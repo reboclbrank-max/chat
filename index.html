@@ -149,6 +149,7 @@
     <button class="voltar" id="btn-voltar">‹</button>
     <div class="titulo" id="titulo-conv"></div>
     <button class="ler-tudo" id="btn-ler-tudo">🔊 ler</button>
+    <button class="ler-tudo" id="btn-atualizar" title="Atualizar">🔄</button>
   </div>
   <div class="msgs" id="msgs"></div>
   <div class="composer-wrap">
@@ -216,7 +217,19 @@ function markdown(t) {
 }
 function ehBot(c) { return c.user && c.user.login === 'github-actions[bot]'; }
 function limparAssinatura(b) {
-  return (b || '').replace(/^🤖 \*\*Assistente Rebocl\*\*\s*/, '').replace(/\n\n---\n_\(.*?\)_$/s, '').trim();
+  return (b || '')
+    .replace(/<!--\s*resp:[^>]*-->/g, '')
+    .replace(/^🤖 \*\*Assistente Rebocl\*\*\s*/, '')
+    .replace(/\n\n---\n_\(.*?\)_$/s, '')
+    .trim();
+}
+function avisar(titulo, corpo) {
+  try {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      const n = new Notification(titulo, { body: (corpo || '').slice(0, 120), icon: 'icone-192.png', tag: 'rebocl' });
+      n.onclick = () => { window.focus(); n.close(); };
+    }
+  } catch (e) {}
 }
 function quando(iso) {
   const d = new Date(iso), agora = new Date();
@@ -395,6 +408,11 @@ async function enviar() {
   const caixa = $('entrada');
   const texto = caixa.value.trim();
   if (!texto || !conversa) return;
+  try {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission().catch(() => {});
+    }
+  } catch (e) {}
   caixa.value = ''; caixa.style.height = 'auto';
   bolha('user', texto, new Date().toISOString());
   rolarFim();
@@ -420,7 +438,12 @@ function iniciarPolling() {
       const comentarios = await api(`/repos/${REPO}/issues/${conversa}/comments?per_page=100`);
       const novos = comentarios.filter((c) => c.id > ultimoId);
       let respondeu = false;
-      novos.forEach((c) => { if (renderComentario(c)) respondeu = true; });
+      novos.forEach((c) => {
+        if (renderComentario(c)) {
+          respondeu = true;
+          avisar('Assistente Rebocl respondeu', limparAssinatura(c.body));
+        }
+      });
       if (novos.length) { pensando(false); rolarFim(); }
       if (respondeu) { pararPolling(); return; }
       if (novos.length) pensando(true);
@@ -437,7 +460,8 @@ function iniciarPolling() {
 const CHIPS = [
   ['🔍 pesquisar', 'pesquisar: '], ['🌤 clima', 'clima: '], ['📰 notícias', 'noticias: '],
   ['💱 dólar', 'cambio: USD'], ['🎨 imagem', 'imagem: '], ['🔎 site no ar', 'verificar: '],
-  ['🧠 lembrar', 'lembrar: '], ['📝 anotar', 'anotar: '], ['📊 status', '/status']
+  ['🧠 memória', 'memoria: '], ['📝 lembrar', 'lembrar: '],
+  ['📝 anotar', 'anotar: '], ['📊 status', '/status']
 ];
 function montarChips() {
   const caixa = $('chips');
@@ -487,6 +511,7 @@ $('btn-config').onclick = () => {
 };
 $('btn-voltar').onclick = voltarLista;
 $('btn-enviar').onclick = enviar;
+$('btn-atualizar').onclick = () => { if (conversa) abrir(conversa, $('titulo-conv').textContent); };
 $('btn-mic').onclick = alternarMicrofone;
 $('btn-ler-tudo').onclick = () => {
   const textos = Array.from(elMsgs.querySelectorAll('.bolha.bot')).map((b) => b.textContent).join('. ');
