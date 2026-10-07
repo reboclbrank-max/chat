@@ -98,6 +98,13 @@
   .aviso{font-size:12.5px;border-radius:10px;padding:9px 11px;margin-top:10px}
   .aviso.ok{background:#14281a;border:1px solid #245c32;color:#a9e0b8}
   .aviso.erro{background:#2a1414;border:1px solid #5c2424;color:#e0a9a9}
+  .sino{background:#15130a;border:1px solid #6b5a20;border-radius:14px;margin:8px 12px 0;
+    padding:10px 12px;font-size:12.5px;color:#e7d9a8;cursor:pointer;max-height:44px;overflow:hidden;
+    transition:max-height .25s}
+  .sino.aberto{max-height:360px;overflow-y:auto}
+  .sino ul{margin:8px 0 0 16px;padding:0}
+  .sino li{margin-bottom:7px;color:#cdc6ad}
+  .sino li i{color:#8a8270;font-size:11px}
   .oculto{display:none !important}
   ol.inst{margin:8px 0 4px 18px;padding:0}
   ol.inst li{margin-bottom:6px}
@@ -117,6 +124,7 @@
 
 <main id="principal">
   <div class="faixa" id="faixa"></div>
+  <div class="sino oculto" id="sino" title="Avisos automáticos (toque para abrir)"></div>
   <div class="lista" id="lista"></div>
 </main>
 
@@ -458,6 +466,7 @@ function iniciarPolling() {
 
 /* ---------- comandos rápidos ---------- */
 const CHIPS = [
+  ['🔔 avisos', 'avisos: '], ['⏰ lembrete', 'lembrete: '], ['👁 vigiar', 'vigiar: '],
   ['🏆 placar', 'placar:'], ['🗄 dados', 'dados:'], ['💡 melhorias', 'melhorias:'],
   ['🧭 panorama', 'panorama:'], ['🌐 abrir', 'abrir: '], ['🗂 arquivo', 'arquivo: '],
   ['🔍 pesquisar', 'pesquisar: '], ['🌤 clima', 'clima: '],
@@ -480,6 +489,50 @@ function montarChips() {
     caixa.appendChild(b);
   });
 }
+
+/* ---------- sino de avisos (v3.7) ---------- */
+const CHAVE_SINO = 'assistente_rebocl_sino';
+function utf8(bin) {
+  const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
+}
+async function checarSino() {
+  const el = $('sino');
+  if (!el) return;
+  if (!token) { el.classList.add('oculto'); return; }
+  let dados = null;
+  try {
+    const r = await api(`/repos/${REPO}/contents/MEMORIA/avisos.json`);
+    dados = JSON.parse(utf8(atob((r.content || '').replace(/\s/g, ''))));
+  } catch (e) { el.classList.add('oculto'); return; }
+  const agora = Date.now();
+  const hist = (dados.historico || []).filter((h) => {
+    const t = Date.parse(h.quando || '');
+    return t && (agora - t) < 72 * 3600 * 1000;
+  });
+  const ativos = (dados.avisos || []).filter((a) => a.ativo);
+  const lembretes = (dados.lembretes || []).filter((l) => !l.feito);
+  if (!hist.length && !ativos.length) { el.classList.add('oculto'); return; }
+  const visto = localStorage.getItem(CHAVE_SINO) || '';
+  const novos = hist.filter((h) => (h.quando || '') > visto);
+  if (novos.length) {
+    const u = novos[novos.length - 1];
+    avisar('🔔 ' + (u.titulo || 'Aviso do assistente'),
+           (u.texto || '').replace(/[*#>_`]/g, '').slice(0, 150));
+    localStorage.setItem(CHAVE_SINO, hist[hist.length - 1].quando || visto);
+  }
+  const limpo = (t) => escapar((t || '').replace(/[*#>_`]/g, '').slice(0, 170));
+  el.innerHTML = `<b>🔔 ${hist.length} aviso(s)</b> nas últimas 72 h · ${ativos.length} vigiando · ` +
+    `${lembretes.length} lembrete(s) <span style="color:#8a8270">(toque para abrir)</span>`
+    + (hist.length ? '<ul>' + hist.slice(-5).reverse().map((h) =>
+        `<li><b>${escapar(h.titulo || '')}</b> — ${limpo(h.texto)} <i>${escapar((h.quando || '').replace('T', ' ').slice(0, 16))} UTC</i></li>`
+      ).join('') + '</ul>' : '');
+  el.classList.remove('oculto');
+}
+(function ligarSino() {
+  const el = $('sino');
+  if (el) el.onclick = () => el.classList.toggle('aberto');
+})();
 
 /* ---------- configuração ---------- */
 async function testarConexao(silencioso) {
@@ -534,7 +587,12 @@ if ('serviceWorker' in navigator) {
 }
 (async function iniciar() {
   if (token) {
-    if (await testarConexao(true)) { carregarLista(); return; }
+    if (await testarConexao(true)) {
+      carregarLista();
+      checarSino();
+      setInterval(checarSino, 5 * 60 * 1000);
+      return;
+    }
   }
   mostrarConfig(true);
 })();
