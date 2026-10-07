@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Chat — Assistente Rebocl</title>
+<style>
+  :root{
+    --fundo:#0e0e11; --painel:#16161c; --painel2:#1d1d25; --borda:#2a2a35;
+    --ouro:#d4af37; --ouro-fraco:#8d7524; --texto:#e8e8ee; --texto2:#9a9aa8;
+    --user:#243447; --bot:#1c1c24;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--fundo); color:var(--texto);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,sans-serif;
+    display:flex; flex-direction:column; height:100dvh;
+  }
+  header{
+    display:flex; align-items:center; gap:10px; padding:10px 14px;
+    background:linear-gradient(180deg,#121218,#0e0e11); border-bottom:1px solid var(--borda);
+    position:sticky; top:0; z-index:5;
+  }
+  .logo{
+    width:38px;height:38px;border-radius:10px;flex:0 0 auto;
+    background:linear-gradient(135deg,#d4af37,#7a5f14); color:#15130a;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;
+  }
+  header h1{font-size:15px;margin:0;letter-spacing:.3px}
+  header p{margin:0;font-size:11.5px;color:var(--texto2)}
+  #btn-config{margin-left:auto;background:none;border:1px solid var(--borda);color:var(--texto2);
+    border-radius:10px;padding:6px 10px;font-size:13px;cursor:pointer}
+  main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+  .faixa{font-size:12px;color:var(--texto2);padding:7px 14px;border-bottom:1px solid var(--borda);
+    background:#101015;text-align:center}
+  .lista{overflow-y:auto;flex:1;padding:10px 12px 90px}
+  .conv{
+    background:var(--painel); border:1px solid var(--borda); border-radius:14px;
+    padding:12px 14px; margin-bottom:10px; cursor:pointer;
+  }
+  .conv:active{background:var(--painel2)}
+  .conv .titulo{font-weight:600;font-size:14.5px;margin-bottom:3px}
+  .conv .meta{font-size:11.5px;color:var(--texto2);display:flex;gap:10px}
+  .vazio{color:var(--texto2);text-align:center;padding:40px 20px;font-size:14px}
+  .vazio .emoji{font-size:34px;display:block;margin-bottom:10px}
+  /* conversa */
+  #cabecalho-conv{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--borda);background:#101015}
+  #cabecalho-conv button{background:none;border:none;color:var(--ouro);font-size:20px;cursor:pointer;padding:2px 8px}
+  #cabecalho-conv .titulo{font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .msgs{flex:1;overflow-y:auto;padding:14px 12px 110px;display:flex;flex-direction:column;gap:10px}
+  .bolha{max-width:86%;border-radius:16px;padding:10px 13px;font-size:14.5px;word-wrap:break-word;overflow-wrap:anywhere}
+  .bolha.user{align-self:flex-end;background:var(--user);border:1px solid #2f4a66}
+  .bolha.bot{align-self:flex-start;background:var(--bot);border:1px solid var(--borda)}
+  .bolha .quem{font-size:11px;color:var(--texto2);margin-bottom:4px}
+  .bolha pre{background:#0b0b0f;border:1px solid var(--borda);border-radius:8px;padding:8px;overflow-x:auto;font-size:12.5px}
+  .bolha code{background:#0b0b0f;border-radius:5px;padding:1px 5px;font-size:12.8px}
+  .bolha a{color:var(--ouro)}
+  .bolha hr{border:none;border-top:1px solid var(--borda);margin:8px 0}
+  .pensando{align-self:flex-start;color:var(--texto2);font-size:13px;padding:6px 12px;display:flex;gap:8px;align-items:center}
+  .ponto{width:6px;height:6px;border-radius:50%;background:var(--ouro);animation:pula 1s infinite alternate}
+  .ponto:nth-child(2){animation-delay:.2s}.ponto:nth-child(3){animation-delay:.4s}
+  @keyframes pula{from{opacity:.25;transform:translateY(0)}to{opacity:1;transform:translateY(-3px)}}
+  /* composer */
+  .composer{
+    position:fixed;left:0;right:0;bottom:0;padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+    background:linear-gradient(0deg,#0e0e11 70%,transparent);display:flex;gap:8px;align-items:flex-end;
+  }
+  .composer textarea{
+    flex:1;resize:none;background:var(--painel);color:var(--texto);border:1px solid var(--borda);
+    border-radius:14px;padding:11px 13px;font:inherit;max-height:120px;min-height:46px;
+  }
+  .composer button{
+    background:linear-gradient(135deg,#d4af37,#a8862a);border:none;color:#15130a;font-weight:700;
+    border-radius:14px;min-width:52px;height:46px;font-size:14px;cursor:pointer;
+  }
+  .composer button:disabled{opacity:.45}
+  /* config */
+  #tela-config{overflow-y:auto;flex:1;padding:16px 14px 40px}
+  .cartao{background:var(--painel);border:1px solid var(--borda);border-radius:16px;padding:16px;margin-bottom:14px}
+  .cartao h2{font-size:15px;margin:0 0 8px}
+  .cartao p,.cartao li{font-size:13.5px;color:#c9c9d4}
+  .cartao a{color:var(--ouro)}
+  .cartao input{
+    width:100%;background:#0b0b0f;border:1px solid var(--borda);color:var(--texto);
+    border-radius:10px;padding:11px;font:inherit;font-size:13.5px;margin:8px 0;
+  }
+  .cartao button{
+    background:linear-gradient(135deg,#d4af37,#a8862a);border:none;color:#15130a;font-weight:700;
+    border-radius:10px;padding:11px 16px;font-size:14px;cursor:pointer;width:100%;
+  }
+  .cartao button.secundario{background:none;border:1px solid var(--borda);color:var(--texto2);font-weight:400}
+  .aviso{font-size:12.5px;border-radius:10px;padding:9px 11px;margin-top:10px}
+  .aviso.ok{background:#14281a;border:1px solid #245c32;color:#a9e0b8}
+  .aviso.erro{background:#2a1414;border:1px solid #5c2424;color:#e0a9a9}
+  .oculto{display:none !important}
+  ol.inst{margin:8px 0 4px 18px;padding:0}
+  ol.inst li{margin-bottom:6px}
+  .rodape{color:#5f5f6e;font-size:11px;text-align:center;padding:12px 8px 30px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">RB</div>
+  <div>
+    <h1>Assistente Rebocl</h1>
+    <p id="sub">sua IA gratuita — salva no GitHub</p>
+  </div>
+  <button id="btn-config" title="Configurar acesso">⚙️</button>
+</header>
+
+<main id="principal">
+  <div class="faixa" id="faixa"></div>
+  <div class="lista" id="lista"></div>
+</main>
+
+<div id="tela-config" class="oculto">
+  <div class="cartao" id="cartao-acesso">
+    <h2>🔑 Acesso</h2>
+    <p>Para esta página ler e escrever nas suas conversas privadas, ela precisa de um <b>token de acesso do GitHub</b> — guardado apenas neste navegador, nunca aqui no site.</p>
+    <ol class="inst">
+      <li>Abra <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a> (entre na conta <b>reboclbrank-max</b>)</li>
+      <li><b>Token name:</b> <code>chat-site</code> · <b>Expiration:</b> 90 dias (ou o que preferir)</li>
+      <li><b>Repository access:</b> Only select repositories → marque <b>agente</b></li>
+      <li><b>Permissions:</b> em <i>Repository permissions</i>, ache <b>Issues</b> e mude para <b>Read and write</b></li>
+      <li><b>Generate token</b> → copie o valor (começa com <code>github_pat_</code>) e cole abaixo</li>
+    </ol>
+    <input type="password" id="token" placeholder="cole aqui o token github_pat_..." autocomplete="off">
+    <button id="btn-salvar">Salvar e testar</button>
+    <div id="status-conexao"></div>
+  </div>
+  <div class="rodape">Página pública (não contém dados). Suas conversas ficam no repositório privado <b>reboclbrank-max/agente</b>.</div>
+</div>
+
+<div id="tela-conv" class="oculto" style="display:none;flex:1;flex-direction:column;overflow:hidden">
+  <div id="cabecalho-conv">
+    <button id="btn-voltar">‹</button>
+    <div class="titulo" id="titulo-conv"></div>
+  </div>
+  <div class="msgs" id="msgs"></div>
+  <div class="composer">
+    <textarea id="entrada" rows="1" placeholder="Escreva... (dica: 'anotar: ...' guarda na memória)"></textarea>
+    <button id="btn-enviar">➤</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+const REPO = 'reboclbrank-max/agente';
+const API = 'https://api.github.com';
+const CHAVE_TOKEN = 'assistente_rebocl_token';
+
+let token = localStorage.getItem(CHAVE_TOKEN) || '';
+let conversa = null;        // número do issue aberto
+let intervalo = null;       // polling
+let ultimoId = 0;           // último comentário visto
+
+const $ = (id) => document.getElementById(id);
+const elLista = $('lista'), elMsgs = $('msgs'), elFaixa = $('faixa');
+
+function api(caminho, opcoes = {}) {
+  return fetch(API + caminho, {
+    ...opcoes,
+    headers: {
+      'Authorization': 'Bearer ' + token,
+      'Accept': 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+      ...(opcoes.body ? { 'Content-Type': 'application/json' } : {}),
+      ...(opcoes.headers || {})
+    }
+  }).then(async (r) => {
+    const texto = await r.text();
+    let dados = null;
+    try { dados = texto ? JSON.parse(texto) : null; } catch (e) { dados = texto; }
+    if (!r.ok) throw new Error((dados && dados.message) || ('HTTP ' + r.status));
+    return dados;
+  });
+}
+
+function escapar(t) {
+  return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function markdown(t) {
+  let s = escapar(t);
+  s = s.replace(/```([\s\S]*?)```/g, (m, c) => '<pre>' + c.trim() + '</pre>');
+  s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+  s = s.replace(/\*\*([^*\n]+)\*\*/g, '<b>$1</b>');
+  s = s.replace(/_(\(?[^_\n]+\)?)_/g, '<i>$1</i>');
+  s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  s = s.replace(/(^|\s)(https?:\/\/[^\s<)]+)/g, '$1<a href="$2" target="_blank" rel="noopener">$2</a>');
+  s = s.replace(/^- /gm, '• ');
+  s = s.replace(/^---$/gm, '<hr>');
+  s = s.replace(/\n/g, '<br>');
+  return s;
+}
+function ehBot(c) { return c.user && c.user.login === 'github-actions[bot]'; }
+function limparAssinatura(b) {
+  return (b || '').replace(/^🤖 \*\*Assistente Rebocl\*\*\s*/, '').replace(/\n\n---\n_\(.*?\)_$/s, '').trim();
+}
+function quando(iso) {
+  const d = new Date(iso), agora = new Date();
+  const min = Math.round((agora - d) / 60000);
+  if (min < 1) return 'agora';
+  if (min < 60) return min + ' min';
+  if (min < 60 * 24) return Math.round(min / 60) + ' h';
+  return d.toLocaleDateString('pt-BR');
+}
+
+/* ---------- telas ---------- */
+function mostrarConfig(mostrar) {
+  $('tela-config').classList.toggle('oculto', !mostrar);
+  $('principal').classList.toggle('oculto', mostrar);
+  $('tela-conv').classList.toggle('oculto', true);
+  $('tela-conv').style.display = 'none';
+}
+function abrirConversa() {
+  $('principal').classList.add('oculto');
+  $('tela-config').classList.add('oculto');
+  $('tela-conv').classList.remove('oculto');
+  $('tela-conv').style.display = 'flex';
+}
+function voltarLista() {
+  pararPolling();
+  conversa = null;
+  $('tela-conv').classList.add('oculto');
+  $('tela-conv').style.display = 'none';
+  $('principal').classList.remove('oculto');
+  carregarLista();
+}
+function pararPolling() { if (intervalo) { clearInterval(intervalo); intervalo = null; } }
+
+/* ---------- lista de conversas ---------- */
+async function carregarLista() {
+  elLista.innerHTML = '<div class="vazio"><span class="emoji">⏳</span>carregando conversas...</div>';
+  try {
+    const issues = await api(`/repos/${REPO}/issues?state=open&per_page=50&sort=updated`);
+    if (!issues.length) {
+      elLista.innerHTML = `<div class="vazio"><span class="emoji">💬</span>nenhuma conversa ainda.<br><br>crie a primeira no botão abaixo.</div>`;
+    } else {
+      elLista.innerHTML = '';
+      issues.forEach((i) => {
+        const div = document.createElement('div');
+        div.className = 'conv';
+        div.innerHTML = `<div class="titulo">${escapar(i.title)}</div>
+          <div class="meta"><span>💬 ${i.comments}</span><span>🕒 ${quando(i.updated_at)}</span></div>`;
+        div.onclick = () => abrir(i.number, i.title);
+        elLista.appendChild(div);
+      });
+    }
+    const nova = document.createElement('div');
+    nova.className = 'conv';
+    nova.style.borderColor = 'var(--ouro-fraco)';
+    nova.innerHTML = `<div class="titulo" style="color:var(--ouro)">＋ Nova conversa</div><div class="meta"><span>comece uma conversa nova com o assistente</span></div>`;
+    nova.onclick = novaConversa;
+    elLista.appendChild(nova);
+    elFaixa.textContent = 'toque numa conversa para abrir · tudo fica salvo no GitHub';
+  } catch (e) {
+    elLista.innerHTML = `<div class="vazio"><span class="emoji">⚠️</span>não consegui carregar (${escapar(String(e.message))}).<br>confira o token nas configurações ⚙️</div>`;
+  }
+}
+
+async function novaConversa() {
+  const texto = prompt('Primeira mensagem para o assistente:');
+  if (!texto || !texto.trim()) return;
+  try {
+    const titulo = texto.trim().split('\n')[0].slice(0, 70);
+    const issue = await api(`/repos/${REPO}/issues`, {
+      method: 'POST',
+      body: JSON.stringify({ title: titulo, body: texto.trim() })
+    });
+    abrir(issue.number, issue.title);
+  } catch (e) {
+    alert('Não consegui criar a conversa: ' + e.message);
+  }
+}
+
+/* ---------- conversa aberta ---------- */
+async function abrir(numero, titulo) {
+  conversa = numero;
+  ultimoId = 0;
+  abrirConversa();
+  $('titulo-conv').textContent = titulo || ('Conversa #' + numero);
+  elMsgs.innerHTML = '<div class="vazio"><span class="emoji">⏳</span>carregando...</div>';
+  try {
+    const comentarios = await api(`/repos/${REPO}/issues/${numero}/comments?per_page=100`);
+    elMsgs.innerHTML = '';
+    // primeira mensagem = corpo do issue
+    const issue = await api(`/repos/${REPO}/issues/${numero}`);
+    if (issue.body) bolha('user', issue.body, issue.created_at);
+    comentarios.forEach(renderComentario);
+    ultimoId = comentarios.length ? comentarios[comentarios.length - 1].id : 0;
+    rolarFim();
+    iniciarPolling();
+  } catch (e) {
+    elMsgs.innerHTML = `<div class="vazio"><span class="emoji">⚠️</span>${escapar(String(e.message))}</div>`;
+  }
+}
+
+function renderComentario(c) {
+  const deBot = ehBot(c);
+  const corpo = deBot ? limparAssinatura(c.body) : c.body;
+  bolha(deBot ? 'bot' : 'user', corpo, c.created_at);
+  if (c.id > ultimoId) ultimoId = c.id;
+  return deBot;
+}
+
+function bolha(tipo, texto, iso) {
+  const div = document.createElement('div');
+  div.className = 'bolha ' + tipo;
+  div.innerHTML = (tipo === 'bot' ? '<div class="quem">🤖 Assistente · ' + quando(iso) + '</div>' : '') + markdown(texto || '');
+  elMsgs.appendChild(div);
+  return div;
+}
+
+function rolarFim() { elMsgs.scrollTop = elMsgs.scrollHeight; }
+
+function pensando(mostrar) {
+  const velho = $('pensando');
+  if (velho) velho.remove();
+  if (mostrar) {
+    const d = document.createElement('div');
+    d.id = 'pensando';
+    d.className = 'pensando';
+    d.innerHTML = '<span class="ponto"></span><span class="ponto"></span><span class="ponto"></span> o assistente está pensando (leva ~1–2 min)...';
+    elMsgs.appendChild(d);
+    rolarFim();
+  }
+}
+
+async function enviar() {
+  const caixa = $('entrada');
+  const texto = caixa.value.trim();
+  if (!texto || !conversa) return;
+  caixa.value = ''; caixa.style.height = 'auto';
+  bolha('user', texto, new Date().toISOString());
+  rolarFim();
+  $('btn-enviar').disabled = true;
+  pensando(true);
+  try {
+    const c = await api(`/repos/${REPO}/issues/${conversa}/comments`, {
+      method: 'POST',
+      body: JSON.stringify({ body: texto })
+    });
+    if (c.id > ultimoId) ultimoId = c.id;
+    iniciarPolling();
+  } catch (e) {
+    pensando(false);
+    alert('Não consegui enviar: ' + e.message);
+  } finally {
+    $('btn-enviar').disabled = false;
+  }
+}
+
+/* ---------- polling da resposta ---------- */
+function iniciarPolling() {
+  pararPolling();
+  let tentativas = 0;
+  intervalo = setInterval(async () => {
+    tentativas++;
+    try {
+      const comentarios = await api(`/repos/${REPO}/issues/${conversa}/comments?per_page=100`);
+      const novos = comentarios.filter((c) => c.id > ultimoId);
+      let respondeu = false;
+      novos.forEach((c) => { if (renderComentario(c)) respondeu = true; });
+      if (novos.length) { pensando(false); rolarFim(); }
+      if (respondeu) { pararPolling(); return; }
+      if (novos.length) pensando(true);
+      if (tentativas > 72) { // ~6 minutos
+        pensando(false);
+        bolha('bot', '_O assistente está demorando mais que o normal. A resposta pode chegar ainda — reabra a conversa em alguns minutos para ver._', new Date().toISOString());
+        pararPolling();
+      }
+    } catch (e) { /* silencioso; tenta de novo */ }
+  }, 5000);
+}
+
+/* ---------- configuração / inicialização ---------- */
+async function testarConexao(silencioso) {
+  const el = $('status-conexao');
+  if (!token) { el.innerHTML = ''; return false; }
+  el.innerHTML = '<div class="aviso">testando...</div>';
+  try {
+    const usuario = await api('/user');
+    await api(`/repos/${REPO}`);
+    el.innerHTML = `<div class="aviso ok">conectado como <b>${escapar(usuario.login)}</b> ✓</div>`;
+    return true;
+  } catch (e) {
+    if (!silencioso) {
+      el.innerHTML = `<div class="aviso erro">falhou: ${escapar(String(e.message))} — confira se o token tem acesso ao repositório <b>agente</b> e permissão de <b>Issues: Read and write</b>.</div>`;
+    }
+    return false;
+  }
+}
+
+$('btn-salvar').onclick = async () => {
+  const valor = $('token').value.trim();
+  if (!valor) { alert('cole o token primeiro'); return; }
+  token = valor;
+  localStorage.setItem(CHAVE_TOKEN, token);
+  const ok = await testarConexao(false);
+  if (ok) { mostrarConfig(false); carregarLista(); }
+};
+$('btn-config').onclick = () => {
+  $('token').value = '';
+  $('status-conexao').innerHTML = token ? '<div class="aviso ok">já existe um token salvo neste navegador.</div>' : '';
+  mostrarConfig(true);
+};
+$('btn-voltar').onclick = voltarLista;
+$('btn-enviar').onclick = enviar;
+$('entrada').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviar(); }
+});
+$('entrada').addEventListener('input', (e) => {
+  e.target.style.height = 'auto';
+  e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+});
+
+(async function iniciar() {
+  if (token) {
+    const ok = await testarConexao(true);
+    if (ok) { carregarLista(); return; }
+  }
+  mostrarConfig(true);
+})();
+</script>
+</body>
+</html>
