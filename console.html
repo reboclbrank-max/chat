@@ -72,6 +72,7 @@
       <div class="linha"><span>Estado</span><b id="piloto-estado">—</b></div>
       <div class="linha"><span>Último post</span><b id="piloto-ultimo">—</b></div>
       <div class="linha"><span>Fila de publicação</span><b id="fila-tam">—</b></div>
+      <div class="linha"><span>Menções respondidas hoje</span><b id="piloto-mencoes">—</b></div>
       <div class="acoes" style="margin-top:10px">
         <button class="acao" data-ordem="piloto: ligar">▶️ ligar</button>
         <button class="sec" data-ordem="piloto: desligar">⏹ desligar</button>
@@ -104,9 +105,9 @@
     </div>
     <div class="card">
       <h2>📊 Métricas ao vivo</h2>
-      <div class="linha"><span>🌙 Ceifalume — itch views</span><b class="num peq" id="m-ceifa-views">—</b></div>
+      <div class="linha"><span>🌙 Ceifalume — itch views</span><b class="num peq" id="m-ceifa-views">—</b> <span id="spark-ceifa"></span></div>
       <div class="linha"><span>🌙 Ceifalume — downloads</span><b class="num peq" id="m-ceifa-dl">—</b></div>
-      <div class="linha"><span>⚽ Prancheta — itch views</span><b class="num peq" id="m-pran-views">—</b></div>
+      <div class="linha"><span>⚽ Prancheta — itch views</span><b class="num peq" id="m-pran-views">—</b> <span id="spark-pran"></span></div>
       <div class="linha"><span>⚽ Prancheta — downloads</span><b class="num peq" id="m-pran-dl">—</b></div>
       <div class="linha"><span>▶️ Trailers (YouTube)</span><b id="m-yt">—</b></div>
     </div>
@@ -116,6 +117,10 @@
       <div class="linha"><span>Lembretes pendentes</span><b class="num peq" id="av-lembretes">—</b></div>
       <div class="linha"><span>Sino no chat</span><b>🔔 72 h — notificações no celular</b></div>
     </div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <h2>📜 Histórico de posts do piloto</h2>
+    <div id="hist-posts"><p>carregando…</p></div>
   </div>
   <div class="card" style="margin-top:12px">
     <h2>📜 Ordens enviadas (últimas conversas do agente)</h2>
@@ -157,6 +162,25 @@ function quando(iso) {
   try { return new Date(iso).toLocaleString('pt-BR').slice(0, 16); } catch (e) { return String(iso || ''); }
 }
 
+function historicoMetricas() {
+  try { return JSON.parse(localStorage.getItem('console-hist-metricas') || '[]'); } catch (e) { return []; }
+}
+function salvarMetrica(ceifa, pran) {
+  const h = historicoMetricas();
+  h.push({ t: Date.now(), ceifa, pran });
+  try { localStorage.setItem('console-hist-metricas', JSON.stringify(h.slice(-60))); } catch (e) {}
+}
+function sparkline(pontos, cor) {
+  if (!pontos || pontos.length < 2) return '';
+  const w = 110, h = 30;
+  const max = Math.max(...pontos, 1), min = Math.min(...pontos, 0);
+  const passo = w / (pontos.length - 1);
+  const pts = pontos.map((v, i) =>
+    (i * passo).toFixed(1) + ',' + (h - ((v - min) / (max - min || 1)) * h).toFixed(1)).join(' ');
+  return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '" style="vertical-align:middle">' +
+    '<polyline points="' + pts + '" fill="none" stroke="' + cor + '" stroke-width="2"/></svg>';
+}
+
 async function carregarEstado() {
   $('status').textContent = 'atualizando…';
   let est = null;
@@ -195,7 +219,7 @@ async function carregarEstado() {
   const ult = (c.ultimas || [])[0];
   $('cerebro-ultima').textContent = ult ? ('“' + esc((ult.p || '').slice(0, 60)) + '…”') : '—';
 
-  // métricas
+  // métricas (+ sparklines com histórico local)
   const mt = est.metricas || {};
   const ce = mt.ceifalume || {}, pr = mt.prancheta || {};
   $('m-ceifa-views').textContent = ce.itch_views != null ? ce.itch_views : '—';
@@ -203,6 +227,20 @@ async function carregarEstado() {
   $('m-pran-views').textContent = pr.itch_views != null ? pr.itch_views : '—';
   $('m-pran-dl').textContent = pr.itch_downloads != null ? pr.itch_downloads : '—';
   $('m-yt').textContent = 'Ceifalume ' + (ce.yt_views != null ? ce.yt_views : '?') + ' · Prancheta ' + (pr.yt_views != null ? pr.yt_views : '?');
+  if (ce.itch_views != null && pr.itch_views != null) {
+    salvarMetrica(ce.itch_views, pr.itch_views);
+    const h = historicoMetricas();
+    $('spark-ceifa').innerHTML = sparkline(h.map((x) => x.ceifa), '#d4af37');
+    $('spark-pran').innerHTML = sparkline(h.map((x) => x.pran), '#3ddc84');
+  }
+
+  // histórico de posts + menções
+  $('piloto-mencoes').textContent = p.mencoes_hoje != null ? p.mencoes_hoje : '—';
+  const hist = (est.piloto && est.piloto.historico) || [];
+  $('hist-posts').innerHTML = hist.length ? hist.slice().reverse().map((h) =>
+    '<div class="linha"><span>' + (h.jogo === 'ceifalume' ? '🌙 Ceifalume' : '⚽ Prancheta') +
+    ' · ' + (h.canais_ok != null ? h.canais_ok : 6) + '/6 canais</span><span>' + quando(h.em) + '</span></div>'
+  ).join('') : '<p>nenhum post ainda</p>';
 
   // avisos
   const av = est.avisos || {};
