@@ -26,3 +26,10 @@ Para mudar o visual ou o texto, edite `index.html` e faça commit. O GitHub Page
 - **Console da IA** (`console.html`): um painel único que mostra **tudo junto** — motores e placar, cérebro próprio, piloto automático, fila de publicação, métricas ao vivo, avisos — e manda ordens para o agente (medir, postar, ligar/desligar o piloto, `pensar:`).
 - **Cérebro local com 3 modelos** para escolher: ⚡ rápido (0.5B), ⚖️ equilibrado (1.5B, padrão), 💪 pesado (3B).
 - **Fallback automático:** se a internet cair, o chat liga o cérebro local sozinho.
+
+## v1.4 — mais perto de "nunca ficar na mão"
+
+- **Cache offline:** conversas e a lista ficam salvas no navegador (IndexedDB) — sem internet você **lê tudo** (modo offline com faixa 📦)
+- **Sugestões após cada resposta:** 👎 ficou ruim (a IA aprende com seu feedback!), 💡 explique simples, 📝 resuma
+- **Atalhos:** Ctrl+Enter envia · `/` foca a caixa · Esc fecha as configurações
+- **Voz 100% offline:** o botão 🔊 usa a voz do próprio aparelho (Web Speech) — funciona sem internet

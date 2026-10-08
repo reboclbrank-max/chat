@@ -202,6 +202,7 @@
   <div id="progresso-local" class="oculto"></div>
   <div class="msgs" id="msgs"></div>
   <div class="composer-wrap">
+    <div id="sugestoes" class="oculto" style="display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 6px"></div>
     <div class="chips" id="chips"></div>
     <div class="composer">
       <button class="mic" id="btn-mic" title="Falar">🎙</button>
@@ -379,8 +380,22 @@ async function carregarLista() {
     nova.onclick = novaConversa;
     elLista.appendChild(nova);
     elFaixa.textContent = 'toque numa conversa para abrir · tudo fica salvo no GitHub';
+    cacheSalvarLista(issues);
   } catch (e) {
-    elLista.innerHTML = `<div class="vazio"><span class="emoji">⚠️</span>não consegui carregar (${escapar(String(e.message))}).<br>confira o token nas configurações ⚙️</div>`;
+    const cache = await cacheLerLista();
+    if (cache && cache.length) {
+      elLista.innerHTML = '';
+      cache.forEach((i) => {
+        const div = document.createElement('div');
+        div.className = 'conv';
+        div.innerHTML = `<div class="titulo">${escapar(i.title)}</div><div class="meta"><span>💬 ${i.comments}</span><span>🕒 ${quando(i.updated_at)}</span></div>`;
+        div.onclick = () => abrir(i.number, i.title);
+        elLista.appendChild(div);
+      });
+      elFaixa.textContent = '📦 modo offline — mostrando cópias salvas neste aparelho';
+    } else {
+      elLista.innerHTML = `<div class="vazio"><span class="emoji">⚠️</span>não consegui carregar (${escapar(String(e.message))}).<br>confira o token nas configurações ⚙️</div>`;
+    }
   }
 }
 
@@ -409,14 +424,103 @@ async function abrir(numero, titulo) {
     elMsgs.innerHTML = '';
     if (issue.body) bolha('user', issue.body, issue.created_at);
     comentarios.forEach(renderComentario);
+    const ultimo = comentarios[comentarios.length - 1];
+    if (ultimo && ehBot(ultimo)) sugestoesPara(limparAssinatura(ultimo.body));
     ultimoId = comentarios.length ? comentarios[comentarios.length - 1].id : 0;
     rolarFim();
     atualizarBadgeSync();
     if (MODO_LOCAL.ligado) $('faixa-local').classList.remove('oculto');
     iniciarPolling();
+    cacheSalvarConversa(numero, { issue, comentarios });
   } catch (e) {
-    elMsgs.innerHTML = `<div class="vazio"><span class="emoji">⚠️</span>${escapar(String(e.message))}</div>`;
+    const cache = await cacheLerConversa(numero);
+    if (cache && (cache.comentarios || []).length) {
+      elMsgs.innerHTML = '';
+      if (cache.issue && cache.issue.body) bolha('user', cache.issue.body, cache.issue.created_at);
+      cache.comentarios.forEach(renderComentario);
+      faixaOffline(true);
+      bolha('bot', '📦 **Modo offline** — mostrando a cópia salva neste aparelho. Quando a internet voltar, sincroniza sozinho.', new Date().toISOString(), '');
+      rolarFim();
+    } else {
+      elMsgs.innerHTML = `<div class="vazio"><span class="emoji">⚠️</span>${escapar(String(e.message))}</div>`;
+    }
   }
+}
+
+/* ---------- cache offline (v1.4) ---------- */
+function idbCacheAbrir() {
+  return new Promise((res, rej) => {
+    const req = indexedDB.open('rebocl-cache', 1);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains('conversas')) db.createObjectStore('conversas', { keyPath: 'numero' });
+      if (!db.objectStoreNames.contains('lista')) db.createObjectStore('lista', { keyPath: 'id' });
+    };
+    req.onsuccess = () => res(req.result);
+    req.onerror = () => rej(req.error);
+  });
+}
+async function cacheSalvarLista(issues) {
+  try {
+    const db = await idbCacheAbrir();
+    await new Promise((res) => {
+      const tx = db.transaction('lista', 'readwrite');
+      tx.objectStore('lista').put({ id: 'lista', issues, salvoEm: Date.now() });
+      tx.oncomplete = res; tx.onerror = res;
+    });
+  } catch (e) {}
+}
+async function cacheLerLista() {
+  try {
+    const db = await idbCacheAbrir();
+    return await new Promise((res) => {
+      const req = db.transaction('lista', 'readonly').objectStore('lista').get('lista');
+      req.onsuccess = () => res((req.result && req.result.issues) || null);
+      req.onerror = () => res(null);
+    });
+  } catch (e) { return null; }
+}
+async function cacheSalvarConversa(numero, dados) {
+  try {
+    const db = await idbCacheAbrir();
+    await new Promise((res) => {
+      const tx = db.transaction('conversas', 'readwrite');
+      tx.objectStore('conversas').put({ numero, issue: dados.issue, comentarios: dados.comentarios, salvoEm: Date.now() });
+      tx.oncomplete = res; tx.onerror = res;
+    });
+  } catch (e) {}
+}
+async function cacheLerConversa(numero) {
+  try {
+    const db = await idbCacheAbrir();
+    return await new Promise((res) => {
+      const req = db.transaction('conversas', 'readonly').objectStore('conversas').get(numero);
+      req.onsuccess = () => res(req.result || null);
+      req.onerror = () => res(null);
+    });
+  } catch (e) { return null; }
+}
+
+/* ---------- sugestões após resposta do bot (v1.4) ---------- */
+function sugestoesPara(texto) {
+  const area = $('sugestoes');
+  if (!area || !conversa) return;
+  area.innerHTML = '';
+  const t = (texto || '').replace(/\s+/g, ' ').slice(0, 120);
+  [['👎 ficou ruim', '/ruim'],
+   ['💡 explique simples', 'explique isso mais simples: ' + t],
+   ['📝 resuma', 'resuma isso: ' + t]].forEach(([rotulo, acao]) => {
+    const b = document.createElement('button');
+    b.className = 'chip';
+    b.textContent = rotulo;
+    b.onclick = () => { $('entrada').value = acao; enviar(); };
+    area.appendChild(b);
+  });
+  area.classList.remove('oculto');
+}
+function limparSugestoes() {
+  const a = $('sugestoes');
+  if (a) { a.innerHTML = ''; a.classList.add('oculto'); }
 }
 
 function motorDe(c) {
@@ -439,7 +543,7 @@ function bolha(tipo, texto, iso, motor) {
   div.className = 'bolha ' + tipo;
   const html = markdown(texto || '');
   if (tipo === 'bot') {
-    div.innerHTML = `<div class="quem">🤖 Assistente · ${quando(iso)}${motor ? ' <span class="' + (motor.indexOf('local') !== -1 ? 'tag-local' : 'tag-motor') + '">' + escapar(motor) + '</span>' : ''} <button class="falar" title="Ouvir">🔊</button></div>${html}`;
+    div.innerHTML = `<div class="quem">🤖 Assistente · ${quando(iso)}${motor ? ' <span class="' + (motor.indexOf('local') !== -1 ? 'tag-local' : 'tag-motor') + '">' + escapar(motor) + '</span>' : ''} <button class="falar" title="Ouvir — voz do aparelho (funciona offline)">🔊</button></div>${html}`;
     const botao = div.querySelector('.falar');
     botao.onclick = () => falar(textoSimples(html), botao);
   } else {
@@ -489,6 +593,7 @@ async function enviar() {
   const caixa = $('entrada');
   const texto = caixa.value.trim();
   if (!texto || !conversa) return;
+  limparSugestoes();
   if (MODO_LOCAL.ligado) {
     caixa.value = ''; caixa.style.height = 'auto';
     bolha('user', texto, new Date().toISOString());
@@ -541,6 +646,7 @@ function iniciarPolling() {
         if (renderComentario(c)) {
           respondeu = true;
           avisar('Assistente Rebocl respondeu', limparAssinatura(c.body));
+          sugestoesPara(limparAssinatura(c.body));
         }
       });
       if (novos.length) { pensando(false); rolarFim(); }
@@ -566,6 +672,7 @@ const CHIPS = [
   ['📰 notícias', 'noticias: '], ['💱 dólar', 'cambio: USD'], ['🎨 imagem', 'imagem: '],
   ['🔎 site no ar', 'verificar: '], ['🧠 memória', 'memoria: '], ['📝 lembrar', 'lembrar: '],
   ['📝 anotar', 'anotar: '], ['📊 status', '/status'],
+  ['👎 ficou ruim', '/ruim'], ['💡 simples', 'explique isso mais simples: '], ['📝 resumo', 'resuma isso: '],
   ['❓ ajuda', '/ajuda'], ['🆕 nova', '@nova'], ['🧠 local', '@local']
 ];
 function montarChips() {
@@ -682,6 +789,12 @@ $('btn-reenviar').onclick = reenviarUltima;
 $('btn-local').onclick = alternarModoLocal;
 $('btn-sync').onclick = sincronizarLocal;
 $('btn-console').onclick = () => { location.href = 'console.html'; };
+document.addEventListener('keydown', (e) => {
+  const caixa = $('entrada');
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && conversa) { e.preventDefault(); enviar(); return; }
+  if (e.key === '/' && document.activeElement !== caixa && !e.ctrlKey && !e.metaKey && !e.altKey) { e.preventDefault(); caixa.focus(); }
+  if (e.key === 'Escape') $('tela-config').classList.add('oculto');
+});
 $('entrada').addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviar(); }
 });
@@ -1041,6 +1154,7 @@ if (MODO_LOCAL.ligado) {
   $('faixa-local').classList.remove('oculto');
 }
 atualizarBadgeSync();
+if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); } catch (e) {} }
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
