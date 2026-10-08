@@ -33,3 +33,10 @@ Para mudar o visual ou o texto, edite `index.html` e faça commit. O GitHub Page
 - **Sugestões após cada resposta:** 👎 ficou ruim (a IA aprende com seu feedback!), 💡 explique simples, 📝 resuma
 - **Atalhos:** Ctrl+Enter envia · `/` foca a caixa · Esc fecha as configurações
 - **Voz 100% offline:** o botão 🔊 usa a voz do próprio aparelho (Web Speech) — funciona sem internet
+
+## v1.5 —polimento final
+
+- **Tema claro/escuro** (☀️/🌙 nas configurações, fica salvo)
+- **Arraste um arquivo** .txt/.md/.csv/.json/.html/.js/.py para a caixa de texto
+- **Ctrl+N** cria conversa nova · **contador de caracteres** · **🖨️ imprimir / salvar como PDF** a conversa
+- **Console v3:** mostra a **saúde dos 6 canais** (🟢/🔴) medida pelo piloto 1× por dia

@@ -16,8 +16,11 @@
   :root{
     --fundo:#0e0e11; --painel:#16161c; --painel2:#1d1d25; --borda:#2a2a35;
     --ouro:#d4af37; --ouro-fraco:#8d7524; --texto:#e8e8ee; --texto2:#9a9aa8;
-    --user:#243447; --bot:#1c1c24; --verde:#3ddc84;
+  --verde:#3ddc84; --vermelho:#e0a9a9;
   }
+  body.claro{--fundo:#f4f4f7;--painel:#ffffff;--painel2:#ececf1;--borda:#d5d5df;--texto:#191922;--texto2:#5c5c6a}
+  .composer #contador{font-size:10.5px;color:var(--texto2);align-self:center;min-width:34px;text-align:right}
+  @media print{header,.composer-wrap,.chips,#sugestoes,#cabecalho-conv .acao,#faixa-local,#progresso-local{display:none !important}body{background:#fff;color:#000}.bolha{break-inside:avoid}}
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
@@ -166,6 +169,11 @@
     <p>Toque no microfone para falar e no 🔊 das respostas para ouvir. Funciona melhor no Chrome/Android.</p>
   </div>
   <div class="cartao">
+    <h2>🎨 Aparência</h2>
+    <p>Tema claro ou escuro — fica salvo neste aparelho.</p>
+    <button class="acao" id="btn-tema" style="margin-top:8px">☀️ tema claro</button>
+  </div>
+  <div class="cartao">
     <h2>🧠 Cérebro 100% local (offline)</h2>
     <p>Ligue o modo local (botão <b>🧠</b> no topo da conversa) e o chat passa a responder com um <b>modelo que roda dentro do seu navegador</b> — depois do 1º uso funciona <b>sem internet</b> e <b>não envia nada para lugar nenhum</b>. É o cérebro reserva do seu assistente: se todos os motores online caírem, o seu aparelho ainda conversa com você.</p>
     <p>Na primeira vez baixa ~1,1 GB (depois fica salvo neste navegador). Precisa de navegador com <b>WebGPU</b> (Chrome/Edge no computador ou Android). Em aparelho fraco pode ficar lento — é opcional.</p>
@@ -195,6 +203,7 @@
     <button class="acao oculto" id="btn-sync" title="Sincronizar conversas do modo local com o GitHub">☁️</button>
     <button class="acao" id="btn-reenviar" title="Reenviar minha última mensagem">🔁</button>
     <button class="acao" id="btn-exportar-conv" title="Exportar só esta conversa">💾</button>
+    <button class="acao" id="btn-imprimir" title="Imprimir / salvar como PDF">🖨️</button>
     <button class="acao" id="btn-renomear" title="Renomear conversa">✏️</button>
     <button class="acao" id="btn-fechar-conv" title="Fechar conversa">🗑️</button>
   </div>
@@ -206,7 +215,8 @@
     <div class="chips" id="chips"></div>
     <div class="composer">
       <button class="mic" id="btn-mic" title="Falar">🎙</button>
-      <textarea id="entrada" rows="1" placeholder="Escreva… (ex.: 'noticias:', 'imagem: …', 'lembrar: …')"></textarea>
+      <textarea id="entrada" rows="1" placeholder="Escreva… (ex.: 'noticias:', 'imagem: …', 'lembrar: …') — ou arraste um arquivo .txt/.md aqui"></textarea>
+      <span id="contador" title="Caracteres"></span>
       <button id="btn-enviar">➤</button>
     </div>
   </div>
@@ -793,6 +803,7 @@ document.addEventListener('keydown', (e) => {
   const caixa = $('entrada');
   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && conversa) { e.preventDefault(); enviar(); return; }
   if (e.key === '/' && document.activeElement !== caixa && !e.ctrlKey && !e.metaKey && !e.altKey) { e.preventDefault(); caixa.focus(); }
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n') { e.preventDefault(); novaConversa(); return; }
   if (e.key === 'Escape') $('tela-config').classList.add('oculto');
 });
 $('entrada').addEventListener('keydown', (e) => {
@@ -1144,6 +1155,41 @@ function montarSeletorModelo() {
   });
 }
 
+/* ---------- tema, contador, arrastar arquivo (v1.5) ---------- */
+function aplicarTema() {
+  const claro = localStorage.getItem('assistente_rebocl_tema') === 'claro';
+  document.body.classList.toggle('claro', claro);
+  const b = $('btn-tema');
+  if (b) b.textContent = claro ? '🌙 tema escuro' : '☀️ tema claro';
+}
+function alternarTema() {
+  const claro = localStorage.getItem('assistente_rebocl_tema') === 'claro';
+  localStorage.setItem('assistente_rebocl_tema', claro ? 'escuro' : 'claro');
+  aplicarTema();
+}
+function atualizarContador() {
+  const el = $('contador');
+  if (el) el.textContent = $('entrada').value.length;
+}
+function lerArquivoDrop(ev) {
+  ev.preventDefault();
+  const arq = ev.dataTransfer.files && ev.dataTransfer.files[0];
+  if (!arq) return;
+  if (!/\.(txt|md|markdown|csv|json|html?|js|py)$/i.test(arq.name)) {
+    alert('Só arquivo de texto (.txt, .md, .csv, .json, .html, .js, .py).');
+    return;
+  }
+  const leitor = new FileReader();
+  leitor.onload = () => {
+    const texto = String(leitor.result || '');
+    const caixa = $('entrada');
+    caixa.value = (caixa.value ? caixa.value + '\n\n' : '') + texto.slice(0, 8000);
+    atualizarContador();
+    caixa.focus();
+  };
+  leitor.readAsText(arq);
+}
+
 /* ---------- inicialização ---------- */
 montarChips();
 montarBusca();
@@ -1153,6 +1199,14 @@ if (MODO_LOCAL.ligado) {
   $('faixa-local').textContent = '🧠 modo 100% local ligado (' + rotuloLocalAtual() + ') — responde no seu aparelho, offline, nada sai dele';
   $('faixa-local').classList.remove('oculto');
 }
+aplicarTema();
+atualizarContador();
+$('btn-tema').onclick = alternarTema;
+$('btn-imprimir').onclick = () => window.print();
+$('entrada').addEventListener('input', atualizarContador);
+const _wrap = document.querySelector('.composer-wrap');
+_wrap.addEventListener('dragover', (e) => e.preventDefault());
+_wrap.addEventListener('drop', lerArquivoDrop);
 atualizarBadgeSync();
 if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); } catch (e) {} }
 if ('serviceWorker' in navigator) {

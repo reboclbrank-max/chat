@@ -73,6 +73,7 @@
       <div class="linha"><span>Último post</span><b id="piloto-ultimo">—</b></div>
       <div class="linha"><span>Fila de publicação</span><b id="fila-tam">—</b></div>
       <div class="linha"><span>Menções respondidas hoje</span><b id="piloto-mencoes">—</b></div>
+      <div class="linha"><span>Saúde dos canais</span><b id="canais-saude" style="font-weight:400">—</b></div>
       <div class="acoes" style="margin-top:10px">
         <button class="acao" data-ordem="piloto: ligar">▶️ ligar</button>
         <button class="sec" data-ordem="piloto: desligar">⏹ desligar</button>
@@ -236,6 +237,10 @@ async function carregarEstado() {
 
   // histórico de posts + menções
   $('piloto-mencoes').textContent = p.mencoes_hoje != null ? p.mencoes_hoje : '—';
+  const canais = (est.piloto && est.piloto.canais) || {};
+  $('canais-saude').textContent = Object.keys(canais).length
+    ? Object.entries(canais).map(([c, st]) => (st === 'ok' ? '🟢 ' : '🔴 ') + c).join('  ')
+    : '—';
   const hist = (est.piloto && est.piloto.historico) || [];
   $('hist-posts').innerHTML = hist.length ? hist.slice().reverse().map((h) =>
     '<div class="linha"><span>' + (h.jogo === 'ceifalume' ? '🌙 Ceifalume' : '⚽ Prancheta') +
