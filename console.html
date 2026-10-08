@@ -193,7 +193,7 @@ async function carregarEstado() {
   const c = est.cerebro || {};
   $('cerebro-cache').textContent = (c.cache_respostas || 0) + ' respostas guardadas';
   const ult = (c.ultimas || [])[0];
-  $('cerebro-ultima').textContent = ult ? ('“' + esc((ult.p || '').slice(0, 60)) + '…”' : '—');
+  $('cerebro-ultima').textContent = ult ? ('“' + esc((ult.p || '').slice(0, 60)) + '…”') : '—';
 
   // métricas
   const mt = est.metricas || {};
