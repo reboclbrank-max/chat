@@ -20,3 +20,9 @@ Página de conversa com a **IA gratuita da Rebocl Brank**.
 ## Manutenção
 
 Para mudar o visual ou o texto, edite `index.html` e faça commit. O GitHub Pages publica sozinho em ~1 minuto.
+
+## v1.3 — a máquina (console + cérebro local turbinado)
+
+- **Console da IA** (`console.html`): um painel único que mostra **tudo junto** — motores e placar, cérebro próprio, piloto automático, fila de publicação, métricas ao vivo, avisos — e manda ordens para o agente (medir, postar, ligar/desligar o piloto, `pensar:`).
+- **Cérebro local com 3 modelos** para escolher: ⚡ rápido (0.5B), ⚖️ equilibrado (1.5B, padrão), 💪 pesado (3B).
+- **Fallback automático:** se a internet cair, o chat liga o cérebro local sozinho.

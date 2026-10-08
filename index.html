@@ -133,6 +133,7 @@
     <h1>Assistente Rebocl</h1>
     <p id="sub">tudo salvo no seu GitHub · grátis</p>
   </div>
+  <button class="hbtn" id="btn-console" title="Console da IA — a máquina completa">🖥️</button>
   <button class="hbtn" id="btn-config" title="Configurar acesso">⚙️</button>
 </header>
 
@@ -169,6 +170,8 @@
     <p>Ligue o modo local (botão <b>🧠</b> no topo da conversa) e o chat passa a responder com um <b>modelo que roda dentro do seu navegador</b> — depois do 1º uso funciona <b>sem internet</b> e <b>não envia nada para lugar nenhum</b>. É o cérebro reserva do seu assistente: se todos os motores online caírem, o seu aparelho ainda conversa com você.</p>
     <p>Na primeira vez baixa ~1,1 GB (depois fica salvo neste navegador). Precisa de navegador com <b>WebGPU</b> (Chrome/Edge no computador ou Android). Em aparelho fraco pode ficar lento — é opcional.</p>
     <p>As trocas do modo local ficam <b>só no aparelho</b> até você apertar <b>☁️</b> para sincronizar com o GitHub (o assistente arquiva sem responder de novo).</p>
+    <h2 style="margin-top:12px">⚖️ Modelo do cérebro local</h2>
+    <div id="seletor-modelo" style="display:flex;flex-direction:column;gap:6px"></div>
   </div>
   <div class="cartao">
     <h2>💾 Minhas conversas fora do navegador</h2>
@@ -510,7 +513,18 @@ async function enviar() {
     if (c.id > ultimoId) ultimoId = c.id;
     iniciarPolling();
   } catch (e) {
-    pensando(false); alert('Não consegui enviar: ' + e.message);
+    pensando(false);
+    if (!navigator.onLine && !MODO_LOCAL.ligado) {
+      MODO_LOCAL.ligado = true;
+      localStorage.setItem('assistente_rebocl_modo_local', '1');
+      $('btn-local').classList.add('local-ligado');
+      const f = $('faixa-local');
+      f.textContent = '📶 Sem internet — liguei o 🧠 cérebro local para não te deixar na mão (' + rotuloLocalAtual() + ')';
+      f.classList.remove('oculto');
+      bolha('bot', '📶 A internet caiu, então liguei o **cérebro 100% local**: suas próximas mensagens são respondidas no seu aparelho, offline. Quando voltar, é só desligar o 🧠.', new Date().toISOString(), '');
+      rolarFim();
+    }
+    alert('Não consegui enviar: ' + e.message);
   } finally { $('btn-enviar').disabled = false; }
 }
 
@@ -667,6 +681,7 @@ $('btn-exportar-conv').onclick = exportarConversaAtual;
 $('btn-reenviar').onclick = reenviarUltima;
 $('btn-local').onclick = alternarModoLocal;
 $('btn-sync').onclick = sincronizarLocal;
+$('btn-console').onclick = () => { location.href = 'console.html'; };
 $('entrada').addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviar(); }
 });
@@ -816,10 +831,21 @@ function faixaOffline(mostrar) {
 /* ---------- cérebro 100% local (modo offline, v1.2) ---------- */
 const MODO_LOCAL = {
   ligado: localStorage.getItem('assistente_rebocl_modo_local') === '1',
-  engine: null, carregando: false,
-  modelo: 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',
+  engine: null, carregando: false, modeloCarregado: null,
+  modelos: {
+    rapido: { id: 'Qwen2.5-0.5B-Instruct-q4f16_1-MLC', rotulo: '⚡ rápido (0.5B — até celular fraco)' },
+    padrao: { id: 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC', rotulo: '⚖️ equilibrado (1.5B — padrão)' },
+    pesado: { id: 'Qwen2.5-3B-Instruct-q4f32_1-MLC', rotulo: '💪 pesado (3B — melhor qualidade, precisa de RAM)' }
+  },
+  escolha: localStorage.getItem('assistente_rebocl_modelo_local') || 'padrao',
   cdn: 'https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@latest/dist/web-llm.min.js'
 };
+function modeloLocalAtual() {
+  return (MODO_LOCAL.modelos[MODO_LOCAL.escolha] || MODO_LOCAL.modelos.padrao).id;
+}
+function rotuloLocalAtual() {
+  return (MODO_LOCAL.modelos[MODO_LOCAL.escolha] || MODO_LOCAL.modelos.padrao).rotulo;
+}
 function carregarScript(src) {
   return new Promise((res, rej) => {
     const sc = document.createElement('script');
@@ -833,7 +859,12 @@ function mostrarProgressoLocal(t) {
   el.textContent = t; el.classList.remove('oculto');
 }
 async function garantirEngineLocal() {
-  if (MODO_LOCAL.engine) return MODO_LOCAL.engine;
+  const modelo = modeloLocalAtual();
+  if (MODO_LOCAL.engine && MODO_LOCAL.modeloCarregado === modelo) return MODO_LOCAL.engine;
+  if (MODO_LOCAL.engine) {
+    try { await MODO_LOCAL.engine.unload(); } catch (e) {}
+    MODO_LOCAL.engine = null;
+  }
   if (MODO_LOCAL.carregando) return null;
   MODO_LOCAL.carregando = true;
   try {
@@ -841,14 +872,15 @@ async function garantirEngineLocal() {
     await carregarScript(MODO_LOCAL.cdn);
     if (!window.webllm) throw new Error('a biblioteca WebLLM não carregou (confira a internet)');
     if (!navigator.gpu) throw new Error('este navegador não tem WebGPU — tente o Chrome ou Edge (computador/Android)');
-    mostrarProgressoLocal('🧠 baixando o cérebro pela primeira vez (~1,1 GB — depois fica salvo neste navegador)…');
-    MODO_LOCAL.engine = await window.webllm.CreateMLCEngine(MODO_LOCAL.modelo, {
+    mostrarProgressoLocal('🧠 baixando o cérebro (' + rotuloLocalAtual() + ') — na 1ª vez demora, depois fica salvo neste navegador…');
+    MODO_LOCAL.engine = await window.webllm.CreateMLCEngine(modelo, {
       initProgressCallback: (p) => {
         if (p && typeof p.progress === 'number')
           mostrarProgressoLocal('🧠 baixando o cérebro… ' + Math.round(p.progress * 100) + '%');
       }
     });
-    mostrarProgressoLocal('🧠 cérebro local pronto ✓ (offline, 100% no seu aparelho)');
+    MODO_LOCAL.modeloCarregado = modelo;
+    mostrarProgressoLocal('🧠 cérebro local pronto ✓ (' + rotuloLocalAtual() + ' — offline, 100% no seu aparelho)');
     setTimeout(() => mostrarProgressoLocal(''), 6000);
     return MODO_LOCAL.engine;
   } catch (e) {
@@ -964,7 +996,7 @@ async function alternarModoLocal() {
   if (b) b.classList.toggle('local-ligado', MODO_LOCAL.ligado);
   const f = $('faixa-local');
   if (MODO_LOCAL.ligado) {
-    f.textContent = '🧠 modo 100% local ligado — suas mensagens são respondidas no seu aparelho, offline, e nada sai dele';
+    f.textContent = '🧠 modo 100% local ligado (' + rotuloLocalAtual() + ') — responde no seu aparelho, offline, nada sai dele';
     f.classList.remove('oculto');
     atualizarBadgeSync();
   } else {
@@ -972,12 +1004,40 @@ async function alternarModoLocal() {
   }
 }
 
+function montarSeletorModelo() {
+  const caixa = $('seletor-modelo');
+  if (!caixa) return;
+  caixa.innerHTML = '';
+  Object.keys(MODO_LOCAL.modelos).forEach((chave) => {
+    const b = document.createElement('button');
+    const ativo = MODO_LOCAL.escolha === chave;
+    b.style.cssText = 'background:var(--painel);border:1px solid ' + (ativo ? 'var(--ouro)' : 'var(--borda)') +
+      ';color:' + (ativo ? 'var(--ouro)' : 'var(--texto)') +
+      ';border-radius:10px;padding:10px;font:inherit;font-size:13px;cursor:pointer;text-align:left';
+    b.textContent = (ativo ? '● ' : '○ ') + MODO_LOCAL.modelos[chave].rotulo;
+    b.onclick = () => {
+      MODO_LOCAL.escolha = chave;
+      localStorage.setItem('assistente_rebocl_modelo_local', chave);
+      if (MODO_LOCAL.engine) {
+        try { MODO_LOCAL.engine.unload(); } catch (e) {}
+        MODO_LOCAL.engine = null;
+        MODO_LOCAL.modeloCarregado = null;
+        mostrarProgressoLocal('🧠 trocando de modelo — o novo baixa na próxima mensagem');
+        setTimeout(() => mostrarProgressoLocal(''), 5000);
+      }
+      montarSeletorModelo();
+    };
+    caixa.appendChild(b);
+  });
+}
+
 /* ---------- inicialização ---------- */
 montarChips();
 montarBusca();
+montarSeletorModelo();
 if (MODO_LOCAL.ligado) {
   $('btn-local').classList.add('local-ligado');
-  $('faixa-local').textContent = '🧠 modo 100% local ligado — suas mensagens são respondidas no seu aparelho, offline, e nada sai dele';
+  $('faixa-local').textContent = '🧠 modo 100% local ligado (' + rotuloLocalAtual() + ') — responde no seu aparelho, offline, nada sai dele';
   $('faixa-local').classList.remove('oculto');
 }
 atualizarBadgeSync();

@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0e0e11">
+<title>Console da IA — Rebocl</title>
+<style>
+  :root{
+    --fundo:#0e0e11; --painel:#16161c; --painel2:#1d1d25; --borda:#2a2a35;
+    --ouro:#d4af37; --ouro-fraco:#8d7524; --texto:#e8e8ee; --texto2:#9a9aa8;
+    --verde:#3ddc84; --vermelho:#e0a9a9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fundo);color:var(--texto);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,sans-serif;min-height:100dvh}
+  header{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--borda);
+    position:sticky;top:0;background:linear-gradient(180deg,#121218,#0e0e11);z-index:5}
+  .logo{width:38px;height:38px;border-radius:10px;flex:0 0 auto;
+    background:linear-gradient(135deg,#d4af37,#7a5f14);color:#15130a;
+    display:flex;align-items:center;justify-content:center;font-weight:800}
+  header h1{font-size:15px;margin:0}
+  header p{margin:0;font-size:11.5px;color:var(--texto2)}
+  .hbtn{margin-left:auto;background:none;border:1px solid var(--borda);color:var(--texto2);
+    border-radius:10px;padding:7px 10px;font-size:14px;cursor:pointer}
+  main{max-width:980px;margin:0 auto;padding:16px 14px 60px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:720px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--painel);border:1px solid var(--borda);border-radius:16px;padding:16px}
+  .card h2{font-size:14.5px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+  .card p,.card li{font-size:13px;color:#c9c9d4}
+  .linha{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--borda);font-size:13px}
+  .linha:last-child{border-bottom:none}
+  .linha b{color:var(--texto)}
+  .tag{font-size:10.5px;border:1px solid var(--borda);border-radius:6px;padding:1px 6px;color:var(--texto2);white-space:nowrap}
+  .tag.ok{color:var(--verde);border-color:#245c32}
+  .tag.off{color:var(--vermelho);border-color:#5c2424}
+  .barra{height:8px;border-radius:6px;background:#0b0b0f;border:1px solid var(--borda);overflow:hidden;flex:1}
+  .barra i{display:block;height:100%;background:linear-gradient(90deg,#8d7524,#d4af37)}
+  .num{font-size:22px;font-weight:800;color:var(--ouro)}
+  .num.peq{font-size:16px}
+  button.acao{background:linear-gradient(135deg,#d4af37,#a8862a);border:none;color:#15130a;font-weight:700;
+    border-radius:10px;padding:10px 14px;font-size:13.5px;cursor:pointer}
+  button.sec{background:var(--painel2);border:1px solid var(--borda);color:var(--texto);
+    border-radius:10px;padding:10px 14px;font-size:13.5px;cursor:pointer}
+  .acoes{display:flex;flex-wrap:wrap;gap:8px}
+  #status{font-size:12px;color:var(--texto2);text-align:center;padding:8px}
+  .aviso{font-size:12.5px;border-radius:10px;padding:9px 11px;margin:10px 0;background:#14281a;border:1px solid #245c32;color:#a9e0b8}
+  .aviso.err{background:#2a1414;border-color:#5c2424;color:var(--vermelho)}
+  input{width:100%;background:#0b0b0f;border:1px solid var(--borda);color:var(--texto);
+    border-radius:10px;padding:10px;font:inherit;font-size:13.5px;margin:6px 0}
+  .oculto{display:none !important}
+  .rodape{color:#5f5f6e;font-size:11px;text-align:center;padding:14px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">RB</div>
+  <div>
+    <h1>🖥️ Console da IA</h1>
+    <p id="sub">a máquina completa — tudo em um lugar só</p>
+  </div>
+  <button class="hbtn" id="btn-chat" title="Voltar ao chat">💬 chat</button>
+  <button class="hbtn" id="btn-atualizar" title="Atualizar agora">🔄</button>
+</header>
+<main>
+  <div id="aviso-token" class="aviso oculto"></div>
+  <div class="grid">
+    <div class="card">
+      <h2>🤖 Piloto automático</h2>
+      <div class="linha"><span>Estado</span><b id="piloto-estado">—</b></div>
+      <div class="linha"><span>Último post</span><b id="piloto-ultimo">—</b></div>
+      <div class="linha"><span>Fila de publicação</span><b id="fila-tam">—</b></div>
+      <div class="acoes" style="margin-top:10px">
+        <button class="acao" data-ordem="piloto: ligar">▶️ ligar</button>
+        <button class="sec" data-ordem="piloto: desligar">⏹ desligar</button>
+        <button class="sec" data-ordem="piloto: status">🔎 status</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>⚡ Ações rápidas <span class="tag">manda pro agente</span></h2>
+      <div class="acoes">
+        <button class="acao" data-ordem="medir agora">📊 medir agora</button>
+        <button class="sec" data-ordem="postar agora: ceifalume">📣 post ceifalume</button>
+        <button class="sec" data-ordem="postar agora: prancheta">📣 post prancheta</button>
+        <button class="sec" data-ordem="panorama:">📋 panorama</button>
+        <button class="sec" data-ordem="avisos:">🔔 avisos</button>
+        <button class="sec" data-ordem="placar:">🏆 placar motores</button>
+      </div>
+      <input id="pensar-entrada" placeholder="🧠 pensar bem sobre… (2 motores + juiz)">
+      <button class="sec" id="btn-pensar" style="width:100%">🧠 pensar bem</button>
+    </div>
+    <div class="card">
+      <h2>🧠 Motores (orquestrador)</h2>
+      <div id="motores"><p>carregando…</p></div>
+    </div>
+    <div class="card">
+      <h2>🗄 Cérebro próprio</h2>
+      <div class="linha"><span>Cache de respostas</span><b id="cerebro-cache">—</b></div>
+      <div class="linha"><span>Última pergunta guardada</span><b id="cerebro-ultima" style="font-weight:400">—</b></div>
+      <div class="linha"><span>Modo 100% local (no chat)</span><b>🧠 no navegador — offline</b></div>
+      <div class="linha"><span>Cérebro de reserva</span><b>🗄 histórico próprio — sem motor</b></div>
+    </div>
+    <div class="card">
+      <h2>📊 Métricas ao vivo</h2>
+      <div class="linha"><span>🌙 Ceifalume — itch views</span><b class="num peq" id="m-ceifa-views">—</b></div>
+      <div class="linha"><span>🌙 Ceifalume — downloads</span><b class="num peq" id="m-ceifa-dl">—</b></div>
+      <div class="linha"><span>⚽ Prancheta — itch views</span><b class="num peq" id="m-pran-views">—</b></div>
+      <div class="linha"><span>⚽ Prancheta — downloads</span><b class="num peq" id="m-pran-dl">—</b></div>
+      <div class="linha"><span>▶️ Trailers (YouTube)</span><b id="m-yt">—</b></div>
+    </div>
+    <div class="card">
+      <h2>🔔 Avisos & lembretes</h2>
+      <div class="linha"><span>Avisos ativos (vigiando)</span><b class="num peq" id="av-ativos">—</b></div>
+      <div class="linha"><span>Lembretes pendentes</span><b class="num peq" id="av-lembretes">—</b></div>
+      <div class="linha"><span>Sino no chat</span><b>🔔 72 h — notificações no celular</b></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <h2>📜 Ordens enviadas (últimas conversas do agente)</h2>
+    <div id="ordens"><p>carregando…</p></div>
+  </div>
+  <div class="rodape">Console público de leitura + controle por conversa (issue) no repositório privado <b>agente</b>. Estado publicado pelo próprio agente em <code>site/estado-ia.json</code>.</div>
+</main>
+<div id="status">atualizando…</div>
+<script>
+'use strict';
+const API = 'https://api.github.com';
+const REPO = 'reboclbrank-max/agente';
+const ESTADO_URL = 'https://raw.githubusercontent.com/reboclbrank-max/site/main/estado-ia.json';
+const CHAVE_TOKEN = 'assistente_rebocl_token';
+let token = localStorage.getItem(CHAVE_TOKEN) || '';
+const $ = (id) => document.getElementById(id);
+
+function api(caminho, opcoes = {}) {
+  return fetch(API + caminho, {
+    ...opcoes,
+    headers: {
+      'Authorization': 'Bearer ' + token,
+      'Accept': 'application/vnd.github+json',
+      ...(opcoes.body ? { 'Content-Type': 'application/json' } : {}),
+      ...(opcoes.headers || {})
+    }
+  }).then(async (r) => {
+    const t = await r.text();
+    let d = null;
+    try { d = t ? JSON.parse(t) : null; } catch (e) { d = t; }
+    if (!r.ok) throw new Error((d && d.message) || ('HTTP ' + r.status));
+    return d;
+  });
+}
+function esc(t) {
+  return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+function quando(iso) {
+  try { return new Date(iso).toLocaleString('pt-BR').slice(0, 16); } catch (e) { return String(iso || ''); }
+}
+
+async function carregarEstado() {
+  $('status').textContent = 'atualizando…';
+  let est = null;
+  try {
+    const r = await fetch(ESTADO_URL + '?t=' + Date.now());
+    if (r.ok) est = await r.json();
+  } catch (e) {}
+  if (!est) {
+    $('status').textContent = '⚠️ sem estado publicado ainda — o agente publica em site/estado-ia.json a cada execução';
+    return;
+  }
+  $('sub').textContent = 'atualizado ' + quando(est.atualizado);
+  $('status').textContent = '✓ estado atualizado ' + quando(est.atualizado) + ' · próxima atualização em 60 s';
+
+  // piloto
+  const p = est.piloto || {};
+  $('piloto-estado').innerHTML = p.ligado
+    ? '<span class="tag ok">LIGADO</span>' : '<span class="tag off">desligado</span>';
+  $('piloto-ultimo').textContent = p.ultimo_post ? (p.ultimo_post.jogo + ' · ' + quando(p.ultimo_post.em)) : 'ainda não postou';
+  const fila = est.fila_publicacao || [];
+  $('fila-tam').textContent = fila.length ? fila.length + ' pendente(s): ' + fila.map((f) => f.canal).join(', ') : 'vazia ✓';
+
+  // motores
+  const mots = est.motores || [];
+  $('motores').innerHTML = mots.length ? mots.map((m) => {
+    const notas = Object.entries(m.notas || {})
+      .map(([cat, n]) => `<span class="tag">${esc(cat)} ${n}</span>`).join(' ');
+    return `<div class="linha"><span><b>${esc(m.nome)}</b><br>${notas}</span>` +
+      `<span style="text-align:right">✅ ${m.ok_total || 0} · ❌ ${m.falhas_total || 0}` +
+      (m.ms_medio ? `<br><span class="tag">${Math.round(m.ms_medio / 100) / 10}s médio</span>` : '') + `</span></div>`;
+  }).join('') : '<p>sem dados ainda</p>';
+
+  // cérebro
+  const c = est.cerebro || {};
+  $('cerebro-cache').textContent = (c.cache_respostas || 0) + ' respostas guardadas';
+  const ult = (c.ultimas || [])[0];
+  $('cerebro-ultima').textContent = ult ? ('“' + esc((ult.p || '').slice(0, 60)) + '…”' : '—');
+
+  // métricas
+  const mt = est.metricas || {};
+  const ce = mt.ceifalume || {}, pr = mt.prancheta || {};
+  $('m-ceifa-views').textContent = ce.itch_views != null ? ce.itch_views : '—';
+  $('m-ceifa-dl').textContent = ce.itch_downloads != null ? ce.itch_downloads : '—';
+  $('m-pran-views').textContent = pr.itch_views != null ? pr.itch_views : '—';
+  $('m-pran-dl').textContent = pr.itch_downloads != null ? pr.itch_downloads : '—';
+  $('m-yt').textContent = 'Ceifalume ' + (ce.yt_views != null ? ce.yt_views : '?') + ' · Prancheta ' + (pr.yt_views != null ? pr.yt_views : '?');
+
+  // avisos
+  const av = est.avisos || {};
+  $('av-ativos').textContent = av.ativos != null ? av.ativos : '—';
+  $('av-lembretes').textContent = av.lembretes_pendentes != null ? av.lembretes_pendentes : '—';
+}
+
+async function carregarOrdens() {
+  const caixa = $('ordens');
+  if (!token) { caixa.innerHTML = '<p>cole o token no chat (⚙️) para ver e mandar ordens.</p>'; return; }
+  try {
+    const issues = await api(`/repos/${REPO}/issues?state=all&per_page=8&sort=updated&direction=desc`);
+    caixa.innerHTML = issues.length ? issues.map((i) =>
+      `<div class="linha"><span><b>${esc(i.title)}</b> <span class="tag">#${i.number}</span></span>` +
+      `<span>${i.state === 'open' ? 'aberta' : 'fechada'} · ${quando(i.updated_at)}</span></div>`).join('')
+      : '<p>nenhuma conversa ainda</p>';
+  } catch (e) {
+    caixa.innerHTML = '<p>não consegui listar — confira o token.</p>';
+  }
+}
+
+async function mandarOrdem(texto) {
+  if (!token) {
+    const aviso = $('aviso-token');
+    aviso.textContent = '⚠️ Para mandar ordens, cole seu token primeiro no chat (botão ⚙️).';
+    aviso.classList.remove('oculto');
+    return;
+  }
+  try {
+    await api(`/repos/${REPO}/issues`, {
+      method: 'POST',
+      body: JSON.stringify({ title: texto.slice(0, 70), body: texto })
+    });
+    carregarOrdens();
+  } catch (e) {
+    alert('Não consegui mandar a ordem: ' + e.message);
+  }
+}
+
+document.querySelectorAll('[data-ordem]').forEach((b) => {
+  b.onclick = () => mandarOrdem(b.getAttribute('data-ordem'));
+});
+$('btn-pensar').onclick = () => {
+  const t = $('pensar-entrada').value.trim();
+  if (t) mandarOrdem('pensar: ' + t);
+};
+$('btn-chat').onclick = () => { location.href = 'index.html'; };
+$('btn-atualizar').onclick = () => { carregarEstado(); carregarOrdens(); };
+
+carregarEstado();
+carregarOrdens();
+setInterval(carregarEstado, 60 * 1000);
+</script>
+</body>
+</html>
