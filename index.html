@@ -118,6 +118,10 @@
     border-radius:7px;font-size:11px;padding:2px 6px;cursor:pointer}
   .faixa.offline{background:#2a1414;color:#e0a9a9}
   #cabecalho-conv .acao{background:none;border:1px solid var(--borda);color:var(--texto2);border-radius:9px;font-size:13px;padding:5px 8px;cursor:pointer}
+  #cabecalho-conv .acao.local-ligado{background:#14281a;border-color:#245c32;color:#a9e0b8}
+  #faixa-local{font-size:12px;padding:7px 14px;border-bottom:1px solid #245c32;background:#14281a;color:#a9e0b8;text-align:center}
+  #progresso-local{font-size:12px;padding:7px 14px;border-bottom:1px solid var(--borda);background:#101015;color:var(--texto2);text-align:center}
+  .tag-local{font-size:10.5px;color:#a9e0b8;border:1px solid #245c32;border-radius:6px;padding:0 5px;margin-left:6px;white-space:nowrap}
   .rodape{color:#5f5f6e;font-size:11px;text-align:center;padding:12px 8px 30px}
 </style>
 </head>
@@ -161,6 +165,12 @@
     <p>Toque no microfone para falar e no 🔊 das respostas para ouvir. Funciona melhor no Chrome/Android.</p>
   </div>
   <div class="cartao">
+    <h2>🧠 Cérebro 100% local (offline)</h2>
+    <p>Ligue o modo local (botão <b>🧠</b> no topo da conversa) e o chat passa a responder com um <b>modelo que roda dentro do seu navegador</b> — depois do 1º uso funciona <b>sem internet</b> e <b>não envia nada para lugar nenhum</b>. É o cérebro reserva do seu assistente: se todos os motores online caírem, o seu aparelho ainda conversa com você.</p>
+    <p>Na primeira vez baixa ~1,1 GB (depois fica salvo neste navegador). Precisa de navegador com <b>WebGPU</b> (Chrome/Edge no computador ou Android). Em aparelho fraco pode ficar lento — é opcional.</p>
+    <p>As trocas do modo local ficam <b>só no aparelho</b> até você apertar <b>☁️</b> para sincronizar com o GitHub (o assistente arquiva sem responder de novo).</p>
+  </div>
+  <div class="cartao">
     <h2>💾 Minhas conversas fora do navegador</h2>
     <p>Exporte um arquivo com todas as conversas para guardar (ou levar para outro aparelho) e importe de volta quando quiser. Só sai do GitHub se você mandar.</p>
     <button id="btn-exp-json">⬇ Exportar tudo (JSON)</button>
@@ -178,11 +188,15 @@
     <div class="titulo" id="titulo-conv"></div>
     <button class="ler-tudo" id="btn-ler-tudo">🔊 ler</button>
     <button class="ler-tudo" id="btn-atualizar" title="Atualizar">🔄</button>
+    <button class="acao" id="btn-local" title="Cérebro 100% local (offline, nada sai do aparelho)">🧠</button>
+    <button class="acao oculto" id="btn-sync" title="Sincronizar conversas do modo local com o GitHub">☁️</button>
     <button class="acao" id="btn-reenviar" title="Reenviar minha última mensagem">🔁</button>
     <button class="acao" id="btn-exportar-conv" title="Exportar só esta conversa">💾</button>
     <button class="acao" id="btn-renomear" title="Renomear conversa">✏️</button>
     <button class="acao" id="btn-fechar-conv" title="Fechar conversa">🗑️</button>
   </div>
+  <div id="faixa-local" class="oculto"></div>
+  <div id="progresso-local" class="oculto"></div>
   <div class="msgs" id="msgs"></div>
   <div class="composer-wrap">
     <div class="chips" id="chips"></div>
@@ -394,6 +408,8 @@ async function abrir(numero, titulo) {
     comentarios.forEach(renderComentario);
     ultimoId = comentarios.length ? comentarios[comentarios.length - 1].id : 0;
     rolarFim();
+    atualizarBadgeSync();
+    if (MODO_LOCAL.ligado) $('faixa-local').classList.remove('oculto');
     iniciarPolling();
   } catch (e) {
     elMsgs.innerHTML = `<div class="vazio"><span class="emoji">⚠️</span>${escapar(String(e.message))}</div>`;
@@ -420,7 +436,7 @@ function bolha(tipo, texto, iso, motor) {
   div.className = 'bolha ' + tipo;
   const html = markdown(texto || '');
   if (tipo === 'bot') {
-    div.innerHTML = `<div class="quem">🤖 Assistente · ${quando(iso)}${motor ? ' <span class="tag-motor">' + escapar(motor) + '</span>' : ''} <button class="falar" title="Ouvir">🔊</button></div>${html}`;
+    div.innerHTML = `<div class="quem">🤖 Assistente · ${quando(iso)}${motor ? ' <span class="' + (motor.indexOf('local') !== -1 ? 'tag-local' : 'tag-motor') + '">' + escapar(motor) + '</span>' : ''} <button class="falar" title="Ouvir">🔊</button></div>${html}`;
     const botao = div.querySelector('.falar');
     botao.onclick = () => falar(textoSimples(html), botao);
   } else {
@@ -470,6 +486,13 @@ async function enviar() {
   const caixa = $('entrada');
   const texto = caixa.value.trim();
   if (!texto || !conversa) return;
+  if (MODO_LOCAL.ligado) {
+    caixa.value = ''; caixa.style.height = 'auto';
+    bolha('user', texto, new Date().toISOString());
+    rolarFim();
+    enviarLocal(texto);
+    return;
+  }
   try {
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission().catch(() => {});
@@ -529,7 +552,7 @@ const CHIPS = [
   ['📰 notícias', 'noticias: '], ['💱 dólar', 'cambio: USD'], ['🎨 imagem', 'imagem: '],
   ['🔎 site no ar', 'verificar: '], ['🧠 memória', 'memoria: '], ['📝 lembrar', 'lembrar: '],
   ['📝 anotar', 'anotar: '], ['📊 status', '/status'],
-  ['❓ ajuda', '/ajuda'], ['🆕 nova', '@nova']
+  ['❓ ajuda', '/ajuda'], ['🆕 nova', '@nova'], ['🧠 local', '@local']
 ];
 function montarChips() {
   const caixa = $('chips');
@@ -539,6 +562,7 @@ function montarChips() {
     b.textContent = rotulo;
     b.onclick = () => {
       if (prefixo === '@nova') { novaConversa(); return; }
+      if (prefixo === '@local') { alternarModoLocal(); return; }
       const entrada = $('entrada');
       entrada.value = prefixo;
       entrada.focus();
@@ -641,6 +665,8 @@ $('btn-renomear').onclick = renomearConversa;
 $('btn-fechar-conv').onclick = fecharConversa;
 $('btn-exportar-conv').onclick = exportarConversaAtual;
 $('btn-reenviar').onclick = reenviarUltima;
+$('btn-local').onclick = alternarModoLocal;
+$('btn-sync').onclick = sincronizarLocal;
 $('entrada').addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviar(); }
 });
@@ -787,9 +813,174 @@ function faixaOffline(mostrar) {
   }
 }
 
+/* ---------- cérebro 100% local (modo offline, v1.2) ---------- */
+const MODO_LOCAL = {
+  ligado: localStorage.getItem('assistente_rebocl_modo_local') === '1',
+  engine: null, carregando: false,
+  modelo: 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',
+  cdn: 'https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@latest/dist/web-llm.min.js'
+};
+function carregarScript(src) {
+  return new Promise((res, rej) => {
+    const sc = document.createElement('script');
+    sc.src = src; sc.onload = res; sc.onerror = () => rej(new Error('não consegui carregar a biblioteca do cérebro local'));
+    document.head.appendChild(sc);
+  });
+}
+function mostrarProgressoLocal(t) {
+  const el = $('progresso-local');
+  if (!t) { el.classList.add('oculto'); el.textContent = ''; return; }
+  el.textContent = t; el.classList.remove('oculto');
+}
+async function garantirEngineLocal() {
+  if (MODO_LOCAL.engine) return MODO_LOCAL.engine;
+  if (MODO_LOCAL.carregando) return null;
+  MODO_LOCAL.carregando = true;
+  try {
+    mostrarProgressoLocal('🧠 carregando a biblioteca do cérebro local…');
+    await carregarScript(MODO_LOCAL.cdn);
+    if (!window.webllm) throw new Error('a biblioteca WebLLM não carregou (confira a internet)');
+    if (!navigator.gpu) throw new Error('este navegador não tem WebGPU — tente o Chrome ou Edge (computador/Android)');
+    mostrarProgressoLocal('🧠 baixando o cérebro pela primeira vez (~1,1 GB — depois fica salvo neste navegador)…');
+    MODO_LOCAL.engine = await window.webllm.CreateMLCEngine(MODO_LOCAL.modelo, {
+      initProgressCallback: (p) => {
+        if (p && typeof p.progress === 'number')
+          mostrarProgressoLocal('🧠 baixando o cérebro… ' + Math.round(p.progress * 100) + '%');
+      }
+    });
+    mostrarProgressoLocal('🧠 cérebro local pronto ✓ (offline, 100% no seu aparelho)');
+    setTimeout(() => mostrarProgressoLocal(''), 6000);
+    return MODO_LOCAL.engine;
+  } catch (e) {
+    mostrarProgressoLocal('');
+    MODO_LOCAL.carregando = false;
+    throw e;
+  }
+}
+function idbAbrir() {
+  return new Promise((res, rej) => {
+    const req = indexedDB.open('rebocl-local', 1);
+    req.onupgradeneeded = () => { try { req.result.createObjectStore('trocas', { keyPath: 'id', autoIncrement: true }); } catch (e) {} };
+    req.onsuccess = () => res(req.result);
+    req.onerror = () => rej(req.error);
+  });
+}
+async function guardarLocal(pergunta, resposta) {
+  try {
+    const db = await idbAbrir();
+    await new Promise((res, rej) => {
+      const tx = db.transaction('trocas', 'readwrite');
+      tx.objectStore('trocas').add({ pergunta, resposta, em: new Date().toISOString(), sync: false });
+      tx.oncomplete = res; tx.onerror = () => rej(tx.error);
+    });
+  } catch (e) {}
+  atualizarBadgeSync();
+}
+async function contarPendentes() {
+  try {
+    const db = await idbAbrir();
+    return await new Promise((res) => {
+      const req = db.transaction('trocas', 'readonly').objectStore('trocas').count();
+      req.onsuccess = () => res(req.result || 0); req.onerror = () => res(0);
+    });
+  } catch (e) { return 0; }
+}
+async function atualizarBadgeSync() {
+  const n = await contarPendentes();
+  const b = $('btn-sync');
+  if (b) {
+    b.classList.toggle('oculto', !n);
+    b.textContent = n ? '☁️ ' + n : '☁️';
+    b.title = n + ' troca(s) do modo local esperando sincronização';
+  }
+}
+function historicoLocal() {
+  return new Promise(async (res) => {
+    try {
+      const db = await idbAbrir();
+      const req = db.transaction('trocas', 'readonly').objectStore('trocas').getAll();
+      req.onsuccess = () => {
+        const msgs = [];
+        for (const t of (req.result || []).slice(-8)) {
+          msgs.push({ role: 'user', content: t.pergunta });
+          msgs.push({ role: 'assistant', content: t.resposta });
+        }
+        res(msgs);
+      };
+      req.onerror = () => res([]);
+    } catch (e) { res([]); }
+  });
+}
+async function enviarLocal(texto) {
+  try {
+    const engine = await garantirEngineLocal();
+    if (!engine) return;
+    pensando(true);
+    const mensagens = [
+      { role: 'system', content: 'Você é o assistente pessoal do dono da Rebocl Brank. Responda em português do Brasil, seja direto, útil e honesto sobre seus limites. Você está rodando 100% no aparelho dele, offline.' }
+    ].concat(await historicoLocal(), [{ role: 'user', content: texto }]);
+    const resposta = await engine.chat.completions.create({ messages: mensagens, temperature: 0.7, max_tokens: 1024 });
+    pensando(false);
+    const conteudo = (resposta.choices[0].message.content || '').trim();
+    bolha('bot', conteudo, new Date().toISOString(), '🧠 local (100% offline)');
+    guardarLocal(texto, conteudo);
+    rolarFim();
+  } catch (e) {
+    pensando(false);
+    bolha('bot', '⚠️ Não consegui usar o cérebro local: ' + e.message +
+      '\n\nSe este navegador não tiver WebGPU, tente o Chrome/Edge. Ou desligue o modo local (🧠) para voltar aos motores online.',
+      new Date().toISOString(), '');
+    rolarFim();
+  }
+}
+async function sincronizarLocal() {
+  if (!conversa) { alert('Abra uma conversa antes de sincronizar.'); return; }
+  try {
+    const db = await idbAbrir();
+    const todas = await new Promise((res) => {
+      const req = db.transaction('trocas', 'readonly').objectStore('trocas').getAll();
+      req.onsuccess = () => res(req.result || []); req.onerror = () => res([]);
+    });
+    if (!todas.length) { alert('Não tem nada para sincronizar.'); return; }
+    if (!confirm('Sincronizar ' + todas.length + ' troca(s) do modo local com esta conversa no GitHub?')) return;
+    let corpo = '[sync-local] 📱 Trocas feitas no **modo 100% local** (offline — saíram só do aparelho):\n';
+    for (const t of todas) {
+      corpo += '\n**Você:** ' + t.pergunta + '\n\n**Cérebro local:** ' + t.resposta + '\n\n---\n';
+    }
+    await api(`/repos/${REPO}/issues/${conversa}/comments`, { method: 'POST', body: JSON.stringify({ body: corpo.slice(0, 60000) }) });
+    await new Promise((res) => {
+      const tx = db.transaction('trocas', 'readwrite');
+      tx.objectStore('trocas').clear();
+      tx.oncomplete = res; tx.onerror = res;
+    });
+    atualizarBadgeSync();
+    alert('Sincronizado ✓ (o assistente só arquiva — não responde de novo)');
+  } catch (e) { alert('Falhou ao sincronizar: ' + e.message); }
+}
+async function alternarModoLocal() {
+  MODO_LOCAL.ligado = !MODO_LOCAL.ligado;
+  localStorage.setItem('assistente_rebocl_modo_local', MODO_LOCAL.ligado ? '1' : '0');
+  const b = $('btn-local');
+  if (b) b.classList.toggle('local-ligado', MODO_LOCAL.ligado);
+  const f = $('faixa-local');
+  if (MODO_LOCAL.ligado) {
+    f.textContent = '🧠 modo 100% local ligado — suas mensagens são respondidas no seu aparelho, offline, e nada sai dele';
+    f.classList.remove('oculto');
+    atualizarBadgeSync();
+  } else {
+    f.classList.add('oculto');
+  }
+}
+
 /* ---------- inicialização ---------- */
 montarChips();
 montarBusca();
+if (MODO_LOCAL.ligado) {
+  $('btn-local').classList.add('local-ligado');
+  $('faixa-local').textContent = '🧠 modo 100% local ligado — suas mensagens são respondidas no seu aparelho, offline, e nada sai dele';
+  $('faixa-local').classList.remove('oculto');
+}
+atualizarBadgeSync();
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
