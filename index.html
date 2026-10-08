@@ -108,6 +108,16 @@
   .oculto{display:none !important}
   ol.inst{margin:8px 0 4px 18px;padding:0}
   ol.inst li{margin-bottom:6px}
+  .busca-wrap{padding:8px 12px 0}
+  .busca-wrap input{width:100%;background:var(--painel);border:1px solid var(--borda);color:var(--texto);
+    border-radius:12px;padding:9px 12px;font:inherit;font-size:13.5px}
+  .tag-motor{font-size:10.5px;color:#8a8270;border:1px solid var(--borda);border-radius:6px;padding:0 5px;margin-left:6px;white-space:nowrap}
+  .bolha .acoes{position:absolute;top:5px;right:7px;display:none}
+  .bolha:hover .acoes{display:block}
+  .bolha .acoes button{background:var(--painel2);border:1px solid var(--borda);color:var(--texto2);
+    border-radius:7px;font-size:11px;padding:2px 6px;cursor:pointer}
+  .faixa.offline{background:#2a1414;color:#e0a9a9}
+  #cabecalho-conv .acao{background:none;border:1px solid var(--borda);color:var(--texto2);border-radius:9px;font-size:13px;padding:5px 8px;cursor:pointer}
   .rodape{color:#5f5f6e;font-size:11px;text-align:center;padding:12px 8px 30px}
 </style>
 </head>
@@ -125,6 +135,7 @@
 <main id="principal">
   <div class="faixa" id="faixa"></div>
   <div class="sino oculto" id="sino" title="Avisos automáticos (toque para abrir)"></div>
+  <div class="busca-wrap"><input id="busca" type="search" placeholder="🔎 buscar conversas pelo título…" autocomplete="off"></div>
   <div class="lista" id="lista"></div>
 </main>
 
@@ -149,6 +160,15 @@
     <h2 style="margin-top:12px">🎙 Voz</h2>
     <p>Toque no microfone para falar e no 🔊 das respostas para ouvir. Funciona melhor no Chrome/Android.</p>
   </div>
+  <div class="cartao">
+    <h2>💾 Minhas conversas fora do navegador</h2>
+    <p>Exporte um arquivo com todas as conversas para guardar (ou levar para outro aparelho) e importe de volta quando quiser. Só sai do GitHub se você mandar.</p>
+    <button id="btn-exp-json">⬇ Exportar tudo (JSON)</button>
+    <button id="btn-exp-md" style="margin-top:8px;background:var(--painel);border:1px solid var(--borda);color:var(--texto);font-weight:600">⬇ Exportar tudo (texto .md)</button>
+    <button id="btn-imp-json" style="margin-top:8px;background:var(--painel);border:1px solid var(--borda);color:var(--texto);font-weight:600">⬆ Importar arquivo (JSON)</button>
+    <input type="file" id="arq-importar" accept="application/json,.json" class="oculto">
+    <div id="status-exportar"></div>
+  </div>
   <div class="rodape">Página pública (não contém dados). Suas conversas ficam no repositório privado <b>reboclbrank-max/agente</b>.</div>
 </div>
 
@@ -158,6 +178,10 @@
     <div class="titulo" id="titulo-conv"></div>
     <button class="ler-tudo" id="btn-ler-tudo">🔊 ler</button>
     <button class="ler-tudo" id="btn-atualizar" title="Atualizar">🔄</button>
+    <button class="acao" id="btn-reenviar" title="Reenviar minha última mensagem">🔁</button>
+    <button class="acao" id="btn-exportar-conv" title="Exportar só esta conversa">💾</button>
+    <button class="acao" id="btn-renomear" title="Renomear conversa">✏️</button>
+    <button class="acao" id="btn-fechar-conv" title="Fechar conversa">🗑️</button>
   </div>
   <div class="msgs" id="msgs"></div>
   <div class="composer-wrap">
@@ -332,6 +356,7 @@ async function carregarLista() {
     });
     const nova = document.createElement('div');
     nova.className = 'conv';
+    nova.id = 'card-nova';
     nova.style.borderColor = 'var(--ouro-fraco)';
     nova.innerHTML = '<div class="titulo" style="color:var(--ouro)">＋ Nova conversa</div><div class="meta"><span>fale o que precisa — eu pesquiso, gero imagem, vejo clima…</span></div>';
     nova.onclick = novaConversa;
@@ -375,26 +400,55 @@ async function abrir(numero, titulo) {
   }
 }
 
+function motorDe(c) {
+  const bruto = c.body || '';
+  const m = bruto.match(/⏱ \d+ s · (.+?)(?: · usei:|\)_|\n|$)/);
+  if (!m) return '';
+  let nome = m[1].trim();
+  if (nome.length > 42) nome = nome.slice(0, 42) + '…';
+  return nome;
+}
 function renderComentario(c) {
   const deBot = ehBot(c);
-  bolha(deBot ? 'bot' : 'user', deBot ? limparAssinatura(c.body) : c.body, c.created_at);
+  bolha(deBot ? 'bot' : 'user', deBot ? limparAssinatura(c.body) : c.body, c.created_at, deBot ? motorDe(c) : '');
   if (c.id > ultimoId) ultimoId = c.id;
   return deBot;
 }
 
-function bolha(tipo, texto, iso) {
+function bolha(tipo, texto, iso, motor) {
   const div = document.createElement('div');
   div.className = 'bolha ' + tipo;
   const html = markdown(texto || '');
   if (tipo === 'bot') {
-    div.innerHTML = `<div class="quem">🤖 Assistente · ${quando(iso)} <button class="falar" title="Ouvir">🔊</button></div>${html}`;
+    div.innerHTML = `<div class="quem">🤖 Assistente · ${quando(iso)}${motor ? ' <span class="tag-motor">' + escapar(motor) + '</span>' : ''} <button class="falar" title="Ouvir">🔊</button></div>${html}`;
     const botao = div.querySelector('.falar');
     botao.onclick = () => falar(textoSimples(html), botao);
   } else {
     div.innerHTML = html;
   }
+  const acoes = document.createElement('div');
+  acoes.className = 'acoes';
+  const copiar = document.createElement('button');
+  copiar.textContent = '📋';
+  copiar.title = 'Copiar texto';
+  copiar.onclick = () => copiarTexto(textoSimples(html), copiar);
+  acoes.appendChild(copiar);
+  div.appendChild(acoes);
   elMsgs.appendChild(div);
   return div;
+}
+function copiarTexto(texto, botao) {
+  const ok = () => { if (botao) { botao.textContent = '✓'; setTimeout(() => (botao.textContent = '📋'), 1200); } };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(texto).then(ok).catch(() => alert('Não consegui copiar.'));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = texto;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); ok(); } catch (e) {}
+    ta.remove();
+  }
 }
 
 function rolarFim() { elMsgs.scrollTop = elMsgs.scrollHeight; }
@@ -460,7 +514,9 @@ function iniciarPolling() {
         bolha('bot', '_O assistente está demorando mais que o normal. A resposta pode chegar — reabra em alguns minutos._', new Date().toISOString());
         pararPolling();
       }
-    } catch (e) {}
+    } catch (e) {
+      if (!navigator.onLine) faixaOffline(true);
+    }
   }, 3000);  // consulta a cada 3 s (v3.3)
 }
 
@@ -472,7 +528,8 @@ const CHIPS = [
   ['🔍 pesquisar', 'pesquisar: '], ['🌤 clima', 'clima: '],
   ['📰 notícias', 'noticias: '], ['💱 dólar', 'cambio: USD'], ['🎨 imagem', 'imagem: '],
   ['🔎 site no ar', 'verificar: '], ['🧠 memória', 'memoria: '], ['📝 lembrar', 'lembrar: '],
-  ['📝 anotar', 'anotar: '], ['📊 status', '/status']
+  ['📝 anotar', 'anotar: '], ['📊 status', '/status'],
+  ['❓ ajuda', '/ajuda'], ['🆕 nova', '@nova']
 ];
 function montarChips() {
   const caixa = $('chips');
@@ -481,6 +538,7 @@ function montarChips() {
     b.className = 'chip';
     b.textContent = rotulo;
     b.onclick = () => {
+      if (prefixo === '@nova') { novaConversa(); return; }
       const entrada = $('entrada');
       entrada.value = prefixo;
       entrada.focus();
@@ -572,6 +630,17 @@ $('btn-ler-tudo').onclick = () => {
   const textos = Array.from(elMsgs.querySelectorAll('.bolha.bot')).map((b) => b.textContent).join('. ');
   if (textos) falar(textos, null);
 };
+$('btn-exp-json').onclick = () => exportarTudo('json');
+$('btn-exp-md').onclick = () => exportarTudo('md');
+$('btn-imp-json').onclick = () => $('arq-importar').click();
+$('arq-importar').onchange = (e) => {
+  if (e.target.files && e.target.files[0]) importarArquivo(e.target.files[0]);
+  e.target.value = '';
+};
+$('btn-renomear').onclick = renomearConversa;
+$('btn-fechar-conv').onclick = fecharConversa;
+$('btn-exportar-conv').onclick = exportarConversaAtual;
+$('btn-reenviar').onclick = reenviarUltima;
 $('entrada').addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviar(); }
 });
@@ -580,8 +649,147 @@ $('entrada').addEventListener('input', (e) => {
   e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
 });
 
+/* ---------- exportar / importar / buscar / ações da conversa (v1.1) ---------- */
+function nomeArquivo(base) {
+  return base + '-' + new Date().toISOString().slice(0, 10) + '.';
+}
+function baixar(texto, arquivo, tipo) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([texto], { type: tipo }));
+  a.download = arquivo;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+async function coletarConversas() {
+  const issues = await api(`/repos/${REPO}/issues?state=all&per_page=100&sort=updated`);
+  const saida = [];
+  for (const i of issues) {
+    let comentarios = [];
+    try { comentarios = await api(`/repos/${REPO}/issues/${i.number}/comments?per_page=100`); } catch (e) {}
+    saida.push({
+      numero: i.number, titulo: i.title, estado: i.state, criado_em: i.created_at,
+      mensagens: [{ de: 'voce', texto: i.body || '', em: i.created_at }].concat(
+        comentarios.map((c) => ({ de: ehBot(c) ? 'assistente' : 'voce', texto: c.body || '', em: c.created_at })))
+    });
+  }
+  return saida;
+}
+async function exportarTudo(formato) {
+  const st = $('status-exportar');
+  st.innerHTML = '<div class="aviso">coletando conversas…</div>';
+  try {
+    const dados = await coletarConversas();
+    if (formato === 'md') {
+      const md = dados.map((c) =>
+        '# ' + c.titulo + '\n\n*(conversa #' + c.numero + ' · ' + c.estado + ')*\n\n' +
+        c.mensagens.map((m) =>
+          '**' + (m.de === 'voce' ? 'Você' : 'Assistente') + '** (' + (m.em || '').replace('T', ' ').slice(0, 16) + ' UTC):\n\n' + m.texto + '\n'
+        ).join('\n---\n\n')
+      ).join('\n\n');
+      baixar(md, nomeArquivo('conversas-rebocl') + 'md', 'text/markdown');
+    } else {
+      baixar(JSON.stringify({ exportado_em: new Date().toISOString(), conversas: dados }, null, 2),
+             nomeArquivo('conversas-rebocl') + 'json', 'application/json');
+    }
+    st.innerHTML = '<div class="aviso ok">' + dados.length + ' conversa(s) exportada(s) ✓</div>';
+  } catch (e) {
+    st.innerHTML = '<div class="aviso erro">falhou: ' + escapar(String(e.message)) + '</div>';
+  }
+}
+async function exportarConversaAtual() {
+  if (!conversa) return;
+  try {
+    const issue = await api(`/repos/${REPO}/issues/${conversa}`);
+    const comentarios = await api(`/repos/${REPO}/issues/${conversa}/comments?per_page=100`);
+    const dados = {
+      titulo: issue.title, numero: issue.number,
+      mensagens: [{ de: 'voce', texto: issue.body || '', em: issue.created_at }].concat(
+        comentarios.map((c) => ({ de: ehBot(c) ? 'assistente' : 'voce', texto: c.body || '', em: c.created_at })))
+    };
+    baixar(JSON.stringify(dados, null, 2), nomeArquivo('conversa-' + conversa) + 'json', 'application/json');
+  } catch (e) { alert('Não consegui exportar: ' + e.message); }
+}
+async function importarArquivo(arquivo) {
+  const st = $('status-exportar');
+  try {
+    const dados = JSON.parse(await arquivo.text());
+    const lista = dados.conversas || (dados.mensagens ? [dados] : []);
+    if (!lista.length) throw new Error('arquivo sem conversas reconhecidas');
+    if (!confirm('Importar ' + lista.length + ' conversa(s) para o GitHub?')) return;
+    st.innerHTML = '<div class="aviso">importando…</div>';
+    let ok = 0;
+    for (const c of lista) {
+      try {
+        const msgs = (c.mensagens || []).filter((m) => m.de === 'voce');
+        const corpo = (msgs[0] && msgs[0].texto) || c.titulo || 'conversa importada';
+        await api(`/repos/${REPO}/issues`, {
+          method: 'POST',
+          body: JSON.stringify({ title: String(c.titulo || corpo).slice(0, 70), body: corpo })
+        });
+        ok++;
+      } catch (e) {}
+    }
+    st.innerHTML = '<div class="aviso ok">' + ok + '/' + lista.length + ' conversa(s) importada(s) ✓</div>';
+    carregarLista();
+  } catch (e) {
+    st.innerHTML = '<div class="aviso erro">falhou: ' + escapar(String(e.message)) + '</div>';
+  }
+}
+function montarBusca() {
+  $('busca').addEventListener('input', (e) => {
+    const termo = e.target.value.trim().toLowerCase();
+    document.querySelectorAll('#lista .conv').forEach((div) => {
+      if (div.id === 'card-nova') { div.style.display = termo ? 'none' : ''; return; }
+      const t = (div.textContent || '').toLowerCase();
+      div.style.display = (!termo || t.indexOf(termo) !== -1) ? '' : 'none';
+    });
+  });
+}
+async function renomearConversa() {
+  if (!conversa) return;
+  const novo = prompt('Novo título da conversa:', $('titulo-conv').textContent);
+  if (!novo || !novo.trim()) return;
+  try {
+    const titulo = novo.trim().slice(0, 120);
+    await api(`/repos/${REPO}/issues/${conversa}`, { method: 'PATCH', body: JSON.stringify({ title: titulo }) });
+    $('titulo-conv').textContent = titulo;
+  } catch (e) { alert('Não consegui renomear: ' + e.message); }
+}
+async function fecharConversa() {
+  if (!conversa) return;
+  if (!confirm('Fechar esta conversa? Ela some da lista, mas fica guardada no GitHub.')) return;
+  try {
+    await api(`/repos/${REPO}/issues/${conversa}`, { method: 'PATCH', body: JSON.stringify({ state: 'closed' }) });
+    voltarLista();
+  } catch (e) { alert('Não consegui fechar: ' + e.message); }
+}
+async function reenviarUltima() {
+  if (!conversa) return;
+  const usuarios = elMsgs.querySelectorAll('.bolha.user');
+  if (!usuarios.length) { alert('Ainda não tem mensagem sua nesta conversa.'); return; }
+  const texto = textoSimples(usuarios[usuarios.length - 1].innerHTML).trim();
+  if (!texto) return;
+  try {
+    const c = await api(`/repos/${REPO}/issues/${conversa}/comments`, { method: 'POST', body: JSON.stringify({ body: texto }) });
+    if (c.id > ultimoId) ultimoId = c.id;
+    bolha('user', texto, new Date().toISOString());
+    rolarFim();
+    iniciarPolling();
+  } catch (e) { alert('Não consegui reenviar: ' + e.message); }
+}
+function faixaOffline(mostrar) {
+  if (mostrar) {
+    elFaixa.textContent = '📶 sem conexão — tente de novo quando a internet voltar';
+    elFaixa.classList.add('offline');
+  } else {
+    elFaixa.classList.remove('offline');
+    elFaixa.textContent = 'toque numa conversa para abrir · tudo fica salvo no GitHub';
+  }
+}
+
 /* ---------- inicialização ---------- */
 montarChips();
+montarBusca();
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }

@@ -9,9 +9,12 @@ Página de conversa com a **IA gratuita da Rebocl Brank**.
 
 ## O que ela faz
 
-- Lista as conversas abertas (issues do repositório privado).
+- Lista as conversas abertas (issues do repositório privado) e **busca pelo título**.
 - Cria conversa nova e envia mensagens.
-- Mostra as respostas do assistente automaticamente (~1–2 min por resposta).
+- Mostra as respostas do assistente automaticamente (~1–2 min por resposta) e avisa por notificação.
+- Mostra **qual motor respondeu** (tag ao lado de "Assistente") e avisa quando a internet cai.
+- **Exporta e importa conversas**: tudo em JSON, tudo em texto (.md), ou só uma conversa — para guardar fora do navegador ou levar para outro aparelho.
+- Por conversa: **renomear**, **fechar**, **reenviar** a última mensagem e **copiar** qualquer mensagem.
 - Dica: escreva `anotar: <texto>` para guardar algo na memória permanente.
 
 ## Manutenção
