@@ -123,6 +123,10 @@
   #cabecalho-conv .acao{background:none;border:1px solid var(--borda);color:var(--texto2);border-radius:9px;font-size:13px;padding:5px 8px;cursor:pointer}
   #cabecalho-conv .acao.local-ligado{background:#14281a;border-color:#245c32;color:#a9e0b8}
   #faixa-local{font-size:12px;padding:7px 14px;border-bottom:1px solid #245c32;background:#14281a;color:#a9e0b8;text-align:center}
+  #lightbox{position:fixed;inset:0;background:rgba(0,0,0,.93);display:none;align-items:center;justify-content:center;z-index:60;cursor:zoom-out}
+  #lightbox.aberto{display:flex}
+  #lightbox img{max-width:96vw;max-height:94vh;border-radius:12px}
+  .bolha img{cursor:zoom-in}
   #progresso-local{font-size:12px;padding:7px 14px;border-bottom:1px solid var(--borda);background:#101015;color:var(--texto2);text-align:center}
   .tag-local{font-size:10.5px;color:#a9e0b8;border:1px solid #245c32;border-radius:6px;padding:0 5px;margin-left:6px;white-space:nowrap}
   .rodape{color:#5f5f6e;font-size:11px;text-align:center;padding:12px 8px 30px}
@@ -222,6 +226,7 @@
   </div>
 </div>
 
+<div id="lightbox"><img alt=""></div>
 <script>
 'use strict';
 const REPO = 'reboclbrank-max/agente';
@@ -389,7 +394,7 @@ async function carregarLista() {
     nova.innerHTML = '<div class="titulo" style="color:var(--ouro)">＋ Nova conversa</div><div class="meta"><span>fale o que precisa — eu pesquiso, gero imagem, vejo clima…</span></div>';
     nova.onclick = novaConversa;
     elLista.appendChild(nova);
-    elFaixa.textContent = 'toque numa conversa para abrir · tudo fica salvo no GitHub';
+    elFaixa.textContent = issues.length + ' conversa' + (issues.length === 1 ? '' : 's') + ' · toque para abrir · tudo fica salvo no GitHub';
     cacheSalvarLista(issues);
   } catch (e) {
     const cache = await cacheLerLista();
@@ -585,6 +590,9 @@ function copiarTexto(texto, botao) {
 }
 
 function rolarFim() { elMsgs.scrollTop = elMsgs.scrollHeight; }
+function pertoDoFim() {
+  return elMsgs.scrollHeight - elMsgs.scrollTop - elMsgs.clientHeight < 140;
+}
 
 function pensando(mostrar) {
   const velho = $('pensando');
@@ -648,6 +656,7 @@ function iniciarPolling() {
   let tentativas = 0;
   intervalo = setInterval(async () => {
     tentativas++;
+    const estavaNoFim = pertoDoFim();
     try {
       const comentarios = await api(`/repos/${REPO}/issues/${conversa}/comments?per_page=100`);
       const novos = comentarios.filter((c) => c.id > ultimoId);
@@ -659,7 +668,7 @@ function iniciarPolling() {
           sugestoesPara(limparAssinatura(c.body));
         }
       });
-      if (novos.length) { pensando(false); rolarFim(); }
+      if (novos.length) { pensando(false); if (estavaNoFim) rolarFim(); }
       if (respondeu) { pararPolling(); return; }
       if (novos.length) pensando(true);
       if (tentativas > 72) {
@@ -1188,6 +1197,19 @@ function lerArquivoDrop(ev) {
     caixa.focus();
   };
   leitor.readAsText(arq);
+}
+
+/* ---------- lightbox das imagens (v1.6) ---------- */
+const _lightbox = $('lightbox');
+if (_lightbox) {
+  _lightbox.addEventListener('click', () => _lightbox.classList.remove('aberto'));
+  document.addEventListener('click', (e) => {
+    const img = e.target && e.target.tagName === 'IMG' && e.target.closest('.bolha');
+    if (img) {
+      _lightbox.querySelector('img').src = e.target.src;
+      _lightbox.classList.add('aberto');
+    }
+  });
 }
 
 /* ---------- inicialização ---------- */

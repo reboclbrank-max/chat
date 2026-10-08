@@ -40,3 +40,9 @@ Para mudar o visual ou o texto, edite `index.html` e faça commit. O GitHub Page
 - **Arraste um arquivo** .txt/.md/.csv/.json/.html/.js/.py para a caixa de texto
 - **Ctrl+N** cria conversa nova · **contador de caracteres** · **🖨️ imprimir / salvar como PDF** a conversa
 - **Console v3:** mostra a **saúde dos 6 canais** (🟢/🔴) medida pelo piloto 1× por dia
+
+## v1.6 — leitura cada vez melhor
+
+- **Toque nas imagens** das respostas para ver em tela cheia (lightbox)
+- **Auto-scroll inteligente:** se você estava lendo uma parte de cima, a página não te arrasta para baixo
+- A lista mostra **quantas conversas** você tem
