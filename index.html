@@ -201,6 +201,7 @@
   <div id="cabecalho-conv">
     <button class="voltar" id="btn-voltar">‹</button>
     <div class="titulo" id="titulo-conv"></div>
+    <button class="ler-tudo" id="btn-auto-voz" title="Ela fala as respostas novas sozinha">🔈 auto</button>
     <button class="ler-tudo" id="btn-ler-tudo">🔊 ler</button>
     <button class="ler-tudo" id="btn-atualizar" title="Atualizar">🔄</button>
     <button class="acao" id="btn-local" title="Cérebro 100% local (offline, nada sai do aparelho)">🧠</button>
@@ -666,6 +667,7 @@ function iniciarPolling() {
           respondeu = true;
           avisar('Assistente Rebocl respondeu', limparAssinatura(c.body));
           sugestoesPara(limparAssinatura(c.body));
+          if (autoVoz()) falar(limparAssinatura(c.body), null);
         }
       });
       if (novos.length) { pensando(false); if (estavaNoFim) rolarFim(); }
@@ -789,6 +791,14 @@ $('btn-config').onclick = () => {
 $('btn-voltar').onclick = voltarLista;
 $('btn-enviar').onclick = enviar;
 $('btn-atualizar').onclick = () => { if (conversa) abrir(conversa, $('titulo-conv').textContent); };
+function autoVoz() { return localStorage.getItem('falarAuto') === '1'; }
+$('btn-auto-voz').onclick = () => {
+  const ligar = !autoVoz();
+  localStorage.setItem('falarAuto', ligar ? '1' : '0');
+  $('btn-auto-voz').textContent = ligar ? '🔊 auto' : '🔈 auto';
+  if (ligar) falar('Pronto! Vou falar as respostas novas sozinha.', null);
+};
+if (autoVoz()) $('btn-auto-voz').textContent = '🔊 auto';
 $('btn-mic').onclick = alternarMicrofone;
 $('btn-ler-tudo').onclick = () => {
   const textos = Array.from(elMsgs.querySelectorAll('.bolha.bot')).map((b) => b.textContent).join('. ');
@@ -1088,6 +1098,7 @@ async function enviarLocal(texto) {
     pensando(false);
     const conteudo = (resposta.choices[0].message.content || '').trim();
     bolha('bot', conteudo, new Date().toISOString(), '🧠 local (100% offline)');
+    if (autoVoz()) falar(conteudo, null);
     guardarLocal(texto, conteudo);
     rolarFim();
   } catch (e) {
