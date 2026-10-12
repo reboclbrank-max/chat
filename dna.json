@@ -226,6 +226,18 @@
    "nome": "Nano-Omni-30B",
    "base": "https://api.kilo.ai/api/gateway",
    "modelo": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free"
+  },
+  {
+   "id": "qwen38",
+   "nome": "Qwen3.8-27B",
+   "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+   "modelo": "Qwen3.8-27B"
+  },
+  {
+   "id": "lagunas",
+   "nome": "Laguna-S-2.1",
+   "base": "https://api.kilo.ai/api/gateway",
+   "modelo": "poolside/laguna-s-2.1:free"
   }
  ]
 }
