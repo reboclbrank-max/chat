@@ -710,6 +710,38 @@ const OURO = [
   { id: 'laguna', nome: 'Laguna-g4f', base: 'https://nvidia.g4f.dev/v1', modelo: 'nvidia/laguna-xs-2.1' },
   { id: 'polli', nome: 'Pollinations', base: 'https://text.pollinations.ai/openai', modelo: 'openai-fast' }
 ];
+async function maosDaCasa(msg) {
+  const m = (msg || '').trim().toLowerCase();
+  if (m.startsWith('!status') || m.startsWith('status da casa')) {
+    try {
+      const j = await (await fetch('https://api.github.com/repos/reboclbrank-max/agente/actions/runs?per_page=1')).json();
+      const w = (j.workflow_runs || [])[0];
+      const estado = w ? (w.name + ' → ' + (w.conclusion || w.status) + ' (' + w.created_at.slice(11, 16) + 'Z)') : 'sem runs';
+      const congelada = w && w.conclusion === 'failure';
+      return '🖐 **Mãos da casa — STATUS**\n\n• Última run: ' + estado + '\n• Billing: ' + (congelada ? '🧊 congelado (runs recusadas) — settings/billing → spending limit $0 → $1' : 'respirando') + '\n• Motores: 12 keyless sempre-vivos no chat · museu com 1991 catalogados';
+    } catch (e) { return '🖐 Não consegui apalpar a casa agora (' + e.message + ')'; }
+  }
+  if (m.startsWith('!censo') || m.startsWith('censo')) {
+    const termo = m.replace(/^!censo\s*/, '').replace(/^censo\s*/, '').trim();
+    try {
+      const j = await (await fetch('https://reboclbrank-max.github.io/site/censo.json')).json();
+      if (!termo) return '🖐 **CENSO: ' + j.length + ' motores catalogados**\n\nmuseu: reboclbrank-max.github.io/site/museu.html — dica: !censo kimi';
+      const ach = j.filter((x) => x.toLowerCase().includes(termo)).slice(0, 15);
+      return '🖐 **Censo "' + termo + '": ' + ach.length + '+ achados**\n\n' + (ach.join('\n') || 'nada com esse nome no museu');
+    } catch (e) { return '🖐 censo inalcançável agora'; }
+  }
+  if (m.startsWith('!livro')) {
+    const n = parseInt(m.replace(/[^0-9]/g, ''), 10);
+    try {
+      const j = await (await fetch('https://api.github.com/repos/reboclbrank-max/base/contents/empresa/registro-de-decisoes.md?ref=main')).json();
+      const txt = new TextDecoder().decode(Uint8Array.from(atob(j.content.replace(/\n/g, '')), (ch) => ch.charCodeAt(0)));
+      const entradas = txt.split(/^## /m).filter(Boolean);
+      if (n) { const e2 = entradas.find((x) => x.startsWith(String(n))); return e2 ? '🖐 **Entrada ' + n + ' do livro:**\n\n' + e2.slice(0, 900) : 'entrada ' + n + ' não achei no livro'; }
+      return '🖐 **O livro tem ' + entradas.length + ' entradas. Últimas:**\n\n' + entradas.slice(-3).map((x) => '## ' + x.slice(0, 240)).join('\n\n');
+    } catch (e) { return '🖐 livro inalcançável agora'; }
+  }
+  return null;
+}
 let emergenciaFeita = false;
 let TURBO = localStorage.getItem('rebocl_turbo') === '1';
 function cerebroEscolhido() { return localStorage.getItem('rebocl_cerebro') || ''; }
@@ -779,6 +811,17 @@ async function emergenciaResponder(numero) {
       content: limparAssinatura(c.body).slice(0, 1200)
     }));
     pararPolling();
+    const minhaMsg = limparAssinatura(([...comentarios].reverse().find((c) => c.user && c.user.login === 'reboclbrank-max') || {}).body || '');
+    const maos = await maosDaCasa(minhaMsg);
+    if (maos) {
+      pensando(false);
+      bolha('bot', maos, new Date().toISOString(), '🖐 mãos da casa');
+      rolarFim();
+      if (autoVoz()) falar(maos, null);
+      avisar('Mãos da casa', maos.slice(0, 120));
+      try { await api('/repos/' + REPO + '/issues/' + numero + '/comments', { method: 'POST', body: JSON.stringify({ body: maos }) }); } catch (e) {}
+      return;
+    }
     const div = bolha('bot', '⏳ chamando os motores do ouro…', new Date().toISOString(), TURBO ? '⚡TURBO · navegador' : 'navegador · ouro keyless');
     rolarFim();
     const r = await pensarStream(hist, (texto) => { renderLive(div, texto); if (pertoDoFim()) rolarFim(); });
@@ -850,6 +893,7 @@ const CHIPS = [
   ['🔎 site no ar', 'verificar: '], ['🧠 memória', 'memoria: '], ['📝 lembrar', 'lembrar: '],
   ['📝 anotar', 'anotar: '], ['📊 status', '/status'],
   ['👎 ficou ruim', '/ruim'], ['💡 simples', 'explique isso mais simples: '], ['📝 resumo', 'resuma isso: '],
+  ['🖐 status', '!status'], ['🖐 censo', '!censo '], ['🖐 livro', '!livro '],
   ['❓ ajuda', '/ajuda'], ['🆕 nova', '@nova'], ['🧠 local', '@local']
 ];
 function montarChips() {
