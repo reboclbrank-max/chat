@@ -1940,6 +1940,21 @@ if ('serviceWorker' in navigator) {
     } catch (e) { return velho.apply(this, arguments); }
   };
 })();
+
+(function(){
+  const ALVO = /nhle\.com|jolpi\.ca|camara\.leg\.br|olinda\.bcb\.gov|mangadex\.org|urbandictionary\.com|gitlab\.com\/api|mastodon\.social|lobste\.rs|nominatim\.openstreetmap|lookup\.binlist|xkcd\.com|receitaws\.com\.br/;
+  const P1 = u => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u);
+  const P2 = u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u);
+  const bruto = window.fetch;
+  window.fetch = function(url, op){
+    const u = String(url);
+    const met = ((op || {}).method || 'GET').toUpperCase();
+    const eh = met === 'GET' && ALVO.test(u);
+    const direto = bruto.apply(this, arguments);
+    if (!eh) return direto;
+    return direto.catch(e1 => bruto.call(this, P1(u)).then(r => { if (!r.ok) throw e1; return r; }).catch(() => bruto.call(this, P2(u)).then(r => { if (!r.ok) throw e1; return r; }).catch(() => { throw e1; })));
+  };
+})();
 </script>
 </body>
 </html>
