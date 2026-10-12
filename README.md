@@ -46,3 +46,12 @@ Para mudar o visual ou o texto, edite `index.html` e faça commit. O GitHub Page
 - **Toque nas imagens** das respostas para ver em tela cheia (lightbox)
 - **Auto-scroll inteligente:** se você estava lendo uma parte de cima, a página não te arrasta para baixo
 - A lista mostra **quantas conversas** você tem
+
+
+## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
+- **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
+- **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código
+- **38 comandos LOCAIS** que funcionam SEM INTERNET: caderno de notas, lista de tarefas, pomodoro, tabuada, regra de três, senha, hash, conversor, morse…
+- Saúde (IMC, água, respiração guiada com anel visual) · Cozinha (!cozinho frango) · Música (!piano) · Radares (aviões, asteroides, cheias de rio, ondas) · Brasil completo (CEP, CNPJ, loteria, IBGE, SELIC, tabela do Brasileirão) · Gutenberg · Xadrez · Tarô · D&D · Estúdio Ghibli
+- **Auto-melhora distribuída:** os aparelhos se falam (canal ntfy), adotam motores provados entre si (!plantar) e a casa SEMEA o resumo do próprio diário todos os dias (!semear)
+- **R$ 0,00 · sem conta · sem chave · offline quando precisa** → [abrir o chat](https://reboclbrank-max.github.io/chat/)
