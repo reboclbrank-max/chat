@@ -1,16 +1,86 @@
 {
- "versao": 1,
- "atualizado": "2026-10-12T07:40Z",
+ "versao": 2,
+ "atualizado": "2026-10-12T08:10Z",
  "casa": "reboclbrank-max",
- "nota": "DNA da CÉLULA — motores KEYLESS (sem token) provados em fogo. Toda célula lê este arquivo no boot e absorve. A casa soma achados aqui.",
+ "nota": "DNA da FAMÍLIA CÉLULA — motores KEYLESS (sem token) provados em fogo. Toda célula lê no boot e absorve. Quando o DNA cresce, TODAS as células ficam mais fortes.",
+ "celulas": [
+  "motor.html (01 geral)",
+  "motor02.html (02 SÁBIA)",
+  "motor03.html (03 RÁPIDA)",
+  "motor04.html (04 ENXAME-MÁXIMO)"
+ ],
  "motores": [
-  {"id": "glm", "nome": "GLM-5.3", "base": "https://nvidia.g4f.dev/v1", "modelo": "z-ai/glm-5.3"},
-  {"id": "kimi", "nome": "Kimi-K3", "base": "https://nvidia.g4f.dev/v1", "modelo": "moonshotai/kimi-k3"},
-  {"id": "ultra", "nome": "Ultra-550B", "base": "https://nvidia.g4f.dev/v1", "modelo": "nvidia/nemotron-3-ultra-550b-a55b"},
-  {"id": "llm7", "nome": "LLM7-Default", "base": "https://api.llm7.io/v1", "modelo": "default"},
-  {"id": "llm7glm", "nome": "LLM7-GLM-Flash", "base": "https://api.llm7.io/v1", "modelo": "GLM-5.3-Flash"},
-  {"id": "ovhq", "nome": "OVH-Qwen-27B", "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1", "modelo": "Qwen3.6-27B"},
-  {"id": "ovhoss", "nome": "OVH-GPT-OSS-120B", "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1", "modelo": "gpt-oss-120b"},
-  {"id": "ovhl", "nome": "OVH-Llama-70B", "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1", "modelo": "Meta-Llama-3_3-70B-Instruct"}
+  {
+   "id": "glm",
+   "nome": "GLM-5.3",
+   "base": "https://nvidia.g4f.dev/v1",
+   "modelo": "z-ai/glm-5.3"
+  },
+  {
+   "id": "kimi",
+   "nome": "Kimi-K3",
+   "base": "https://nvidia.g4f.dev/v1",
+   "modelo": "moonshotai/kimi-k3"
+  },
+  {
+   "id": "ultra",
+   "nome": "Ultra-550B",
+   "base": "https://nvidia.g4f.dev/v1",
+   "modelo": "nvidia/nemotron-3-ultra-550b-a55b"
+  },
+  {
+   "id": "llm7",
+   "nome": "LLM7-Default",
+   "base": "https://api.llm7.io/v1",
+   "modelo": "default"
+  },
+  {
+   "id": "llm7glm",
+   "nome": "LLM7-GLM-Flash",
+   "base": "https://api.llm7.io/v1",
+   "modelo": "GLM-5.3-Flash"
+  },
+  {
+   "id": "ovhq",
+   "nome": "OVH-Qwen-27B",
+   "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+   "modelo": "Qwen3.6-27B"
+  },
+  {
+   "id": "ovhoss",
+   "nome": "OVH-GPT-OSS-120B",
+   "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+   "modelo": "gpt-oss-120b"
+  },
+  {
+   "id": "ovhl",
+   "nome": "OVH-Llama-70B",
+   "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+   "modelo": "Meta-Llama-3_3-70B-Instruct"
+  },
+  {
+   "id": "ovhm",
+   "nome": "OVH-Mistral-24B",
+   "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+   "modelo": "Mistral-Small-3.2-24B-Instruct-2506"
+  },
+  {
+   "id": "ovhq9",
+   "nome": "OVH-Qwen-9B",
+   "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+   "modelo": "Qwen3.5-9B"
+  },
+  {
+   "id": "ovhoss20",
+   "nome": "OVH-GPT-OSS-20B",
+   "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+   "modelo": "gpt-oss-20b"
+  },
+  {
+   "id": "g4oss20",
+   "nome": "G4F-GPT-OSS-20B",
+   "base": "https://nvidia.g4f.dev/v1",
+   "modelo": "openai/gpt-oss-20b"
+  }
  ]
 }
