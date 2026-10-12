@@ -190,6 +190,42 @@
    "nome": "GLM-5.3 completo",
    "base": "https://nvidia.g4f.dev/v1",
    "modelo": "z-ai/glm-5.3"
+  },
+  {
+   "id": "qwen36",
+   "nome": "Qwen3.6-27B",
+   "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+   "modelo": "Qwen3.6-27B"
+  },
+  {
+   "id": "ovhsm24",
+   "nome": "Mistral-Small-3.2-24B",
+   "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+   "modelo": "Mistral-Small-3.2-24B-Instruct-2506"
+  },
+  {
+   "id": "qwen35b9",
+   "nome": "Qwen3.5-9B",
+   "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+   "modelo": "Qwen3.5-9B"
+  },
+  {
+   "id": "gigante2",
+   "nome": "GIGANTE-550B via Kilo",
+   "base": "https://api.kilo.ai/api/gateway",
+   "modelo": "nvidia/nemotron-3-ultra-550b-a55b:free"
+  },
+  {
+   "id": "kilolight",
+   "nome": "Nemotron-3.5-Lightning",
+   "base": "https://api.kilo.ai/api/gateway",
+   "modelo": "nvidia/nemotron-3.5-lightning:free"
+  },
+  {
+   "id": "nanoomni",
+   "nome": "Nano-Omni-30B",
+   "base": "https://api.kilo.ai/api/gateway",
+   "modelo": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free"
   }
  ]
 }
