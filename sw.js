@@ -1,6 +1,6 @@
 /* Service worker — deixa o chat instalável e abrindo mesmo com internet ruim.
    Nunca guarda as conversas (api.github.com sempre vai na rede). */
-const CACHE = 'rebocl-chat-v1';
+const CACHE = 'rebocl-chat-v2';
 const CASCA = ['./', './index.html', './manifest.json', './icone-192.png', './icone-512.png'];
 
 self.addEventListener('install', (e) => {
