@@ -718,6 +718,7 @@ const OURO = [
    { id: 'ovhoss', nome: 'OVH-GPT-OSS-120B', base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1', modelo: 'gpt-oss-120b' },
    { id: 'ovhl', nome: 'OVH-Llama-70B', base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1', modelo: 'Meta-Llama-3_3-70B-Instruct' }
 ];
+try { const EXTRA = JSON.parse(localStorage.getItem('rebocl_extra_frota') || '[]'); if (Array.isArray(EXTRA) && EXTRA.length) OURO.push(...EXTRA.filter(e => e && e.id && e.base && e.modelo)); } catch (e) {}
 /* ---------- vigia automático: caça a frota + pulso da casa, sem ninguém pedir ---------- */
 let vigiaTimer = null;
 async function cacarFrota(silencioso) {
@@ -760,13 +761,61 @@ async function pulsoDaCasa() {
 }
 function iniciarVigia() {
   setTimeout(() => { cacarFrota(true); pulsoDaCasa(); }, 2500);
+  setTimeout(() => { trabalhar(); }, 40000);
   vigiaTimer = setInterval(async () => {
-    if (!document.hidden) { await cacarFrota(true); await pulsoDaCasa(); }
+    if (!document.hidden) { await cacarFrota(true); await pulsoDaCasa(); await trabalhar(); }
   }, 10 * 60 * 1000);
 }
+/* ---------- TURNO INFINITO: o chat trabalha sem parar ---------- */
+let turnoN = parseInt(localStorage.getItem('rebocl_turno_n') || '0', 10);
+async function trabalhar() {
+  turnoN++; localStorage.setItem('rebocl_turno_n', String(turnoN));
+  const cand = OURO.filter(x => !x.chaveLS);
+  const sorteio = cand.sort(() => Math.random() - 0.5).slice(0, 3);
+  let vivos = 0, rapido = null;
+  for (const x of sorteio) {
+    const t0 = Date.now();
+    try {
+      const r = await fetch(x.base + '/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ((x.chaveLS && localStorage.getItem(x.chaveLS)) ? localStorage.getItem(x.chaveLS) : 'unused') }, body: JSON.stringify({ model: x.modelo, messages: [{ role: 'user', content: 'ping' }], max_tokens: 5 }), signal: AbortSignal.timeout(15000) });
+      const ms = Date.now() - t0;
+      if (r.ok) { vivos++; if (!rapido || ms < rapido.ms) rapido = { nome: x.nome, ms }; }
+    } catch (e) {}
+  }
+  try {
+    const s = JSON.parse(localStorage.getItem('rebocl_saude') || '[]');
+    s.push({ t: new Date().toISOString().slice(5, 16), vivos, total: sorteio.length, rapido: rapido ? (rapido.nome + ' ' + rapido.ms + 'ms') : '—' });
+    localStorage.setItem('rebocl_saude', JSON.stringify(s.slice(-48)));
+  } catch (e) {}
+  if (turnoN % 6 === 0 && rapido) { bolha('bot', '🤖 **TURNO ' + turnoN + '**: amostra ' + vivos + '/' + sorteio.length + ' vivos · mais rápido: ' + rapido.nome + ' (' + rapido.ms + 'ms) · histórico: !saude', new Date().toISOString(), '⚙️ turno'); rolarFim(); }
+  if (turnoN % 3 !== 0 || vivos === 0) return;
+  const oraculo = sorteio[0];
+  if (!oraculo) return;
+  let pista = '';
+  try {
+    const r = await fetch(oraculo.base + '/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ((oraculo.chaveLS && localStorage.getItem(oraculo.chaveLS)) ? localStorage.getItem(oraculo.chaveLS) : 'unused') }, body: JSON.stringify({ model: oraculo.modelo, messages: [{ role: 'user', content: 'Name ONE real keyless (no API key) OpenAI-compatible LLM endpoint that works today. Answer in EXACTLY one line, format: https://BASE | model. No explanation.' }], max_tokens: 60 }), signal: AbortSignal.timeout(25000) });
+    const j = await r.json();
+    pista = (((j.choices || [])[0] || {}).message || {}).content || '';
+  } catch (e) {}
+  pista = (pista.trim().split(/\n/).find(l => l.includes('http')) || '').trim();
+  const mm = pista.match(/(https?:\/\/[^\s|`]+)\s*\|\s*([^\s|]+)/);
+  if (!mm) return;
+  const urlP = mm[1].replace(/\/+$/, ''); const modP = mm[2].replace(/["']/g, '');
+  const pistas = JSON.parse(localStorage.getItem('rebocl_pistas') || '[]');
+  if (pistas.includes(urlP + '|' + modP)) return;
+  pistas.push(urlP + '|' + modP); localStorage.setItem('rebocl_pistas', JSON.stringify(pistas.slice(-60)));
+  try {
+    const r2 = await fetch(urlP + '/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer unused' }, body: JSON.stringify({ model: modP, messages: [{ role: 'user', content: 'ping' }], max_tokens: 5 }), signal: AbortSignal.timeout(15000) });
+    let tem = false;
+    try { const jj = JSON.parse(await r2.text()); tem = r2.ok && !!((((jj.choices || [])[0] || {}).message || {}).content || '').trim(); } catch (e2) {}
+    if (tem) { bolha('bot', '🏆 **PISTA PROVADA NO FOGO**: ' + urlP + ' | ' + modP + '\nDigite `!plantar ' + urlP + '|' + modP + '|' + modP.split('/').pop() + '` pra virar motor permanente!', new Date().toISOString(), '⛏️ turno-scout'); rolarFim(); }
+  } catch (e) {}
+}
+
 async function maosDaCasa(msg) {
   const m = (msg || '').trim().toLowerCase();
   if (m.startsWith('!chave ')) { const p2 = msg.trim().slice(7).trim().split(/\s+/); const serv = (p2[0] || '').toLowerCase().replace(/[^a-z0-9_]/g, ''); const val = (p2[1] || '').trim(); if (!serv || !val) return '⚠️ uso: !chave <serviço> <valor>  (ex.: !chave glama glm_...)'; localStorage.setItem('rebocl_chave_' + serv, val); return '🔑 chave de **' + serv + '** guardada NESTE navegador (localStorage — nunca sai do seu aparelho). Motores com chave dela já usam na próxima fala.'; }
+  if (m.startsWith('!plantar ')) { const p3 = msg.trim().slice(9).split('|').map(s => s.trim()); if (!/^https:\/\/.+/.test(p3[0] || '') || !p3[1]) return '⚠️ uso: !plantar https://base | modelo | nome'; const ex = JSON.parse(localStorage.getItem('rebocl_extra_frota') || '[]'); ex.push({ id: 'x' + Date.now().toString(36), nome: p3[2] || p3[1], base: p3[0], modelo: p3[1] }); localStorage.setItem('rebocl_extra_frota', JSON.stringify(ex.slice(-12))); return '🌱 **plantado!** ' + (p3[2] || p3[1]) + ' entrou na frota e JÁ aparece no seletor (keyless).'; }
+  if (m.startsWith('!saude')) { const s = JSON.parse(localStorage.getItem('rebocl_saude') || '[]'); if (!s.length) return '🩺 sem medições ainda — o turno roda a cada 10min com a aba aberta.'; const ult = s.slice(-8).map(x => '• ' + x.t + ' — ' + x.vivos + '/' + x.total + ' vivos · ' + x.rapido).join('\n'); const tot = s.reduce((a, x) => a + x.total, 0); const med = tot ? Math.round(100 * s.reduce((a, x) => a + x.vivos, 0) / tot) : 0; return '🩺 **SAÚDE DA FROTA** (' + s.length + ' medições · ' + med + '% vivas):\n' + ult; }
   if (m.startsWith('!status') || m.startsWith('status da casa')) {
     try {
       const j = await (await fetch('https://api.github.com/repos/reboclbrank-max/agente/actions/runs?per_page=1')).json();
@@ -964,7 +1013,7 @@ const CHIPS = [
   ['🔎 site no ar', 'verificar: '], ['🧠 memória', 'memoria: '], ['📝 lembrar', 'lembrar: '],
   ['📝 anotar', 'anotar: '], ['📊 status', '/status'],
   ['👎 ficou ruim', '/ruim'], ['💡 simples', 'explique isso mais simples: '], ['📝 resumo', 'resuma isso: '],
-  ['📖 pesquisar', '!pesquisar '],   ['⛏ caça', '!caça'], ['🏛 museu', '!museu'],   ['🖐 status', '!status'], ['🖐 censo', '!censo '], ['🖐 livro', '!livro '],
+  ['📖 pesquisar', '!pesquisar '],   ['⛏ caça', '!caça'], ['🩺 saúde', '!saude'], ['🏛 museu', '!museu'],   ['🖐 status', '!status'], ['🖐 censo', '!censo '], ['🖐 livro', '!livro '],
   ['❓ ajuda', '/ajuda'], ['🆕 nova', '@nova'], ['🧠 local', '@local']
 ];
 function montarChips() {
