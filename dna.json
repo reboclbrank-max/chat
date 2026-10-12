@@ -1,6 +1,6 @@
 {
- "versao": 4,
- "atualizado": "2026-10-12T09:45Z",
+ "versao": 5,
+ "atualizado": "2026-10-12T10:30Z",
  "casa": "reboclbrank-max",
  "nota": "DNA v3 = SINCRONIZADO com o OURO do cérebro fixo (22 motores keyless provados). As células NÃO são chats individuais: são BRAÇOS do CHAT DA CASA (index.html) — todo o poder delas vive dentro dele (!enxame sabio / !enxame rapido). Engordou o DNA = todos crescem juntos. · os motores COM CHAVE (glama/upstage) pertencem só ao cérebro fixo (!chave) — o DNA é 100% keyless.",
  "celulas": "braços de treino do chat principal (motor/02/03/04.html)",
@@ -142,6 +142,36 @@
    "nome": "Qwen-397B (a BESTA)",
    "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
    "modelo": "Qwen3.5-397B-A17B"
+  },
+  {
+   "id": "ovhq38",
+   "nome": "OVH-Qwen3.8-27B",
+   "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+   "modelo": "Qwen3.8-27B"
+  },
+  {
+   "id": "ovhnemo",
+   "nome": "OVH-Mistral-Nemo",
+   "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+   "modelo": "Mistral-Nemo-Instruct-2407"
+  },
+  {
+   "id": "ovhm7",
+   "nome": "OVH-Mistral-7B",
+   "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+   "modelo": "Mistral-7B-Instruct-v0.3"
+  },
+  {
+   "id": "ovhvl",
+   "nome": "👁 Qwen-VL-72B (visão)",
+   "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+   "modelo": "Qwen2.5-VL-72B-Instruct"
+  },
+  {
+   "id": "g4super",
+   "nome": "Nemotron-Super-120B",
+   "base": "https://nvidia.g4f.dev/v1",
+   "modelo": "nvidia/nemotron-3-super-120b-a12b"
   }
  ]
 }
