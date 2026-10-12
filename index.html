@@ -244,7 +244,7 @@ const $ = (id) => document.getElementById(id);
 const elLista = $('lista'), elMsgs = $('msgs'), elFaixa = $('faixa');
 
 function api(caminho, opcoes = {}) {
-  return fetch(API + caminho, {
+  const uma = () => fetch(API + caminho, {
     ...opcoes,
     headers: {
       'Authorization': 'Bearer ' + token,
@@ -259,6 +259,12 @@ function api(caminho, opcoes = {}) {
     try { dados = texto ? JSON.parse(texto) : null; } catch (e) { dados = texto; }
     if (!r.ok) throw new Error((dados && dados.message) || ('HTTP ' + r.status));
     return dados;
+  });
+  return uma().catch((e1) => {
+    const msg = String((e1 || {}).message || e1);
+    const permanente = /HTTP 4\d\d/.test(msg) && !/HTTP 429|HTTP 408|HTTP 409/.test(msg);
+    if (permanente) throw e1;
+    return new Promise((res2) => setTimeout(res2, 900)).then(uma);
   });
 }
 
