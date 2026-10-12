@@ -727,7 +727,8 @@ const OURO = [
    { id: 'ovhnemo', nome: 'OVH-Mistral-Nemo', base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1', modelo: 'Mistral-Nemo-Instruct-2407' },
    { id: 'ovhm7', nome: 'OVH-Mistral-7B', base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1', modelo: 'Mistral-7B-Instruct-v0.3' },
    { id: 'ovhvl', nome: '👁 OVH-Qwen-VL-72B (visão)', base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1', modelo: 'Qwen2.5-VL-72B-Instruct' },
-   { id: 'g4super', nome: 'Nemotron-Super-120B', base: 'https://nvidia.g4f.dev/v1', modelo: 'nvidia/nemotron-3-super-120b-a12b' }
+   { id: 'g4super', nome: 'Nemotron-Super-120B', base: 'https://nvidia.g4f.dev/v1', modelo: 'nvidia/nemotron-3-super-120b-a12b' },
+   { id: 'glm5flash', nome: 'GLM-Flash (g4f, ressuscitado)', base: 'https://nvidia.g4f.dev/v1', modelo: 'z-ai/glm-5.3-flash' }
 ];
 try { const EXTRA = JSON.parse(localStorage.getItem('rebocl_extra_frota') || '[]'); if (Array.isArray(EXTRA) && EXTRA.length) OURO.push(...EXTRA.filter(e => e && e.id && e.base && e.modelo)); } catch (e) {}
 try { fetch('https://raw.githubusercontent.com/reboclbrank-max/chat/main/dna.json', { cache: 'no-store' }).then(r => r.json()).then(j => { const ex = new Set(OURO.map(x => x.base + '|' + x.modelo)); const add = []; for (const mm of (j.motores || [])) { if (mm && mm.base && mm.modelo && !ex.has(mm.base + '|' + mm.modelo)) { ex.add(mm.base + '|' + mm.modelo); OURO.push(mm); add.push(mm.nome); } } if (add.length) { montarSeletorCerebro(); bolha('bot', '🧬 **DNA ABSORVIDO:** ' + add.join(', ') + ' — o cérebro fixo cresceu com a família (já no seletor).', new Date().toISOString(), '🧬 dna'); rolarFim(); } }).catch(() => {}); } catch (e) {}
