@@ -653,6 +653,7 @@ async function enviar() {
 }
 
 function iniciarPolling() {
+  emergenciaFeita = false;
   pararPolling();
   let tentativas = 0;
   intervalo = setInterval(async () => {
@@ -672,6 +673,10 @@ function iniciarPolling() {
       });
       if (novos.length) { pensando(false); if (estavaNoFim) rolarFim(); }
       if (respondeu) { pararPolling(); return; }
+      if (!respondeu && tentativas === 10 && !MODO_LOCAL.ligado && !emergenciaFeita) {
+        emergenciaFeita = true;
+        emergenciaResponder(conversa);
+      }
       if (novos.length) pensando(true);
       if (tentativas > 72) {
         pensando(false);
@@ -682,6 +687,64 @@ function iniciarPolling() {
       if (!navigator.onLine) faixaOffline(true);
     }
   }, 3000);  // consulta a cada 3 s (v3.3)
+}
+
+/* ---------- emergência: casa congelada → o navegador pensa com o ouro keyless ---------- */
+const OURO = [
+  { nome: 'GLM-5.3', base: 'https://nvidia.g4f.dev/v1', modelo: 'z-ai/glm-5.3' },
+  { nome: 'Kimi-K3', base: 'https://nvidia.g4f.dev/v1', modelo: 'moonshotai/kimi-k3' },
+  { nome: 'Auto', base: 'https://nvidia.g4f.dev/v1', modelo: 'auto' },
+  { nome: 'Ultra-550B', base: 'https://nvidia.g4f.dev/v1', modelo: 'nvidia/nemotron-3-ultra-550b-a55b' },
+  { nome: 'GPT-OSS-20B', base: 'https://nvidia.g4f.dev/v1', modelo: 'openai/gpt-oss-20b' },
+  { nome: 'GLM-Flash', base: 'https://nvidia.g4f.dev/v1', modelo: 'z-ai/glm-5.3-flash' },
+  { nome: 'Pollinations', base: 'https://text.pollinations.ai/openai', modelo: 'openai-fast' }
+];
+let emergenciaFeita = false;
+async function pensarNaNuvem(historico) {
+  const system = { role: 'system', content: 'Você é a Assistente Rebocl, assistente pessoal do dono da casa Rebocl Brank. Português do Brasil, direta, honesta e calorosa. Contexto: a casa está com o GitHub Actions congelado (billing), então esta resposta é gerada no NAVEGADOR do dono pelos motores keyless de emergência — você NÃO tem as ferramentas da casa agora (sem placar, sem pesquisa, sem lembretes); seja útil com o que sabe e diga se algo precisa da casa online.' };
+  for (const m of OURO) {
+    try {
+      const r = await fetch(m.base + '/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer unused' },
+        body: JSON.stringify({ model: m.modelo, messages: [system].concat(historico), max_tokens: 800 })
+      });
+      if (!r.ok) continue;
+      const j = await r.json();
+      const t = ((j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || '').trim();
+      if (t) return { texto: t, motor: m.nome };
+    } catch (e) {}
+  }
+  return null;
+}
+async function emergenciaResponder(numero) {
+  try {
+    const comentarios = await api('/repos/' + REPO + '/issues/' + numero + '/comments?per_page=100');
+    const hist = comentarios.slice(-12).map((c) => ({
+      role: c.user && c.user.login === 'reboclbrank-max' ? 'user' : 'assistant',
+      content: limparAssinatura(c.body).slice(0, 1200)
+    }));
+    const r = await pensarNaNuvem(hist);
+    pensando(false);
+    pararPolling();
+    if (!r) {
+      bolha('bot', '_A casa está congelada (billing) e os motores keyless não abriram agora. Tente de novo em instantes — ou ligue o 🧠 local._', new Date().toISOString());
+      rolarFim();
+      return;
+    }
+    const corpo = '⚡ **Resposta de emergência** — gerada no navegador (' + r.motor + ') enquanto a casa está congelada:\n\n---\n\n' + r.texto;
+    bolha('bot', corpo, new Date().toISOString());
+    rolarFim();
+    if (autoVoz()) falar(limparAssinatura(corpo), null);
+    avisar('Assistente Rebocl (emergência)', r.texto.slice(0, 120));
+    try {
+      await api('/repos/' + REPO + '/issues/' + numero + '/comments', {
+        method: 'POST', body: JSON.stringify({ body: corpo })
+      });
+    } catch (e) {}
+  } catch (e) {
+    pensando(false);
+  }
 }
 
 /* ---------- comandos rápidos ---------- */
