@@ -710,6 +710,52 @@ const OURO = [
   { id: 'laguna', nome: 'Laguna-g4f', base: 'https://nvidia.g4f.dev/v1', modelo: 'nvidia/laguna-xs-2.1' },
   { id: 'polli', nome: 'Pollinations', base: 'https://text.pollinations.ai/openai', modelo: 'openai-fast' }
 ];
+/* ---------- vigia automático: caça a frota + pulso da casa, sem ninguém pedir ---------- */
+let vigiaTimer = null;
+async function cacarFrota(silencioso) {
+  const alvo = OURO.filter((m) => m.id !== 'polli');
+  const vivos = [];
+  for (const m of alvo) {
+    try {
+      const r = await fetch(m.base + '/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer unused' }, body: JSON.stringify({ model: m.modelo, messages: [{ role: 'user', content: 'ping' }], max_tokens: 24 }) });
+      if (r.ok) {
+        const j = await r.json();
+        const t = ((j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || '').trim();
+        if (t) vivos.push(m.nome);
+      }
+    } catch (e) {}
+    await new Promise((r2) => setTimeout(r2, 350));
+  }
+  const antes = JSON.parse(localStorage.getItem('rebocl_frota') || '{}');
+  localStorage.setItem('rebocl_frota', JSON.stringify({ quando: new Date().toISOString(), vivos }));
+  const nasceram = vivos.filter((x) => !(antes.vivos || []).includes(x));
+  const morreram = (antes.vivos || []).filter((x) => !vivos.includes(x));
+  if (!silencioso) return { vivos, nasceram, morreram };
+  if (nasceram.length && antes.vivos) {
+    bolha('bot', '⛏🔔 **Vigia automático:** janela ABRIU — ' + nasceram.join(', ') + ' vivo agora!\n\nFrota: ' + vivos.length + '/' + alvo.length + ' vivos.', new Date().toISOString(), '⛏ vigia');
+    rolarFim(); avisar('Caça automática', nasceram.join(', ') + ' vivo!');
+  }
+  return { vivos, nasceram, morreram };
+}
+async function pulsoDaCasa() {
+  try {
+    const j = await (await fetch('https://api.github.com/repos/reboclbrank-max/agente/actions/runs?per_page=1')).json();
+    const w = (j.workflow_runs || [])[0];
+    if (w && w.conclusion === 'success' && !localStorage.getItem('rebocl_acordou_' + w.id)) {
+      localStorage.setItem('rebocl_acordou_' + w.id, '1');
+      const msg = '🎉 **A CASA ACORDOU!** Run "' + w.name + '" terminou bem (' + w.created_at.slice(11, 16) + 'Z) — o billing voltou! Os robôs de rotina voltam sozinhos.';
+      bolha('bot', msg, new Date().toISOString(), '🌅 vigia');
+      rolarFim(); avisar('A CASA ACORDOU 🎉', 'billing voltou!');
+      try { if (conversa) await api('/repos/' + REPO + '/issues/' + conversa + '/comments', { method: 'POST', body: JSON.stringify({ body: msg }) }); } catch (e) {}
+    }
+  } catch (e) {}
+}
+function iniciarVigia() {
+  setTimeout(() => { cacarFrota(true); pulsoDaCasa(); }, 2500);
+  vigiaTimer = setInterval(async () => {
+    if (!document.hidden) { await cacarFrota(true); await pulsoDaCasa(); }
+  }, 10 * 60 * 1000);
+}
 async function maosDaCasa(msg) {
   const m = (msg || '').trim().toLowerCase();
   if (m.startsWith('!status') || m.startsWith('status da casa')) {
@@ -740,9 +786,15 @@ async function maosDaCasa(msg) {
       return '🖐 **O livro tem ' + entradas.length + ' entradas. Últimas:**\n\n' + entradas.slice(-3).map((x) => '## ' + x.slice(0, 240)).join('\n\n');
     } catch (e) { return '🖐 livro inalcançável agora'; }
   }
+  if (m.startsWith('!caça') || m.startsWith('!caca')) {
+    const r = await cacarFrota(false);
+    return '⛏ **Raio-X da frota agora:** ' + r.vivos.length + '/' + OURO.filter((x) => x.id !== 'polli').length + ' vivos\n\n' + (r.vivos.join(', ') || 'nenhum vivo nesta varredura') + (r.nasceram.length ? '\n\n🆕 acabaram de nascer: ' + r.nasceram.join(', ') : '');
+  }
+  if (m.startsWith('!museu')) {
+    return '🏛 **Museu dos Motores** — 1991 catalogados com fonte e crachá de VIVO\n\nreboclbrank-max.github.io/site/museu.html (busca instantânea + censo .json aberto)\n\nVivos keyless: 12 — todos na casa.';
+  }
   return null;
-}
-let emergenciaFeita = false;
+}eita = false;
 let TURBO = localStorage.getItem('rebocl_turbo') === '1';
 function cerebroEscolhido() { return localStorage.getItem('rebocl_cerebro') || ''; }
 function ouroFiltrado() {
@@ -893,7 +945,7 @@ const CHIPS = [
   ['🔎 site no ar', 'verificar: '], ['🧠 memória', 'memoria: '], ['📝 lembrar', 'lembrar: '],
   ['📝 anotar', 'anotar: '], ['📊 status', '/status'],
   ['👎 ficou ruim', '/ruim'], ['💡 simples', 'explique isso mais simples: '], ['📝 resumo', 'resuma isso: '],
-  ['🖐 status', '!status'], ['🖐 censo', '!censo '], ['🖐 livro', '!livro '],
+  ['⛏ caça', '!caça'], ['🏛 museu', '!museu'],   ['🖐 status', '!status'], ['🖐 censo', '!censo '], ['🖐 livro', '!livro '],
   ['❓ ajuda', '/ajuda'], ['🆕 nova', '@nova'], ['🧠 local', '@local']
 ];
 function montarChips() {
@@ -1019,6 +1071,7 @@ $('btn-turbo').onclick = alternarTurbo;
 $('btn-mic').onclick = falarAgora;
 montarSeletorCerebro();
 if (TURBO) $('btn-turbo').classList.add('local-ligado');
+iniciarVigia();
 $('btn-local').onclick = alternarModoLocal;
 $('btn-sync').onclick = sincronizarLocal;
 $('btn-console').onclick = () => { location.href = 'console.html'; };
