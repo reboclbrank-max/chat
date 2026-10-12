@@ -256,6 +256,12 @@
    "nome": "Llama-3.3-70B",
    "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
    "modelo": "Meta-Llama-3_3-70B-Instruct"
+  },
+  {
+   "id": "coherecode",
+   "nome": "Cohere-North-Mini (código)",
+   "base": "https://api.kilo.ai/api/gateway",
+   "modelo": "cohere/north-mini-code:free"
   }
  ]
 }
