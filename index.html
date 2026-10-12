@@ -712,6 +712,9 @@ const OURO = [
    { id: 'llm7', nome: 'LLM7-Default', base: 'https://api.llm7.io/v1', modelo: 'default' },
    { id: 'llm7glm', nome: 'LLM7-GLM-Flash', base: 'https://api.llm7.io/v1', modelo: 'GLM-5.3-Flash' },
    { id: 'ovhq', nome: 'OVH-Qwen-27B', base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1', modelo: 'Qwen3.6-27B' },
+   { id: 'glamaH', nome: 'Claude-Haiku-5.5', base: 'https://glama.ai/api/gateway/openai/v1', modelo: 'anthropic/claude-haiku-5.5', chaveLS: 'rebocl_chave_glama'},
+   { id: 'glamaS', nome: 'Claude-Sonnet-5.5', base: 'https://glama.ai/api/gateway/openai/v1', modelo: 'anthropic/claude-sonnet-5.5', chaveLS: 'rebocl_chave_glama'},
+   { id: 'upst', nome: 'Solar-Pro2', base: 'https://api.upstage.ai/v1/solar', modelo: 'solar-pro2-251215', chaveLS: 'rebocl_chave_upstage'},
    { id: 'ovhoss', nome: 'OVH-GPT-OSS-120B', base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1', modelo: 'gpt-oss-120b' },
    { id: 'ovhl', nome: 'OVH-Llama-70B', base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1', modelo: 'Meta-Llama-3_3-70B-Instruct' }
 ];
@@ -722,7 +725,7 @@ async function cacarFrota(silencioso) {
   const vivos = [];
   for (const m of alvo) {
     try {
-      const r = await fetch(m.base + '/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer unused' }, body: JSON.stringify({ model: m.modelo, messages: [{ role: 'user', content: 'ping' }], max_tokens: 24 }) });
+      const r = await fetch(m.base + '/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ((m.chaveLS && localStorage.getItem(m.chaveLS)) ? localStorage.getItem(m.chaveLS) : 'unused') }, body: JSON.stringify({ model: m.modelo, messages: [{ role: 'user', content: 'ping' }], max_tokens: 24 }) });
       if (r.ok) {
         const j = await r.json();
         const t = ((j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || '').trim();
@@ -763,6 +766,7 @@ function iniciarVigia() {
 }
 async function maosDaCasa(msg) {
   const m = (msg || '').trim().toLowerCase();
+  if (m.startsWith('!chave ')) { const p2 = msg.trim().slice(7).trim().split(/\s+/); const serv = (p2[0] || '').toLowerCase().replace(/[^a-z0-9_]/g, ''); const val = (p2[1] || '').trim(); if (!serv || !val) return '⚠️ uso: !chave <serviço> <valor>  (ex.: !chave glama glm_...)'; localStorage.setItem('rebocl_chave_' + serv, val); return '🔑 chave de **' + serv + '** guardada NESTE navegador (localStorage — nunca sai do seu aparelho). Motores com chave dela já usam na próxima fala.'; }
   if (m.startsWith('!status') || m.startsWith('status da casa')) {
     try {
       const j = await (await fetch('https://api.github.com/repos/reboclbrank-max/agente/actions/runs?per_page=1')).json();
@@ -822,7 +826,7 @@ async function pensarStream(historico, aoVivo) {
     try {
       const r = await fetch(m.base + '/chat/completions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer unused' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ((m.chaveLS && localStorage.getItem(m.chaveLS)) ? localStorage.getItem(m.chaveLS) : 'unused') },
         body: JSON.stringify({ model: m.modelo, messages: [system].concat(historico), max_tokens: 800, stream: true })
       });
       if (!r.ok || !r.body) continue;
@@ -853,7 +857,7 @@ async function pensarStream(historico, aoVivo) {
       if (total.trim()) return { texto: total.trim(), motor: m.nome + ' · streaming' };
       const r2 = await fetch(m.base + '/chat/completions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer unused' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ((m.chaveLS && localStorage.getItem(m.chaveLS)) ? localStorage.getItem(m.chaveLS) : 'unused') },
         body: JSON.stringify({ model: m.modelo, messages: [system].concat(historico), max_tokens: 800 })
       });
       if (r2.ok) {
