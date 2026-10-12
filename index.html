@@ -786,6 +786,16 @@ async function maosDaCasa(msg) {
       return '🖐 **O livro tem ' + entradas.length + ' entradas. Últimas:**\n\n' + entradas.slice(-3).map((x) => '## ' + x.slice(0, 240)).join('\n\n');
     } catch (e) { return '🖐 livro inalcançável agora'; }
   }
+  if (m.startsWith('!pesquisar')) {
+    const t = msg.trim().replace(/^!pesquisar\s*/i, '');
+    if (!t) return '🖐 **!pesquisar [assunto]** — busco resumo de fontes abertas (Wikipedia etc.) e leio pra você.';
+    try {
+      const r = await fetch('https://pt.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(t));
+      const j = await r.json();
+      if (j.extract) return '📖 **' + (j.title || t) + '**\n\n' + j.extract.slice(0, 800) + '\n\n🔗 ' + (j.content_urls && j.content_urls.desktop ? j.content_urls.desktop.page : 'pt.wikipedia.org');
+      return '📖 Nada na Wikipedia por esse nome — tenta outro termo.';
+    } catch (e) { return '📖 busca falhou agora (' + e.message + ')'; }
+  }
   if (m.startsWith('!caça') || m.startsWith('!caca')) {
     const r = await cacarFrota(false);
     return '⛏ **Raio-X da frota agora:** ' + r.vivos.length + '/' + OURO.filter((x) => x.id !== 'polli').length + ' vivos\n\n' + (r.vivos.join(', ') || 'nenhum vivo nesta varredura') + (r.nasceram.length ? '\n\n🆕 acabaram de nascer: ' + r.nasceram.join(', ') : '');
@@ -945,7 +955,7 @@ const CHIPS = [
   ['🔎 site no ar', 'verificar: '], ['🧠 memória', 'memoria: '], ['📝 lembrar', 'lembrar: '],
   ['📝 anotar', 'anotar: '], ['📊 status', '/status'],
   ['👎 ficou ruim', '/ruim'], ['💡 simples', 'explique isso mais simples: '], ['📝 resumo', 'resuma isso: '],
-  ['⛏ caça', '!caça'], ['🏛 museu', '!museu'],   ['🖐 status', '!status'], ['🖐 censo', '!censo '], ['🖐 livro', '!livro '],
+  ['📖 pesquisar', '!pesquisar '],   ['⛏ caça', '!caça'], ['🏛 museu', '!museu'],   ['🖐 status', '!status'], ['🖐 censo', '!censo '], ['🖐 livro', '!livro '],
   ['❓ ajuda', '/ajuda'], ['🆕 nova', '@nova'], ['🧠 local', '@local']
 ];
 function montarChips() {
