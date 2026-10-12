@@ -1,14 +1,9 @@
 {
- "versao": 2,
- "atualizado": "2026-10-12T08:10Z",
+ "versao": 3,
+ "atualizado": "2026-10-12T09:00Z",
  "casa": "reboclbrank-max",
- "nota": "DNA da FAMÍLIA CÉLULA — motores KEYLESS (sem token) provados em fogo. Toda célula lê no boot e absorve. Quando o DNA cresce, TODAS as células ficam mais fortes.",
- "celulas": [
-  "motor.html (01 geral)",
-  "motor02.html (02 SÁBIA)",
-  "motor03.html (03 RÁPIDA)",
-  "motor04.html (04 ENXAME-MÁXIMO)"
- ],
+ "nota": "DNA v3 = SINCRONIZADO com o OURO do cérebro fixo (22 motores keyless provados). As células NÃO são chats individuais: são BRAÇOS do CHAT DA CASA (index.html) — todo o poder delas vive dentro dele (!enxame sabio / !enxame rapido). Engordou o DNA = todos crescem juntos.",
+ "celulas": "braços de treino do chat principal (motor/02/03/04.html)",
  "motores": [
   {
    "id": "glm",
@@ -23,10 +18,76 @@
    "modelo": "moonshotai/kimi-k3"
   },
   {
+   "id": "auto",
+   "nome": "Auto",
+   "base": "https://nvidia.g4f.dev/v1",
+   "modelo": "auto"
+  },
+  {
    "id": "ultra",
    "nome": "Ultra-550B",
    "base": "https://nvidia.g4f.dev/v1",
    "modelo": "nvidia/nemotron-3-ultra-550b-a55b"
+  },
+  {
+   "id": "oss20",
+   "nome": "GPT-OSS-20B",
+   "base": "https://nvidia.g4f.dev/v1",
+   "modelo": "openai/gpt-oss-20b"
+  },
+  {
+   "id": "flash",
+   "nome": "GLM-Flash",
+   "base": "https://nvidia.g4f.dev/v1",
+   "modelo": "z-ai/glm-5.3-flash"
+  },
+  {
+   "id": "nano",
+   "nome": "Nano-Omni",
+   "base": "https://nvidia.g4f.dev/v1",
+   "modelo": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning"
+  },
+  {
+   "id": "light",
+   "nome": "Lightning",
+   "base": "https://nvidia.g4f.dev/v1",
+   "modelo": "nvidia/nemotron-3.5-lightning-30b-a3b"
+  },
+  {
+   "id": "ds41",
+   "nome": "DeepSeek-V4.1",
+   "base": "https://nvidia.g4f.dev/v1",
+   "modelo": "deepseek-ai/deepseek-v4.1-flash"
+  },
+  {
+   "id": "gemma31",
+   "nome": "Gemma-4-31B",
+   "base": "https://nvidia.g4f.dev/v1",
+   "modelo": "google/gemma-4-31b-it"
+  },
+  {
+   "id": "muse",
+   "nome": "Muse-Glimmer",
+   "base": "https://nvidia.g4f.dev/v1",
+   "modelo": "nvidia/muse-glimmer-30b"
+  },
+  {
+   "id": "diff",
+   "nome": "DiffusionGemma",
+   "base": "https://nvidia.g4f.dev/v1",
+   "modelo": "nvidia/diffusiongemma-26b-a4b-it"
+  },
+  {
+   "id": "laguna",
+   "nome": "Laguna-g4f",
+   "base": "https://nvidia.g4f.dev/v1",
+   "modelo": "nvidia/laguna-xs-2.1"
+  },
+  {
+   "id": "polli",
+   "nome": "Pollinations",
+   "base": "https://text.pollinations.ai/openai",
+   "modelo": "openai-fast"
   },
   {
    "id": "llm7",
@@ -45,6 +106,24 @@
    "nome": "OVH-Qwen-27B",
    "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
    "modelo": "Qwen3.6-27B"
+  },
+  {
+   "id": "glamaH",
+   "nome": "Claude-Haiku-5.5",
+   "base": "https://glama.ai/api/gateway/openai/v1",
+   "modelo": "anthropic/claude-haiku-5.5"
+  },
+  {
+   "id": "glamaS",
+   "nome": "Claude-Sonnet-5.5",
+   "base": "https://glama.ai/api/gateway/openai/v1",
+   "modelo": "anthropic/claude-sonnet-5.5"
+  },
+  {
+   "id": "upst",
+   "nome": "Solar-Pro2",
+   "base": "https://api.upstage.ai/v1/solar",
+   "modelo": "solar-pro2-251215"
   },
   {
    "id": "ovhoss",
@@ -75,12 +154,6 @@
    "nome": "OVH-GPT-OSS-20B",
    "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
    "modelo": "gpt-oss-20b"
-  },
-  {
-   "id": "g4oss20",
-   "nome": "G4F-GPT-OSS-20B",
-   "base": "https://nvidia.g4f.dev/v1",
-   "modelo": "openai/gpt-oss-20b"
   }
  ]
 }
