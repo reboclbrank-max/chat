@@ -238,6 +238,24 @@
    "nome": "Laguna-S-2.1",
    "base": "https://api.kilo.ai/api/gateway",
    "modelo": "poolside/laguna-s-2.1:free"
+  },
+  {
+   "id": "gigante3",
+   "nome": "Qwen3.5-397B-A17B",
+   "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+   "modelo": "Qwen3.5-397B-A17B"
+  },
+  {
+   "id": "oss120",
+   "nome": "GPT-OSS-120B",
+   "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+   "modelo": "gpt-oss-120b"
+  },
+  {
+   "id": "llama70",
+   "nome": "Llama-3.3-70B",
+   "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+   "modelo": "Meta-Llama-3_3-70B-Instruct"
   }
  ]
 }
