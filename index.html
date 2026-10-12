@@ -1199,7 +1199,7 @@ let TURBO = localStorage.getItem('rebocl_turbo') === '1';
 function cerebroEscolhido() { return localStorage.getItem('rebocl_cerebro') || ''; }
 function ouroFiltrado() {
   const alvo = cerebroEscolhido();
-  return alvo ? OURO.filter((m) => m.id === alvo) : OURO;
+  return alvo ? OURO.filter((m) => m.id === alvo).concat(OURO.filter((m) => m.id !== alvo && !m.chaveLS)) : OURO;
 }
 async function pensarStream(historico, aoVivo) {
   const system = { role: 'system', content: 'Você é a Assistente Rebocl, assistente pessoal do dono da casa Rebocl Brank. Português do Brasil, direta, honesta e calorosa. Contexto: a casa está com o GitHub Actions congelado (billing), então esta resposta nasce no NAVEGADOR do dono pelos motores keyless de emergência — você NÃO tem as ferramentas da casa agora (sem placar, sem pesquisa, sem lembretes); seja útil com o que sabe.' };
@@ -1915,6 +1915,30 @@ if ('serviceWorker' in navigator) {
 })();
 
 (function(){ const DIC=['!acao','!acervo','!adivinha','!agro','!agua','!anime','!anotacoes','!anotar','!apagarnota','!apagartarefa','!aprender','!ar','!arte','!artista','!asteroides','!avatar','!avioes','!backup','!bacon','!bancos','!baralho','!base64','!bateria','!bbcmundo','!bin','!bitcoin','!bitstamp','!bundle','!busca','!cachorro','!cafe','!calc','!cambio','!cambiohistorico','!candido','!capsula','!carta','!cartapokemon','!caça','!censo','!cep','!cepworld','!cerveja','!chave','!cheias','!chess','!chuck','!chuva','!ciber','!cidades','!ciencia','!clima','!cnpj','!codigo','!commit','!conselho','!conta','!contar','!conversor','!converter','!cor','!corao','!covid','!cozinho','!cripto','!curiosidade','!curioso','!dado','!ddd','!decidir','!deputados','!desafiododia','!desculpa','!destaque','!dev','!dias','!diasemana','!disco','!dividir','!doaj','!dolar','!drink','!edgar','!elemento','!elevacao','!emprego','!empresa','!encurtar','!enxame','!eonet','!epic','!esporte','!esquecer','!estoiro','!eurlex','!f1','!falar','!fato','!feitico','!feito','!feriado','!feriadode','!feriados','!ferramentas','!fipe','!fotinha','!fuso','!g1','!gato','!gh','!ghibli','!giria','!gitlab','!gorjeta','!grande','!gratuito','!harry','!hash','!hn','!hoje','!humanitario','!ibge','!idade','!identidade','!imagem','!imc','!inspira','!instalar','!ipca','!iss','!jogos','!jogosdo dia','!juros','!juroscompostos','!kanye','!kombat','!lancamento','!lembrete','!letra','!library','!livro','!lobsters','!looku','!loteria','!magia','!manga','!mastodon','!matematica','!mc','!medico','!medo','!memoria','!mercado','!meuip','!mlb','!moeda','!moedaconv','!molar','!monstro','!morse','!mundo','!museu','!musica','!nasa','!nasaimg','!nasceuhoje','!natureza','!nba','!nesseadia','!nhl','!nobel','!nome','!noticias','!noticiasespaco','!npm','!nutri','!olhar','!ondas','!onde','!ouro','!ouvir','!palavra','!palavracha','!paleta','!paper','!passado','!persona','!personas','!pesquisar','!piada','!piadabr','!piadadepai','!piano','!picum','!placar','!plantar','!plenário','!pokemon','!pomodoro','!print','!produto','!promocoes','!ptax','!pubmed','!qr','!quadro','!quimica','!quiz','!raca','!radio','!raposa','!receita','!regra3','!respirar','!restaurar','!rick','!romano','!rx','!sabio','!saude','!semear','!senado','!senha','!serie','!simounao','!sol','!solar','!sorteio','!speedrun','!stack','!starwars','!status','!surpresa','!tabela','!tabuada','!tarefa','!tarefas','!tarot','!terremoto','!timer','!tocar','!tom','!topcripto','!traduzir','!trem','!trend','!trendcripto','!truco','!tvhoje','!uf','!usar','!uuid','!varredura','!verbete','!verdade','!verdadedesafio','!veredicto','!verso','!vinho','!wayback','!wiki','!word','!xadrez','!xkcd']; const ent=document.getElementById('entrada'); if(!ent) return; ent.addEventListener('keydown', function(ev){ if(ev.key!=='Tab') return; const v=ent.value; if(!v||v[0]!=='!') return; ev.preventDefault(); const cur=v.toLowerCase(); let cand=DIC.filter(function(c2){ return c2.startsWith(cur); }); if(!cand.length) cand=DIC.filter(function(c2){ return c2.startsWith(cur.slice(0,3)); }); if(!cand.length) return; const i2=cand.indexOf(cur); ent.value=cand[(i2+1)%cand.length]+' '; }); })();
+
+(function(){
+  const MEM = new Map(); const TTL = 180000; const MAX = 80;
+  const PROIB = /ntfy\.sh|api\.github\.com|chat\/completions|pollinations|g4f\.dev|llm7\.io|kilo\.ai|kepler\.ai|random|flip\?/;
+  const velho = window.fetch;
+  window.fetch = function(url, op){
+    try {
+      const u = String(url);
+      const metodo = ((op || {}).method || 'GET').toUpperCase();
+      if (metodo !== 'GET' || PROIB.test(u)) return velho.apply(this, arguments);
+      const hit = MEM.get(u);
+      if (hit && Date.now() - hit.t < TTL) return Promise.resolve(new Response(hit.txt, { status: 200, headers: { 'Content-Type': hit.ct } }));
+      return velho.apply(this, arguments).then(r => {
+        try {
+          if (r.ok && MEM.size < MAX + 1) {
+            const ct = r.headers.get('content-type') || 'text/plain';
+            r.clone().text().then(txt => { MEM.set(u, { txt, ct, t: Date.now() }); if (MEM.size > MAX) { const k1 = MEM.keys().next().value; MEM.delete(k1); } }).catch(() => {});
+          }
+        } catch (e) {}
+        return r;
+      });
+    } catch (e) { return velho.apply(this, arguments); }
+  };
+})();
 </script>
 </body>
 </html>
