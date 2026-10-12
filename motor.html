@@ -32,7 +32,7 @@ a{color:var(--sint)}
 <body>
 <header>
   <h1>🧬 CÉLULA 01</h1>
-  <span class="sub">motor da casa · 10+10=20 · <b style="color:var(--casa)">sem token</b> · se multiplica</span>
+  <span class="sub">motor da casa · 10+10=20 · <b style="color:var(--casa)">sem token</b> · se multiplica · <a href="motor.html">01</a><a href="motor02.html">02</a><a href="motor03.html">03</a><a href="motor04.html">04</a></span>
   <select id="modo" class="sel">
     <option value="enxame">🐝 Enxame 10+10 (2 respondem + 1 sintetiza)</option>
     <option value="simples">⚡ Simples (1 motor)</option>
@@ -150,6 +150,7 @@ function comando(txt){
     carregarDNA(); bolha('celula','🌱 plantado: ' + (p[2]||p[1]) + ' — já entra na próxima resposta.', '🧬');
     return true;
   }
+  if (txt.startsWith('!familia')){ bolha('celula','🧬 FAMÍLIA CÉLULA — 4 irmãs, um só DNA: motor.html (01 geral) · motor02.html (02 SÁBIA) · motor03.html (03 RÁPIDA) · motor04.html (04 ENXAME-MÁXIMO). Links no topo da tela. DNA atual: chat/dna.json', '🧬'); return true; }
   return false;
 }
 
