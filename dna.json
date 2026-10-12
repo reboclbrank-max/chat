@@ -1,6 +1,6 @@
 {
- "versao": 3,
- "atualizado": "2026-10-12T09:00Z",
+ "versao": 4,
+ "atualizado": "2026-10-12T09:45Z",
  "casa": "reboclbrank-max",
  "nota": "DNA v3 = SINCRONIZADO com o OURO do cérebro fixo (22 motores keyless provados). As células NÃO são chats individuais: são BRAÇOS do CHAT DA CASA (index.html) — todo o poder delas vive dentro dele (!enxame sabio / !enxame rapido). Engordou o DNA = todos crescem juntos. · os motores COM CHAVE (glama/upstage) pertencem só ao cérebro fixo (!chave) — o DNA é 100% keyless.",
  "celulas": "braços de treino do chat principal (motor/02/03/04.html)",
@@ -136,6 +136,12 @@
    "nome": "OVH-GPT-OSS-20B",
    "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
    "modelo": "gpt-oss-20b"
+  },
+  {
+   "id": "ovhq397",
+   "nome": "Qwen-397B (a BESTA)",
+   "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+   "modelo": "Qwen3.5-397B-A17B"
   }
  ]
 }
