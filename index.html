@@ -729,7 +729,7 @@ async function pensarStream(historico, aoVivo) {
       if (!r.ok || !r.body) continue;
       const leitor = r.body.getReader();
       const dec = new TextDecoder();
-      let bruto = '', total = '';
+      let bruto = '', total = '', pensou = '';
       while (true) {
         const passo = await leitor.read();
         if (passo.done) break;
@@ -743,8 +743,11 @@ async function pensarStream(historico, aoVivo) {
           if (dado === '[DONE]') continue;
           try {
             const j = JSON.parse(dado);
-            const pedaco = (j.choices && j.choices[0] && j.choices[0].delta && j.choices[0].delta.content) || '';
+            const d2 = (j.choices && j.choices[0] && j.choices[0].delta) || {};
+            const pedaco = d2.content || '';
+            const racio = d2.reasoning_content || '';
             if (pedaco) { total += pedaco; aoVivo(total, m.nome); }
+            else if (racio) { pensou += racio; if (!total) aoVivo('💭 *' + pensou.slice(-350).replace(/\n/g, ' ') + '…*', m.nome + ' · pensando'); }
           } catch (e) {}
         }
       }
