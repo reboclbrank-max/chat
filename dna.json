@@ -2,7 +2,7 @@
  "versao": 3,
  "atualizado": "2026-10-12T09:00Z",
  "casa": "reboclbrank-max",
- "nota": "DNA v3 = SINCRONIZADO com o OURO do cérebro fixo (22 motores keyless provados). As células NÃO são chats individuais: são BRAÇOS do CHAT DA CASA (index.html) — todo o poder delas vive dentro dele (!enxame sabio / !enxame rapido). Engordou o DNA = todos crescem juntos.",
+ "nota": "DNA v3 = SINCRONIZADO com o OURO do cérebro fixo (22 motores keyless provados). As células NÃO são chats individuais: são BRAÇOS do CHAT DA CASA (index.html) — todo o poder delas vive dentro dele (!enxame sabio / !enxame rapido). Engordou o DNA = todos crescem juntos. · os motores COM CHAVE (glama/upstage) pertencem só ao cérebro fixo (!chave) — o DNA é 100% keyless.",
  "celulas": "braços de treino do chat principal (motor/02/03/04.html)",
  "motores": [
   {
@@ -106,24 +106,6 @@
    "nome": "OVH-Qwen-27B",
    "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
    "modelo": "Qwen3.6-27B"
-  },
-  {
-   "id": "glamaH",
-   "nome": "Claude-Haiku-5.5",
-   "base": "https://glama.ai/api/gateway/openai/v1",
-   "modelo": "anthropic/claude-haiku-5.5"
-  },
-  {
-   "id": "glamaS",
-   "nome": "Claude-Sonnet-5.5",
-   "base": "https://glama.ai/api/gateway/openai/v1",
-   "modelo": "anthropic/claude-sonnet-5.5"
-  },
-  {
-   "id": "upst",
-   "nome": "Solar-Pro2",
-   "base": "https://api.upstage.ai/v1/solar",
-   "modelo": "solar-pro2-251215"
   },
   {
    "id": "ovhoss",
