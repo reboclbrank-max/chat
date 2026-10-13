@@ -1,0 +1,174 @@
+{
+ "v": 2,
+ "nivel": "avancado",
+ "criado": "2026-10-13",
+ "questoes": [
+  {
+   "id": 100,
+   "tipo": "mat",
+   "q": "Um relógio marca 3h40. Qual o ângulo (em graus) entre os ponteiros das horas e dos minutos?",
+   "g": [
+    "130"
+   ]
+  },
+  {
+   "id": 101,
+   "tipo": "mat",
+   "q": "Se x ao quadrado é 81 e x é positivo, quanto é x?",
+   "g": [
+    "9"
+   ]
+  },
+  {
+   "id": 102,
+   "tipo": "mat",
+   "q": "Numa escola, 20% dos alunos são 60. Quantos alunos tem a escola?",
+   "g": [
+    "300"
+   ]
+  },
+  {
+   "id": 103,
+   "tipo": "mat",
+   "q": "Um trabalho: A sozinho faz em 6h, B sozinho em 3h. Juntos, em quantas horas?",
+   "g": [
+    "2"
+   ]
+  },
+  {
+   "id": 104,
+   "tipo": "mat",
+   "q": "Um preço sobe 20% e depois desce 20%. Em porcentagem do original, quanto ficou (número)?",
+   "g": [
+    "96"
+   ]
+  },
+  {
+   "id": 105,
+   "tipo": "mat",
+   "q": "Notas 7, 8 e 9. Quanto preciso na 4ª prova para média 8,5?",
+   "g": [
+    "10"
+   ]
+  },
+  {
+   "id": 106,
+   "tipo": "mat",
+   "q": "Juros simples: R$1000 a 5% ao mês por 6 meses. Total em R$?",
+   "g": [
+    "1300"
+   ]
+  },
+  {
+   "id": 107,
+   "tipo": "mat",
+   "q": "Escala de mapa 1:50000: 3,4 cm no mapa equivalem a quantos km reais?",
+   "g": [
+    "1,7",
+    "1.7"
+   ]
+  },
+  {
+   "id": 108,
+   "tipo": "seq",
+   "q": "Próximo: 2,3,5,9,17,?",
+   "g": [
+    "33"
+   ]
+  },
+  {
+   "id": 109,
+   "tipo": "seq",
+   "q": "Próximo: 1,4,13,40,?",
+   "g": [
+    "121"
+   ]
+  },
+  {
+   "id": 110,
+   "tipo": "seq",
+   "q": "Próximo: 4,9,25,49,?",
+   "g": [
+    "121"
+   ]
+  },
+  {
+   "id": 111,
+   "tipo": "seq",
+   "q": "Próximo: 100,50,52,26,28,?",
+   "g": [
+    "14"
+   ]
+  },
+  {
+   "id": 112,
+   "tipo": "logica",
+   "q": "2 moedas honestas ao ar: probabilidade de sair PELO MENOS uma cara (fração)?",
+   "g": [
+    "3/4"
+   ]
+  },
+  {
+   "id": 113,
+   "tipo": "logica",
+   "q": "Alguns A são B; todos B são C. Necessariamente ALGUNS A são C? sim/nao",
+   "g": [
+    "sim"
+   ]
+  },
+  {
+   "id": 114,
+   "tipo": "logica",
+   "q": "Todos os blorks são quorks; nenhum quork é zib. Algum blork é zib? sim/nao",
+   "g": [
+    "nao",
+    "não"
+   ]
+  },
+  {
+   "id": 115,
+   "tipo": "logica",
+   "q": "Os ponteiros de um relógio se cruzam quantas vezes em 12 horas?",
+   "g": [
+    "11",
+    "onze"
+   ]
+  },
+  {
+   "id": 116,
+   "tipo": "logica",
+   "q": "Um número de 2 dígitos somado ao seu reverso dá 77 e a diferença dos dígitos é 1. Um dos possíveis?",
+   "g": [
+    "43",
+    "34"
+   ]
+  },
+  {
+   "id": 117,
+   "tipo": "logica",
+   "q": "Desconto de 30% e depois mais 20% sobre o novo valor = desconto total de quantos % (número)?",
+   "g": [
+    "44"
+   ]
+  },
+  {
+   "id": 118,
+   "tipo": "brasil",
+   "q": "Qual estado brasileiro faz fronteira com o MAIOR número de outros estados?",
+   "g": [
+    "minas gerais",
+    "bahia",
+    "mg"
+   ]
+  },
+  {
+   "id": 119,
+   "tipo": "lingua",
+   "q": "Qual é a classe gramatical de 'muito' em 'Ele corre muito'?",
+   "g": [
+    "adverbio",
+    "advérbio"
+   ]
+  }
+ ]
+}
