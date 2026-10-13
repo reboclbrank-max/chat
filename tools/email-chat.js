@@ -35,7 +35,7 @@ async function cerebro(pergunta) {
     const alvo = (uids || []).slice(-5);
     console.log('emails não lidos:', (uids || []).length, '| processando até', alvo.length);
     for (const uid of alvo) {
-      const msg = await client.fetchOne(uid, { source: true, envelope: true });
+      const msg = await client.fetchOne(uid, { source: true, envelope: true, bodyStructure: false });
       if (!msg || !msg.envelope) continue;
       const de = (msg.envelope.from || []).map(f => f.address).join(',').toLowerCase();
       const assunto = (msg.envelope.subject || '(sem assunto)');
@@ -48,6 +48,8 @@ async function cerebro(pergunta) {
       const resposta = r ? r.texto : 'travei agora — reenvie que eu respondo (casa Rebocl).';
       await transporte.sendMail({ from: '"Assistente Rebocl" <' + USER + '>', to: de, subject: 'Re: ' + assunto, text: resposta + '\n\n— Assistente Rebocl (casa Rebocl Brank)', inReplyTo: msg.envelope.messageId, references: msg.envelope.messageId });
       console.log('✉️ respondido via', r ? r.via : 'sem cérebro');
+      const fs = require('fs');
+      fs.appendFileSync('email-log.md', '- ' + new Date().toISOString().slice(0, 16) + ' UTC — ' + de + ' | "' + assunto.slice(0, 40) + '" → respondido via ' + (r ? r.via : 'fallback') + '\n');
       await client.messageFlagsAdd(uid, ['\\Seen'], { uid: true });
       await sleep(2000);
     }
