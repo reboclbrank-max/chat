@@ -1,0 +1,23 @@
+name: Evolução do chat (bateria diária)
+on:
+  schedule:
+    - cron: '0 11 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  exame:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node tools/evolucao-chat.js
+      - name: Salva o histórico
+        run: |
+          git config user.name "evolucao-casa"
+          git config user.email "evolucao@rebocl.local"
+          git add saude-cerebro.md
+          git diff --cached --quiet || git commit -m "exame diario $(date -u +%F)"
+          git push
