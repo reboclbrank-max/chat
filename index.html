@@ -1980,7 +1980,7 @@ _wrap.addEventListener('drop', lerArquivoDrop);
 atualizarBadgeSync();
 if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); } catch (e) {} }
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
+  navigator.serviceWorker.register('sw.js?v=' + Date.now(), { updateViaCache: 'none' }).then(function (r) { setInterval(function () { try { r.update(); } catch (e) {} }, 60000); }).catch(() => {});
 }
 (async function iniciar() {
   if (token) {
