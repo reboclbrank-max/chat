@@ -439,8 +439,10 @@ async function novaConversa() {
 /* ---------- conversa ---------- */
 async function abrir(numero, titulo) {
   conversa = numero;
+  try { localStorage.setItem('rebocl_conv', String(numero)); } catch (e) {}
   ultimoId = 0;
   abrirConversa();
+  try { localStorage.setItem('rebocl_conv_titulo', titulo || ('Conversa #' + numero)); } catch (e) {}
   $('titulo-conv').textContent = titulo || ('Conversa #' + numero);
   elMsgs.innerHTML = '<div class="vazio"><span class="emoji">⏳</span>carregando…</div>';
   try {
@@ -620,7 +622,25 @@ function pensando(mostrar) {
 async function enviar() {
   const caixa = $('entrada');
   const texto = caixa.value.trim();
-  if (!texto || !conversa) return;
+  if (!texto) return;
+  if (!conversa) {
+    caixa.value = ''; caixa.style.height = 'auto';
+    bolha('user', texto, new Date().toISOString()); rolarFim();
+    if (!token) {
+      bolha('bot', '🖐 Falta UMA coisa: as **mãos** (token do dono neste navegador) — é ele que abre teu caderno de conversa. Abre este link **neste navegador**: ' + location.origin + location.pathname.replace(/[^/]*$/, '') + 'limpar.html — aparece MÃOS LIGADAS, e aí me escreve de novo.', new Date().toISOString(), '🖐'); rolarFim();
+      return;
+    }
+    pensando(true);
+    try {
+      const nova = await api('/repos/' + REPO + '/issues', { method: 'POST', body: JSON.stringify({ title: texto.trim().split('\n')[0].slice(0, 70), body: texto.trim() }) });
+      ultimoId = 0;
+      await abrir(nova.number, nova.title);
+      $('btn-enviar').disabled = true;
+      if (TURBO) emergenciaResponder(nova.number); else iniciarPolling();
+    } catch (e) { pensando(false); bolha('bot', '⚠️ não consegui abrir teu caderno: ' + e.message + ' — se der 401, o token venceu; me pede pra trocar.', new Date().toISOString(), '⚠️'); rolarFim(); }
+    finally { $('btn-enviar').disabled = false; }
+    return;
+  }
   limparSugestoes();
   if (MODO_LOCAL.ligado) {
     caixa.value = ''; caixa.style.height = 'auto';
@@ -1311,6 +1331,9 @@ function renderLive(div, texto) {
   const quem = div.querySelector('.quem');
   const cab = quem ? quem.outerHTML : '';
   div.innerHTML = cab + markdown(texto + ' ▌');
+}
+async function reabrirUltima() {
+  try { if (token && localStorage.getItem('rebocl_conv')) { await abrir(parseInt(localStorage.getItem('rebocl_conv'), 10), localStorage.getItem('rebocl_conv_titulo') || ''); } } catch (e) {}
 }
 async function emergenciaResponder(numero) {
   try {
@@ -2020,6 +2043,8 @@ if ('serviceWorker' in navigator) {
 
 (function () { window.profundaSys = function () { try { const a = JSON.parse(localStorage.getItem('rebocl_profunda') || '[]'); return a.length ? '\nMEMÓRIA PROFUNDA DO DONO (fatos duradouros — use quando for útil):\n' + a.slice(-20).map(x => '• ' + x).join('\n') : ''; } catch (e) { return ''; } }; })();
 
+
+setTimeout(function () { try { if (token && localStorage.getItem('rebocl_conv') && !conversa) { reabrirUltima(); } } catch (e) {} }, 1200);
 </script>
 </body>
 </html>
