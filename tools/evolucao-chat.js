@@ -1,7 +1,15 @@
 // 🧠 EVOLUÇÃO DIÁRIA DO CHAT v2 — 10 questões do banco v1, 3 rodadas × 3 rotas (frota → reserva → omni)
 // "mudo" só conta como erro depois de 3 rodadas com 15s de respiro. Histórico: saude-cerebro.md
 const fs = require('fs');
-const banco = JSON.parse(fs.readFileSync('banco-questoes.json', 'utf8')).questoes;
+let banco = JSON.parse(fs.readFileSync('banco-questoes.json', 'utf8')).questoes;
+let nivel = 1;
+try {
+  const hist = (fs.readFileSync('saude-cerebro.md', 'utf8').match(/— (\d+)\/10/g) || []).map(s => parseInt(s));
+  if (hist.length >= 3 && hist.slice(0, 3).every(x => x >= 9)) {
+    banco = JSON.parse(fs.readFileSync('banco-v2.json', 'utf8')).questoes;
+    nivel = 2;
+  }
+} catch (e) {}
 const dia = Math.floor(Date.now() / 86400000);
 const nm = s => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
 const sorteadas = [];
@@ -43,7 +51,7 @@ async function pergunta(conteudo) {
     await sleep(2000);
   }
   const quando = new Date().toISOString().slice(0, 16).replace('T', ' ');
-  const linha = '- ' + quando + ' UTC — ' + ok + '/10 (mudos: ' + mudos + ')' + (ok === 10 ? ' ✨ PERFEITO' : '');
+  const linha = '- ' + quando + ' UTC — ' + ok + '/10 (mudos: ' + mudos + (nivel === 2 ? ', NÍVEL 2' : '') + ')' + (ok === 10 ? ' ✨ PERFEITO' : '');
   let prev = '';
   try { prev = fs.readFileSync('saude-cerebro.md', 'utf8'); } catch (e) {}
   const prevLinhas = prev.split('\n').filter(l => l.startsWith('- '));
