@@ -1,0 +1,518 @@
+{
+ "v": 1,
+ "criado": "2026-10-13",
+ "questoes": [
+  {
+   "id": 1,
+   "tipo": "mat",
+   "q": "Quanto é 17+26?",
+   "g": [
+    "43"
+   ]
+  },
+  {
+   "id": 2,
+   "tipo": "mat",
+   "q": "Quanto é 144÷12?",
+   "g": [
+    "12"
+   ]
+  },
+  {
+   "id": 3,
+   "tipo": "mat",
+   "q": "Quanto é 15% de 80?",
+   "g": [
+    "12"
+   ]
+  },
+  {
+   "id": 4,
+   "tipo": "mat",
+   "q": "Um caderno custa R$3. Quanto custam 7?",
+   "g": [
+    "21"
+   ]
+  },
+  {
+   "id": 5,
+   "tipo": "mat",
+   "q": "Quanto é 9×7?",
+   "g": [
+    "63"
+   ]
+  },
+  {
+   "id": 6,
+   "tipo": "mat",
+   "q": "Quanto é 2^10?",
+   "g": [
+    "1024"
+   ]
+  },
+  {
+   "id": 7,
+   "tipo": "mat",
+   "q": "Raiz quadrada de 169?",
+   "g": [
+    "13"
+   ]
+  },
+  {
+   "id": 8,
+   "tipo": "mat",
+   "q": "Metade de 0,75?",
+   "g": [
+    "0,375",
+    "0.375"
+   ]
+  },
+  {
+   "id": 9,
+   "tipo": "mat",
+   "q": "Um ônibus a 60km/h: quantos km em 45min?",
+   "g": [
+    "45"
+   ]
+  },
+  {
+   "id": 10,
+   "tipo": "mat",
+   "q": "Troco de R$50 numa compra de R$37?",
+   "g": [
+    "13"
+   ]
+  },
+  {
+   "id": 11,
+   "tipo": "seq",
+   "q": "Próximo: 2,4,8,16,?",
+   "g": [
+    "32"
+   ]
+  },
+  {
+   "id": 12,
+   "tipo": "seq",
+   "q": "Próximo: 100,90,81,73,?",
+   "g": [
+    "66"
+   ]
+  },
+  {
+   "id": 13,
+   "tipo": "seq",
+   "q": "Próximo: 1,1,2,3,5,8,?",
+   "g": [
+    "13"
+   ]
+  },
+  {
+   "id": 14,
+   "tipo": "seq",
+   "q": "Próximo: 2,6,12,20,30,?",
+   "g": [
+    "42"
+   ]
+  },
+  {
+   "id": 15,
+   "tipo": "seq",
+   "q": "Próximo: 81,27,9,?",
+   "g": [
+    "3"
+   ]
+  },
+  {
+   "id": 16,
+   "tipo": "seq",
+   "q": "Próximo: 5,11,23,47,?",
+   "g": [
+    "95"
+   ]
+  },
+  {
+   "id": 17,
+   "tipo": "seq",
+   "q": "Próximo letras: B,D,G,K,?",
+   "g": [
+    "p"
+   ]
+  },
+  {
+   "id": 18,
+   "tipo": "seq",
+   "q": "Próximo: 3,7,16,35,?",
+   "g": [
+    "74"
+   ]
+  },
+  {
+   "id": 19,
+   "tipo": "seq",
+   "q": "Próximo: 1,8,27,?",
+   "g": [
+    "64"
+   ]
+  },
+  {
+   "id": 20,
+   "tipo": "seq",
+   "q": "Próximo: 7,14,28,56,?",
+   "g": [
+    "112"
+   ]
+  },
+  {
+   "id": 21,
+   "tipo": "logica",
+   "q": "Todos os pássaros têm asas; pinguim é pássaro. Pinguim tem asas? sim/nao",
+   "g": [
+    "sim"
+   ]
+  },
+  {
+   "id": 22,
+   "tipo": "logica",
+   "q": "Se A>B e B>C, A é maior que C? sim/nao",
+   "g": [
+    "sim"
+   ]
+  },
+  {
+   "id": 23,
+   "tipo": "logica",
+   "q": "São 14h; daqui a 7 horas, que hora (0-23)?",
+   "g": [
+    "21"
+   ]
+  },
+  {
+   "id": 24,
+   "tipo": "logica",
+   "q": "Numa corrida você ultrapassa o 2º colocado. Em que posição fica?",
+   "g": [
+    "2",
+    "segundo",
+    "2º",
+    "segunda"
+   ]
+  },
+  {
+   "id": 25,
+   "tipo": "logica",
+   "q": "5 máquinas fazem 5 peças em 5min. 1 máquina faz 1 peça em quantos min?",
+   "g": [
+    "5"
+   ]
+  },
+  {
+   "id": 26,
+   "tipo": "logica",
+   "q": "Uma vara e meia custa R$15. Quanto custam 3 varas (R$)?",
+   "g": [
+    "30"
+   ]
+  },
+  {
+   "id": 27,
+   "tipo": "logica",
+   "q": "Hoje é sábado. Que dia será daqui a 52 dias?",
+   "g": [
+    "terca",
+    "terça"
+   ]
+  },
+  {
+   "id": 28,
+   "tipo": "logica",
+   "q": "Se chove levo guarda-chuva; não levei. Choveu? sim/nao/incerto",
+   "g": [
+    "nao",
+    "não",
+    "incerto",
+    "nao necessariamente"
+   ]
+  },
+  {
+   "id": 29,
+   "tipo": "logica",
+   "q": "Todos os A são B; todos os B são C. Todos os A são C? sim/nao",
+   "g": [
+    "sim"
+   ]
+  },
+  {
+   "id": 30,
+   "tipo": "logica",
+   "q": "8 bolas idênticas, 1 mais pesada, balança de 2 pratos: mín. de pesagens?",
+   "g": [
+    "2",
+    "duas"
+   ]
+  },
+  {
+   "id": 31,
+   "tipo": "brasil",
+   "q": "Capital do Piauí?",
+   "g": [
+    "teresina"
+   ]
+  },
+  {
+   "id": 32,
+   "tipo": "brasil",
+   "q": "Maior estado do Brasil em área?",
+   "g": [
+    "amazonas"
+   ]
+  },
+  {
+   "id": 33,
+   "tipo": "brasil",
+   "q": "Qual rio banha Manaus?",
+   "g": [
+    "negro",
+    "rio negro"
+   ]
+  },
+  {
+   "id": 34,
+   "tipo": "brasil",
+   "q": "Quem trouxe o avião ao Brasil / pioneiro da aviação?",
+   "g": [
+    "santos dumont",
+    "santos-dumont"
+   ]
+  },
+  {
+   "id": 35,
+   "tipo": "brasil",
+   "q": "Idioma oficial do Brasil?",
+   "g": [
+    "portugues",
+    "português"
+   ]
+  },
+  {
+   "id": 36,
+   "tipo": "brasil",
+   "q": "Quantos países fazem fronteira com o Brasil?",
+   "g": [
+    "10",
+    "dez"
+   ]
+  },
+  {
+   "id": 37,
+   "tipo": "brasil",
+   "q": "Maior cidade do Brasil em população?",
+   "g": [
+    "sao paulo",
+    "são paulo"
+   ]
+  },
+  {
+   "id": 38,
+   "tipo": "brasil",
+   "q": "O Maracanã fica em qual cidade?",
+   "g": [
+    "rio de janeiro",
+    "rio"
+   ]
+  },
+  {
+   "id": 39,
+   "tipo": "brasil",
+   "q": "Que oceano banha o Brasil?",
+   "g": [
+    "atlantico",
+    "atlântico"
+   ]
+  },
+  {
+   "id": 40,
+   "tipo": "brasil",
+   "q": "Fuso oficial de Brasília: UTC-?",
+   "g": [
+    "3",
+    "-3"
+   ]
+  },
+  {
+   "id": 41,
+   "tipo": "lingua",
+   "q": "Plural de 'cidadão'?",
+   "g": [
+    "cidadaos",
+    "cidadãos"
+   ]
+  },
+  {
+   "id": 42,
+   "tipo": "lingua",
+   "q": "Singular de 'fósseis'?",
+   "g": [
+    "fosseil",
+    "fóssil"
+   ]
+  },
+  {
+   "id": 43,
+   "tipo": "lingua",
+   "q": "Feminino de 'poeta'?",
+   "g": [
+    "poetisa"
+   ]
+  },
+  {
+   "id": 44,
+   "tipo": "lingua",
+   "q": "Antônimo de 'efêmero'?",
+   "g": [
+    "duradouro",
+    "permanente",
+    "eterno"
+   ]
+  },
+  {
+   "id": 45,
+   "tipo": "lingua",
+   "q": "Complete: 'Ele agiu ___' (mal ou mau)?",
+   "g": [
+    "mal"
+   ]
+  },
+  {
+   "id": 46,
+   "tipo": "lingua",
+   "q": "Quantas sílabas tem 'paralelepípedo'?",
+   "g": [
+    "7",
+    "sete"
+   ]
+  },
+  {
+   "id": 47,
+   "tipo": "lingua",
+   "q": "Coletivo de lobos?",
+   "g": [
+    "alcateia"
+   ]
+  },
+  {
+   "id": 48,
+   "tipo": "lingua",
+   "q": "Figura de linguagem em 'chorei um rio de lágrimas'?",
+   "g": [
+    "hiperbole",
+    "hipérbole",
+    "metafora",
+    "metáfora"
+   ]
+  },
+  {
+   "id": 49,
+   "tipo": "lingua",
+   "q": "Complete com crase ou sem: 'Refiro-me ___ isso.'",
+   "g": [
+    "a"
+   ]
+  },
+  {
+   "id": 50,
+   "tipo": "lingua",
+   "q": "Futuro do subjuntivo: 'Se eu ___ rico...' (ser)?",
+   "g": [
+    "for"
+   ]
+  },
+  {
+   "id": 51,
+   "tipo": "eng",
+   "q": "CSS serve para...? (1 palavra)",
+   "g": [
+    "estilo",
+    "aparencia",
+    "aparência",
+    "apresentacao"
+   ]
+  },
+  {
+   "id": 52,
+   "tipo": "eng",
+   "q": "HTTP 404 significa?",
+   "g": [
+    "nao encontrado",
+    "não encontrado",
+    "not found"
+   ]
+  },
+  {
+   "id": 53,
+   "tipo": "eng",
+   "q": "Comando git para baixar um repositório: git ___",
+   "g": [
+    "clone"
+   ]
+  },
+  {
+   "id": 54,
+   "tipo": "eng",
+   "q": "Banco NoSQL famosa por documentos JSON (1 palavra)?",
+   "g": [
+    "mongodb"
+   ]
+  },
+  {
+   "id": 55,
+   "tipo": "eng",
+   "q": "JavaScript roda originalmente no...? (1 palavra)",
+   "g": [
+    "navegador",
+    "browser"
+   ]
+  },
+  {
+   "id": 56,
+   "tipo": "eng",
+   "q": "O que 'npm install' faz?",
+   "g": [
+    "instala"
+   ]
+  },
+  {
+   "id": 57,
+   "tipo": "eng",
+   "q": "RAM guarda dados de forma volátil ou persistente?",
+   "g": [
+    "volatil",
+    "volátil"
+   ]
+  },
+  {
+   "id": 58,
+   "tipo": "eng",
+   "q": "Sigla do protocolo seguro de páginas web?",
+   "g": [
+    "https"
+   ]
+  },
+  {
+   "id": 59,
+   "tipo": "eng",
+   "q": "Commit no git = salvar estado do código? sim/nao",
+   "g": [
+    "sim"
+   ]
+  },
+  {
+   "id": 60,
+   "tipo": "eng",
+   "q": "Porta padrão do HTTPS?",
+   "g": [
+    "443"
+   ]
+  }
+ ]
+}
