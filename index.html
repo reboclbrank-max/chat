@@ -627,7 +627,13 @@ async function enviar() {
     caixa.value = ''; caixa.style.height = 'auto';
     bolha('user', texto, new Date().toISOString()); rolarFim();
     if (!token) {
-      bolha('bot', '🖐 Falta UMA coisa: as **mãos** (token do dono neste navegador) — é ele que abre teu caderno de conversa. Abre este link **neste navegador**: ' + location.origin + location.pathname.replace(/[^/]*$/, '') + 'limpar.html — aparece MÃOS LIGADAS, e aí me escreve de novo.', new Date().toISOString(), '🖐'); rolarFim();
+      pensando(true);
+      pensarStream([{ role: 'user', content: texto }], function () {}).then(function (r) {
+        pensando(false);
+        const t = (r && r.texto) || '';
+        bolha('bot', t || 'travei agora — manda de novo que eu respondo.', new Date().toISOString(), '⚡ direto'); rolarFim();
+        try { const h = JSON.parse(localStorage.getItem('rebocl_direto_h') || '[]'); h.push({ q: 'u', t: texto }); if (t) h.push({ q: 'b', t: t }); localStorage.setItem('rebocl_direto_h', JSON.stringify(h.slice(-60))); } catch (e) {}
+      }).catch(function () { pensando(false); bolha('bot', 'a fiação piscou — manda de novo.', new Date().toISOString(), '⚡'); rolarFim(); });
       return;
     }
     pensando(true);
@@ -2044,7 +2050,8 @@ if ('serviceWorker' in navigator) {
 (function () { window.profundaSys = function () { try { const a = JSON.parse(localStorage.getItem('rebocl_profunda') || '[]'); return a.length ? '\nMEMÓRIA PROFUNDA DO DONO (fatos duradouros — use quando for útil):\n' + a.slice(-20).map(x => '• ' + x).join('\n') : ''; } catch (e) { return ''; } }; })();
 
 
-setTimeout(function () { try { if (token && localStorage.getItem('rebocl_conv') && !conversa) { reabrirUltima(); } } catch (e) {} }, 1200);
+setTimeout(function () { try { if (token && localStorage.getItem('rebocl_conv') && !conversa) { reabrirUltima(); return; } } catch (e) {}
+  try { if (!token) { abrirConversa(); $('titulo-conv').textContent = '⚡ Direto'; bolha('bot', '📍 **modo direto** — escreva qualquer coisa aí embaixo e eu respondo AQUI mesmo, sem caderno, sem chave, sem nada. Pra falar com a casa inteira (status, acordar, exame), um dia instalamos sua chave — mas pra conversar, agora já vale.', new Date().toISOString(), '⚡'); rolarFim(); } } catch (e) {} }, 1200);
 </script>
 </body>
 </html>
