@@ -40,8 +40,11 @@ async function cerebro(pergunta) {
       const de = (msg.envelope.from || []).map(f => f.address).join(',').toLowerCase();
       const assunto = (msg.envelope.subject || '(sem assunto)');
       if (!de || de.includes(USER.toLowerCase())) { await client.messageFlagsAdd(uid, ['\\Seen'], { uid: true }); continue; }
-      const texto = (msg.source || '').toString();
-      const corpo = texto.replace(/-----BEGIN PGP[\s\S]*?-----END PGP SIGNATURE-----/g, '').replace(/--\s*$/gm, '').replace(/https?:\/\/\S+/g, '').slice(0, 3000) || assunto;
+      const bruto = (msg.source || '').toString();
+      const partes = bruto.split(/\r?\n\r?\n/);
+      let corpo = partes.slice(1).join('\n\n') || assunto;
+      try { corpo = require('quopri').decodestring(Buffer.from(corpo)).toString('utf-8'); } catch (e) {}
+      corpo = corpo.replace(/--[0-9a-f]{16,}[\s\S]*$/, '').replace(/-----BEGIN PGP[\s\S]*?-----END PGP SIGNATURE-----/g, '').replace(/https?:\/\/\S+/g, '').trim().slice(0, 3000);
       console.log('📨 de', de, '| assunto:', assunto.slice(0, 60));
       const r = await cerebro('Você é a Assistente Rebocl, do Brasil, direta e calorosa. Responda este e-mail em português claro (máx 15 linhas):\n\n' + assunto + '\n\n' + corpo);
       const transporte = nodemailer.createTransport({ host: 'smtp.gmail.com', port: 465, secure: true, auth: { user: USER, pass: PASS } });
