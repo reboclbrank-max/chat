@@ -17,9 +17,7 @@ jobs:
         run: |
           git config user.name "email-casa"
           git config user.email "email@rebocl.local"
-          git add email-log.md
-          git diff --cached --quiet || git commit -m "email respondido $(date -u +%F-%H%M)"
-          git push
+          if [ -f email-log.md ]; then git add email-log.md; git diff --cached --quiet || git commit -m "email respondido $(date -u +%F-%H%M)" && git push || true; fi
         env:
           GMAIL_CHAT_ADDR: ${{ secrets.GMAIL_CHAT_ADDR }}
           GMAIL_CHAT_PASS: ${{ secrets.GMAIL_CHAT_PASS }}
