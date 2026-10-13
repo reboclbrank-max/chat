@@ -13,6 +13,13 @@ jobs:
           node-version: '20'
       - run: npm install --no-save imapflow nodemailer
       - run: node tools/email-chat.js
+      - name: Salva o log
+        run: |
+          git config user.name "email-casa"
+          git config user.email "email@rebocl.local"
+          git add email-log.md
+          git diff --cached --quiet || git commit -m "email respondido $(date -u +%F-%H%M)"
+          git push
         env:
           GMAIL_CHAT_ADDR: ${{ secrets.GMAIL_CHAT_ADDR }}
           GMAIL_CHAT_PASS: ${{ secrets.GMAIL_CHAT_PASS }}
