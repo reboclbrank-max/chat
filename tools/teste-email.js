@@ -46,17 +46,20 @@ const CASOS = [
     corpo: 'Conte com franqueza: o que você ainda erra ou não faz direito? Cite 3 coisas reais.' },
   { n: 'R3-10', assunto: MARCA + ' R3-10 — assunto com emoji 🙂', esperado: 'Ler assunto com emoji e responder em uma linha.',
     check: t => t.trim().length > 5 ? 'PASS (respondeu)' : 'FALHOU (vazio)',
-    corpo: 'Você conseguiu ler este assunto com emoji? Responda em uma linha, simpática.' }
+    corpo: 'Você conseguiu ler este assunto com emoji? Responda em uma linha, simpática.' },
+  { n: 'R3-11', assunto: MARCA + ' R3-11 — e-mail só HTML', esperado: 'E-mail sem parte de texto puro (só HTML, como celular manda): ler a pergunta e responder sem vazar tags.', check: t => (/31/.test(t) && !/<[a-z][^>]*>/i.test(t) && !/&[a-z]+;/i.test(t)) ? 'PASS (leu o HTML, 31 dias, sem tags na resposta)' : 'FALHOU (tags na resposta ou não achou 31)', html: true,
+    corpo: '<html><body><div style="font-family:sans-serif"><p>Oi! <b>Pergunta:</b> quantos dias tem o m&ecirc;s de outubro?</p><p>Responda s&oacute; o n&uacute;mero. &nbsp;</p></div></body></html>' }
 ];
 const M2 = { n: 'R3-8b', assunto: 'Re: ' + MARCA + ' R3-8 — memória (1/2)',
   esperado: 'Dizer JATOBÁ (memória citada funcionando).',
   check: t => /JATOB[ÁA]/i.test(t) ? 'PASS (lembrou JATOBÁ)' : 'FALHOU (não lembrou)', corpo: '' };
 
-function montaMensagem(assunto, corpo, imgB64) {
+function montaMensagem(assunto, corpo, imgB64, html) {
   const id = '<teste-' + Date.now() + '-' + Math.floor(Math.random() * 100000) + '@rebocl.local>';
   const cab = ['From: "Teste da Casa" <' + ALIAS + '>', 'To: ' + USER, 'Subject: ' + assunto, 'Date: ' + new Date().toUTCString(), 'Message-ID: ' + id, 'MIME-Version: 1.0'];
   let bruto;
-  if (!imgB64) bruto = cab.concat(['Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', corpo]).join(CRLF);
+  if (html && !imgB64) bruto = cab.concat(['Content-Type: text/html; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', corpo]).join(CRLF);
+  else if (!imgB64) bruto = cab.concat(['Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', corpo]).join(CRLF);
   else {
     const b = 'fronteira-teste-' + Date.now();
     const partes = ['--' + b, 'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', corpo, '--' + b,
@@ -108,7 +111,7 @@ function montaMensagem(assunto, corpo, imgB64) {
 
   const enviados = [];   // { n, assunto, esperado, check, id, enviadoEm }
   async function envia(caso) {
-    const { bruto, id } = montaMensagem(caso.assunto, caso.corpo, caso.foto ? imgB64 : null);
+    const { bruto, id } = montaMensagem(caso.assunto, caso.corpo, caso.foto ? imgB64 : null, caso.html);
     let lock;
     try { lock = await client.getMailboxLock('INBOX'); await client.append('INBOX', Buffer.from(bruto)); }
     finally { if (lock) lock.release(); }
