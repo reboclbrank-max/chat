@@ -1,0 +1,22 @@
+name: Diagnóstico da caixa de e-mail (interno)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: diag-email
+  cancel-in-progress: false
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --no-save imapflow nodemailer
+      - run: node tools/diag-email.js
+        env:
+          GMAIL_CHAT_ADDR: ${{ secrets.GMAIL_CHAT_ADDR }}
+          GMAIL_CHAT_PASS: ${{ secrets.GMAIL_CHAT_PASS }}
