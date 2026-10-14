@@ -1,0 +1,33 @@
+{
+ "verificado_em": "2026-10-14T03:09:03.050Z",
+ "itens": {
+  "Página do chat": {
+   "ok": true,
+   "falhas": 0
+  },
+  "Site oficial": {
+   "ok": true,
+   "falhas": 0
+  },
+  "Casa postando (site)": {
+   "ok": true,
+   "falhas": 0
+  },
+  "Chat por e-mail (24h)": {
+   "ok": true,
+   "falhas": 0
+  },
+  "Bateria do cérebro": {
+   "ok": true,
+   "falhas": 0
+  },
+  "itch Ceifalume": {
+   "ok": true,
+   "falhas": 0
+  },
+  "itch Prancheta": {
+   "ok": true,
+   "falhas": 0
+  }
+ }
+}
