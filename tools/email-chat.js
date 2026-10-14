@@ -13,6 +13,17 @@ function qpDecode(s) {
   if (bytes.length) out += Buffer.from(bytes).toString('utf-8');
   return out;
 }
+// 🛡 Guarda anti-cota (13/10/2026): a reserva Pollinations pode devolver 200 com TEXTO DE COTA
+// no content ("The API key used for this request has reached..."). Isso NÃO é resposta — é infra.
+// Regra da casa: infra falada ≠ cérebro errado; a rota seguinte assume.
+const COTA_RE = /api key used for this request|(?:has|have) reached (?:its|your|the) (?:limit|quota)|too many requests|rate limit exceeded/i;
+function textoUtil(t) {
+  const s = String(t || '').trim();
+  if (!s) return false;
+  if (s.length < 300 && COTA_RE.test(s)) return false;
+  return true;
+}
+
 async function cerebro(pergunta) {
   const rotas = [
     ['frota', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'auto', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, true],
@@ -28,7 +39,7 @@ async function cerebro(pergunta) {
         if (!r.ok) continue;
         const j = await r.json();
         const t = ((((j.choices || [])[0] || {}).message || {}).content) || '';
-        if (t.trim()) return { texto: t.trim().slice(0, 2500), via: nome };
+        if (textoUtil(t)) return { texto: t.trim().slice(0, 2500), via: nome };
       } catch (e) {}
     }
     if (!rodada) await sleep(8000);

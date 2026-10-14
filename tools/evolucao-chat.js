@@ -15,6 +15,17 @@ const nm = s => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f
 const sorteadas = [];
 for (let i = 0; i < 10; i++) sorteadas.push(banco[(dia * 7 + i * 13) % banco.length]);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+// 🛡 Guarda anti-cota (13/10/2026): a reserva Pollinations pode devolver 200 com TEXTO DE COTA
+// no content ("The API key used for this request has reached..."). Isso NÃO é resposta — é infra.
+// Regra da casa: infra falada ≠ cérebro errado; a rota seguinte assume.
+const COTA_RE = /api key used for this request|(?:has|have) reached (?:its|your|the) (?:limit|quota)|too many requests|rate limit exceeded/i;
+function textoUtil(t) {
+  const s = String(t || '').trim();
+  if (!s) return false;
+  if (s.length < 300 && COTA_RE.test(s)) return false;
+  return true;
+}
+
 async function rota(nome, url, corpo, bearer) {
   const headers = { 'Content-Type': 'application/json' };
   if (bearer) headers['Authorization'] = 'Bearer unused';
@@ -22,7 +33,7 @@ async function rota(nome, url, corpo, bearer) {
   if (!r.ok) throw new Error('HTTP ' + r.status);
   const j = await r.json();
   const c = ((((j.choices || [])[0] || {}).message || {}).content) || '';
-  return c.trim() ? c.trim() : null;
+  return textoUtil(c) ? c.trim() : null;
 }
 async function pergunta(conteudo) {
   const rotas = [
