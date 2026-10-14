@@ -104,6 +104,8 @@ async function acao(rotulo, arquivo) {
   for (const par of [['itch Ceifalume', 'https://rebocl-brank.itch.io/ceifalume'], ['itch Prancheta', 'https://rebocl-brank.itch.io/prancheta']]) {
     itens.push(await verifica(par[0], async () => {
       const r = await fetch(par[1], { signal: AbortSignal.timeout(25000), redirect: 'follow' });
+      // 429 = o próprio itch limitou a checagem (a página está no ar, só não quer conversa agora)
+      if (r.status === 429) return 'no ar (itch limitou a checagem agora — 429, sem alarme)';
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return 'no ar';
     }));
