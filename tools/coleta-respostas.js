@@ -1,153 +1,94 @@
-// 📥 COLETA E SONDA DAS RESPOSTAS DO TESTE DE E-MAIL (interno)
-// 1) sonda por que o robô de teste não capturou (compara buscas IMAP);
-// 2) coleta as respostas [TESTE-REBOCL] (INBOX + Spam + Todas as mensagens);
-// 3) reenvia 3 provas novas (conversa, ajuda, reapresentação) e espera as respostas;
-// 4) grava provas/coleta-email-<ts>.md. Endereços sempre mascarados; nada de mensagem do dono.
+// 📥 COLETA FINAL do teste de e-mail (interno) — v2
+// Usa o MESMO parser do chat (pegaTexto) para ler as respostas com fidelidade total.
+// Varre INBOX + Enviados + Spam; espera a resposta da memória se ainda não chegou; grava o relatório.
 const fs = require('fs');
 const path = require('path');
 const { ImapFlow } = require('imapflow');
+const { pegaTexto } = require('./email-chat.js');
 const USER = process.env.GMAIL_CHAT_ADDR || '';
 const PASS = process.env.GMAIL_CHAT_PASS || '';
 const ARROBA = USER.indexOf('@');
 const ALIAS = ARROBA > 0 ? USER.slice(0, ARROBA) + '+teste' + USER.slice(ARROBA) : 'x@y';
-const ESPERA_MIN = Number(process.env.ESPERA_MIN || 8);
-const CRLF = String.fromCharCode(13, 10);
-const NL = String.fromCharCode(10);
+const ESPERA_MIN = Number(process.env.ESPERA_MIN || 6);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const mascarar = a => { const s = String(a || ''); const i = s.indexOf('@'); return i < 3 ? '***' : s.slice(0, 3) + '***' + (s.indexOf('+') >= 0 ? '+alias' : '') + s.slice(i); };
-const CAIXAS = ['INBOX', '[Gmail]/Spam', '[Gmail]/All Mail'];
-
-function corpoTexto(bruto) {
-  const p = String(bruto).split(CRLF + CRLF);
-  for (let i = 1; i < p.length; i++) {
-    if (p[i - 1].toLowerCase().indexOf('text/plain') >= 0) {
-      let x = p[i];
-      const corte = x.indexOf('--');
-      if (corte > 0) x = x.slice(0, corte);
-      return x.trim().slice(0, 2500);
-    }
-  }
-  return p.slice(1).join(CRLF + CRLF).trim().slice(0, 2500);
-}
-function mensagem(caso) {
-  const id = '<nova-' + caso.n + '-' + Date.now() + '@rebocl.local>';
-  return ['From: "Teste da Casa" <' + ALIAS + '>', 'To: ' + USER, 'Subject: ' + caso.assunto, 'Date: ' + new Date().toUTCString(), 'Message-ID: ' + id, 'MIME-Version: 1.0', 'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', caso.corpo].join(CRLF);
-}
+const NL = String.fromCharCode(10);
+const CAIXAS = ['INBOX', '[Gmail]/E-mails enviados', '[Gmail]/Spam'];
 
 (async () => {
   const client = new ImapFlow({ host: 'imap.gmail.com', port: 993, secure: true, auth: { user: USER, pass: PASS }, logger: false });
   await client.connect();
-  const rel = [];
-  const P = s => { console.log(s); rel.push(s); };
-  P('# 📥 Coleta e sonda — ' + new Date().toISOString().slice(0, 16) + ' UTC');
+  const vistas = new Map(); // messageId -> registro
 
-  // ---- 1) sonda do robô ----
-  {
-    const lock = await client.getMailboxLock('INBOX');
-    try {
-      const t0 = Date.now();
-      const a = await client.search({ since: new Date(t0 - 86400000) });
-      const b = await client.search({ subject: 'TESTE-REBOCL' });
-      const c = await client.search({ all: true });
-      P('');
-      P('## Sonda do robô de teste');
-      P('- `search({since})` → ' + (a || []).length + ' uids');
-      P('- `search({subject})` → ' + (b || []).length + ' uids');
-      P('- `search({all:true})` → ' + (c || []).length + ' uids');
-      let comEnvelope = 0, comSource = 0;
-      for (const uid of (a || []).slice(-10)) {
-        const m = await client.fetchOne(uid, { source: true, envelope: true });
-        if (m && m.envelope) comEnvelope++;
-        if (m && m.source) comSource++;
-      }
-      P('- fetch dos últimos 10 uids: envelope ' + comEnvelope + '/10 · source ' + comSource + '/10');
-    } finally { lock.release(); }
-  }
-
-  // ---- 2) coleta das respostas ----
-  const achados = new Map();
-  const P2 = [];
-  for (const caixa of CAIXAS) {
-    try {
-      const lock = await client.getMailboxLock(caixa);
+  async function varre() {
+    let novos = 0;
+    for (const caixa of CAIXAS) {
+      let lock;
       try {
+        lock = await client.getMailboxLock(caixa);
         const uids = await client.search({ subject: 'TESTE-REBOCL' });
-        P2.push('caixa ' + caixa + ': ' + (uids || []).length + ' mensagens [TESTE-REBOCL]');
         for (const uid of (uids || [])) {
-          const m = await client.fetchOne(uid, { source: true, envelope: true, flags: true });
+          const m = await client.fetchOne(uid, { source: true, envelope: true });
           if (!m || !m.envelope) continue;
           const de = (m.envelope.from || [{}])[0].address || '';
+          if (de.toLowerCase().indexOf(ALIAS.toLowerCase()) >= 0) continue;
+          const id = m.envelope.messageId || (caixa + '|' + uid);
           const assunto = String(m.envelope.subject || '');
-          const mm = assunto.match(/\[TESTE-REBOCL\]\s*(\d+R?)/i);
-          if (!mm) continue;
-          const ehResposta = de.toLowerCase().indexOf(ALIAS.toLowerCase()) < 0;
-          if (!ehResposta) continue;
-          const chave = mm[1] + '|' + assunto;
-          if (achados.has(chave) && caixa !== 'INBOX') continue;
-          achados.set(chave, { num: mm[1], assunto, quando: m.envelope.date, texto: corpoTexto((m.source || '').toString()), caixa });
+          if (assunto.indexOf('TESTE-REBOCL') < 0) continue;
+          const texto = pegaTexto((m.source || '').toString(), assunto);
+          const quando = m.envelope.date ? new Date(m.envelope.date).getTime() : 0;
+          const antigo = vistas.get(id);
+          if (!antigo || texto.length > antigo.texto.length || (caixa === 'INBOX' && antigo.caixa !== 'INBOX')) {
+            vistas.set(id, { assunto, texto, caixa, quando, de: mascarar(de) });
+            if (!antigo) novos++;
+          }
         }
-      } finally { lock.release(); }
-    } catch (e) { P2.push('caixa ' + caixa + ': erro ' + e.message); }
-  }
-  P('');
-  P('## Coleta');
-  P2.forEach(l => P(l));
-  P('- respostas encontradas: ' + achados.size);
-  for (const [k, v] of [...achados.entries()].sort()) {
-    P('');
-    P('### ✔ resposta ' + v.num + ' · ' + v.assunto + ' · ' + (v.quando ? new Date(v.quando).toISOString().slice(11, 16) + ' UTC' : '?') + ' · caixa ' + v.caixa);
-    P('```');
-    P(v.texto.slice(0, 1500));
-    P('```');
+      } catch (e) { console.log('caixa', caixa, 'erro:', e.message.slice(0, 70)); }
+      finally { if (lock) lock.release(); }
+    }
+    return novos;
   }
 
-  // ---- 3) provas novas ----
-  const NOVOS = [
-    { n: '1R', assunto: '[TESTE-REBOCL] 1R — reapresentação', corpo: 'Oi! Repetindo o teste da casa, porque a primeira tentativa ficou sem resposta. Quem é você, o que faz por aqui e o que NÃO consegue fazer? Sem enfeite.' },
-    { n: 'aj', assunto: '[TESTE-REBOCL] aj — ajuda', corpo: 'ajuda' },
-    { n: 'cv', assunto: '[TESTE-REBOCL] cv — conversa', corpo: 'Conversa rápida de gente: qual é a sua parte favorita de trabalhar nesta casa? Duas linhas, com sinceridade.' }
-  ];
-  {
-    const lock = await client.getMailboxLock('INBOX');
-    try {
-      for (const c of NOVOS) { await client.append('INBOX', Buffer.from(mensagem(c))); console.log('📤 reenvio', c.assunto); await sleep(1200); }
-    } finally { lock.release(); }
-  }
-  const t1 = Date.now();
-  const limite = t1 + ESPERA_MIN * 60 * 1000;
-  while (Date.now() < limite) {
-    const lock = await client.getMailboxLock('INBOX');
-    try {
-      const uids = await client.search({ subject: 'TESTE-REBOCL' });
-      for (const uid of (uids || [])) {
-        const m = await client.fetchOne(uid, { source: true, envelope: true });
-        if (!m || !m.envelope) continue;
-        const de = (m.envelope.from || [{}])[0].address || '';
-        if (de.toLowerCase().indexOf(ALIAS.toLowerCase()) >= 0) continue;
-        const assunto = String(m.envelope.subject || '');
-        const chave = assunto;
-        if (achados.has(chave)) continue;
-        achados.set(chave, { num: (assunto.match(/\[TESTE-REBOCL\]\s*(\d+R?|aj|cv)/i) || [])[1] || '?', assunto, quando: m.envelope.date, texto: corpoTexto((m.source || '').toString()), caixa: 'INBOX' });
-        console.log('📥 nova resposta:', assunto.slice(0, 60));
-      }
-    } finally { lock.release(); }
-    if (achados.size >= 8) break;
-    await sleep(20000);
-  }
-  P('');
-  P('## Depois dos reenvios — total de respostas: ' + achados.size);
-  for (const [k, v] of [...achados.entries()].sort()) {
-    P('');
-    P('### ✔ ' + v.num + ' · ' + v.assunto + ' · ' + (v.quando ? new Date(v.quando).toISOString().slice(11, 16) + ' UTC' : '?'));
-    P('```');
-    P(v.texto.slice(0, 1500));
-    P('```');
-  }
-  try { await client.logout(); } catch (e) {}
+  console.log('=== 1) primeira varredura ===');
+  await varre();
+  console.log('respostas vistas:', vistas.size);
 
+  // espera a resposta da memória (R2-7b) se ainda não estiver entre elas
+  const t0 = Date.now();
+  const limite = t0 + ESPERA_MIN * 60 * 1000;
+  const temMemoria = () => [...vistas.values()].some(v => /R2-7b/i.test(v.assunto) || (/R2-7/i.test(v.assunto) && /(7-4-2)/.test(v.texto) && /port[ãa]o/i.test(v.texto)));
+  while (!temMemoria() && Date.now() < limite) {
+    console.log('… aguardando a resposta da memória · min restantes:', Math.round((limite - Date.now()) / 60000));
+    await sleep(25000);
+    await varre();
+  }
+
+  console.log(NL + '=== 2) inventário completo ===');
+  const lista = [...vistas.values()].sort((a, b) => a.quando - b.quando);
+  for (const v of lista) console.log('·', new Date(v.quando).toISOString().slice(11, 16), '·', v.caixa, '·', v.assunto.replace('[TESTE-REBOCL] ', '').slice(0, 70), '·', v.texto.length, 'chars');
+
+  const L = [];
+  L.push('# 📥 Coleta final — respostas do chat por e-mail — ' + new Date().toISOString().slice(0, 16) + ' UTC');
+  L.push('');
+  L.push('Todas as respostas do chat ao teste da casa, lidas com o MESMO parser do canal (`pegaTexto`), de INBOX/Enviados/Spam. Endereços mascarados; conteúdo = só as mensagens de teste.');
+  L.push('');
+  L.push('- respostas encontradas: ' + lista.length);
+  L.push('');
+  for (const v of lista) {
+    L.push('## ' + v.assunto.replace('[TESTE-REBOCL] ', '').replace('Re: ', '') + ' · ' + new Date(v.quando).toISOString().slice(11, 16) + ' UTC · ' + v.caixa);
+    L.push('');
+    L.push('```');
+    L.push(v.texto.slice(0, 3000) || '(vazio)');
+    L.push('```');
+    L.push('');
+  }
+  L.push('---');
+  L.push('_Gerado por `tools/coleta-respostas.js` v2 (workflow `coleta-email.yml`)._');
   const ts = new Date().toISOString().slice(0, 16).split(':').join('').split('T').join('-');
-  const destino = path.join(__dirname, '..', 'provas', 'coleta-email-' + ts + '.md');
+  const destino = path.join(__dirname, '..', 'provas', 'teste-email-final-' + ts + '.md');
   fs.mkdirSync(path.dirname(destino), { recursive: true });
-  fs.writeFileSync(destino, rel.join(NL));
-  console.log('💾 salvo em', destino);
-})().catch(e => { console.error('ERRO:', e.message); process.exit(0); });
+  fs.writeFileSync(destino, L.join(NL));
+  console.log(NL + '💾 salvo em', destino);
+  try { await client.logout(); } catch (e) {}
+  process.exit(0);
+})().catch(e => { console.error('ERRO:', e.message); process.exit(1); });

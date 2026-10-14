@@ -233,4 +233,6 @@ function montaMensagem(assunto, corpo, imgB64) {
   fs.writeFileSync(destino, rel);
   console.log(NL + rel.slice(0, 4000));
   console.log('💾 salvo em', destino);
+  try { await client.logout(); } catch (e) {}
+  process.exit(0);
 })().catch(e => { console.error('ERRO:', e.message); process.exit(0); });
