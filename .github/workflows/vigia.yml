@@ -2,6 +2,7 @@ name: Vigia da casa (24h grátis)
 on:
   schedule:
     - cron: '17 * * * *'
+    - cron: '11,41 * * * *'
   workflow_dispatch:
     inputs:
       teste:
