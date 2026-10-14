@@ -168,6 +168,7 @@ const AJUDA = [
   '   • hora: tokyo       (também brasilia, nova york, lisboa, utc…)',
   '   • noticias: godot   (qualquer tema)',
   '   • status:           (como está a casa agora)',
+  '   • voz: bom dia, dona!   (eu devolvo um áudio falado em anexo)',
   '   • ajuda',
   '',
   '— Assistente Rebocl (casa Rebocl Brank)'
@@ -199,7 +200,7 @@ function citacaoDoEmail(bruto) {
 
 
 // 🪞 CAPACIDADES (14/10/2026): o chat precisa conhecer os próprios recursos para não errar sobre si mesmo.
-const CAPS = ' Você é o chat por e-mail da casa Rebocl Brank. Seja PRECISA quando falar de si: você RESPONDE e-mails; você VÊ fotos anexadas (visão) e, quando os motores de visão oscilam, ainda lê o TEXTO da foto por uma lupa própria; e tem comandos locais que funcionam mesmo com os motores caídos: clima:, cambio:, hora:, noticias:, status: e ajuda. O que você NÃO tem: WhatsApp, envio de arquivos, memória longa entre e-mails distantes (lembra só o que vier citado na conversa) e os motores gratuitos às vezes oscilam — nesse caso avise e peça reenvio.';
+const CAPS = ' Você é o chat por e-mail da casa Rebocl Brank. Seja PRECISA quando falar de si: você RESPONDE e-mails; você VÊ fotos anexadas (visão) e, quando os motores de visão oscilam, ainda lê o TEXTO da foto por uma lupa própria; você OUVE áudios recebidos por e-mail (transcrição por motor pequeno — pode errar nomes) e RESPONDE EM VOZ quando o dono pede, por palavras ("manda em áudio") ou pelo comando voz:, devolvendo um áudio falado em anexo; e tem comandos locais que funcionam mesmo com os motores caídos: clima:, cambio:, hora:, noticias:, status: e ajuda. O que você NÃO tem: WhatsApp, anexar arquivos quaisquer (só o áudio falado que VOCÊ mesma gera), memória longa entre e-mails distantes (lembra só o que vier citado na conversa) e os motores gratuitos às vezes oscilam — nesse caso avise e peça reenvio.';
 
 async function cerebro(pergunta, imagem) {
   const rotas = [];
@@ -245,6 +246,104 @@ async function leTextoDaFoto(imagem) {
     return limpo.length >= 2 ? limpo.slice(0, 800) : '';
   } catch (e) { return ''; }
 }
+
+// ================== 🎤 VOZ DA CASA (14/10/2026) ==================
+// Falar: grátis e sem chave — edge-tts (voz neural) → gTTS (Google) → espeak-ng (offline).
+// Ouvir: transcrição offline pelo Vosk (modelo pequeno pt-BR; o chat baixa uma vez por turno).
+const TRIPLA = String.fromCharCode(96, 96, 96);
+
+// Áudio recebido (voz do dono) — até 6 MB; aceita o que os celulares mandam.
+function extraiAudio(bruto) {
+  const mB = bruto.match(/content-type:\s*multipart\/[^;]+;\s*boundary="?([^"\r\n;]+)"?/i);
+  if (!mB) return null;
+  const sep = '--' + mB[1].replace(/^--/, '');
+  for (const p of bruto.split(sep)) {
+    const iCab = p.search(/\r?\n\r?\n/);
+    if (iCab < 0) continue;
+    const cab = p.slice(0, iCab);
+    if (!/content-type:\s*audio\//i.test(cab)) continue;
+    const tipo = (cab.match(/content-type:\s*(audio\/[a-z0-9.+-]+)/i) || [])[1].toLowerCase();
+    const corpo = p.slice(iCab).replace(/^\r?\n\r?\n/, '').replace(/[^A-Za-z0-9+/=]/g, '');
+    if (corpo.length < 400 || corpo.length > 8000000) continue;
+    return { tipo, b64: corpo, bytes: Math.floor(corpo.length * 3 / 4) };
+  }
+  return null;
+}
+
+// Deixa o texto "falável": tira código, markdown, links e emojis.
+function limpaPraFalar(t) {
+  return String(t || '')
+    .split(TRIPLA).join(' ')
+    .replace(/[\x60*_#>|]/g, ' ')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/https?:\/\/\S+/g, ' ')
+    .replace(/[\u{1F000}-\u{1FAFF}\u{2190}-\u{27BF}\u{2B00}-\u{2BFF}\u{1F1E6}-\u{1F1FF}\u{FE0F}\u{FE0E}]/gu, ' ')
+    .split(NL).map(l => l.trim()).filter(Boolean).join('. ')
+    .split(' — ').join(', ')
+    .split(/\s{2,}/).join(' ')
+    .trim().slice(0, 700);
+}
+
+async function fala(texto) {
+  const falaTexto = limpaPraFalar(texto);
+  if (falaTexto.length < 3) return null;
+  const spawnSync = require('child_process').spawnSync;
+  const fsLocal = require('fs');
+  fsLocal.writeFileSync('/tmp/fala-casa.txt', falaTexto);
+  const tentativas = [
+    ['edge-tts', ['--voice', 'pt-BR-FranciscaNeural', '--file', '/tmp/fala-casa.txt', '--write-media', '/tmp/fala-casa.mp3'], '/tmp/fala-casa.mp3', 'rebocl-voz.mp3'],
+    ['python3', ['-m', 'edge_tts', '--voice', 'pt-BR-FranciscaNeural', '--file', '/tmp/fala-casa.txt', '--write-media', '/tmp/fala-casa.mp3'], '/tmp/fala-casa.mp3', 'rebocl-voz.mp3'],
+    ['gtts-cli', ['--file', '/tmp/fala-casa.txt', '--lang', 'pt', '--output', '/tmp/fala-casa-g.mp3'], '/tmp/fala-casa-g.mp3', 'rebocl-voz.mp3'],
+    ['python3', ['-m', 'gtts.cli', '--file', '/tmp/fala-casa.txt', '--lang', 'pt', '--output', '/tmp/fala-casa-g.mp3'], '/tmp/fala-casa-g.mp3', 'rebocl-voz.mp3'],
+    ['espeak-ng', ['-v', 'pt-br', '-s', '160', '-f', '/tmp/fala-casa.txt', '-w', '/tmp/fala-casa.wav'], '/tmp/fala-casa.wav', 'rebocl-voz.wav'],
+  ];
+  for (const t of tentativas) {
+    try { if (fsLocal.existsSync(t[2])) fsLocal.unlinkSync(t[2]); } catch (e) {}
+    try { spawnSync(t[0], t[1], { timeout: 90000, stdio: 'ignore' }); } catch (e) {}
+    try {
+      if (fsLocal.existsSync(t[2]) && fsLocal.statSync(t[2]).size > 2500) {
+        return { buf: fsLocal.readFileSync(t[2]), nome: t[3], via: t[0] };
+      }
+    } catch (e) {}
+  }
+  return null;
+}
+
+async function ouve(anexo) {
+  const fsLocal = require('fs');
+  const spawnSync = require('child_process').spawnSync;
+  const ext = ({ 'audio/mpeg': 'mp3', 'audio/mp3': 'mp3', 'audio/ogg': 'ogg', 'audio/opus': 'opus', 'audio/oga': 'ogg', 'audio/wav': 'wav', 'audio/x-wav': 'wav', 'audio/mp4': 'm4a', 'audio/m4a': 'm4a', 'audio/x-m4a': 'm4a', 'audio/aac': 'aac', 'audio/webm': 'webm', 'audio/flac': 'flac' })[anexo.tipo] || 'bin';
+  const caminho = '/tmp/voz-recebida.' + ext;
+  try { fsLocal.writeFileSync(caminho, Buffer.from(anexo.b64, 'base64')); } catch (e) { return ''; }
+  const modelo = '/tmp/vosk-model-small-pt-0.3';
+  if (!fsLocal.existsSync(modelo)) {
+    try {
+      console.log('🎧 baixando o modelo de escuta (31 MB, uma vez por turno)...');
+      const r = await fetch('https://alphacephei.com/vosk/models/vosk-model-small-pt-0.3.zip', { signal: AbortSignal.timeout(240000) });
+      if (r.ok) {
+        fsLocal.writeFileSync('/tmp/vosk-pt.zip', Buffer.from(await r.arrayBuffer()));
+        spawnSync('unzip', ['-q', '-o', '/tmp/vosk-pt.zip', '-d', '/tmp'], { timeout: 180000 });
+      }
+    } catch (e) { console.log('modelo do ouvido falhou:', e.message); }
+  }
+  if (!fsLocal.existsSync(modelo)) return '';
+  const r = spawnSync('python3', ['tools/transcreve.py', caminho], { timeout: 240000, encoding: 'utf8' });
+  try {
+    const j = JSON.parse(String(r.stdout || '').trim().split(NL).pop());
+    return String(j.texto || '').trim();
+  } catch (e) { return ''; }
+}
+
+// O dono pediu resposta falada?
+function pedeAudio(txt) {
+  const t = String(txt || '');
+  if (/(manda|mandar|envia|enviar|quero|queria|pode|poderia|consegue)\s+(um\s+|o\s+|uma\s+)?(áudio|audio|voz)/i.test(t)) return true;
+  if (/(em|por)\s+(áudio|audio|voz)\b/i.test(t)) return true;
+  if (/(áudio|audio)\s+(de|com)\s+(bom\s+dia|boa\s+tarde|boa\s+noite)/i.test(t)) return true;
+  return false;
+}
+// ================== fim da voz ==================
+
 async function processOnce() {
   if (!USER || !PASS) { console.error('sem credenciais'); return 0; }
   const client = new ImapFlow({ host: 'imap.gmail.com', port: 993, secure: true, auth: { user: USER, pass: PASS }, logger: false });
@@ -264,22 +363,36 @@ async function processOnce() {
       const corpoMsg = pegaTexto(bruto, assunto);
       const anexos = extraiAnexos(bruto);
       const imagem = anexos[0] || null;
+      const audioAnexo = (imagem ? null : extraiAudio(bruto));
+      let transcrito = '';
+      if (audioAnexo) {
+        transcrito = await ouve(audioAnexo);
+        console.log(transcrito ? '🎧 ouvi o áudio: ' + transcrito.slice(0, 90) : '🎧 não consegui ouvir o áudio (' + audioAnexo.tipo + ')');
+      }
       const chave = limpaAssunto(assunto);
       const citado = citacaoDoEmail(bruto);
       const lembrado = memoria.has(chave) ? memoria.get(chave) : '';
       const contexto = [citado, lembrado].filter(Boolean).join(NL + '---' + NL).slice(0, 1600);
       const blocoCtx = contexto ? (NL + NL + 'Contexto de mensagens anteriores desta conversa (use somente se ajudar; pode ignorar):' + NL + contexto) : '';
-      console.log('📨 de', de, '| assunto:', assunto.slice(0, 60), imagem ? '| 📷 foto ' + imagem.tipo + ' ~' + Math.round(imagem.bytes / 1024) + 'KB' : '');
+      console.log('📨 de', de, '| assunto:', assunto.slice(0, 60), imagem ? '| 📷 foto ' + imagem.tipo + ' ~' + Math.round(imagem.bytes / 1024) + 'KB' : (audioAnexo ? '| 🎤 áudio ' + audioAnexo.tipo + ' ~' + Math.round(audioAnexo.bytes / 1024) + 'KB' : ''));
       const pergunta = imagem
         ? 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' O dono mandou uma FOTO por e-mail; descreva com precisão o que você vê nela e responda a pergunta dele, em português claro (máx 15 linhas). Se houver texto na foto, leia o texto.\n\nPergunta dele: ' + (corpoMsg || assunto) + blocoCtx
-        : 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' Responda este e-mail em português claro (máx 15 linhas):\n\n' + assunto + '\n\n' + corpoMsg + blocoCtx;
-      let respostaFerramenta = null;
-      if (!imagem) respostaFerramenta = await ferramenta(corpoMsg);
+        : 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' Responda este e-mail em português claro (máx 15 linhas):\n\n' + assunto + '\n\n' + corpoMsg + (transcrito ? NL + NL + 'O dono TAMBÉM mandou um ÁUDIO; transcrição (motor pequeno — pode errar nomes): "' + transcrito + '". Responda ao conteúdo do áudio e mostre que ouviu.' : '') + blocoCtx;
+      let respostaFerramenta = null, anexoVoz = null;
+      const mVoz = (!imagem && !audioAnexo) ? corpoMsg.trim().match(/^voz\s*:\s*([\s\S]{1,700})$/) : null;
+      if (mVoz) {
+        anexoVoz = await fala(mVoz[1].trim());
+        console.log(anexoVoz ? '🎙️ áudio gerado (' + anexoVoz.via + ', ' + Math.round(anexoVoz.buf.length / 1024) + 'KB)' : '🎙️ não consegui gerar o áudio');
+      }
+      if (!imagem && !audioAnexo && !mVoz) respostaFerramenta = await ferramenta(corpoMsg);
       if (respostaFerramenta) console.log('🧰 respondido por ferramenta (sem motor)');
-      const r = respostaFerramenta ? { texto: respostaFerramenta, via: 'ferramenta' } : await cerebro(pergunta, imagem);
+      const r = mVoz
+        ? { texto: anexoVoz ? '🎙️ Aí vai, falado (voz da casa):' + NL + NL + '« ' + mVoz[1].trim() + ' »' + NL + NL + 'O áudio vai em anexo — é só dar o play.' : 'quis te mandar um áudio, mas os motores de voz estão fora agora — tenta de novo em instantes (casa Rebocl).', via: anexoVoz ? 'voz' : 'voz-falhou' }
+        : (respostaFerramenta ? { texto: respostaFerramenta, via: 'ferramenta' } : await cerebro(pergunta, imagem));
       const transporte = nodemailer.createTransport({ host: 'smtp.gmail.com', port: 465, secure: true, auth: { user: USER, pass: PASS } });
       let resposta;
       if (r) resposta = r.texto;
+      else if (audioAnexo) resposta = 'recebi seu áudio, mas não consegui ouvi-lo agora (os motores de escuta estão fora). Me escreve o que você queria que eu respondo na hora — ou manda o áudio de novo em alguns minutos (casa Rebocl).';
       else if (imagem) {
         const lido = await leTextoDaFoto(imagem);
         if (lido) resposta = 'recebi sua foto. Os motores de VISÃO estão oscilando agora, mas passei a minha lupa de texto e li isso na imagem:' + NL + NL + '« ' + lido + ' »' + NL + NL + 'Se quiser a descrição completa (formas, cores, cenário), me reenvia a foto em alguns minutos que eu tento de novo.';
@@ -289,9 +402,15 @@ async function processOnce() {
         const st = await ferramenta('status:');
         resposta = 'estou vivo, mas os cérebros estão oscilando agora — reenvie em instantes que eu respondo.' + (st ? NL + NL + st : '');
       }
-      await transporte.sendMail({ from: '"Assistente Rebocl" <' + USER + '>', to: de, subject: 'Re: ' + assunto, text: (resposta.indexOf('Assistente Rebocl') >= 0 ? resposta : resposta + '\n\n— Assistente Rebocl (casa Rebocl Brank)'), inReplyTo: msg.envelope.messageId, references: msg.envelope.messageId });
+      if (!anexoVoz && r && !mVoz && pedeAudio(corpoMsg + ' ' + transcrito)) {
+        anexoVoz = await fala(resposta);
+        if (anexoVoz) console.log('🎙️ resposta falada a pedido (' + anexoVoz.via + ')');
+      }
+      const opcoes = { from: '"Assistente Rebocl" <' + USER + '>', to: de, subject: 'Re: ' + assunto, text: (resposta.indexOf('Assistente Rebocl') >= 0 ? resposta : resposta + '\n\n— Assistente Rebocl (casa Rebocl Brank)'), inReplyTo: msg.envelope.messageId, references: msg.envelope.messageId };
+      if (anexoVoz) opcoes.attachments = [{ filename: anexoVoz.nome, content: anexoVoz.buf }];
+      await transporte.sendMail(opcoes);
       console.log('✉️ respondido via', r ? r.via : 'sem cérebro');
-      try { require('fs').appendFileSync('email-log.md', '- ' + new Date().toISOString().slice(0, 16) + ' UTC — ' + de + ' | "' + assunto.slice(0, 40) + '" → respondido via ' + (r ? r.via : 'fallback') + '\n'); } catch (e) {}
+      try { require('fs').appendFileSync('email-log.md', '- ' + new Date().toISOString().slice(0, 16) + ' UTC — ' + de + ' | "' + assunto.slice(0, 40) + '" → respondido via ' + (r ? r.via : 'fallback') + (anexoVoz ? ' + áudio' : '') + '\n'); } catch (e) {}
       await client.messageFlagsAdd(uid, ['\\Seen'], { uid: true });
       memoria.set(chave, 'Pergunta: ' + String(corpoMsg || assunto).slice(0, 400) + NL + 'Resposta: ' + String(resposta).slice(0, 800));
       if (memoria.size > 25) { const k0 = memoria.keys().next().value; memoria.delete(k0); }
@@ -301,5 +420,5 @@ async function processOnce() {
   } finally { lock.release(); await client.logout(); }
   return respondidos;
 }
-module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria };
+module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar };
 if (require.main === module) { processOnce().then(n => console.log('ciclo único:', n, 'respondidos')).catch(e => { console.error('ERRO:', e.message); process.exit(0); }); }
