@@ -6,6 +6,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: email-casa
+  cancel-in-progress: false
 jobs:
   turno:
     if: github.event.schedule != '*/30 * * * *'
