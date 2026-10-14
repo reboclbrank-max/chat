@@ -1,54 +1,45 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# 🎧 OUVIDO DA CASA (14/10/2026) — transcreve um áudio recebido por e-mail.
-# Grátis e offline: modelo pequeno pt-BR do Vosk (o chat baixa uma vez por turno, 31 MB).
-# Uso: python3 tools/transcreve.py /caminho/audio.ext   → imprime {"texto": "..."} em JSON.
+# 🎧 OUVIDO DA CASA v2 (14/10/2026) — transcreve áudio recebido por e-mail.
+# Motor 1: Whisper (modelo 'base' do whisper.cpp via pywhispercpp) — com DICA dos nomes da casa,
+#          que conserta "reboque" → "Rebocl" (testado).
+# Motor 2 (reserva): Vosk pequeno pt-BR, offline.
+# Uso: python3 tools/transcreve.py /caminho/audio.ext   → JSON {"texto": "...", "motor": "..."}.
 import json
 import os
 import shutil
 import subprocess
 import sys
 
-MODELO = os.environ.get('VOSK_MODELO', '/tmp/vosk-model-small-pt-0.3')
+MODELO_VOSK = os.environ.get('VOSK_MODELO', '/tmp/vosk-model-small-pt-0.3')
+DICA = 'Casa Rebocl Brank, dona Rebocl, horta, almoço, feira, portão.'
 WAV = '/tmp/ouvido-casa-16k.wav'
 
 
 def falha(msg):
-    print(json.dumps({'texto': '', 'erro': str(msg)[:200]}))
+    print(json.dumps({'texto': '', 'motor': '', 'erro': str(msg)[:200]}))
     sys.exit(0)
 
 
-def main():
-    if len(sys.argv) < 2 or not os.path.exists(sys.argv[1]):
-        falha('sem arquivo de áudio')
-    if not os.path.isdir(MODELO):
-        falha('modelo de escuta ausente')
-    try:
-        import numpy as np
-        import soundfile as sf
-        from vosk import Model, KaldiRecognizer, SetLogLevel
-    except Exception as e:
-        falha('bibliotecas: ' + str(e))
-
-    dados = None
-    taxa = 16000
-    # 1) ffmpeg primeiro: entende m4a do iPhone, opus do WhatsApp, o que vier
+def para_16k(caminho):
+    """Devolve o áudio como numpy float32 a 16 kHz (o formato que os dois motores querem)."""
+    import numpy as np
+    import soundfile as sf
+    dados, taxa = None, 16000
     if shutil.which('ffmpeg'):
         try:
             r = subprocess.run(
-                ['ffmpeg', '-y', '-loglevel', 'quiet', '-i', sys.argv[1], '-ar', '16000', '-ac', '1', WAV],
+                ['ffmpeg', '-y', '-loglevel', 'quiet', '-i', caminho, '-ar', '16000', '-ac', '1', WAV],
                 capture_output=True, timeout=180)
             if r.returncode == 0 and os.path.exists(WAV):
                 dados, taxa = sf.read(WAV, dtype='float32')
         except Exception:
             dados = None
-    # 2) sem ffmpeg: tenta direto (mp3/ogg/wav/flac — o que a libsndfile abrir)
     if dados is None:
         try:
-            dados, taxa = sf.read(sys.argv[1], dtype='float32')
+            dados, taxa = sf.read(caminho, dtype='float32')
         except Exception as e:
             falha('não abri o áudio: ' + str(e))
-
     if dados is None or len(dados) < 4000:
         falha('áudio curto demais')
     if getattr(dados, 'ndim', 1) > 1:
@@ -56,20 +47,50 @@ def main():
     if taxa != 16000:
         n = int(len(dados) * 16000 / taxa)
         dados = np.interp(np.linspace(0, len(dados), n, endpoint=False), np.arange(len(dados)), dados)
-    pcm = (dados * 32767).astype(np.int16).tobytes()
+    return dados.astype('float32')
 
-    SetLogLevel(-1)
+
+def com_whisper(dados):
     try:
-        modelo = Model(MODELO)
-        rec = KaldiRecognizer(modelo, 16000)
+        from pywhispercpp.model import Model
+        m = Model('base', n_threads=max(2, (os.cpu_count() or 2) - 1), print_realtime=False,
+                  print_progress=False, language='pt')
+        segs = m.transcribe(dados, initial_prompt=DICA)
+        return ' '.join(s.text for s in segs).strip()
+    except Exception:
+        return ''
+
+
+def com_vosk(dados):
+    try:
+        import numpy as np
+        from vosk import Model, KaldiRecognizer, SetLogLevel
+        if not os.path.isdir(MODELO_VOSK):
+            return ''
+        SetLogLevel(-1)
+        m = Model(MODELO_VOSK)
+        rec = KaldiRecognizer(m, 16000)
         rec.SetWords(False)
+        pcm = (dados * 32767).astype(np.int16).tobytes()
         passo = 32000
         for i in range(0, len(pcm), passo):
             rec.AcceptWaveform(pcm[i:i + passo])
-        texto = json.loads(rec.FinalResult()).get('text', '')
-        print(json.dumps({'texto': texto.strip()}))
-    except Exception as e:
-        falha('transcrição: ' + str(e))
+        return json.loads(rec.FinalResult()).get('text', '').strip()
+    except Exception:
+        return ''
+
+
+def main():
+    if len(sys.argv) < 2 or not os.path.exists(sys.argv[1]):
+        falha('sem arquivo de áudio')
+    dados = para_16k(sys.argv[1])
+
+    texto, motor = com_whisper(dados), 'whisper-base'
+    if len(texto) < 2:
+        texto, motor = com_vosk(dados), 'vosk'
+    if len(texto) < 2:
+        motor = ''
+    print(json.dumps({'texto': texto, 'motor': motor}))
 
 
 main()

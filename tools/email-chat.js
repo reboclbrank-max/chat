@@ -161,7 +161,7 @@ const AJUDA = [
   '🤖 Assistente Rebocl — o que você pode pedir por e-mail:',
   '',
   '(1) Qualquer pergunta ou conversa — eu respondo com o melhor cérebro disponível.',
-  '(2) Uma FOTO anexada — eu olho a imagem, comento, resumo ou leio textos nela.',
+  '(2) Uma FOTO, um ÁUDIO ou um ARQUIVO (PDF/Word/texto) anexado — eu olho, ouço ou leio.',
   '(3) Comandos rápidos que respondem na hora, sem depender dos motores:',
   '   • clima: Aracaju',
   '   • cambio: dolar     (também euro, libra, bitcoin, peso…)',
@@ -200,7 +200,7 @@ function citacaoDoEmail(bruto) {
 
 
 // 🪞 CAPACIDADES (14/10/2026): o chat precisa conhecer os próprios recursos para não errar sobre si mesmo.
-const CAPS = ' Você é o chat por e-mail da casa Rebocl Brank. Seja PRECISA quando falar de si: você RESPONDE e-mails; você VÊ fotos anexadas (visão) e, quando os motores de visão oscilam, ainda lê o TEXTO da foto por uma lupa própria; você OUVE áudios recebidos por e-mail (transcrição por motor pequeno — pode errar nomes) e RESPONDE EM VOZ quando o dono pede, por palavras ("manda em áudio") ou pelo comando voz:, devolvendo um áudio falado em anexo; e tem comandos locais que funcionam mesmo com os motores caídos: clima:, cambio:, hora:, noticias:, status: e ajuda. O que você NÃO tem: WhatsApp, anexar arquivos quaisquer (só o áudio falado que VOCÊ mesma gera), memória longa entre e-mails distantes (lembra só o que vier citado na conversa) e os motores gratuitos às vezes oscilam — nesse caso avise e peça reenvio.';
+const CAPS = ' Você é o chat por e-mail da casa Rebocl Brank. Seja PRECISA quando falar de si: você RESPONDE e-mails; você VÊ fotos anexadas (visão) e, quando os motores de visão oscilam, ainda lê o TEXTO da foto por uma lupa própria; você OUVE áudios recebidos por e-mail (transcrição por motor pequeno — pode errar nomes) e RESPONDE EM VOZ quando o dono pede, por palavras ("manda em áudio") ou pelo comando voz:, devolvendo um áudio falado em anexo; você LÊ arquivos anexados de texto (PDF, Word, TXT) extraindo o conteúdo; e tem comandos locais que funcionam mesmo com os motores caídos: clima:, cambio:, hora:, noticias:, status: e ajuda. O que você NÃO tem: WhatsApp, anexar arquivos quaisquer (só o áudio falado que VOCÊ mesma gera), memória longa entre e-mails distantes (lembra só o que vier citado na conversa) e os motores gratuitos às vezes oscilam — nesse caso avise e peça reenvio.';
 
 async function cerebro(pergunta, imagem) {
   const rotas = [];
@@ -246,6 +246,66 @@ async function leTextoDaFoto(imagem) {
     return limpo.length >= 2 ? limpo.slice(0, 800) : '';
   } catch (e) { return ''; }
 }
+
+
+// ================== 📄 LEITOR DE DOCUMENTOS (14/10/2026) ==================
+// Anexo de texto/PDF/Word → extrai o texto no próprio runner e responde sobre o conteúdo.
+// PDF: pdftotext (poppler) e, se faltar, pypdf. Word: python-docx. Nunca finge: se não der, avisa.
+function extraiAnexoTexto(bruto) {
+  const mB = bruto.match(/content-type:\s*multipart\/[^;]+;\s*boundary="?([^"\r\n;]+)"?/i);
+  if (!mB) return null;
+  const sep = '--' + mB[1].replace(/^--/, '');
+  for (const p of bruto.split(sep)) {
+    const iCab = p.search(/\r?\n\r?\n/);
+    if (iCab < 0) continue;
+    const cab = p.slice(0, iCab);
+    // só ANEXO de verdade (o corpo do e-mail também é text/plain!)
+    if (!/content-disposition:\s*attachment/i.test(cab) && !/filename=/i.test(cab)) continue;
+    const mTipo = cab.match(/content-type:\s*([a-z0-9.+\/-]+)/i);
+    const tipo = (mTipo ? mTipo[1] : '').toLowerCase();
+    const mNome = cab.match(/filename="?([^"\r\n;]+)"?/i) || cab.match(/name="?([^"\r\n;]+)"?/i);
+    const nome = (mNome ? mNome[1] : 'arquivo').trim();
+    const eTexto = /^text\/(plain|markdown|csv)$/.test(tipo) || tipo === 'application/json' || tipo === 'application/xml' || /\.(txt|md|csv|json|xml|ya?ml)$/i.test(nome);
+    const ePdf = tipo === 'application/pdf' || /\.pdf$/i.test(nome);
+    const eDocx = /wordprocessingml\.document/.test(tipo) || /\.docx$/i.test(nome);
+    if (!eTexto && !ePdf && !eDocx) continue;
+    const corpo = p.slice(iCab).replace(/^\r?\n\r?\n/, '').replace(/[^A-Za-z0-9+/=]/g, '');
+    if (corpo.length < 40 || corpo.length > 9000000) continue;
+    return { nome, tipo: tipo || (ePdf ? 'application/pdf' : 'text/plain'), b64: corpo, bytes: Math.floor(corpo.length * 3 / 4) };
+  }
+  return null;
+}
+
+async function docTexto(a) {
+  const fsLocal = require('fs');
+  const spawnSync = require('child_process').spawnSync;
+  const nome = (String(a.nome).replace(/[^A-Za-z0-9._-]/g, '_') || 'arquivo').slice(-60);
+  const caminho = '/tmp/doc-recebido-' + nome;
+  try { fsLocal.writeFileSync(caminho, Buffer.from(a.b64, 'base64')); } catch (e) { return ''; }
+  const opcoes = { timeout: 120000, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 };
+  // texto puro
+  if (/^text\//.test(a.tipo) || /\.[a-z0-9]+$/i.test(nome) && /\.(txt|md|csv|json|xml|ya?ml)$/i.test(nome)) {
+    try {
+      const t = fsLocal.readFileSync(caminho, 'utf8');
+      if (t.trim().length >= 2) return t.slice(0, 4000);
+    } catch (e) {}
+  }
+  // PDF: pdftotext primeiro; pypdf de reserva
+  if (a.tipo === 'application/pdf' || /\.pdf$/i.test(nome)) {
+    const r1 = spawnSync('pdftotext', ['-layout', caminho, '-'], opcoes);
+    if (r1.status === 0 && String(r1.stdout || '').trim().length >= 10) return String(r1.stdout).trim().slice(0, 4000);
+    const r2 = spawnSync('python3', ['-c', 'from pypdf import PdfReader; import sys; print(" ".join((p.extract_text() or "") for p in PdfReader(sys.argv[1]).pages))', caminho], opcoes);
+    if (r2.status === 0 && String(r2.stdout || '').trim().length >= 10) return String(r2.stdout).trim().slice(0, 4000);
+    return '';
+  }
+  // Word .docx
+  if (/\.docx$/i.test(nome) || /wordprocessingml/.test(a.tipo)) {
+    const r3 = spawnSync('python3', ['-c', 'import docx, sys; d = docx.Document(sys.argv[1]); print(" ".join(p.text for p in d.paragraphs if p.text.strip()))', caminho], opcoes);
+    if (r3.status === 0 && String(r3.stdout || '').trim().length >= 2) return String(r3.stdout).trim().slice(0, 4000);
+  }
+  return '';
+}
+// ================== fim do leitor ==================
 
 // ================== 🎤 VOZ DA CASA (14/10/2026) ==================
 // Falar: grátis e sem chave — edge-tts (voz neural) → gTTS (Google) → espeak-ng (offline).
@@ -369,22 +429,28 @@ async function processOnce() {
         transcrito = await ouve(audioAnexo);
         console.log(transcrito ? '🎧 ouvi o áudio: ' + transcrito.slice(0, 90) : '🎧 não consegui ouvir o áudio (' + audioAnexo.tipo + ')');
       }
+      const docAnexo = (imagem || audioAnexo) ? null : extraiAnexoTexto(bruto);
+      let textoDoc = '';
+      if (docAnexo) {
+        textoDoc = await docTexto(docAnexo);
+        console.log(textoDoc ? '📄 li o arquivo ' + docAnexo.nome + ' (' + Math.round(docAnexo.bytes / 1024) + 'KB → ' + textoDoc.length + ' caracteres)' : '📄 não consegui ler o arquivo ' + docAnexo.nome);
+      }
       const chave = limpaAssunto(assunto);
       const citado = citacaoDoEmail(bruto);
       const lembrado = memoria.has(chave) ? memoria.get(chave) : '';
       const contexto = [citado, lembrado].filter(Boolean).join(NL + '---' + NL).slice(0, 1600);
       const blocoCtx = contexto ? (NL + NL + 'Contexto de mensagens anteriores desta conversa (use somente se ajudar; pode ignorar):' + NL + contexto) : '';
-      console.log('📨 de', de, '| assunto:', assunto.slice(0, 60), imagem ? '| 📷 foto ' + imagem.tipo + ' ~' + Math.round(imagem.bytes / 1024) + 'KB' : (audioAnexo ? '| 🎤 áudio ' + audioAnexo.tipo + ' ~' + Math.round(audioAnexo.bytes / 1024) + 'KB' : ''));
+      console.log('📨 de', de, '| assunto:', assunto.slice(0, 60), imagem ? '| 📷 foto ' + imagem.tipo + ' ~' + Math.round(imagem.bytes / 1024) + 'KB' : (audioAnexo ? '| 🎤 áudio ' + audioAnexo.tipo + ' ~' + Math.round(audioAnexo.bytes / 1024) + 'KB' : (docAnexo ? '| 📄 doc ' + docAnexo.nome + ' ~' + Math.round(docAnexo.bytes / 1024) + 'KB' : '')));
       const pergunta = imagem
         ? 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' O dono mandou uma FOTO por e-mail; descreva com precisão o que você vê nela e responda a pergunta dele, em português claro (máx 15 linhas). Se houver texto na foto, leia o texto.\n\nPergunta dele: ' + (corpoMsg || assunto) + blocoCtx
-        : 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' Responda este e-mail em português claro (máx 15 linhas):\n\n' + assunto + '\n\n' + corpoMsg + (transcrito ? NL + NL + 'O dono TAMBÉM mandou um ÁUDIO; transcrição (motor pequeno — pode errar nomes): "' + transcrito + '". Responda ao conteúdo do áudio e mostre que ouviu.' : '') + blocoCtx;
+        : 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' Responda este e-mail em português claro (máx 15 linhas):\n\n' + assunto + '\n\n' + corpoMsg + (transcrito ? NL + NL + 'O dono TAMBÉM mandou um ÁUDIO; transcrição (motor pequeno — pode errar nomes): "' + transcrito + '". Responda ao conteúdo do áudio e mostre que ouviu.' : '') + (textoDoc ? NL + NL + 'O dono TAMBÉM mandou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído dele (pode estar truncado):' + NL + textoDoc + NL + 'Responda ao conteúdo do arquivo, citando o que está nele.' : '') + blocoCtx;
       let respostaFerramenta = null, anexoVoz = null;
       const mVoz = (!imagem && !audioAnexo) ? corpoMsg.trim().match(/^voz\s*:\s*([\s\S]{1,700})$/) : null;
       if (mVoz) {
         anexoVoz = await fala(mVoz[1].trim());
         console.log(anexoVoz ? '🎙️ áudio gerado (' + anexoVoz.via + ', ' + Math.round(anexoVoz.buf.length / 1024) + 'KB)' : '🎙️ não consegui gerar o áudio');
       }
-      if (!imagem && !audioAnexo && !mVoz) respostaFerramenta = await ferramenta(corpoMsg);
+      if (!imagem && !audioAnexo && !docAnexo && !mVoz) respostaFerramenta = await ferramenta(corpoMsg);
       if (respostaFerramenta) console.log('🧰 respondido por ferramenta (sem motor)');
       const r = mVoz
         ? { texto: anexoVoz ? '🎙️ Aí vai, falado (voz da casa):' + NL + NL + '« ' + mVoz[1].trim() + ' »' + NL + NL + 'O áudio vai em anexo — é só dar o play.' : 'quis te mandar um áudio, mas os motores de voz estão fora agora — tenta de novo em instantes (casa Rebocl).', via: anexoVoz ? 'voz' : 'voz-falhou' }
@@ -393,6 +459,8 @@ async function processOnce() {
       let resposta;
       if (r) resposta = r.texto;
       else if (audioAnexo) resposta = 'recebi seu áudio, mas não consegui ouvi-lo agora (os motores de escuta estão fora). Me escreve o que você queria que eu respondo na hora — ou manda o áudio de novo em alguns minutos (casa Rebocl).';
+      else if (docAnexo && textoDoc) resposta = 'os motores estão oscilando agora, mas eu LI o seu arquivo "' + docAnexo.nome + '" — e o texto dele começa assim:' + NL + NL + '« ' + textoDoc.slice(0, 500) + ' »' + NL + NL + 'Me reenvia o pedido em instantes que eu comento o resto (casa Rebocl).';
+      else if (docAnexo) resposta = 'recebi seu arquivo ("' + docAnexo.nome + '"), mas não consegui ler o texto dele — se ele for digitalizado (uma foto/scan), me manda como IMAGEM que eu leio pela visão; se for um formato diferente, me diz que eu vejo o que faço (casa Rebocl).';
       else if (imagem) {
         const lido = await leTextoDaFoto(imagem);
         if (lido) resposta = 'recebi sua foto. Os motores de VISÃO estão oscilando agora, mas passei a minha lupa de texto e li isso na imagem:' + NL + NL + '« ' + lido + ' »' + NL + NL + 'Se quiser a descrição completa (formas, cores, cenário), me reenvia a foto em alguns minutos que eu tento de novo.';
@@ -420,5 +488,5 @@ async function processOnce() {
   } finally { lock.release(); await client.logout(); }
   return respondidos;
 }
-module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar };
+module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar, extraiAnexoTexto, docTexto };
 if (require.main === module) { processOnce().then(n => console.log('ciclo único:', n, 'respondidos')).catch(e => { console.error('ERRO:', e.message); process.exit(0); }); }
