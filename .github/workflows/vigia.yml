@@ -12,6 +12,10 @@ on:
         description: "encadeia a próxima rodada (sim/nao)"
         type: string
         default: 'sim'
+      cadeia_min:
+        description: "minutos até a próxima rodada da corrente"
+        type: string
+        default: '17'
 permissions:
   contents: write
   actions: write
@@ -31,6 +35,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VIGIA_TESTE: ${{ inputs.teste }}
           VIGIA_CADEIA: ${{ inputs.cadeia }}
+          VIGIA_CADEIA_MIN: ${{ inputs.cadeia_min }}
       - name: Salva o estado do vigia
         run: |
           git config user.name "vigia-casa"
