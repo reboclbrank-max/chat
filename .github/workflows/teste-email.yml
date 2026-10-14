@@ -6,6 +6,10 @@ on:
         description: 'minutos de espera pelas respostas'
         required: false
         default: '14'
+      script:
+        description: 'qual teste rodar'
+        required: false
+        default: 'tools/teste-email.js'
 permissions:
   contents: write
 concurrency:
@@ -20,9 +24,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: npm install --no-save imapflow nodemailer
+      - run: npm install --no-save imapflow
       - name: Envia o teste e captura as respostas
-        run: node tools/teste-email.js
+        run: |
+          SCRIPT="${{ github.event.inputs.script }}"
+          case "$SCRIPT" in tools/teste-email.js|tools/teste-memoria.js) ;; *) SCRIPT=tools/teste-email.js ;; esac
+          echo "rodando $SCRIPT"
+          node "$SCRIPT"
         env:
           GMAIL_CHAT_ADDR: ${{ secrets.GMAIL_CHAT_ADDR }}
           GMAIL_CHAT_PASS: ${{ secrets.GMAIL_CHAT_PASS }}
