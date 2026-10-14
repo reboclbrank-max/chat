@@ -18,14 +18,14 @@ async function despacha(arquivo, rotulo) {
 }
 const pedeVigia = () => despacha('vigia.yml', '🛡 vigia despachado');
 const proximoTurno = () => despacha('email.yml', '🔗 próximo turno na fila');
-const FIM = Date.now() + (5 * 60 + 45) * 60 * 1000;
+const FIM = Date.now() + (5 * 60 + 45) * 60 * 1000; // 5h45 com varredura a cada 50s (14/10: era 75s — pega o e-mail mais cedo)
 (async () => {
   let varreduras = 0, respondidos = 0;
   let proximoAviso = Date.now() + 5 * 60 * 1000;
   while (Date.now() < FIM) {
     try { const n = await processOnce(); varreduras++; respondidos += n; if (n) console.log('📬 respondeu', n, 'email(s)'); }
     catch (e) { console.error('ciclo com erro (segue vivo):', e.message); }
-    await sleep(75000);
+    await sleep(50000);
     if (Date.now() >= proximoAviso) { await pedeVigia(); await proximoTurno(); proximoAviso = Date.now() + 40 * 60 * 1000; }
   }
   console.log('turno encerrado:', varreduras, 'varreduras,', respondidos, 'emails respondidos');

@@ -22,7 +22,7 @@ jobs:
           node-version: '20'
       - run: |
           npm install --no-save imapflow nodemailer
-          python3 -m pip install --quiet --disable-pip-version-check --break-system-packages "numpy<2.5" edge-tts gTTS vosk soundfile pywhispercpp pypdf python-docx || python3 -m pip install --quiet --disable-pip-version-check "numpy<2.5" edge-tts gTTS vosk soundfile pywhispercpp pypdf python-docx || true
+          python3 -m pip install --quiet --disable-pip-version-check --break-system-packages "numpy<2.5" Pillow edge-tts gTTS vosk soundfile pywhispercpp pypdf python-docx || python3 -m pip install --quiet --disable-pip-version-check "numpy<2.5" Pillow edge-tts gTTS vosk soundfile pywhispercpp pypdf python-docx || true
           faltam=""
           command -v ffmpeg >/dev/null || faltam="$faltam ffmpeg"
           command -v espeak-ng >/dev/null || faltam="$faltam espeak-ng"
@@ -48,7 +48,7 @@ jobs:
           node-version: '20'
       - run: |
           npm install --no-save imapflow nodemailer
-          python3 -m pip install --quiet --disable-pip-version-check --break-system-packages "numpy<2.5" edge-tts gTTS vosk soundfile pywhispercpp pypdf python-docx || python3 -m pip install --quiet --disable-pip-version-check "numpy<2.5" edge-tts gTTS vosk soundfile pywhispercpp pypdf python-docx || true
+          python3 -m pip install --quiet --disable-pip-version-check --break-system-packages "numpy<2.5" Pillow edge-tts gTTS vosk soundfile pywhispercpp pypdf python-docx || python3 -m pip install --quiet --disable-pip-version-check "numpy<2.5" Pillow edge-tts gTTS vosk soundfile pywhispercpp pypdf python-docx || true
           faltam=""
           command -v ffmpeg >/dev/null || faltam="$faltam ffmpeg"
           command -v espeak-ng >/dev/null || faltam="$faltam espeak-ng"
