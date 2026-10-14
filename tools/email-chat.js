@@ -199,10 +199,11 @@ function citacaoDoEmail(bruto) {
 
 
 // 🪞 CAPACIDADES (14/10/2026): o chat precisa conhecer os próprios recursos para não errar sobre si mesmo.
-const CAPS = ' Você é o chat por e-mail da casa Rebocl Brank. Seja PRECISA quando falar de si: você RESPONDE e-mails; você VÊ fotos anexadas (visão); e tem comandos locais que funcionam mesmo com os motores caídos: clima:, cambio:, hora:, noticias:, status: e ajuda. O que você NÃO tem: WhatsApp, envio de arquivos, memória longa entre e-mails distantes (lembra só o que vier citado na conversa) e os motores gratuitos às vezes oscilam — nesse caso avise e peça reenvio.';
+const CAPS = ' Você é o chat por e-mail da casa Rebocl Brank. Seja PRECISA quando falar de si: você RESPONDE e-mails; você VÊ fotos anexadas (visão) e, quando os motores de visão oscilam, ainda lê o TEXTO da foto por uma lupa própria; e tem comandos locais que funcionam mesmo com os motores caídos: clima:, cambio:, hora:, noticias:, status: e ajuda. O que você NÃO tem: WhatsApp, envio de arquivos, memória longa entre e-mails distantes (lembra só o que vier citado na conversa) e os motores gratuitos às vezes oscilam — nesse caso avise e peça reenvio.';
 
 async function cerebro(pergunta, imagem) {
   const rotas = [];
+  if (imagem) rotas.push(['visão (auto)', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'auto', messages: [{ role: 'user', content: [{ type: 'text', text: pergunta }, { type: 'image_url', image_url: { url: 'data:' + imagem.tipo + ';base64,' + imagem.b64 } }] }], max_tokens: 600 }, true]);
   if (imagem) rotas.push(['visão (omni)', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning', messages: [{ role: 'user', content: [{ type: 'text', text: pergunta }, { type: 'image_url', image_url: { url: 'data:' + imagem.tipo + ';base64,' + imagem.b64 } }] }], max_tokens: 600 }, true]);
   if (!imagem) rotas.push(
     ['frota', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'auto', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, true],
@@ -225,6 +226,24 @@ async function cerebro(pergunta, imagem) {
     if (!rodada) await sleep(8000);
   }
   return null;
+}
+// 🔎 LUPA DE TEXTO (rede de segurança da visão): OCR grátis da api.ocr.space (chave pública de
+// demonstração 'helloworld', sem cadastro). Usada só quando os motores de visão oscilam — assim o
+// dono nunca fica sem resposta: pelo menos o TEXTO da foto é lido e devolvido.
+async function leTextoDaFoto(imagem) {
+  try {
+    const corpo = 'base64Image=' + encodeURIComponent('data:' + imagem.tipo + ';base64,' + imagem.b64) +
+      '&apikey=helloworld&language=por&OCREngine=2&scale=true';
+    const r = await fetch('https://api.ocr.space/parse/image', {
+      method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: corpo,
+      signal: AbortSignal.timeout(60000)
+    });
+    if (!r.ok) return '';
+    const j = await r.json();
+    const t = (((j.ParsedResults || [])[0] || {}).ParsedText) || '';
+    const limpo = t.split(String.fromCharCode(13)).join(' ').trim();
+    return limpo.length >= 2 ? limpo.slice(0, 800) : '';
+  } catch (e) { return ''; }
 }
 async function processOnce() {
   if (!USER || !PASS) { console.error('sem credenciais'); return 0; }
@@ -261,7 +280,11 @@ async function processOnce() {
       const transporte = nodemailer.createTransport({ host: 'smtp.gmail.com', port: 465, secure: true, auth: { user: USER, pass: PASS } });
       let resposta;
       if (r) resposta = r.texto;
-      else if (imagem) resposta = 'recebi sua foto, mas não consegui abrir ela agora — manda de novo em instantes (casa Rebocl).';
+      else if (imagem) {
+        const lido = await leTextoDaFoto(imagem);
+        if (lido) resposta = 'recebi sua foto. Os motores de VISÃO estão oscilando agora, mas passei a minha lupa de texto e li isso na imagem:' + NL + NL + '« ' + lido + ' »' + NL + NL + 'Se quiser a descrição completa (formas, cores, cenário), me reenvia a foto em alguns minutos que eu tento de novo.';
+        else resposta = 'recebi sua foto, mas não consegui abrir ela agora — manda de novo em instantes (casa Rebocl).';
+      }
       else {
         const st = await ferramenta('status:');
         resposta = 'estou vivo, mas os cérebros estão oscilando agora — reenvie em instantes que eu respondo.' + (st ? NL + NL + st : '');
