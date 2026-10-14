@@ -173,6 +173,30 @@ const AJUDA = [
   '— Assistente Rebocl (casa Rebocl Brank)'
 ].join(NL);
 
+
+// 🧠 MEMÓRIA DE CONVERSA (14/10/2026): contexto citado no próprio e-mail + curto prazo no turno.
+const memoria = new Map();
+function limpaAssunto(a) {
+  let s = String(a || '').trim();
+  let guarda = 0;
+  while (guarda++ < 3) {
+    const b = s.toLowerCase();
+    if (b.indexOf('re:') === 0 || b.indexOf('fwd:') === 0 || b.indexOf('enc:') === 0) s = s.slice(s.indexOf(':') + 1).trim();
+    else break;
+  }
+  return s.toLowerCase().slice(0, 90);
+}
+function citacaoDoEmail(bruto) {
+  const NLc = String.fromCharCode(10);
+  const linhas = String(bruto || '').split(NLc);
+  const citadas = [];
+  for (const l of linhas) {
+    const tt = l.trim();
+    if (tt.charAt(0) === '>') citadas.push(tt.split('>').join('').trim());
+  }
+  return citadas.filter(Boolean).join(NLc).slice(0, 1200);
+}
+
 async function cerebro(pergunta, imagem) {
   const rotas = [];
   if (imagem) rotas.push(['visão (omni)', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning', messages: [{ role: 'user', content: [{ type: 'text', text: pergunta }, { type: 'image_url', image_url: { url: 'data:' + imagem.tipo + ';base64,' + imagem.b64 } }] }], max_tokens: 600 }, true]);
@@ -216,10 +240,14 @@ async function processOnce() {
       const corpoMsg = pegaTexto(bruto, assunto);
       const anexos = extraiAnexos(bruto);
       const imagem = anexos[0] || null;
+      const chave = limpaAssunto(assunto);
+      let contexto = citacaoDoEmail(bruto);
+      if (!contexto && memoria.has(chave)) contexto = memoria.get(chave);
+      const blocoCtx = contexto ? (NL + NL + 'Contexto de mensagens anteriores desta conversa (use somente se ajudar; pode ignorar):' + NL + contexto) : '';
       console.log('📨 de', de, '| assunto:', assunto.slice(0, 60), imagem ? '| 📷 foto ' + imagem.tipo + ' ~' + Math.round(imagem.bytes / 1024) + 'KB' : '');
       const pergunta = imagem
-        ? 'Você é a Assistente Rebocl, do Brasil, direta e calorosa. O dono mandou uma FOTO por e-mail; descreva com precisão o que você vê nela e responda a pergunta dele, em português claro (máx 15 linhas). Se houver texto na foto, leia o texto.\n\nPergunta dele: ' + (corpoMsg || assunto)
-        : 'Você é a Assistente Rebocl, do Brasil, direta e calorosa. Responda este e-mail em português claro (máx 15 linhas):\n\n' + assunto + '\n\n' + corpoMsg;
+        ? 'Você é a Assistente Rebocl, do Brasil, direta e calorosa. O dono mandou uma FOTO por e-mail; descreva com precisão o que você vê nela e responda a pergunta dele, em português claro (máx 15 linhas). Se houver texto na foto, leia o texto.\n\nPergunta dele: ' + (corpoMsg || assunto) + blocoCtx
+        : 'Você é a Assistente Rebocl, do Brasil, direta e calorosa. Responda este e-mail em português claro (máx 15 linhas):\n\n' + assunto + '\n\n' + corpoMsg + blocoCtx;
       let respostaFerramenta = null;
       if (!imagem) respostaFerramenta = await ferramenta(corpoMsg);
       if (respostaFerramenta) console.log('🧰 respondido por ferramenta (sem motor)');
@@ -236,11 +264,13 @@ async function processOnce() {
       console.log('✉️ respondido via', r ? r.via : 'sem cérebro');
       try { require('fs').appendFileSync('email-log.md', '- ' + new Date().toISOString().slice(0, 16) + ' UTC — ' + de + ' | "' + assunto.slice(0, 40) + '" → respondido via ' + (r ? r.via : 'fallback') + '\n'); } catch (e) {}
       await client.messageFlagsAdd(uid, ['\\Seen'], { uid: true });
+      memoria.set(chave, 'Pergunta: ' + String(corpoMsg || assunto).slice(0, 400) + NL + 'Resposta: ' + String(resposta).slice(0, 800));
+      if (memoria.size > 25) { const k0 = memoria.keys().next().value; memoria.delete(k0); }
       respondidos++;
       await sleep(2000);
     }
   } finally { lock.release(); await client.logout(); }
   return respondidos;
 }
-module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta };
+module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria };
 if (require.main === module) { processOnce().then(n => console.log('ciclo único:', n, 'respondidos')).catch(e => { console.error('ERRO:', e.message); process.exit(0); }); }
