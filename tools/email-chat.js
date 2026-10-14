@@ -197,6 +197,10 @@ function citacaoDoEmail(bruto) {
   return citadas.filter(Boolean).join(NLc).slice(0, 1200);
 }
 
+
+// 🪞 CAPACIDADES (14/10/2026): o chat precisa conhecer os próprios recursos para não errar sobre si mesmo.
+const CAPS = ' Você é o chat por e-mail da casa Rebocl Brank. Seja PRECISA quando falar de si: você RESPONDE e-mails; você VÊ fotos anexadas (visão); e tem comandos locais que funcionam mesmo com os motores caídos: clima:, cambio:, hora:, noticias:, status: e ajuda. O que você NÃO tem: WhatsApp, envio de arquivos, memória longa entre e-mails distantes (lembra só o que vier citado na conversa) e os motores gratuitos às vezes oscilam — nesse caso avise e peça reenvio.';
+
 async function cerebro(pergunta, imagem) {
   const rotas = [];
   if (imagem) rotas.push(['visão (omni)', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning', messages: [{ role: 'user', content: [{ type: 'text', text: pergunta }, { type: 'image_url', image_url: { url: 'data:' + imagem.tipo + ';base64,' + imagem.b64 } }] }], max_tokens: 600 }, true]);
@@ -246,8 +250,8 @@ async function processOnce() {
       const blocoCtx = contexto ? (NL + NL + 'Contexto de mensagens anteriores desta conversa (use somente se ajudar; pode ignorar):' + NL + contexto) : '';
       console.log('📨 de', de, '| assunto:', assunto.slice(0, 60), imagem ? '| 📷 foto ' + imagem.tipo + ' ~' + Math.round(imagem.bytes / 1024) + 'KB' : '');
       const pergunta = imagem
-        ? 'Você é a Assistente Rebocl, do Brasil, direta e calorosa. O dono mandou uma FOTO por e-mail; descreva com precisão o que você vê nela e responda a pergunta dele, em português claro (máx 15 linhas). Se houver texto na foto, leia o texto.\n\nPergunta dele: ' + (corpoMsg || assunto) + blocoCtx
-        : 'Você é a Assistente Rebocl, do Brasil, direta e calorosa. Responda este e-mail em português claro (máx 15 linhas):\n\n' + assunto + '\n\n' + corpoMsg + blocoCtx;
+        ? 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' O dono mandou uma FOTO por e-mail; descreva com precisão o que você vê nela e responda a pergunta dele, em português claro (máx 15 linhas). Se houver texto na foto, leia o texto.\n\nPergunta dele: ' + (corpoMsg || assunto) + blocoCtx
+        : 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' Responda este e-mail em português claro (máx 15 linhas):\n\n' + assunto + '\n\n' + corpoMsg + blocoCtx;
       let respostaFerramenta = null;
       if (!imagem) respostaFerramenta = await ferramenta(corpoMsg);
       if (respostaFerramenta) console.log('🧰 respondido por ferramenta (sem motor)');
@@ -260,7 +264,7 @@ async function processOnce() {
         const st = await ferramenta('status:');
         resposta = 'estou vivo, mas os cérebros estão oscilando agora — reenvie em instantes que eu respondo.' + (st ? NL + NL + st : '');
       }
-      await transporte.sendMail({ from: '"Assistente Rebocl" <' + USER + '>', to: de, subject: 'Re: ' + assunto, text: resposta + '\n\n— Assistente Rebocl (casa Rebocl Brank)', inReplyTo: msg.envelope.messageId, references: msg.envelope.messageId });
+      await transporte.sendMail({ from: '"Assistente Rebocl" <' + USER + '>', to: de, subject: 'Re: ' + assunto, text: (resposta.indexOf('Assistente Rebocl') >= 0 ? resposta : resposta + '\n\n— Assistente Rebocl (casa Rebocl Brank)'), inReplyTo: msg.envelope.messageId, references: msg.envelope.messageId });
       console.log('✉️ respondido via', r ? r.via : 'sem cérebro');
       try { require('fs').appendFileSync('email-log.md', '- ' + new Date().toISOString().slice(0, 16) + ' UTC — ' + de + ' | "' + assunto.slice(0, 40) + '" → respondido via ' + (r ? r.via : 'fallback') + '\n'); } catch (e) {}
       await client.messageFlagsAdd(uid, ['\\Seen'], { uid: true });
