@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# 👁️ OLHO LOCAL DA CASA v3 (14/10/2026) — descreve a imagem SEM internet e SEM motores.
+# 👁️ OLHO LOCAL DA CASA v4 (14/10/2026) — descreve a imagem SEM internet e SEM motores.
 # v1: formas e cores de traço. v2: paleta, brilho, orientação, faixas, documento/print.
 # v3: ROSTOS (opencv haar, offline — "quanta gente aparece"), nitidez (foto tremida?) e
-#     preto-e-branco/cor. Tudo medido; nada inventado: quando não dá, ele diz que não dá.
+#     preto-e-branco/cor. v4: LEITURA DE CENA em faixas ("de cima para baixo: céu; vegetação; areia").
+#     Tudo medido; nada inventado: quando não dá, ele diz que não dá.
 # Uso: python3 tools/olho.py /caminho/imagem.png  → JSON {"descricao", "formas", "paleta", "rostos"}.
 import json
 import sys
@@ -17,7 +18,7 @@ PALETA = {
 
 
 def falha(msg):
-    print(json.dumps({'descricao': '', 'formas': [], 'paleta': [], 'rostos': 0, 'erro': str(msg)[:160]}))
+    print(json.dumps({'descricao': '', 'pistas': '', 'formas': [], 'paleta': [], 'rostos': 0, 'erro': str(msg)[:160]}))
     sys.exit(0)
 
 
@@ -187,6 +188,51 @@ def main():
             if len(paleta) >= 3:
                 break
 
+    # 🌅 v4: LEITURA DE CENA em faixas horizontais ("de cima para baixo") — céu, vegetação, água, terra...
+    def cara_de(cor, lisa, detalhada, pos, brilho_b):
+        if pos == 'em cima' and cor in ('azul', 'ciano') and lisa and brilho_b > 120:
+            return 'céu'
+        if pos != 'em cima' and cor in ('azul', 'ciano', 'azul-escuro') and lisa and brilho_b > 60:
+            return 'água/mar'
+        if cor == 'verde':
+            return 'vegetação/plantas' if detalhada else 'grama ou vegetação lisa'
+        if cor == 'verde-escuro':
+            return 'vegetação escura'
+        if pos == 'embaixo' and cor in ('bege', 'creme', 'amarelo', 'marrom') and lisa:
+            return 'areia ou terra'
+        if cor in ('cinza', 'branco', 'creme') and lisa and detalhada is False:
+            return 'parede ou fundo'
+        if cor == 'azul' and lisa:
+            return 'azul liso'
+        return None
+
+    alturas = [('em cima', 0, H // 3), ('no meio', H // 3, 2 * H // 3), ('embaixo', 2 * H // 3, H)]
+    faixas_cena, faixas_detalhe = [], []
+    for nome_f, y1b, y2b in alturas:
+        if y2b <= y1b:
+            continue
+        rec = arr[y1b:y2b]
+        g_rec = grad[y1b:y2b]
+        cor_f = nome_cor(rec.reshape(-1, 3).mean(axis=0))
+        det_f = float((g_rec > 25).mean())
+        lis_f = det_f < 0.09
+        det_alto = det_f > 0.14
+        b_f = float(cinza[y1b:y2b].mean())
+        cara = cara_de(cor_f, lis_f, det_alto, nome_f, b_f)
+        faixas_detalhe.append((nome_f, cor_f, det_f))
+        faixas_cena.append((nome_f, cor_f, ('liso' if lis_f else ('detalhado' if det_alto else '')), cara))
+    # só vira frase se as faixas se DIFERENCIAM (senão é imagem de uma cor só)
+    cores_faixas = [f[1] for f in faixas_cena]
+    leitura_cena = ''
+    if len(set(cores_faixas)) > 1 or any(f[3] for f in faixas_cena):
+        pedacos_cena = []
+        for nome_f, cor_f, text_f, cara in faixas_cena:
+            ped = nome_f + ': ' + cor_f + (' ' + text_f if text_f else '')
+            if cara:
+                ped += ' (cara de ' + cara + ')'
+            pedacos_cena.append(ped)
+        leitura_cena = 'de cima para baixo — ' + '; '.join(pedacos_cena)
+
     frac_escuro = float((cinza < 110).mean())
     # documento/print exige também pouca cor (papel não é colorido) — 14/10: o retrato colorido enganava
     parece_doc = (fundo in ('branco', 'creme')) and 0.01 <= frac_escuro <= 0.35 and brilho > 165 and dif_canais < 22
@@ -213,12 +259,23 @@ def main():
         partes.append('sem cor (preto e branco/cinza)')
     if tremida:
         partes.append('meio desfocada (pode ter saído tremida)')
+    if leitura_cena:
+        partes.append(leitura_cena)
     if faixa and not formas:
         partes.append(faixa)
     if not formas and not (det and det['n'] > 0) and densidade > 0.12:
         partes.append('olho local não detalha cena de foto — para isso, os motores de visão (ou o texto pela lupa)')
     descricao = '; '.join(partes)
-    print(json.dumps({'descricao': descricao, 'formas': formas, 'paleta': paleta,
+    # 🎯 'pistas': resumo curto e medido (entra no prompt dos motores de visão como apoio)
+    pedacos_pista = []
+    if det and det['n'] > 0:
+        pedacos_pista.append('detectei ' + str(det['n']) + ' rosto(s) provável(is) de pessoa (' + '; '.join(det['onde']) + ')')
+    if leitura_cena:
+        pedacos_pista.append(leitura_cena)
+    if tremida:
+        pedacos_pista.append('foto possivelmente tremida/desfocada')
+    pistas = '; '.join(pedacos_pista)
+    print(json.dumps({'descricao': descricao, 'pistas': pistas, 'formas': formas, 'paleta': paleta,
                       'rostos': (det or {}).get('n', 0)}))
 
 
