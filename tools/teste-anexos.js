@@ -30,6 +30,7 @@ function monta(assunto, corpo, anexoNome, anexoB64, anexoTipo) {
     pdf: fs.readFileSync(path.join(__dirname, 'anexo-prova.pdf')).toString('base64'),
     docx: fs.readFileSync(path.join(__dirname, 'anexo-prova.docx')).toString('base64'),
     txt: fs.readFileSync(path.join(__dirname, 'anexo-prova.txt')).toString('base64'),
+    scan: fs.readFileSync(path.join(__dirname, 'anexo-prova-scan.pdf')).toString('base64'),
   };
   const client = new ImapFlow({ host: 'imap.gmail.com', port: 993, secure: true, auth: { user: USER, pass: PASS }, logger: false });
   await client.connect();
@@ -72,8 +73,9 @@ function monta(assunto, corpo, anexoNome, anexoB64, anexoTipo) {
   const D1 = await envia(MARCA + ' D1 — PDF da horta', 'Li o relatório que mandei em PDF e preciso de dois números: quantos pés de couve a horta tem e qual é o código do portão do galpão?', 'anexo-prova.pdf', arqs.pdf, 'application/pdf');
   const D2 = await envia(MARCA + ' D2 — Word do recado', 'Me diga o que tem no recado do Word que acabei de mandar — quem eu tenho que pagar e quanto.', 'anexo-prova.docx', arqs.docx, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
   const D3 = await envia(MARCA + ' D3 — TXT da lista', 'Leia a listinha em anexo e me diga o que eu preciso comprar.', 'anexo-prova.txt', arqs.txt, 'text/plain');
+  const D4 = await envia(MARCA + ' D4 — PDF digitalizado (scan)', 'O anexo é um papel digitalizado (uma foto vira PDF). Leia o recado e me diga: o que eu tenho que pagar e até quando?', 'anexo-prova-scan.pdf', arqs.scan, 'application/pdf');
 
-  const alvos = [D1, D2, D3];
+  const alvos = [D1, D2, D3, D4];
   const limite = Date.now() + ESPERA_MIN * 60 * 1000;
   while (Date.now() < limite) {
     await sleep(20000); await varre();
@@ -91,10 +93,11 @@ function monta(assunto, corpo, anexoNome, anexoB64, anexoTipo) {
     const bateu = regras.filter(k => new RegExp(k, 'i').test(t));
     return bateu.length >= Math.min(2, regras.length) ? 'PASS (citou: ' + bateu.join(', ') + ')' : 'PARCIAL (só: ' + bateu.join(', ') + ')';
   }
-  const r1 = acha(D1), r2 = acha(D2), r3 = acha(D3);
+  const r1 = acha(D1), r2 = acha(D2), r3 = acha(D3), r4 = acha(D4);
   const c1 = checa(r1, ['12', 'couve', '7[\\s,-]*4[\\s,-]*2|742'], 'PDF');
   const c2 = checa(r2, ['350', 'pedreiro', 'z[ée]'], 'DOCX');
   const c3 = checa(r3, ['caf[ée]', 'arroz', 'couve'], 'TXT');
+  const c4 = checa(r4, ['boleto', 's[íi]tio|sitio', 'sexta|zeca'], 'SCAN');
 
   const L = [];
   L.push('# 📄 Teste dos anexos de documento — ' + new Date().toISOString().slice(0, 16) + ' UTC');
@@ -102,8 +105,9 @@ function monta(assunto, corpo, anexoNome, anexoB64, anexoTipo) {
   L.push('- D1 (PDF: 12 pés de couve + código 7-4-2) → ' + c1);
   L.push('- D2 (Word: pagar o pedreiro Zé, R$ 350) → ' + c2);
   L.push('- D3 (TXT: café, arroz, mudas de couve) → ' + c3);
+  L.push('- D4 (PDF digitalizado: pagar o boleto do sítio até sexta) → ' + c4);
   L.push('');
-  for (const [rot, r] of [['D1 — PDF', r1], ['D2 — Word', r2], ['D3 — TXT', r3]]) {
+  for (const [rot, r] of [['D1 — PDF', r1], ['D2 — Word', r2], ['D3 — TXT', r3], ['D4 — PDF digitalizado (scan)', r4]]) {
     if (!r) continue;
     L.push('## ' + rot + ' — resposta (' + r.caixa + ')');
     L.push('```');
@@ -112,7 +116,7 @@ function monta(assunto, corpo, anexoNome, anexoB64, anexoTipo) {
     L.push('');
   }
   L.push('---');
-  L.push('_Gerado por `tools/teste-anexos.js` (workflow `teste-email.yml`). Arquivos de prova: `tools/anexo-prova.pdf`, `.docx`, `.txt`._');
+  L.push('_Gerado por `tools/teste-anexos.js` (workflow `teste-email.yml`). Arquivos de prova: `tools/anexo-prova.pdf`, `.docx`, `.txt`, `.scan.pdf`._');
   const ts = new Date().toISOString().slice(0, 16).split(':').join('').split('T').join('-');
   const destino = path.join(__dirname, '..', 'provas', 'teste-anexos-' + ts + '.md');
   fs.mkdirSync(path.dirname(destino), { recursive: true });
