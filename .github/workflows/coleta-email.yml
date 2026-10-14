@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: npm install --no-save imapflow
+      - run: npm install --no-save imapflow nodemailer
       - name: Coleta e sonda
         run: node tools/coleta-respostas.js
         env:
