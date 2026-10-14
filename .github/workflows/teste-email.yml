@@ -24,7 +24,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: npm install --no-save imapflow
+      - run: npm install --no-save imapflow nodemailer
       - name: Envia o teste e captura as respostas
         run: |
           SCRIPT="${{ github.event.inputs.script }}"
