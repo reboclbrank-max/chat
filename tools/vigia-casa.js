@@ -61,11 +61,13 @@ async function acao(rotulo, arquivo) {
     return 'último commit há ' + idade.toFixed(1) + 'h';
   }));
 
-  const runs = await buscaJSON('https://api.github.com/repos/' + REPO + '/actions/runs?per_page=30').catch(() => null);
+  // 🔎 consulta POR WORKFLOW (a lista genérica pode "perder" runs antigos no meio de muitas páginas)
+  const runsEmail = await buscaJSON('https://api.github.com/repos/' + REPO + '/actions/workflows/email.yml/runs?per_page=15').catch(() => null);
+  const runsExame = await buscaJSON('https://api.github.com/repos/' + REPO + '/actions/workflows/evolucao.yml/runs?per_page=10').catch(() => null);
 
   itens.push(await verifica('Chat por e-mail (24h)', async () => {
-    if (!runs) throw new Error('API de execuções indisponível');
-    const meus = runs.workflow_runs.filter(r => r.name.includes('email'));
+    if (!runsEmail) throw new Error('API de execuções indisponível');
+    const meus = runsEmail.workflow_runs;
     const vivos = meus.filter(r => r.status === 'in_progress' || r.status === 'queued');
     if (vivos.length > 1) {
       // 🛡 turnos duplicados (achado da auditoria de 14/10): mantém o mais antigo e cancela os extras
@@ -92,8 +94,8 @@ async function acao(rotulo, arquivo) {
   }));
 
   itens.push(await verifica('Bateria do cérebro', async () => {
-    if (!runs) throw new Error('API de execuções indisponível');
-    const meus = runs.workflow_runs.filter(r => /Evolu/.test(r.name));
+    if (!runsExame) throw new Error('API de execuções indisponível');
+    const meus = runsExame.workflow_runs;
     const ult = meus[0];
     if (!ult) throw new Error('nenhuma execução encontrada');
     const idade = h(Date.now() - new Date(ult.created_at).getTime());
