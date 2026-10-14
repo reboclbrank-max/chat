@@ -1,0 +1,38 @@
+name: Coleta das respostas do teste (interno)
+on:
+  workflow_dispatch:
+    inputs:
+      espera:
+        description: 'minutos de espera pelas respostas novas'
+        required: false
+        default: '8'
+permissions:
+  contents: write
+concurrency:
+  group: diag-email
+  cancel-in-progress: false
+jobs:
+  coleta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --no-save imapflow
+      - name: Coleta e sonda
+        run: node tools/coleta-respostas.js
+        env:
+          GMAIL_CHAT_ADDR: ${{ secrets.GMAIL_CHAT_ADDR }}
+          GMAIL_CHAT_PASS: ${{ secrets.GMAIL_CHAT_PASS }}
+          ESPERA_MIN: ${{ github.event.inputs.espera }}
+      - name: Publica a coleta
+        if: always()
+        run: |
+          git config user.name "coleta-email"
+          git config user.email "coleta@rebocl.local"
+          git pull --rebase --autostash || true
+          git add provas/ || true
+          git diff --cached --quiet || git commit -m "coleta do teste de email $(date -u +%F-%H%M)"
+          git push || true
