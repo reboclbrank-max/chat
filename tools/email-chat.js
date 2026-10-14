@@ -93,7 +93,7 @@ async function ferramenta(corpo) {
   try {
     if (cmd === 'clima') {
       const cidade = arg || 'Tobias Barreto';
-      const r = await fetch('https://wttr.in/' + encodeURIComponent(cidade) + '?format=%l:+%C,+%t+(sensacao+%f),+umidade+%h,+vento+%w&m&lang=pt', { signal: AbortSignal.timeout(25000), headers: { 'User-Agent': 'curl/8' } });
+      const r = await fetch('https://wttr.in/' + encodeURIComponent(cidade) + '?format=%l:+%C,+%t+(sensação+%f),+umidade+%h,+vento+%w&m&lang=pt', { signal: AbortSignal.timeout(25000), headers: { 'User-Agent': 'curl/8' } });
       const linha = (await r.text()).trim();
       if (!linha) return null;
       return '🌤 Clima agora — ' + linha;
@@ -207,6 +207,7 @@ async function cerebro(pergunta, imagem) {
   if (!imagem) rotas.push(
     ['frota', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'auto', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, true],
     ['reserva', 'https://text.pollinations.ai/openai/chat/completions', { model: 'openai-fast', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, false],
+    ['llm7', 'https://api.llm7.io/v1/chat/completions', { model: 'DeepSeek-V4-Flash-0731', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, true],
     ['omni', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, true]
   );
   for (let rodada = 0; rodada < 3; rodada++) {
@@ -245,8 +246,9 @@ async function processOnce() {
       const anexos = extraiAnexos(bruto);
       const imagem = anexos[0] || null;
       const chave = limpaAssunto(assunto);
-      let contexto = citacaoDoEmail(bruto);
-      if (!contexto && memoria.has(chave)) contexto = memoria.get(chave);
+      const citado = citacaoDoEmail(bruto);
+      const lembrado = memoria.has(chave) ? memoria.get(chave) : '';
+      const contexto = [citado, lembrado].filter(Boolean).join(NL + '---' + NL).slice(0, 1600);
       const blocoCtx = contexto ? (NL + NL + 'Contexto de mensagens anteriores desta conversa (use somente se ajudar; pode ignorar):' + NL + contexto) : '';
       console.log('📨 de', de, '| assunto:', assunto.slice(0, 60), imagem ? '| 📷 foto ' + imagem.tipo + ' ~' + Math.round(imagem.bytes / 1024) + 'KB' : '');
       const pergunta = imagem
