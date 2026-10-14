@@ -1,0 +1,38 @@
+name: Teste do chat por e-mail (autoavaliação)
+on:
+  workflow_dispatch:
+    inputs:
+      espera:
+        description: 'minutos de espera pelas respostas'
+        required: false
+        default: '14'
+permissions:
+  contents: write
+concurrency:
+  group: teste-email
+  cancel-in-progress: false
+jobs:
+  teste:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --no-save imapflow
+      - name: Envia o teste e captura as respostas
+        run: node tools/teste-email.js
+        env:
+          GMAIL_CHAT_ADDR: ${{ secrets.GMAIL_CHAT_ADDR }}
+          GMAIL_CHAT_PASS: ${{ secrets.GMAIL_CHAT_PASS }}
+          ESPERA_MIN: ${{ github.event.inputs.espera }}
+      - name: Publica o relatório
+        if: always()
+        run: |
+          git config user.name "teste-email"
+          git config user.email "teste@rebocl.local"
+          git pull --rebase --autostash || true
+          git add provas/ || true
+          git diff --cached --quiet || git commit -m "teste do e-mail: relatório $(date -u +%F-%H%M)"
+          git push || true
