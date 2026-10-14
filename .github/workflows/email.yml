@@ -1,8 +1,8 @@
 name: Chat por email (24h vivo)
 on:
   schedule:
-    - cron: '0 */6 * * *'
-    - cron: '*/30 * * * *'
+    - cron: '7 */6 * * *'
+    - cron: '17,47 * * * *'
   workflow_dispatch:
 permissions:
   contents: write
@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   turno:
-    if: github.event.schedule != '*/30 * * * *'
+    if: github.event.schedule != '17,47 * * * *'
     runs-on: ubuntu-latest
     timeout-minutes: 350
     steps:
@@ -25,13 +25,14 @@ jobs:
         env:
           GMAIL_CHAT_ADDR: ${{ secrets.GMAIL_CHAT_ADDR }}
           GMAIL_CHAT_PASS: ${{ secrets.GMAIL_CHAT_PASS }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Salva o log
         run: |
           git config user.name "email-casa"
           git config user.email "email@rebocl.local"
           if [ -f email-log.md ]; then git add email-log.md; git diff --cached --quiet || git commit -m "email respondido $(date -u +%F-%H%M)" && git push || true; fi
   reserva:
-    if: github.event.schedule == '*/30 * * * *'
+    if: github.event.schedule == '17,47 * * * *'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
