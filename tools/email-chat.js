@@ -24,13 +24,59 @@ function textoUtil(t) {
   return true;
 }
 
-async function cerebro(pergunta) {
-  const rotas = [
+
+// 📷 FOTOS POR E-MAIL (14/10/2026): extrai anexos de imagem do MIME e deixa o cérebro "ver".
+// Simples e tolerante: aceita jpeg/png/webp/gif em base64 até ~4 MB. Sem anexo, nada muda.
+function extraiAnexos(bruto) {
+  const anexos = [];
+  const mB = bruto.match(/content-type:\s*multipart\/[^;]+;\s*boundary="?([^"\r\n;]+)"?/i);
+  if (!mB) return anexos;
+  const sep = '--' + mB[1].replace(/^--/, '');
+  for (const p of bruto.split(sep)) {
+    const iCab = p.search(/\r?\n\r?\n/);
+    if (iCab < 0) continue;
+    const cab = p.slice(0, iCab);
+    if (!/content-type:\s*image\//i.test(cab)) continue;
+    const tipo = (cab.match(/content-type:\s*(image\/[a-z0-9.+-]+)/i) || [])[1].toLowerCase().replace('jpg', 'jpeg');
+    if (!/^image\/(jpeg|png|webp|gif)$/.test(tipo)) continue;
+    let corpo = p.slice(iCab).replace(/^\r?\n\r?\n/, '').replace(/[^A-Za-z0-9+/=]/g, '');
+    if (corpo.length < 100) continue;
+    if (corpo.length > 5500000) continue;
+    anexos.push({ tipo, b64: corpo, bytes: Math.floor(corpo.length * 3 / 4) });
+    if (anexos.length >= 2) break;
+  }
+  return anexos;
+}
+
+function limpaTexto(t) {
+  return String(t || '').replace(/--[0-9a-f]{16,}[\s\S]*$/, '').replace(/-----BEGIN PGP[\s\S]*?-----END PGP SIGNATURE-----/g, '').replace(/https?:\/\/\S+/g, '').trim().slice(0, 3000);
+}
+
+function pegaTexto(bruto, assunto) {
+  const mB = bruto.match(/content-type:\s*multipart\/[^;]+;\s*boundary="?([^"\r\n;]+)"?/i);
+  if (mB) {
+    const sep = '--' + mB[1].replace(/^--/, '');
+    for (const p of bruto.split(sep)) {
+      const iCab = p.search(/\r?\n\r?\n/);
+      if (iCab < 0) continue;
+      if (!/content-type:\s*text\/plain/i.test(p.slice(0, iCab))) continue;
+      return limpaTexto(qpDecode(p.slice(iCab).replace(/^\r?\n\r?\n/, '')));
+    }
+  }
+  const partes = bruto.split(/\r?\n\r?\n/);
+  let corpoMsg = partes.slice(1).join('\n\n') || assunto;
+  return limpaTexto(qpDecode(corpoMsg));
+}
+
+async function cerebro(pergunta, imagem) {
+  const rotas = [];
+  if (imagem) rotas.push(['visão (omni)', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning', messages: [{ role: 'user', content: [{ type: 'text', text: pergunta }, { type: 'image_url', image_url: { url: 'data:' + imagem.tipo + ';base64,' + imagem.b64 } }] }], max_tokens: 600 }, true]);
+  if (!imagem) rotas.push(
     ['frota', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'auto', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, true],
     ['reserva', 'https://text.pollinations.ai/openai/chat/completions', { model: 'openai-fast', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, false],
     ['omni', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, true]
-  ];
-  for (let rodada = 0; rodada < 2; rodada++) {
+  );
+  for (let rodada = 0; rodada < 3; rodada++) {
     for (const [nome, url, corpo, bearer] of rotas) {
       try {
         const headers = { 'Content-Type': 'application/json' };
@@ -62,13 +108,16 @@ async function processOnce() {
       const assunto = (msg.envelope.subject || '(sem assunto)');
       if (!de || de.includes(USER.toLowerCase())) { await client.messageFlagsAdd(uid, ['\\Seen'], { uid: true }); continue; }
       const bruto = (msg.source || '').toString();
-      const partes = bruto.split(/\r?\n\r?\n/);
-      let corpoMsg = partes.slice(1).join('\n\n') || assunto;
-      corpoMsg = qpDecode(corpoMsg).replace(/--[0-9a-f]{16,}[\s\S]*$/, '').replace(/-----BEGIN PGP[\s\S]*?-----END PGP SIGNATURE-----/g, '').replace(/https?:\/\/\S+/g, '').trim().slice(0, 3000);
-      console.log('📨 de', de, '| assunto:', assunto.slice(0, 60));
-      const r = await cerebro('Você é a Assistente Rebocl, do Brasil, direta e calorosa. Responda este e-mail em português claro (máx 15 linhas):\n\n' + assunto + '\n\n' + corpoMsg);
+      const corpoMsg = pegaTexto(bruto, assunto);
+      const anexos = extraiAnexos(bruto);
+      const imagem = anexos[0] || null;
+      console.log('📨 de', de, '| assunto:', assunto.slice(0, 60), imagem ? '| 📷 foto ' + imagem.tipo + ' ~' + Math.round(imagem.bytes / 1024) + 'KB' : '');
+      const pergunta = imagem
+        ? 'Você é a Assistente Rebocl, do Brasil, direta e calorosa. O dono mandou uma FOTO por e-mail; descreva com precisão o que você vê nela e responda a pergunta dele, em português claro (máx 15 linhas). Se houver texto na foto, leia o texto.\n\nPergunta dele: ' + (corpoMsg || assunto)
+        : 'Você é a Assistente Rebocl, do Brasil, direta e calorosa. Responda este e-mail em português claro (máx 15 linhas):\n\n' + assunto + '\n\n' + corpoMsg;
+      const r = await cerebro(pergunta, imagem);
       const transporte = nodemailer.createTransport({ host: 'smtp.gmail.com', port: 465, secure: true, auth: { user: USER, pass: PASS } });
-      const resposta = r ? r.texto : 'travei agora — reenvie que eu respondo (casa Rebocl).';
+      const resposta = r ? r.texto : (imagem ? 'recebi sua foto, mas não consegui abrir ela agora — manda de novo em instantes (casa Rebocl).' : 'travei agora — reenvie que eu respondo (casa Rebocl).');
       await transporte.sendMail({ from: '"Assistente Rebocl" <' + USER + '>', to: de, subject: 'Re: ' + assunto, text: resposta + '\n\n— Assistente Rebocl (casa Rebocl Brank)', inReplyTo: msg.envelope.messageId, references: msg.envelope.messageId });
       console.log('✉️ respondido via', r ? r.via : 'sem cérebro');
       try { require('fs').appendFileSync('email-log.md', '- ' + new Date().toISOString().slice(0, 16) + ' UTC — ' + de + ' | "' + assunto.slice(0, 40) + '" → respondido via ' + (r ? r.via : 'fallback') + '\n'); } catch (e) {}
