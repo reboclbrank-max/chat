@@ -28,7 +28,7 @@ jobs:
       - name: Envia o teste e captura as respostas
         run: |
           SCRIPT="${{ github.event.inputs.script }}"
-          case "$SCRIPT" in tools/teste-email.js|tools/teste-memoria.js) ;; *) SCRIPT=tools/teste-email.js ;; esac
+          case "$SCRIPT" in tools/teste-email.js|tools/teste-memoria.js|tools/teste-foto.js) ;; *) SCRIPT=tools/teste-email.js ;; esac
           echo "rodando $SCRIPT"
           node "$SCRIPT"
         env:

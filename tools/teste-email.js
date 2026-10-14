@@ -60,7 +60,7 @@ function montaMensagem(assunto, corpo, imgB64) {
   else {
     const b = 'fronteira-teste-' + Date.now();
     const partes = ['--' + b, 'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', corpo, '--' + b,
-      'Content-Type: image/png; name="teste-visao2.png"', 'Content-Transfer-Encoding: base64', 'Content-Disposition: attachment; filename="teste-visao2.png"', '',
+      'Content-Type: image/png; name="teste-visao3.png"', 'Content-Transfer-Encoding: base64', 'Content-Disposition: attachment; filename="teste-visao3.png"', '',
       imgB64.match(/.{1,76}/g).join(CRLF), '--' + b + '--', ''];
     bruto = cab.concat(['Content-Type: multipart/mixed; boundary="' + b + '"', '', partes.join(CRLF)]).join(CRLF);
   }
@@ -71,7 +71,7 @@ function montaMensagem(assunto, corpo, imgB64) {
   if (!USER || !PASS) { console.error('sem credenciais (rode no Actions)'); process.exit(1); }
   const { ImapFlow } = require('imapflow');
   const { pegaTexto } = require('./email-chat.js');   // MESMO parser do canal
-  const imgB64 = fs.existsSync(path.join(__dirname, 'teste-visao2.png')) ? fs.readFileSync(path.join(__dirname, 'teste-visao2.png')).toString('base64') : null;
+  const imgB64 = fs.existsSync(path.join(__dirname, 'teste-visao3.png')) ? fs.readFileSync(path.join(__dirname, 'teste-visao3.png')).toString('base64') : null;
   const client = new ImapFlow({ host: 'imap.gmail.com', port: 993, secure: true, auth: { user: USER, pass: PASS }, logger: false });
   await client.connect();
   const t0 = Date.now();
