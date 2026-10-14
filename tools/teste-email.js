@@ -48,13 +48,17 @@ const CASOS = [
     check: t => t.trim().length > 5 ? 'PASS (respondeu)' : 'FALHOU (vazio)',
     corpo: 'Você conseguiu ler este assunto com emoji? Responda em uma linha, simpática.' },
   { n: 'R3-11', assunto: MARCA + ' R3-11 — e-mail só HTML', esperado: 'E-mail sem parte de texto puro (só HTML, como celular manda): ler a pergunta e responder sem vazar tags.', check: t => (/31/.test(t) && !/<[a-z][^>]*>/i.test(t) && !/&[a-z]+;/i.test(t)) ? 'PASS (leu o HTML, 31 dias, sem tags na resposta)' : 'FALHOU (tags na resposta ou não achou 31)', html: true,
-    corpo: '<html><body><div style="font-family:sans-serif"><p>Oi! <b>Pergunta:</b> quantos dias tem o m&ecirc;s de outubro?</p><p>Responda s&oacute; o n&uacute;mero. &nbsp;</p></div></body></html>' }
+    corpo: '<html><body><div style="font-family:sans-serif"><p>Oi! <b>Pergunta:</b> quantos dias tem o m&ecirc;s de outubro?</p><p>Responda s&oacute; o n&uacute;mero. &nbsp;</p></div></body></html>' },
+  { n: 'R3-12', assunto: MARCA + ' R3-12 — foto + PDF juntos', foto: true, pdf: true,
+    esperado: 'FOTO e PDF na MESMA mensagem: a resposta fala do PDF (couve/horta) e também da imagem.',
+    check: t => (/couve|horta/i.test(t) && /foto|imagem/i.test(t)) ? 'PASS (respondeu o PDF e a foto juntos)' : 'FALHOU (ignorou um dos dois)',
+    corpo: 'Anexei uma FOTO e um PDF juntos. Me diga o que tem na foto e quantos pés de couve diz o PDF.' }
 ];
 const M2 = { n: 'R3-8b', assunto: 'Re: ' + MARCA + ' R3-8 — memória (1/2)',
   esperado: 'Dizer JATOBÁ (memória citada funcionando).',
   check: t => /JATOB[ÁA]/i.test(t) ? 'PASS (lembrou JATOBÁ)' : 'FALHOU (não lembrou)', corpo: '' };
 
-function montaMensagem(assunto, corpo, imgB64, html) {
+function montaMensagem(assunto, corpo, imgB64, html, pdfB64) {
   const id = '<teste-' + Date.now() + '-' + Math.floor(Math.random() * 100000) + '@rebocl.local>';
   const cab = ['From: "Teste da Casa" <' + ALIAS + '>', 'To: ' + USER, 'Subject: ' + assunto, 'Date: ' + new Date().toUTCString(), 'Message-ID: ' + id, 'MIME-Version: 1.0'];
   let bruto;
@@ -64,7 +68,11 @@ function montaMensagem(assunto, corpo, imgB64, html) {
     const b = 'fronteira-teste-' + Date.now();
     const partes = ['--' + b, 'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', corpo, '--' + b,
       'Content-Type: image/png; name="teste-visao3.png"', 'Content-Transfer-Encoding: base64', 'Content-Disposition: attachment; filename="teste-visao3.png"', '',
-      imgB64.match(/.{1,76}/g).join(CRLF), '--' + b + '--', ''];
+      imgB64.match(/.{1,76}/g).join(CRLF)];
+    if (pdfB64) partes.push('--' + b,
+      'Content-Type: application/pdf; name="anexo-prova.pdf"', 'Content-Transfer-Encoding: base64', 'Content-Disposition: attachment; filename="anexo-prova.pdf"', '',
+      pdfB64.match(/.{1,76}/g).join(CRLF));
+    partes.push('--' + b + '--', '');
     bruto = cab.concat(['Content-Type: multipart/mixed; boundary="' + b + '"', '', partes.join(CRLF)]).join(CRLF);
   }
   return { bruto, id };
@@ -75,6 +83,7 @@ function montaMensagem(assunto, corpo, imgB64, html) {
   const { ImapFlow } = require('imapflow');
   const { pegaTexto } = require('./email-chat.js');   // MESMO parser do canal
   const imgB64 = fs.existsSync(path.join(__dirname, 'teste-visao3.png')) ? fs.readFileSync(path.join(__dirname, 'teste-visao3.png')).toString('base64') : null;
+  const pdfB64 = fs.existsSync(path.join(__dirname, 'anexo-prova.pdf')) ? fs.readFileSync(path.join(__dirname, 'anexo-prova.pdf')).toString('base64') : null;
   const client = new ImapFlow({ host: 'imap.gmail.com', port: 993, secure: true, auth: { user: USER, pass: PASS }, logger: false });
   await client.connect();
   const t0 = Date.now();
@@ -111,11 +120,11 @@ function montaMensagem(assunto, corpo, imgB64, html) {
 
   const enviados = [];   // { n, assunto, esperado, check, id, enviadoEm }
   async function envia(caso) {
-    const { bruto, id } = montaMensagem(caso.assunto, caso.corpo, caso.foto ? imgB64 : null, caso.html);
+    const { bruto, id } = montaMensagem(caso.assunto, caso.corpo, caso.foto ? imgB64 : null, caso.html, caso.pdf ? pdfB64 : null);
     let lock;
     try { lock = await client.getMailboxLock('INBOX'); await client.append('INBOX', Buffer.from(bruto)); }
     finally { if (lock) lock.release(); }
-    enviados.push({ n: caso.n, assunto: caso.assunto, corpo: caso.corpo, esperado: caso.esperado, check: caso.check, id, enviadoEm: Date.now(), foto: !!caso.foto });
+    enviados.push({ n: caso.n, assunto: caso.assunto, corpo: caso.corpo, esperado: caso.esperado, check: caso.check, id, enviadoEm: Date.now(), foto: !!caso.foto, pdf: !!caso.pdf });
     console.log('📤', caso.n, '—', caso.assunto.replace(MARCA + ' ', ''), caso.foto ? '(com foto)' : '');
     await sleep(1300);
   }
@@ -161,7 +170,7 @@ function montaMensagem(assunto, corpo, imgB64, html) {
   L.push('');
   L.push('## Caso a caso');
   for (const x of resp) {
-    L.push('### ' + x.e.n + ' — ' + x.e.assunto.replace(MARCA + ' ', '').replace('Re: ', '') + (x.e.foto ? ' 📷' : ''));
+    L.push('### ' + x.e.n + ' — ' + x.e.assunto.replace(MARCA + ' ', '').replace('Re: ', '') + (x.e.foto ? ' 📷' : '') + (x.e.pdf ? ' 📄' : ''));
     L.push('');
     L.push('**Pergunta:** ' + (x.e.corpo || '(seguimento)').split(NL).join(' ').slice(0, 220));
     L.push('');
