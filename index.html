@@ -232,6 +232,17 @@
 
 <div id="lightbox"><img alt=""></div>
 <script>
+// 🛡 Guarda anti-cota (14/10/2026): texto de infra da reserva (ex.: "The API key used for this
+// request has reached its limit") NÃO é resposta — a rota seguinte assume. Lei da casa: infra falada
+// ≠ cérebro errado. Aplicada também nos tools do e-mail e da bateria no mesmo dia.
+const COTA_RE = /api key used for this request|(?:has|have) reached (?:its|your|the) (?:limit|quota)|too many requests|rate limit exceeded/i;
+function textoUtil(t) {
+  const s = String(t || '').trim();
+  if (!s) return false;
+  if (s.length < 300 && COTA_RE.test(s)) return false;
+  return true;
+}
+
 'use strict';
 const REPO = 'reboclbrank-max/agente';
 const API = 'https://api.github.com';
@@ -781,7 +792,7 @@ async function cacarFrota(silencioso) {
       if (r.ok) {
         const j = await r.json();
         const t = ((j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || '').trim();
-        if (t) vivos.push(m.nome);
+        if (t && textoUtil(t)) vivos.push(m.nome);
       }
     } catch (e) {}
     await new Promise((r2) => setTimeout(r2, 0));
@@ -1305,7 +1316,7 @@ async function pensarStream(historico, aoVivo) {
           } catch (e) {}
         }
       }
-      if (total.trim()) return { texto: total.trim(), motor: m.nome + ' · streaming' };
+      if (total.trim() && textoUtil(total)) return { texto: total.trim(), motor: m.nome + ' · streaming' };
       const r2 = await fetch(m.base + '/chat/completions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ((m.chaveLS && localStorage.getItem(m.chaveLS)) ? localStorage.getItem(m.chaveLS) : 'unused') },
@@ -1314,7 +1325,7 @@ async function pensarStream(historico, aoVivo) {
       if (r2.ok) {
         const j2 = await r2.json();
         const t2 = ((j2.choices && j2.choices[0] && j2.choices[0].message && j2.choices[0].message.content) || '').trim();
-        if (t2) return { texto: t2, motor: m.nome };
+        if (t2 && textoUtil(t2)) return { texto: t2, motor: m.nome };
       }
     } catch (e) {}
   }
@@ -1322,13 +1333,13 @@ async function pensarStream(historico, aoVivo) {
   for (const mod of ['openai-fast', 'openai-large']) {
     try {
       const rp = await fetch('https://text.pollinations.ai/openai/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: mod, messages: [{ role: 'user', content: ultima }], max_tokens: 550 }) });
-      if (rp.ok) { const jp = await rp.json(); const tp = ((((jp.choices || [])[0] || {}).message || {}).content) || ''; if (tp.trim()) return { texto: tp.trim(), motor: 'pollinations · ' + mod + ' (cérebro de reserva)' }; }
+      if (rp.ok) { const jp = await rp.json(); const tp = ((((jp.choices || [])[0] || {}).message || {}).content) || ''; if (tp.trim() && textoUtil(tp)) return { texto: tp.trim(), motor: 'pollinations · ' + mod + ' (cérebro de reserva)' }; }
     } catch (e) {}
   }
   for (const x2 of [{ base: 'https://nvidia.g4f.dev/v1', modelo: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning', nome: 'omni da frota' }, { base: 'https://nvidia.g4f.dev/v1', modelo: 'z-ai/glm-5.3-flash', nome: 'glm flash' }]) {
     try {
       const r3 = await fetch(x2.base + '/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer unused' }, body: JSON.stringify({ model: x2.modelo, messages: historico, max_tokens: 700 }) });
-      if (r3.ok) { const j3 = await r3.json(); const t3 = ((((j3.choices || [])[0] || {}).message || {}).content) || ''; if (t3.trim()) return { texto: t3.trim(), motor: x2.nome + ' (reserva da reserva)' }; }
+      if (r3.ok) { const j3 = await r3.json(); const t3 = ((((j3.choices || [])[0] || {}).message || {}).content) || ''; if (t3.trim() && textoUtil(t3)) return { texto: t3.trim(), motor: x2.nome + ' (reserva da reserva)' }; }
     } catch (e) {}
   }
   return null;
