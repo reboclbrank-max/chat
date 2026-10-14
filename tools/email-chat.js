@@ -68,6 +68,111 @@ function pegaTexto(bruto, assunto) {
   return limpaTexto(qpDecode(corpoMsg));
 }
 
+
+// 🧰 FERRAMENTAS POR E-MAIL (14/10/2026): comandos que respondem com DADOS REAIS, sem depender de motor.
+// Vale mesmo com todos os cérebros caídos. Comandos: clima:, cambio:, hora:, noticias:, status:, ajuda
+const NL = String.fromCharCode(10);
+function semAcento(s) { return String(s || '').toLowerCase(); }
+function decr(s) {
+  return String(s || '').split('&amp;').join('&').split('&#39;').join(String.fromCharCode(39))
+    .split('&apos;').join(String.fromCharCode(39)).split('&quot;').join(String.fromCharCode(34))
+    .split('&lt;').join('<').split('&gt;').join('>')
+    .split('&#193;').join('Á').split('&#225;').join('á').split('&#201;').join('É').split('&#233;').join('é')
+    .split('&#205;').join('Í').split('&#237;').join('í').split('&#211;').join('Ó').split('&#243;').join('ó')
+    .split('&#218;').join('Ú').split('&#250;').join('ú').split('&#195;').join('Ã').split('&#227;').join('ã')
+    .split('&#199;').join('Ç').split('&#231;').join('ç');
+}
+async function ferramenta(corpo) {
+  const txt = String(corpo || '').trim();
+  if (/^!?ajuda$/i.test(txt) || txt.toLowerCase() === 'ajuda' || txt.toLowerCase() === 'comandos') return AJUDA;
+  const pos = txt.indexOf(':');
+  if (pos < 1 || pos > 12) return null;
+  const cmd = txt.slice(0, pos).trim().toLowerCase();
+  const arg = txt.slice(pos + 1).trim();
+  if (cmd.indexOf(' ') >= 0) return null;
+  try {
+    if (cmd === 'clima') {
+      const cidade = arg || 'Tobias Barreto';
+      const r = await fetch('https://wttr.in/' + encodeURIComponent(cidade) + '?format=%l:+%C,+%t+(sensacao+%f),+umidade+%h,+vento+%w&m&lang=pt', { signal: AbortSignal.timeout(25000), headers: { 'User-Agent': 'curl/8' } });
+      const linha = (await r.text()).trim();
+      if (!linha) return null;
+      return '🌤 Clima agora — ' + linha;
+    }
+    if (cmd === 'cambio' || cmd === 'cotacao') {
+      const mapa = { 'dolar': 'USD', 'dólar': 'USD', 'usd': 'USD', 'euro': 'EUR', 'eur': 'EUR', 'libra': 'GBP', 'gbp': 'GBP', 'bitcoin': 'BTC', 'btc': 'BTC', 'iene': 'JPY', 'jpy': 'JPY', 'peso': 'ARS', 'ars': 'ARS' };
+      const moeda = mapa[arg.toLowerCase()] || (arg ? arg.toUpperCase().slice(0, 3) : 'USD');
+      if (moeda === 'BTC') {
+        const rc = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=brl,usd', { signal: AbortSignal.timeout(25000), headers: { 'User-Agent': 'rebocl/1' } });
+        const jc = await rc.json();
+        if (jc && jc.bitcoin && jc.bitcoin.brl) return '💱 1 BTC = R$ ' + Number(jc.bitcoin.brl).toLocaleString('pt-BR') + ' (US$ ' + Number(jc.bitcoin.usd).toLocaleString('en-US') + ')';
+        return null;
+      }
+      const r = await fetch('https://open.er-api.com/v6/latest/' + moeda, { signal: AbortSignal.timeout(25000) });
+      const j = await r.json();
+      if (!j || !j.rates || !j.rates.BRL) return null;
+      return '💱 1 ' + moeda + ' = R$ ' + Number(j.rates.BRL).toFixed(2) + ' (atualizado ' + String(j.time_last_update_utc || '').slice(0, 16) + ')';
+    }
+    if (cmd === 'hora') {
+      const mapa = { 'brasilia': 'America/Sao_Paulo', 'brasília': 'America/Sao_Paulo', 'sp': 'America/Sao_Paulo', 'sao paulo': 'America/Sao_Paulo', 'são paulo': 'America/Sao_Paulo', 'rio': 'America/Sao_Paulo', 'aracaju': 'America/Maceio', 'maceio': 'America/Maceio', 'tokyo': 'Asia/Tokyo', 'tóquio': 'Asia/Tokyo', 'nova york': 'America/New_York', 'lisboa': 'Europe/Lisbon', 'londres': 'Europe/London', 'paris': 'Europe/Paris', 'utc': 'UTC', 'china': 'Asia/Shanghai', 'dubai': 'Asia/Dubai', 'sydney': 'Australia/Sydney' };
+      const fuso = mapa[(arg || 'brasilia').toLowerCase()];
+      if (!fuso) return '🕐 Ainda não conheço esse lugar. Tente: brasilia, tokyo, nova york, lisboa, utc…';
+      const hora = new Intl.DateTimeFormat('pt-BR', { timeZone: fuso, dateStyle: 'short', timeStyle: 'short' }).format(new Date());
+      return '🕐 ' + (arg || 'Brasília') + ': ' + hora;
+    }
+    if (cmd === 'noticias' || cmd === 'notícias') {
+      const termo = arg || 'Brasil';
+      const le = (xml) => {
+        const partes = String(xml || '').split('<title>').slice(1).map(p => p.split('</title>')[0]);
+        return partes.map(x => decr(x.trim())).filter(x => {
+          if (!x || x.length <= 8) return false;
+          const l = x.toLowerCase();
+          const ruins = ['google not', 'bingnot', 'bing not', ' - google', '- bing', 'notícias - '];
+          if (ruins.some(ru => l.indexOf(ru) >= 0)) return false;
+          const termoLimpo = termo.toLowerCase();
+          if (l === termoLimpo) return false;
+          if (l.indexOf(termoLimpo + ' -') === 0) return false;
+          return true;
+        }).slice(0, 5);
+      };
+      let titulos = [];
+      try {
+        const r1 = await fetch('https://news.google.com/rss/search?q=' + encodeURIComponent(termo) + '&hl=pt-BR&gl=BR&ceid=BR:pt-419', { signal: AbortSignal.timeout(25000), headers: { 'User-Agent': 'Mozilla/5.0' } });
+        titulos = le(await r1.text());
+      } catch (e) {}
+      if (!titulos.length) {
+        try {
+          const r2 = await fetch('https://www.bing.com/news/search?q=' + encodeURIComponent(termo) + '&format=RSS&setmkt=pt-BR', { signal: AbortSignal.timeout(25000), headers: { 'User-Agent': 'Mozilla/5.0' } });
+          titulos = le(await r2.text());
+        } catch (e) {}
+      }
+      if (!titulos.length) return '📰 Não achei manchetes sobre "' + termo + '" agora. Tente outras palavras (ou o termo em inglês).';
+      return '📰 Manchetes sobre "' + termo + '":' + NL + '• ' + titulos.join(NL + '• ');
+    }
+    if (cmd === 'status') {
+      const r = await fetch('https://raw.githubusercontent.com/reboclbrank-max/chat/main/vigia-estado.json', { signal: AbortSignal.timeout(20000), cache: 'no-store' });
+      const j = await r.json();
+      const linhas = Object.entries(j.itens || {}).map(function (p) { return (p[1].ok ? '✅' : '❌') + ' ' + p[0]; });
+      return '🩺 Estado da casa (checagem ' + j.verificado_em + ' UTC):' + NL + linhas.join(NL) + NL + NL + '📧 E-mail: respondendo · 🌐 site postando · 🧠 bateria diária';
+    }
+  } catch (e) { return null; }
+  return null;
+}
+const AJUDA = [
+  '🤖 Assistente Rebocl — o que você pode pedir por e-mail:',
+  '',
+  '(1) Qualquer pergunta ou conversa — eu respondo com o melhor cérebro disponível.',
+  '(2) Uma FOTO anexada — eu olho a imagem, comento, resumo ou leio textos nela.',
+  '(3) Comandos rápidos que respondem na hora, sem depender dos motores:',
+  '   • clima: Aracaju',
+  '   • cambio: dolar     (também euro, libra, bitcoin, peso…)',
+  '   • hora: tokyo       (também brasilia, nova york, lisboa, utc…)',
+  '   • noticias: godot   (qualquer tema)',
+  '   • status:           (como está a casa agora)',
+  '   • ajuda',
+  '',
+  '— Assistente Rebocl (casa Rebocl Brank)'
+].join(NL);
+
 async function cerebro(pergunta, imagem) {
   const rotas = [];
   if (imagem) rotas.push(['visão (omni)', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning', messages: [{ role: 'user', content: [{ type: 'text', text: pergunta }, { type: 'image_url', image_url: { url: 'data:' + imagem.tipo + ';base64,' + imagem.b64 } }] }], max_tokens: 600 }, true]);
@@ -115,9 +220,18 @@ async function processOnce() {
       const pergunta = imagem
         ? 'Você é a Assistente Rebocl, do Brasil, direta e calorosa. O dono mandou uma FOTO por e-mail; descreva com precisão o que você vê nela e responda a pergunta dele, em português claro (máx 15 linhas). Se houver texto na foto, leia o texto.\n\nPergunta dele: ' + (corpoMsg || assunto)
         : 'Você é a Assistente Rebocl, do Brasil, direta e calorosa. Responda este e-mail em português claro (máx 15 linhas):\n\n' + assunto + '\n\n' + corpoMsg;
-      const r = await cerebro(pergunta, imagem);
+      let respostaFerramenta = null;
+      if (!imagem) respostaFerramenta = await ferramenta(corpoMsg);
+      if (respostaFerramenta) console.log('🧰 respondido por ferramenta (sem motor)');
+      const r = respostaFerramenta ? { texto: respostaFerramenta, via: 'ferramenta' } : await cerebro(pergunta, imagem);
       const transporte = nodemailer.createTransport({ host: 'smtp.gmail.com', port: 465, secure: true, auth: { user: USER, pass: PASS } });
-      const resposta = r ? r.texto : (imagem ? 'recebi sua foto, mas não consegui abrir ela agora — manda de novo em instantes (casa Rebocl).' : 'travei agora — reenvie que eu respondo (casa Rebocl).');
+      let resposta;
+      if (r) resposta = r.texto;
+      else if (imagem) resposta = 'recebi sua foto, mas não consegui abrir ela agora — manda de novo em instantes (casa Rebocl).';
+      else {
+        const st = await ferramenta('status:');
+        resposta = 'estou vivo, mas os cérebros estão oscilando agora — reenvie em instantes que eu respondo.' + (st ? NL + NL + st : '');
+      }
       await transporte.sendMail({ from: '"Assistente Rebocl" <' + USER + '>', to: de, subject: 'Re: ' + assunto, text: resposta + '\n\n— Assistente Rebocl (casa Rebocl Brank)', inReplyTo: msg.envelope.messageId, references: msg.envelope.messageId });
       console.log('✉️ respondido via', r ? r.via : 'sem cérebro');
       try { require('fs').appendFileSync('email-log.md', '- ' + new Date().toISOString().slice(0, 16) + ' UTC — ' + de + ' | "' + assunto.slice(0, 40) + '" → respondido via ' + (r ? r.via : 'fallback') + '\n'); } catch (e) {}
@@ -128,5 +242,5 @@ async function processOnce() {
   } finally { lock.release(); await client.logout(); }
   return respondidos;
 }
-module.exports = { processOnce };
+module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta };
 if (require.main === module) { processOnce().then(n => console.log('ciclo único:', n, 'respondidos')).catch(e => { console.error('ERRO:', e.message); process.exit(0); }); }
