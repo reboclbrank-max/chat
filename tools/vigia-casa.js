@@ -68,9 +68,11 @@ async function acao(rotulo, arquivo) {
   itens.push(await verifica('Chat por e-mail (24h)', async () => {
     if (!runsEmail) throw new Error('API de execuções indisponível');
     const meus = runsEmail.workflow_runs;
-    const vivos = meus.filter(r => r.status === 'in_progress' || r.status === 'queued');
+    const vivos = meus.filter(r => r.status === 'in_progress');
+    const naFila = meus.filter(r => r.status === 'queued' || r.status === 'pending');
     if (vivos.length > 1) {
       // 🛡 turnos duplicados (achado da auditoria de 14/10): mantém o mais antigo e cancela os extras
+      // (14/10, manhã: só RODANDO conta como duplicado — o turno seguinte na fila é a corrente, não defeito)
       const manter = vivos[vivos.length - 1];
       let n = 0;
       for (const r of vivos) {
@@ -85,7 +87,7 @@ async function acao(rotulo, arquivo) {
       }
       return 'turno ACORDADO agora · 🛡 duplicados cancelados: ' + n + '/' + (vivos.length - 1);
     }
-    if (vivos.length) return 'turno ACORDADO agora';
+    if (vivos.length) return 'turno ACORDADO agora' + (naFila.length ? ' · 🔗 próximo já na fila' : '');
     const ult = meus[0];
     if (!ult) throw new Error('nenhuma execução encontrada');
     const idade = h(Date.now() - new Date(ult.created_at).getTime());
