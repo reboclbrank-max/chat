@@ -52,20 +52,46 @@ function limpaTexto(t) {
   return String(t || '').replace(/--[0-9a-f]{16,}[\s\S]*$/, '').replace(/-----BEGIN PGP[\s\S]*?-----END PGP SIGNATURE-----/g, '').replace(/https?:\/\/\S+/g, '').trim().slice(0, 3000);
 }
 
+function tiraHtml(s) {
+  let t = String(s || '');
+  t = t.split(/<style[\s\S]*?<\/style>/i).join(' ');
+  t = t.split(/<script[\s\S]*?<\/script>/i).join(' ');
+  t = t.replace(/<br\s*\/?>/gi, NL).replace(/<\/(p|div|li|tr|h[1-6]|blockquote)>/gi, NL);
+  t = t.replace(/<[^>]+>/g, ' ');
+  t = decr(t);
+  // acentos em entidade nomeada (celular/webmail manda assim: &ecirc; &ccedil;...)
+  const ENTIDADES = [['&nbsp;', ' '], ['&#160;', ' '], ['&aacute;', 'á'], ['&eacute;', 'é'], ['&iacute;', 'í'],
+    ['&oacute;', 'ó'], ['&uacute;', 'ú'], ['&atilde;', 'ã'], ['&otilde;', 'õ'], ['&ccedil;', 'ç'],
+    ['&acirc;', 'â'], ['&ecirc;', 'ê'], ['&ocirc;', 'ô'], ['&agrave;', 'à'], ['&Aacute;', 'Á'],
+    ['&Eacute;', 'É'], ['&Atilde;', 'Ã'], ['&Otilde;', 'Õ'], ['&Ccedil;', 'Ç'], ['&ldquo;', '"'],
+    ['&rdquo;', '"'], ['&hellip;', '...'], ['&ndash;', '-'], ['&mdash;', '—']];
+  for (const par of ENTIDADES) t = t.split(par[0]).join(par[1]);
+  t = t.split('&amp;').join('&');
+  t = t.split(/[ \t]{2,}/g).join(' ');
+  t = t.split(NL).map(function (l) { return l.trim(); }).join(NL);
+  return t.trim();
+}
 function pegaTexto(bruto, assunto) {
   const mB = bruto.match(/content-type:\s*multipart\/[^;]+;\s*boundary="?([^"\r\n;]+)"?/i);
   if (mB) {
     const sep = '--' + mB[1].replace(/^--/, '');
+    let html = '';
     for (const p of bruto.split(sep)) {
       const iCab = p.search(/\r?\n\r?\n/);
       if (iCab < 0) continue;
-      if (!/content-type:\s*text\/plain/i.test(p.slice(0, iCab))) continue;
-      return limpaTexto(qpDecode(p.slice(iCab).replace(/^\r?\n\r?\n/, '')));
+      const cab = p.slice(0, iCab);
+      if (/content-disposition:\s*attachment/i.test(cab)) continue; // 📎 anexo NUNCA é o corpo
+      const corpoParte = qpDecode(p.slice(iCab).replace(/^\r?\n\r?\n/, ''));
+      if (/content-type:\s*text\/plain/i.test(cab)) return limpaTexto(corpoParte);
+      if (!html && /content-type:\s*text\/html/i.test(cab)) html = corpoParte;
     }
+    if (html) return limpaTexto(tiraHtml(html)); // e-mail só-HTML (celular/webmail)
   }
   const partes = bruto.split(/\r?\n\r?\n/);
-  let corpoMsg = partes.slice(1).join('\n\n') || assunto;
-  return limpaTexto(qpDecode(corpoMsg));
+  let corpoMsg = partes.slice(1).join(NL + NL) || assunto;
+  corpoMsg = qpDecode(corpoMsg);
+  if (/<[a-z][\s\S]*>/i.test(corpoMsg)) corpoMsg = tiraHtml(corpoMsg);
+  return limpaTexto(corpoMsg);
 }
 
 
@@ -240,12 +266,14 @@ async function cerebro(pergunta, imagem) {
       ['omni', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, true]
     );
   }
-  for (let passada = 0; passada < 2; passada++) {
+  // 👁️ foto vale mais uma passada: a saturação do g4f costuma ceder em menos de um minuto
+  const passadas = imagem ? 3 : 2;
+  for (let passada = 0; passada < passadas; passada++) {
     for (let i = 0; i < rotas.length; i += 2) {
       const r = await corre(rotas.slice(i, i + 2), pergunta, imagem);
       if (r) return r;
     }
-    if (!passada) await sleep(8000);
+    if (passada < passadas - 1) await sleep(imagem ? 25000 : 8000);
   }
   return null;
 }

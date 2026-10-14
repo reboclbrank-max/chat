@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# 👁️ OLHO LOCAL DA CASA (14/10/2026) — descreve formas e cores de uma imagem SEM internet e SEM motores.
-# É a segunda rede de segurança da visão: quando os motores gratuitos saturam, a lupa lê o TEXTO e
-# este olho lê as FORMAS/CORES por análise de pixels. Simples e honesto: bom para imagens de traço e
-# para blocos grandes; em foto bagunçada, avisa que não deu para detalhar.
-# Uso: python3 tools/olho.py /caminho/imagem.png  → JSON {"descricao": "...", "formas": [...]}.
+# 👁️ OLHO LOCAL DA CASA v2 (14/10/2026) — descreve a imagem SEM internet e SEM motores.
+# v1: formas e cores de traço. v2 acrescenta o que dá para dizer com honestidade sobre foto:
+# paleta dominante, brilho, orientação, "cara de foto / documento / print" e faixas (cima/baixo).
+# Nada de inventar cena: se for foto complexa, ele diz que não detalha e entrega o que MEDIU.
+# Uso: python3 tools/olho.py /caminho/imagem.png  → JSON {"descricao", "formas", "paleta"}.
 import json
 import sys
 
@@ -14,12 +14,10 @@ PALETA = {
     'rosa': (240, 120, 180), 'marrom': (120, 80, 50), 'ciano': (40, 200, 200),
     'vinho': (130, 20, 40), 'creme': (245, 240, 220),
 }
-CLAROS = {'branco', 'creme', 'amarelo'}
-ESCUROS = {'preto'}
 
 
 def falha(msg):
-    print(json.dumps({'descricao': '', 'formas': [], 'erro': str(msg)[:160]}))
+    print(json.dumps({'descricao': '', 'formas': [], 'paleta': [], 'erro': str(msg)[:160]}))
     sys.exit(0)
 
 
@@ -52,29 +50,27 @@ def main():
     except Exception as e:
         falha('não abri a imagem: ' + str(e))
 
-    # reduz para o olho não demorar (mantém proporção)
     largura_max = 320
-    if img.size[0] > largura_max or img.size[1] > largura_max:
+    if max(img.size) > largura_max:
         escala = largura_max / max(img.size)
         img = img.resize((max(8, int(img.size[0] * escala)), max(8, int(img.size[1] * escala))), Image.LANCZOS)
     arr = np.asarray(img).astype(int)
     H, W = arr.shape[0], arr.shape[1]
 
-    # fundo = cor mais comum (quantizada)
+    # fundo = cor mais comum (quantizada) e máscara "fora do fundo"
     q = (arr // 24) * 24
     cores, contagens = np.unique(q.reshape(-1, 3), axis=0, return_counts=True)
     fundo_rgb = cores[int(np.argmax(contagens))]
     fundo = nome_cor(fundo_rgb)
     dist_fundo = np.sqrt(((arr - fundo_rgb) ** 2).sum(axis=2))
+    fora = dist_fundo > 60
 
-    # máscara dos pixels "de forma": longe do fundo e de cor saturada
     nomes = np.empty((H, W), dtype=object)
     for y in range(H):
         for x in range(W):
             nomes[y, x] = nome_cor(arr[y, x])
-    def fora_do_fundo(y, x):
-        return dist_fundo[y, x] > 60
 
+    # ---- formas (como na v1, ignorando letras/traços escuros) ----
     visitado = np.zeros((H, W), dtype=bool)
     formas = []
     area_min = max(30, int(0.004 * H * W))
@@ -83,7 +79,7 @@ def main():
             if visitado[y0, x0]:
                 continue
             visitado[y0, x0] = True
-            if not fora_do_fundo(y0, x0):
+            if not fora[y0, x0]:
                 continue
             pilha = [(y0, x0)]
             px = []
@@ -92,7 +88,7 @@ def main():
                 px.append((y, x))
                 for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
                     yy, xx = y + dy, x + dx
-                    if 0 <= yy < H and 0 <= xx < W and not visitado[yy, xx] and fora_do_fundo(yy, xx):
+                    if 0 <= yy < H and 0 <= xx < W and not visitado[yy, xx] and fora[yy, xx]:
                         visitado[yy, xx] = True
                         pilha.append((yy, xx))
             if len(px) < area_min:
@@ -103,23 +99,23 @@ def main():
             alt, larg = (y2 - y1 + 1), (x2 - x1 + 1)
             area = len(px)
             preenchimento = area / float(alt * larg)
-            # perfil de largura por linha (amostra de 5 linhas) — separa triângulo de bloco
-            linhas = [y1 + int((y2 - y1) * f) for f in (0.05, 0.5, 0.95)]
-            larguras = []
-            for ly in linhas:
-                colunas = [x for (yy, x) in px if yy == ly]
-                larguras.append((max(colunas) - min(colunas) + 1) if colunas else 0)
-
-            # cor dominante do bloco
             from collections import Counter
             c = Counter(nomes[yy, xx] for (yy, xx) in px)
             cor = c.most_common(1)[0][0]
             proporcao_cor = c.most_common(1)[0][1] / float(area)
-
-            razao = larg / float(alt)
             if cor in ('preto', 'cinza') and preenchimento < 0.88:
-                continue  # letras/traços escuros não são "formas" (o texto já vem pela lupa)
-            elif preenchimento >= 0.90:
+                continue
+            if proporcao_cor < 0.5:
+                continue
+            linha5 = y1 + int((y2 - y1) * 0.05)
+            linha50 = y1 + int((y2 - y1) * 0.5)
+            linha95 = y1 + int((y2 - y1) * 0.95)
+            larguras = []
+            for ly in (linha5, linha50, linha95):
+                colunas = [x for (yy, x) in px if yy == ly]
+                larguras.append((max(colunas) - min(colunas) + 1) if colunas else 0)
+            razao = larg / float(alt)
+            if preenchimento >= 0.90:
                 tipo = 'quadrado' if 0.8 <= razao <= 1.25 else 'retângulo'
             elif preenchimento >= 0.65:
                 tipo = 'círculo' if 0.75 <= razao <= 1.33 else 'elipse'
@@ -129,22 +125,70 @@ def main():
                 tipo = 'traço/linha'
             else:
                 tipo = 'forma irregular'
-            if proporcao_cor < 0.5:
-                continue
-
             cx, cy = (x1 + x2) / 2.0, (y1 + y2) / 2.0
             horiz = 'esquerda' if cx < W / 3 else ('centro' if cx < 2 * W / 3 else 'direita')
             vert = 'em cima' if cy < H / 3 else ('no meio' if cy < 2 * H / 3 else 'embaixo')
             formas.append({'cor': cor, 'tipo': tipo, 'posicao': horiz + ', ' + vert,
                            'tamanho_pct': round(100.0 * area / (H * W), 1)})
-
     formas.sort(key=lambda f: -f['tamanho_pct'])
-    if not formas:
-        descricao = 'não encontrei blocos de forma/cores claros (deve ser foto; para descrição fina, os motores de visão)'
-    else:
-        descricao = 'fundo ' + fundo + '; ' + '; '.join(
-            '%s %s (%s)' % (f['tipo'], f['cor'], f['posicao']) for f in formas[:6])
-    print(json.dumps({'descricao': descricao, 'formas': formas[:6]}))
+    formas = formas[:6]
+
+    # ---- medidas honestas para foto ----
+    cinza = (arr[:, :, 0] * 0.299 + arr[:, :, 1] * 0.587 + arr[:, :, 2] * 0.114)
+    brilho = float(cinza.mean())
+    nivel = 'clara' if brilho > 170 else ('escura' if brilho < 85 else 'de brilho médio')
+    orient = 'paisagem (deitada)' if W > H * 1.15 else ('retrato (em pé)' if H > W * 1.15 else 'quadrada')
+    grad = np.abs(np.gradient(cinza)[0]) + np.abs(np.gradient(cinza)[1])
+    densidade = float((grad > 25).mean())
+    rotulo_det = 'muito detalhada (cara de foto)' if densidade > 0.12 else ('simples (cara de desenho/documento)' if densidade < 0.045 else 'detalhe médio')
+
+    # paleta fora do fundo (top 3)
+    cores_px = arr[fora] if fora.any() else arr.reshape(-1, 3)
+    paleta = []
+    if len(cores_px):
+        passos = ((cores_px // 40) * 40)
+        uniq, cnt = np.unique(passos, axis=0, return_counts=True)
+        ordem = np.argsort(cnt)[::-1][:6]
+        total = float(cnt.sum())
+        vistos = set()
+        for i in ordem:
+            nome = nome_cor(uniq[i])
+            if nome in vistos:
+                continue
+            vistos.add(nome)
+            paleta.append({'cor': nome, 'pct': round(100.0 * cnt[i] / total, 1)})
+            if len(paleta) >= 3:
+                break
+
+    # documento/print: fundo claro + traços escuros + baixa saturação de cor
+    frac_escuro = float((cinza < 110).mean())
+    parece_doc = (fundo in ('branco', 'creme')) and 0.01 <= frac_escuro <= 0.35 and brilho > 165
+    # faixas (cima/baixo) — só quando forem bem diferentes
+    faixa = ''
+    if H >= 40:
+        topo = arr[:max(1, H // 4)].reshape(-1, 3)
+        base = arr[-max(1, H // 4):].reshape(-1, 3)
+        ctopo = nome_cor(topo.mean(axis=0))
+        cbase = nome_cor(base.mean(axis=0))
+        if ctopo != cbase and nome_cor(topo.mean(axis=0)) != 'outro':
+            faixa = 'metade de cima tende a ' + ctopo + ', a de baixo a ' + cbase
+
+    # ---- descrição ----
+    partes = []
+    if formas:
+        partes.append('fundo ' + fundo + '; ' + '; '.join(
+            '%s %s (%s)' % (f['tipo'], f['cor'], f['posicao']) for f in formas))
+    if parece_doc:
+        partes.append('parece documento/print com texto (muito traço escuro em fundo claro)')
+    if paleta and not formas:
+        partes.append('paleta dominante: ' + ', '.join('%s %s%%' % (p['cor'], p['pct']) for p in paleta))
+    partes.append('imagem ' + orient + ', ' + nivel + ' (' + rotulo_det + ')')
+    if faixa and not formas:  # com formas já descritas, a faixa vira ruído
+        partes.append(faixa)
+    if not formas and densidade > 0.12:
+        partes.append('olho local não detalha cena de foto — para isso, os motores de visão (ou o texto pela lupa)')
+    descricao = '; '.join(partes)
+    print(json.dumps({'descricao': descricao, 'formas': formas, 'paleta': paleta}))
 
 
 main()
