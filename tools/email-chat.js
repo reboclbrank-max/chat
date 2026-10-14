@@ -293,6 +293,18 @@ async function olhoDaFoto(imagem) {
     return String(j.descricao || '').trim();
   } catch (e) { return ''; }
 }
+// 🎯 OLHO v4 — pistas medidas (rostos, faixas de cena) para APOIAR os motores de visão no prompt.
+async function olhoPistas(imagem) {
+  const spawnSync = require('child_process').spawnSync;
+  const fsLocal = require('fs');
+  const caminho = '/tmp/olho-pistas.' + (imagem.tipo.split('/')[1] || 'png');
+  try { fsLocal.writeFileSync(caminho, Buffer.from(imagem.b64, 'base64')); } catch (e) { return ''; }
+  const r = spawnSync('python3', ['tools/olho.py', caminho], { timeout: 90000, encoding: 'utf8' });
+  try {
+    const j = JSON.parse(String(r.stdout || '').trim().split(NL).pop());
+    return String(j.pistas || '').trim();
+  } catch (e) { return ''; }
+}
 // 🖨️ PDF digitalizado (scan): renderiza a 1ª página em PNG (pdftoppm) e devolve como imagem para a VISÃO.
 async function renderPdf(a) {
   const spawnSync = require('child_process').spawnSync;
@@ -524,8 +536,11 @@ async function processOnce() {
       const blocoCtx = contexto ? (NL + NL + 'Contexto de mensagens anteriores desta conversa (use somente se ajudar; pode ignorar):' + NL + contexto) : '';
       console.log('📨 de', de, '| assunto:', assunto.slice(0, 60), imagem ? '| 📷 foto ' + imagem.tipo + ' ~' + Math.round(imagem.bytes / 1024) + 'KB' : (audioAnexo ? '| 🎤 áudio ' + audioAnexo.tipo + ' ~' + Math.round(audioAnexo.bytes / 1024) + 'KB' : (docAnexo ? '| 📄 doc ' + docAnexo.nome + ' ~' + Math.round(docAnexo.bytes / 1024) + 'KB' : '')));
       const imagemVisao = imagem || imagemDoPdf;
+      // 🎯 v11: pistas do olho local entram no prompt dos motores (apoio honesto — "pode ser impreciso")
+      let dicaOlho = '';
+      if (imagemVisao) { const pistasOlho = await olhoPistas(imagemVisao); if (pistasOlho) dicaOlho = NL + NL + 'Um olho local mediu a imagem antes de você (pode ser impreciso — use como apoio, sem inventar além disto): ' + pistasOlho; }
       const pergunta = imagemVisao
-        ? 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + (imagem ? ' O dono mandou uma FOTO por e-mail' : ' O dono mandou um PDF DIGITALIZADO (a 1ª página foi renderizada aqui)') + '; descreva com precisão o que você vê e responda a pergunta dele, em português claro (máx 15 linhas). Se houver texto visível, leia o texto.\n\nPergunta dele: ' + (corpoMsg || assunto) + (textoDoc ? NL + NL + 'O dono TAMBÉM anexou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído dele (pode estar truncado):' + NL + textoDoc + NL + 'Leve o arquivo em conta na resposta.' : '') + blocoCtx
+        ? 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + (imagem ? ' O dono mandou uma FOTO por e-mail' : ' O dono mandou um PDF DIGITALIZADO (a 1ª página foi renderizada aqui)') + '; descreva com precisão o que você vê e responda a pergunta dele, em português claro (máx 15 linhas). Se houver texto visível, leia o texto.\n\nPergunta dele: ' + (corpoMsg || assunto) + (textoDoc ? NL + NL + 'O dono TAMBÉM anexou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído dele (pode estar truncado):' + NL + textoDoc + NL + 'Leve o arquivo em conta na resposta.' : '') + blocoCtx + dicaOlho
         : 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' Responda este e-mail em português claro (máx 15 linhas):\n\n' + assunto + '\n\n' + corpoMsg + (transcrito ? NL + NL + 'O dono TAMBÉM mandou um ÁUDIO; transcrição (motor pequeno — pode errar nomes): "' + transcrito + '". Responda ao conteúdo do áudio e mostre que ouviu.' : '') + (textoDoc ? NL + NL + 'O dono TAMBÉM mandou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído dele (pode estar truncado):' + NL + textoDoc + NL + 'Responda ao conteúdo do arquivo, citando o que está nele.' : '') + blocoCtx;
       let respostaFerramenta = null, anexoVoz = null;
       const mVoz = (!imagem && !audioAnexo) ? corpoMsg.trim().match(/^voz\s*:\s*([\s\S]{1,700})$/) : null;
@@ -575,5 +590,5 @@ async function processOnce() {
   } finally { lock.release(); await client.logout(); }
   return respondidos;
 }
-module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar, extraiAnexoTexto, docTexto, olhoDaFoto, renderPdf, buscaRota, corre };
+module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar, extraiAnexoTexto, docTexto, olhoDaFoto, olhoPistas, renderPdf, buscaRota, corre };
 if (require.main === module) { processOnce().then(n => console.log('ciclo único:', n, 'respondidos')).catch(e => { console.error('ERRO:', e.message); process.exit(0); }); }
