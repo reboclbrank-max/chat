@@ -1,0 +1,41 @@
+name: Vigia da casa (24h grátis)
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+    inputs:
+      teste:
+        description: "manda um e-mail de teste ao dono"
+        type: string
+        default: 'nao'
+permissions:
+  contents: write
+  actions: write
+jobs:
+  vigia:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --no-save nodemailer
+      - run: node tools/vigia-casa.js
+        env:
+          GMAIL_CHAT_ADDR: ${{ secrets.GMAIL_CHAT_ADDR }}
+          GMAIL_CHAT_PASS: ${{ secrets.GMAIL_CHAT_PASS }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VIGIA_TESTE: ${{ inputs.teste }}
+      - name: Salva o estado do vigia
+        run: |
+          git config user.name "vigia-casa"
+          git config user.email "vigia@rebocl.local"
+          git add vigia-estado.json || true
+          git diff --cached --quiet || git commit -m "vigia: estado $(date -u +%F-%H%M)"
+          ok=0
+          for i in 1 2 3; do
+            git pull --rebase --autostash -q origin main || true
+            if git push; then ok=1; break; fi
+            sleep 5
+          done
+          [ "$ok" = "1" ] || echo "push sem mudanças ou falhou"
