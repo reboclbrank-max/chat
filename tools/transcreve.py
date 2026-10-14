@@ -50,10 +50,10 @@ def para_16k(caminho):
     return dados.astype('float32')
 
 
-def com_whisper(dados):
+def com_whisper(dados, modelo):
     try:
         from pywhispercpp.model import Model
-        m = Model('base', n_threads=max(2, (os.cpu_count() or 2) - 1), print_realtime=False,
+        m = Model(modelo, n_threads=max(2, (os.cpu_count() or 2) - 1), print_realtime=False,
                   print_progress=False, language='pt')
         segs = m.transcribe(dados, initial_prompt=DICA)
         return ' '.join(s.text for s in segs).strip()
@@ -85,7 +85,11 @@ def main():
         falha('sem arquivo de áudio')
     dados = para_16k(sys.argv[1])
 
-    texto, motor = com_whisper(dados), 'whisper-base'
+    # modelo 'small' (14/10: "Regue a horta amanhã cedo" certo, onde o 'base' errava);
+    # reservas: 'base' (mais rápido) e o Vosk (leve, offline).
+    texto, motor = com_whisper(dados, 'small'), 'whisper-small'
+    if len(texto) < 2:
+        texto, motor = com_whisper(dados, 'base'), 'whisper-base'
     if len(texto) < 2:
         texto, motor = com_vosk(dados), 'vosk'
     if len(texto) < 2:

@@ -202,35 +202,83 @@ function citacaoDoEmail(bruto) {
 // 🪞 CAPACIDADES (14/10/2026): o chat precisa conhecer os próprios recursos para não errar sobre si mesmo.
 const CAPS = ' Você é o chat por e-mail da casa Rebocl Brank. Seja PRECISA quando falar de si: você RESPONDE e-mails; você VÊ fotos anexadas (visão) e, quando os motores de visão oscilam, ainda lê o TEXTO da foto por uma lupa própria; você OUVE áudios recebidos por e-mail (transcrição por motor pequeno — pode errar nomes) e RESPONDE EM VOZ quando o dono pede, por palavras ("manda em áudio") ou pelo comando voz:, devolvendo um áudio falado em anexo; você LÊ arquivos anexados de texto (PDF, Word, TXT) extraindo o conteúdo; e tem comandos locais que funcionam mesmo com os motores caídos: clima:, cambio:, hora:, noticias:, status: e ajuda. O que você NÃO tem: WhatsApp, anexar arquivos quaisquer (só o áudio falado que VOCÊ mesma gera), memória longa entre e-mails distantes (lembra só o que vier citado na conversa) e os motores gratuitos às vezes oscilam — nesse caso avise e peça reenvio.';
 
+async function buscaRota(nome, url, corpo, bearer, pergunta, imagem) {
+  try {
+    const headers = { 'Content-Type': 'application/json' };
+    if (bearer) headers['Authorization'] = 'Bearer unused';
+    const r = await fetch(url, { method: 'POST', headers, body: JSON.stringify(corpo), signal: AbortSignal.timeout(45000) });
+    if (!r.ok) return null;
+    const j = await r.json();
+    const t = ((((j.choices || [])[0] || {}).message || {}).content) || '';
+    if (textoUtil(t)) return { texto: t.trim().slice(0, 2500), via: nome };
+  } catch (e) {}
+  return null;
+}
+// 🏁 corrida: dispara um PAR de rotas e fica com a primeira que responder de verdade.
+// (14/10: a fila sequencial fazia pior caso de ~12 min; a corrida corta para ~3 min e antecipa o caso comum.)
+async function corre(dupla, pergunta, imagem) {
+  return new Promise(function (resolve) {
+    let restantes = dupla.length;
+    for (const rt of dupla) {
+      buscaRota(rt[0], rt[1], rt[2], rt[3], pergunta, imagem).then(function (x) {
+        if (x) resolve(x);
+        else if (--restantes === 0) resolve(null);
+      });
+    }
+  });
+}
 async function cerebro(pergunta, imagem) {
   const rotas = [];
-  if (imagem) rotas.push(['visão (auto)', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'auto', messages: [{ role: 'user', content: [{ type: 'text', text: pergunta }, { type: 'image_url', image_url: { url: 'data:' + imagem.tipo + ';base64,' + imagem.b64 } }] }], max_tokens: 600 }, true]);
-  if (imagem) rotas.push(['visão (omni)', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning', messages: [{ role: 'user', content: [{ type: 'text', text: pergunta }, { type: 'image_url', image_url: { url: 'data:' + imagem.tipo + ';base64,' + imagem.b64 } }] }], max_tokens: 600 }, true]);
-  if (!imagem) rotas.push(
-    ['frota', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'auto', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, true],
-    ['reserva', 'https://text.pollinations.ai/openai/chat/completions', { model: 'openai-fast', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, false],
-    ['llm7', 'https://api.llm7.io/v1/chat/completions', { model: 'DeepSeek-V4-Flash-0731', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, true],
-    ['omni', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, true]
-  );
-  for (let rodada = 0; rodada < 3; rodada++) {
-    for (const [nome, url, corpo, bearer] of rotas) {
-      try {
-        const headers = { 'Content-Type': 'application/json' };
-        if (bearer) headers['Authorization'] = 'Bearer unused';
-        const r = await fetch(url, { method: 'POST', headers, body: JSON.stringify(corpo), signal: AbortSignal.timeout(60000) });
-        if (!r.ok) continue;
-        const j = await r.json();
-        const t = ((((j.choices || [])[0] || {}).message || {}).content) || '';
-        if (textoUtil(t)) return { texto: t.trim().slice(0, 2500), via: nome };
-      } catch (e) {}
+  if (imagem) {
+    rotas.push(['visão (auto)', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'auto', messages: [{ role: 'user', content: [{ type: 'text', text: pergunta }, { type: 'image_url', image_url: { url: 'data:' + imagem.tipo + ';base64,' + imagem.b64 } }] }], max_tokens: 600 }, true]);
+    rotas.push(['visão (omni)', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning', messages: [{ role: 'user', content: [{ type: 'text', text: pergunta }, { type: 'image_url', image_url: { url: 'data:' + imagem.tipo + ';base64,' + imagem.b64 } }] }], max_tokens: 600 }, true]);
+  } else {
+    rotas.push(
+      ['frota', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'auto', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, true],
+      ['reserva', 'https://text.pollinations.ai/openai/chat/completions', { model: 'openai-fast', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, false],
+      ['llm7', 'https://api.llm7.io/v1/chat/completions', { model: 'DeepSeek-V4-Flash-0731', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, true],
+      ['omni', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, true]
+    );
+  }
+  for (let passada = 0; passada < 2; passada++) {
+    for (let i = 0; i < rotas.length; i += 2) {
+      const r = await corre(rotas.slice(i, i + 2), pergunta, imagem);
+      if (r) return r;
     }
-    if (!rodada) await sleep(8000);
+    if (!passada) await sleep(8000);
   }
   return null;
 }
 // 🔎 LUPA DE TEXTO (rede de segurança da visão): OCR grátis da api.ocr.space (chave pública de
 // demonstração 'helloworld', sem cadastro). Usada só quando os motores de visão oscilam — assim o
 // dono nunca fica sem resposta: pelo menos o TEXTO da foto é lido e devolvido.
+// 👁️ OLHO LOCAL: descreve formas/cores por análise de pixels (tools/olho.py) — a rede de segurança
+// que entra quando os motores de visão saturam. Não inventa: se for foto bagunçada, o olho avisa.
+async function olhoDaFoto(imagem) {
+  const spawnSync = require('child_process').spawnSync;
+  const fsLocal = require('fs');
+  const caminho = '/tmp/olho-casa.' + (imagem.tipo.split('/')[1] || 'png');
+  try { fsLocal.writeFileSync(caminho, Buffer.from(imagem.b64, 'base64')); } catch (e) { return ''; }
+  const r = spawnSync('python3', ['tools/olho.py', caminho], { timeout: 90000, encoding: 'utf8' });
+  try {
+    const j = JSON.parse(String(r.stdout || '').trim().split(NL).pop());
+    return String(j.descricao || '').trim();
+  } catch (e) { return ''; }
+}
+// 🖨️ PDF digitalizado (scan): renderiza a 1ª página em PNG (pdftoppm) e devolve como imagem para a VISÃO.
+async function renderPdf(a) {
+  const spawnSync = require('child_process').spawnSync;
+  const fsLocal = require('fs');
+  try {
+    fsLocal.writeFileSync('/tmp/scan-casa.pdf', Buffer.from(a.b64, 'base64'));
+    spawnSync('pdftoppm', ['-png', '-r', '130', '-f', '1', '-l', '1', '/tmp/scan-casa.pdf', '/tmp/scan-pagina'], { timeout: 120000 });
+    const achados = fsLocal.readdirSync('/tmp').filter(f => f.indexOf('scan-pagina') === 0 && /\.png$/.test(f));
+    if (!achados.length) return null;
+    const buf = fsLocal.readFileSync('/tmp/' + achados[0]);
+    if (buf.length < 2000) return null;
+    return { tipo: 'image/png', b64: buf.toString('base64'), bytes: buf.length };
+  } catch (e) { return null; }
+}
 async function leTextoDaFoto(imagem) {
   try {
     const corpo = 'base64Image=' + encodeURIComponent('data:' + imagem.tipo + ';base64,' + imagem.b64) +
@@ -353,6 +401,7 @@ async function fala(texto) {
   const tentativas = [
     ['edge-tts', ['--voice', 'pt-BR-FranciscaNeural', '--file', '/tmp/fala-casa.txt', '--write-media', '/tmp/fala-casa.mp3'], '/tmp/fala-casa.mp3', 'rebocl-voz.mp3'],
     ['python3', ['-m', 'edge_tts', '--voice', 'pt-BR-FranciscaNeural', '--file', '/tmp/fala-casa.txt', '--write-media', '/tmp/fala-casa.mp3'], '/tmp/fala-casa.mp3', 'rebocl-voz.mp3'],
+    ['edge-tts', ['--voice', 'pt-BR-AntonioNeural', '--file', '/tmp/fala-casa.txt', '--write-media', '/tmp/fala-casa.mp3'], '/tmp/fala-casa.mp3', 'rebocl-voz.mp3'],
     ['gtts-cli', ['--file', '/tmp/fala-casa.txt', '--lang', 'pt', '--output', '/tmp/fala-casa-g.mp3'], '/tmp/fala-casa-g.mp3', 'rebocl-voz.mp3'],
     ['python3', ['-m', 'gtts.cli', '--file', '/tmp/fala-casa.txt', '--lang', 'pt', '--output', '/tmp/fala-casa-g.mp3'], '/tmp/fala-casa-g.mp3', 'rebocl-voz.mp3'],
     ['espeak-ng', ['-v', 'pt-br', '-s', '160', '-f', '/tmp/fala-casa.txt', '-w', '/tmp/fala-casa.wav'], '/tmp/fala-casa.wav', 'rebocl-voz.wav'],
@@ -430,10 +479,14 @@ async function processOnce() {
         console.log(transcrito ? '🎧 ouvi o áudio: ' + transcrito.slice(0, 90) : '🎧 não consegui ouvir o áudio (' + audioAnexo.tipo + ')');
       }
       const docAnexo = (imagem || audioAnexo) ? null : extraiAnexoTexto(bruto);
-      let textoDoc = '';
+      let textoDoc = '', imagemDoPdf = null;
       if (docAnexo) {
         textoDoc = await docTexto(docAnexo);
-        console.log(textoDoc ? '📄 li o arquivo ' + docAnexo.nome + ' (' + Math.round(docAnexo.bytes / 1024) + 'KB → ' + textoDoc.length + ' caracteres)' : '📄 não consegui ler o arquivo ' + docAnexo.nome);
+        if (!textoDoc && /pdf/i.test(String(docAnexo.nome) + ' ' + docAnexo.tipo)) {
+          imagemDoPdf = await renderPdf(docAnexo);
+          console.log(imagemDoPdf ? '🖨️ PDF sem texto → renderizei a 1ª página e mandei para a visão' : '🖨️ PDF sem texto e não consegui renderizar');
+        }
+        if (textoDoc) console.log('📄 li o arquivo ' + docAnexo.nome + ' (' + Math.round(docAnexo.bytes / 1024) + 'KB → ' + textoDoc.length + ' caracteres)');
       }
       const chave = limpaAssunto(assunto);
       const citado = citacaoDoEmail(bruto);
@@ -441,8 +494,9 @@ async function processOnce() {
       const contexto = [citado, lembrado].filter(Boolean).join(NL + '---' + NL).slice(0, 1600);
       const blocoCtx = contexto ? (NL + NL + 'Contexto de mensagens anteriores desta conversa (use somente se ajudar; pode ignorar):' + NL + contexto) : '';
       console.log('📨 de', de, '| assunto:', assunto.slice(0, 60), imagem ? '| 📷 foto ' + imagem.tipo + ' ~' + Math.round(imagem.bytes / 1024) + 'KB' : (audioAnexo ? '| 🎤 áudio ' + audioAnexo.tipo + ' ~' + Math.round(audioAnexo.bytes / 1024) + 'KB' : (docAnexo ? '| 📄 doc ' + docAnexo.nome + ' ~' + Math.round(docAnexo.bytes / 1024) + 'KB' : '')));
-      const pergunta = imagem
-        ? 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' O dono mandou uma FOTO por e-mail; descreva com precisão o que você vê nela e responda a pergunta dele, em português claro (máx 15 linhas). Se houver texto na foto, leia o texto.\n\nPergunta dele: ' + (corpoMsg || assunto) + blocoCtx
+      const imagemVisao = imagem || imagemDoPdf;
+      const pergunta = imagemVisao
+        ? 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + (imagem ? ' O dono mandou uma FOTO por e-mail' : ' O dono mandou um PDF DIGITALIZADO (a 1ª página foi renderizada aqui)') + '; descreva com precisão o que você vê e responda a pergunta dele, em português claro (máx 15 linhas). Se houver texto visível, leia o texto.\n\nPergunta dele: ' + (corpoMsg || assunto) + blocoCtx
         : 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' Responda este e-mail em português claro (máx 15 linhas):\n\n' + assunto + '\n\n' + corpoMsg + (transcrito ? NL + NL + 'O dono TAMBÉM mandou um ÁUDIO; transcrição (motor pequeno — pode errar nomes): "' + transcrito + '". Responda ao conteúdo do áudio e mostre que ouviu.' : '') + (textoDoc ? NL + NL + 'O dono TAMBÉM mandou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído dele (pode estar truncado):' + NL + textoDoc + NL + 'Responda ao conteúdo do arquivo, citando o que está nele.' : '') + blocoCtx;
       let respostaFerramenta = null, anexoVoz = null;
       const mVoz = (!imagem && !audioAnexo) ? corpoMsg.trim().match(/^voz\s*:\s*([\s\S]{1,700})$/) : null;
@@ -454,16 +508,20 @@ async function processOnce() {
       if (respostaFerramenta) console.log('🧰 respondido por ferramenta (sem motor)');
       const r = mVoz
         ? { texto: anexoVoz ? '🎙️ Aí vai, falado (voz da casa):' + NL + NL + '« ' + mVoz[1].trim() + ' »' + NL + NL + 'O áudio vai em anexo — é só dar o play.' : 'quis te mandar um áudio, mas os motores de voz estão fora agora — tenta de novo em instantes (casa Rebocl).', via: anexoVoz ? 'voz' : 'voz-falhou' }
-        : (respostaFerramenta ? { texto: respostaFerramenta, via: 'ferramenta' } : await cerebro(pergunta, imagem));
+        : (respostaFerramenta ? { texto: respostaFerramenta, via: 'ferramenta' } : await cerebro(pergunta, imagemVisao));
       const transporte = nodemailer.createTransport({ host: 'smtp.gmail.com', port: 465, secure: true, auth: { user: USER, pass: PASS } });
       let resposta;
       if (r) resposta = r.texto;
       else if (audioAnexo) resposta = 'recebi seu áudio, mas não consegui ouvi-lo agora (os motores de escuta estão fora). Me escreve o que você queria que eu respondo na hora — ou manda o áudio de novo em alguns minutos (casa Rebocl).';
       else if (docAnexo && textoDoc) resposta = 'os motores estão oscilando agora, mas eu LI o seu arquivo "' + docAnexo.nome + '" — e o texto dele começa assim:' + NL + NL + '« ' + textoDoc.slice(0, 500) + ' »' + NL + NL + 'Me reenvia o pedido em instantes que eu comento o resto (casa Rebocl).';
       else if (docAnexo) resposta = 'recebi seu arquivo ("' + docAnexo.nome + '"), mas não consegui ler o texto dele — se ele for digitalizado (uma foto/scan), me manda como IMAGEM que eu leio pela visão; se for um formato diferente, me diz que eu vejo o que faço (casa Rebocl).';
-      else if (imagem) {
-        const lido = await leTextoDaFoto(imagem);
-        if (lido) resposta = 'recebi sua foto. Os motores de VISÃO estão oscilando agora, mas passei a minha lupa de texto e li isso na imagem:' + NL + NL + '« ' + lido + ' »' + NL + NL + 'Se quiser a descrição completa (formas, cores, cenário), me reenvia a foto em alguns minutos que eu tento de novo.';
+      else if (imagemVisao) {
+        const lido = await leTextoDaFoto(imagemVisao);
+        const visto = await olhoDaFoto(imagemVisao);
+        const pedacos = [];
+        if (lido) pedacos.push('passei a minha lupa de texto e li: « ' + lido + ' »');
+        if (visto) pedacos.push('meu olho local (análise de pixels) viu: ' + visto);
+        if (pedacos.length) resposta = 'recebi sua ' + (imagem ? 'foto' : 'página do PDF') + '. Os motores de VISÃO estão oscilando agora, mas ' + pedacos.join('. ') + '. Se quiser a leitura completa (detalhes, cenário), me reenvia em alguns minutos que eu tento de novo.';
         else resposta = 'recebi sua foto, mas não consegui abrir ela agora — manda de novo em instantes (casa Rebocl).';
       }
       else {
@@ -488,5 +546,5 @@ async function processOnce() {
   } finally { lock.release(); await client.logout(); }
   return respondidos;
 }
-module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar, extraiAnexoTexto, docTexto };
+module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar, extraiAnexoTexto, docTexto, olhoDaFoto, renderPdf, buscaRota, corre };
 if (require.main === module) { processOnce().then(n => console.log('ciclo único:', n, 'respondidos')).catch(e => { console.error('ERRO:', e.message); process.exit(0); }); }
