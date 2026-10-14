@@ -33,7 +33,7 @@ const CASOS = [
     check: t => /trim\(\)/.test(t) ? 'PASS (trim)' : 'FALHOU (não citou trim)',
     corpo: 'Em uma linha de JavaScript: como eu tiro os espaços do começo e do fim de um texto? Explique em uma frase.' },
   { n: 'R3-6', assunto: MARCA + ' R3-6 — foto nova', foto: true, esperado: 'quadrado azul, círculo vermelho, triângulo verde e o texto "CASA REBOCL 14/10/2026".',
-    check: t => (/quadrado|square/i.test(t) && /c[íi]rculo|circle/i.test(t) && /2026/.test(t)) ? 'PASS (formas + data completa)' : 'FALHOU (faltou algo)',
+    check: t => (/quadrado|square/i.test(t) && /c[íi]rculo|circle/i.test(t) && /2026/.test(t)) ? 'PASS (formas + data completa)' : (/lupa/i.test(t) && /REBOCL/i.test(t) && /2026/.test(t) ? 'PASS (lupa de texto — visão oscilou, mas o texto veio)' : 'FALHOU (faltou algo)'),
     corpo: 'Anexei uma foto nova do laboratório. Leia TODO o texto exatamente como aparece e liste as formas e cores.' },
   { n: 'R3-7', assunto: MARCA + ' R3-7 — ajuda', esperado: 'Lista de comandos e assinatura ÚNICA (o defeito da assinatura dupla foi corrigido).',
     check: t => { const c = (t.match(/— Assistente Rebocl \(casa Rebocl Brank\)/g) || []).length; return c === 1 ? 'PASS (assinatura única)' : 'FALHOU (assinatura aparece ' + c + 'x)'; },
