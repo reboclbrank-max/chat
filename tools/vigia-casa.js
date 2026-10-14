@@ -13,6 +13,7 @@ const ESTADO = 'vigia-estado.json';
 const TESTE = String(process.env.VIGIA_TESTE || process.argv[2] || '').toLowerCase() === 'sim';
 const agora = new Date().toISOString();
 const h = ms => ms / 36e5;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 async function buscaJSON(url) {
   const r = await fetch(url, { headers: { 'User-Agent': 'vigia-casa/1', 'Accept': 'application/vnd.github+json' }, signal: AbortSignal.timeout(30000) });
@@ -123,6 +124,28 @@ async function acao(rotulo, arquivo) {
     }));
   }
 
+  // 📬 CAIXA: e-mail parado sem resposta é o problema mais importante da casa (o vigia não pode dormir nele)
+  itens.push(await verifica('Caixa de e-mail', async () => {
+    if (!USER || !PASS) throw new Error('sem credenciais nesta execução');
+    let imap = null;
+    try { imap = require('imapflow'); } catch (e) { throw new Error('imapflow ausente nesta execução'); }
+    const cli = new imap.ImapFlow({ host: 'imap.gmail.com', port: 993, secure: true, auth: { user: USER, pass: PASS }, logger: false });
+    await cli.connect();
+    try {
+      const lock = await cli.getMailboxLock('INBOX');
+      try {
+        const uids = await cli.search({ seen: false });
+        const alvo = uids || [];
+        if (!alvo.length) return 'nada sem resposta';
+        const m = await cli.fetchOne(alvo[0], { envelope: true });
+        const quando = (m && m.envelope && m.envelope.date) ? new Date(m.envelope.date).getTime() : Date.now();
+        const min = (Date.now() - quando) / 60000;
+        if (min < 12) return alvo.length + ' e-mail(s) recém-chegado(s) — o turno pega em instantes';
+        throw new Error(alvo.length + ' e-mail(s) SEM RESPOSTA, o mais antigo há ' + min.toFixed(0) + ' min');
+      } finally { lock.release(); }
+    } finally { try { await cli.logout(); } catch (e) {} }
+  }));
+
   // ---- estado + anti-alarme-falso (falha só conta após 2 rodadas seguidas) ----
   let antigo = { itens: {} };
   try { antigo = JSON.parse(fs.readFileSync(ESTADO, 'utf8')); } catch (e) {}
@@ -145,8 +168,14 @@ async function acao(rotulo, arquivo) {
   if (t && !t.ok) cura.push(await acao('E-mail (turno)', 'email.yml'));
   const b = itens.find(i => i.nome === 'Bateria do cérebro');
   if (b && !b.ok) cura.push(await acao('Bateria (exame)', 'evolucao.yml'));
+  const cb = itens.find(i => i.nome === 'Caixa de e-mail');
+  if (cb && !cb.ok) cura.push(await acao('Caixa (turno)', 'email.yml'));
 
-  fs.writeFileSync(ESTADO, JSON.stringify({ verificado_em: agora, itens: novos }, null, 1));
+  // grava o estado SÓ quando algo muda (com a corrente de 20 min seria 1 commit por rodada — ruído à toa)
+  const textoAntigo = JSON.stringify((antigo && antigo.itens) || {});
+  if (textoAntigo !== JSON.stringify(novos)) {
+    fs.writeFileSync(ESTADO, JSON.stringify({ verificado_em: agora, itens: novos }, null, 1));
+  }
   console.log(linhas.join('\n'));
   if (cura.length) console.log('cura:', cura.join(' · '));
 
@@ -167,5 +196,19 @@ async function acao(rotulo, arquivo) {
     }
   } else {
     console.log('(sem mudança — nenhum aviso enviado)');
+  }
+  // 🔗 CORRENTE DO VIGIA: em vez de depender de cron (que neste repo não dispara), cada rodada
+  // dorme um pouco e chama a PRÓXIMA. Se a corrente morrer, o turno e os pulsos do site a revivem.
+  if (String(process.env.VIGIA_CADEIA || 'sim').toLowerCase() !== 'nao' && TOKEN) {
+    const min = Math.max(5, Number(process.env.VIGIA_CADEIA_MIN || 17));
+    console.log('🔗 corrente: próxima rodada em ' + min + ' min');
+    await new Promise(r => setTimeout(r, min * 60 * 1000));
+    try {
+      const rr = await fetch('https://api.github.com/repos/' + REPO + '/actions/workflows/vigia.yml/dispatches', {
+        method: 'POST', headers: { 'Authorization': 'Bearer ' + TOKEN, 'User-Agent': 'vigia-casa/1', 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ref: 'main' }), signal: AbortSignal.timeout(30000)
+      });
+      console.log('🔗 próxima rodada despachada (' + rr.status + ')');
+    } catch (e) { console.log('🔗 dispatch da corrente falhou:', e.message); }
   }
 })().catch(e => { console.error('ERRO no vigia:', e.message); process.exit(0); });

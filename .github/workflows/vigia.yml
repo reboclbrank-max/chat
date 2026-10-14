@@ -8,6 +8,10 @@ on:
         description: "manda um e-mail de teste ao dono"
         type: string
         default: 'nao'
+      cadeia:
+        description: "encadeia a próxima rodada (sim/nao)"
+        type: string
+        default: 'sim'
 permissions:
   contents: write
   actions: write
@@ -19,13 +23,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: npm install --no-save nodemailer
+      - run: npm install --no-save nodemailer imapflow
       - run: node tools/vigia-casa.js
         env:
           GMAIL_CHAT_ADDR: ${{ secrets.GMAIL_CHAT_ADDR }}
           GMAIL_CHAT_PASS: ${{ secrets.GMAIL_CHAT_PASS }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VIGIA_TESTE: ${{ inputs.teste }}
+          VIGIA_CADEIA: ${{ inputs.cadeia }}
       - name: Salva o estado do vigia
         run: |
           git config user.name "vigia-casa"
