@@ -88,12 +88,12 @@ async function acao(rotulo, arquivo) {
       return 'turno ACORDADO agora · 🛡 duplicados cancelados: ' + n + '/' + (vivos.length - 1);
     }
     if (vivos.length) return 'turno ACORDADO agora' + (naFila.length ? ' · 🔗 próximo já na fila' : '');
+    // fila com NADA rodando: aí sim pode ser travamento (na corrente, esperar atrás de um turno vivo é normal)
     if (naFila.length) {
-      // fila parada demais = runner travado/na fila errada → cura em vez de esperar
       const maisVelho = Math.max.apply(null, naFila.map(r => Date.now() - new Date(r.created_at).getTime()));
       const min = maisVelho / 60000;
-      if (min > 30) throw new Error('turno na fila há ' + min.toFixed(0) + 'min sem iniciar');
-      return 'turno na fila há ' + min.toFixed(0) + 'min';
+      if (min > 30) throw new Error('turno na fila há ' + min.toFixed(0) + 'min SEM nada rodando');
+      return 'turno na fila há ' + min.toFixed(0) + 'min (nada rodando ainda)';
     }
     const ult = meus[0];
     if (!ult) throw new Error('nenhuma execução encontrada');
