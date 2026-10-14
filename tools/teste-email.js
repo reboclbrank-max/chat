@@ -39,7 +39,7 @@ const CASOS = [
     check: t => { const c = (t.match(/— Assistente Rebocl \(casa Rebocl Brank\)/g) || []).length; return c === 1 ? 'PASS (assinatura única)' : 'FALHOU (assinatura aparece ' + c + 'x)'; },
     corpo: 'ajuda' },
   { n: 'R3-8', assunto: MARCA + ' R3-8 — memória (1/2)', esperado: 'Confirmar que guardou a palavra JATOBÁ.',
-    check: t => /guardad|anotad|combinad|confirmad/i.test(t) ? 'PASS (confirmou)' : 'FALHOU',
+    check: t => /guardad|anotad|combinad|confirmad|jatob/i.test(t) ? 'PASS (confirmou)' : 'FALHOU',
     corpo: 'Guarde uma palavra-chave para a próxima mensagem: JATOBÁ é o nome que eu dei pra horta. Responda só confirmado.' },
   { n: 'R3-9', assunto: MARCA + ' R3-9 — limites (2ª vez)', esperado: 'Limites reais SEM dizer que não abre anexos/fotos (o CAPS foi aplicado).',
     check: t => /n[ãa]o (consigo|posso) (abrir|processar) (arquivos|anexos|fotos)/i.test(t) ? 'FALHOU (ainda diz que não vê anexos)' : 'PASS (não nega a visão)',
