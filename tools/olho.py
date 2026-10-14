@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# 👁️ OLHO LOCAL DA CASA v2 (14/10/2026) — descreve a imagem SEM internet e SEM motores.
-# v1: formas e cores de traço. v2 acrescenta o que dá para dizer com honestidade sobre foto:
-# paleta dominante, brilho, orientação, "cara de foto / documento / print" e faixas (cima/baixo).
-# Nada de inventar cena: se for foto complexa, ele diz que não detalha e entrega o que MEDIU.
-# Uso: python3 tools/olho.py /caminho/imagem.png  → JSON {"descricao", "formas", "paleta"}.
+# 👁️ OLHO LOCAL DA CASA v3 (14/10/2026) — descreve a imagem SEM internet e SEM motores.
+# v1: formas e cores de traço. v2: paleta, brilho, orientação, faixas, documento/print.
+# v3: ROSTOS (opencv haar, offline — "quanta gente aparece"), nitidez (foto tremida?) e
+#     preto-e-branco/cor. Tudo medido; nada inventado: quando não dá, ele diz que não dá.
+# Uso: python3 tools/olho.py /caminho/imagem.png  → JSON {"descricao", "formas", "paleta", "rostos"}.
 import json
 import sys
 
@@ -17,7 +17,7 @@ PALETA = {
 
 
 def falha(msg):
-    print(json.dumps({'descricao': '', 'formas': [], 'paleta': [], 'erro': str(msg)[:160]}))
+    print(json.dumps({'descricao': '', 'formas': [], 'paleta': [], 'rostos': 0, 'erro': str(msg)[:160]}))
     sys.exit(0)
 
 
@@ -35,6 +35,31 @@ def nome_cor(rgb):
         if d < dist:
             melhor, dist = nome, d
     return melhor
+
+
+def rostos(caminho, H, W):
+    """Quantos rostos? (opencv offline; se não tiver opencv, devolve None — melhor não saber do que errar.)"""
+    try:
+        import cv2
+        if not hasattr(cv2, 'CascadeClassifier'):
+            return None
+        casc = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        if casc.empty():
+            return None
+        img = cv2.imread(caminho)
+        if img is None:
+            return None
+        cinza = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        achados = casc.detectMultiScale(cinza, scaleFactor=1.1, minNeighbors=7, minSize=(max(40, H // 8), max(40, H // 8)))
+        detalhes = []
+        for (x, y, w, h) in achados[:4]:
+            cx, cy = (x + w / 2.0) / W, (y + h / 2.0) / H
+            horiz = 'esquerda' if cx < 0.4 else ('centro' if cx < 0.6 else 'direita')
+            vert = 'em cima' if cy < 0.4 else ('no meio' if cy < 0.6 else 'embaixo')
+            detalhes.append(horiz + ', ' + vert)
+        return {'n': len(achados), 'onde': detalhes}
+    except Exception:
+        return None
 
 
 def main():
@@ -57,7 +82,9 @@ def main():
     arr = np.asarray(img).astype(int)
     H, W = arr.shape[0], arr.shape[1]
 
-    # fundo = cor mais comum (quantizada) e máscara "fora do fundo"
+    # rostos na imagem CHEIA (não na reduzida — o haar precisa de detalhe)
+    det = rostos(sys.argv[1], H, W)
+
     q = (arr // 24) * 24
     cores, contagens = np.unique(q.reshape(-1, 3), axis=0, return_counts=True)
     fundo_rgb = cores[int(np.argmax(contagens))]
@@ -70,7 +97,6 @@ def main():
         for x in range(W):
             nomes[y, x] = nome_cor(arr[y, x])
 
-    # ---- formas (como na v1, ignorando letras/traços escuros) ----
     visitado = np.zeros((H, W), dtype=bool)
     formas = []
     area_min = max(30, int(0.004 * H * W))
@@ -102,14 +128,11 @@ def main():
             from collections import Counter
             c = Counter(nomes[yy, xx] for (yy, xx) in px)
             cor = c.most_common(1)[0][0]
-            proporcao_cor = c.most_common(1)[0][1] / float(area)
             if cor in ('preto', 'cinza') and preenchimento < 0.88:
                 continue
-            if proporcao_cor < 0.5:
+            if c.most_common(1)[0][1] / float(area) < 0.5:
                 continue
-            linha5 = y1 + int((y2 - y1) * 0.05)
-            linha50 = y1 + int((y2 - y1) * 0.5)
-            linha95 = y1 + int((y2 - y1) * 0.95)
+            linha5, linha50, linha95 = y1 + int((y2 - y1) * 0.05), y1 + int((y2 - y1) * 0.5), y1 + int((y2 - y1) * 0.95)
             larguras = []
             for ly in (linha5, linha50, linha95):
                 colunas = [x for (yy, x) in px if yy == ly]
@@ -133,7 +156,6 @@ def main():
     formas.sort(key=lambda f: -f['tamanho_pct'])
     formas = formas[:6]
 
-    # ---- medidas honestas para foto ----
     cinza = (arr[:, :, 0] * 0.299 + arr[:, :, 1] * 0.587 + arr[:, :, 2] * 0.114)
     brilho = float(cinza.mean())
     nivel = 'clara' if brilho > 170 else ('escura' if brilho < 85 else 'de brilho médio')
@@ -141,8 +163,13 @@ def main():
     grad = np.abs(np.gradient(cinza)[0]) + np.abs(np.gradient(cinza)[1])
     densidade = float((grad > 25).mean())
     rotulo_det = 'muito detalhada (cara de foto)' if densidade > 0.12 else ('simples (cara de desenho/documento)' if densidade < 0.045 else 'detalhe médio')
+    nitidez = float(np.var(np.gradient(cinza)[0]) + np.var(np.gradient(cinza)[1]))
+    tremida = nitidez < 18.0
 
-    # paleta fora do fundo (top 3)
+    # preto e branco? (saturação média baixa E pouca diferença entre canais)
+    dif_canais = float(np.mean(np.abs(arr[:, :, 0] - arr[:, :, 2]) + np.abs(arr[:, :, 1] - arr[:, :, 2])) / 2)
+    pb = dif_canais < 10
+
     cores_px = arr[fora] if fora.any() else arr.reshape(-1, 3)
     paleta = []
     if len(cores_px):
@@ -160,35 +187,39 @@ def main():
             if len(paleta) >= 3:
                 break
 
-    # documento/print: fundo claro + traços escuros + baixa saturação de cor
     frac_escuro = float((cinza < 110).mean())
-    parece_doc = (fundo in ('branco', 'creme')) and 0.01 <= frac_escuro <= 0.35 and brilho > 165
-    # faixas (cima/baixo) — só quando forem bem diferentes
+    # documento/print exige também pouca cor (papel não é colorido) — 14/10: o retrato colorido enganava
+    parece_doc = (fundo in ('branco', 'creme')) and 0.01 <= frac_escuro <= 0.35 and brilho > 165 and dif_canais < 22
     faixa = ''
     if H >= 40:
         topo = arr[:max(1, H // 4)].reshape(-1, 3)
         base = arr[-max(1, H // 4):].reshape(-1, 3)
-        ctopo = nome_cor(topo.mean(axis=0))
-        cbase = nome_cor(base.mean(axis=0))
-        if ctopo != cbase and nome_cor(topo.mean(axis=0)) != 'outro':
+        ctopo, cbase = nome_cor(topo.mean(axis=0)), nome_cor(base.mean(axis=0))
+        if ctopo != cbase and ctopo != 'outro':
             faixa = 'metade de cima tende a ' + ctopo + ', a de baixo a ' + cbase
 
-    # ---- descrição ----
     partes = []
     if formas:
         partes.append('fundo ' + fundo + '; ' + '; '.join(
             '%s %s (%s)' % (f['tipo'], f['cor'], f['posicao']) for f in formas))
+    if det and det['n'] > 0:
+        partes.append('detectei ' + str(det['n']) + ' rosto(s) provavel(is) de pessoa (' + '; '.join(det['onde']) + ')')
     if parece_doc:
         partes.append('parece documento/print com texto (muito traço escuro em fundo claro)')
     if paleta and not formas:
         partes.append('paleta dominante: ' + ', '.join('%s %s%%' % (p['cor'], p['pct']) for p in paleta))
     partes.append('imagem ' + orient + ', ' + nivel + ' (' + rotulo_det + ')')
-    if faixa and not formas:  # com formas já descritas, a faixa vira ruído
+    if pb:
+        partes.append('sem cor (preto e branco/cinza)')
+    if tremida:
+        partes.append('meio desfocada (pode ter saído tremida)')
+    if faixa and not formas:
         partes.append(faixa)
-    if not formas and densidade > 0.12:
+    if not formas and not (det and det['n'] > 0) and densidade > 0.12:
         partes.append('olho local não detalha cena de foto — para isso, os motores de visão (ou o texto pela lupa)')
     descricao = '; '.join(partes)
-    print(json.dumps({'descricao': descricao, 'formas': formas, 'paleta': paleta}))
+    print(json.dumps({'descricao': descricao, 'formas': formas, 'paleta': paleta,
+                      'rostos': (det or {}).get('n', 0)}))
 
 
 main()
