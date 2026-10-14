@@ -66,8 +66,24 @@ async function acao(rotulo, arquivo) {
   itens.push(await verifica('Chat por e-mail (24h)', async () => {
     if (!runs) throw new Error('API de execuções indisponível');
     const meus = runs.workflow_runs.filter(r => r.name.includes('email'));
-    const vivo = meus.find(r => r.status === 'in_progress' || r.status === 'queued');
-    if (vivo) return 'turno ACORDADO agora';
+    const vivos = meus.filter(r => r.status === 'in_progress' || r.status === 'queued');
+    if (vivos.length > 1) {
+      // 🛡 turnos duplicados (achado da auditoria de 14/10): mantém o mais antigo e cancela os extras
+      const manter = vivos[vivos.length - 1];
+      let n = 0;
+      for (const r of vivos) {
+        if (r.id === manter.id || !TOKEN) continue;
+        try {
+          const rr = await fetch('https://api.github.com/repos/' + REPO + '/actions/runs/' + r.id + '/cancel', {
+            method: 'POST', headers: { 'Authorization': 'Bearer ' + TOKEN, 'User-Agent': 'vigia-casa/1', 'Accept': 'application/vnd.github+json' },
+            signal: AbortSignal.timeout(30000)
+          });
+          if (rr.status === 202) n++;
+        } catch (e) {}
+      }
+      return 'turno ACORDADO agora · 🛡 duplicados cancelados: ' + n + '/' + (vivos.length - 1);
+    }
+    if (vivos.length) return 'turno ACORDADO agora';
     const ult = meus[0];
     if (!ult) throw new Error('nenhuma execução encontrada');
     const idade = h(Date.now() - new Date(ult.created_at).getTime());
