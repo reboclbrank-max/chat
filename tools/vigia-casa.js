@@ -88,11 +88,19 @@ async function acao(rotulo, arquivo) {
       return 'turno ACORDADO agora · 🛡 duplicados cancelados: ' + n + '/' + (vivos.length - 1);
     }
     if (vivos.length) return 'turno ACORDADO agora' + (naFila.length ? ' · 🔗 próximo já na fila' : '');
+    if (naFila.length) {
+      // fila parada demais = runner travado/na fila errada → cura em vez de esperar
+      const maisVelho = Math.max.apply(null, naFila.map(r => Date.now() - new Date(r.created_at).getTime()));
+      const min = maisVelho / 60000;
+      if (min > 30) throw new Error('turno na fila há ' + min.toFixed(0) + 'min sem iniciar');
+      return 'turno na fila há ' + min.toFixed(0) + 'min';
+    }
     const ult = meus[0];
     if (!ult) throw new Error('nenhuma execução encontrada');
     const idade = h(Date.now() - new Date(ult.created_at).getTime());
-    if (idade > 7) throw new Error('último turno há ' + idade.toFixed(1) + 'h');
-    return 'turno recente há ' + idade.toFixed(1) + 'h';
+    // 14/10: corrente nova — sem NADA vivo nem na fila, 45 min já é sinal de corrente quebrada (antes: 7h)
+    if (idade > 0.75) throw new Error('nenhum turno vivo há ' + idade.toFixed(1) + 'h');
+    return 'turno recente há ' + (idade * 60).toFixed(0) + 'min';
   }));
 
   itens.push(await verifica('Bateria do cérebro', async () => {
