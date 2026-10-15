@@ -5,6 +5,7 @@
 // v12.2: resposta de foto que NÃO viu a imagem (diz que não enxerga ou só repete medidas locais) é descartada
 // na corrida; o prompt leva só o que ajuda de verdade (rostos quando a pergunta é sobre pessoas; OCR >= 80%).
 // v12.3: polimento do fallback — "pela lupa" (era "pelo lupa") e respostas começando com maiúscula.
+// v12.4: PRIVACIDADE — o email-log.md vai para um repositório PÚBLICO: endereço mascarado e assunto só de teste.
 const { ImapFlow } = require('imapflow');
 const nodemailer = require('nodemailer');
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
@@ -248,6 +249,15 @@ async function buscaRota(nome, url, corpo, bearer, pergunta, imagem) {
 }
 // 🏁 corrida: dispara um PAR de rotas e fica com a primeira que responder de verdade.
 // (14/10: a fila sequencial fazia pior caso de ~12 min; a corrida corta para ~3 min e antecipa o caso comum.)
+// 🔒 v12.4: o email-log.md é público — endereço mascarado (como em provas/) e assunto só de e-mail de TESTE.
+function mascaraEndereco(a) {
+  const s = String(a || ''); const i = s.indexOf('@');
+  return i < 3 ? '***' : s.slice(0, 3) + '***' + (s.indexOf('+') >= 0 ? '+alias' : '') + s.slice(i);
+}
+function assuntoPublico(a) {
+  const s = String(a || '');
+  return /^(re:\s*)?\[TESTE-REBOCL\]/i.test(s) ? s.slice(0, 40) : '(assunto do dono — fica só na caixa)';
+}
 // 🙈 v12.2: famílias SÓ DE TEXTO (sonda 15/10: o gpt-oss-20b recebeu a foto e disse "não consigo visualizar").
 const SO_TEXTO = /gpt-oss|nemotron-3-(ultra|super)|deepseek/i;
 // 🙈 v12.2: resposta de FOTO que não viu a imagem — diz que não enxerga, ou só repete as medidas do olho local.
@@ -653,7 +663,7 @@ async function processOnce() {
       if (anexoVoz) opcoes.attachments = [{ filename: anexoVoz.nome, content: anexoVoz.buf }];
       await transporte.sendMail(opcoes);
       console.log('✉️ respondido via', r ? r.via + (r.modelo ? ' · ' + r.modelo : '') : 'sem cérebro');
-      try { require('fs').appendFileSync('email-log.md', '- ' + new Date().toISOString().slice(0, 16) + ' UTC — ' + de + ' | "' + assunto.slice(0, 40) + '" → respondido via ' + (r ? r.via + (r.modelo ? ' (' + r.modelo + ')' : '') : 'fallback') + (anexoVoz ? ' + áudio' : '') + '\n'); } catch (e) {}
+      try { require('fs').appendFileSync('email-log.md', '- ' + new Date().toISOString().slice(0, 16) + ' UTC — ' + mascaraEndereco(de) + ' | "' + assuntoPublico(assunto) + '" → respondido via ' + (r ? r.via + (r.modelo ? ' (' + r.modelo + ')' : '') : 'fallback') + (anexoVoz ? ' + áudio' : '') + '\n'); } catch (e) {}
       await client.messageFlagsAdd(uid, ['\\Seen'], { uid: true });
       memoria.set(chave, 'Pergunta: ' + String(corpoMsg || assunto).slice(0, 400) + NL + 'Resposta: ' + String(resposta).slice(0, 800));
       if (memoria.size > 25) { const k0 = memoria.keys().next().value; memoria.delete(k0); }
@@ -663,5 +673,5 @@ async function processOnce() {
   } finally { lock.release(); await client.logout(); }
   return respondidos;
 }
-module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar, extraiAnexoTexto, docTexto, olhoDaFoto, olhoPistas, leTextoLocal, leTextoLocalInfo, pareceCego, SO_TEXTO, renderPdf, buscaRota, corre };
+module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar, extraiAnexoTexto, docTexto, olhoDaFoto, olhoPistas, leTextoLocal, leTextoLocalInfo, pareceCego, SO_TEXTO, mascaraEndereco, assuntoPublico, renderPdf, buscaRota, corre };
 if (require.main === module) { processOnce().then(n => console.log('ciclo único:', n, 'respondidos')).catch(e => { console.error('ERRO:', e.message); process.exit(0); }); }
