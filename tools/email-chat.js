@@ -10,6 +10,8 @@
 // e-mail: se um falhar 2x nesta sessão, ele é pulado (fica não lido para o próximo turno) e não trava os outros.
 // v12.6: VISÃO LOCAL — se os motores de visão da internet falham, um modelo de visão na CPU do runner olha a foto
 // (tools/visao-local.py) e um motor de texto redige a resposta só com o que ela viu (dizendo de onde veio).
+// v12.7: a visão local começa JUNTO com a 1ª tentativa na internet (encerrada se a internet responder; se a internet
+// falhar e ela já tiver a foto, o chat não espera as outras tentativas). E-mail com anexo espera as ferramentas do turno.
 const { ImapFlow } = require('imapflow');
 const nodemailer = require('nodemailer');
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
@@ -282,7 +284,7 @@ async function corre(dupla, pergunta, imagem, valida) {
     }
   });
 }
-async function cerebro(pergunta, imagem) {
+async function cerebro(pergunta, imagem, opcoes) {
   const rotas = [];
   if (imagem) {
     rotas.push(['visão (auto)', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'auto', messages: [{ role: 'user', content: [{ type: 'text', text: pergunta }, { type: 'image_url', image_url: { url: 'data:' + imagem.tipo + ';base64,' + imagem.b64 } }] }], max_tokens: 600 }, true]);
@@ -302,7 +304,16 @@ async function cerebro(pergunta, imagem) {
       const r = await corre(rotas.slice(i, i + 2), pergunta, imagem, imagem ? (x => !pareceCego(x && x.texto) && !SO_TEXTO.test((x && x.modelo) || '')) : null);
       if (r) return r;
     }
-    if (passada < passadas - 1) await sleep(imagem ? 25000 : 8000);
+    if (passada < passadas - 1) {
+      // ⚡ v12.7: se a visão local já tem a foto, não espero as outras passadas da internet
+      const desiste = opcoes && opcoes.desistirSe;
+      const ate = Date.now() + (imagem ? 25000 : 8000);
+      while (Date.now() < ate) {
+        if (desiste && desiste()) { console.log('⏩ a internet falhou e a visão local já tem a foto — não espero as outras tentativas'); return null; }
+        await sleep(1000);
+      }
+      if (desiste && desiste()) { console.log('⏩ a internet falhou e a visão local já tem a foto — não espero as outras tentativas'); return null; }
+    }
   }
   return null;
 }
@@ -355,18 +366,48 @@ async function leTextoLocalInfo(imagem) {
 async function leTextoLocal(imagem) { const j = await leTextoLocalInfo(imagem); return j ? j.texto : ''; }
 // 👁️‍🗨️ v12.6: VISÃO LOCAL — modelo de visão rodando na CPU do runner (llama.cpp), sem serviço de terceiros.
 // Se o preparo em 2º plano ainda estiver baixando o modelo, o script espera a trava e usa quando ficar pronto.
-async function visaoLocal(imagem, pergunta) {
-  const spawnSync = require('child_process').spawnSync;
+// ⚡ v12.7: começa a visão local SEM bloquear — devolve { promessa, para }. "para" encerra o grupo de processos
+// (o python e o llama-mtmd-cli) quando a internet respondeu antes, liberando a CPU.
+function iniciaVisaoLocal(imagem, pergunta) {
+  const { spawn } = require('child_process');
   const fsLocal = require('fs');
   const ext = (String(imagem.tipo || 'image/png').split('/')[1] || 'png').replace('jpeg', 'jpg');
-  const caminho = '/tmp/visao-casa.' + ext;
-  try { fsLocal.writeFileSync(caminho, Buffer.from(imagem.b64, 'base64')); } catch (e) { return null; }
-  const r = spawnSync('python3', ['tools/visao-local.py', caminho, '--pergunta', String(pergunta || '').slice(0, 400)], { timeout: 480000, encoding: 'utf8' });
-  try {
-    const j = JSON.parse(String(r.stdout || '').trim().split(NL).pop());
-    if (!j.ok || !j.texto) { console.log('👁️‍🗨️ visão local: ' + (j.motivo || 'sem descrição')); return null; }
-    return { texto: String(j.texto).trim().slice(0, 2000), modelo: j.modelo || '?', segundos: j.segundos };
-  } catch (e) { console.log('👁️‍🗨️ visão local não respondeu (' + (r.error ? r.error.message : 'saída vazia') + ')'); return null; }
+  const caminho = '/tmp/visao-casa-' + Date.now() + '.' + ext;
+  try { fsLocal.writeFileSync(caminho, Buffer.from(imagem.b64, 'base64')); } catch (e) { return { promessa: Promise.resolve(null), para() {} }; }
+  let filho = null, encerrado = false;
+  const promessa = new Promise(resolve => {
+    let saida = '';
+    try { filho = spawn('python3', ['tools/visao-local.py', caminho, '--pergunta', String(pergunta || '').slice(0, 400)], { stdio: ['ignore', 'pipe', 'ignore'], detached: true }); }
+    catch (e) { resolve(null); return; }
+    const relogio = setTimeout(() => { try { process.kill(-filho.pid, 'SIGKILL'); } catch (e) {} }, 480000);
+    filho.stdout.on('data', d => { saida += d; });
+    filho.on('error', () => { clearTimeout(relogio); resolve(null); });
+    filho.on('close', () => {
+      clearTimeout(relogio);
+      try { fsLocal.unlinkSync(caminho); } catch (e) {}
+      if (encerrado) { resolve(null); return; }
+      try {
+        const j = JSON.parse(String(saida).trim().split(NL).pop());
+        if (!j.ok || !j.texto) { console.log('👁️‍🗨️ visão local: ' + (j.motivo || 'sem descrição')); resolve(null); return; }
+        resolve({ texto: String(j.texto).trim().slice(0, 2000), modelo: j.modelo || '?', segundos: j.segundos });
+      } catch (e) { console.log('👁️‍🗨️ visão local não respondeu (saída vazia)'); resolve(null); }
+    });
+  });
+  return { promessa, para() { encerrado = true; try { if (filho && filho.exitCode === null) process.kill(-filho.pid, 'SIGKILL'); } catch (e) {} } };
+}
+async function visaoLocal(imagem, pergunta) { return iniciaVisaoLocal(imagem, pergunta).promessa; }
+// ⏳ v12.7: o turno instala as ferramentas Python em 2º plano; e-mail com anexo espera ficarem prontas (até 2 min).
+async function esperaFerramentas() {
+  const marcador = process.env.FERRAMENTAS_MARCADOR;
+  if (!marcador || require('fs').existsSync(marcador)) return true;
+  console.log('⏳ chegou anexo enquanto as ferramentas do turno ainda instalam — espero ficarem prontas');
+  const ate = Date.now() + 120000;
+  while (Date.now() < ate) {
+    await sleep(2000);
+    if (require('fs').existsSync(marcador)) return true;
+  }
+  console.log('⏳ as ferramentas não ficaram prontas em 2 min — sigo com o que tiver');
+  return false;
 }
 // 🖨️ PDF digitalizado (scan): renderiza a 1ª página em PNG (pdftoppm) e devolve como imagem para a VISÃO.
 async function renderPdf(a) {
@@ -580,6 +621,7 @@ async function processOnce() {
         const anexos = extraiAnexos(bruto);
         const imagem = anexos[0] || null;
         const audioAnexo = (imagem ? null : extraiAudio(bruto));
+        if (imagem || audioAnexo || /filename=|Content-Disposition:\s*attachment/i.test(bruto)) await esperaFerramentas();
         let transcrito = '';
         if (audioAnexo) {
           transcrito = await ouve(audioAnexo);
@@ -644,10 +686,16 @@ async function processOnce() {
         if (respostaFerramenta) console.log('🧰 respondido por ferramenta (sem motor)');
         // 🎯 v12: resposta curta demais para uma foto = UMA nova tentativa exigindo concretude
         let respostaMotor = null;
+        // ⚡ v12.7: a visão local já começa a olhar a foto, em paralelo com os motores da internet
+        let localEmCurso = null, localPronto = null;
+        if (imagemVisao && !mVoz && !respostaFerramenta) {
+          localEmCurso = iniciaVisaoLocal(imagemVisao, corpoMsg || assunto);
+          localEmCurso.promessa.then(v => { localPronto = v; });
+        }
         if (!mVoz && !respostaFerramenta) {
           const testeLocal = !!imagemVisao && /\[VISAO-LOCAL\]/i.test(assunto);
           if (testeLocal) console.log('🧪 teste: visão da internet pulada de propósito ([VISAO-LOCAL] no assunto)');
-          respostaMotor = testeLocal ? null : await cerebro(pergunta, imagemVisao);
+          respostaMotor = testeLocal ? null : await cerebro(pergunta, imagemVisao, { desistirSe: () => !!localPronto });
           if (imagemVisao && respostaMotor && String(respostaMotor.texto || '').trim().length < 45) {
             console.log('⚠️ resposta curta para a foto (' + String(respostaMotor.texto || '').trim().length + ' caracteres) — tentando de novo');
             const deNovo = await cerebro(pergunta + NL + NL + 'Seja concreto: diga o que aparece (objetos, cores, pessoas, texto). Onde não tiver certeza, repita o que o olho local mediu em vez de inventar.', imagemVisao);
@@ -655,8 +703,9 @@ async function processOnce() {
           }
         }
         // 👁️‍🗨️ v12.6: os motores de visão da internet falharam → a VISÃO LOCAL olha a foto e um motor de texto redige
+        if (localEmCurso && respostaMotor) localEmCurso.para();   // ⚡ v12.7: a internet respondeu — libera a CPU
         if (imagemVisao && !respostaMotor && !mVoz && !respostaFerramenta) {
-          const vl = await visaoLocal(imagemVisao, corpoMsg || assunto);
+          const vl = localEmCurso ? await localEmCurso.promessa : null;
           if (vl) {
             console.log('👁️‍🗨️ visão local (' + vl.modelo + ', ' + vl.segundos + ' s) olhou a foto');
             const pedidoTexto = 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' Os motores de visão da internet estão fora agora, então a casa olhou a ' + (imagem ? 'FOTO' : 'página do PDF') + ' com a VISÃO LOCAL (um modelo pequeno que roda aqui mesmo e pode errar detalhes). Ela descreveu assim:' + NL + '«' + vl.texto + '»' + (ocrAceito ? NL + 'O leitor de texto local (confiança alta) leu: «' + ocrAceito.slice(0, 800) + '»' : '') + (textoDoc ? NL + NL + 'O dono TAMBÉM anexou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído (pode estar truncado):' + NL + textoDoc : '') + NL + NL + 'Pergunta do dono: ' + (corpoMsg || assunto) + NL + NL + 'Responda em português claro (máx 12 linhas) usando SOMENTE o que está descrito acima (não invente detalhes) e diga, numa frase curta no fim, que a descrição veio da visão local da casa porque os motores da internet estavam fora.';
@@ -714,5 +763,5 @@ async function processOnce() {
   } finally { lock.release(); await client.logout(); }
   return respondidos;
 }
-module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar, extraiAnexoTexto, docTexto, olhoDaFoto, olhoPistas, leTextoLocal, leTextoLocalInfo, pareceCego, SO_TEXTO, mascaraEndereco, assuntoPublico, falhasPorUid, visaoLocal, renderPdf, buscaRota, corre };
+module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar, extraiAnexoTexto, docTexto, olhoDaFoto, olhoPistas, leTextoLocal, leTextoLocalInfo, pareceCego, SO_TEXTO, mascaraEndereco, assuntoPublico, falhasPorUid, visaoLocal, iniciaVisaoLocal, esperaFerramentas, renderPdf, buscaRota, corre };
 if (require.main === module) { processOnce().then(n => console.log('ciclo único:', n, 'respondidos')).catch(e => { console.error('ERRO:', e.message); process.exit(0); }); }
