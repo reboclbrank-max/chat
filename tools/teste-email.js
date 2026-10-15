@@ -7,6 +7,7 @@
 //       oscilando, foto não vista), a nota vira "PANE — FALHOU (…)" e o placar conta à parte (rodada 16).
 // v3.9: caso R3-16 — foto + PDF com a chave [SEM-VISAO] (prova em produção o caminho "nada vê a foto" da v12.8);
 //       caso R3-17 — FOTO DE CELULAR (12 MP, gravada deitada com a marca EXIF 6), que o chat v12.9 prepara antes.
+// v3.10: e-mail SEM RESPOSTA ganha o motivo (LIDO sem resposta / NÃO LIDO / fora da caixa) — rodada 20.
 // Melhorias sobre a v2: usa o MESMO parser do canal (pegaTexto), casa cada resposta com o e-mail
 // que a originou (In-Reply-To = thread exata) e roda CHECAGENS AUTOMÁTICAS por caso no relatório.
 const fs = require('fs');
@@ -205,6 +206,21 @@ function montaMensagem(assunto, corpo, imgB64, html, pdfB64, imgNome) {
   }
   await varre();
 
+  // v3.10: o e-mail que ficou SEM RESPOSTA está "lido" (algo o tirou da fila) ou "não lido" (o chat não pegou)?
+  const sumico = new Map();
+  try {
+    const lockS = await client.getMailboxLock('INBOX');
+    try {
+      for (const e of enviados) {
+        if (casa(e)) continue;
+        const u = await client.search({ header: { 'message-id': e.id } }, { uid: true });
+        if (!u || !u.length) { sumico.set(e.id, 'o e-mail não está mais na caixa de entrada'); continue; }
+        const f = await client.fetchOne(u[u.length - 1], { flags: true }, { uid: true });
+        sumico.set(e.id, (f && f.flags && f.flags.has('\\Seen')) ? 'o e-mail está LIDO sem resposta (algo o tirou da fila)' : 'o e-mail continua NÃO LIDO (o chat não chegou a pegar)');
+      }
+    } finally { lockS.release(); }
+  } catch (err) { console.log('checagem dos sem resposta falhou:', String(err.message || err).slice(0, 80)); }
+
   const L = [];
   L.push('# 🧪 Teste do chat por e-mail — RODADA 3 — ' + new Date().toISOString().slice(0, 16) + ' UTC');
   L.push('');
@@ -231,14 +247,14 @@ function montaMensagem(assunto, corpo, imgB64, html, pdfB64, imgNome) {
       L.push('```');
       L.push(x.r.texto.slice(0, 2200) || '(vazio)');
       L.push('```');
-    } else { L.push('**SEM RESPOSTA na janela** ❌'); }
+    } else { L.push('**SEM RESPOSTA na janela** ❌' + (sumico.get(x.e.id) ? ' — ' + sumico.get(x.e.id) : '')); }
     L.push('');
   }
   L.push('## Todas as respostas vistas na janela');
   for (const r of [...porMensagem.values()].sort((a, b) => a.quando - b.quando)) L.push('- ' + new Date(r.quando).toISOString().slice(11, 16) + ' · ' + r.caixa + ' · ' + r.assunto.replace(MARCA + ' ', '').slice(0, 70));
   L.push('');
   L.push('---');
-  L.push('_Gerado por `tools/teste-email.js` v3.7 (workflow `teste-email.yml`)._');
+  L.push('_Gerado por `tools/teste-email.js` v3.10 (workflow `teste-email.yml`)._');
   const ts = new Date().toISOString().slice(0, 16).split(':').join('').split('T').join('-');
   const destino = path.join(__dirname, '..', 'provas', 'teste-email-r3-' + ts + '.md');
   fs.mkdirSync(path.dirname(destino), { recursive: true });
