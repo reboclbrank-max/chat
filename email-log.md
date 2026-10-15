@@ -1,0 +1,14 @@
+- 2026-10-15T03:30 UTC — boges1413+teste@gmail.com | "[TESTE-REBOCL] R3-6 — foto nova" → respondido via fallback
+- 2026-10-15T03:30 UTC — boges1413+teste@gmail.com | "[TESTE-REBOCL] R3-7 — ajuda" → respondido via ferramenta
+- 2026-10-15T03:30 UTC — boges1413+teste@gmail.com | "[TESTE-REBOCL] R3-8 — memória (1/2)" → respondido via reserva (gpt-oss-20b)
+- 2026-10-15T03:30 UTC — boges1413+teste@gmail.com | "[TESTE-REBOCL] R3-9 — limites (2ª vez)" → respondido via reserva (gpt-oss-20b)
+- 2026-10-15T03:30 UTC — boges1413+teste@gmail.com | "[TESTE-REBOCL] R3-10 — assunto com emoji" → respondido via reserva (gpt-oss-20b)
+- 2026-10-15T03:32 UTC — boges1413+teste@gmail.com | "[TESTE-REBOCL] R3-4 — tradução" → respondido via reserva (gpt-oss-20b)
+- 2026-10-15T03:32 UTC — boges1413+teste@gmail.com | "[TESTE-REBOCL] R3-5 — código" → respondido via reserva (gpt-oss-20b)
+- 2026-10-15T03:32 UTC — boges1413+teste@gmail.com | "[TESTE-REBOCL] R3-11 — e-mail só HTML" → respondido via reserva (gpt-oss-20b)
+- 2026-10-15T03:34 UTC — boges1413+teste@gmail.com | "[TESTE-REBOCL] R3-12 — foto + PDF juntos" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-15T03:34 UTC — boges1413+teste@gmail.com | "[TESTE-REBOCL] R3-13 — foto de bilhete" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-15T03:35 UTC — boges1413+teste@gmail.com | "Re: [TESTE-REBOCL] R3-8 — memória (1/2)" → respondido via reserva (gpt-oss-20b)
+- 2026-10-15T03:36 UTC — boges1413+teste@gmail.com | "[TESTE-REBOCL] R3-1 — recursos" → respondido via reserva (gpt-oss-20b)
+- 2026-10-15T03:36 UTC — boges1413+teste@gmail.com | "[TESTE-REBOCL] R3-2 — clima local" → respondido via ferramenta
+- 2026-10-15T03:37 UTC — boges1413+teste@gmail.com | "[TESTE-REBOCL] R3-3 — poema" → respondido via reserva (gpt-oss-20b)
