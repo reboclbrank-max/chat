@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      VISAO_MODELO: qwen3vl-2b
+      VISAO_MODELO: qwen3vl-4b
       VISAO_CACHE: /home/runner/.cache/visao-casa
     steps:
       - uses: actions/checkout@v4
