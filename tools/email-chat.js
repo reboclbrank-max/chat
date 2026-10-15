@@ -1,6 +1,7 @@
 // 📧 CHAT POR EMAIL — módulo: processa 1 varredura da caixa (responde não-lidos com 3 rotas de cérebro)
 // v12 (14/10/2026): 🔤 OCR LOCAL (tesseract) lê o texto da foto sem internet e entra no prompt;
 // resposta curta demais para foto ganha UMA nova tentativa exigindo concretude.
+// v12.1: a confiança do OCR vai no prompt; quando divergir do que o motor vê, vale a imagem.
 const { ImapFlow } = require('imapflow');
 const nodemailer = require('nodemailer');
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
@@ -570,9 +571,9 @@ async function processOnce() {
           const conf = (info.confianca == null ? 0 : info.confianca);
           const olhoViuTexto = /TEXTO|documento|print/i.test(dicaOlho);
           const pedeLeitura = /leia|leitura|\bler\b|escrit|texto|bilhete|placa|document|recibo|receita|boleto|etiqueta|r[óo]tulo|cart[ãa]o/i.test(corpoMsg + ' ' + assunto);
-          if ((olhoViuTexto && palavras >= 1) || (pedeLeitura && conf >= 50 && palavras >= 2) || (conf >= 72 && palavras >= 3)) {
+          if ((olhoViuTexto && palavras >= 1 && conf >= 55) || (pedeLeitura && conf >= 50 && palavras >= 2) || (conf >= 72 && palavras >= 3)) {
             ocrAceito = info.texto;
-            ocrFoto = NL + NL + 'Um leitor de texto LOCAL (tesseract, sem internet) leu isto na imagem — use como base e corrija só o que for claramente erro de leitura:' + NL + info.texto.slice(0, 2500);
+            ocrFoto = NL + NL + 'Um leitor de texto LOCAL (tesseract, sem internet) leu isto na imagem (confiança ' + conf + '%) — use como apoio para ler o texto; quando ele divergir do que você VÊ, confie na imagem:' + NL + info.texto.slice(0, 2500);
             console.log('🔤 texto do OCR local entrou no prompt (' + palavras + ' palavras · confiança ' + conf + '%)');
           } else console.log('🔤 OCR local ignorado (pouco sinal de texto: ' + palavras + ' palavras · confiança ' + conf + '%)');
         }
