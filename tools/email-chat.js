@@ -18,6 +18,8 @@
 // [SEM-VISAO] desliga as duas visões e prova o caminho "nada vê a foto"; log da visão local com tamanho e laço cortado.
 // v12.10: em pane, o aviso de origem é acrescentado pelo CÓDIGO (curto e fixo) — o modelo não comenta a origem nem
 // sugere que a foto tem defeito (rodada 18: "reenvie com melhor qualidade" enganava; a origem ocupava 3 frases).
+// v12.11: a instrução não fala mais do aviso automático (o modelo vazava "a casa acrescenta o aviso…"); sem visão, o
+// que vier do leitor de texto/análise de pixels é dito com a fonte; um filtro tira frases que vazem a instrução.
 const { ImapFlow } = require('imapflow');
 const nodemailer = require('nodemailer');
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
@@ -377,6 +379,11 @@ async function leTextoLocal(imagem) { const j = await leTextoLocalInfo(imagem); 
 // 📐 v12.9: foto de celular (12 MP, 3–5 MB, às vezes gravada "deitada" com a marca EXIF que manda girar) vira JPEG
 // EM PÉ com até 2048 px ANTES de tudo — a internet recebe um arquivo pequeno (serviço gratuito recusa anexo grande)
 // e a visão local, o leitor de texto e o olho veem a foto em pé. Foto pequena e em pé passa direto; erro = original.
+// 🧹 v12.11: tira frases que vazam a instrução interna ("a casa acrescenta o aviso…") — o aviso real vem do código
+function limpaVazamento(texto) {
+  const VAZA = /(acrescent|adiciona|coloca|inclui)[^.\n]{0,50}aviso|aviso[^.\n]{0,50}(autom[áa]tic|sozinh)|\ba casa (acrescenta|adiciona)/i;
+  return String(texto || '').split(NL).map(l => l.split(/(?<=[.!?])\s+/).filter(f => !VAZA.test(f)).join(' ')).filter((l, i, a) => l.trim() || (i > 0 && a[i - 1].trim())).join(NL).trim();
+}
 function preparaFoto(img) {
   return new Promise(resolve => {
     if (!img || !img.b64) return resolve(img);
@@ -743,9 +750,9 @@ async function processOnce() {
           const vl = localEmCurso ? await localEmCurso.promessa : null;
           if (vl) {
             console.log('👁️‍🗨️ visão local (' + vl.modelo + ', ' + vl.segundos + ' s) olhou a foto' + (vl.imagem ? ' · ' + vl.imagem : '') + (vl.cortado ? ' · ✂️ laço do modelo cortado' : ''));
-            const pedidoTexto = 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' Os motores de visão da internet estão fora agora, então a casa olhou a ' + (imagem ? 'FOTO' : 'página do PDF') + ' com a VISÃO LOCAL (um modelo pequeno que roda aqui mesmo e pode errar detalhes). Ela descreveu assim:' + NL + '«' + vl.texto + '»' + (ocrAceito ? NL + 'O leitor de texto local (confiança alta) leu: «' + ocrAceito.slice(0, 800) + '»' : '') + (textoDoc ? NL + NL + 'O dono TAMBÉM anexou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído (pode estar truncado):' + NL + textoDoc : '') + NL + NL + 'Pergunta do dono: ' + (corpoMsg || assunto) + NL + NL + 'Responda em português claro (máx 12 linhas) usando SOMENTE o que está descrito acima (não invente detalhes). Não comente de onde veio a descrição nem a qualidade da foto: a casa acrescenta sozinha um aviso curto no fim.';
+            const pedidoTexto = 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' Os motores de visão da internet estão fora agora, então a casa olhou a ' + (imagem ? 'FOTO' : 'página do PDF') + ' com a VISÃO LOCAL (um modelo pequeno que roda aqui mesmo e pode errar detalhes). Ela descreveu assim:' + NL + '«' + vl.texto + '»' + (ocrAceito ? NL + 'O leitor de texto local (confiança alta) leu: «' + ocrAceito.slice(0, 800) + '»' : '') + (textoDoc ? NL + NL + 'O dono TAMBÉM anexou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído (pode estar truncado):' + NL + textoDoc : '') + NL + NL + 'Pergunta do dono: ' + (corpoMsg || assunto) + NL + NL + 'Responda em português claro (máx 12 linhas) usando SOMENTE o que está descrito acima (não invente detalhes). Não fale sobre de onde veio a descrição nem sobre a qualidade da foto.';
             const redigida = await cerebro(pedidoTexto, null);
-            if (redigida && String(redigida.texto || '').trim().length > 20) respostaMotor = { texto: String(redigida.texto).trim() + NL + NL + '(Descrição feita pela visão local da casa — os motores de visão da internet ' + (/\[VISAO-LOCAL\]/i.test(assunto) ? 'foram pulados neste teste' : 'estavam fora') + '.)', via: 'visão local (' + vl.modelo + ') + ' + redigida.via, modelo: redigida.modelo };
+            if (redigida && String(redigida.texto || '').trim().length > 20) respostaMotor = { texto: limpaVazamento(redigida.texto) + NL + NL + '(Descrição feita pela visão local da casa — os motores de visão da internet ' + (/\[VISAO-LOCAL\]/i.test(assunto) ? 'foram pulados neste teste' : 'estavam fora') + '.)', via: 'visão local (' + vl.modelo + ') + ' + redigida.via, modelo: redigida.modelo };
             else respostaMotor = { texto: 'Os motores de visão da internet estão fora agora, mas a minha visão local (roda aqui mesmo) olhou a sua ' + (imagem ? 'foto' : 'página') + ':' + NL + NL + vl.texto + NL + NL + '(descrição automática local — pode errar detalhes; se quiser a leitura completa, me reenvia daqui a pouco)', via: 'visão local (' + vl.modelo + ')', modelo: vl.modelo };
           }
         }
@@ -756,9 +763,9 @@ async function processOnce() {
           if (!lidoFoto) { lupaFoto = await leTextoDaFoto(imagemVisao); lidoFoto = lupaFoto || ''; }
           if (textoDoc || lidoFoto) {
             const vistoOlho = await olhoDaFoto(imagemVisao);
-            const pedidoSemVisao = 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' Os motores de visão estão fora agora e a casa NÃO conseguiu ver a ' + (imagem ? 'foto' : 'página') + ' em detalhe.' + (lidoFoto ? ' Um leitor de texto leu isto na imagem: «' + lidoFoto + '».' : '') + (vistoOlho ? ' Uma análise simples de pixels (só cores e formas, sem entender a cena) indicou: ' + vistoOlho.slice(0, 500) + '.' : '') + (textoDoc ? NL + NL + 'O dono TAMBÉM anexou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído (pode estar truncado):' + NL + textoDoc : '') + NL + NL + 'Pergunta do dono: ' + (corpoMsg || assunto) + NL + NL + 'Responda em português claro (máx 12 linhas): responda tudo o que der com base no texto acima (principalmente o arquivo). Não invente o conteúdo da foto, não diga que ela tem pouca qualidade e não comente que ela não foi vista: a casa acrescenta sozinha esse aviso no fim.';
+            const pedidoSemVisao = 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' Os motores de visão estão fora agora e a casa NÃO conseguiu ver a ' + (imagem ? 'foto' : 'página') + ' em detalhe.' + (lidoFoto ? ' Um leitor de texto leu isto na imagem: «' + lidoFoto + '».' : '') + (vistoOlho ? ' Uma análise simples de pixels (só cores e formas, sem entender a cena) indicou: ' + vistoOlho.slice(0, 500) + '.' : '') + (textoDoc ? NL + NL + 'O dono TAMBÉM anexou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído (pode estar truncado):' + NL + textoDoc : '') + NL + NL + 'Pergunta do dono: ' + (corpoMsg || assunto) + NL + NL + 'Responda em português claro (máx 12 linhas): responda tudo o que der com base no texto acima (principalmente o arquivo). Sobre a foto, diga só o que o leitor de texto ou a análise de pixels indicaram, deixando claro que veio deles (por exemplo: "o leitor de texto achou…", "pelas cores, parece…"). Não invente o conteúdo da foto, não fale da qualidade dela e não precisa avisar que ela não foi vista.';
             const semVisao = await cerebro(pedidoSemVisao, null);
-            if (semVisao && String(semVisao.texto || '').trim().length > 20) { respostaMotor = { texto: String(semVisao.texto).trim() + NL + NL + '(A foto não pôde ser vista agora: os motores de visão ' + (testeSemVisao ? 'foram desligados neste teste' : 'estão fora') + '. Se quiser, reenvie mais tarde que eu olho de novo.)', via: 'sem visão (texto) + ' + semVisao.via, modelo: semVisao.modelo }; console.log('🧩 foto não vista, mas o texto (arquivo/leitura) foi respondido por um motor de texto'); }
+            if (semVisao && String(semVisao.texto || '').trim().length > 20) { respostaMotor = { texto: limpaVazamento(semVisao.texto) + NL + NL + '(A foto não pôde ser vista agora: os motores de visão ' + (testeSemVisao ? 'foram desligados neste teste' : 'estão fora') + '. Se quiser, reenvie mais tarde que eu olho de novo.)', via: 'sem visão (texto) + ' + semVisao.via, modelo: semVisao.modelo }; console.log('🧩 foto não vista, mas o texto (arquivo/leitura) foi respondido por um motor de texto'); }
           }
         }
         const r = mVoz
