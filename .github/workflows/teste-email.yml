@@ -25,9 +25,9 @@ jobs:
         with:
           node-version: '20'
       - run: npm install --no-save imapflow@2.4.3 nodemailer@10.1.1
-      - name: Fotos de prova geradas na hora (foto de celular de ~6 MB + HEIC do iPhone)
+      - name: Arquivos de prova gerados na hora (foto de ~6 MB, HEIC, nota de voz, planilha, PDF escaneado)
         run: |
-          python3 -m pip install --quiet --disable-pip-version-check --break-system-packages Pillow pillow-heif==1.8.1 || python3 -m pip install --quiet --disable-pip-version-check Pillow pillow-heif==1.8.1 || true
+          python3 -m pip install --quiet --disable-pip-version-check --break-system-packages Pillow pillow-heif==1.8.1 gTTS openpyxl==3.1.5 || python3 -m pip install --quiet --disable-pip-version-check Pillow pillow-heif==1.8.1 gTTS openpyxl==3.1.5 || true
           python3 tools/gerar-fixtures.py || echo "⚠️ fotos de prova não geradas"
       - name: Envia o teste e captura as respostas
         run: |

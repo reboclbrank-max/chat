@@ -12,6 +12,8 @@
 //        R3-19 — e-mail AUTOMÁTICO (Auto-Submitted): o certo é NÃO responder (RFC 3834) — PASS = lido e sem resposta.
 // v3.12: e-mails no FORMATO REAL do Gmail e do iPhone (R3-22, R3-23), 3 fotos (R3-24), HEIC (R3-25), memória pela
 //        conversa do Gmail (R3-20), remetente não autorizado (R3-21) e foto de celular de ~6 MB no R3-17.
+// v3.13: cérebro local de texto (R3-26), remetente falsificado (R3-27), nota de voz (R3-28), planilha (R3-29) e
+//        PDF escaneado de 2 páginas (R3-30); anexos genéricos (áudio, planilha, PDF) gerados na hora.
 // Melhorias sobre a v2: usa o MESMO parser do canal (pegaTexto), casa cada resposta com o e-mail
 // que a originou (In-Reply-To = thread exata) e roda CHECAGENS AUTOMÁTICAS por caso no relatório.
 const fs = require('fs');
@@ -120,7 +122,28 @@ const CASOS = [
   { n: 'R3-25', assunto: MARCA + ' R3-25 — foto HEIC do iPhone', fotoArq: 'foto-iphone.heic',
     esperado: 'Foto em HEIC (o formato padrão do iPhone): antes da v12.14 nem era reconhecida como foto. Tem de descrever a horta (3 de 4).',
     check: t => { const g = [/horta|alface|couve|verdura|hortali|canteir|vegeta/i, /regador|rega\b/i, /cachorr|\bc[ãa]o\b|cadel/i, /cerca|estaca/i]; const n = g.filter(r => r.test(t)).length; return n >= 3 ? 'PASS (abriu a HEIC e descreveu: ' + n + '/4)' : 'FALHOU (só ' + n + '/4 elementos — a HEIC abriu?)'; },
-    corpo: 'Tirei essa foto com o iPhone. O que você vê nela?' }
+    corpo: 'Tirei essa foto com o iPhone. O que você vê nela?' },
+  { n: 'R3-26', assunto: MARCA + ' R3-26 — sem internet [SEM-INTERNET]',
+    esperado: 'CÉREBRO LOCAL DE TEXTO: a chave [SEM-INTERNET] desliga os motores de texto da internet; o modelo local (o mesmo da visão local) responde 12×12 = 144 e a resposta diz que veio do cérebro local.',
+    check: t => (/\b144\b/.test(t) && /c[ée]rebro local/i.test(t)) ? 'PASS (o cérebro local respondeu 144 e disse de onde veio)' : (/c[ée]rebro local/i.test(t) ? 'FALHOU (o cérebro local respondeu, mas errou a conta)' : 'FALHOU (o cérebro local não respondeu)'),
+    corpo: 'Quanto é 12 vezes 12? Responda em uma frase curta.' },
+  { n: 'R3-27', assunto: MARCA + ' R3-27 — remetente falsificado',
+    cab: ['Authentication-Results: mx.google.com; dkim=fail header.i=@gmail.com header.s=20230601; spf=softfail (google.com: domain of transitioning teste@gmail.com does not designate 203.0.113.9 as permitted sender) smtp.mailfrom=teste@gmail.com; dmarc=fail (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com'],
+    esperado: 'REMETENTE FALSIFICADO: o "De" é um endereço autorizado, mas o carimbo do Gmail diz que a autenticação FALHOU (dkim/spf/dmarc). O chat não confia no "De": resposta curta, sem IA.',
+    check: t => (/n[ãa]o est[áa] autorizado/i.test(t) && !/\b81\b/.test(t)) ? 'PASS (não confiou no "De" falsificado)' : (/\b81\b/.test(t) ? 'FALHOU (respondeu um remetente falsificado)' : 'FALHOU (faltou o aviso de não autorizado)'),
+    corpo: 'Quanto é 9 vezes 9? Responda só o número.' },
+  { n: 'R3-28', assunto: MARCA + ' R3-28 — nota de voz', arquivos: [['nota-de-voz.ogg', 'nota-de-voz.mp3']],
+    esperado: 'NOTA DE VOZ (como o WhatsApp manda, .ogg/opus): o chat transcreve e responde — a palavra secreta MANGUEIRA e a conta (2+3) só estão no áudio.',
+    check: t => (/MANGUEIRA/i.test(t) && /\b5\b|cinco/i.test(t)) ? 'PASS (ouviu a nota de voz e respondeu)' : (/MANGUEIRA/i.test(t) ? 'FALHOU (ouviu, mas não respondeu a conta)' : 'FALHOU (não ouviu o áudio)'),
+    corpo: 'Mandei uma nota de voz. Responda o que eu perguntei no áudio e repita a palavra secreta.' },
+  { n: 'R3-29', assunto: MARCA + ' R3-29 — planilha Excel', arquivos: [['materiais.xlsx']],
+    esperado: 'PLANILHA EXCEL (.xlsx): antes da v12.15 não era lida. Tem de dizer quantos tijolos (500) e o preço do cimento (38,90).',
+    check: t => (/\b500\b/.test(t) && /38[,.]9/.test(t)) ? 'PASS (leu a planilha)' : 'FALHOU (não leu a planilha)',
+    corpo: 'Na planilha anexa, quantos tijolos tem e qual é o preço do cimento?' },
+  { n: 'R3-30', assunto: MARCA + ' R3-30 — PDF escaneado de 2 páginas', arquivos: [['pdf-escaneado.pdf']],
+    esperado: 'PDF DIGITALIZADO com 2 páginas (só imagem, sem texto): antes da v12.15 só a 1ª página era lida. A senha do portão (4721) está na página 2.',
+    check: t => /\b4721\b/.test(t) ? 'PASS (leu a página 2 do PDF escaneado)' : 'FALHOU (não leu a página 2)',
+    corpo: 'Qual é a senha do portão que aparece na página 2 do PDF anexo?' }
 ];
 const M3 = { n: 'R3-20', assunto: 'Re: ' + MARCA + ' R3-8 — memória (1/2)',
   esperado: 'MEMÓRIA PELA CONVERSA DO GMAIL: a chave [SEM-MEMORIA] faz o chat ignorar a memória do turno e a citação — só a conversa guardada no Gmail pode lembrar JATOBÁ (é a memória que sobrevive à troca de turno).',
@@ -158,12 +181,13 @@ function montaMensagem(assunto, corpo, imgB64, html, pdfB64, imgNome, extraCab, 
       '--' + D, 'Content-Type: text/html;', '\tcharset=utf-8', 'Content-Transfer-Encoding: base64', '', b64('<html><body>' + corpo + imagens.map((im, i) => '<img src="cid:foto' + i + '@iphone">').join('') + '</body></html>'), '']
       .concat(inline).concat(['--' + D + '--', '', '--' + C + '--', '']);
     bruto = cab.concat(['Content-Type: multipart/alternative;', '\tboundary=' + C, '', partes.join(CRLF)]).join(CRLF);
-  } else if (html && !imagens.length) bruto = cab.concat(['Content-Type: text/html; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', corpo]).join(CRLF);
-  else if (!imagens.length && !pdfB64) bruto = cab.concat(['Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', corpo]).join(CRLF);
+  } else if (html && !imagens.length && !(opc.arquivos || []).length) bruto = cab.concat(['Content-Type: text/html; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', corpo]).join(CRLF);
+  else if (!imagens.length && !pdfB64 && !(opc.arquivos || []).length) bruto = cab.concat(['Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', corpo]).join(CRLF);
   else {
     const b = 'fronteira-teste-' + Date.now();
     const partes = ['--' + b, 'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', corpo].concat(anexosImg(b));
     if (pdfB64) partes.push('--' + b, 'Content-Type: application/pdf; name="anexo-prova.pdf"', 'Content-Transfer-Encoding: base64', 'Content-Disposition: attachment; filename="anexo-prova.pdf"', '', pdfB64.match(/.{1,76}/g).join(CRLF));
+    for (const a of (opc.arquivos || [])) partes.push('--' + b, 'Content-Type: ' + a.tipo + '; name="' + a.nome + '"', 'Content-Transfer-Encoding: base64', 'Content-Disposition: attachment; filename="' + a.nome + '"', '', a.b64.match(/.{1,76}/g).join(CRLF));   // v3.13
     partes.push('--' + b + '--', '');
     bruto = cab.concat(['Content-Type: multipart/mixed; boundary="' + b + '"', '', partes.join(CRLF)]).join(CRLF);
   }
@@ -234,8 +258,10 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
     let fotoCaso = caso.foto ? imgB64 : null;
     if (caso.fotoArq) { const arq = path.join(__dirname, caso.fotoArq); fotoCaso = fs.existsSync(arq) ? fs.readFileSync(arq).toString('base64') : null; if (!fotoCaso) console.log('⚠️ fixture ausente:', caso.fotoArq); }
     let imagens = null;
+    const TIPOS = { ogg: 'audio/ogg', mp3: 'audio/mpeg', m4a: 'audio/mp4', xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', pdf: 'application/pdf' };
+    const arquivos = (caso.arquivos || []).map(opcoes => { const nome = opcoes.find(n => fs.existsSync(path.join(__dirname, n))); if (!nome) { console.log('⚠️ fixture ausente:', opcoes.join(' / ')); return null; } return { nome, tipo: TIPOS[nome.split('.').pop()] || 'application/octet-stream', b64: fs.readFileSync(path.join(__dirname, nome)).toString('base64') }; }).filter(Boolean);   // v3.13
     if (caso.fotos) imagens = caso.fotos.map(nome => { const arq = path.join(__dirname, nome); if (!fs.existsSync(arq)) { console.log('⚠️ fixture ausente:', nome); return null; } return { nome, b64: fs.readFileSync(arq).toString('base64') }; }).filter(Boolean);
-    const { bruto, id } = montaMensagem(caso.assunto, caso.corpo, fotoCaso, caso.html, caso.pdf ? pdfB64 : null, caso.fotoArq || null, caso.cab || null, { formato: caso.formato, imagens, inReplyTo: caso.inReplyTo, references: caso.references, de: caso.de });
+    const { bruto, id } = montaMensagem(caso.assunto, caso.corpo, fotoCaso, caso.html, caso.pdf ? pdfB64 : null, caso.fotoArq || null, caso.cab || null, { formato: caso.formato, imagens, inReplyTo: caso.inReplyTo, references: caso.references, de: caso.de, arquivos });
     let lock;
     try { lock = await client.getMailboxLock('INBOX'); await client.append('INBOX', Buffer.from(bruto), caso.lido ? ['\\Seen'] : []); }
     finally { if (lock) lock.release(); }
@@ -328,7 +354,7 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
   for (const r of [...porMensagem.values()].sort((a, b) => a.quando - b.quando)) L.push('- ' + new Date(r.quando).toISOString().slice(11, 16) + ' · ' + r.caixa + ' · ' + r.assunto.replace(MARCA + ' ', '').slice(0, 70));
   L.push('');
   L.push('---');
-  L.push('_Gerado por `tools/teste-email.js` v3.12 (workflow `teste-email.yml`)._');
+  L.push('_Gerado por `tools/teste-email.js` v3.13 (workflow `teste-email.yml`)._');
   const ts = new Date().toISOString().slice(0, 16).split(':').join('').split('T').join('-');
   const destino = path.join(__dirname, '..', 'provas', 'teste-email-r3-' + ts + '.md');
   fs.mkdirSync(path.dirname(destino), { recursive: true });
