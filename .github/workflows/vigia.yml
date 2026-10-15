@@ -32,6 +32,7 @@ jobs:
         env:
           GMAIL_CHAT_ADDR: ${{ secrets.GMAIL_CHAT_ADDR }}
           GMAIL_CHAT_PASS: ${{ secrets.GMAIL_CHAT_PASS }}
+          VIGIA_PARA: ${{ secrets.CHAT_DONO }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VIGIA_TESTE: ${{ inputs.teste }}
           VIGIA_CADEIA: ${{ inputs.cadeia }}

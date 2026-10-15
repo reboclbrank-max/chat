@@ -1,3 +1,4 @@
+// v4.2 (15/10/2026): o endereço do dono vem do segredo CHAT_DONO — saiu do código público.
 // 🩺 VIGIA DA CASA (v1, 14/10/2026) — roda no repositório PÚBLICO: minutos ILIMITADOS e grátis.
 // Olha o sistema inteiro DE FORA, cura o que dá (re-dispara turno/exame) e avisa o dono
 // por e-mail SÓ quando o estado muda. Anti-alarme-falso: uma falha só vale após 2 rodadas seguidas.
@@ -5,7 +6,8 @@ const fs = require('fs');
 let nodemailer = null;
 try { nodemailer = require('nodemailer'); } catch (e) {}
 
-const PARA = process.env.VIGIA_PARA || 'reboclbrank@gmail.com';
+const PARA = String(process.env.VIGIA_PARA || '').trim();   // v4.2: o endereço do dono vem do segredo CHAT_DONO (saiu do código público)
+console.log('📧 avisos para: ' + (PARA ? PARA.replace(/^(.{3})[^@]*/, '$1***') : '(ninguém — falta o segredo CHAT_DONO)'));
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
 const TOKEN = process.env.GITHUB_TOKEN || '';
 const REPO = 'reboclbrank-max/chat';
@@ -187,7 +189,9 @@ async function acao(rotulo, arquivo) {
       'Checagem de ' + agora + ' (UTC):\n\n' + linhas.join('\n') +
       (cura.length ? '\n\nCuras tentadas:\n- ' + cura.join('\n- ') : '') +
       '\n\n— Vigia da casa (Rebocl Brank) · este aviso só chega quando algo muda';
-    if (nodemailer && USER && PASS) {
+    if (!PARA) {
+      console.log('📧 sem destinatário (segredo CHAT_DONO ausente) — aviso só neste log');
+    } else if (nodemailer && USER && PASS) {
       const tr = nodemailer.createTransport({ host: 'smtp.gmail.com', port: 465, secure: true, auth: { user: USER, pass: PASS } });
       await tr.sendMail({ from: '"Vigia da Casa" <' + USER + '>', to: PARA, subject: assunto, text: corpo });
       console.log('📧 aviso enviado:', assunto);
