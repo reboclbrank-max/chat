@@ -12,3 +12,19 @@
 - 2026-10-15T03:36 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-1 — recursos" → respondido via reserva (gpt-oss-20b)
 - 2026-10-15T03:36 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-2 — clima local" → respondido via ferramenta
 - 2026-10-15T03:37 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-3 — poema" → respondido via reserva (gpt-oss-20b)
+- 2026-10-15T05:17 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-1 — recursos" → respondido via reserva (gpt-oss-20b)
+- 2026-10-15T05:17 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-2 — clima local" → respondido via ferramenta
+- 2026-10-15T05:18 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-3 — poema" → respondido via reserva (gpt-oss-20b)
+- 2026-10-15T05:18 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-4 — tradução" → respondido via reserva (gpt-oss-20b)
+- 2026-10-15T05:19 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-5 — código" → respondido via reserva (gpt-oss-20b)
+- 2026-10-15T05:21 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-6 — foto nova" → respondido via visão local (qwen3vl-2b) + reserva (gpt-oss-20b)
+- 2026-10-15T05:22 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-7 — ajuda" → respondido via ferramenta
+- 2026-10-15T05:22 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-8 — memória (1/2)" → respondido via reserva (gpt-oss-20b)
+- 2026-10-15T05:23 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-9 — limites (2ª vez)" → respondido via reserva (gpt-oss-20b)
+- 2026-10-15T05:23 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-10 — assunto com emoji" → respondido via reserva (gpt-oss-20b)
+- 2026-10-15T05:24 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-11 — e-mail só HTML" → respondido via reserva (gpt-oss-20b)
+- 2026-10-15T05:24 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-12 — foto + PDF juntos" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-15T05:24 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-13 — foto de bilhete" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-15T05:25 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-14 — foto complexa (ho" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-15T05:26 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-15 — visão local [VISA" → respondido via visão local (qwen3vl-2b) + reserva (gpt-oss-20b)
+- 2026-10-15T05:34 UTC — bog***+alias@gmail.com | "Re: [TESTE-REBOCL] R3-8 — memória (1/2)" → respondido via reserva (gpt-oss-20b)
