@@ -4,6 +4,7 @@
 // v12.1: a confiança do OCR vai no prompt; quando divergir do que o motor vê, vale a imagem.
 // v12.2: resposta de foto que NÃO viu a imagem (diz que não enxerga ou só repete medidas locais) é descartada
 // na corrida; o prompt leva só o que ajuda de verdade (rostos quando a pergunta é sobre pessoas; OCR >= 80%).
+// v12.3: polimento do fallback — "pela lupa" (era "pelo lupa") e respostas começando com maiúscula.
 const { ImapFlow } = require('imapflow');
 const nodemailer = require('nodemailer');
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
@@ -629,14 +630,14 @@ async function processOnce() {
       else if (docAnexo) resposta = 'recebi seu arquivo ("' + docAnexo.nome + '"), mas não consegui ler o texto dele — se ele for digitalizado (uma foto/scan), me manda como IMAGEM que eu leio pela visão; se for um formato diferente, me diz que eu vejo o que faço (casa Rebocl).';
       else if (imagemVisao) {
         let lido = ocrAceito ? ocrAceito.slice(0, 800) : '';
-        let viaLeitura = lido ? 'leitor local (sem internet)' : '';
-        if (!lido) { lido = await leTextoDaFoto(imagemVisao); if (lido) viaLeitura = 'lupa de texto'; }
-        if (!lido && ocrIncerto) { lido = ocrIncerto.slice(0, 800); viaLeitura = 'leitor local (leitura incerta)'; }
+        let viaLeitura = lido ? 'pelo leitor local (sem internet)' : '';
+        if (!lido) { lido = await leTextoDaFoto(imagemVisao); if (lido) viaLeitura = 'pela lupa de texto'; }
+        if (!lido && ocrIncerto) { lido = ocrIncerto.slice(0, 800); viaLeitura = 'pelo leitor local (leitura incerta)'; }
         const visto = await olhoDaFoto(imagemVisao);
         const pedacos = [];
-        if (lido) pedacos.push('li o texto pelo ' + viaLeitura + ': « ' + lido + ' »');
+        if (lido) pedacos.push('li o texto ' + viaLeitura + ': « ' + lido + ' »');
         if (visto) pedacos.push('meu olho local (análise de pixels) viu: ' + visto);
-        if (pedacos.length) resposta = 'recebi sua ' + (imagem ? 'foto' : 'página do PDF') + '. Os motores de VISÃO estão oscilando agora, mas ' + pedacos.join('. ') + '. Se quiser a leitura completa (detalhes, cenário), me reenvia em alguns minutos que eu tento de novo.';
+        if (pedacos.length) resposta = 'recebi sua ' + (imagem ? 'foto' : 'página do PDF') + '. Os motores de VISÃO estão oscilando agora, mas ' + pedacos.map((p, i) => i ? p.charAt(0).toUpperCase() + p.slice(1) : p).join('. ') + '. Se quiser a leitura completa (detalhes, cenário), me reenvia em alguns minutos que eu tento de novo.';
         else resposta = 'recebi sua foto, mas não consegui abrir ela agora — manda de novo em instantes (casa Rebocl).';
       }
       else {
@@ -647,6 +648,7 @@ async function processOnce() {
         anexoVoz = await fala(resposta);
         if (anexoVoz) console.log('🎙️ resposta falada a pedido (' + anexoVoz.via + ')');
       }
+      if (resposta) resposta = resposta.charAt(0).toUpperCase() + resposta.slice(1);   // v12.3: começa com maiúscula
       const opcoes = { from: '"Assistente Rebocl" <' + USER + '>', to: de, subject: 'Re: ' + assunto, text: (resposta.indexOf('Assistente Rebocl') >= 0 ? resposta : resposta + '\n\n— Assistente Rebocl (casa Rebocl Brank)'), inReplyTo: msg.envelope.messageId, references: msg.envelope.messageId };
       if (anexoVoz) opcoes.attachments = [{ filename: anexoVoz.nome, content: anexoVoz.buf }];
       await transporte.sendMail(opcoes);
