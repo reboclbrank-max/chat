@@ -22,6 +22,8 @@
 // que vier do leitor de texto/análise de pixels é dito com a fonte; um filtro tira frases que vazem a instrução.
 // v12.12: o log de execução (público) vai mascarado — endereço, assunto do dono, transcrição de áudio e nome de arquivo
 // não aparecem; cada ciclo registra os UIDs não lidos que achou e nenhum e-mail é marcado como lido em silêncio.
+// v12.13: ♻️ rede de segurança (e-mail lido e sem resposta volta para a fila); 🤖 não responde robôs (RFC 3834) e marca
+// as respostas como automáticas; 🔐 memória da conversa por remetente + assunto.
 const { ImapFlow } = require('imapflow');
 const nodemailer = require('nodemailer');
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
@@ -641,11 +643,74 @@ function pedeAudio(txt) {
 // ================== fim da voz ==================
 
 // 🧾 v12.5: falhas por e-mail nesta sessão (o escutador chama processOnce em loop no mesmo processo)
+// 🤖 v12.13: resposta automática responsável (RFC 3834) — robô não recebe resposta (evita laço de respostas automáticas).
+// Devolve o motivo (texto curto) ou '' se é gente.
+function motivoAutomatico(de, cab) {
+  const h = String(cab || '').replace(/\r?\n[ \t]+/g, ' ');
+  const val = nome => { const m = h.match(new RegExp('^' + nome + ':[ \\t]*(.*)$', 'im')); return m ? m[1].trim() : ''; };
+  const auto = val('Auto-Submitted');
+  if (auto && !/^no\b/i.test(auto)) return 'Auto-Submitted: ' + auto.slice(0, 30);
+  const prec = val('Precedence');
+  if (/^(bulk|junk|list)\b/i.test(prec)) return 'Precedence: ' + prec.slice(0, 20);
+  if (val('List-Id') || val('List-Unsubscribe')) return 'lista de e-mails';
+  if (val('X-Autoreply') || val('X-Autorespond')) return 'resposta automática de outro sistema';
+  if (/^<\s*>$/.test(val('Return-Path'))) return 'aviso de entrega (remetente vazio)';
+  const local = String(de || '').split(',')[0].trim().split('@')[0];
+  if (/^(mailer-daemon|postmaster|no-?reply|do-?not-?reply|bounces?|notifications?)$|^owner-|-request$|^bounce/i.test(local)) return 'remetente automático (' + local + ')';
+  return '';
+}
+// ♻️ v12.13: REDE DE SEGURANÇA — e-mail das últimas 6 h que está "lido" mas não tem resposta na pasta de enviados volta
+// para a fila. 8 min de folga (dá tempo de o turno responder), no máximo 10 por vez, cada e-mail UMA vez (etiqueta
+// "rebocl-devolvido" no Gmail + memória do turno); automático e da própria casa nunca voltam.
+let proximaAuditoria = 0;
+const devolvidosNoTurno = new Set();
+async function auditaSemResposta(client) {
+  const desde = Date.now() - 6 * 3600 * 1000, folga = Date.now() - 8 * 60 * 1000;
+  const pastas = await client.list();
+  const pastaEnviados = (pastas.find(p => p.specialUse === '\\Sent') || {}).path;
+  if (!pastaEnviados) { console.log('♻️ auditoria: não achei a pasta de enviados — pulo'); return 0; }
+  const respondidos = new Set();
+  let lock = await client.getMailboxLock(pastaEnviados);
+  try {
+    const u = await client.search({ since: new Date(desde) }, { uid: true });
+    if (u && u.length) for await (const m of client.fetch(u, { envelope: true }, { uid: true })) if (m.envelope && m.envelope.inReplyTo) respondidos.add(String(m.envelope.inReplyTo).trim());
+  } finally { lock.release(); }
+  lock = await client.getMailboxLock('INBOX');
+  const candidatos = [];
+  try {
+    const u = await client.search({ seen: true, since: new Date(desde) }, { uid: true });
+    if (u && u.length) {
+      for await (const m of client.fetch(u, { envelope: true, labels: true, internalDate: true, headers: ['auto-submitted', 'precedence', 'list-id', 'list-unsubscribe', 'return-path', 'x-autoreply', 'x-autorespond'] }, { uid: true })) {
+        const quando = new Date(m.internalDate || (m.envelope && m.envelope.date) || 0).getTime();
+        if (!(quando >= desde && quando <= folga)) continue;
+        const de = ((m.envelope && m.envelope.from) || []).map(f => f.address).join(',').toLowerCase();
+        if (!de || de.split(',').some(a => a.trim() === USER.toLowerCase())) continue;
+        if (motivoAutomatico(de, String(m.headers || ''))) continue;
+        if (m.labels && [...m.labels].some(l => /rebocl-devolvido/i.test(String(l)))) continue;
+        const id = String((m.envelope && m.envelope.messageId) || '').trim();
+        if (!id || respondidos.has(id) || devolvidosNoTurno.has(id)) continue;
+        candidatos.push({ uid: m.uid, id });
+      }
+    }
+    for (const c of candidatos.slice(0, 10)) {
+      await client.messageFlagsRemove(c.uid, ['\\Seen'], { uid: true });
+      devolvidosNoTurno.add(c.id);
+      try { await client.messageFlagsAdd(c.uid, ['rebocl-devolvido'], { uid: true, useLabels: true }); } catch (e) { console.log('♻️ auditoria: não consegui pôr a etiqueta no uid ' + c.uid + ' (' + String(e.message || e).slice(0, 60) + ')'); }
+    }
+  } finally { lock.release(); }
+  const n = Math.min(candidatos.length, 10);
+  if (n) console.log('♻️ auditoria: ' + n + ' e-mail(s) estavam lidos e SEM resposta — devolvidos à fila (uid ' + candidatos.slice(0, 10).map(c => c.uid).join(', ') + ')');
+  return n;
+}
 const falhasPorUid = new Map();
 async function processOnce() {
   if (!USER || !PASS) { console.error('sem credenciais'); return 0; }
   const client = new ImapFlow({ host: 'imap.gmail.com', port: 993, secure: true, auth: { user: USER, pass: PASS }, logger: false });
   await client.connect();
+  if (Date.now() >= proximaAuditoria) {   // ♻️ v12.13: antes de olhar a fila, devolve o que ficou lido e sem resposta
+    proximaAuditoria = Date.now() + (process.env.CHAT_AUDITORIA_SEG !== undefined ? Number(process.env.CHAT_AUDITORIA_SEG) : 300) * 1000;   // 5 min (teste: CHAT_AUDITORIA_SEG)
+    try { await auditaSemResposta(client); } catch (e) { console.log('♻️ auditoria falhou (sigo normal): ' + String(e.message || e).slice(0, 100)); }
+  }
   const lock = await client.getMailboxLock('INBOX');
   let respondidos = 0;
   try {
@@ -662,6 +727,8 @@ async function processOnce() {
         if (!de) { const n0 = (falhasPorUid.get(uid) || 0) + 1; falhasPorUid.set(uid, n0); console.log('⚠️ uid ' + uid + ': e-mail sem remetente legível (' + n0 + 'ª vez) — não marco como lido'); continue; }
         if (de.split(',').some(a => a.trim() === USER.toLowerCase())) { console.log('↩️ uid ' + uid + ': mensagem da própria casa — marcada como lida, sem resposta'); await client.messageFlagsAdd(uid, ['\\Seen'], { uid: true }); continue; }
         const bruto = (msg.source || '').toString();
+        const robo = motivoAutomatico(de, bruto.split(/\r?\n\r?\n/)[0]);   // 🤖 v12.13 (RFC 3834)
+        if (robo) { console.log('↩️ uid ' + uid + ': não respondo robô (' + robo + ') — marcado como lido'); await client.messageFlagsAdd(uid, ['\\Seen'], { uid: true }); continue; }
         const corpoMsg = pegaTexto(bruto, assunto);
         const anexos = extraiAnexos(bruto);
         const imagem = anexos[0] || null;
@@ -683,7 +750,7 @@ async function processOnce() {
           }
           if (textoDoc) console.log('📄 li o arquivo ' + (/^(re:\s*)?\[TESTE-REBOCL\]/i.test(assunto) ? docAnexo.nome : '(anexo do dono)') + ' (' + Math.round(docAnexo.bytes / 1024) + 'KB → ' + textoDoc.length + ' caracteres)');
         }
-        const chave = limpaAssunto(assunto);
+        const chave = de + '|' + limpaAssunto(assunto);   // 🔐 v12.13: memória por remetente + assunto
         const citado = citacaoDoEmail(bruto);
         const lembrado = memoria.has(chave) ? memoria.get(chave) : '';
         const contexto = [citado, lembrado].filter(Boolean).join(NL + '---' + NL).slice(0, 1600);
@@ -802,7 +869,7 @@ async function processOnce() {
           if (anexoVoz) console.log('🎙️ resposta falada a pedido (' + anexoVoz.via + ')');
         }
         if (resposta) resposta = resposta.charAt(0).toUpperCase() + resposta.slice(1);   // v12.3: começa com maiúscula
-        const opcoes = { from: '"Assistente Rebocl" <' + USER + '>', to: de, subject: 'Re: ' + assunto, text: (resposta.indexOf('Assistente Rebocl') >= 0 ? resposta : resposta + '\n\n— Assistente Rebocl (casa Rebocl Brank)'), inReplyTo: msg.envelope.messageId, references: msg.envelope.messageId };
+        const opcoes = { from: '"Assistente Rebocl" <' + USER + '>', to: de, subject: 'Re: ' + assunto, text: (resposta.indexOf('Assistente Rebocl') >= 0 ? resposta : resposta + '\n\n— Assistente Rebocl (casa Rebocl Brank)'), inReplyTo: msg.envelope.messageId, references: msg.envelope.messageId, headers: { 'Auto-Submitted': 'auto-replied', 'X-Auto-Response-Suppress': 'All' } };   // 🤖 v12.13
         if (anexoVoz) opcoes.attachments = [{ filename: anexoVoz.nome, content: anexoVoz.buf }];
         await transporte.sendMail(opcoes);
         console.log('✉️ respondido via', r ? r.via + (r.modelo ? ' · ' + r.modelo : '') : 'sem cérebro');
