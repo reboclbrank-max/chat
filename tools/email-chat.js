@@ -14,6 +14,8 @@
 // falhar e ela já tiver a foto, o chat não espera as outras tentativas). E-mail com anexo espera as ferramentas do turno.
 // v12.8: foto + documento em pane — a visão local só recebe a pergunta quando não há documento junto; se nada viu a
 // foto, um motor de texto responde o que é texto (arquivo, texto lido na foto) e diz com franqueza o que não deu para ver.
+// v12.9: foto de celular — preparada uma vez (em pé pela marca EXIF, até 2048 px, JPEG) antes de tudo; chave de teste
+// [SEM-VISAO] desliga as duas visões e prova o caminho "nada vê a foto"; log da visão local com tamanho e laço cortado.
 const { ImapFlow } = require('imapflow');
 const nodemailer = require('nodemailer');
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
@@ -370,6 +372,34 @@ async function leTextoLocal(imagem) { const j = await leTextoLocalInfo(imagem); 
 // Se o preparo em 2º plano ainda estiver baixando o modelo, o script espera a trava e usa quando ficar pronto.
 // ⚡ v12.7: começa a visão local SEM bloquear — devolve { promessa, para }. "para" encerra o grupo de processos
 // (o python e o llama-mtmd-cli) quando a internet respondeu antes, liberando a CPU.
+// 📐 v12.9: foto de celular (12 MP, 3–5 MB, às vezes gravada "deitada" com a marca EXIF que manda girar) vira JPEG
+// EM PÉ com até 2048 px ANTES de tudo — a internet recebe um arquivo pequeno (serviço gratuito recusa anexo grande)
+// e a visão local, o leitor de texto e o olho veem a foto em pé. Foto pequena e em pé passa direto; erro = original.
+function preparaFoto(img) {
+  return new Promise(resolve => {
+    if (!img || !img.b64) return resolve(img);
+    const fsLocal = require('fs');
+    const marca = Date.now() + '-' + Math.floor(Math.random() * 1e6);
+    const ent = '/tmp/foto-entrada-' + marca, sai = '/tmp/foto-pronta-' + marca + '.jpg';
+    try { fsLocal.writeFileSync(ent, Buffer.from(img.b64, 'base64')); } catch (e) { return resolve(img); }
+    require('child_process').execFile('python3', ['tools/prepara-foto.py', ent, sai], { timeout: 45000 }, (err, stdout) => {
+      let j = null;
+      try { j = JSON.parse(String(stdout || '').trim().split(NL).pop()); } catch (e) {}
+      try { fsLocal.unlinkSync(ent); } catch (e) {}
+      if (err || !j || !j.ok || !j.mudou) {
+        try { fsLocal.unlinkSync(sai); } catch (e) {}
+        if (j && j.ok === false) console.log('📐 foto não preparada (' + (j.motivo || 'erro') + ') — sigo com a original');
+        return resolve(img);
+      }
+      try {
+        const dados = fsLocal.readFileSync(sai);
+        fsLocal.unlinkSync(sai);
+        console.log('📐 foto preparada: ' + j.info);
+        resolve(Object.assign({}, img, { tipo: 'image/jpeg', b64: dados.toString('base64'), bytes: dados.length, preparada: j.info }));
+      } catch (e) { resolve(img); }
+    });
+  });
+}
 function iniciaVisaoLocal(imagem, pergunta) {
   const { spawn } = require('child_process');
   const fsLocal = require('fs');
@@ -391,7 +421,7 @@ function iniciaVisaoLocal(imagem, pergunta) {
       try {
         const j = JSON.parse(String(saida).trim().split(NL).pop());
         if (!j.ok || !j.texto) { console.log('👁️‍🗨️ visão local: ' + (j.motivo || 'sem descrição')); resolve(null); return; }
-        resolve({ texto: String(j.texto).trim().slice(0, 2000), modelo: j.modelo || '?', segundos: j.segundos });
+        resolve({ texto: String(j.texto).trim().slice(0, 2000), modelo: j.modelo || '?', segundos: j.segundos, imagem: j.imagem || '', cortado: !!j.cortado });
       } catch (e) { console.log('👁️‍🗨️ visão local não respondeu (saída vazia)'); resolve(null); }
     });
   });
@@ -646,7 +676,7 @@ async function processOnce() {
         const contexto = [citado, lembrado].filter(Boolean).join(NL + '---' + NL).slice(0, 1600);
         const blocoCtx = contexto ? (NL + NL + 'Contexto de mensagens anteriores desta conversa (use somente se ajudar; pode ignorar):' + NL + contexto) : '';
         console.log('📨 de', de, '| assunto:', assunto.slice(0, 60), imagem ? '| 📷 foto ' + imagem.tipo + ' ~' + Math.round(imagem.bytes / 1024) + 'KB' : (audioAnexo ? '| 🎤 áudio ' + audioAnexo.tipo + ' ~' + Math.round(audioAnexo.bytes / 1024) + 'KB' : (docAnexo ? '| 📄 doc ' + docAnexo.nome + ' ~' + Math.round(docAnexo.bytes / 1024) + 'KB' : '')));
-        const imagemVisao = imagem || imagemDoPdf;
+        const imagemVisao = await preparaFoto(imagem || imagemDoPdf);   // 📐 v12.9: em pé e menor, para todo mundo (internet, OCR, olho, visão local)
         // 🎯 v11→v12.2: o olho mede ANTES dos motores; no prompt só vai o que ajuda (rostos, quando a pergunta é sobre pessoas)
         let dicaOlho = '';
         let pistasOlho = '';
@@ -690,13 +720,14 @@ async function processOnce() {
         let respostaMotor = null;
         // ⚡ v12.7: a visão local já começa a olhar a foto, em paralelo com os motores da internet
         let localEmCurso = null, localPronto = null;
-        if (imagemVisao && !mVoz && !respostaFerramenta) {
+        const testeSemVisao = !!imagemVisao && /\[SEM-VISAO\]/i.test(assunto);   // 🧪 v12.9: prova do caminho "nada vê a foto"
+        if (imagemVisao && !mVoz && !respostaFerramenta && !testeSemVisao) {
           localEmCurso = iniciaVisaoLocal(imagemVisao, docAnexo ? '' : (corpoMsg || assunto));   // v12.8: com documento junto, a visão só descreve a foto
           localEmCurso.promessa.then(v => { localPronto = v; });
         }
         if (!mVoz && !respostaFerramenta) {
-          const testeLocal = !!imagemVisao && /\[VISAO-LOCAL\]/i.test(assunto);
-          if (testeLocal) console.log('🧪 teste: visão da internet pulada de propósito ([VISAO-LOCAL] no assunto)');
+          const testeLocal = !!imagemVisao && /\[VISAO-LOCAL\]|\[SEM-VISAO\]/i.test(assunto);
+          if (testeLocal) console.log(testeSemVisao ? '🧪 teste: visão da internet E visão local desligadas de propósito ([SEM-VISAO] no assunto)' : '🧪 teste: visão da internet pulada de propósito ([VISAO-LOCAL] no assunto)');
           respostaMotor = testeLocal ? null : await cerebro(pergunta, imagemVisao, { desistirSe: () => !!localPronto });
           if (imagemVisao && respostaMotor && String(respostaMotor.texto || '').trim().length < 45) {
             console.log('⚠️ resposta curta para a foto (' + String(respostaMotor.texto || '').trim().length + ' caracteres) — tentando de novo');
@@ -709,7 +740,7 @@ async function processOnce() {
         if (imagemVisao && !respostaMotor && !mVoz && !respostaFerramenta) {
           const vl = localEmCurso ? await localEmCurso.promessa : null;
           if (vl) {
-            console.log('👁️‍🗨️ visão local (' + vl.modelo + ', ' + vl.segundos + ' s) olhou a foto');
+            console.log('👁️‍🗨️ visão local (' + vl.modelo + ', ' + vl.segundos + ' s) olhou a foto' + (vl.imagem ? ' · ' + vl.imagem : '') + (vl.cortado ? ' · ✂️ laço do modelo cortado' : ''));
             const pedidoTexto = 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' Os motores de visão da internet estão fora agora, então a casa olhou a ' + (imagem ? 'FOTO' : 'página do PDF') + ' com a VISÃO LOCAL (um modelo pequeno que roda aqui mesmo e pode errar detalhes). Ela descreveu assim:' + NL + '«' + vl.texto + '»' + (ocrAceito ? NL + 'O leitor de texto local (confiança alta) leu: «' + ocrAceito.slice(0, 800) + '»' : '') + (textoDoc ? NL + NL + 'O dono TAMBÉM anexou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído (pode estar truncado):' + NL + textoDoc : '') + NL + NL + 'Pergunta do dono: ' + (corpoMsg || assunto) + NL + NL + 'Responda em português claro (máx 12 linhas) usando SOMENTE o que está descrito acima (não invente detalhes) e diga, numa frase curta no fim, que a descrição veio da visão local da casa porque os motores da internet estavam fora.';
             const redigida = await cerebro(pedidoTexto, null);
             if (redigida && String(redigida.texto || '').trim().length > 20) respostaMotor = { texto: redigida.texto, via: 'visão local (' + vl.modelo + ') + ' + redigida.via, modelo: redigida.modelo };
