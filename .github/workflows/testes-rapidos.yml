@@ -1,0 +1,41 @@
+name: Testes rápidos do chat (barreira antes de entrar no ar)
+# 🚦 roda a cada mudança de código do chat; o escutador (v4.3) só troca o turno se este teste passar.
+# Sem Gmail e sem IA de verdade: IMAP, SMTP e motores falsos (tools/testes/simula-caixa.js).
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/email-chat.js'
+      - 'tools/email-poll.js'
+      - 'tools/prepara-foto.py'
+      - 'tools/visao-local.py'
+      - 'tools/ocr-local.py'
+      - 'tools/olho.py'
+      - 'tools/transcreve.py'
+      - 'tools/testes/**'
+      - '.github/workflows/email.yml'
+      - '.github/workflows/testes-rapidos.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: testes-rapidos-${{ github.sha }}
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Bibliotecas (as mesmas versões do turno)
+        run: |
+          npm install --no-save imapflow@2.4.3 nodemailer@10.1.1
+          python3 -m pip install --quiet --disable-pip-version-check --break-system-packages "numpy<2.5" Pillow pillow-heif==1.8.1 openpyxl==3.1.5 pypdf || python3 -m pip install --quiet --disable-pip-version-check Pillow pillow-heif==1.8.1 openpyxl==3.1.5 pypdf
+      - name: Sintaxe
+        run: |
+          for f in tools/email-chat.js tools/email-poll.js tools/teste-email.js tools/testes/*.js; do node --check "$f"; done
+          for f in tools/prepara-foto.py tools/visao-local.py tools/ocr-local.py tools/olho.py; do python3 -m py_compile "$f"; done
+      - name: Testes rápidos (IMAP, SMTP e motores falsos)
+        run: node tools/testes/roda-testes.js
