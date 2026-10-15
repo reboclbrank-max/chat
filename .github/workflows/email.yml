@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 350
     env:
-      VISAO_MODELO: qwen3vl-2b
+      VISAO_MODELO: qwen3vl-4b
       VISAO_CACHE: /home/runner/.cache/visao-casa
     steps:
       - uses: actions/checkout@v4
@@ -93,7 +93,7 @@ jobs:
     if: github.event.schedule == '17,47 * * * *'
     runs-on: ubuntu-latest
     env:
-      VISAO_MODELO: qwen3vl-2b
+      VISAO_MODELO: qwen3vl-4b
       VISAO_CACHE: /home/runner/.cache/visao-casa
     steps:
       - uses: actions/checkout@v4
