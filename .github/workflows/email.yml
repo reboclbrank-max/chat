@@ -15,8 +15,17 @@ jobs:
     if: github.event.schedule != '17,47 * * * *'
     runs-on: ubuntu-latest
     timeout-minutes: 350
+    env:
+      VISAO_MODELO: qwen3vl-2b
+      VISAO_CACHE: /home/runner/.cache/visao-casa
     steps:
       - uses: actions/checkout@v4
+      - name: Restaura a visão local (cache do modelo)
+        id: cache-visao
+        uses: actions/cache/restore@v4
+        with:
+          path: /home/runner/.cache/visao-casa
+          key: visao-${{ env.VISAO_MODELO }}-b11635-v1
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -29,7 +38,10 @@ jobs:
           command -v pdftotext >/dev/null || faltam="$faltam poppler-utils"
           tesseract --list-langs 2>/dev/null | grep -qx por || faltam="$faltam tesseract-ocr tesseract-ocr-por"
           if [ -n "$faltam" ]; then sudo apt-get update -qq && sudo apt-get install -y -qq $faltam || true; fi
-      - run: node tools/email-poll.js
+      - run: |
+          # 👁️‍🗨️ visão local: prepara o modelo em 2º plano (o escutador já começa a atender)
+          nohup python3 tools/visao-local.py --preparar > /tmp/visao-preparo.log 2>&1 &
+          node tools/email-poll.js
         env:
           GMAIL_CHAT_ADDR: ${{ secrets.GMAIL_CHAT_ADDR }}
           GMAIL_CHAT_PASS: ${{ secrets.GMAIL_CHAT_PASS }}
@@ -61,9 +73,24 @@ jobs:
               echo "nada novo no log desta sessão"
             fi
           fi
+      - name: Visão local pronta?
+        id: visao-pronta
+        if: always()
+        run: |
+          cat /tmp/visao-preparo.log 2>/dev/null || echo "(sem log de preparo)"
+          if ls /home/runner/.cache/visao-casa/.pronto-* >/dev/null 2>&1; then echo "ok=1" >> "$GITHUB_OUTPUT"; fi
+      - name: Guarda a visão local (cache do modelo)
+        if: always() && steps.cache-visao.outputs.cache-hit != 'true' && steps.visao-pronta.outputs.ok == '1'
+        uses: actions/cache/save@v4
+        with:
+          path: /home/runner/.cache/visao-casa
+          key: visao-${{ env.VISAO_MODELO }}-b11635-v1
   reserva:
     if: github.event.schedule == '17,47 * * * *'
     runs-on: ubuntu-latest
+    env:
+      VISAO_MODELO: qwen3vl-2b
+      VISAO_CACHE: /home/runner/.cache/visao-casa
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
