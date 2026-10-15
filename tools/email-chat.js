@@ -8,6 +8,8 @@
 // v12.4: PRIVACIDADE — o email-log.md vai para um repositório PÚBLICO: endereço mascarado e assunto só de teste.
 // v12.5: ORDEM DE CHEGADA (o mais antigo primeiro) com UID consistente em busca/leitura/marcação, e proteção por
 // e-mail: se um falhar 2x nesta sessão, ele é pulado (fica não lido para o próximo turno) e não trava os outros.
+// v12.6: VISÃO LOCAL — se os motores de visão da internet falham, um modelo de visão na CPU do runner olha a foto
+// (tools/visao-local.py) e um motor de texto redige a resposta só com o que ela viu (dizendo de onde veio).
 const { ImapFlow } = require('imapflow');
 const nodemailer = require('nodemailer');
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
@@ -351,6 +353,21 @@ async function leTextoLocalInfo(imagem) {
   } catch (e) { return null; }
 }
 async function leTextoLocal(imagem) { const j = await leTextoLocalInfo(imagem); return j ? j.texto : ''; }
+// 👁️‍🗨️ v12.6: VISÃO LOCAL — modelo de visão rodando na CPU do runner (llama.cpp), sem serviço de terceiros.
+// Se o preparo em 2º plano ainda estiver baixando o modelo, o script espera a trava e usa quando ficar pronto.
+async function visaoLocal(imagem, pergunta) {
+  const spawnSync = require('child_process').spawnSync;
+  const fsLocal = require('fs');
+  const ext = (String(imagem.tipo || 'image/png').split('/')[1] || 'png').replace('jpeg', 'jpg');
+  const caminho = '/tmp/visao-casa.' + ext;
+  try { fsLocal.writeFileSync(caminho, Buffer.from(imagem.b64, 'base64')); } catch (e) { return null; }
+  const r = spawnSync('python3', ['tools/visao-local.py', caminho, '--pergunta', String(pergunta || '').slice(0, 400)], { timeout: 480000, encoding: 'utf8' });
+  try {
+    const j = JSON.parse(String(r.stdout || '').trim().split(NL).pop());
+    if (!j.ok || !j.texto) { console.log('👁️‍🗨️ visão local: ' + (j.motivo || 'sem descrição')); return null; }
+    return { texto: String(j.texto).trim().slice(0, 2000), modelo: j.modelo || '?', segundos: j.segundos };
+  } catch (e) { console.log('👁️‍🗨️ visão local não respondeu (' + (r.error ? r.error.message : 'saída vazia') + ')'); return null; }
+}
 // 🖨️ PDF digitalizado (scan): renderiza a 1ª página em PNG (pdftoppm) e devolve como imagem para a VISÃO.
 async function renderPdf(a) {
   const spawnSync = require('child_process').spawnSync;
@@ -628,11 +645,24 @@ async function processOnce() {
         // 🎯 v12: resposta curta demais para uma foto = UMA nova tentativa exigindo concretude
         let respostaMotor = null;
         if (!mVoz && !respostaFerramenta) {
-          respostaMotor = await cerebro(pergunta, imagemVisao);
+          const testeLocal = !!imagemVisao && /\[VISAO-LOCAL\]/i.test(assunto);
+          if (testeLocal) console.log('🧪 teste: visão da internet pulada de propósito ([VISAO-LOCAL] no assunto)');
+          respostaMotor = testeLocal ? null : await cerebro(pergunta, imagemVisao);
           if (imagemVisao && respostaMotor && String(respostaMotor.texto || '').trim().length < 45) {
             console.log('⚠️ resposta curta para a foto (' + String(respostaMotor.texto || '').trim().length + ' caracteres) — tentando de novo');
             const deNovo = await cerebro(pergunta + NL + NL + 'Seja concreto: diga o que aparece (objetos, cores, pessoas, texto). Onde não tiver certeza, repita o que o olho local mediu em vez de inventar.', imagemVisao);
             if (deNovo && String(deNovo.texto || '').trim().length > String(respostaMotor.texto || '').trim().length) respostaMotor = deNovo;
+          }
+        }
+        // 👁️‍🗨️ v12.6: os motores de visão da internet falharam → a VISÃO LOCAL olha a foto e um motor de texto redige
+        if (imagemVisao && !respostaMotor && !mVoz && !respostaFerramenta) {
+          const vl = await visaoLocal(imagemVisao, corpoMsg || assunto);
+          if (vl) {
+            console.log('👁️‍🗨️ visão local (' + vl.modelo + ', ' + vl.segundos + ' s) olhou a foto');
+            const pedidoTexto = 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' Os motores de visão da internet estão fora agora, então a casa olhou a ' + (imagem ? 'FOTO' : 'página do PDF') + ' com a VISÃO LOCAL (um modelo pequeno que roda aqui mesmo e pode errar detalhes). Ela descreveu assim:' + NL + '«' + vl.texto + '»' + (ocrAceito ? NL + 'O leitor de texto local (confiança alta) leu: «' + ocrAceito.slice(0, 800) + '»' : '') + (textoDoc ? NL + NL + 'O dono TAMBÉM anexou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído (pode estar truncado):' + NL + textoDoc : '') + NL + NL + 'Pergunta do dono: ' + (corpoMsg || assunto) + NL + NL + 'Responda em português claro (máx 12 linhas) usando SOMENTE o que está descrito acima (não invente detalhes) e diga, numa frase curta no fim, que a descrição veio da visão local da casa porque os motores da internet estavam fora.';
+            const redigida = await cerebro(pedidoTexto, null);
+            if (redigida && String(redigida.texto || '').trim().length > 20) respostaMotor = { texto: redigida.texto, via: 'visão local (' + vl.modelo + ') + ' + redigida.via, modelo: redigida.modelo };
+            else respostaMotor = { texto: 'Os motores de visão da internet estão fora agora, mas a minha visão local (roda aqui mesmo) olhou a sua ' + (imagem ? 'foto' : 'página') + ':' + NL + NL + vl.texto + NL + NL + '(descrição automática local — pode errar detalhes; se quiser a leitura completa, me reenvia daqui a pouco)', via: 'visão local (' + vl.modelo + ')', modelo: vl.modelo };
           }
         }
         const r = mVoz
@@ -684,5 +714,5 @@ async function processOnce() {
   } finally { lock.release(); await client.logout(); }
   return respondidos;
 }
-module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar, extraiAnexoTexto, docTexto, olhoDaFoto, olhoPistas, leTextoLocal, leTextoLocalInfo, pareceCego, SO_TEXTO, mascaraEndereco, assuntoPublico, falhasPorUid, renderPdf, buscaRota, corre };
+module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar, extraiAnexoTexto, docTexto, olhoDaFoto, olhoPistas, leTextoLocal, leTextoLocalInfo, pareceCego, SO_TEXTO, mascaraEndereco, assuntoPublico, falhasPorUid, visaoLocal, renderPdf, buscaRota, corre };
 if (require.main === module) { processOnce().then(n => console.log('ciclo único:', n, 'respondidos')).catch(e => { console.error('ERRO:', e.message); process.exit(0); }); }
