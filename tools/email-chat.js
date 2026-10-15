@@ -27,6 +27,8 @@
 // v12.14: 📬 leitor de MIME recursivo (e-mail do Gmail com foto chegava SEM a pergunta; o do iPhone, com o texto em
 // base64 e sem a foto); 📷 foto de até ~22 MB e até 4 por e-mail (montagem numerada); 📱 HEIC; 🎨 resposta formatada;
 // 🧵 memória pela conversa do Gmail (sobrevive à troca de turno); 🔒 quem pode usar (dono + autorizados).
+// v12.15: 🧠 cérebro local de texto (sem internet); 🛡️ remetente autêntico (carimbo do Gmail); 📊 planilha .xlsx;
+// 🖨️ PDF escaneado com até 4 páginas (nome único por e-mail); 📄 documento de até 15 mil caracteres.
 const { ImapFlow } = require('imapflow');
 const nodemailer = require('nodemailer');
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
@@ -490,6 +492,39 @@ function paraHtml(texto) {
 function semMarcacao(texto) {
   return String(texto || '').replace(/\*\*([^*\n]+?)\*\*/g, '$1').replace(/__([^_\n]+?)__/g, '$1').replace(/^[ \t]*#{1,6}[ \t]+/gm, '').replace(/^[ \t]*```[a-z]*[ \t]*$/gim, '');
 }
+// 🧠 v12.15: CÉREBRO LOCAL DE TEXTO — se todos os motores de texto da internet falharem, o mesmo modelo da visão local
+// (Qwen3-VL-4B, já guardado no cache do turno) responde só com texto, aqui mesmo (~30–60 s). Antes, a resposta era
+// "estou vivo, mas os cérebros estão oscilando agora — reenvie em instantes".
+function cerebroLocal(prompt) {
+  return new Promise(resolve => {
+    const fsLocal = require('fs');
+    const arq = '/tmp/cerebro-pedido-' + Date.now() + '-' + Math.floor(Math.random() * 1e6) + '.txt';
+    try { fsLocal.writeFileSync(arq, String(prompt || '').slice(0, 9000)); } catch (e) { return resolve(null); }
+    require('child_process').execFile('python3', ['tools/visao-local.py', '--texto', '--pergunta-arquivo', arq], { timeout: 330000, maxBuffer: 4 * 1024 * 1024 }, (err, stdout) => {
+      try { fsLocal.unlinkSync(arq); } catch (e) {}
+      let j = null;
+      try { j = JSON.parse(String(stdout || '').trim().split(NL).pop()); } catch (e) {}
+      if (!j || !j.ok || !j.texto) { console.log('🧠 cérebro local não respondeu (' + String((j && j.motivo) || (err && err.message) || 'sem saída').slice(0, 100) + ')'); return resolve(null); }
+      console.log('🧠 cérebro local (' + j.modelo + ', ' + j.segundos + ' s) respondeu sem internet');
+      resolve({ texto: String(j.texto).trim(), modelo: j.modelo });
+    });
+  });
+}
+// 🖨️ v12.15: PDF DIGITALIZADO com várias páginas — renderiza até `max` páginas (antes, só a 1ª), com nome ÚNICO por
+// e-mail (antes, se o PDF novo falhasse, a página de um e-mail anterior podia ser reaproveitada) e apaga ao terminar.
+async function renderPdfPaginas(a, max) {
+  const spawnSync = require('child_process').spawnSync;
+  const fsLocal = require('fs');
+  const base = 'scan-' + Date.now() + '-' + Math.floor(Math.random() * 1e6);
+  try {
+    fsLocal.writeFileSync('/tmp/' + base + '.pdf', Buffer.from(a.b64, 'base64'));
+    spawnSync('pdftoppm', ['-png', '-r', '130', '-f', '1', '-l', String(max || 4), '/tmp/' + base + '.pdf', '/tmp/' + base + '-p'], { timeout: 180000 });
+    const arquivos = fsLocal.readdirSync('/tmp').filter(f => f.indexOf(base + '-p') === 0 && /\.png$/.test(f)).sort();
+    const paginas = arquivos.map(f => fsLocal.readFileSync('/tmp/' + f)).filter(b => b.length >= 2000).map(b => ({ tipo: 'image/png', b64: b.toString('base64'), bytes: b.length }));
+    arquivos.concat([base + '.pdf']).forEach(f => { try { fsLocal.unlinkSync('/tmp/' + f); } catch (e) {} });
+    return paginas;
+  } catch (e) { return []; }
+}
 function preparaFoto(img) {
   return new Promise(resolve => {
     if (!img || !img.b64) return resolve(img);
@@ -598,10 +633,11 @@ function extraiAnexoTexto(bruto) {
     const eTexto = /^text\/(plain|markdown|csv)$/.test(tipo) || tipo === 'application/json' || tipo === 'application/xml' || /\.(txt|md|csv|json|xml|ya?ml)$/i.test(nome);
     const ePdf = tipo === 'application/pdf' || /\.pdf$/i.test(nome);
     const eDocx = /wordprocessingml\.document/.test(tipo) || /\.docx$/i.test(nome);
-    if (!eTexto && !ePdf && !eDocx) continue;
+    const eXlsx = /spreadsheetml\.sheet/.test(tipo) || /\.xlsx$/i.test(nome);   // 📊 v12.15
+    if (!eTexto && !ePdf && !eDocx && !eXlsx) continue;
     const corpo = base64Mime(f);
     if (corpo.length < 40 || corpo.length > 9000000) continue;
-    return { nome, tipo: tipo || (ePdf ? 'application/pdf' : 'text/plain'), b64: corpo, bytes: Math.floor(corpo.length * 3 / 4) };
+    return { nome, tipo: tipo || (ePdf ? 'application/pdf' : (eXlsx ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : (eDocx ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' : 'text/plain'))), b64: corpo, bytes: Math.floor(corpo.length * 3 / 4) };
   }
   return null;
 }
@@ -617,21 +653,27 @@ async function docTexto(a) {
   if (/^text\//.test(a.tipo) || /\.[a-z0-9]+$/i.test(nome) && /\.(txt|md|csv|json|xml|ya?ml)$/i.test(nome)) {
     try {
       const t = fsLocal.readFileSync(caminho, 'utf8');
-      if (t.trim().length >= 2) return t.slice(0, 4000);
+      if (t.trim().length >= 2) return t.slice(0, 15000);
     } catch (e) {}
   }
   // PDF: pdftotext primeiro; pypdf de reserva
   if (a.tipo === 'application/pdf' || /\.pdf$/i.test(nome)) {
     const r1 = spawnSync('pdftotext', ['-layout', caminho, '-'], opcoes);
-    if (r1.status === 0 && String(r1.stdout || '').trim().length >= 10) return String(r1.stdout).trim().slice(0, 4000);
+    if (r1.status === 0 && String(r1.stdout || '').trim().length >= 10) return String(r1.stdout).trim().slice(0, 15000);
     const r2 = spawnSync('python3', ['-c', 'from pypdf import PdfReader; import sys; print(" ".join((p.extract_text() or "") for p in PdfReader(sys.argv[1]).pages))', caminho], opcoes);
-    if (r2.status === 0 && String(r2.stdout || '').trim().length >= 10) return String(r2.stdout).trim().slice(0, 4000);
+    if (r2.status === 0 && String(r2.stdout || '').trim().length >= 10) return String(r2.stdout).trim().slice(0, 15000);
     return '';
+  }
+  // 📊 v12.15: planilha Excel .xlsx — cada aba vira linhas de texto (células separadas por " | ")
+  if (/\.xlsx$/i.test(nome) || /spreadsheetml/.test(a.tipo)) {
+    const py = 'import openpyxl, sys\nwb = openpyxl.load_workbook(sys.argv[1], read_only=True, data_only=True)\nfor ws in wb.worksheets[:5]:\n    print("## aba: " + ws.title)\n    n = 0\n    for row in ws.iter_rows(values_only=True):\n        cel = ["" if v is None else str(v) for v in row]\n        if any(c.strip() for c in cel):\n            print(" | ".join(cel).rstrip(" |"))\n            n += 1\n        if n >= 300:\n            print("(...)")\n            break';
+    const r4 = spawnSync('python3', ['-c', py, caminho], opcoes);
+    if (r4.status === 0 && String(r4.stdout || '').trim().length >= 2) return String(r4.stdout).trim().slice(0, 15000);
   }
   // Word .docx
   if (/\.docx$/i.test(nome) || /wordprocessingml/.test(a.tipo)) {
     const r3 = spawnSync('python3', ['-c', 'import docx, sys; d = docx.Document(sys.argv[1]); print(" ".join(p.text for p in d.paragraphs if p.text.strip()))', caminho], opcoes);
-    if (r3.status === 0 && String(r3.stdout || '').trim().length >= 2) return String(r3.stdout).trim().slice(0, 4000);
+    if (r3.status === 0 && String(r3.stdout || '').trim().length >= 2) return String(r3.stdout).trim().slice(0, 15000);
   }
   return '';
 }
@@ -814,6 +856,20 @@ function ehAutorizado(de) {
   if (!AUTORIZADOS) return true;
   return String(de || '').split(',').some(x => { const a = x.trim().toLowerCase(); return AUTORIZADOS.exato.has(a) || AUTORIZADOS.normal.has(normalizaGmail(a)); });
 }
+// 🛡️ v12.15: o campo "De" pode ser FALSIFICADO. O Gmail carimba todo e-mail que chega de fora (Authentication-Results:
+// dkim/spf/dmarc) — vale o 1º carimbo, que é o do próprio Gmail. Para tratar como do dono, tem de ter passado (dmarc=pass
+// ou dkim=pass do mesmo domínio). Mensagem SEM carimbo foi posta por dentro da caixa (só quem tem a senha consegue).
+function autenticidade(cab, de) {
+  const linhas = String(cab || '').replace(/\r?\n[ \t]+/g, ' ').split(/\r?\n/).filter(l => /^authentication-results:/i.test(l));
+  if (!linhas.length) return { ok: true, motivo: 'sem carimbo (posta por dentro da caixa)' };
+  const gmail = linhas.find(l => /^authentication-results:\s*mx\.google\.com\b/i.test(l));
+  if (!gmail || gmail !== linhas[0]) return { ok: false, motivo: 'o 1º carimbo não é do Gmail' };
+  if (/\bdmarc=pass\b/i.test(gmail)) return { ok: true, motivo: 'dmarc=pass' };
+  const dominio = (String(de || '').split(',')[0].trim().split('@')[1] || '').toLowerCase();
+  const dk = gmail.match(/\bdkim=pass\b[^;]*?header\.[id]=@?([^\s;]+)/i);
+  if (dk && dominio && dk[1].toLowerCase().replace(/^.*@/, '') === dominio) return { ok: true, motivo: 'dkim=pass' };
+  return { ok: false, motivo: (gmail.match(/\b(dmarc|dkim|spf)=\w+/gi) || ['sem aprovação']).slice(0, 3).join(' ') };
+}
 const avisadosNoTurno = new Map();
 const RESPOSTA_DESCONHECIDO = 'Olá! Este é o chat por e-mail da casa Rebocl Brank, de uso particular. Este endereço ainda não está autorizado a usá-lo — se você conhece o dono da casa, peça para ele incluir você.' + NL + NL + '— Assistente Rebocl (casa Rebocl Brank)';
 // 🧵 v12.14: MEMÓRIA QUE NÃO SE PERDE — o contexto vem da própria conversa no Gmail (mesma thread, na pasta "Todos os
@@ -886,7 +942,10 @@ async function processOnce() {
         const bruto = (msg.source || '').toString();
         const robo = motivoAutomatico(de, bruto.split(/\r?\n\r?\n/)[0]);   // 🤖 v12.13 (RFC 3834)
         if (robo) { console.log('↩️ uid ' + uid + ': não respondo robô (' + robo + ') — marcado como lido'); await client.messageFlagsAdd(uid, ['\\Seen'], { uid: true }); continue; }
-        if (!ehAutorizado(de)) {   // 🔒 v12.14: quem pode usar o chat
+        const carimbo = autenticidade(bruto.split(/\r?\n\r?\n/)[0], de);   // 🛡️ v12.15: o "De" pode ser falsificado
+        const falsificado = !!AUTORIZADOS && ehAutorizado(de) && !carimbo.ok;
+        if (falsificado) console.log('🛡️ uid ' + uid + ': endereço autorizado, mas o carimbo do Gmail não confere (' + carimbo.motivo + ') — tratado como desconhecido');
+        if (!ehAutorizado(de) || falsificado) {   // 🔒 v12.14: quem pode usar o chat
           const n0 = (avisadosNoTurno.get(de) || 0) + 1;
           avisadosNoTurno.set(de, n0);
           if (n0 <= 3) {
@@ -920,8 +979,14 @@ async function processOnce() {
         if (docAnexo) {
           textoDoc = await docTexto(docAnexo);
           if (!textoDoc && /pdf/i.test(String(docAnexo.nome) + ' ' + docAnexo.tipo)) {
-            imagemDoPdf = await renderPdf(docAnexo);
-            console.log(imagemDoPdf ? '🖨️ PDF sem texto → renderizei a 1ª página e mandei para a visão' : '🖨️ PDF sem texto e não consegui renderizar');
+            const paginas = await renderPdfPaginas(docAnexo, 4);   // 🖨️ v12.15: até 4 páginas, cada uma lida pelo leitor local
+            if (paginas.length) {
+              const lidos = [];
+              for (let i = 0; i < paginas.length; i++) { const tx = await leTextoLocal(paginas[i]); if (tx) lidos.push('[página ' + (i + 1) + '] ' + tx); }
+              if (lidos.join(' ').length >= 40) textoDoc = '(PDF digitalizado — texto lido pelo leitor local em ' + paginas.length + ' página(s); pode ter erros de leitura)' + NL + lidos.join(NL);
+              imagemDoPdf = paginas.length > 1 ? await montaFotos(paginas) : paginas[0];
+            }
+            console.log(paginas.length ? '🖨️ PDF sem texto → ' + paginas.length + ' página(s) renderizada(s)' + (textoDoc ? ' e lida(s) pelo leitor local' : '') : '🖨️ PDF sem texto e não consegui renderizar');
           }
           if (textoDoc) console.log('📄 li o arquivo ' + (/^(re:\s*)?\[TESTE-REBOCL\]/i.test(assunto) ? docAnexo.nome : '(anexo do dono)') + ' (' + Math.round(docAnexo.bytes / 1024) + 'KB → ' + textoDoc.length + ' caracteres)');
         }
@@ -978,7 +1043,8 @@ async function processOnce() {
         let respostaMotor = null;
         // ⚡ v12.7: a visão local já começa a olhar a foto, em paralelo com os motores da internet
         let localEmCurso = null, localPronto = null;
-        const testeSemVisao = !!imagemVisao && /\[SEM-VISAO\]/i.test(assunto);   // 🧪 v12.9: prova do caminho "nada vê a foto"
+        const testeSemVisao = !!imagemVisao && /\[SEM-VISAO\]/i.test(assunto);
+        const testeSemInternet = /\[SEM-INTERNET\]/i.test(assunto);   // 🧪 v12.15: prova do cérebro local de texto   // 🧪 v12.9: prova do caminho "nada vê a foto"
         if (imagemVisao && !mVoz && !respostaFerramenta && !testeSemVisao) {
           localEmCurso = iniciaVisaoLocal(imagemVisao, docAnexo ? '' : perguntaDono);   // v12.8: com documento junto, a visão só descreve a foto
           localEmCurso.promessa.then(v => { localPronto = v; });
@@ -986,7 +1052,7 @@ async function processOnce() {
         if (!mVoz && !respostaFerramenta) {
           const testeLocal = !!imagemVisao && /\[VISAO-LOCAL\]|\[SEM-VISAO\]/i.test(assunto);
           if (testeLocal) console.log(testeSemVisao ? '🧪 teste: visão da internet E visão local desligadas de propósito ([SEM-VISAO] no assunto)' : '🧪 teste: visão da internet pulada de propósito ([VISAO-LOCAL] no assunto)');
-          respostaMotor = testeLocal ? null : await cerebro(pergunta, imagemVisao, { desistirSe: () => !!localPronto });
+          respostaMotor = (testeLocal || testeSemInternet) ? null : await cerebro(pergunta, imagemVisao, { desistirSe: () => !!localPronto });
           if (imagemVisao && respostaMotor && String(respostaMotor.texto || '').trim().length < 45) {
             console.log('⚠️ resposta curta para a foto (' + String(respostaMotor.texto || '').trim().length + ' caracteres) — tentando de novo');
             const deNovo = await cerebro(pergunta + NL + NL + 'Seja concreto: diga o que aparece (objetos, cores, pessoas, texto). Onde não tiver certeza, repita o que o olho local mediu em vez de inventar.', imagemVisao);
@@ -1013,9 +1079,15 @@ async function processOnce() {
           if (textoDoc || lidoFoto) {
             const vistoOlho = await olhoDaFoto(imagemVisao);
             const pedidoSemVisao = 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' Os motores de visão estão fora agora e a casa NÃO conseguiu ver a ' + (imagem ? 'foto' : 'página') + ' em detalhe.' + (lidoFoto ? ' Um leitor de texto leu isto na imagem: «' + lidoFoto + '».' : '') + (vistoOlho ? ' Uma análise simples de pixels (só cores e formas, sem entender a cena) indicou: ' + vistoOlho.slice(0, 500) + '.' : '') + (textoDoc ? NL + NL + 'O dono TAMBÉM anexou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído (pode estar truncado):' + NL + textoDoc : '') + NL + NL + 'Pergunta do dono: ' + perguntaDono + NL + NL + 'Responda em português claro (máx 12 linhas): responda tudo o que der com base no texto acima (principalmente o arquivo). Sobre a foto, diga só o que o leitor de texto ou a análise de pixels indicaram, deixando claro que veio deles (por exemplo: "o leitor de texto achou…", "pelas cores, parece…"). Não invente o conteúdo da foto, não fale da qualidade dela e não precisa avisar que ela não foi vista.';
-            const semVisao = await cerebro(pedidoSemVisao, null);
+            let semVisao = testeSemInternet ? null : await cerebro(pedidoSemVisao, null);
+            if (!semVisao) { const l = await cerebroLocal(pedidoSemVisao); if (l) semVisao = { texto: l.texto, via: 'cérebro local', modelo: l.modelo }; }   // 🧠 v12.15
             if (semVisao && String(semVisao.texto || '').trim().length > 20) { respostaMotor = { texto: limpaVazamento(semVisao.texto) + NL + NL + '(A foto não pôde ser vista agora: os motores de visão ' + (testeSemVisao ? 'foram desligados neste teste' : 'estão fora') + '. Se quiser, reenvie mais tarde que eu olho de novo.)', via: 'sem visão (texto) + ' + semVisao.via, modelo: semVisao.modelo }; console.log('🧩 foto não vista, mas o texto (arquivo/leitura) foi respondido por um motor de texto'); }
           }
+        }
+        // 🧠 v12.15: nenhum motor de texto da internet respondeu → o cérebro local responde (texto, arquivo lido, áudio)
+        if (!respostaMotor && !mVoz && !respostaFerramenta && !imagemVisao) {
+          const local = await cerebroLocal(pergunta);
+          if (local) respostaMotor = { texto: limpaVazamento(local.texto) + NL + NL + '(Resposta do cérebro local da casa — os motores de texto da internet ' + (testeSemInternet ? 'foram desligados neste teste' : 'estavam fora') + '.)', via: 'cérebro local (' + local.modelo + ')', modelo: local.modelo };
         }
         const r = mVoz
           ? { texto: anexoVoz ? '🎙️ Aí vai, falado (voz da casa):' + NL + NL + '« ' + mVoz[1].trim() + ' »' + NL + NL + 'O áudio vai em anexo — é só dar o play.' : 'quis te mandar um áudio, mas os motores de voz estão fora agora — tenta de novo em instantes (casa Rebocl).', via: anexoVoz ? 'voz' : 'voz-falhou' }
