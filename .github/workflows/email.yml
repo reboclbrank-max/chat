@@ -29,18 +29,22 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - run: npm install --no-save imapflow nodemailer
       - run: |
-          npm install --no-save imapflow nodemailer
-          python3 -m pip install --quiet --disable-pip-version-check --break-system-packages "numpy<2.5" Pillow edge-tts gTTS vosk soundfile pywhispercpp pypdf python-docx opencv-python-headless==4.10.0.84 || python3 -m pip install --quiet --disable-pip-version-check "numpy<2.5" Pillow edge-tts gTTS vosk soundfile pywhispercpp pypdf python-docx opencv-python-headless==4.10.0.84 || true
-          faltam=""
-          command -v ffmpeg >/dev/null || faltam="$faltam ffmpeg"
-          command -v espeak-ng >/dev/null || faltam="$faltam espeak-ng"
-          command -v pdftotext >/dev/null || faltam="$faltam poppler-utils"
-          tesseract --list-langs 2>/dev/null | grep -qx por || faltam="$faltam tesseract-ocr tesseract-ocr-por"
-          if [ -n "$faltam" ]; then sudo apt-get update -qq && sudo apt-get install -y -qq $faltam || true; fi
-      - run: |
-          # 👁️‍🗨️ visão local: prepara o modelo em 2º plano (o escutador já começa a atender)
-          nohup python3 tools/visao-local.py --preparar > /tmp/visao-preparo.log 2>&1 &
+          # 🧰 v12.7: ferramentas Python (voz, OCR, olho) e a visão local ficam prontas em 2º plano — o escutador
+          # já atende e-mail de texto; e-mail com anexo espera o marcador /tmp/ferramentas-prontas
+          (
+            python3 -m pip install --quiet --disable-pip-version-check --break-system-packages "numpy<2.5" Pillow edge-tts gTTS vosk soundfile pywhispercpp pypdf python-docx opencv-python-headless==4.10.0.84 || python3 -m pip install --quiet --disable-pip-version-check "numpy<2.5" Pillow edge-tts gTTS vosk soundfile pywhispercpp pypdf python-docx opencv-python-headless==4.10.0.84 || true
+            faltam=""
+            command -v ffmpeg >/dev/null || faltam="$faltam ffmpeg"
+            command -v espeak-ng >/dev/null || faltam="$faltam espeak-ng"
+            command -v pdftotext >/dev/null || faltam="$faltam poppler-utils"
+            tesseract --list-langs 2>/dev/null | grep -qx por || faltam="$faltam tesseract-ocr tesseract-ocr-por"
+            if [ -n "$faltam" ]; then sudo apt-get update -qq && sudo apt-get install -y -qq $faltam || true; fi
+            touch /tmp/ferramentas-prontas
+            python3 tools/visao-local.py --preparar
+          ) > /tmp/preparo.log 2>&1 &
+          export FERRAMENTAS_MARCADOR=/tmp/ferramentas-prontas
           node tools/email-poll.js
         env:
           GMAIL_CHAT_ADDR: ${{ secrets.GMAIL_CHAT_ADDR }}
@@ -77,7 +81,7 @@ jobs:
         id: visao-pronta
         if: always()
         run: |
-          cat /tmp/visao-preparo.log 2>/dev/null || echo "(sem log de preparo)"
+          tail -n 40 /tmp/preparo.log 2>/dev/null || echo "(sem log de preparo)"
           if ls /home/runner/.cache/visao-casa/.pronto-* >/dev/null 2>&1; then echo "ok=1" >> "$GITHUB_OUTPUT"; fi
       - name: Guarda a visão local (cache do modelo)
         if: always() && steps.cache-visao.outputs.cache-hit != 'true' && steps.visao-pronta.outputs.ok == '1'
