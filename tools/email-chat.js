@@ -20,6 +20,8 @@
 // sugere que a foto tem defeito (rodada 18: "reenvie com melhor qualidade" enganava; a origem ocupava 3 frases).
 // v12.11: a instrução não fala mais do aviso automático (o modelo vazava "a casa acrescenta o aviso…"); sem visão, o
 // que vier do leitor de texto/análise de pixels é dito com a fonte; um filtro tira frases que vazem a instrução.
+// v12.12: o log de execução (público) vai mascarado — endereço, assunto do dono, transcrição de áudio e nome de arquivo
+// não aparecem; cada ciclo registra os UIDs não lidos que achou e nenhum e-mail é marcado como lido em silêncio.
 const { ImapFlow } = require('imapflow');
 const nodemailer = require('nodemailer');
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
@@ -650,13 +652,15 @@ async function processOnce() {
     // v12.5: UID (não número de sequência) e ordem de chegada; quem falhou 2x nesta sessão fica para o próximo turno
     const uids = await client.search({ seen: false }, { uid: true });
     const alvo = (uids || []).slice().sort((a, b) => a - b).filter(u => (falhasPorUid.get(u) || 0) < 2).slice(0, 5);
+    if (alvo.length) console.log('📥 ' + uids.length + ' não lido(s) na caixa · agora: uid ' + alvo.join(', '));   // v12.12
     for (const uid of alvo) {
       try {
         const msg = await client.fetchOne(uid, { source: true, envelope: true }, { uid: true });
-        if (!msg || !msg.envelope) continue;
+        if (!msg || !msg.envelope) { const n0 = (falhasPorUid.get(uid) || 0) + 1; falhasPorUid.set(uid, n0); console.log('⚠️ uid ' + uid + ': não consegui ler o envelope (' + n0 + 'ª vez) — não marco como lido'); continue; }
         const de = (msg.envelope.from || []).map(f => f.address).join(',').toLowerCase();
         const assunto = (msg.envelope.subject || '(sem assunto)');
-        if (!de || de.includes(USER.toLowerCase())) { await client.messageFlagsAdd(uid, ['\\Seen'], { uid: true }); continue; }
+        if (!de) { const n0 = (falhasPorUid.get(uid) || 0) + 1; falhasPorUid.set(uid, n0); console.log('⚠️ uid ' + uid + ': e-mail sem remetente legível (' + n0 + 'ª vez) — não marco como lido'); continue; }
+        if (de.split(',').some(a => a.trim() === USER.toLowerCase())) { console.log('↩️ uid ' + uid + ': mensagem da própria casa — marcada como lida, sem resposta'); await client.messageFlagsAdd(uid, ['\\Seen'], { uid: true }); continue; }
         const bruto = (msg.source || '').toString();
         const corpoMsg = pegaTexto(bruto, assunto);
         const anexos = extraiAnexos(bruto);
@@ -666,7 +670,7 @@ async function processOnce() {
         let transcrito = '';
         if (audioAnexo) {
           transcrito = await ouve(audioAnexo);
-          console.log(transcrito ? '🎧 ouvi o áudio: ' + transcrito.slice(0, 90) : '🎧 não consegui ouvir o áudio (' + audioAnexo.tipo + ')');
+          console.log(transcrito ? '🎧 ouvi o áudio (' + transcrito.length + ' caracteres)' : '🎧 não consegui ouvir o áudio (' + audioAnexo.tipo + ')');   // v12.12: sem a transcrição no log público
         }
         // 📎 14/10: documento é extraído MESMO quando vem foto ou áudio junto (antes, a foto mandava e o arquivo era ignorado)
         const docAnexo = extraiAnexoTexto(bruto);
@@ -677,14 +681,14 @@ async function processOnce() {
             imagemDoPdf = await renderPdf(docAnexo);
             console.log(imagemDoPdf ? '🖨️ PDF sem texto → renderizei a 1ª página e mandei para a visão' : '🖨️ PDF sem texto e não consegui renderizar');
           }
-          if (textoDoc) console.log('📄 li o arquivo ' + docAnexo.nome + ' (' + Math.round(docAnexo.bytes / 1024) + 'KB → ' + textoDoc.length + ' caracteres)');
+          if (textoDoc) console.log('📄 li o arquivo ' + (/^(re:\s*)?\[TESTE-REBOCL\]/i.test(assunto) ? docAnexo.nome : '(anexo do dono)') + ' (' + Math.round(docAnexo.bytes / 1024) + 'KB → ' + textoDoc.length + ' caracteres)');
         }
         const chave = limpaAssunto(assunto);
         const citado = citacaoDoEmail(bruto);
         const lembrado = memoria.has(chave) ? memoria.get(chave) : '';
         const contexto = [citado, lembrado].filter(Boolean).join(NL + '---' + NL).slice(0, 1600);
         const blocoCtx = contexto ? (NL + NL + 'Contexto de mensagens anteriores desta conversa (use somente se ajudar; pode ignorar):' + NL + contexto) : '';
-        console.log('📨 de', de, '| assunto:', assunto.slice(0, 60), imagem ? '| 📷 foto ' + imagem.tipo + ' ~' + Math.round(imagem.bytes / 1024) + 'KB' : (audioAnexo ? '| 🎤 áudio ' + audioAnexo.tipo + ' ~' + Math.round(audioAnexo.bytes / 1024) + 'KB' : (docAnexo ? '| 📄 doc ' + docAnexo.nome + ' ~' + Math.round(docAnexo.bytes / 1024) + 'KB' : '')));
+        console.log('📨 de', mascaraEndereco(de), '| assunto:', assuntoPublico(assunto), imagem ? '| 📷 foto ' + imagem.tipo + ' ~' + Math.round(imagem.bytes / 1024) + 'KB' : (audioAnexo ? '| 🎤 áudio ' + audioAnexo.tipo + ' ~' + Math.round(audioAnexo.bytes / 1024) + 'KB' : (docAnexo ? '| 📄 doc ' + docAnexo.nome + ' ~' + Math.round(docAnexo.bytes / 1024) + 'KB' : '')));
         const imagemVisao = await preparaFoto(imagem || imagemDoPdf);   // 📐 v12.9: em pé e menor, para todo mundo (internet, OCR, olho, visão local)
         // 🎯 v11→v12.2: o olho mede ANTES dos motores; no prompt só vai o que ajuda (rostos, quando a pergunta é sobre pessoas)
         let dicaOlho = '';
