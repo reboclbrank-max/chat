@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# 👁️‍🗨️ VISÃO LOCAL DA CASA v1.5 (15/10/2026) — descreve a foto com um modelo de visão que roda AQUI MESMO
+# 👁️‍🗨️ VISÃO LOCAL DA CASA v1.6 (16/10/2026) — descreve a foto com um modelo de visão que roda AQUI MESMO
 # (llama.cpp na CPU do runner). Nada de serviço de terceiros: quando os motores de visão da internet caem
 # (504/502, como na madrugada de 15/10), a casa ainda VÊ a foto.
 # v1.4: FOTO DE CELULAR — (1) desvira pela marca EXIF (o llama.cpp não lê a orientação: foto em pé chegava
@@ -12,6 +12,8 @@
 # v1.5 (exame #3 no runner): modelo padrão QWEN3-VL-4B (formas 5/5, horta 4/4 — viu o regador —, 58 s/foto; o 2B
 #       dava 3/5 e 3/4, 44 s); o laço é cortado na 2ª ocorrência (a 1ª é conteúdo: o 2B repetia o texto lido e o
 #       corte levava o texto junto); o eco da pergunta do dono e linhas soltas ("parece") saem da descrição.
+# v1.6: 🧠 CÉREBRO LOCAL DE TEXTO (--texto): o mesmo modelo responde só com texto (llama-completion, formato de conversa
+#       do Qwen), para quando todos os motores de texto da internet caem; a pergunta pode vir por arquivo.
 # Uso:
 #   python3 tools/visao-local.py --preparar              → baixa binário + modelo (para o turno rodar em 2º plano)
 #   python3 tools/visao-local.py foto.png [--pergunta "..."] [--modelo chave]   → JSON na stdout
@@ -40,6 +42,7 @@ MODELOS = {
     'gemma4-e2b': ('ggml-org/gemma-4-E2B-it-GGUF', 'gemma-4-E2B-it-Q4_0.gguf', 'mmproj-gemma-4-E2B-it-Q8_0.gguf'),
     'gemma3-4b': ('ggml-org/gemma-3-4b-it-GGUF', 'gemma-3-4b-it-Q4_K_M.gguf', 'mmproj-model-f16.gguf'),
     'smol-500m': ('ggml-org/SmolVLM-500M-Instruct-GGUF', 'SmolVLM-500M-Instruct-Q8_0.gguf', 'mmproj-SmolVLM-500M-Instruct-Q8_0.gguf'),
+    'smollm2-135m': ('bartowski/SmolLM2-135M-Instruct-GGUF', 'SmolLM2-135M-Instruct-IQ4_XS.gguf', None),   # só texto (testes)
 }
 PADRAO = os.environ.get('VISAO_MODELO', 'qwen3vl-4b')
 CACHE = os.environ.get('VISAO_CACHE', os.path.expanduser('~/.cache/visao-casa'))
@@ -86,9 +89,10 @@ def prepara(chave):
             os.remove(tgz)
         repo, modelo, mmproj = MODELOS[chave]
         m = os.path.join(CACHE, modelo)
-        p = os.path.join(CACHE, mmproj)
+        p = os.path.join(CACHE, mmproj) if mmproj else None
         baixa(HF % (repo, modelo), m)
-        baixa(HF % (repo, mmproj), p)
+        if mmproj:
+            baixa(HF % (repo, mmproj), p)
         with open(os.path.join(CACHE, '.pronto-' + chave), 'w') as f:   # o turno só guarda o cache com isto
             f.write(time.strftime('%Y-%m-%d %H:%M:%S'))
     return cli, m, p
@@ -178,6 +182,40 @@ def limpa_eco(texto, pergunta):
     return texto.strip()
 
 
+def responde_texto(chave, pergunta, t0):
+    """v1.6: cérebro local de texto — formato de conversa do Qwen (ChatML) montado à mão, pelo llama-completion."""
+    try:
+        cli, m, p = prepara(chave)
+    except Exception as e:
+        responde({'ok': False, 'motivo': 'não consegui preparar o cérebro local: ' + str(e)[:200], 'modo': 'texto'})
+    comp = os.path.join(os.path.dirname(cli), 'llama-completion')
+    if not os.path.exists(comp):
+        responde({'ok': False, 'motivo': 'llama-completion ausente nesta versão do llama.cpp', 'modo': 'texto'})
+    sistema = ('Você é a Assistente Rebocl, do Brasil, direta e calorosa. Responda em português do Brasil, com clareza e no '
+               'máximo 12 linhas. Não invente fatos; se não souber, diga que não sabe.')
+    prompt = '<|im_start|>system\n' + sistema + '<|im_end|>\n<|im_start|>user\n' + pergunta.strip()[:9000] + '<|im_end|>\n<|im_start|>assistant\n'
+    fd, arq = tempfile.mkstemp(prefix='cerebro-', suffix='.txt')
+    os.close(fd)
+    temporarios.append(arq)
+    with open(arq, 'w', encoding='utf-8') as f:
+        f.write(prompt)
+    env = dict(os.environ, LD_LIBRARY_PATH=os.path.dirname(cli))
+    cmd = [comp, '-m', m, '-f', arq, '-n', '480', '--temp', '0.3', '--repeat-penalty', '1.1', '-no-cnv', '--no-display-prompt',
+           '-t', str(max(1, os.cpu_count() or 1)), '-c', '8192']
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=300, env=env)
+    except subprocess.TimeoutExpired:
+        responde({'ok': False, 'motivo': 'o cérebro local passou de 5 min', 'modelo': chave, 'modo': 'texto'})
+    texto = (r.stdout or '').replace('[end of text]', '')
+    texto = re.sub(r'<think>[\s\S]*?</think>', '', texto).split('<|im_end|>')[0].strip()
+    if r.returncode != 0 or len(texto) < 2:
+        responde({'ok': False, 'motivo': 'llama-completion saiu com %s: %s' % (r.returncode, (r.stderr or '')[-200:]), 'modelo': chave, 'modo': 'texto'})
+    texto, cortado = corta_laco(texto)
+    if texto is None:
+        responde({'ok': False, 'motivo': 'o modelo entrou em repetição', 'modelo': chave, 'modo': 'texto'})
+    responde({'ok': True, 'texto': texto[:4000], 'modelo': chave, 'segundos': round(time.time() - t0, 1), 'modo': 'texto'})
+
+
 def main():
     args = sys.argv[1:]
     chave = PADRAO
@@ -191,6 +229,18 @@ def main():
         pergunta = args[i + 1]
         del args[i:i + 2]
     t0 = time.time()
+    if '--pergunta-arquivo' in args:   # v1.6: pergunta longa por arquivo
+        i = args.index('--pergunta-arquivo')
+        try:
+            pergunta = open(args[i + 1], encoding='utf-8').read()
+        except Exception:
+            pergunta = ''
+        del args[i:i + 2]
+    if '--texto' in args:              # v1.6: cérebro local de texto
+        args.remove('--texto')
+        if not pergunta.strip():
+            responde({'ok': False, 'motivo': 'sem pergunta', 'modo': 'texto'})
+        responde_texto(chave, pergunta, t0)
     if args and args[0] == '--preparar':
         try:
             prepara(chave)
