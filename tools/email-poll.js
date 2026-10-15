@@ -1,6 +1,7 @@
 // 🔁 TURNO 24H — fica acordado 5h45 varrendo a caixa a cada 50s; o cron do workflow o reconvoca 4x/dia
 // e, para não depender do cron do GitHub (que neste repositório não disparou nenhuma vez),
 // cada turno deixa o PRÓXIMO TURNO na fila — o grupo 'email-casa' garante que só um roda por vez.
+// v4.1 (15/10/2026): a visão local (tools/visao-local.py) também conta como código do turno.
 // v4 (15/10/2026): 🔄 TROCA DE TURNO COM CÓDIGO NOVO — a cada 10 min ele confere se o código do chat mudou no
 // main desde que este turno começou; se mudou, deixa o próximo turno na fila e encerra com calma (o log é salvo).
 // Antes, código novo esperava até 6 h para entrar no ar.
@@ -24,7 +25,7 @@ const proximoTurno = () => despacha('email.yml', '🔗 próximo turno na fila');
 
 // 🔄 v4: o que conta como CÓDIGO do turno (robô de teste, relatórios e README não derrubam o turno)
 const SHA_INICIO = process.env.GITHUB_SHA || '';
-const CODIGO = /^tools\/(email-chat\.js|email-poll\.js|olho\.py|ocr-local\.py|transcreve\.py)$|^\.github\/workflows\/email\.yml$/;
+const CODIGO = /^tools\/(email-chat\.js|email-poll\.js|olho\.py|ocr-local\.py|transcreve\.py|visao-local\.py)$|^\.github\/workflows\/email\.yml$/;
 async function codigoMudou() {
   const tok = process.env.GITHUB_TOKEN || '';
   if (!tok || !SHA_INICIO) return [];
