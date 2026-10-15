@@ -8,6 +8,10 @@ on:
         description: 'modelos de visão local a comparar, separados por vírgula (vazio = pula esta parte)'
         required: false
         default: 'qwen3vl-2b'
+      cru:
+        description: 'sim = mede também a foto de celular pelo caminho antigo (sem desvirar/reduzir), uma vez'
+        required: false
+        default: 'nao'
 permissions:
   contents: write
 concurrency:
@@ -16,7 +20,7 @@ concurrency:
 jobs:
   exame:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 80
     steps:
       - uses: actions/checkout@v4
       - name: Instala o mesmo que o turno usa (OCR + olho)
@@ -61,33 +65,17 @@ jobs:
             echo '```'
           } > "$ARQ"
           cat "$ARQ"
-      - name: Visão local (modelo de visão na CPU do runner, via llama.cpp)
+      - name: Visão local (modelo de visão na CPU do runner, via llama.cpp) — exame comparativo v3
         if: ${{ github.event.inputs.visao != '' }}
         env:
           VISAO_CACHE: /home/runner/visao-casa
           MODELOS: ${{ github.event.inputs.visao }}
+          CRU: ${{ github.event.inputs.cru }}
         run: |
           ARQ=$(ls provas/ferramentas-*.md | sort | tail -1)
-          mostra() { python3 -c "import json,sys; j=json.load(sys.stdin); print(('%.1f s · ' % j.get('segundos', 0)) + (j.get('texto') or ('FALHOU: ' + j.get('motivo', ''))))"; }
-          {
-            echo
-            echo "## Visão local (llama.cpp na CPU: $(nproc) núcleos, $(free -g | awk '/Mem/{print $2}') GB de RAM)"
-            for M in $(echo "$MODELOS" | tr ',' ' '); do
-              echo
-              echo "### $M"
-              echo
-              echo '```'
-              echo "preparo: $(python3 tools/visao-local.py --preparar --modelo "$M")"
-              for F in "tools/teste-visao3.png|Leia todo o texto e liste as formas e cores." "tools/foto-bilhete.png|O que está escrito e quem assinou?" "tools/foto-horta.jpg|O que tem nessa foto?"; do
-                IMG="${F%%|*}"; PERG="${F#*|}"
-                echo "--- $IMG"
-                python3 tools/visao-local.py "$IMG" --modelo "$M" --pergunta "$PERG" | mostra
-              done
-              echo '```'
-              rm -f "$VISAO_CACHE"/*.gguf
-            done
-          } >> "$ARQ"
-          tail -n 60 "$ARQ"
+          EXTRA=""; if [ "$CRU" = "sim" ]; then EXTRA="--cru"; fi
+          python3 tools/exame-visao.py "$MODELOS" $EXTRA >> "$ARQ"
+          tail -n 90 "$ARQ"
       - name: Publica o exame
         run: |
           git config user.name "exame-ferramentas"
