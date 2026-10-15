@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# 👁️‍🗨️ VISÃO LOCAL DA CASA v1.2 (15/10/2026) — descreve a foto com um modelo de visão que roda AQUI MESMO
+# 👁️‍🗨️ VISÃO LOCAL DA CASA v1.3 (15/10/2026) — descreve a foto com um modelo de visão que roda AQUI MESMO
 # (llama.cpp na CPU do runner). Nada de serviço de terceiros: quando os motores de visão da internet caem
 # (504/502, como na madrugada de 15/10), a casa ainda VÊ a foto.
 # Uso:
@@ -72,6 +72,8 @@ def prepara(chave):
         p = os.path.join(CACHE, mmproj)
         baixa(HF % (repo, modelo), m)
         baixa(HF % (repo, mmproj), p)
+        with open(os.path.join(CACHE, '.pronto-' + chave), 'w') as f:   # o turno só guarda o cache com isto
+            f.write(time.strftime('%Y-%m-%d %H:%M:%S'))
     return cli, m, p
 
 
@@ -105,7 +107,7 @@ def main():
         responde({'ok': False, 'motivo': 'não consegui preparar a visão local: ' + str(e)[:200]})
     pedido = ('Descreva esta imagem em português do Brasil, de forma objetiva e curta (até 8 linhas): o que aparece '
               '(objetos, formas, pessoas, cores, cenário) e transcreva EXATAMENTE qualquer texto visível. '
-              'Se não tiver certeza de algo, diga que não tem certeza. Não invente.')
+              'Use "parece" quando não tiver certeza. Não invente.')
     if pergunta.strip():
         pedido += ' Depois, responda em 1 ou 2 linhas a pergunta do dono: ' + pergunta.strip()[:400]
     env = dict(os.environ, LD_LIBRARY_PATH=os.path.dirname(cli))
