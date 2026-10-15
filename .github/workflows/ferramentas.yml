@@ -1,0 +1,65 @@
+name: Exame das ferramentas locais (OCR + olho)
+# 🧰 um clique prova, no próprio runner, que o leitor de texto local (tesseract) e o olho funcionam —
+# sem segredo nenhum, sem internet de terceiros. Gera provas/ferramentas-AAAA-MM-DD-HHMM.md
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: ferramentas
+  cancel-in-progress: false
+jobs:
+  exame:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Instala o mesmo que o turno usa (OCR + olho)
+        run: |
+          python3 -m pip install --quiet --disable-pip-version-check --break-system-packages "numpy<2.5" Pillow opencv-python-headless==4.10.0.84
+          faltam=""
+          tesseract --list-langs 2>/dev/null | grep -qx por || faltam="$faltam tesseract-ocr tesseract-ocr-por"
+          if [ -n "$faltam" ]; then sudo apt-get update -qq && sudo apt-get install -y -qq $faltam || true; fi
+      - name: Exame
+        run: |
+          mkdir -p provas
+          TS=$(date -u +%F-%H%M)
+          ARQ="provas/ferramentas-$TS.md"
+          {
+            echo "# 🧰 Exame das ferramentas locais — $TS UTC"
+            echo
+            echo "- tesseract: $(tesseract --version 2>&1 | head -1)"
+            echo "- línguas: $(tesseract --list-langs 2>/dev/null | tail -n +2 | tr '\n' ' ')"
+            echo
+            echo "## Leitor de texto local no bilhete (tools/foto-bilhete.png)"
+            echo
+            echo '```'
+            ( time -p python3 tools/ocr-local.py tools/foto-bilhete.png ) 2>&1
+            echo '```'
+            echo
+            echo "## Leitor de texto local na foto do laboratório (tools/teste-visao3.png)"
+            echo
+            echo '```'
+            python3 tools/ocr-local.py tools/teste-visao3.png
+            echo '```'
+            echo
+            echo "## Olho no bilhete (pistas)"
+            echo
+            echo '```'
+            python3 tools/olho.py tools/foto-bilhete.png | python3 -c "import json,sys; j=json.load(sys.stdin); print(j.get('pistas') or j.get('descricao'))"
+            echo '```'
+            echo
+            echo "## Olho na foto do laboratório (descrição)"
+            echo
+            echo '```'
+            python3 tools/olho.py tools/teste-visao3.png | python3 -c "import json,sys; j=json.load(sys.stdin); print(j.get('descricao'))"
+            echo '```'
+          } > "$ARQ"
+          cat "$ARQ"
+      - name: Publica o exame
+        run: |
+          git config user.name "exame-ferramentas"
+          git config user.email "exame@rebocl.local"
+          git add provas/ferramentas-*.md
+          git commit -m "exame das ferramentas $(date -u +%F-%H%M)" || exit 0
+          for i in 1 2 3; do git pull --rebase --autostash -q && git push -q && break; sleep 5; done
