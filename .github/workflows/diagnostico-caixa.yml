@@ -1,0 +1,21 @@
+name: Diagnóstico da caixa (somente leitura)
+# 🔍 1 clique: mostra pastas, marcação de lido e etiquetas dos e-mails de TESTE das últimas 6 h. Não lê conteúdo e
+# não altera nada; o log é público, então só aparecem assuntos [TESTE-REBOCL] e nenhum endereço.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  olha:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --no-save imapflow
+      - run: node tools/diagnostico-caixa.js
+        env:
+          GMAIL_CHAT_ADDR: ${{ secrets.GMAIL_CHAT_ADDR }}
+          GMAIL_CHAT_PASS: ${{ secrets.GMAIL_CHAT_PASS }}
