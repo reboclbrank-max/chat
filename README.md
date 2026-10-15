@@ -48,17 +48,17 @@ Para mudar o visual ou o texto, edite `index.html` e faça commit. O GitHub Page
 - A lista mostra **quantas conversas** você tem
 
 
-## v1.7 — o canal por e-mail (14/10/2026)
+## v1.8 — o canal por e-mail (15/10/2026)
 
-- **Responde os e-mails do dono** em turnos de escuta de até ~6 h que se revezam sozinhos (uma sessão por vez; o turno novo assume quando o anterior termina) e com um **vigia** que acorda o turno se algo ficar sem resposta.
+- **Responde os e-mails do dono** em turnos de escuta de até ~6 h que se revezam sozinhos (uma sessão por vez; o turno novo assume quando o anterior termina e já atende ~30 s depois de começar; código novo entra no ar sozinho em até ~10 min) e com um **vigia** que acorda o turno se algo ficar sem resposta.
 - **Entende anexos:** foto (motores de visão + olho local), PDF/Word/TXT/CSV/JSON, PDF digitalizado (a página vira imagem), foto e documento na mesma mensagem, e áudio (transcrição local). Responde **falando** quando pedido (`voz: <texto>`).
 - **Leitor de texto local (v12):** o tesseract roda no próprio runner e lê bilhete, placa, rótulo e documento fotografado **sem mandar a foto para terceiros**. A confiança vai junto para o motor de visão; quando divergir do que ele vê, vale a imagem.
 - **Resposta cega barrada (v12.2):** se o motor de visão engasga e um modelo só de texto tenta "descrever" a foto sem vê-la, a resposta é descartada; aí vem o fallback honesto (texto lido + olho local).
-- **Visão local (v12.6):** se os motores de visão da internet caem, um modelo de visão (Qwen3-VL-2B) roda na CPU do próprio GitHub e olha a foto (~35 s); um motor de texto escreve a resposta dizendo de onde veio a descrição.
+- **Visão local (v12.6–v12.8):** se os motores de visão da internet caem, um modelo de visão (Qwen3-VL-2B) roda na CPU do próprio GitHub e olha a foto; um motor de texto escreve a resposta dizendo de onde veio a descrição. Ela já começa junto com a 1ª tentativa na internet: numa pane real (15/10), as fotos foram respondidas em **45–64 s** (antes, 4–5 min). Com foto + documento, o arquivo é respondido mesmo se nada conseguir ver a foto, e a resposta diz isso com franqueza.
 - **Ordem de chegada (v12.5):** os e-mails são atendidos na ordem em que chegaram; um e-mail problemático fica para o turno seguinte sem travar os outros.
 - **Olho local (v5):** sem internet, mede rostos, cena em faixas (céu/água/vegetação/areia), blocos de cor, linha de horizonte, "parece ter texto" e nitidez. Para o motor de visão só vai a contagem de rostos, quando a pergunta é sobre pessoas (pista rica no prompt piorava as respostas); o resto garante uma resposta mínima e honesta quando os motores caem.
 - **Privacidade:** o `email-log.md` (público) leva endereço mascarado e só o assunto de e-mails de teste.
-- **Provas:** robô de teste com 16 casos (`teste-email.yml`) e **exame das ferramentas** de 1 clique (`ferramentas.yml`); os relatórios ficam em `provas/`. Última rodada (15): **16/16 PASS**, inclusive foto complexa e visão local.
+- **Provas:** robô de teste com 16 casos (`teste-email.yml`) e **exame das ferramentas** de 1 clique (`ferramentas.yml`); os relatórios ficam em `provas/`. Última rodada (17): **16/16 PASS**, média de 2,6 min por resposta, inclusive foto + PDF, bilhete e foto complexa; falha em modo de pane (motores da internet fora) aparece separada no relatório como "PANE".
 
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
