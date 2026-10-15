@@ -3,10 +3,19 @@
 // v3.6: varredura rápida — só e-mails desde ontem, cabeçalho antes do conteúdo, nada relido (UIDs estáveis).
 // v3.7: caso R3-14 — FOTO COMPLEXA da horta (o ponto aberto "descrição completa da foto") + anexo JPEG com tipo certo;
 //       caso R3-15 — VISÃO LOCAL forçada pela chave [VISAO-LOCAL] (prova o caminho que só roda quando a internet cai).
+// v3.8: separa FALHOU de MODO DE PANE — se a checagem falha e a resposta admite pane (visão local, motores fora/
+//       oscilando, foto não vista), a nota vira "PANE — FALHOU (…)" e o placar conta à parte (rodada 16).
 // Melhorias sobre a v2: usa o MESMO parser do canal (pegaTexto), casa cada resposta com o e-mail
 // que a originou (In-Reply-To = thread exata) e roda CHECAGENS AUTOMÁTICAS por caso no relatório.
 const fs = require('fs');
 const path = require('path');
+// v3.8: frases que o chat usa quando responde em modo degradado (motores da internet fora)
+const PANE = /vis[ãa]o local|motores[^.\n]{0,40}(fora|oscilando)|c[ée]rebros[^.\n]{0,20}oscilando|n[ãa]o (p[ôo]de|pude|consegui|conseguiu)[^.\n]{0,25}(ver|vista)/i;
+function avalia(e, texto) {
+  const nota = e.check(texto);
+  if (nota.indexOf('PASS') === 0 || !PANE.test(texto)) return nota;
+  return 'PANE — ' + nota + ' · respondeu em modo de pane (motores da internet fora)';
+}
 
 const USER = process.env.GMAIL_CHAT_ADDR || '';
 const PASS = process.env.GMAIL_CHAT_PASS || '';
@@ -193,8 +202,8 @@ function montaMensagem(assunto, corpo, imgB64, html, pdfB64, imgNome) {
   L.push('');
   const resp = enviados.map(e => ({ e, r: casa(e) }));
   const ok = resp.filter(x => x.r).length;
-  const notas = resp.filter(x => x.r && x.e.check).map(x => x.e.check(x.r.texto));
-  L.push('- enviados: ' + enviados.length + ' · respondidos: ' + ok + ' · checagens PASS: ' + notas.filter(n => n.indexOf('PASS') === 0).length + '/' + notas.length);
+  const notas = resp.filter(x => x.r && x.e.check).map(x => avalia(x.e, x.r.texto));
+  L.push('- enviados: ' + enviados.length + ' · respondidos: ' + ok + ' · checagens PASS: ' + notas.filter(n => n.indexOf('PASS') === 0).length + '/' + notas.length + (notas.some(n => n.indexOf('PANE') === 0) ? ' · em modo de pane (motores da internet fora): ' + notas.filter(n => n.indexOf('PANE') === 0).length : ''));
   const lat = resp.filter(x => x.r).map(x => (x.r.quando - x.e.enviadoEm) / 60000);
   if (lat.length) L.push('- latência: ' + Math.min.apply(null, lat).toFixed(1) + '–' + Math.max.apply(null, lat).toFixed(1) + ' min (média ' + (lat.reduce((a, b) => a + b, 0) / lat.length).toFixed(1) + ')');
   L.push('');
@@ -207,7 +216,7 @@ function montaMensagem(assunto, corpo, imgB64, html, pdfB64, imgNome) {
     L.push('**Espera-se:** ' + x.e.esperado);
     L.push('');
     if (x.r) {
-      L.push('**Checagem automática:** ' + (x.e.check ? x.e.check(x.r.texto) : '—') + ' · **Resposta em ' + ((x.r.quando - x.e.enviadoEm) / 60000).toFixed(1) + ' min** (' + x.r.caixa + ')');
+      L.push('**Checagem automática:** ' + (x.e.check ? avalia(x.e, x.r.texto) : '—') + ' · **Resposta em ' + ((x.r.quando - x.e.enviadoEm) / 60000).toFixed(1) + ' min** (' + x.r.caixa + ')');
       L.push('');
       L.push('```');
       L.push(x.r.texto.slice(0, 2200) || '(vazio)');
