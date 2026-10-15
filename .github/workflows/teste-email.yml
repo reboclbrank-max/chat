@@ -18,13 +18,17 @@ concurrency:
 jobs:
   teste:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 55
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
       - run: npm install --no-save imapflow@2.4.3 nodemailer@10.1.1
+      - name: Fotos de prova geradas na hora (foto de celular de ~6 MB + HEIC do iPhone)
+        run: |
+          python3 -m pip install --quiet --disable-pip-version-check --break-system-packages Pillow pillow-heif==1.8.1 || python3 -m pip install --quiet --disable-pip-version-check Pillow pillow-heif==1.8.1 || true
+          python3 tools/gerar-fixtures.py || echo "⚠️ fotos de prova não geradas"
       - name: Envia o teste e captura as respostas
         run: |
           SCRIPT="${{ github.event.inputs.script }}"

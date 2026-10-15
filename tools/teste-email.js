@@ -10,6 +10,8 @@
 // v3.10: e-mail SEM RESPOSTA ganha o motivo (LIDO sem resposta / NÃO LIDO / fora da caixa) — rodada 20.
 // v3.11: R3-18 — e-mail PERDIDO (chega como lido; a rede de segurança do chat v12.13 tem de devolvê-lo à fila);
 //        R3-19 — e-mail AUTOMÁTICO (Auto-Submitted): o certo é NÃO responder (RFC 3834) — PASS = lido e sem resposta.
+// v3.12: e-mails no FORMATO REAL do Gmail e do iPhone (R3-22, R3-23), 3 fotos (R3-24), HEIC (R3-25), memória pela
+//        conversa do Gmail (R3-20), remetente não autorizado (R3-21) e foto de celular de ~6 MB no R3-17.
 // Melhorias sobre a v2: usa o MESMO parser do canal (pegaTexto), casa cada resposta com o e-mail
 // que a originou (In-Reply-To = thread exata) e roda CHECAGENS AUTOMÁTICAS por caso no relatório.
 const fs = require('fs');
@@ -28,6 +30,7 @@ const ESPERA_MIN = Number(process.env.ESPERA_MIN || 16);
 const ARROBA = USER.indexOf('@');
 const ALIAS = ARROBA > 0 ? USER.slice(0, ARROBA) + '+teste' + USER.slice(ARROBA) : 'teste@exemplo.com';
 const MARCA = '[TESTE-REBOCL]';
+const ALIAS_ESTRANHO = ARROBA > 0 ? USER.slice(0, ARROBA) + '+estranho' + USER.slice(ARROBA) : 'estranho@exemplo.com';   // v3.12: remetente não autorizado
 const CRLF = String.fromCharCode(13, 10);
 const NL = String.fromCharCode(10);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -87,8 +90,8 @@ const CASOS = [
     esperado: 'Caminho SEM VISÃO (a chave [SEM-VISAO] desliga a visão da internet e a local): responder o PDF (12 pés de couve) e dizer com franqueza que a foto não foi vista — inventar a foto reprova.',
     check: t => { const doc = /\b12\b/.test(t) && /couve/i.test(t); const franca = /n[ãa]o (p[ôo]de|pude|consegui|conseguiu|foi poss[íi]vel|deu|tenho como|d[áa] para)[^.\n]{0,50}(\bver\b|vist|enxerg|analis|olh|visualiz|descrev)|sem (conseguir )?ver a (foto|imagem)|n[ãa]o vi a (foto|imagem)|(foto|imagem) n[ãa]o (p[ôo]de|foi|p[ôo]de ser)[^.\n]{0,20}(vist|analis|visualiz)/i.test(t); return (doc && franca) ? 'PASS (respondeu o PDF e disse com franqueza que a foto não foi vista)' : (doc ? 'FALHOU (respondeu o PDF, mas não foi franco sobre a foto)' : 'FALHOU (não respondeu o PDF)'); },
     corpo: 'Teste do modo sem visão: quantos pés de couve diz o PDF? E o que dá para saber da foto?' },
-  { n: 'R3-17', assunto: MARCA + ' R3-17 — foto de celular (12 MP, deitada)', fotoArq: 'foto-celular.jpg',
-    esperado: 'FOTO DE CELULAR de verdade: 12 MP, 1,3 MB, gravada deitada com a marca EXIF 6 (como o celular faz). O chat prepara a foto (em pé, menor) e descreve a horta — canteiros, regador, cachorro, cerca (PASS com 3 dos 4).',
+  { n: 'R3-17', assunto: MARCA + ' R3-17 — foto de celular (12 MP, deitada)', fotoArq: 'foto-grande.jpg',
+    esperado: 'FOTO DE CELULAR de verdade: 12 MP, ~6 MB (antes da v12.14, acima de ~4 MB era descartada sem aviso), gravada deitada com a marca EXIF 6 (como o celular faz). O chat prepara a foto (em pé, menor) e descreve a horta — canteiros, regador, cachorro, cerca (PASS com 3 dos 4).',
     check: t => { const g = [/horta|alface|couve|verdura|hortali|canteir|vegeta/i, /regador/i, /cachorr|\bc[ãa]o\b|cadel/i, /cerca|estaca/i]; const achou = g.filter(r => r.test(t)).length; return achou >= 3 ? 'PASS (descreveu a foto de celular: ' + achou + '/4 elementos)' : 'FALHOU (só ' + achou + '/4 elementos da foto de celular)'; },
     corpo: 'Tirei essa foto do quintal com o celular agora. O que você vê nela?' },
   { n: 'R3-18', assunto: MARCA + ' R3-18 — e-mail perdido (chega como lido)', lido: true,
@@ -97,32 +100,83 @@ const CASOS = [
     corpo: 'Teste da rede de segurança: este e-mail chegou como LIDO, como se tivesse sumido da fila. Responda só: recebido.' },
   { n: 'R3-19', assunto: MARCA + ' R3-19 — e-mail automático (não responder)', cab: ['Auto-Submitted: auto-generated'], semResposta: true,
     esperado: 'E-mail AUTOMÁTICO (cabeçalho Auto-Submitted: auto-generated): pela RFC 3834 o chat NÃO responde — evita laço de respostas automáticas. PASS se ele for lido e ficar sem resposta.',
-    corpo: 'Este é um aviso automático de teste. Não responda.' }
+    corpo: 'Este é um aviso automático de teste. Não responda.' },
+  { n: 'R3-21', assunto: MARCA + ' R3-21 — remetente desconhecido', de: ALIAS_ESTRANHO,
+    esperado: 'Remetente NÃO autorizado (endereço que não é do dono nem do robô): o chat manda só uma resposta curta e fixa — sem IA, sem abrir anexo e sem responder a pergunta.',
+    check: t => (/n[ãa]o est[áa] autorizado/i.test(t) && !/\b56\b/.test(t)) ? 'PASS (resposta curta, sem IA, sem responder a conta)' : (/\b56\b/.test(t) ? 'FALHOU (respondeu a pergunta de um desconhecido)' : 'FALHOU (faltou o aviso de não autorizado)'),
+    corpo: 'Quanto é 7 vezes 8? Responda só o número.' },
+  { n: 'R3-22', assunto: MARCA + ' R3-22 — e-mail do Gmail com foto', foto: true, formato: 'gmail',
+    esperado: 'E-mail montado como o GMAIL monta (texto dentro de multipart/alternative, foto anexada): antes da v12.14 a pergunta se perdia. Tem de responder PIMENTA (só está na pergunta) e a data da imagem.',
+    check: t => (/PIMENTA/i.test(t) && /14\/10\/2026/.test(t)) ? 'PASS (leu a pergunta do corpo e viu a foto)' : (/PIMENTA/i.test(t) ? 'FALHOU (leu a pergunta, mas não a data)' : 'FALHOU (a pergunta do corpo não chegou)'),
+    corpo: 'Responda primeiro com a palavra PIMENTA e depois diga qual é a data escrita nesta imagem.' },
+  { n: 'R3-23', assunto: MARCA + ' R3-23 — e-mail do iPhone com foto', foto: true, formato: 'iphone',
+    esperado: 'E-mail montado como o Mail do IPHONE monta (texto em base64, foto dentro de multipart/related): antes da v12.14 o texto chegava em base64 e a foto não era achada. Tem de responder GOIABA e citar as formas.',
+    check: t => { const f = [/quadrado/i, /c[íi]rculo/i, /tri[âa]ngulo/i].filter(r => r.test(t)).length; return (/GOIABA/i.test(t) && f >= 2) ? 'PASS (leu o texto do iPhone e viu a foto: ' + f + '/3 formas)' : (/GOIABA/i.test(t) ? 'FALHOU (leu o texto, mas não viu a foto)' : 'FALHOU (o texto do iPhone não chegou)'); },
+    corpo: 'Responda primeiro com a palavra GOIABA e depois diga quais formas aparecem nesta foto.' },
+  { n: 'R3-24', assunto: MARCA + ' R3-24 — três fotos no mesmo e-mail', fotos: ['teste-visao3.png', 'foto-bilhete.png', 'foto-horta.jpg'],
+    esperado: 'TRÊS FOTOS no mesmo e-mail (formas, bilhete, horta): antes só a 1ª era vista. A resposta tem de falar das três.',
+    check: t => { const g = [/quadrado|c[íi]rculo|tri[âa]ngulo|formas? geom/i, /bilhete|marta|varanda|trinco|port[ãa]o/i, /cachorr|\bc[ãa]o\b|regador|cerca|canteir|hortali/i]; const n = g.filter(r => r.test(t)).length; return n === 3 ? 'PASS (falou das 3 fotos)' : 'FALHOU (falou de ' + n + ' das 3 fotos)'; },
+    corpo: 'Mandei 3 fotos. Diga, em uma linha por foto, o que aparece em cada uma.' },
+  { n: 'R3-25', assunto: MARCA + ' R3-25 — foto HEIC do iPhone', fotoArq: 'foto-iphone.heic',
+    esperado: 'Foto em HEIC (o formato padrão do iPhone): antes da v12.14 nem era reconhecida como foto. Tem de descrever a horta (3 de 4).',
+    check: t => { const g = [/horta|alface|couve|verdura|hortali|canteir|vegeta/i, /regador|rega\b/i, /cachorr|\bc[ãa]o\b|cadel/i, /cerca|estaca/i]; const n = g.filter(r => r.test(t)).length; return n >= 3 ? 'PASS (abriu a HEIC e descreveu: ' + n + '/4)' : 'FALHOU (só ' + n + '/4 elementos — a HEIC abriu?)'; },
+    corpo: 'Tirei essa foto com o iPhone. O que você vê nela?' }
 ];
+const M3 = { n: 'R3-20', assunto: 'Re: ' + MARCA + ' R3-8 — memória (1/2)',
+  esperado: 'MEMÓRIA PELA CONVERSA DO GMAIL: a chave [SEM-MEMORIA] faz o chat ignorar a memória do turno e a citação — só a conversa guardada no Gmail pode lembrar JATOBÁ (é a memória que sobrevive à troca de turno).',
+  check: t => /JATOB[ÁA]/i.test(t) ? 'PASS (lembrou JATOBÁ pela conversa do Gmail)' : 'FALHOU (não lembrou pela conversa)' };
 const M2 = { n: 'R3-8b', assunto: 'Re: ' + MARCA + ' R3-8 — memória (1/2)',
   esperado: 'Dizer JATOBÁ (memória citada funcionando).',
   check: t => /JATOB[ÁA]/i.test(t) ? 'PASS (lembrou JATOBÁ)' : 'FALHOU (não lembrou)', corpo: '' };
 
-function montaMensagem(assunto, corpo, imgB64, html, pdfB64, imgNome, extraCab) {
-  const nomeImg = imgNome || 'teste-visao3.png';
-  const tipoImg = /\.jpe?g$/i.test(nomeImg) ? 'image/jpeg' : 'image/png';
+function montaMensagem(assunto, corpo, imgB64, html, pdfB64, imgNome, extraCab, opc) {
+  // v3.12: formatos REAIS — 'gmail' (multipart/mixed > multipart/alternative > text/plain QP + text/html; fronteiras
+  // hexadecimais minúsculas) e 'iphone' (multipart/alternative > text/plain base64 + multipart/related > html + foto
+  // inline); várias fotos; HEIC; resposta na mesma conversa (In-Reply-To/References); remetente escolhido
+  opc = opc || {};
+  const tipoDe = n => /\.jpe?g$/i.test(n) ? 'image/jpeg' : (/\.hei[cf]$/i.test(n) ? 'image/heic' : 'image/png');
+  const imagens = opc.imagens || (imgB64 ? [{ nome: imgNome || 'teste-visao3.png', b64: imgB64 }] : []);
   const id = '<teste-' + Date.now() + '-' + Math.floor(Math.random() * 100000) + '@rebocl.local>';
-  const cab = ['From: "Teste da Casa" <' + ALIAS + '>', 'To: ' + USER, 'Subject: ' + assunto, 'Date: ' + new Date().toUTCString(), 'Message-ID: ' + id].concat(extraCab || []).concat(['MIME-Version: 1.0']);
+  const cab = ['From: "Teste da Casa" <' + (opc.de || ALIAS) + '>', 'To: ' + USER, 'Subject: ' + assunto, 'Date: ' + new Date().toUTCString(), 'Message-ID: ' + id]
+    .concat(opc.inReplyTo ? ['In-Reply-To: ' + opc.inReplyTo, 'References: ' + (opc.references || opc.inReplyTo)] : [])
+    .concat(extraCab || []).concat(['MIME-Version: 1.0']);
+  const b64 = s => Buffer.from(s, 'utf-8').toString('base64').match(/.{1,76}/g).join(CRLF);
+  const anexosImg = b => imagens.flatMap(im => ['--' + b, 'Content-Type: ' + tipoDe(im.nome) + '; name="' + im.nome + '"', 'Content-Transfer-Encoding: base64', 'Content-Disposition: attachment; filename="' + im.nome + '"', '', im.b64.match(/.{1,76}/g).join(CRLF)]);
   let bruto;
-  if (html && !imgB64) bruto = cab.concat(['Content-Type: text/html; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', corpo]).join(CRLF);
-  else if (!imgB64) bruto = cab.concat(['Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', corpo]).join(CRLF);
+  if (opc.formato === 'gmail') {
+    const A = '0000000000' + Date.now().toString(16) + 'a1', B = '0000000000' + Date.now().toString(16) + 'b2';
+    const partes = ['--' + A, 'Content-Type: multipart/alternative; boundary="' + B + '"', '',
+      '--' + B, 'Content-Type: text/plain; charset="UTF-8"', 'Content-Transfer-Encoding: quoted-printable', '', qpCodifica(corpo), '',
+      '--' + B, 'Content-Type: text/html; charset="UTF-8"', 'Content-Transfer-Encoding: quoted-printable', '', qpCodifica('<div dir="ltr">' + corpo + '</div>'), '',
+      '--' + B + '--'].concat(anexosImg(A)).concat(['--' + A + '--', '']);
+    bruto = cab.concat(['Content-Type: multipart/mixed; boundary="' + A + '"', '', partes.join(CRLF)]).join(CRLF);
+  } else if (opc.formato === 'iphone') {
+    const C = 'Apple-Mail-' + Date.now().toString(16).toUpperCase() + '-A', D = 'Apple-Mail-' + Date.now().toString(16).toUpperCase() + '-B';
+    const inline = imagens.flatMap((im, i) => ['--' + D, 'Content-Type: ' + tipoDe(im.nome) + ';', '\tname=' + im.nome, 'Content-Disposition: inline;', '\tfilename=' + im.nome, 'Content-Transfer-Encoding: base64', 'Content-Id: <foto' + i + '@iphone>', '', im.b64.match(/.{1,76}/g).join(CRLF)]);
+    const partes = ['--' + C, 'Content-Type: text/plain;', '\tcharset=utf-8', 'Content-Transfer-Encoding: base64', '', b64(corpo), '',
+      '--' + C, 'Content-Type: multipart/related;', '\ttype="text/html";', '\tboundary=' + D, '',
+      '--' + D, 'Content-Type: text/html;', '\tcharset=utf-8', 'Content-Transfer-Encoding: base64', '', b64('<html><body>' + corpo + imagens.map((im, i) => '<img src="cid:foto' + i + '@iphone">').join('') + '</body></html>'), '']
+      .concat(inline).concat(['--' + D + '--', '', '--' + C + '--', '']);
+    bruto = cab.concat(['Content-Type: multipart/alternative;', '\tboundary=' + C, '', partes.join(CRLF)]).join(CRLF);
+  } else if (html && !imagens.length) bruto = cab.concat(['Content-Type: text/html; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', corpo]).join(CRLF);
+  else if (!imagens.length && !pdfB64) bruto = cab.concat(['Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', corpo]).join(CRLF);
   else {
     const b = 'fronteira-teste-' + Date.now();
-    const partes = ['--' + b, 'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', corpo, '--' + b,
-      'Content-Type: ' + tipoImg + '; name="' + nomeImg + '"', 'Content-Transfer-Encoding: base64', 'Content-Disposition: attachment; filename="' + nomeImg + '"', '',
-      imgB64.match(/.{1,76}/g).join(CRLF)];
-    if (pdfB64) partes.push('--' + b,
-      'Content-Type: application/pdf; name="anexo-prova.pdf"', 'Content-Transfer-Encoding: base64', 'Content-Disposition: attachment; filename="anexo-prova.pdf"', '',
-      pdfB64.match(/.{1,76}/g).join(CRLF));
+    const partes = ['--' + b, 'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', corpo].concat(anexosImg(b));
+    if (pdfB64) partes.push('--' + b, 'Content-Type: application/pdf; name="anexo-prova.pdf"', 'Content-Transfer-Encoding: base64', 'Content-Disposition: attachment; filename="anexo-prova.pdf"', '', pdfB64.match(/.{1,76}/g).join(CRLF));
     partes.push('--' + b + '--', '');
     bruto = cab.concat(['Content-Type: multipart/mixed; boundary="' + b + '"', '', partes.join(CRLF)]).join(CRLF);
   }
   return { bruto, id };
+}
+function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linhas de até 76
+  let out = '', linha = '';
+  for (const b of Buffer.from(String(s), 'utf-8')) {
+    const c = ((b >= 33 && b <= 126 && b !== 61) || b === 32) ? String.fromCharCode(b) : '=' + b.toString(16).toUpperCase().padStart(2, '0');
+    if (linha.length + c.length > 75) { out += linha + '=' + CRLF; linha = ''; }
+    linha += c;
+  }
+  return out + linha;
 }
 
 (async () => {
@@ -156,12 +210,12 @@ function montaMensagem(assunto, corpo, imgB64, html, pdfB64, imgNome, extraCab) 
           if (!cab || !cab.envelope) continue;
           const deCab = ((cab.envelope.from || [{}])[0].address || '').toLowerCase();
           const quandoCab = cab.envelope.date ? new Date(cab.envelope.date).getTime() : 0;
-          if (quandoCab < t0 - 180000 || deCab.indexOf(ALIAS.toLowerCase()) >= 0) { vistos.add(chave); continue; }
+          if (quandoCab < t0 - 180000 || deCab.indexOf(ALIAS.toLowerCase()) >= 0 || deCab.indexOf(ALIAS_ESTRANHO.toLowerCase()) >= 0) { vistos.add(chave); continue; }
           const m = await client.fetchOne(uid, { source: true, envelope: true }, { uid: true });
           if (!m || !m.envelope) continue;
           vistos.add(chave);
           const de = (m.envelope.from || [{}])[0].address || '';
-          if (de.toLowerCase().indexOf(ALIAS.toLowerCase()) >= 0) continue;   // mensagem nossa
+          if (de.toLowerCase().indexOf(ALIAS.toLowerCase()) >= 0 || de.toLowerCase().indexOf(ALIAS_ESTRANHO.toLowerCase()) >= 0) continue;   // mensagem nossa
           const id = m.envelope.messageId || (caixa + '|' + uid);
           const quando = m.envelope.date ? new Date(m.envelope.date).getTime() : 0;
           if (quando < t0 - 180000) continue;                                  // só esta rodada
@@ -179,11 +233,13 @@ function montaMensagem(assunto, corpo, imgB64, html, pdfB64, imgNome, extraCab) 
   async function envia(caso) {
     let fotoCaso = caso.foto ? imgB64 : null;
     if (caso.fotoArq) { const arq = path.join(__dirname, caso.fotoArq); fotoCaso = fs.existsSync(arq) ? fs.readFileSync(arq).toString('base64') : null; if (!fotoCaso) console.log('⚠️ fixture ausente:', caso.fotoArq); }
-    const { bruto, id } = montaMensagem(caso.assunto, caso.corpo, fotoCaso, caso.html, caso.pdf ? pdfB64 : null, caso.fotoArq || null, caso.cab || null);
+    let imagens = null;
+    if (caso.fotos) imagens = caso.fotos.map(nome => { const arq = path.join(__dirname, nome); if (!fs.existsSync(arq)) { console.log('⚠️ fixture ausente:', nome); return null; } return { nome, b64: fs.readFileSync(arq).toString('base64') }; }).filter(Boolean);
+    const { bruto, id } = montaMensagem(caso.assunto, caso.corpo, fotoCaso, caso.html, caso.pdf ? pdfB64 : null, caso.fotoArq || null, caso.cab || null, { formato: caso.formato, imagens, inReplyTo: caso.inReplyTo, references: caso.references, de: caso.de });
     let lock;
     try { lock = await client.getMailboxLock('INBOX'); await client.append('INBOX', Buffer.from(bruto), caso.lido ? ['\\Seen'] : []); }
     finally { if (lock) lock.release(); }
-    enviados.push({ n: caso.n, assunto: caso.assunto, corpo: caso.corpo, esperado: caso.esperado, check: caso.check, id, enviadoEm: Date.now(), foto: !!(caso.foto || caso.fotoArq), pdf: !!caso.pdf, semResposta: !!caso.semResposta, lido: !!caso.lido });
+    enviados.push({ n: caso.n, assunto: caso.assunto, corpo: caso.corpo, esperado: caso.esperado, check: caso.check, id, enviadoEm: Date.now(), foto: !!(caso.foto || caso.fotoArq || caso.fotos), pdf: !!caso.pdf, semResposta: !!caso.semResposta, lido: !!caso.lido });
     console.log('📤', caso.n, '—', caso.assunto.replace(MARCA + ' ', ''), (caso.foto || caso.fotoArq) ? '(com foto)' : '');
     await sleep(1300);
   }
@@ -206,6 +262,9 @@ function montaMensagem(assunto, corpo, imgB64, html, pdfB64, imgNome, extraCab) 
       const citado = String(r8.texto).split(NL).slice(0, 6).map(l => '> ' + l).join(NL);
       const casoM2 = { n: M2.n, assunto: M2.assunto, corpo: '> (resposta anterior)\n' + citado + '\n\nMuito bem. Qual era a palavra-chave que eu combinei com você? Uma linha só.', esperado: M2.esperado, check: M2.check };
       await envia(casoM2); m2Enviado = true;
+      const idR8 = ([...porMensagem.entries()].find(([mid, r]) => r === r8) || [])[0];   // v3.12: id da resposta do chat ao R3-8
+      await envia({ n: M3.n, assunto: M3.assunto, corpo: '[SEM-MEMORIA] Sem citar nada da conversa: qual era a palavra-chave que eu combinei com você? Uma linha só.', esperado: M3.esperado, check: M3.check, inReplyTo: idR8 || c8.id, references: c8.id + (idR8 ? ' ' + idR8 : '') });
+      console.log('📤 R3-20 — memória pela conversa do Gmail ([SEM-MEMORIA])');
       console.log('📤 R3-8b — segunda parte da MEMÓRIA');
     }
     const esperados = enviados.filter(e => !e.semResposta);   // v3.11: o automático não conta
@@ -269,7 +328,7 @@ function montaMensagem(assunto, corpo, imgB64, html, pdfB64, imgNome, extraCab) 
   for (const r of [...porMensagem.values()].sort((a, b) => a.quando - b.quando)) L.push('- ' + new Date(r.quando).toISOString().slice(11, 16) + ' · ' + r.caixa + ' · ' + r.assunto.replace(MARCA + ' ', '').slice(0, 70));
   L.push('');
   L.push('---');
-  L.push('_Gerado por `tools/teste-email.js` v3.11 (workflow `teste-email.yml`)._');
+  L.push('_Gerado por `tools/teste-email.js` v3.12 (workflow `teste-email.yml`)._');
   const ts = new Date().toISOString().slice(0, 16).split(':').join('').split('T').join('-');
   const destino = path.join(__dirname, '..', 'provas', 'teste-email-r3-' + ts + '.md');
   fs.mkdirSync(path.dirname(destino), { recursive: true });
