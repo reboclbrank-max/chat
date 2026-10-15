@@ -2,6 +2,8 @@
 // v12 (14/10/2026): 🔤 OCR LOCAL (tesseract) lê o texto da foto sem internet e entra no prompt;
 // resposta curta demais para foto ganha UMA nova tentativa exigindo concretude.
 // v12.1: a confiança do OCR vai no prompt; quando divergir do que o motor vê, vale a imagem.
+// v12.2: resposta de foto que NÃO viu a imagem (diz que não enxerga ou só repete medidas locais) é descartada
+// na corrida; o prompt leva só o que ajuda de verdade (rostos quando a pergunta é sobre pessoas; OCR >= 80%).
 const { ImapFlow } = require('imapflow');
 const nodemailer = require('nodemailer');
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
@@ -239,19 +241,28 @@ async function buscaRota(nome, url, corpo, bearer, pergunta, imagem) {
     if (!r.ok) return null;
     const j = await r.json();
     const t = ((((j.choices || [])[0] || {}).message || {}).content) || '';
-    if (textoUtil(t)) return { texto: t.trim().slice(0, 2500), via: nome };
+    if (textoUtil(t)) return { texto: t.trim().slice(0, 2500), via: nome, modelo: String(j.model || '') };
   } catch (e) {}
   return null;
 }
 // 🏁 corrida: dispara um PAR de rotas e fica com a primeira que responder de verdade.
 // (14/10: a fila sequencial fazia pior caso de ~12 min; a corrida corta para ~3 min e antecipa o caso comum.)
-async function corre(dupla, pergunta, imagem) {
+// 🙈 v12.2: famílias SÓ DE TEXTO (sonda 15/10: o gpt-oss-20b recebeu a foto e disse "não consigo visualizar").
+const SO_TEXTO = /gpt-oss|nemotron-3-(ultra|super)|deepseek/i;
+// 🙈 v12.2: resposta de FOTO que não viu a imagem — diz que não enxerga, ou só repete as medidas do olho local.
+function pareceCego(t) {
+  const s = String(t || '');
+  const naoVe = /n[ãa]o (consigo|posso|[ée] poss[íi]vel) (ver|visualizar|abrir|enxergar|analisar) (a |esta |essa |sua )?(imagem|foto)|n[ãa]o recebi (a |nenhuma )?(imagem|foto)|sem acesso [àa] (imagem|foto)|can(no|')t see|unable to (see|view)/i;
+  const eco = /bloco retangular|blocos de cor|cara de (c[ée]u|parede|[áa]gua|areia|terra)|parede ou fundo/i;
+  return naoVe.test(s) || eco.test(s);
+}
+async function corre(dupla, pergunta, imagem, valida) {
   return new Promise(function (resolve) {
     let restantes = dupla.length;
     for (const rt of dupla) {
       buscaRota(rt[0], rt[1], rt[2], rt[3], pergunta, imagem).then(function (x) {
-        if (x) resolve(x);
-        else if (--restantes === 0) resolve(null);
+        if (x && (!valida || valida(x))) resolve(x);
+        else { if (x) console.log('🙈 ' + rt[0] + (x.modelo ? ' (' + x.modelo + ')' : '') + ' respondeu sem ver a foto — descartei e segui a corrida'); if (--restantes === 0) resolve(null); }
       });
     }
   });
@@ -273,7 +284,7 @@ async function cerebro(pergunta, imagem) {
   const passadas = imagem ? 3 : 2;
   for (let passada = 0; passada < passadas; passada++) {
     for (let i = 0; i < rotas.length; i += 2) {
-      const r = await corre(rotas.slice(i, i + 2), pergunta, imagem);
+      const r = await corre(rotas.slice(i, i + 2), pergunta, imagem, imagem ? (x => !pareceCego(x && x.texto) && !SO_TEXTO.test((x && x.modelo) || '')) : null);
       if (r) return r;
     }
     if (passada < passadas - 1) await sleep(imagem ? 25000 : 8000);
@@ -558,20 +569,28 @@ async function processOnce() {
       const blocoCtx = contexto ? (NL + NL + 'Contexto de mensagens anteriores desta conversa (use somente se ajudar; pode ignorar):' + NL + contexto) : '';
       console.log('📨 de', de, '| assunto:', assunto.slice(0, 60), imagem ? '| 📷 foto ' + imagem.tipo + ' ~' + Math.round(imagem.bytes / 1024) + 'KB' : (audioAnexo ? '| 🎤 áudio ' + audioAnexo.tipo + ' ~' + Math.round(audioAnexo.bytes / 1024) + 'KB' : (docAnexo ? '| 📄 doc ' + docAnexo.nome + ' ~' + Math.round(docAnexo.bytes / 1024) + 'KB' : '')));
       const imagemVisao = imagem || imagemDoPdf;
-      // 🎯 v11: pistas do olho local entram no prompt dos motores (apoio honesto — "pode ser impreciso")
+      // 🎯 v11→v12.2: o olho mede ANTES dos motores; no prompt só vai o que ajuda (rostos, quando a pergunta é sobre pessoas)
       let dicaOlho = '';
-      if (imagemVisao) { const pistasOlho = await olhoPistas(imagemVisao); if (pistasOlho) dicaOlho = NL + NL + 'Um olho local mediu a imagem antes de você (pode ser impreciso — use como apoio, sem inventar além disto): ' + pistasOlho; }
+      let pistasOlho = '';
+      if (imagemVisao) {
+        pistasOlho = await olhoPistas(imagemVisao);
+        // 🙈 v12.2: medidas ricas no prompt deixavam motor CEGO "descrever" a foto (rodada 13) — agora só vai a
+        // contagem de rostos, e só quando a pergunta é sobre pessoas. O resto do olho fica para o fallback honesto.
+        const mRost = pistasOlho.match(/detectei (\d+) rosto/);
+        if (mRost && /pessoa|gente|rosto|quant[oa]s|quem|crian[çc]a|homem|mulher|fam[íi]lia/i.test(corpoMsg + ' ' + assunto)) dicaOlho = NL + NL + 'Um detector local de rostos (pode errar) contou ' + mRost[1] + ' rosto(s) provável(is) na imagem — confira com o que você vê.';
+      }
       // 🔤 v12: leitor de texto LOCAL (sem internet) roda em toda foto; o texto só entra no prompt com SINAL
       // de texto (olho mediu texto, o dono pediu leitura, ou confiança alta) — rabisco de paisagem não entra.
-      let ocrFoto = '', ocrAceito = '';
+      let ocrFoto = '', ocrAceito = '', ocrIncerto = '';
       if (imagemVisao) {
         const info = await leTextoLocalInfo(imagemVisao);
         if (info && info.texto) {
           const palavras = (info.texto.match(/[A-Za-zÀ-ÿ]{3,}/g) || []).length;
           const conf = (info.confianca == null ? 0 : info.confianca);
-          const olhoViuTexto = /TEXTO|documento|print/i.test(dicaOlho);
+          const olhoViuTexto = /TEXTO|documento|print/i.test(pistasOlho);
           const pedeLeitura = /leia|leitura|\bler\b|escrit|texto|bilhete|placa|document|recibo|receita|boleto|etiqueta|r[óo]tulo|cart[ãa]o/i.test(corpoMsg + ' ' + assunto);
-          if ((olhoViuTexto && palavras >= 1 && conf >= 55) || (pedeLeitura && conf >= 50 && palavras >= 2) || (conf >= 72 && palavras >= 3)) {
+          if (conf >= 55) ocrIncerto = info.texto;
+          if (palavras >= 2 && (conf >= 80 || ((olhoViuTexto || pedeLeitura) && conf >= 75))) {
             ocrAceito = info.texto;
             ocrFoto = NL + NL + 'Um leitor de texto LOCAL (tesseract, sem internet) leu isto na imagem (confiança ' + conf + '%) — use como apoio para ler o texto; quando ele divergir do que você VÊ, confie na imagem:' + NL + info.texto.slice(0, 2500);
             console.log('🔤 texto do OCR local entrou no prompt (' + palavras + ' palavras · confiança ' + conf + '%)');
@@ -612,6 +631,7 @@ async function processOnce() {
         let lido = ocrAceito ? ocrAceito.slice(0, 800) : '';
         let viaLeitura = lido ? 'leitor local (sem internet)' : '';
         if (!lido) { lido = await leTextoDaFoto(imagemVisao); if (lido) viaLeitura = 'lupa de texto'; }
+        if (!lido && ocrIncerto) { lido = ocrIncerto.slice(0, 800); viaLeitura = 'leitor local (leitura incerta)'; }
         const visto = await olhoDaFoto(imagemVisao);
         const pedacos = [];
         if (lido) pedacos.push('li o texto pelo ' + viaLeitura + ': « ' + lido + ' »');
@@ -630,8 +650,8 @@ async function processOnce() {
       const opcoes = { from: '"Assistente Rebocl" <' + USER + '>', to: de, subject: 'Re: ' + assunto, text: (resposta.indexOf('Assistente Rebocl') >= 0 ? resposta : resposta + '\n\n— Assistente Rebocl (casa Rebocl Brank)'), inReplyTo: msg.envelope.messageId, references: msg.envelope.messageId };
       if (anexoVoz) opcoes.attachments = [{ filename: anexoVoz.nome, content: anexoVoz.buf }];
       await transporte.sendMail(opcoes);
-      console.log('✉️ respondido via', r ? r.via : 'sem cérebro');
-      try { require('fs').appendFileSync('email-log.md', '- ' + new Date().toISOString().slice(0, 16) + ' UTC — ' + de + ' | "' + assunto.slice(0, 40) + '" → respondido via ' + (r ? r.via : 'fallback') + (anexoVoz ? ' + áudio' : '') + '\n'); } catch (e) {}
+      console.log('✉️ respondido via', r ? r.via + (r.modelo ? ' · ' + r.modelo : '') : 'sem cérebro');
+      try { require('fs').appendFileSync('email-log.md', '- ' + new Date().toISOString().slice(0, 16) + ' UTC — ' + de + ' | "' + assunto.slice(0, 40) + '" → respondido via ' + (r ? r.via + (r.modelo ? ' (' + r.modelo + ')' : '') : 'fallback') + (anexoVoz ? ' + áudio' : '') + '\n'); } catch (e) {}
       await client.messageFlagsAdd(uid, ['\\Seen'], { uid: true });
       memoria.set(chave, 'Pergunta: ' + String(corpoMsg || assunto).slice(0, 400) + NL + 'Resposta: ' + String(resposta).slice(0, 800));
       if (memoria.size > 25) { const k0 = memoria.keys().next().value; memoria.delete(k0); }
@@ -641,5 +661,5 @@ async function processOnce() {
   } finally { lock.release(); await client.logout(); }
   return respondidos;
 }
-module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar, extraiAnexoTexto, docTexto, olhoDaFoto, olhoPistas, leTextoLocal, leTextoLocalInfo, renderPdf, buscaRota, corre };
+module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar, extraiAnexoTexto, docTexto, olhoDaFoto, olhoPistas, leTextoLocal, leTextoLocalInfo, pareceCego, SO_TEXTO, renderPdf, buscaRota, corre };
 if (require.main === module) { processOnce().then(n => console.log('ciclo único:', n, 'respondidos')).catch(e => { console.error('ERRO:', e.message); process.exit(0); }); }
