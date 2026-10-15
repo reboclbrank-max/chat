@@ -1,6 +1,8 @@
 // 🧪 ROBÔ DE TESTE DO CHAT POR E-MAIL — v3 (14/10/2026)
 // v3.5: caso R3-13 — FOTO DE BILHETE (texto escrito na imagem → leitor de texto LOCAL/tesseract da v12).
 // v3.6: varredura rápida — só e-mails desde ontem, cabeçalho antes do conteúdo, nada relido (UIDs estáveis).
+// v3.7: caso R3-14 — FOTO COMPLEXA da horta (o ponto aberto "descrição completa da foto") + anexo JPEG com tipo certo;
+//       caso R3-15 — VISÃO LOCAL forçada pela chave [VISAO-LOCAL] (prova o caminho que só roda quando a internet cai).
 // Melhorias sobre a v2: usa o MESMO parser do canal (pegaTexto), casa cada resposta com o e-mail
 // que a originou (In-Reply-To = thread exata) e roda CHECAGENS AUTOMÁTICAS por caso no relatório.
 const fs = require('fs');
@@ -58,7 +60,15 @@ const CASOS = [
   { n: 'R3-13', assunto: MARCA + ' R3-13 — foto de bilhete', fotoArq: 'foto-bilhete.png',
     esperado: 'FOTO de um bilhete de papel: ler o que está escrito (horta, varanda, portão/trinco) e quem assinou (Dona Marta) — aqui entra o leitor de texto LOCAL (tesseract).',
     check: t => { const achou = ['horta', 'varanda', 'trinco|port[ãa]o', 'marta'].filter(p => new RegExp(p, 'i').test(t)).length; return achou >= 3 ? 'PASS (leu o bilhete: ' + achou + '/4 trechos)' : 'FALHOU (leu só ' + achou + '/4 trechos do bilhete)'; },
-    corpo: 'Achei este bilhete em cima da mesa. O que está escrito nele e quem assinou?' }
+    corpo: 'Achei este bilhete em cima da mesa. O que está escrito nele e quem assinou?' },
+  { n: 'R3-14', assunto: MARCA + ' R3-14 — foto complexa (horta)', fotoArq: 'foto-horta.jpg',
+    esperado: 'FOTO COMPLEXA de uma horta: descrever o que aparece — canteiros de verduras, regador vermelho, cachorro deitado, cerca de madeira (PASS com 3 dos 4).',
+    check: t => { const g = [/horta|alface|couve|verdura|hortali|canteir|vegeta/i, /regador/i, /cachorr|\bc[ãa]o\b|cadel/i, /cerca|estaca/i]; const achou = g.filter(r => r.test(t)).length; return achou >= 3 ? 'PASS (descreveu a cena: ' + achou + '/4 elementos)' : 'FALHOU (só ' + achou + '/4 elementos da cena)'; },
+    corpo: 'Tirei essa foto do quintal agora. O que você vê nela? Descreve tudo que der.' },
+  { n: 'R3-15', assunto: MARCA + ' R3-15 — visão local [VISAO-LOCAL]', fotoArq: 'teste-visao3.png',
+    esperado: 'Caminho da VISÃO LOCAL (a chave [VISAO-LOCAL] pula a visão da internet): formas + texto da foto do laboratório, dizendo que veio da visão local.',
+    check: t => (/quadrado|square/i.test(t) && /c[íi]rculo|circle/i.test(t) && /REBOCL|2026/i.test(t) && /vis[ãa]o local/i.test(t)) ? 'PASS (visão local viu as formas e o texto, e disse de onde veio)' : 'FALHOU (faltou forma, texto ou o aviso de visão local)',
+    corpo: 'Teste da visão local: o que tem nesta imagem? Liste formas, cores e o texto.' }
 ];
 const M2 = { n: 'R3-8b', assunto: 'Re: ' + MARCA + ' R3-8 — memória (1/2)',
   esperado: 'Dizer JATOBÁ (memória citada funcionando).',
@@ -66,6 +76,7 @@ const M2 = { n: 'R3-8b', assunto: 'Re: ' + MARCA + ' R3-8 — memória (1/2)',
 
 function montaMensagem(assunto, corpo, imgB64, html, pdfB64, imgNome) {
   const nomeImg = imgNome || 'teste-visao3.png';
+  const tipoImg = /\.jpe?g$/i.test(nomeImg) ? 'image/jpeg' : 'image/png';
   const id = '<teste-' + Date.now() + '-' + Math.floor(Math.random() * 100000) + '@rebocl.local>';
   const cab = ['From: "Teste da Casa" <' + ALIAS + '>', 'To: ' + USER, 'Subject: ' + assunto, 'Date: ' + new Date().toUTCString(), 'Message-ID: ' + id, 'MIME-Version: 1.0'];
   let bruto;
@@ -74,7 +85,7 @@ function montaMensagem(assunto, corpo, imgB64, html, pdfB64, imgNome) {
   else {
     const b = 'fronteira-teste-' + Date.now();
     const partes = ['--' + b, 'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', corpo, '--' + b,
-      'Content-Type: image/png; name="' + nomeImg + '"', 'Content-Transfer-Encoding: base64', 'Content-Disposition: attachment; filename="' + nomeImg + '"', '',
+      'Content-Type: ' + tipoImg + '; name="' + nomeImg + '"', 'Content-Transfer-Encoding: base64', 'Content-Disposition: attachment; filename="' + nomeImg + '"', '',
       imgB64.match(/.{1,76}/g).join(CRLF)];
     if (pdfB64) partes.push('--' + b,
       'Content-Type: application/pdf; name="anexo-prova.pdf"', 'Content-Transfer-Encoding: base64', 'Content-Disposition: attachment; filename="anexo-prova.pdf"', '',
@@ -208,7 +219,7 @@ function montaMensagem(assunto, corpo, imgB64, html, pdfB64, imgNome) {
   for (const r of [...porMensagem.values()].sort((a, b) => a.quando - b.quando)) L.push('- ' + new Date(r.quando).toISOString().slice(11, 16) + ' · ' + r.caixa + ' · ' + r.assunto.replace(MARCA + ' ', '').slice(0, 70));
   L.push('');
   L.push('---');
-  L.push('_Gerado por `tools/teste-email.js` v3.6 (workflow `teste-email.yml`)._');
+  L.push('_Gerado por `tools/teste-email.js` v3.7 (workflow `teste-email.yml`)._');
   const ts = new Date().toISOString().slice(0, 16).split(':').join('').split('T').join('-');
   const destino = path.join(__dirname, '..', 'provas', 'teste-email-r3-' + ts + '.md');
   fs.mkdirSync(path.dirname(destino), { recursive: true });
