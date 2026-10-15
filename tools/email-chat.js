@@ -1,4 +1,6 @@
 // 📧 CHAT POR EMAIL — módulo: processa 1 varredura da caixa (responde não-lidos com 3 rotas de cérebro)
+// v12 (14/10/2026): 🔤 OCR LOCAL (tesseract) lê o texto da foto sem internet e entra no prompt;
+// resposta curta demais para foto ganha UMA nova tentativa exigindo concretude.
 const { ImapFlow } = require('imapflow');
 const nodemailer = require('nodemailer');
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
@@ -305,6 +307,25 @@ async function olhoPistas(imagem) {
     return String(j.pistas || '').trim();
   } catch (e) { return ''; }
 }
+// 🔤 v12: OCR LOCAL — lê o TEXTO de foto/scan SEM internet e SEM terceiros (tesseract no runner).
+// Devolve { texto, confianca, motor } ou null; leTextoLocal() devolve só o texto.
+async function leTextoLocalInfo(imagem) {
+  const spawnSync = require('child_process').spawnSync;
+  const fsLocal = require('fs');
+  const caminho = '/tmp/ocr-casa.' + (String(imagem.tipo || 'image/png').split('/')[1] || 'png');
+  try { fsLocal.writeFileSync(caminho, Buffer.from(imagem.b64, 'base64')); } catch (e) { return null; }
+  const r = spawnSync('python3', ['tools/ocr-local.py', caminho], { timeout: 200000, encoding: 'utf8' });
+  try {
+    const bruto = String(r.stdout || '').trim();
+    const i = bruto.lastIndexOf('{');
+    if (i < 0) return null;
+    const j = JSON.parse(bruto.slice(i));
+    if (!j.ok || !j.texto) { console.log('🔤 OCR local: ' + (j.motivo || 'sem texto')); return null; }
+    console.log('🔤 OCR local (' + j.motor + ') leu ' + String(j.texto).length + ' caracteres' + (j.confianca ? ' · confiança ' + j.confianca + '%' : ''));
+    return { texto: String(j.texto).trim(), confianca: (typeof j.confianca === 'number' ? j.confianca : null), motor: j.motor };
+  } catch (e) { return null; }
+}
+async function leTextoLocal(imagem) { const j = await leTextoLocalInfo(imagem); return j ? j.texto : ''; }
 // 🖨️ PDF digitalizado (scan): renderiza a 1ª página em PNG (pdftoppm) e devolve como imagem para a VISÃO.
 async function renderPdf(a) {
   const spawnSync = require('child_process').spawnSync;
@@ -539,8 +560,25 @@ async function processOnce() {
       // 🎯 v11: pistas do olho local entram no prompt dos motores (apoio honesto — "pode ser impreciso")
       let dicaOlho = '';
       if (imagemVisao) { const pistasOlho = await olhoPistas(imagemVisao); if (pistasOlho) dicaOlho = NL + NL + 'Um olho local mediu a imagem antes de você (pode ser impreciso — use como apoio, sem inventar além disto): ' + pistasOlho; }
+      // 🔤 v12: leitor de texto LOCAL (sem internet) roda em toda foto; o texto só entra no prompt com SINAL
+      // de texto (olho mediu texto, o dono pediu leitura, ou confiança alta) — rabisco de paisagem não entra.
+      let ocrFoto = '', ocrAceito = '';
+      if (imagemVisao) {
+        const info = await leTextoLocalInfo(imagemVisao);
+        if (info && info.texto) {
+          const palavras = (info.texto.match(/[A-Za-zÀ-ÿ]{3,}/g) || []).length;
+          const conf = (info.confianca == null ? 0 : info.confianca);
+          const olhoViuTexto = /TEXTO|documento|print/i.test(dicaOlho);
+          const pedeLeitura = /leia|leitura|\bler\b|escrit|texto|bilhete|placa|document|recibo|receita|boleto|etiqueta|r[óo]tulo|cart[ãa]o/i.test(corpoMsg + ' ' + assunto);
+          if ((olhoViuTexto && palavras >= 1) || (pedeLeitura && conf >= 50 && palavras >= 2) || (conf >= 72 && palavras >= 3)) {
+            ocrAceito = info.texto;
+            ocrFoto = NL + NL + 'Um leitor de texto LOCAL (tesseract, sem internet) leu isto na imagem — use como base e corrija só o que for claramente erro de leitura:' + NL + info.texto.slice(0, 2500);
+            console.log('🔤 texto do OCR local entrou no prompt (' + palavras + ' palavras · confiança ' + conf + '%)');
+          } else console.log('🔤 OCR local ignorado (pouco sinal de texto: ' + palavras + ' palavras · confiança ' + conf + '%)');
+        }
+      }
       const pergunta = imagemVisao
-        ? 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + (imagem ? ' O dono mandou uma FOTO por e-mail' : ' O dono mandou um PDF DIGITALIZADO (a 1ª página foi renderizada aqui)') + '; descreva com precisão o que você vê e responda a pergunta dele, em português claro (máx 15 linhas). Se houver texto visível, leia o texto.\n\nPergunta dele: ' + (corpoMsg || assunto) + (textoDoc ? NL + NL + 'O dono TAMBÉM anexou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído dele (pode estar truncado):' + NL + textoDoc + NL + 'Leve o arquivo em conta na resposta.' : '') + blocoCtx + dicaOlho
+        ? 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + (imagem ? ' O dono mandou uma FOTO por e-mail' : ' O dono mandou um PDF DIGITALIZADO (a 1ª página foi renderizada aqui)') + '; descreva com precisão o que você vê e responda a pergunta dele, em português claro (máx 15 linhas). Se houver texto visível, leia o texto.\n\nPergunta dele: ' + (corpoMsg || assunto) + (textoDoc ? NL + NL + 'O dono TAMBÉM anexou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído dele (pode estar truncado):' + NL + textoDoc + NL + 'Leve o arquivo em conta na resposta.' : '') + blocoCtx + dicaOlho + ocrFoto
         : 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' Responda este e-mail em português claro (máx 15 linhas):\n\n' + assunto + '\n\n' + corpoMsg + (transcrito ? NL + NL + 'O dono TAMBÉM mandou um ÁUDIO; transcrição (motor pequeno — pode errar nomes): "' + transcrito + '". Responda ao conteúdo do áudio e mostre que ouviu.' : '') + (textoDoc ? NL + NL + 'O dono TAMBÉM mandou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído dele (pode estar truncado):' + NL + textoDoc + NL + 'Responda ao conteúdo do arquivo, citando o que está nele.' : '') + blocoCtx;
       let respostaFerramenta = null, anexoVoz = null;
       const mVoz = (!imagem && !audioAnexo) ? corpoMsg.trim().match(/^voz\s*:\s*([\s\S]{1,700})$/) : null;
@@ -550,9 +588,19 @@ async function processOnce() {
       }
       if (!imagem && !audioAnexo && !docAnexo && !mVoz) respostaFerramenta = await ferramenta(corpoMsg);
       if (respostaFerramenta) console.log('🧰 respondido por ferramenta (sem motor)');
+      // 🎯 v12: resposta curta demais para uma foto = UMA nova tentativa exigindo concretude
+      let respostaMotor = null;
+      if (!mVoz && !respostaFerramenta) {
+        respostaMotor = await cerebro(pergunta, imagemVisao);
+        if (imagemVisao && respostaMotor && String(respostaMotor.texto || '').trim().length < 45) {
+          console.log('⚠️ resposta curta para a foto (' + String(respostaMotor.texto || '').trim().length + ' caracteres) — tentando de novo');
+          const deNovo = await cerebro(pergunta + NL + NL + 'Seja concreto: diga o que aparece (objetos, cores, pessoas, texto). Onde não tiver certeza, repita o que o olho local mediu em vez de inventar.', imagemVisao);
+          if (deNovo && String(deNovo.texto || '').trim().length > String(respostaMotor.texto || '').trim().length) respostaMotor = deNovo;
+        }
+      }
       const r = mVoz
         ? { texto: anexoVoz ? '🎙️ Aí vai, falado (voz da casa):' + NL + NL + '« ' + mVoz[1].trim() + ' »' + NL + NL + 'O áudio vai em anexo — é só dar o play.' : 'quis te mandar um áudio, mas os motores de voz estão fora agora — tenta de novo em instantes (casa Rebocl).', via: anexoVoz ? 'voz' : 'voz-falhou' }
-        : (respostaFerramenta ? { texto: respostaFerramenta, via: 'ferramenta' } : await cerebro(pergunta, imagemVisao));
+        : (respostaFerramenta ? { texto: respostaFerramenta, via: 'ferramenta' } : respostaMotor);
       const transporte = nodemailer.createTransport({ host: 'smtp.gmail.com', port: 465, secure: true, auth: { user: USER, pass: PASS } });
       let resposta;
       if (r) resposta = r.texto;
@@ -560,10 +608,12 @@ async function processOnce() {
       else if (docAnexo && textoDoc) resposta = 'os motores estão oscilando agora, mas eu LI o seu arquivo "' + docAnexo.nome + '" — e o texto dele começa assim:' + NL + NL + '« ' + textoDoc.slice(0, 500) + ' »' + NL + NL + 'Me reenvia o pedido em instantes que eu comento o resto (casa Rebocl).';
       else if (docAnexo) resposta = 'recebi seu arquivo ("' + docAnexo.nome + '"), mas não consegui ler o texto dele — se ele for digitalizado (uma foto/scan), me manda como IMAGEM que eu leio pela visão; se for um formato diferente, me diz que eu vejo o que faço (casa Rebocl).';
       else if (imagemVisao) {
-        const lido = await leTextoDaFoto(imagemVisao);
+        let lido = ocrAceito ? ocrAceito.slice(0, 800) : '';
+        let viaLeitura = lido ? 'leitor local (sem internet)' : '';
+        if (!lido) { lido = await leTextoDaFoto(imagemVisao); if (lido) viaLeitura = 'lupa de texto'; }
         const visto = await olhoDaFoto(imagemVisao);
         const pedacos = [];
-        if (lido) pedacos.push('passei a minha lupa de texto e li: « ' + lido + ' »');
+        if (lido) pedacos.push('li o texto pelo ' + viaLeitura + ': « ' + lido + ' »');
         if (visto) pedacos.push('meu olho local (análise de pixels) viu: ' + visto);
         if (pedacos.length) resposta = 'recebi sua ' + (imagem ? 'foto' : 'página do PDF') + '. Os motores de VISÃO estão oscilando agora, mas ' + pedacos.join('. ') + '. Se quiser a leitura completa (detalhes, cenário), me reenvia em alguns minutos que eu tento de novo.';
         else resposta = 'recebi sua foto, mas não consegui abrir ela agora — manda de novo em instantes (casa Rebocl).';
@@ -590,5 +640,5 @@ async function processOnce() {
   } finally { lock.release(); await client.logout(); }
   return respondidos;
 }
-module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar, extraiAnexoTexto, docTexto, olhoDaFoto, olhoPistas, renderPdf, buscaRota, corre };
+module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar, extraiAnexoTexto, docTexto, olhoDaFoto, olhoPistas, leTextoLocal, leTextoLocalInfo, renderPdf, buscaRota, corre };
 if (require.main === module) { processOnce().then(n => console.log('ciclo único:', n, 'respondidos')).catch(e => { console.error('ERRO:', e.message); process.exit(0); }); }
