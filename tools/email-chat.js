@@ -12,6 +12,8 @@
 // (tools/visao-local.py) e um motor de texto redige a resposta só com o que ela viu (dizendo de onde veio).
 // v12.7: a visão local começa JUNTO com a 1ª tentativa na internet (encerrada se a internet responder; se a internet
 // falhar e ela já tiver a foto, o chat não espera as outras tentativas). E-mail com anexo espera as ferramentas do turno.
+// v12.8: foto + documento em pane — a visão local só recebe a pergunta quando não há documento junto; se nada viu a
+// foto, um motor de texto responde o que é texto (arquivo, texto lido na foto) e diz com franqueza o que não deu para ver.
 const { ImapFlow } = require('imapflow');
 const nodemailer = require('nodemailer');
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
@@ -657,7 +659,7 @@ async function processOnce() {
         }
         // 🔤 v12: leitor de texto LOCAL (sem internet) roda em toda foto; o texto só entra no prompt com SINAL
         // de texto (olho mediu texto, o dono pediu leitura, ou confiança alta) — rabisco de paisagem não entra.
-        let ocrFoto = '', ocrAceito = '', ocrIncerto = '';
+        let ocrFoto = '', ocrAceito = '', ocrIncerto = '', lupaFoto = null;   // v12.8: lupaFoto guarda a leitura da lupa (não chamar duas vezes)
         if (imagemVisao) {
           const info = await leTextoLocalInfo(imagemVisao);
           if (info && info.texto) {
@@ -689,7 +691,7 @@ async function processOnce() {
         // ⚡ v12.7: a visão local já começa a olhar a foto, em paralelo com os motores da internet
         let localEmCurso = null, localPronto = null;
         if (imagemVisao && !mVoz && !respostaFerramenta) {
-          localEmCurso = iniciaVisaoLocal(imagemVisao, corpoMsg || assunto);
+          localEmCurso = iniciaVisaoLocal(imagemVisao, docAnexo ? '' : (corpoMsg || assunto));   // v12.8: com documento junto, a visão só descreve a foto
           localEmCurso.promessa.then(v => { localPronto = v; });
         }
         if (!mVoz && !respostaFerramenta) {
@@ -714,6 +716,18 @@ async function processOnce() {
             else respostaMotor = { texto: 'Os motores de visão da internet estão fora agora, mas a minha visão local (roda aqui mesmo) olhou a sua ' + (imagem ? 'foto' : 'página') + ':' + NL + NL + vl.texto + NL + NL + '(descrição automática local — pode errar detalhes; se quiser a leitura completa, me reenvia daqui a pouco)', via: 'visão local (' + vl.modelo + ')', modelo: vl.modelo };
           }
         }
+        // 🧩 v12.8: nem a internet nem a visão local viram a foto → ainda dá para responder o que é TEXTO (o arquivo
+        // anexado, o texto lido na foto) com um motor de texto, dizendo com franqueza que a foto não pôde ser vista
+        if (imagemVisao && !respostaMotor && !mVoz && !respostaFerramenta) {
+          let lidoFoto = ocrAceito ? ocrAceito.slice(0, 800) : '';
+          if (!lidoFoto) { lupaFoto = await leTextoDaFoto(imagemVisao); lidoFoto = lupaFoto || ''; }
+          if (textoDoc || lidoFoto) {
+            const vistoOlho = await olhoDaFoto(imagemVisao);
+            const pedidoSemVisao = 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' Os motores de visão estão fora agora e a casa NÃO conseguiu ver a ' + (imagem ? 'foto' : 'página') + ' em detalhe.' + (lidoFoto ? ' Um leitor de texto leu isto na imagem: «' + lidoFoto + '».' : '') + (vistoOlho ? ' Uma análise simples de pixels (só cores e formas, sem entender a cena) indicou: ' + vistoOlho.slice(0, 500) + '.' : '') + (textoDoc ? NL + NL + 'O dono TAMBÉM anexou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído (pode estar truncado):' + NL + textoDoc : '') + NL + NL + 'Pergunta do dono: ' + (corpoMsg || assunto) + NL + NL + 'Responda em português claro (máx 12 linhas): responda tudo o que der com base no texto acima (principalmente o arquivo) e diga com franqueza, numa frase, que a foto não pôde ser vista em detalhe agora. Não invente o conteúdo da foto.';
+            const semVisao = await cerebro(pedidoSemVisao, null);
+            if (semVisao && String(semVisao.texto || '').trim().length > 20) { respostaMotor = { texto: semVisao.texto, via: 'sem visão (texto) + ' + semVisao.via, modelo: semVisao.modelo }; console.log('🧩 foto não vista, mas o texto (arquivo/leitura) foi respondido por um motor de texto'); }
+          }
+        }
         const r = mVoz
           ? { texto: anexoVoz ? '🎙️ Aí vai, falado (voz da casa):' + NL + NL + '« ' + mVoz[1].trim() + ' »' + NL + NL + 'O áudio vai em anexo — é só dar o play.' : 'quis te mandar um áudio, mas os motores de voz estão fora agora — tenta de novo em instantes (casa Rebocl).', via: anexoVoz ? 'voz' : 'voz-falhou' }
           : (respostaFerramenta ? { texto: respostaFerramenta, via: 'ferramenta' } : respostaMotor);
@@ -726,7 +740,7 @@ async function processOnce() {
         else if (imagemVisao) {
           let lido = ocrAceito ? ocrAceito.slice(0, 800) : '';
           let viaLeitura = lido ? 'pelo leitor local (sem internet)' : '';
-          if (!lido) { lido = await leTextoDaFoto(imagemVisao); if (lido) viaLeitura = 'pela lupa de texto'; }
+          if (!lido) { lido = (lupaFoto !== null ? lupaFoto : await leTextoDaFoto(imagemVisao)); if (lido) viaLeitura = 'pela lupa de texto'; }
           if (!lido && ocrIncerto) { lido = ocrIncerto.slice(0, 800); viaLeitura = 'pelo leitor local (leitura incerta)'; }
           const visto = await olhoDaFoto(imagemVisao);
           const pedacos = [];
