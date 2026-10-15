@@ -1,5 +1,6 @@
 // 🧪 ROBÔ DE TESTE DO CHAT POR E-MAIL — v3 (14/10/2026)
 // v3.5: caso R3-13 — FOTO DE BILHETE (texto escrito na imagem → leitor de texto LOCAL/tesseract da v12).
+// v3.6: varredura rápida — só e-mails desde ontem, cabeçalho antes do conteúdo, nada relido (UIDs estáveis).
 // Melhorias sobre a v2: usa o MESMO parser do canal (pegaTexto), casa cada resposta com o e-mail
 // que a originou (In-Reply-To = thread exata) e roda CHECAGENS AUTOMÁTICAS por caso no relatório.
 const fs = require('fs');
@@ -100,15 +101,25 @@ function montaMensagem(assunto, corpo, imgB64, html, pdfB64, imgNome) {
   try { for (const m of await client.list()) if (/enviad|sent|todos|all mail|spam/i.test(m.path)) caixas.push(m.path); } catch (e) {}
   console.log('caixas:', caixas.join(' | '));
 
+  const vistos = new Set();   // v3.6: caixa|uid já lidos (e-mail não muda)
   async function varre() {
     for (const caixa of caixas) {
       let lock;
       try {
         lock = await client.getMailboxLock(caixa);
-        const uids = await client.search({ subject: 'TESTE-REBOCL' });
+        // v3.6: só o que chegou desde ontem (o IMAP SINCE é por dia) — antes puxava TODAS as rodadas antigas, com anexos
+        const uids = await client.search({ subject: 'TESTE-REBOCL', since: new Date(t0 - 24 * 3600 * 1000) }, { uid: true });
         for (const uid of (uids || [])) {
-          const m = await client.fetchOne(uid, { source: true, envelope: true });
+          const chave = caixa + '|' + uid;
+          if (vistos.has(chave)) continue;
+          const cab = await client.fetchOne(uid, { envelope: true }, { uid: true });
+          if (!cab || !cab.envelope) continue;
+          const deCab = ((cab.envelope.from || [{}])[0].address || '').toLowerCase();
+          const quandoCab = cab.envelope.date ? new Date(cab.envelope.date).getTime() : 0;
+          if (quandoCab < t0 - 180000 || deCab.indexOf(ALIAS.toLowerCase()) >= 0) { vistos.add(chave); continue; }
+          const m = await client.fetchOne(uid, { source: true, envelope: true }, { uid: true });
           if (!m || !m.envelope) continue;
+          vistos.add(chave);
           const de = (m.envelope.from || [{}])[0].address || '';
           if (de.toLowerCase().indexOf(ALIAS.toLowerCase()) >= 0) continue;   // mensagem nossa
           const id = m.envelope.messageId || (caixa + '|' + uid);
@@ -197,7 +208,7 @@ function montaMensagem(assunto, corpo, imgB64, html, pdfB64, imgNome) {
   for (const r of [...porMensagem.values()].sort((a, b) => a.quando - b.quando)) L.push('- ' + new Date(r.quando).toISOString().slice(11, 16) + ' · ' + r.caixa + ' · ' + r.assunto.replace(MARCA + ' ', '').slice(0, 70));
   L.push('');
   L.push('---');
-  L.push('_Gerado por `tools/teste-email.js` v3.5 (workflow `teste-email.yml`)._');
+  L.push('_Gerado por `tools/teste-email.js` v3.6 (workflow `teste-email.yml`)._');
   const ts = new Date().toISOString().slice(0, 16).split(':').join('').split('T').join('-');
   const destino = path.join(__dirname, '..', 'provas', 'teste-email-r3-' + ts + '.md');
   fs.mkdirSync(path.dirname(destino), { recursive: true });
