@@ -27,7 +27,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: npm install --no-save nodemailer imapflow
+      - run: npm install --no-save nodemailer@10.1.1 imapflow@2.4.3
       - run: node tools/vigia-casa.js
         env:
           GMAIL_CHAT_ADDR: ${{ secrets.GMAIL_CHAT_ADDR }}

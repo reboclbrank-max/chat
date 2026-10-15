@@ -29,7 +29,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: npm install --no-save imapflow nodemailer
+      - run: npm install --no-save imapflow@2.4.3 nodemailer@10.1.1
       - run: |
           # 🧰 v12.7: ferramentas Python (voz, OCR, olho) e a visão local ficam prontas em 2º plano — o escutador
           # já atende e-mail de texto; e-mail com anexo espera o marcador /tmp/ferramentas-prontas
@@ -101,7 +101,7 @@ jobs:
         with:
           node-version: '20'
       - run: |
-          npm install --no-save imapflow nodemailer
+          npm install --no-save imapflow@2.4.3 nodemailer@10.1.1
           python3 -m pip install --quiet --disable-pip-version-check --break-system-packages "numpy<2.5" Pillow edge-tts gTTS vosk soundfile pywhispercpp pypdf python-docx opencv-python-headless==4.10.0.84 || python3 -m pip install --quiet --disable-pip-version-check "numpy<2.5" Pillow edge-tts gTTS vosk soundfile pywhispercpp pypdf python-docx opencv-python-headless==4.10.0.84 || true
           faltam=""
           command -v ffmpeg >/dev/null || faltam="$faltam ffmpeg"
