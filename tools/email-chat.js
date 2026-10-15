@@ -6,6 +6,8 @@
 // na corrida; o prompt leva só o que ajuda de verdade (rostos quando a pergunta é sobre pessoas; OCR >= 80%).
 // v12.3: polimento do fallback — "pela lupa" (era "pelo lupa") e respostas começando com maiúscula.
 // v12.4: PRIVACIDADE — o email-log.md vai para um repositório PÚBLICO: endereço mascarado e assunto só de teste.
+// v12.5: ORDEM DE CHEGADA (o mais antigo primeiro) com UID consistente em busca/leitura/marcação, e proteção por
+// e-mail: se um falhar 2x nesta sessão, ele é pulado (fica não lido para o próximo turno) e não trava os outros.
 const { ImapFlow } = require('imapflow');
 const nodemailer = require('nodemailer');
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
@@ -537,6 +539,8 @@ function pedeAudio(txt) {
 }
 // ================== fim da voz ==================
 
+// 🧾 v12.5: falhas por e-mail nesta sessão (o escutador chama processOnce em loop no mesmo processo)
+const falhasPorUid = new Map();
 async function processOnce() {
   if (!USER || !PASS) { console.error('sem credenciais'); return 0; }
   const client = new ImapFlow({ host: 'imap.gmail.com', port: 993, secure: true, auth: { user: USER, pass: PASS }, logger: false });
@@ -544,134 +548,141 @@ async function processOnce() {
   const lock = await client.getMailboxLock('INBOX');
   let respondidos = 0;
   try {
-    const uids = await client.search({ seen: false });
-    const alvo = (uids || []).slice(-5);
+    // v12.5: UID (não número de sequência) e ordem de chegada; quem falhou 2x nesta sessão fica para o próximo turno
+    const uids = await client.search({ seen: false }, { uid: true });
+    const alvo = (uids || []).slice().sort((a, b) => a - b).filter(u => (falhasPorUid.get(u) || 0) < 2).slice(0, 5);
     for (const uid of alvo) {
-      const msg = await client.fetchOne(uid, { source: true, envelope: true });
-      if (!msg || !msg.envelope) continue;
-      const de = (msg.envelope.from || []).map(f => f.address).join(',').toLowerCase();
-      const assunto = (msg.envelope.subject || '(sem assunto)');
-      if (!de || de.includes(USER.toLowerCase())) { await client.messageFlagsAdd(uid, ['\\Seen'], { uid: true }); continue; }
-      const bruto = (msg.source || '').toString();
-      const corpoMsg = pegaTexto(bruto, assunto);
-      const anexos = extraiAnexos(bruto);
-      const imagem = anexos[0] || null;
-      const audioAnexo = (imagem ? null : extraiAudio(bruto));
-      let transcrito = '';
-      if (audioAnexo) {
-        transcrito = await ouve(audioAnexo);
-        console.log(transcrito ? '🎧 ouvi o áudio: ' + transcrito.slice(0, 90) : '🎧 não consegui ouvir o áudio (' + audioAnexo.tipo + ')');
-      }
-      // 📎 14/10: documento é extraído MESMO quando vem foto ou áudio junto (antes, a foto mandava e o arquivo era ignorado)
-      const docAnexo = extraiAnexoTexto(bruto);
-      let textoDoc = '', imagemDoPdf = null;
-      if (docAnexo) {
-        textoDoc = await docTexto(docAnexo);
-        if (!textoDoc && /pdf/i.test(String(docAnexo.nome) + ' ' + docAnexo.tipo)) {
-          imagemDoPdf = await renderPdf(docAnexo);
-          console.log(imagemDoPdf ? '🖨️ PDF sem texto → renderizei a 1ª página e mandei para a visão' : '🖨️ PDF sem texto e não consegui renderizar');
+      try {
+        const msg = await client.fetchOne(uid, { source: true, envelope: true }, { uid: true });
+        if (!msg || !msg.envelope) continue;
+        const de = (msg.envelope.from || []).map(f => f.address).join(',').toLowerCase();
+        const assunto = (msg.envelope.subject || '(sem assunto)');
+        if (!de || de.includes(USER.toLowerCase())) { await client.messageFlagsAdd(uid, ['\\Seen'], { uid: true }); continue; }
+        const bruto = (msg.source || '').toString();
+        const corpoMsg = pegaTexto(bruto, assunto);
+        const anexos = extraiAnexos(bruto);
+        const imagem = anexos[0] || null;
+        const audioAnexo = (imagem ? null : extraiAudio(bruto));
+        let transcrito = '';
+        if (audioAnexo) {
+          transcrito = await ouve(audioAnexo);
+          console.log(transcrito ? '🎧 ouvi o áudio: ' + transcrito.slice(0, 90) : '🎧 não consegui ouvir o áudio (' + audioAnexo.tipo + ')');
         }
-        if (textoDoc) console.log('📄 li o arquivo ' + docAnexo.nome + ' (' + Math.round(docAnexo.bytes / 1024) + 'KB → ' + textoDoc.length + ' caracteres)');
-      }
-      const chave = limpaAssunto(assunto);
-      const citado = citacaoDoEmail(bruto);
-      const lembrado = memoria.has(chave) ? memoria.get(chave) : '';
-      const contexto = [citado, lembrado].filter(Boolean).join(NL + '---' + NL).slice(0, 1600);
-      const blocoCtx = contexto ? (NL + NL + 'Contexto de mensagens anteriores desta conversa (use somente se ajudar; pode ignorar):' + NL + contexto) : '';
-      console.log('📨 de', de, '| assunto:', assunto.slice(0, 60), imagem ? '| 📷 foto ' + imagem.tipo + ' ~' + Math.round(imagem.bytes / 1024) + 'KB' : (audioAnexo ? '| 🎤 áudio ' + audioAnexo.tipo + ' ~' + Math.round(audioAnexo.bytes / 1024) + 'KB' : (docAnexo ? '| 📄 doc ' + docAnexo.nome + ' ~' + Math.round(docAnexo.bytes / 1024) + 'KB' : '')));
-      const imagemVisao = imagem || imagemDoPdf;
-      // 🎯 v11→v12.2: o olho mede ANTES dos motores; no prompt só vai o que ajuda (rostos, quando a pergunta é sobre pessoas)
-      let dicaOlho = '';
-      let pistasOlho = '';
-      if (imagemVisao) {
-        pistasOlho = await olhoPistas(imagemVisao);
-        // 🙈 v12.2: medidas ricas no prompt deixavam motor CEGO "descrever" a foto (rodada 13) — agora só vai a
-        // contagem de rostos, e só quando a pergunta é sobre pessoas. O resto do olho fica para o fallback honesto.
-        const mRost = pistasOlho.match(/detectei (\d+) rosto/);
-        if (mRost && /pessoa|gente|rosto|quant[oa]s|quem|crian[çc]a|homem|mulher|fam[íi]lia/i.test(corpoMsg + ' ' + assunto)) dicaOlho = NL + NL + 'Um detector local de rostos (pode errar) contou ' + mRost[1] + ' rosto(s) provável(is) na imagem — confira com o que você vê.';
-      }
-      // 🔤 v12: leitor de texto LOCAL (sem internet) roda em toda foto; o texto só entra no prompt com SINAL
-      // de texto (olho mediu texto, o dono pediu leitura, ou confiança alta) — rabisco de paisagem não entra.
-      let ocrFoto = '', ocrAceito = '', ocrIncerto = '';
-      if (imagemVisao) {
-        const info = await leTextoLocalInfo(imagemVisao);
-        if (info && info.texto) {
-          const palavras = (info.texto.match(/[A-Za-zÀ-ÿ]{3,}/g) || []).length;
-          const conf = (info.confianca == null ? 0 : info.confianca);
-          const olhoViuTexto = /TEXTO|documento|print/i.test(pistasOlho);
-          const pedeLeitura = /leia|leitura|\bler\b|escrit|texto|bilhete|placa|document|recibo|receita|boleto|etiqueta|r[óo]tulo|cart[ãa]o/i.test(corpoMsg + ' ' + assunto);
-          if (conf >= 55) ocrIncerto = info.texto;
-          if (palavras >= 2 && (conf >= 80 || ((olhoViuTexto || pedeLeitura) && conf >= 75))) {
-            ocrAceito = info.texto;
-            ocrFoto = NL + NL + 'Um leitor de texto LOCAL (tesseract, sem internet) leu isto na imagem (confiança ' + conf + '%) — use como apoio para ler o texto; quando ele divergir do que você VÊ, confie na imagem:' + NL + info.texto.slice(0, 2500);
-            console.log('🔤 texto do OCR local entrou no prompt (' + palavras + ' palavras · confiança ' + conf + '%)');
-          } else console.log('🔤 OCR local ignorado (pouco sinal de texto: ' + palavras + ' palavras · confiança ' + conf + '%)');
+        // 📎 14/10: documento é extraído MESMO quando vem foto ou áudio junto (antes, a foto mandava e o arquivo era ignorado)
+        const docAnexo = extraiAnexoTexto(bruto);
+        let textoDoc = '', imagemDoPdf = null;
+        if (docAnexo) {
+          textoDoc = await docTexto(docAnexo);
+          if (!textoDoc && /pdf/i.test(String(docAnexo.nome) + ' ' + docAnexo.tipo)) {
+            imagemDoPdf = await renderPdf(docAnexo);
+            console.log(imagemDoPdf ? '🖨️ PDF sem texto → renderizei a 1ª página e mandei para a visão' : '🖨️ PDF sem texto e não consegui renderizar');
+          }
+          if (textoDoc) console.log('📄 li o arquivo ' + docAnexo.nome + ' (' + Math.round(docAnexo.bytes / 1024) + 'KB → ' + textoDoc.length + ' caracteres)');
         }
-      }
-      const pergunta = imagemVisao
-        ? 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + (imagem ? ' O dono mandou uma FOTO por e-mail' : ' O dono mandou um PDF DIGITALIZADO (a 1ª página foi renderizada aqui)') + '; descreva com precisão o que você vê e responda a pergunta dele, em português claro (máx 15 linhas). Se houver texto visível, leia o texto.\n\nPergunta dele: ' + (corpoMsg || assunto) + (textoDoc ? NL + NL + 'O dono TAMBÉM anexou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído dele (pode estar truncado):' + NL + textoDoc + NL + 'Leve o arquivo em conta na resposta.' : '') + blocoCtx + dicaOlho + ocrFoto
-        : 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' Responda este e-mail em português claro (máx 15 linhas):\n\n' + assunto + '\n\n' + corpoMsg + (transcrito ? NL + NL + 'O dono TAMBÉM mandou um ÁUDIO; transcrição (motor pequeno — pode errar nomes): "' + transcrito + '". Responda ao conteúdo do áudio e mostre que ouviu.' : '') + (textoDoc ? NL + NL + 'O dono TAMBÉM mandou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído dele (pode estar truncado):' + NL + textoDoc + NL + 'Responda ao conteúdo do arquivo, citando o que está nele.' : '') + blocoCtx;
-      let respostaFerramenta = null, anexoVoz = null;
-      const mVoz = (!imagem && !audioAnexo) ? corpoMsg.trim().match(/^voz\s*:\s*([\s\S]{1,700})$/) : null;
-      if (mVoz) {
-        anexoVoz = await fala(mVoz[1].trim());
-        console.log(anexoVoz ? '🎙️ áudio gerado (' + anexoVoz.via + ', ' + Math.round(anexoVoz.buf.length / 1024) + 'KB)' : '🎙️ não consegui gerar o áudio');
-      }
-      if (!imagem && !audioAnexo && !docAnexo && !mVoz) respostaFerramenta = await ferramenta(corpoMsg);
-      if (respostaFerramenta) console.log('🧰 respondido por ferramenta (sem motor)');
-      // 🎯 v12: resposta curta demais para uma foto = UMA nova tentativa exigindo concretude
-      let respostaMotor = null;
-      if (!mVoz && !respostaFerramenta) {
-        respostaMotor = await cerebro(pergunta, imagemVisao);
-        if (imagemVisao && respostaMotor && String(respostaMotor.texto || '').trim().length < 45) {
-          console.log('⚠️ resposta curta para a foto (' + String(respostaMotor.texto || '').trim().length + ' caracteres) — tentando de novo');
-          const deNovo = await cerebro(pergunta + NL + NL + 'Seja concreto: diga o que aparece (objetos, cores, pessoas, texto). Onde não tiver certeza, repita o que o olho local mediu em vez de inventar.', imagemVisao);
-          if (deNovo && String(deNovo.texto || '').trim().length > String(respostaMotor.texto || '').trim().length) respostaMotor = deNovo;
+        const chave = limpaAssunto(assunto);
+        const citado = citacaoDoEmail(bruto);
+        const lembrado = memoria.has(chave) ? memoria.get(chave) : '';
+        const contexto = [citado, lembrado].filter(Boolean).join(NL + '---' + NL).slice(0, 1600);
+        const blocoCtx = contexto ? (NL + NL + 'Contexto de mensagens anteriores desta conversa (use somente se ajudar; pode ignorar):' + NL + contexto) : '';
+        console.log('📨 de', de, '| assunto:', assunto.slice(0, 60), imagem ? '| 📷 foto ' + imagem.tipo + ' ~' + Math.round(imagem.bytes / 1024) + 'KB' : (audioAnexo ? '| 🎤 áudio ' + audioAnexo.tipo + ' ~' + Math.round(audioAnexo.bytes / 1024) + 'KB' : (docAnexo ? '| 📄 doc ' + docAnexo.nome + ' ~' + Math.round(docAnexo.bytes / 1024) + 'KB' : '')));
+        const imagemVisao = imagem || imagemDoPdf;
+        // 🎯 v11→v12.2: o olho mede ANTES dos motores; no prompt só vai o que ajuda (rostos, quando a pergunta é sobre pessoas)
+        let dicaOlho = '';
+        let pistasOlho = '';
+        if (imagemVisao) {
+          pistasOlho = await olhoPistas(imagemVisao);
+          // 🙈 v12.2: medidas ricas no prompt deixavam motor CEGO "descrever" a foto (rodada 13) — agora só vai a
+          // contagem de rostos, e só quando a pergunta é sobre pessoas. O resto do olho fica para o fallback honesto.
+          const mRost = pistasOlho.match(/detectei (\d+) rosto/);
+          if (mRost && /pessoa|gente|rosto|quant[oa]s|quem|crian[çc]a|homem|mulher|fam[íi]lia/i.test(corpoMsg + ' ' + assunto)) dicaOlho = NL + NL + 'Um detector local de rostos (pode errar) contou ' + mRost[1] + ' rosto(s) provável(is) na imagem — confira com o que você vê.';
         }
+        // 🔤 v12: leitor de texto LOCAL (sem internet) roda em toda foto; o texto só entra no prompt com SINAL
+        // de texto (olho mediu texto, o dono pediu leitura, ou confiança alta) — rabisco de paisagem não entra.
+        let ocrFoto = '', ocrAceito = '', ocrIncerto = '';
+        if (imagemVisao) {
+          const info = await leTextoLocalInfo(imagemVisao);
+          if (info && info.texto) {
+            const palavras = (info.texto.match(/[A-Za-zÀ-ÿ]{3,}/g) || []).length;
+            const conf = (info.confianca == null ? 0 : info.confianca);
+            const olhoViuTexto = /TEXTO|documento|print/i.test(pistasOlho);
+            const pedeLeitura = /leia|leitura|\bler\b|escrit|texto|bilhete|placa|document|recibo|receita|boleto|etiqueta|r[óo]tulo|cart[ãa]o/i.test(corpoMsg + ' ' + assunto);
+            if (conf >= 55) ocrIncerto = info.texto;
+            if (palavras >= 2 && (conf >= 80 || ((olhoViuTexto || pedeLeitura) && conf >= 75))) {
+              ocrAceito = info.texto;
+              ocrFoto = NL + NL + 'Um leitor de texto LOCAL (tesseract, sem internet) leu isto na imagem (confiança ' + conf + '%) — use como apoio para ler o texto; quando ele divergir do que você VÊ, confie na imagem:' + NL + info.texto.slice(0, 2500);
+              console.log('🔤 texto do OCR local entrou no prompt (' + palavras + ' palavras · confiança ' + conf + '%)');
+            } else console.log('🔤 OCR local ignorado (pouco sinal de texto: ' + palavras + ' palavras · confiança ' + conf + '%)');
+          }
+        }
+        const pergunta = imagemVisao
+          ? 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + (imagem ? ' O dono mandou uma FOTO por e-mail' : ' O dono mandou um PDF DIGITALIZADO (a 1ª página foi renderizada aqui)') + '; descreva com precisão o que você vê e responda a pergunta dele, em português claro (máx 15 linhas). Se houver texto visível, leia o texto.\n\nPergunta dele: ' + (corpoMsg || assunto) + (textoDoc ? NL + NL + 'O dono TAMBÉM anexou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído dele (pode estar truncado):' + NL + textoDoc + NL + 'Leve o arquivo em conta na resposta.' : '') + blocoCtx + dicaOlho + ocrFoto
+          : 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' Responda este e-mail em português claro (máx 15 linhas):\n\n' + assunto + '\n\n' + corpoMsg + (transcrito ? NL + NL + 'O dono TAMBÉM mandou um ÁUDIO; transcrição (motor pequeno — pode errar nomes): "' + transcrito + '". Responda ao conteúdo do áudio e mostre que ouviu.' : '') + (textoDoc ? NL + NL + 'O dono TAMBÉM mandou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído dele (pode estar truncado):' + NL + textoDoc + NL + 'Responda ao conteúdo do arquivo, citando o que está nele.' : '') + blocoCtx;
+        let respostaFerramenta = null, anexoVoz = null;
+        const mVoz = (!imagem && !audioAnexo) ? corpoMsg.trim().match(/^voz\s*:\s*([\s\S]{1,700})$/) : null;
+        if (mVoz) {
+          anexoVoz = await fala(mVoz[1].trim());
+          console.log(anexoVoz ? '🎙️ áudio gerado (' + anexoVoz.via + ', ' + Math.round(anexoVoz.buf.length / 1024) + 'KB)' : '🎙️ não consegui gerar o áudio');
+        }
+        if (!imagem && !audioAnexo && !docAnexo && !mVoz) respostaFerramenta = await ferramenta(corpoMsg);
+        if (respostaFerramenta) console.log('🧰 respondido por ferramenta (sem motor)');
+        // 🎯 v12: resposta curta demais para uma foto = UMA nova tentativa exigindo concretude
+        let respostaMotor = null;
+        if (!mVoz && !respostaFerramenta) {
+          respostaMotor = await cerebro(pergunta, imagemVisao);
+          if (imagemVisao && respostaMotor && String(respostaMotor.texto || '').trim().length < 45) {
+            console.log('⚠️ resposta curta para a foto (' + String(respostaMotor.texto || '').trim().length + ' caracteres) — tentando de novo');
+            const deNovo = await cerebro(pergunta + NL + NL + 'Seja concreto: diga o que aparece (objetos, cores, pessoas, texto). Onde não tiver certeza, repita o que o olho local mediu em vez de inventar.', imagemVisao);
+            if (deNovo && String(deNovo.texto || '').trim().length > String(respostaMotor.texto || '').trim().length) respostaMotor = deNovo;
+          }
+        }
+        const r = mVoz
+          ? { texto: anexoVoz ? '🎙️ Aí vai, falado (voz da casa):' + NL + NL + '« ' + mVoz[1].trim() + ' »' + NL + NL + 'O áudio vai em anexo — é só dar o play.' : 'quis te mandar um áudio, mas os motores de voz estão fora agora — tenta de novo em instantes (casa Rebocl).', via: anexoVoz ? 'voz' : 'voz-falhou' }
+          : (respostaFerramenta ? { texto: respostaFerramenta, via: 'ferramenta' } : respostaMotor);
+        const transporte = nodemailer.createTransport({ host: 'smtp.gmail.com', port: 465, secure: true, auth: { user: USER, pass: PASS } });
+        let resposta;
+        if (r) resposta = r.texto;
+        else if (audioAnexo) resposta = 'recebi seu áudio, mas não consegui ouvi-lo agora (os motores de escuta estão fora). Me escreve o que você queria que eu respondo na hora — ou manda o áudio de novo em alguns minutos (casa Rebocl).';
+        else if (docAnexo && textoDoc) resposta = 'os motores estão oscilando agora, mas eu LI o seu arquivo "' + docAnexo.nome + '" — e o texto dele começa assim:' + NL + NL + '« ' + textoDoc.slice(0, 500) + ' »' + NL + NL + 'Me reenvia o pedido em instantes que eu comento o resto (casa Rebocl).';
+        else if (docAnexo) resposta = 'recebi seu arquivo ("' + docAnexo.nome + '"), mas não consegui ler o texto dele — se ele for digitalizado (uma foto/scan), me manda como IMAGEM que eu leio pela visão; se for um formato diferente, me diz que eu vejo o que faço (casa Rebocl).';
+        else if (imagemVisao) {
+          let lido = ocrAceito ? ocrAceito.slice(0, 800) : '';
+          let viaLeitura = lido ? 'pelo leitor local (sem internet)' : '';
+          if (!lido) { lido = await leTextoDaFoto(imagemVisao); if (lido) viaLeitura = 'pela lupa de texto'; }
+          if (!lido && ocrIncerto) { lido = ocrIncerto.slice(0, 800); viaLeitura = 'pelo leitor local (leitura incerta)'; }
+          const visto = await olhoDaFoto(imagemVisao);
+          const pedacos = [];
+          if (lido) pedacos.push('li o texto ' + viaLeitura + ': « ' + lido + ' »');
+          if (visto) pedacos.push('meu olho local (análise de pixels) viu: ' + visto);
+          if (pedacos.length) resposta = 'recebi sua ' + (imagem ? 'foto' : 'página do PDF') + '. Os motores de VISÃO estão oscilando agora, mas ' + pedacos.map((p, i) => i ? p.charAt(0).toUpperCase() + p.slice(1) : p).join('. ') + '. Se quiser a leitura completa (detalhes, cenário), me reenvia em alguns minutos que eu tento de novo.';
+          else resposta = 'recebi sua foto, mas não consegui abrir ela agora — manda de novo em instantes (casa Rebocl).';
+        }
+        else {
+          const st = await ferramenta('status:');
+          resposta = 'estou vivo, mas os cérebros estão oscilando agora — reenvie em instantes que eu respondo.' + (st ? NL + NL + st : '');
+        }
+        if (!anexoVoz && r && !mVoz && pedeAudio(corpoMsg + ' ' + transcrito)) {
+          anexoVoz = await fala(resposta);
+          if (anexoVoz) console.log('🎙️ resposta falada a pedido (' + anexoVoz.via + ')');
+        }
+        if (resposta) resposta = resposta.charAt(0).toUpperCase() + resposta.slice(1);   // v12.3: começa com maiúscula
+        const opcoes = { from: '"Assistente Rebocl" <' + USER + '>', to: de, subject: 'Re: ' + assunto, text: (resposta.indexOf('Assistente Rebocl') >= 0 ? resposta : resposta + '\n\n— Assistente Rebocl (casa Rebocl Brank)'), inReplyTo: msg.envelope.messageId, references: msg.envelope.messageId };
+        if (anexoVoz) opcoes.attachments = [{ filename: anexoVoz.nome, content: anexoVoz.buf }];
+        await transporte.sendMail(opcoes);
+        console.log('✉️ respondido via', r ? r.via + (r.modelo ? ' · ' + r.modelo : '') : 'sem cérebro');
+        try { require('fs').appendFileSync('email-log.md', '- ' + new Date().toISOString().slice(0, 16) + ' UTC — ' + mascaraEndereco(de) + ' | "' + assuntoPublico(assunto) + '" → respondido via ' + (r ? r.via + (r.modelo ? ' (' + r.modelo + ')' : '') : 'fallback') + (anexoVoz ? ' + áudio' : '') + '\n'); } catch (e) {}
+        await client.messageFlagsAdd(uid, ['\\Seen'], { uid: true });
+        memoria.set(chave, 'Pergunta: ' + String(corpoMsg || assunto).slice(0, 400) + NL + 'Resposta: ' + String(resposta).slice(0, 800));
+        if (memoria.size > 25) { const k0 = memoria.keys().next().value; memoria.delete(k0); }
+        respondidos++;
+        await sleep(2000);
+      } catch (e) {
+        const n = (falhasPorUid.get(uid) || 0) + 1;
+        falhasPorUid.set(uid, n);
+        console.error('⚠️ e-mail uid ' + uid + ' falhou (' + n + 'ª vez): ' + String(e && e.message || e).slice(0, 160) + (n >= 2 ? ' — fica para o próximo turno, sigo com os outros' : ''));
       }
-      const r = mVoz
-        ? { texto: anexoVoz ? '🎙️ Aí vai, falado (voz da casa):' + NL + NL + '« ' + mVoz[1].trim() + ' »' + NL + NL + 'O áudio vai em anexo — é só dar o play.' : 'quis te mandar um áudio, mas os motores de voz estão fora agora — tenta de novo em instantes (casa Rebocl).', via: anexoVoz ? 'voz' : 'voz-falhou' }
-        : (respostaFerramenta ? { texto: respostaFerramenta, via: 'ferramenta' } : respostaMotor);
-      const transporte = nodemailer.createTransport({ host: 'smtp.gmail.com', port: 465, secure: true, auth: { user: USER, pass: PASS } });
-      let resposta;
-      if (r) resposta = r.texto;
-      else if (audioAnexo) resposta = 'recebi seu áudio, mas não consegui ouvi-lo agora (os motores de escuta estão fora). Me escreve o que você queria que eu respondo na hora — ou manda o áudio de novo em alguns minutos (casa Rebocl).';
-      else if (docAnexo && textoDoc) resposta = 'os motores estão oscilando agora, mas eu LI o seu arquivo "' + docAnexo.nome + '" — e o texto dele começa assim:' + NL + NL + '« ' + textoDoc.slice(0, 500) + ' »' + NL + NL + 'Me reenvia o pedido em instantes que eu comento o resto (casa Rebocl).';
-      else if (docAnexo) resposta = 'recebi seu arquivo ("' + docAnexo.nome + '"), mas não consegui ler o texto dele — se ele for digitalizado (uma foto/scan), me manda como IMAGEM que eu leio pela visão; se for um formato diferente, me diz que eu vejo o que faço (casa Rebocl).';
-      else if (imagemVisao) {
-        let lido = ocrAceito ? ocrAceito.slice(0, 800) : '';
-        let viaLeitura = lido ? 'pelo leitor local (sem internet)' : '';
-        if (!lido) { lido = await leTextoDaFoto(imagemVisao); if (lido) viaLeitura = 'pela lupa de texto'; }
-        if (!lido && ocrIncerto) { lido = ocrIncerto.slice(0, 800); viaLeitura = 'pelo leitor local (leitura incerta)'; }
-        const visto = await olhoDaFoto(imagemVisao);
-        const pedacos = [];
-        if (lido) pedacos.push('li o texto ' + viaLeitura + ': « ' + lido + ' »');
-        if (visto) pedacos.push('meu olho local (análise de pixels) viu: ' + visto);
-        if (pedacos.length) resposta = 'recebi sua ' + (imagem ? 'foto' : 'página do PDF') + '. Os motores de VISÃO estão oscilando agora, mas ' + pedacos.map((p, i) => i ? p.charAt(0).toUpperCase() + p.slice(1) : p).join('. ') + '. Se quiser a leitura completa (detalhes, cenário), me reenvia em alguns minutos que eu tento de novo.';
-        else resposta = 'recebi sua foto, mas não consegui abrir ela agora — manda de novo em instantes (casa Rebocl).';
-      }
-      else {
-        const st = await ferramenta('status:');
-        resposta = 'estou vivo, mas os cérebros estão oscilando agora — reenvie em instantes que eu respondo.' + (st ? NL + NL + st : '');
-      }
-      if (!anexoVoz && r && !mVoz && pedeAudio(corpoMsg + ' ' + transcrito)) {
-        anexoVoz = await fala(resposta);
-        if (anexoVoz) console.log('🎙️ resposta falada a pedido (' + anexoVoz.via + ')');
-      }
-      if (resposta) resposta = resposta.charAt(0).toUpperCase() + resposta.slice(1);   // v12.3: começa com maiúscula
-      const opcoes = { from: '"Assistente Rebocl" <' + USER + '>', to: de, subject: 'Re: ' + assunto, text: (resposta.indexOf('Assistente Rebocl') >= 0 ? resposta : resposta + '\n\n— Assistente Rebocl (casa Rebocl Brank)'), inReplyTo: msg.envelope.messageId, references: msg.envelope.messageId };
-      if (anexoVoz) opcoes.attachments = [{ filename: anexoVoz.nome, content: anexoVoz.buf }];
-      await transporte.sendMail(opcoes);
-      console.log('✉️ respondido via', r ? r.via + (r.modelo ? ' · ' + r.modelo : '') : 'sem cérebro');
-      try { require('fs').appendFileSync('email-log.md', '- ' + new Date().toISOString().slice(0, 16) + ' UTC — ' + mascaraEndereco(de) + ' | "' + assuntoPublico(assunto) + '" → respondido via ' + (r ? r.via + (r.modelo ? ' (' + r.modelo + ')' : '') : 'fallback') + (anexoVoz ? ' + áudio' : '') + '\n'); } catch (e) {}
-      await client.messageFlagsAdd(uid, ['\\Seen'], { uid: true });
-      memoria.set(chave, 'Pergunta: ' + String(corpoMsg || assunto).slice(0, 400) + NL + 'Resposta: ' + String(resposta).slice(0, 800));
-      if (memoria.size > 25) { const k0 = memoria.keys().next().value; memoria.delete(k0); }
-      respondidos++;
-      await sleep(2000);
     }
   } finally { lock.release(); await client.logout(); }
   return respondidos;
 }
-module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar, extraiAnexoTexto, docTexto, olhoDaFoto, olhoPistas, leTextoLocal, leTextoLocalInfo, pareceCego, SO_TEXTO, mascaraEndereco, assuntoPublico, renderPdf, buscaRota, corre };
+module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar, extraiAnexoTexto, docTexto, olhoDaFoto, olhoPistas, leTextoLocal, leTextoLocalInfo, pareceCego, SO_TEXTO, mascaraEndereco, assuntoPublico, falhasPorUid, renderPdf, buscaRota, corre };
 if (require.main === module) { processOnce().then(n => console.log('ciclo único:', n, 'respondidos')).catch(e => { console.error('ERRO:', e.message); process.exit(0); }); }
