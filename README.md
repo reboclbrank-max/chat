@@ -48,7 +48,7 @@ Para mudar o visual ou o texto, edite `index.html` e faça commit. O GitHub Page
 - A lista mostra **quantas conversas** você tem
 
 
-## v1.9 — o canal por e-mail (15/10/2026)
+## v1.10 — o canal por e-mail (15/10/2026)
 
 - **Responde os e-mails do dono** em turnos de escuta de até ~6 h que se revezam sozinhos (uma sessão por vez; o turno novo assume quando o anterior termina e já atende ~30 s depois de começar; código novo entra no ar sozinho em até ~10 min) e com um **vigia** que acorda o turno se algo ficar sem resposta.
 - **Entende anexos:** foto (motores de visão + olho local), PDF/Word/TXT/CSV/JSON, PDF digitalizado (a página vira imagem), foto e documento na mesma mensagem, e áudio (transcrição local). Responde **falando** quando pedido (`voz: <texto>`).
@@ -57,9 +57,11 @@ Para mudar o visual ou o texto, edite `index.html` e faça commit. O GitHub Page
 - **Visão local (v12.6–v12.10):** se os motores de visão da internet caem, um modelo de visão (**Qwen3-VL-4B**, escolhido no exame comparativo: formas 5/5 e horta 4/4, contra 3/5 e 3/4 do 2B) roda na CPU do próprio GitHub e olha a foto; um motor de texto escreve a resposta. Ela começa junto com a 1ª tentativa na internet: em pane real, uma foto sai em **~1–1,5 min** (antes, 4–5 min). Com foto + documento, o arquivo é respondido mesmo se nada conseguir ver a foto. O aviso de origem ("descrição feita pela visão local…", "a foto não pôde ser vista agora…") é acrescentado pelo próprio código, curto e fixo — não depende do modelo.
 - **Foto de celular (v12.9):** foto grande ou gravada "deitada" (a marca EXIF que o celular usa) é preparada uma vez antes de tudo: em pé, até 2048 px, JPEG. A internet recebe um arquivo pequeno e a visão local, o leitor de texto e o olho veem a foto em pé. Antes, uma foto de 12 MP estourava os 5 min da visão local.
 - **Ordem de chegada (v12.5):** os e-mails são atendidos na ordem em que chegaram; um e-mail problemático fica para o turno seguinte sem travar os outros.
+- **Nenhum e-mail perdido (v12.13):** a cada 5 min o chat confere se algum e-mail das últimas 6 h ficou marcado como lido sem resposta na pasta de enviados e o devolve à fila (uma vez por e-mail). Na estreia, recuperou e respondeu 7 e-mails de teste que tinham sumido da fila horas antes.
+- **Resposta automática responsável (v12.13):** não responde robôs — avisos de entrega, no-reply, listas, mensagens marcadas como automáticas (RFC 3834) — e marca as próprias respostas como automáticas, para nunca entrar em laço com outro robô.
 - **Olho local (v5):** sem internet, mede rostos, cena em faixas (céu/água/vegetação/areia), blocos de cor, linha de horizonte, "parece ter texto" e nitidez. Para o motor de visão só vai a contagem de rostos, quando a pergunta é sobre pessoas (pista rica no prompt piorava as respostas); o resto garante uma resposta mínima e honesta quando os motores caem.
-- **Privacidade:** o `email-log.md` e o log de execução do Actions (ambos públicos) levam o endereço mascarado e só o assunto de e-mails de teste; transcrição de áudio e nome de arquivo do dono não aparecem (v12.12).
-- **Provas:** robô de teste com 18 casos (`teste-email.yml`) e **exame das ferramentas** de 1 clique (`ferramentas.yml`, que também compara modelos de visão local); os relatórios ficam em `provas/`. Última rodada (21): **18/18 PASS**, média de 3,3 min por resposta, inclusive foto + PDF, bilhete, foto complexa, foto de celular de 12 MP e o modo "sem visão"; falha em modo de pane (motores da internet fora) aparece separada no relatório como "PANE".
+- **Privacidade:** o `email-log.md` e o log de execução do Actions (ambos públicos) levam o endereço mascarado e só o assunto de e-mails de teste; transcrição de áudio e nome de arquivo do dono não aparecem (v12.12). A memória da conversa é guardada por remetente + assunto (outra pessoa com o mesmo assunto não vê a sua conversa).
+- **Provas:** robô de teste com 20 casos (`teste-email.yml`) e **exame das ferramentas** de 1 clique (`ferramentas.yml`, que também compara modelos de visão local); os relatórios ficam em `provas/`. Última rodada (22): **20/20 PASS**, média de 3,6 min por resposta, inclusive e-mail perdido (chega como lido), e-mail automático (não responder), foto + PDF, bilhete, foto complexa, foto de celular de 12 MP e o modo "sem visão"; falha em modo de pane (motores da internet fora) aparece separada no relatório como "PANE".
 
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
