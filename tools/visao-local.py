@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# 👁️‍🗨️ VISÃO LOCAL DA CASA v1.4 (15/10/2026) — descreve a foto com um modelo de visão que roda AQUI MESMO
+# 👁️‍🗨️ VISÃO LOCAL DA CASA v1.5 (15/10/2026) — descreve a foto com um modelo de visão que roda AQUI MESMO
 # (llama.cpp na CPU do runner). Nada de serviço de terceiros: quando os motores de visão da internet caem
 # (504/502, como na madrugada de 15/10), a casa ainda VÊ a foto.
 # v1.4: FOTO DE CELULAR — (1) desvira pela marca EXIF (o llama.cpp não lê a orientação: foto em pé chegava
@@ -9,6 +9,9 @@
 #       laço, a parte boa é aproveitada (antes, tudo era descartado — rodada 16, R3-12); (3) modelo 'qwen3vl-4b'
 #       (GGUF oficial da Qwen, Q4_K_M); (4) pedido 'detalhado' opcional (VISAO_PEDIDO=detalhado), neutro — não sugere
 #       objetos (pista no pedido faz modelo inventar); (5) o JSON traz 'imagem' (tamanho/redução/desvirada).
+# v1.5 (exame #3 no runner): modelo padrão QWEN3-VL-4B (formas 5/5, horta 4/4 — viu o regador —, 58 s/foto; o 2B
+#       dava 3/5 e 3/4, 44 s); o laço é cortado na 2ª ocorrência (a 1ª é conteúdo: o 2B repetia o texto lido e o
+#       corte levava o texto junto); o eco da pergunta do dono e linhas soltas ("parece") saem da descrição.
 # Uso:
 #   python3 tools/visao-local.py --preparar              → baixa binário + modelo (para o turno rodar em 2º plano)
 #   python3 tools/visao-local.py foto.png [--pergunta "..."] [--modelo chave]   → JSON na stdout
@@ -38,7 +41,7 @@ MODELOS = {
     'gemma3-4b': ('ggml-org/gemma-3-4b-it-GGUF', 'gemma-3-4b-it-Q4_K_M.gguf', 'mmproj-model-f16.gguf'),
     'smol-500m': ('ggml-org/SmolVLM-500M-Instruct-GGUF', 'SmolVLM-500M-Instruct-Q8_0.gguf', 'mmproj-SmolVLM-500M-Instruct-Q8_0.gguf'),
 }
-PADRAO = os.environ.get('VISAO_MODELO', 'qwen3vl-2b')
+PADRAO = os.environ.get('VISAO_MODELO', 'qwen3vl-4b')
 CACHE = os.environ.get('VISAO_CACHE', os.path.expanduser('~/.cache/visao-casa'))
 MAX_PIXELS = int(os.environ.get('VISAO_MAX_PIXELS', '800000'))   # ~0,8 MP ≈ 780 tokens de imagem no Qwen3-VL
 PEDIDO_MODO = os.environ.get('VISAO_PEDIDO', 'normal')
@@ -145,11 +148,8 @@ def corta_laco(texto):
     if not ocorre or max(len(v) for v in ocorre.values()) < 4:
         return texto, False
     pior = max(ocorre.values(), key=len)
-    corte = pior[0]                                   # o laço começa na 1ª ocorrência do trecho que se repete
+    corte = pior[1]                                   # v1.5: a 1ª ocorrência é conteúdo; o laço começa na 2ª
     boa = texto[:spans[corte][0]].rstrip(' \t\n,;:-–—*')
-    fim_frase = max(boa.rfind('.'), boa.rfind('!'), boa.rfind('?'), boa.rfind('\n'))
-    if fim_frase >= len(boa) - 160 and fim_frase > 0:  # não termina no meio de uma frase
-        boa = boa[:fim_frase + 1].rstrip()
     boa = re.sub(r'(\s+(e|de|da|do|com|ou|a|o|um|uma|que))+$', '', boa, flags=re.I)   # sem conectivo solto no fim
     resto = [w.lower() for w in boa.split()]
     sub = {}
@@ -159,6 +159,23 @@ def corta_laco(texto):
     if len(resto) >= 12 and (not sub or max(sub.values()) < 3):
         return boa, True
     return None, True
+
+
+def limpa_eco(texto, pergunta):
+    """v1.5: o modelo costuma repetir a pergunta do dono antes de responder, e às vezes solta uma linha só com
+    "parece" — nada disso é descrição."""
+    p = (pergunta or '').strip()
+    if len(p) >= 12:
+        texto = texto.replace(p, ' ')
+        for frase in re.split(r'(?<=[.?!])\s+', p):     # também frase a frase ("O que você vê nela?")
+            if len(frase) >= 12:
+                texto = texto.replace(frase, ' ')
+    linhas = [l.strip() for l in texto.splitlines()]
+    linhas = [l for l in linhas if l.strip().lower().strip('.:*-– ') not in ('parece', 'pergunta', 'resposta')]
+    texto = '\n'.join(linhas)
+    texto = re.sub(r'[ \t]{2,}', ' ', texto)
+    texto = re.sub(r'\n{3,}', '\n\n', texto)
+    return texto.strip()
 
 
 def main():
@@ -216,7 +233,9 @@ def main():
         responde({'ok': False, 'motivo': 'o modelo repetiu o pedido em vez de descrever (' + ', '.join(eco) + ')', 'modelo': chave, 'imagem': info})
     # ... ou entra em REPETIÇÃO no fim ("formas, pessoas, cores, formas, pessoas, cores...") — v1.4: aproveita o que veio antes
     texto, cortado = corta_laco(texto)
-    if texto is None:
+    if texto is not None:
+        texto = limpa_eco(texto, pergunta)
+    if texto is None or len(texto) < 8:
         responde({'ok': False, 'motivo': 'o modelo entrou em repetição', 'modelo': chave, 'imagem': info})
     saida = {'ok': True, 'texto': texto[:3000], 'modelo': chave, 'segundos': round(time.time() - t0, 1), 'imagem': info}
     if cortado:
