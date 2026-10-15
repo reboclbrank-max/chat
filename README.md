@@ -54,7 +54,7 @@ Para mudar o visual ou o texto, edite `index.html` e faça commit. O GitHub Page
 - **Entende anexos:** foto (motores de visão + olho local), PDF/Word/TXT/CSV/JSON, PDF digitalizado (a página vira imagem), foto e documento na mesma mensagem, e áudio (transcrição local). Responde **falando** quando pedido (`voz: <texto>`).
 - **Leitor de texto local (v12):** o tesseract roda no próprio runner e lê bilhete, placa, rótulo e documento fotografado **sem mandar a foto para terceiros**. A confiança vai junto para o motor de visão; quando divergir do que ele vê, vale a imagem.
 - **Resposta cega barrada (v12.2):** se o motor de visão engasga e um modelo só de texto tenta "descrever" a foto sem vê-la, a resposta é descartada; aí vem o fallback honesto (texto lido + olho local).
-- **Olho local (v5):** sem internet, mede rostos, cena em faixas (céu/água/vegetação/areia), blocos de cor, linha de horizonte, "parece ter texto" e nitidez. Vira apoio no prompt e garante uma resposta mínima quando os motores caem.
+- **Olho local (v5):** sem internet, mede rostos, cena em faixas (céu/água/vegetação/areia), blocos de cor, linha de horizonte, "parece ter texto" e nitidez. Para o motor de visão só vai a contagem de rostos, quando a pergunta é sobre pessoas (pista rica no prompt piorava as respostas); o resto garante uma resposta mínima e honesta quando os motores caem.
 - **Privacidade:** o `email-log.md` (público) leva endereço mascarado e só o assunto de e-mails de teste.
 - **Provas:** robô de teste com 14 casos (`teste-email.yml`) e **exame das ferramentas** de 1 clique (`ferramentas.yml`); os relatórios ficam em `provas/`. Última rodada (14): **14/14 PASS**.
 
