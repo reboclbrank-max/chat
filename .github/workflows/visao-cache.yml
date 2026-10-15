@@ -1,0 +1,41 @@
+name: Guarda a visão local (cache do modelo)
+# 👁️‍🗨️ baixa o modelo de visão local UMA vez e guarda no cache do Actions — o turno restaura em segundos
+# (mesmo caminho e mesma chave do email.yml). Se o cache já existe, não baixa nada. 1 clique, sem segredos.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: visao-cache
+  cancel-in-progress: false
+jobs:
+  guarda:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      VISAO_MODELO: qwen3vl-2b
+      VISAO_CACHE: /home/runner/.cache/visao-casa
+    steps:
+      - uses: actions/checkout@v4
+      - name: Já está no cache?
+        id: cache-visao
+        uses: actions/cache/restore@v4
+        with:
+          path: /home/runner/.cache/visao-casa
+          key: visao-${{ env.VISAO_MODELO }}-b11635-v1
+          lookup-only: true
+      - name: Prepara o modelo
+        if: steps.cache-visao.outputs.cache-hit != 'true'
+        run: python3 tools/visao-local.py --preparar
+      - name: Prova rápida (a foto do laboratório)
+        if: steps.cache-visao.outputs.cache-hit != 'true'
+        run: python3 tools/visao-local.py tools/teste-visao3.png
+      - name: Guarda no cache
+        if: steps.cache-visao.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: /home/runner/.cache/visao-casa
+          key: visao-${{ env.VISAO_MODELO }}-b11635-v1
+      - name: Resumo
+        run: |
+          if [ "${{ steps.cache-visao.outputs.cache-hit }}" = "true" ]; then echo "o modelo já estava guardado no cache"; else echo "modelo guardado no cache agora"; fi
