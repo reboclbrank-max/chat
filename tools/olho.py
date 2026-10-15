@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# 👁️ OLHO LOCAL DA CASA v4 (14/10/2026) — descreve a imagem SEM internet e SEM motores.
+# 👁️ OLHO LOCAL DA CASA v5 (14/10/2026) — descreve a imagem SEM internet e SEM motores.
 # v1: formas e cores de traço. v2: paleta, brilho, orientação, faixas, documento/print.
 # v3: ROSTOS (opencv haar, offline — "quanta gente aparece"), nitidez (foto tremida?) e
 #     preto-e-branco/cor. v4: LEITURA DE CENA em faixas ("de cima para baixo: céu; vegetação; areia").
-#     Tudo medido; nada inventado: quando não dá, ele diz que não dá.
+# v5: BLOCOS DE COR com porcentagem, LINHA DE HORIZONTE, tom de PELE (apoio quando o rosto
+#     não aparece), "parece ter TEXTO" e interior/exterior. Tudo medido; nada inventado.
 # Uso: python3 tools/olho.py /caminho/imagem.png  → JSON {"descricao", "formas", "paleta", "rostos"}.
 import json
 import sys
@@ -244,6 +245,98 @@ def main():
         if ctopo != cbase and ctopo != 'outro':
             faixa = 'metade de cima tende a ' + ctopo + ', a de baixo a ' + cbase
 
+    # 🧱 v5: BLOCOS DE COR — agrupa tons parecidos e mede quanto cada um ocupa da imagem
+    blocos = []
+    try:
+        base = arr.reshape(-1, 3).astype(float)
+        q32 = (base // 32) * 32
+        uniq, cnt = np.unique(q32, axis=0, return_counts=True)
+        total = float(cnt.sum())
+        brutos = []
+        for i in np.argsort(cnt)[::-1]:
+            cor_i = uniq[i].astype(float)
+            pct_i = 100.0 * float(cnt[i]) / total
+            junto = None
+            for b in brutos:
+                if float(np.sqrt(((b['rgb'] - cor_i) ** 2).sum())) < 48:
+                    junto = b
+                    break
+            if junto is not None:
+                junto['pct'] += pct_i
+            elif len(brutos) < 6:
+                brutos.append({'rgb': cor_i, 'pct': pct_i})
+        brutos.sort(key=lambda b: -b['pct'])
+        blocos = [{'cor': nome_cor(b['rgb'].astype(int)), 'pct': round(b['pct'], 1)}
+                  for b in brutos[:4] if b['pct'] >= 4.0]
+    except Exception:
+        blocos = []
+
+    # 🧍 v5: TOM DE PELE — apoio para "tem pessoa?" quando o detector de rosto não pega.
+    # Só conta se for um BLOCO COMPACTO (areia, madeira e parede também são quentes —
+    # espalhadas pela imagem toda, não são pessoa).
+    pele_pct = 0.0
+    pele_quente = 0.0  # tons quentes que PODEM ser pele (ou areia/madeira) — só avisamos
+    try:
+        r_, g_, b_ = arr[:, :, 0], arr[:, :, 1], arr[:, :, 2]
+        mx = np.maximum(np.maximum(r_, g_), b_)
+        mn = np.minimum(np.minimum(r_, g_), b_)
+        pele = (r_ > 60) & (g_ > 35) & (b_ > 25) & ((r_ - g_) >= 15) & (b_ >= 0.35 * r_) & \
+               ((mx - mn) >= 18) & ((mx - mn) <= 95)
+        if pele.any():
+            bruto = 100.0 * float(pele.mean())
+            ys, xs = np.where(pele)
+            y1, y2, x1, x2 = int(ys.min()), int(ys.max()), int(xs.min()), int(xs.max())
+            caixa = float((y2 - y1 + 1) * (x2 - x1 + 1))
+            cheio = float(pele.sum()) / caixa if caixa else 0.0
+            largura_rel = (x2 - x1 + 1) / float(W)
+            if cheio >= 0.22 and largura_rel <= 0.80:
+                pele_pct = round(bruto, 1)
+            elif bruto >= 20:
+                pele_quente = round(bruto, 1)
+    except Exception:
+        pele_pct = 0.0
+        pele_quente = 0.0
+
+    # 🌄 v5: LINHA DE HORIZONTE — onde a cor muda de vez de uma faixa para a seguinte
+    horizonte_pct = 0
+    try:
+        passo = max(6, H // 24)
+        melhor = (0.0, 0)
+        for yy in range(passo, H - passo, passo):
+            a1 = arr[yy - passo:yy].reshape(-1, 3).mean(axis=0)
+            a2 = arr[yy:yy + passo].reshape(-1, 3).mean(axis=0)
+            d = float(np.sqrt(((a1 - a2) ** 2).sum()))
+            if d > melhor[0]:
+                melhor = (d, yy)
+        if melhor[0] > 42 and not parece_doc:
+            horizonte_pct = int(round(100.0 * melhor[1] / H))
+    except Exception:
+        horizonte_pct = 0
+
+    # 🔤 v5: PARECE TER TEXTO — várias linhas com traço escuro sobre fundo claro
+    texto_visivel = False
+    try:
+        if (parece_doc or (fundo in ('branco', 'creme') and brilho > 150)) and dif_canais < 26:
+            nlinhas = 0
+            for yy in range(0, H, max(1, H // 24)):
+                if float((cinza[yy] < 110).mean()) > 0.06:
+                    nlinhas += 1
+            texto_visivel = nlinhas >= 3
+    except Exception:
+        texto_visivel = False
+    if texto_visivel:
+        horizonte_pct = 0  # "salto de cor" em documento é linha de texto, não horizonte
+
+    # 🏞 v5: INTERIOR OU EXTERIOR (só diz quando as cores apoiam)
+    nomes_blocos = ' '.join(b['cor'] for b in blocos)
+    lugar = ''
+    if ('ciano' in nomes_blocos or 'azul' in nomes_blocos) and 'verde' in nomes_blocos:
+        lugar = 'cara de lugar aberto (céu e vegetação aparecem juntos)'
+    elif horizonte_pct and ('ciano' in nomes_blocos or 'azul' in nomes_blocos):
+        lugar = 'cara de lugar aberto, com linha de horizonte'
+    elif 'cinza' in nomes_blocos and brilho < 140:
+        lugar = 'cara de ambiente fechado/interior'
+
     partes = []
     if formas:
         partes.append('fundo ' + fundo + '; ' + '; '.join(
@@ -252,7 +345,17 @@ def main():
         partes.append('detectei ' + str(det['n']) + ' rosto(s) provavel(is) de pessoa (' + '; '.join(det['onde']) + ')')
     if parece_doc:
         partes.append('parece documento/print com texto (muito traço escuro em fundo claro)')
-    if paleta and not formas:
+    if texto_visivel and not parece_doc:
+        partes.append('parece ter TEXTO/escrita em cima de fundo claro')
+    if pele_pct >= 4 and not (det and det['n'] > 0):
+        partes.append('tom de pele em ~' + str(pele_pct) + '% da imagem (pode haver pessoa, sem rosto detectado)')
+    elif pele_quente >= 20 and not (det and det['n'] > 0):
+        partes.append('tons quentes em ~' + str(pele_quente) + '% (pode ser pessoa bem de perto, ou areia/madeira)')
+    if blocos and not formas:
+        partes.append('blocos de cor: ' + ', '.join('%s %s%%' % (b['cor'], b['pct']) for b in blocos))
+    if lugar:
+        partes.append(lugar + (' (horizonte a ~' + str(horizonte_pct) + '% de cima)' if horizonte_pct else ''))
+    if paleta and not formas and not blocos:
         partes.append('paleta dominante: ' + ', '.join('%s %s%%' % (p['cor'], p['pct']) for p in paleta))
     partes.append('imagem ' + orient + ', ' + nivel + ' (' + rotulo_det + ')')
     if pb:
@@ -270,12 +373,26 @@ def main():
     pedacos_pista = []
     if det and det['n'] > 0:
         pedacos_pista.append('detectei ' + str(det['n']) + ' rosto(s) provável(is) de pessoa (' + '; '.join(det['onde']) + ')')
+    elif pele_pct >= 4:
+        pedacos_pista.append('tom de pele em ~' + str(pele_pct) + '% (pode haver pessoa, rosto não detectado)')
+    elif pele_quente >= 25:
+        pedacos_pista.append('tons quentes (pele, areia ou madeira) em ~' + str(pele_quente) + '%')
     if leitura_cena:
         pedacos_pista.append(leitura_cena)
+    if blocos:
+        pedacos_pista.append('blocos de cor: ' + ', '.join('%s %s%%' % (b['cor'], b['pct']) for b in blocos))
+    if lugar:
+        pedacos_pista.append(lugar)
+    if horizonte_pct:
+        pedacos_pista.append('linha de horizonte a ~' + str(horizonte_pct) + '% de cima')
+    if texto_visivel:
+        pedacos_pista.append('parece ter TEXTO escrito na imagem')
     if tremida:
         pedacos_pista.append('foto possivelmente tremida/desfocada')
     pistas = '; '.join(pedacos_pista)
     print(json.dumps({'descricao': descricao, 'pistas': pistas, 'formas': formas, 'paleta': paleta,
+                      'blocos': blocos, 'horizonte_pct': horizonte_pct, 'pele_pct': pele_pct, 'pele_quente_pct': pele_quente,
+                      'texto_visivel': bool(texto_visivel), 'lugar': lugar,
                       'rostos': (det or {}).get('n', 0)}))
 
 
