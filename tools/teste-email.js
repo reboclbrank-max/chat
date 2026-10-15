@@ -5,6 +5,8 @@
 //       caso R3-15 — VISÃO LOCAL forçada pela chave [VISAO-LOCAL] (prova o caminho que só roda quando a internet cai).
 // v3.8: separa FALHOU de MODO DE PANE — se a checagem falha e a resposta admite pane (visão local, motores fora/
 //       oscilando, foto não vista), a nota vira "PANE — FALHOU (…)" e o placar conta à parte (rodada 16).
+// v3.9: caso R3-16 — foto + PDF com a chave [SEM-VISAO] (prova em produção o caminho "nada vê a foto" da v12.8);
+//       caso R3-17 — FOTO DE CELULAR (12 MP, gravada deitada com a marca EXIF 6), que o chat v12.9 prepara antes.
 // Melhorias sobre a v2: usa o MESMO parser do canal (pegaTexto), casa cada resposta com o e-mail
 // que a originou (In-Reply-To = thread exata) e roda CHECAGENS AUTOMÁTICAS por caso no relatório.
 const fs = require('fs');
@@ -77,7 +79,15 @@ const CASOS = [
   { n: 'R3-15', assunto: MARCA + ' R3-15 — visão local [VISAO-LOCAL]', fotoArq: 'teste-visao3.png',
     esperado: 'Caminho da VISÃO LOCAL (a chave [VISAO-LOCAL] pula a visão da internet): formas + texto da foto do laboratório, dizendo que veio da visão local.',
     check: t => (/quadrado|square/i.test(t) && /c[íi]rculo|circle/i.test(t) && /REBOCL|2026/i.test(t) && /vis[ãa]o local/i.test(t)) ? 'PASS (visão local viu as formas e o texto, e disse de onde veio)' : 'FALHOU (faltou forma, texto ou o aviso de visão local)',
-    corpo: 'Teste da visão local: o que tem nesta imagem? Liste formas, cores e o texto.' }
+    corpo: 'Teste da visão local: o que tem nesta imagem? Liste formas, cores e o texto.' },
+  { n: 'R3-16', assunto: MARCA + ' R3-16 — foto + PDF sem visão [SEM-VISAO]', foto: true, pdf: true,
+    esperado: 'Caminho SEM VISÃO (a chave [SEM-VISAO] desliga a visão da internet e a local): responder o PDF (12 pés de couve) e dizer com franqueza que a foto não foi vista — inventar a foto reprova.',
+    check: t => { const doc = /\b12\b/.test(t) && /couve/i.test(t); const franca = /n[ãa]o (p[ôo]de|pude|consegui|conseguiu|foi poss[íi]vel|deu|tenho como|d[áa] para)[^.\n]{0,50}(\bver\b|vist|enxerg|analis|olh|visualiz|descrev)|sem (conseguir )?ver a (foto|imagem)|n[ãa]o vi a (foto|imagem)|(foto|imagem) n[ãa]o (p[ôo]de|foi|p[ôo]de ser)[^.\n]{0,20}(vist|analis|visualiz)/i.test(t); return (doc && franca) ? 'PASS (respondeu o PDF e disse com franqueza que a foto não foi vista)' : (doc ? 'FALHOU (respondeu o PDF, mas não foi franco sobre a foto)' : 'FALHOU (não respondeu o PDF)'); },
+    corpo: 'Teste do modo sem visão: quantos pés de couve diz o PDF? E o que dá para saber da foto?' },
+  { n: 'R3-17', assunto: MARCA + ' R3-17 — foto de celular (12 MP, deitada)', fotoArq: 'foto-celular.jpg',
+    esperado: 'FOTO DE CELULAR de verdade: 12 MP, 1,3 MB, gravada deitada com a marca EXIF 6 (como o celular faz). O chat prepara a foto (em pé, menor) e descreve a horta — canteiros, regador, cachorro, cerca (PASS com 3 dos 4).',
+    check: t => { const g = [/horta|alface|couve|verdura|hortali|canteir|vegeta/i, /regador/i, /cachorr|\bc[ãa]o\b|cadel/i, /cerca|estaca/i]; const achou = g.filter(r => r.test(t)).length; return achou >= 3 ? 'PASS (descreveu a foto de celular: ' + achou + '/4 elementos)' : 'FALHOU (só ' + achou + '/4 elementos da foto de celular)'; },
+    corpo: 'Tirei essa foto do quintal com o celular agora. O que você vê nela?' }
 ];
 const M2 = { n: 'R3-8b', assunto: 'Re: ' + MARCA + ' R3-8 — memória (1/2)',
   esperado: 'Dizer JATOBÁ (memória citada funcionando).',
