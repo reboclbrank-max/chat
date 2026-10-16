@@ -20,6 +20,8 @@
 //        os links da resposta são lidos do e-mail bruto (o leitor do chat tira links do texto de entrada).
 // v3.16: casos R3-35 a R3-37 — os comandos novos da v12.18: conta: (local, 267,5 na hora), feriado: (datas + nomes)
 //        e cep: 49300000 (Tobias Barreto — SE, pela BrasilAPI).
+// v3.19: 🪶 varre do MAIS NOVO para o mais velho — se o Gmail cortar a conexão no meio da varredura
+//        (fez isso a tarde toda de 16/10), a rodada de HOJE já foi coletada; os restos antigos não importam.
 // v3.18: 🪶 varredura mais leve e com sonda de vida — "Todos os e-mails" fica fora (é cópia de INBOX+Enviados e
 //        dobrava o trabalho); antes de varrer, um STATUS rápido confere se a conexão está viva (conexão meia-morta
 //        não queima mais 2 min de teto). Motivação: 16/10 à noite, o Gmail derrubava as varreduras pesadas.
@@ -287,7 +289,7 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
         lock = await client.getMailboxLock(caixa);
         // v3.6: só o que chegou desde ontem (o IMAP SINCE é por dia) — antes puxava TODAS as rodadas antigas, com anexos
         const uids = await client.search({ subject: 'TESTE-REBOCL', since: new Date(t0 - 24 * 3600 * 1000) }, { uid: true });
-        for (const uid of (uids || [])) {
+        for (const uid of (uids || []).slice().reverse()) {   // 🪶 v3.19: do mais novo para o mais velho — o importante primeiro
           const chave = caixa + '|' + uid;
           if (vistos.has(chave)) continue;
           const cab = await client.fetchOne(uid, { envelope: true }, { uid: true });
@@ -432,7 +434,7 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
   for (const r of [...porMensagem.values()].sort((a, b) => a.quando - b.quando)) L.push('- ' + new Date(r.quando).toISOString().slice(11, 16) + ' · ' + r.caixa + ' · ' + r.assunto.replace(MARCA + ' ', '').slice(0, 70));
   L.push('');
   L.push('---');
-  L.push('_Gerado por `tools/teste-email.js` v3.18 (workflow `teste-email.yml`)._');
+  L.push('_Gerado por `tools/teste-email.js` v3.19 (workflow `teste-email.yml`)._');
   const ts = new Date().toISOString().slice(0, 16).split(':').join('').split('T').join('-');
   const destino = path.join(__dirname, '..', 'provas', 'teste-email-r3-' + ts + '.md');
   fs.mkdirSync(path.dirname(destino), { recursive: true });

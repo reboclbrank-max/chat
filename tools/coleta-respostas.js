@@ -1,8 +1,11 @@
 // 📥 COLETA FINAL do teste de e-mail (interno) — v3
 // Usa o MESMO parser do chat (pegaTexto) para ler as respostas com fidelidade total.
 // Varre INBOX + Enviados + Spam; espera a resposta da memória se ainda não chegou; grava o relatório.
+// v3.1 (16/10/2026): 🪶 envelope ANTES do source — envio nosso (com anexos pesados) não é mais baixado à toa,
+//      ordem do mais novo para o mais velho e busca por UID estável. Foi o que faltou: a varredura morria
+//      baixando anexos das rodadas antigas e nunca chegava às respostas do dia.
 // v3 (16/10/2026): 🛡️ à prova de conexão morta (teto de tempo + reconexão, como o robô v3.17) e 🪶 mais leve —
-// só mensagens das últimas 36 h (a caixa de testes passou de 1000) e sem reler o que já viu.
+//      só mensagens das últimas 36 h (a caixa de testes passou de 1000) e sem reler o que já viu.
 const fs = require('fs');
 const path = require('path');
 const { ImapFlow } = require('imapflow');
@@ -50,10 +53,14 @@ const CAIXAS = ['INBOX', '[Gmail]/E-mails enviados', '[Gmail]/Spam'];
       let lock;
       try {
         lock = await client.getMailboxLock(caixa);
-        const uids = await client.search({ subject: 'TESTE-REBOCL', since: new Date(Date.now() - 36 * 3600e3) });   // 🪶 v3: só o último dia e meio
-        for (const uid of (uids || [])) {
+        const uids = await client.search({ subject: 'TESTE-REBOCL', since: new Date(Date.now() - 36 * 3600e3) }, { uid: true });   // 🪶 v3.1: UID estável + só o último dia e meio
+        for (const uid of (uids || []).slice().reverse()) {   // 🪶 v3.1: do mais novo para o mais velho — as respostas de hoje primeiro
           if (vistos.has(caixa + '|' + uid)) continue;   // 🪶 v3: já leu este
-          const m = await client.fetchOne(uid, { source: true, envelope: true });
+          const cab = await client.fetchOne(uid, { envelope: true }, { uid: true });   // 🪶 v3.1: envelope barato antes do source
+          if (!cab || !cab.envelope) { vistos.add(caixa + '|' + uid); continue; }
+          const deCab = ((cab.envelope.from || [{}])[0].address || '').toLowerCase();
+          if (deCab.indexOf(ALIAS.toLowerCase()) >= 0) { vistos.add(caixa + '|' + uid); continue; }   // 🪶 v3.1: envio nosso (anexo pesado) não baixa
+          const m = await client.fetchOne(uid, { source: true, envelope: true }, { uid: true });
           if (!m || !m.envelope) continue;
           const de = (m.envelope.from || [{}])[0].address || '';
           if (de.toLowerCase().indexOf(ALIAS.toLowerCase()) >= 0) continue;
@@ -109,7 +116,7 @@ const CAIXAS = ['INBOX', '[Gmail]/E-mails enviados', '[Gmail]/Spam'];
     L.push('');
   }
   L.push('---');
-  L.push('_Gerado por `tools/coleta-respostas.js` v3 (workflow `coleta-email.yml`)._');
+  L.push('_Gerado por `tools/coleta-respostas.js` v3.1 (workflow `coleta-email.yml`)._');
   const ts = new Date().toISOString().slice(0, 16).split(':').join('').split('T').join('-');
   const destino = path.join(__dirname, '..', 'provas', 'teste-email-final-' + ts + '.md');
   fs.mkdirSync(path.dirname(destino), { recursive: true });
