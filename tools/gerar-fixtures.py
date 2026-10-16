@@ -7,6 +7,7 @@
 #   nota-de-voz.ogg  — nota de voz como o WhatsApp manda (voz sintetizada → opus); .mp3 se não houver ffmpeg
 #   materiais.xlsx   — planilha Excel com materiais, quantidades e preços
 #   pdf-escaneado.pdf — PDF de 2 páginas SÓ COM IMAGEM (sem texto), como um documento digitalizado
+#   video-curto.mp4  — vídeo de 6 s (a horta, depois o bilhete) com uma fala: "a palavra do vídeo é jabuticaba"
 import os
 import subprocess
 import sys
@@ -79,3 +80,18 @@ try:   # PDF escaneado de 2 páginas (só imagem, sem camada de texto)
     print('✔ pdf-escaneado.pdf (2 páginas, só imagem)')
 except Exception as e:
     print('⚠️ PDF escaneado não gerado (%s)' % str(e)[:80])
+try:   # vídeo curto: 2 cenas + fala (precisa de ffmpeg)
+    from gtts import gTTS
+    fala = os.path.join(base, 'fala-video.mp3')
+    gTTS('Este é o vídeo de teste da casa. A palavra do vídeo é jabuticaba.', lang='pt', tld='com.br').save(fala)
+    video = os.path.join(base, 'video-curto.mp4')
+    filtro = ('[0:v]scale=1024:558,setsar=1[a];[1:v]scale=1024:558:force_original_aspect_ratio=decrease,'
+              'pad=1024:558:(ow-iw)/2:(oh-ih)/2:white,setsar=1[b];[a][b]concat=n=2:v=1:a=0,format=yuv420p[v]')
+    r = subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-loop', '1', '-t', '3', '-i', os.path.join(base, 'foto-horta.jpg'),
+                        '-loop', '1', '-t', '3', '-i', os.path.join(base, 'foto-bilhete.png'), '-i', fala,
+                        '-filter_complex', filtro, '-map', '[v]', '-map', '2:a', '-c:v', 'libx264', '-preset', 'veryfast',
+                        '-c:a', 'aac', '-t', '6', video])
+    os.remove(fala)
+    print('✔ video-curto.mp4  %.0f KB' % (os.path.getsize(video) / 1024) if r.returncode == 0 and os.path.exists(video) else '⚠️ vídeo não gerado (ffmpeg falhou)')
+except Exception as e:
+    print('⚠️ vídeo não gerado (%s)' % str(e)[:80])

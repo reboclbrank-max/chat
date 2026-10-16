@@ -14,6 +14,8 @@
 //        conversa do Gmail (R3-20), remetente não autorizado (R3-21) e foto de celular de ~6 MB no R3-17.
 // v3.13: cérebro local de texto (R3-26), remetente falsificado (R3-27), nota de voz (R3-28), planilha (R3-29) e
 //        PDF escaneado de 2 páginas (R3-30); anexos genéricos (áudio, planilha, PDF) gerados na hora.
+// v3.14: lembrete entregue na hora (R3-31, 2 respostas), pesquisa com fonte (R3-32), planilha gerada (R3-33) e
+//        vídeo curto (R3-34); a resposta registra os nomes dos anexos (📎 anexos: …).
 // Melhorias sobre a v2: usa o MESMO parser do canal (pegaTexto), casa cada resposta com o e-mail
 // que a originou (In-Reply-To = thread exata) e roda CHECAGENS AUTOMÁTICAS por caso no relatório.
 const fs = require('fs');
@@ -143,7 +145,23 @@ const CASOS = [
   { n: 'R3-30', assunto: MARCA + ' R3-30 — PDF escaneado de 2 páginas', arquivos: [['pdf-escaneado.pdf']],
     esperado: 'PDF DIGITALIZADO com 2 páginas (só imagem, sem texto): antes da v12.15 só a 1ª página era lida. A senha do portão (4721) está na página 2.',
     check: t => /\b4721\b/.test(t) ? 'PASS (leu a página 2 do PDF escaneado)' : 'FALHOU (não leu a página 2)',
-    corpo: 'Qual é a senha do portão que aparece na página 2 do PDF anexo?' }
+    corpo: 'Qual é a senha do portão que aparece na página 2 do PDF anexo?' },
+  { n: 'R3-31', assunto: MARCA + ' R3-31 — lembrete', lembrete: true,
+    esperado: 'LEMBRETE: "daqui a 2 minutos" — o chat confirma (com dia e hora) e, na hora marcada, manda o lembrete na mesma conversa (guardado na própria caixa, sobrevive à troca de turno).',
+    check: t => (/vou te lembrar/i.test(t) && /⏰ Lembrete:[^\n]*testar o lembrete/i.test(t)) ? 'PASS (confirmou e entregou o lembrete na hora)' : (/vou te lembrar/i.test(t) ? 'FALHOU (confirmou, mas o lembrete não chegou na janela)' : 'FALHOU (não confirmou o lembrete)'),
+    corpo: 'lembrete: daqui a 2 minutos testar o lembrete da casa' },
+  { n: 'R3-32', assunto: MARCA + ' R3-32 — pesquisa com fonte',
+    esperado: 'PESQUISA COM FONTE: busca na Wikipédia/buscador e responde citando as fontes, com o endereço de cada uma.',
+    check: t => (/Aracaju/i.test(t) && /https?:\/\//.test(t)) ? 'PASS (respondeu Aracaju e citou a fonte)' : (/Aracaju/i.test(t) ? 'FALHOU (respondeu, mas sem o endereço da fonte)' : 'FALHOU (a pesquisa não respondeu)'),
+    corpo: 'pesquisa: capital de Sergipe' },
+  { n: 'R3-33', assunto: MARCA + ' R3-33 — planilha gerada',
+    esperado: 'RESPOSTA COM ARQUIVO: "faça uma planilha…" — a resposta volta com planilha.xlsx anexa.',
+    check: t => /📎 anexos:[^\n]*planilha\.xlsx/.test(t) ? 'PASS (veio a planilha.xlsx anexa)' : 'FALHOU (a planilha não veio anexa)',
+    corpo: 'Faça uma planilha com 3 materiais de construção e o preço estimado de cada um.' },
+  { n: 'R3-34', assunto: MARCA + ' R3-34 — vídeo curto', arquivos: [['video-curto.mp4']],
+    esperado: 'VÍDEO CURTO (6 s: a horta e depois o bilhete, com uma fala): o chat tira quadros e o áudio — tem de dizer a palavra falada (JABUTICABA) e algo do que aparece.',
+    check: t => (/jabuticaba/i.test(t) && /horta|regador|cachorr|canteir|bilhete|marta|planta|jardim/i.test(t)) ? 'PASS (viu os quadros e ouviu a fala do vídeo)' : (/jabuticaba/i.test(t) ? 'FALHOU (ouviu, mas não descreveu o que aparece)' : 'FALHOU (não ouviu a fala do vídeo)'),
+    corpo: 'Mandei um vídeo curto. O que aparece nele e qual é a palavra falada no vídeo?' }
 ];
 const M3 = { n: 'R3-20', assunto: 'Re: ' + MARCA + ' R3-8 — memória (1/2)',
   esperado: 'MEMÓRIA PELA CONVERSA DO GMAIL: a chave [SEM-MEMORIA] faz o chat ignorar a memória do turno e a citação — só a conversa guardada no Gmail pode lembrar JATOBÁ (é a memória que sobrevive à troca de turno).',
@@ -243,7 +261,9 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
           const id = m.envelope.messageId || (caixa + '|' + uid);
           const quando = m.envelope.date ? new Date(m.envelope.date).getTime() : 0;
           if (quando < t0 - 180000) continue;                                  // só esta rodada
-          const texto = pegaTexto((m.source || '').toString(), String(m.envelope.subject || ''));
+          const fonte = (m.source || '').toString();
+          const nomesAnexos = [...fonte.matchAll(/filename\*?="?([^"\r\n;]+)/gi)].map(x => x[1]);   // v3.14
+          const texto = pegaTexto(fonte, String(m.envelope.subject || '')) + (nomesAnexos.length ? '\n📎 anexos: ' + nomesAnexos.join(', ') : '');
           const antigo = porMensagem.get(id);
           if (!antigo || texto.length > antigo.texto.length || (caixa === 'INBOX' && antigo.caixa !== 'INBOX'))
             porMensagem.set(id, { texto, caixa, quando, assunto: String(m.envelope.subject || ''), inReplyTo: m.envelope.inReplyTo || '' });
@@ -258,7 +278,7 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
     let fotoCaso = caso.foto ? imgB64 : null;
     if (caso.fotoArq) { const arq = path.join(__dirname, caso.fotoArq); fotoCaso = fs.existsSync(arq) ? fs.readFileSync(arq).toString('base64') : null; if (!fotoCaso) console.log('⚠️ fixture ausente:', caso.fotoArq); }
     let imagens = null;
-    const TIPOS = { ogg: 'audio/ogg', mp3: 'audio/mpeg', m4a: 'audio/mp4', xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', pdf: 'application/pdf' };
+    const TIPOS = { ogg: 'audio/ogg', mp3: 'audio/mpeg', m4a: 'audio/mp4', xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', pdf: 'application/pdf', mp4: 'video/mp4' };
     const arquivos = (caso.arquivos || []).map(opcoes => { const nome = opcoes.find(n => fs.existsSync(path.join(__dirname, n))); if (!nome) { console.log('⚠️ fixture ausente:', opcoes.join(' / ')); return null; } return { nome, tipo: TIPOS[nome.split('.').pop()] || 'application/octet-stream', b64: fs.readFileSync(path.join(__dirname, nome)).toString('base64') }; }).filter(Boolean);   // v3.13
     if (caso.fotos) imagens = caso.fotos.map(nome => { const arq = path.join(__dirname, nome); if (!fs.existsSync(arq)) { console.log('⚠️ fixture ausente:', nome); return null; } return { nome, b64: fs.readFileSync(arq).toString('base64') }; }).filter(Boolean);
     const { bruto, id } = montaMensagem(caso.assunto, caso.corpo, fotoCaso, caso.html, caso.pdf ? pdfB64 : null, caso.fotoArq || null, caso.cab || null, { formato: caso.formato, imagens, inReplyTo: caso.inReplyTo, references: caso.references, de: caso.de, arquivos });
@@ -269,6 +289,8 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
     console.log('📤', caso.n, '—', caso.assunto.replace(MARCA + ' ', ''), (caso.foto || caso.fotoArq) ? '(com foto)' : '');
     await sleep(1300);
   }
+  function respostasDe(caso) { return [...porMensagem.values()].filter(r => r.inReplyTo === caso.id).sort((a, b) => a.quando - b.quando); }   // v3.14
+  function textoDe(x) { return x.e.lembrete ? respostasDe(x.e).map(r => r.texto).join('\n---\n') : x.r.texto; }
   function casa(caso) {
     for (const [mid, r] of porMensagem) if (r.inReplyTo === caso.id) return r;
     for (const [mid, r] of porMensagem) if (r.assunto.indexOf(caso.n + ' ') >= 0 || r.assunto.indexOf(caso.n + ' —') >= 0) return r;
@@ -294,7 +316,7 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
       console.log('📤 R3-8b — segunda parte da MEMÓRIA');
     }
     const esperados = enviados.filter(e => !e.semResposta);   // v3.11: o automático não conta
-    const respondidos = esperados.filter(e => casa(e)).length;
+    const respondidos = esperados.filter(e => e.lembrete ? respostasDe(e).length >= 2 : casa(e)).length;   // v3.14: lembrete = 2 respostas
     console.log('… respondidos:', respondidos, '/', esperados.length, '· min restantes:', Math.max(0, Math.round((limite - Date.now()) / 60000)));
     if (m2Enviado && respondidos >= esperados.length) break;
     await sleep(25000);
@@ -325,7 +347,7 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
   // v3.11: o automático passa se foi LIDO e ficou SEM resposta (o chat viu e decidiu não responder)
   const notaSemResposta = x => x.r ? 'FALHOU (respondeu um e-mail automático)' : (/LIDO sem resposta/.test(sumico.get(x.e.id) || '') ? 'PASS (lido e não respondido — RFC 3834)' : 'FALHOU (o chat não chegou a olhar o e-mail automático)');
   const ok = resp.filter(x => x.r && !x.e.semResposta).length;
-  const notas = resp.filter(x => (x.r && x.e.check) || x.e.semResposta).map(x => x.e.semResposta ? notaSemResposta(x) : avalia(x.e, x.r.texto));
+  const notas = resp.filter(x => (x.r && x.e.check) || x.e.semResposta).map(x => x.e.semResposta ? notaSemResposta(x) : avalia(x.e, textoDe(x)));
   L.push('- enviados: ' + enviados.length + ' · respondidos: ' + ok + ' · checagens PASS: ' + notas.filter(n => n.indexOf('PASS') === 0).length + '/' + notas.length + (notas.some(n => n.indexOf('PANE') === 0) ? ' · em modo de pane (motores da internet fora): ' + notas.filter(n => n.indexOf('PANE') === 0).length : ''));
   const lat = resp.filter(x => x.r && !x.e.semResposta).map(x => (x.r.quando - x.e.enviadoEm) / 60000);
   if (lat.length) L.push('- latência: ' + Math.min.apply(null, lat).toFixed(1) + '–' + Math.max.apply(null, lat).toFixed(1) + ' min (média ' + (lat.reduce((a, b) => a + b, 0) / lat.length).toFixed(1) + ')');
@@ -342,10 +364,10 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
       L.push('**Checagem automática:** ' + notaSemResposta(x) + ' · **' + (x.r ? 'respondeu em ' + ((x.r.quando - x.e.enviadoEm) / 60000).toFixed(1) + ' min' : 'sem resposta, como esperado') + '**');
       if (x.r) { L.push(''); L.push('```'); L.push(x.r.texto.slice(0, 800)); L.push('```'); }
     } else if (x.r) {
-      L.push('**Checagem automática:** ' + (x.e.check ? avalia(x.e, x.r.texto) : '—') + ' · **Resposta em ' + ((x.r.quando - x.e.enviadoEm) / 60000).toFixed(1) + ' min** (' + x.r.caixa + ')');
+      L.push('**Checagem automática:** ' + (x.e.check ? avalia(x.e, textoDe(x)) : '—') + ' · **Resposta em ' + ((x.r.quando - x.e.enviadoEm) / 60000).toFixed(1) + ' min** (' + x.r.caixa + ')');
       L.push('');
       L.push('```');
-      L.push(x.r.texto.slice(0, 2200) || '(vazio)');
+      L.push(textoDe(x).slice(0, 2200) || '(vazio)');
       L.push('```');
     } else { L.push('**SEM RESPOSTA na janela** ❌' + (sumico.get(x.e.id) ? ' — ' + sumico.get(x.e.id) : '')); }
     L.push('');
@@ -354,7 +376,7 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
   for (const r of [...porMensagem.values()].sort((a, b) => a.quando - b.quando)) L.push('- ' + new Date(r.quando).toISOString().slice(11, 16) + ' · ' + r.caixa + ' · ' + r.assunto.replace(MARCA + ' ', '').slice(0, 70));
   L.push('');
   L.push('---');
-  L.push('_Gerado por `tools/teste-email.js` v3.13 (workflow `teste-email.yml`)._');
+  L.push('_Gerado por `tools/teste-email.js` v3.14 (workflow `teste-email.yml`)._');
   const ts = new Date().toISOString().slice(0, 16).split(':').join('').split('T').join('-');
   const destino = path.join(__dirname, '..', 'provas', 'teste-email-r3-' + ts + '.md');
   fs.mkdirSync(path.dirname(destino), { recursive: true });
