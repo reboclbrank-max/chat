@@ -1,0 +1,28 @@
+name: Diagnóstico do Telegram (sem atrapalhar o turno)
+# 🔍 1 clique: o dono está pareado? o bot alcança a conversa dele? (MANDAR=sim manda uma confirmação para o dono)
+# Não lê o getUpdates (quem lê é o turno). Log público: ID e nome mascarados.
+on:
+  workflow_dispatch:
+    inputs:
+      mandar:
+        description: 'sim = manda uma mensagem de confirmação para o dono'
+        required: false
+        default: 'nao'
+permissions:
+  contents: read
+jobs:
+  olha:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --no-save imapflow@2.4.3
+      - run: node tools/diagnostico-telegram.js
+        env:
+          GMAIL_CHAT_ADDR: ${{ secrets.GMAIL_CHAT_ADDR }}
+          GMAIL_CHAT_PASS: ${{ secrets.GMAIL_CHAT_PASS }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          MANDAR: ${{ github.event.inputs.mandar }}
