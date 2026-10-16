@@ -268,3 +268,105 @@
 - 2026-10-16T16:28 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-3 — poema" → respondido via reserva (gpt-oss-20b)
 - 2026-10-16T16:28 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-4 — tradução" → respondido via reserva (gpt-oss-20b)
 - 2026-10-16T16:28 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-5 — código" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T16:31 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-6 — foto nova" → respondido via visão local (qwen3vl-4b) + reserva (gpt-oss-20b)
+- 2026-10-16T16:31 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-7 — ajuda" → respondido via ferramenta
+- 2026-10-16T16:32 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-8 — memória (1/2)" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T16:33 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-9 — limites (2ª vez)" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T16:34 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-10 — assunto com emoji" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T16:36 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-11 — e-mail só HTML" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T16:37 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-12 — foto + PDF juntos" → respondido via visão local (qwen3vl-4b) + reserva (gpt-oss-20b)
+- 2026-10-16T16:38 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-13 — foto de bilhete" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-16T16:39 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-14 — foto complexa (ho" → respondido via visão local (qwen3vl-4b) + reserva (gpt-oss-20b)
+- 2026-10-16T16:41 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-15 — visão local [VISA" → respondido via visão local (qwen3vl-4b) + reserva (gpt-oss-20b)
+- 2026-10-16T16:42 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-16 — foto + PDF sem vi" → respondido via sem visão (texto) + reserva (gpt-oss-20b)
+- 2026-10-16T16:45 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-17 — foto de celular (" → respondido via visão local (qwen3vl-4b) + reserva (gpt-oss-20b)
+- 2026-10-16T16:46 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-18 — e-mail perdido (c" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T16:46 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-21 — remetente desconh" → remetente não autorizado (resposta curta, sem IA)
+- 2026-10-16T16:49 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-22 — e-mail do Gmail c" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-16T16:50 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-23 — e-mail do iPhone " → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-16T16:51 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-24 — três fotos no mes" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-16T16:51 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-25 — foto HEIC do iPho" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-16T16:51 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-26 — sem internet [SEM" → respondido via cérebro local (qwen3vl-4b) (qwen3vl-4b)
+- 2026-10-16T16:53 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-27 — remetente falsifi" → remetente não autorizado (resposta curta, sem IA)
+- 2026-10-16T16:54 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-28 — nota de voz" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T16:55 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-29 — planilha Excel" → respondido via llm7 (DeepSeek-V4-Flash-0731)
+- 2026-10-16T16:56 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-30 — PDF escaneado de " → respondido via visão local (qwen3vl-4b) + reserva (gpt-oss-20b)
+- 2026-10-16T16:57 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-31 — lembrete" → respondido via ferramenta
+- 2026-10-16T17:00 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-32 — pesquisa com font" → respondido via ferramenta
+- 2026-10-16T17:01 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-33 — planilha gerada" → respondido via llm7 (DeepSeek-V4-Flash-0731)
+- 2026-10-16T17:03 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-34 — vídeo curto" → respondido via visão local (qwen3vl-4b) + reserva (gpt-oss-20b)
+- 2026-10-16T17:03 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-35 — conta rápida" → respondido via ferramenta
+- 2026-10-16T17:03 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-36 — próximos feriados" → respondido via ferramenta
+- 2026-10-16T17:06 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-37 — endereço por CEP" → respondido via ferramenta
+- 2026-10-16T17:19 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-1 — recursos" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T17:19 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-2 — clima local" → respondido via ferramenta
+- 2026-10-16T17:19 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-3 — poema" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T17:21 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-4 — tradução" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T17:22 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-5 — código" → respondido via omni (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-16T17:22 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-6 — foto nova" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-16T17:23 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-7 — ajuda" → respondido via ferramenta
+- 2026-10-16T17:24 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-8 — memória (1/2)" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T17:24 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-9 — limites (2ª vez)" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T17:25 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-10 — assunto com emoji" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T17:25 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-11 — e-mail só HTML" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T17:26 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-12 — foto + PDF juntos" → respondido via visão local (qwen3vl-4b) + reserva (gpt-oss-20b)
+- 2026-10-16T17:28 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-13 — foto de bilhete" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-16T17:29 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-14 — foto complexa (ho" → respondido via visão local (qwen3vl-4b) + reserva (gpt-oss-20b)
+- 2026-10-16T17:29 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-15 — visão local [VISA" → respondido via visão local (qwen3vl-4b) + reserva (gpt-oss-20b)
+- 2026-10-16T17:30 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-16 — foto + PDF sem vi" → respondido via sem visão (texto) + reserva (gpt-oss-20b)
+- 2026-10-16T17:33 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-17 — foto de celular (" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-16T17:33 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-18 — e-mail perdido (c" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T17:35 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-21 — remetente desconh" → remetente não autorizado (resposta curta, sem IA)
+- 2026-10-16T17:36 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-22 — e-mail do Gmail c" → respondido via visão local (qwen3vl-4b) (qwen3vl-4b)
+- 2026-10-16T17:36 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-23 — e-mail do iPhone " → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-16T17:37 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-24 — três fotos no mes" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-16T17:37 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-25 — foto HEIC do iPho" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-16T17:40 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-26 — sem internet [SEM" → respondido via cérebro local (qwen3vl-4b) (qwen3vl-4b)
+- 2026-10-16T17:40 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-27 — remetente falsifi" → remetente não autorizado (resposta curta, sem IA)
+- 2026-10-16T17:40 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-28 — nota de voz" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T17:41 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-29 — planilha Excel" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T17:42 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-30 — PDF escaneado de " → respondido via visão local (qwen3vl-4b) + reserva (gpt-oss-20b)
+- 2026-10-16T17:45 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-31 — lembrete" → respondido via ferramenta
+- 2026-10-16T17:45 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-32 — pesquisa com font" → respondido via ferramenta
+- 2026-10-16T17:46 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-33 — planilha gerada" → respondido via llm7 (DeepSeek-V4-Flash-0731)
+- 2026-10-16T17:47 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-34 — vídeo curto" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-16T17:47 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-35 — conta rápida" → respondido via ferramenta
+- 2026-10-16T17:49 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-36 — próximos feriados" → respondido via ferramenta
+- 2026-10-16T17:49 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-37 — endereço por CEP" → respondido via ferramenta
+- 2026-10-16T18:04 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-1 — recursos" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T18:05 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-2 — clima local" → respondido via ferramenta
+- 2026-10-16T18:06 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-1 — recursos" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T18:06 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-2 — clima local" → respondido via ferramenta
+- 2026-10-16T18:06 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-3 — poema" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T18:06 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-4 — tradução" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T18:08 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-5 — código" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T18:09 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-6 — foto nova" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-16T18:09 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-7 — ajuda" → respondido via ferramenta
+- 2026-10-16T18:09 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-8 — memória (1/2)" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T18:10 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-9 — limites (2ª vez)" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T18:11 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-10 — assunto com emoji" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T18:11 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-11 — e-mail só HTML" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T18:12 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-12 — foto + PDF juntos" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-16T18:12 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-13 — foto de bilhete" → respondido via visão local (qwen3vl-4b) + reserva (gpt-oss-20b)
+- 2026-10-16T18:13 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-14 — foto complexa (ho" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-16T18:15 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-15 — visão local [VISA" → respondido via visão local (qwen3vl-4b) + reserva (gpt-oss-20b)
+- 2026-10-16T18:15 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-16 — foto + PDF sem vi" → respondido via sem visão (texto) + reserva (gpt-oss-20b)
+- 2026-10-16T18:17 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-17 — foto de celular (" → respondido via visão local (qwen3vl-4b) + reserva (gpt-oss-20b)
+- 2026-10-16T18:17 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-18 — e-mail perdido (c" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T18:18 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-21 — remetente desconh" → remetente não autorizado (resposta curta, sem IA)
+- 2026-10-16T18:20 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-22 — e-mail do Gmail c" → respondido via visão local (qwen3vl-4b) + reserva (gpt-oss-20b)
+- 2026-10-16T18:20 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-23 — e-mail do iPhone " → respondido via visão local (qwen3vl-4b) + reserva (gpt-oss-20b)
+- 2026-10-16T18:22 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-24 — três fotos no mes" → respondido via visão local (qwen3vl-4b) + reserva (gpt-oss-20b)
+- 2026-10-16T18:24 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-25 — foto HEIC do iPho" → respondido via visão local (qwen3vl-4b) + reserva (gpt-oss-20b)
+- 2026-10-16T18:25 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-26 — sem internet [SEM" → respondido via cérebro local (qwen3vl-4b) (qwen3vl-4b)
+- 2026-10-16T18:25 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-27 — remetente falsifi" → remetente não autorizado (resposta curta, sem IA)
+- 2026-10-16T18:25 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-28 — nota de voz" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T18:26 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-29 — planilha Excel" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T18:28 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-30 — PDF escaneado de " → respondido via visão local (qwen3vl-4b) + reserva (gpt-oss-20b)
+- 2026-10-16T18:29 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-31 — lembrete" → respondido via ferramenta
+- 2026-10-16T18:29 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-32 — pesquisa com font" → respondido via ferramenta
+- 2026-10-16T18:29 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-33 — planilha gerada" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T18:30 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-34 — vídeo curto" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-16T18:33 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-35 — conta rápida" → respondido via ferramenta
+- 2026-10-16T18:33 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-36 — próximos feriados" → respondido via ferramenta
+- 2026-10-16T18:34 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-37 — endereço por CEP" → respondido via ferramenta
