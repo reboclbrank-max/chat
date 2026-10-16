@@ -20,6 +20,9 @@
 //        os links da resposta são lidos do e-mail bruto (o leitor do chat tira links do texto de entrada).
 // v3.16: casos R3-35 a R3-37 — os comandos novos da v12.18: conta: (local, 267,5 na hora), feriado: (datas + nomes)
 //        e cep: 49300000 (Tobias Barreto — SE, pela BrasilAPI).
+// v3.17: 🛡️ COLETA À PROVA DE CONEXÃO MORTA — o Gmail derrubou a conexão IMAP do robô no meio da espera (16/10:
+//        "Connection not available" e uma rodada travada até o teto do workflow). Agora cada operação tem teto de
+//        tempo, a conexão morta é destruída e refeita na hora, o envio tenta 2x e a rodada termina sempre com relatório.
 // Melhorias sobre a v2: usa o MESMO parser do canal (pegaTexto), casa cada resposta com o e-mail
 // que a originou (In-Reply-To = thread exata) e roda CHECAGENS AUTOMÁTICAS por caso no relatório.
 const fs = require('fs');
@@ -240,8 +243,27 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
   const { pegaTexto } = require('./email-chat.js');   // MESMO parser do canal
   const imgB64 = fs.existsSync(path.join(__dirname, 'teste-visao3.png')) ? fs.readFileSync(path.join(__dirname, 'teste-visao3.png')).toString('base64') : null;
   const pdfB64 = fs.existsSync(path.join(__dirname, 'anexo-prova.pdf')) ? fs.readFileSync(path.join(__dirname, 'anexo-prova.pdf')).toString('base64') : null;
-  const client = new ImapFlow({ host: 'imap.gmail.com', port: 993, secure: true, auth: { user: USER, pass: PASS }, logger: false });
-  await client.connect();
+  let client = new ImapFlow({ host: 'imap.gmail.com', port: 993, secure: true, auth: { user: USER, pass: PASS }, logger: false });
+  // 🛡️ v3.17: teto de tempo em tudo que usa a conexão — conexão morta não trava mais a rodada
+  const comTeto = (p, ms, rotulo) => { Promise.resolve(p).catch(() => {}); return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('teto ' + Math.round(ms / 1000) + 's: ' + rotulo)), ms))]); };
+  async function reconecta(motivo) {
+    console.log('🔌 reconectando a caixa (' + motivo + ')…');
+    try { client.close(); } catch (e) {}
+    client = new ImapFlow({ host: 'imap.gmail.com', port: 993, secure: true, auth: { user: USER, pass: PASS }, logger: false });
+    await comTeto(client.connect(), 45000, 'conexão');
+    console.log('🔌 caixa reconectada');
+  }
+  const varreSegura = async () => {   // varredura com teto + até 3 tentativas, reconectando entre elas
+    for (let tent = 1; tent <= 3; tent++) {
+      try { await comTeto(varre(), 120000, 'varredura'); return true; }
+      catch (e) {
+        console.log('⚠️ varredura falhou (' + String(e.message || e).slice(0, 70) + ') — ' + (tent < 3 ? 'reconecto e tento de novo' : 'sigo com o que coletei'));
+        try { await reconecta(String(e.message || e).slice(0, 40)); } catch (e2) { await sleep(4000); }
+      }
+    }
+    return false;
+  };
+  await comTeto(client.connect(), 45000, 'conexão inicial');
   const t0 = Date.now();
   const porMensagem = new Map();   // messageId -> { texto, caixa, quando, assunto }
   const porCaso = new Map();       // n do caso -> registro
@@ -252,6 +274,7 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
 
   const vistos = new Set();   // v3.6: caixa|uid já lidos (e-mail não muda)
   async function varre() {
+    let caixasOk = 0;   // 🛡️ v3.17: caixas que responderam nesta varredura
     for (const caixa of caixas) {
       let lock;
       try {
@@ -282,9 +305,11 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
           if (!antigo || texto.length > antigo.texto.length || (caixa === 'INBOX' && antigo.caixa !== 'INBOX'))
             porMensagem.set(id, { texto, caixa, quando, assunto: String(m.envelope.subject || ''), inReplyTo: m.envelope.inReplyTo || '' });
         }
+        caixasOk++;   // 🛡️ v3.17: esta caixa respondeu
       } catch (e) { console.log('caixa', caixa, 'erro:', e.message.slice(0, 60)); }
       finally { if (lock) lock.release(); }
     }
+    if (!caixasOk) throw new Error('nenhuma caixa respondeu (conexão morta?)');   // 🛡️ v3.17
   }
 
   const enviados = [];   // { n, assunto, esperado, check, id, enviadoEm }
@@ -296,9 +321,20 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
     const arquivos = (caso.arquivos || []).map(opcoes => { const nome = opcoes.find(n => fs.existsSync(path.join(__dirname, n))); if (!nome) { console.log('⚠️ fixture ausente:', opcoes.join(' / ')); return null; } return { nome, tipo: TIPOS[nome.split('.').pop()] || 'application/octet-stream', b64: fs.readFileSync(path.join(__dirname, nome)).toString('base64') }; }).filter(Boolean);   // v3.13
     if (caso.fotos) imagens = caso.fotos.map(nome => { const arq = path.join(__dirname, nome); if (!fs.existsSync(arq)) { console.log('⚠️ fixture ausente:', nome); return null; } return { nome, b64: fs.readFileSync(arq).toString('base64') }; }).filter(Boolean);
     const { bruto, id } = montaMensagem(caso.assunto, caso.corpo, fotoCaso, caso.html, caso.pdf ? pdfB64 : null, caso.fotoArq || null, caso.cab || null, { formato: caso.formato, imagens, inReplyTo: caso.inReplyTo, references: caso.references, de: caso.de, arquivos });
-    let lock;
-    try { lock = await client.getMailboxLock('INBOX'); await client.append('INBOX', Buffer.from(bruto), caso.lido ? ['\\Seen'] : []); }
-    finally { if (lock) lock.release(); }
+    let enviado = false, ultErr = null;   // 🛡️ v3.17: envio à prova de conexão morta
+    for (let tent = 1; tent <= 2 && !enviado; tent++) {
+      let lock = null;
+      try {
+        lock = await comTeto(client.getMailboxLock('INBOX'), 30000, 'envio');
+        await comTeto(client.append('INBOX', Buffer.from(bruto), caso.lido ? ['\\Seen'] : []), 60000, 'append');
+        enviado = true;
+      } catch (e) {
+        ultErr = e;
+        console.log('⚠️ envio falhou (' + String(e.message || e).slice(0, 60) + ') — ' + (tent < 2 ? 'reconecto e tento de novo' : 'desisto deste caso'));
+        try { await reconecta('envio'); } catch (e2) {}
+      } finally { if (lock) { try { lock.release(); } catch (e) {} } }
+    }
+    if (!enviado) throw ultErr;
     enviados.push({ n: caso.n, assunto: caso.assunto, corpo: caso.corpo, esperado: caso.esperado, check: caso.check, id, enviadoEm: Date.now(), foto: !!(caso.foto || caso.fotoArq || caso.fotos), pdf: !!caso.pdf, semResposta: !!caso.semResposta, lido: !!caso.lido, lembrete: !!caso.lembrete });
     console.log('📤', caso.n, '—', caso.assunto.replace(MARCA + ' ', ''), (caso.foto || caso.fotoArq) ? '(com foto)' : '');
     await sleep(1300);
@@ -317,7 +353,7 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
   let m2Enviado = false;
   const limite = Date.now() + ESPERA_MIN * 60 * 1000;
   while (Date.now() < limite) {
-    await varre();
+    await varreSegura();
     const c8 = enviados.find(e => e.n === 'R3-8');
     const r8 = c8 && casa(c8);
     if (r8 && !m2Enviado) {
@@ -335,12 +371,12 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
     if (m2Enviado && respondidos >= esperados.length) break;
     await sleep(25000);
   }
-  await varre();
+  await varreSegura();
 
   // v3.10: o e-mail que ficou SEM RESPOSTA está "lido" (algo o tirou da fila) ou "não lido" (o chat não pegou)?
   const sumico = new Map();
   try {
-    const lockS = await client.getMailboxLock('INBOX');
+    const lockS = await comTeto(client.getMailboxLock('INBOX'), 30000, 'checagem final');   // 🛡️ v3.17
     try {
       for (const e of enviados) {
         if (casa(e)) continue;
@@ -390,13 +426,13 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
   for (const r of [...porMensagem.values()].sort((a, b) => a.quando - b.quando)) L.push('- ' + new Date(r.quando).toISOString().slice(11, 16) + ' · ' + r.caixa + ' · ' + r.assunto.replace(MARCA + ' ', '').slice(0, 70));
   L.push('');
   L.push('---');
-  L.push('_Gerado por `tools/teste-email.js` v3.15 (workflow `teste-email.yml`)._');
+  L.push('_Gerado por `tools/teste-email.js` v3.17 (workflow `teste-email.yml`)._');
   const ts = new Date().toISOString().slice(0, 16).split(':').join('').split('T').join('-');
   const destino = path.join(__dirname, '..', 'provas', 'teste-email-r3-' + ts + '.md');
   fs.mkdirSync(path.dirname(destino), { recursive: true });
   fs.writeFileSync(destino, L.join(NL));
   console.log(NL + L.join(NL).slice(0, 3500));
   console.log('💾 salvo em', destino);
-  try { await client.logout(); } catch (e) {}
+  try { await comTeto(client.logout(), 15000, 'logout'); } catch (e) {}   // 🛡️ v3.17
   process.exit(0);
 })().catch(e => { console.error('ERRO:', e.message); process.exit(0); });
