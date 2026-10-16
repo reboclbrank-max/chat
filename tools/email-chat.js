@@ -29,6 +29,8 @@
 // 🧵 memória pela conversa do Gmail (sobrevive à troca de turno); 🔒 quem pode usar (dono + autorizados).
 // v12.15: 🧠 cérebro local de texto (sem internet); 🛡️ remetente autêntico (carimbo do Gmail); 📊 planilha .xlsx;
 // 🖨️ PDF escaneado com até 4 páginas (nome único por e-mail); 📄 documento de até 15 mil caracteres.
+// v12.16: ⏰ lembretes (guardados na caixa, entregues na hora); 🔎 pesquisa com fonte; 📎 resposta com planilha/PDF;
+// 🎬 vídeo curto (4 quadros + áudio transcrito).
 const { ImapFlow } = require('imapflow');
 const nodemailer = require('nodemailer');
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
@@ -525,6 +527,240 @@ async function renderPdfPaginas(a, max) {
     return paginas;
   } catch (e) { return []; }
 }
+// ⏰ v12.16: entende QUANDO num pedido de lembrete em português (horário de Brasília, -03:00, sem horário de verão)
+// devolve { quando: Date (UTC), resto: o que lembrar } ou null. Formas: "daqui a 2 horas", "em 30 minutos", "hoje às 18h",
+// "amanhã às 7h", "depois de amanhã 9:30", "sexta às 10 da manhã", "dia 20 às 9h", "dia 20/11 às 14h", "às 7 da noite".
+function entendeQuando(txt, agora) {
+  agora = agora || new Date();
+  let o = ' ' + String(txt || '').replace(/\s+/g, ' ').trim() + ' ';   // original (mantém maiúsculas)
+  let t = o.toLowerCase();                                              // para procurar (mesmo tamanho)
+  if (t.length !== o.length) { t = o = o.toLowerCase(); }
+  const B = '(?<![\\p{L}\\d])', E = '(?![\\p{L}\\d])';                  // bordas de palavra que entendem acento
+  const R = (s, f) => new RegExp(s.split('\\b<').join(B).split('\\b>').join(E), 'u' + (f || ''));
+  const corta = (i, n) => { t = t.slice(0, i) + ' ' + t.slice(i + n); o = o.slice(0, i) + ' ' + o.slice(i + n); };
+  const br = new Date(agora.getTime() - 3 * 3600 * 1000);            // relógio de Brasília (campos UTC = hora local)
+  const doBR = (ano, mes, dia, h, m) => new Date(Date.UTC(ano, mes, dia, h + 3, m || 0));   // hora de Brasília → UTC
+  const NUM = { um: 1, uma: 1, dois: 2, duas: 2, 'três': 3, tres: 3, quatro: 4, cinco: 5, seis: 6, sete: 7, oito: 8, nove: 9, dez: 10, quinze: 15, vinte: 20, trinta: 30, quarenta: 40, meia: 0.5 };
+  const tira = re => { const m = t.match(re); if (m) corta(m.index, m[0].length); return m; };
+  // 1) relativo: "daqui a 2 horas", "em 30 minutos", "daqui a meia hora", "dentro de 3 dias"
+  let m = tira(R('\\b<(?:daqui a|daqui|em|dentro de)\\s+(\\d+|um|uma|dois|duas|três|tres|quatro|cinco|seis|sete|oito|nove|dez|quinze|vinte|trinta|quarenta|meia)\\s*(minutos?|min|horas?|h|dias?)\\b>'));
+  if (m) {
+    const n = /^\d+$/.test(m[1]) ? Number(m[1]) : NUM[m[1]];
+    const ms = /^min/.test(m[2]) ? 60e3 : (/^h/.test(m[2]) ? 3600e3 : 86400e3);
+    if (n) return { quando: new Date(agora.getTime() + n * ms), resto: limpaResto(o) };
+  }
+  // 2) dia: depois de amanhã / amanhã / hoje / dia DD(/MM) / dia da semana
+  let ano = br.getUTCFullYear(), mes = br.getUTCMonth(), dia = br.getUTCDate(), temDia = false;
+  const poe = d => { ano = d.getUTCFullYear(); mes = d.getUTCMonth(); dia = d.getUTCDate(); temDia = true; };
+  if (tira(R('\\b<depois de amanh[ãa]\\b>'))) poe(new Date(Date.UTC(ano, mes, dia + 2)));
+  else if (tira(R('\\b<amanh[ãa]\\b>'))) poe(new Date(Date.UTC(ano, mes, dia + 1)));
+  else if (tira(R('\\b<hoje\\b>'))) temDia = true;
+  else if ((m = tira(R('\\b<dia\\s+(\\d{1,2})(?:\\/(\\d{1,2}))?\\b>')))) {
+    const dd = Number(m[1]), mm = m[2] ? Number(m[2]) - 1 : mes;
+    let d = new Date(Date.UTC(ano, mm, dd));
+    if (d.getTime() < Date.UTC(br.getUTCFullYear(), br.getUTCMonth(), br.getUTCDate())) d = m[2] ? new Date(Date.UTC(ano + 1, mm, dd)) : new Date(Date.UTC(ano, mm + 1, dd));
+    poe(d);
+  } else if ((m = tira(R('\\b<(?:n[ao]\\s+|na próxima\\s+|no próximo\\s+|próxim[ao]\\s+)?(domingo|segunda|terça|terca|quarta|quinta|sexta|sábado|sabado)(?:-feira)?\\b>')))) {
+    const alvo = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'].indexOf(m[1].replace('terca', 'terça').replace('sabado', 'sábado'));
+    const falta = ((alvo - br.getUTCDay() + 7) % 7) || 7;
+    poe(new Date(Date.UTC(ano, mes, dia + falta)));
+  }
+  // 3) hora: "às 7h", "as 18:30", "9h30", "19 horas", "7 da noite", "meio-dia", "meia-noite"
+  let h = null, min = 0;
+  if (tira(R('\\b<(?:ao?\\s+)?meio[- ]dia\\b>'))) h = 12;
+  else if (tira(R('\\b<(?:à\\s+|a\\s+)?meia[- ]noite\\b>'))) h = 0;
+  else {
+    for (const x of t.matchAll(R('(?:\\b<(às|as|à)\\s+)?\\b<(\\d{1,2})(?:(?::|h)(\\d{2}))?\\s*(h|hs|horas?)?(?:\\s+(da manhã|da manha|da tarde|da noite|da madrugada))?\\b>', 'g'))) {
+      if (!(x[1] || x[3] || x[4] || x[5])) continue;                    // número solto não é hora
+      const hh = Number(x[2]) + ((x[5] && /tarde|noite/.test(x[5]) && Number(x[2]) < 12) ? 12 : 0), mi = Number(x[3] || 0);
+      if (hh > 23 || mi > 59) continue;
+      h = hh; min = mi;
+      corta(x.index, x[0].length);
+      break;
+    }
+  }
+  if (h === null && !temDia) return null;
+  if (h === null) h = 8;                                               // só o dia: 8h da manhã
+  let quando = doBR(ano, mes, dia, h, min);
+  if (!temDia && quando.getTime() <= agora.getTime()) quando = doBR(ano, mes, dia + 1, h, min);   // "às 7h" que já passou → amanhã
+  if (quando.getTime() <= agora.getTime()) return null;                // no passado: não entendi
+  return { quando, resto: limpaResto(o) };
+}
+function limpaResto(t) {
+  return String(t).replace(/^\s*(lembrete|lembrar)\s*[:\-]?\s*/i, ' ').replace(/(^|\s)(me lembr[ae]r?|me avise?|lembre-me|lembra-me)(?=\s|$)/gi, ' ')
+    .replace(/\s+/g, ' ').replace(/^[\s,.:;-]+|[\s,.:;-]+$/g, '').replace(/^(de|que|para|pra|do|da)\s+/i, '').replace(/\s+(de|que|para|pra)$/i, '').trim();
+}
+// ⏰ v12.16: LEMBRETES guardados na própria caixa (pasta Rebocl-Lembretes; sobrevivem à troca de turno), numa conexão
+// separada (não mexe na fila que está sendo atendida). Entregues na hora, como resposta na mesma conversa.
+const PASTA_LEMBRETES = 'Rebocl-Lembretes';
+async function comCaixaSeparada(fn) {
+  const c = new ImapFlow({ host: 'imap.gmail.com', port: 993, secure: true, auth: { user: USER, pass: PASS }, logger: false });
+  await c.connect();
+  try { return await fn(c); } finally { try { await c.logout(); } catch (e) {} }
+}
+function quandoBR(d) { const x = new Date(d.getTime() - 3 * 3600e3).toISOString(); return x.slice(8, 10) + '/' + x.slice(5, 7) + ' às ' + x.slice(11, 16); }
+async function lerLembretes(c, para) {
+  if (!(await c.list()).find(p => p.path === PASTA_LEMBRETES)) return [];
+  const lock = await c.getMailboxLock(PASTA_LEMBRETES);
+  const lista = [];
+  try {
+    const u = await c.search({ all: true }, { uid: true });
+    if (u && u.length) for await (const m of c.fetch(u, { source: true }, { uid: true })) {
+      const s = (m.source || '').toString();
+      const cab = s.split(/\r?\n\r?\n/)[0].replace(/\r?\n[ \t]+/g, ' ');
+      const r = { uid: m.uid, quando: new Date(cabValor(cab, 'x-rebocl-quando')), para: cabValor(cab, 'x-rebocl-para'), msgId: cabValor(cab, 'x-rebocl-responder'),
+        assunto: Buffer.from(cabValor(cab, 'x-rebocl-assunto') || '', 'base64').toString('utf-8'), texto: pegaTexto(s, '') };
+      if (!isNaN(r.quando) && (!para || r.para.toLowerCase() === String(para).toLowerCase())) lista.push(r);
+    }
+  } finally { lock.release(); }
+  return lista.sort((a, b) => a.quando - b.quando);
+}
+let proximaEntrega = 0;
+async function entregaLembretes() {
+  let entregues = 0;
+  await comCaixaSeparada(async c => {
+    const vencidos = (await lerLembretes(c, null)).filter(r => r.quando.getTime() <= Date.now());
+    if (!vencidos.length) return;
+    const lixeira = ((await c.list()).find(p => p.specialUse === '\\Trash') || {}).path;
+    const tr = nodemailer.createTransport({ host: 'smtp.gmail.com', port: 465, secure: true, auth: { user: USER, pass: PASS } });
+    const lock = await c.getMailboxLock(PASTA_LEMBRETES);
+    try {
+      for (const r of vencidos) {
+        const texto = '⏰ Lembrete: ' + r.texto + NL + NL + '(Você pediu para eu te lembrar em ' + quandoBR(r.quando) + ', horário de Brasília.)' + NL + NL + '— Assistente Rebocl (casa Rebocl Brank)';
+        await tr.sendMail({ from: '"Assistente Rebocl" <' + USER + '>', to: r.para, subject: r.assunto ? 'Re: ' + String(r.assunto).replace(/^(re:\s*)+/i, '') : '⏰ Lembrete', text: semMarcacao(texto), html: paraHtml(texto),
+          inReplyTo: r.msgId || undefined, references: r.msgId || undefined, headers: { 'Auto-Submitted': 'auto-generated', 'X-Auto-Response-Suppress': 'All' } });
+        if (lixeira) await c.messageMove(r.uid, lixeira, { uid: true }); else await c.messageDelete(r.uid, { uid: true });
+        console.log('⏰ lembrete entregue (marcado para ' + quandoBR(r.quando) + ')');
+        entregues++;
+      }
+    } finally { lock.release(); }
+  });
+  return entregues;
+}
+// 🔎 v12.16: PESQUISA COM FONTE — Wikipédia (API pública) + buscador DuckDuckGo (melhor esforço), sem chave de API
+async function buscaFontes(termo) {
+  const fontes = [];
+  const UA = { 'User-Agent': 'casa-rebocl/1.0 (chat por e-mail de uso pessoal)' };
+  try {
+    const r = await fetch('https://pt.wikipedia.org/w/api.php?action=query&list=search&format=json&srlimit=3&srsearch=' + encodeURIComponent(termo), { headers: UA, signal: AbortSignal.timeout(15000) });
+    const titulos = (((await r.json()).query || {}).search || []).map(x => x.title).slice(0, 3);
+    if (titulos.length) {
+      const r2 = await fetch('https://pt.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&format=json&redirects=1&titles=' + encodeURIComponent(titulos.join('|')), { headers: UA, signal: AbortSignal.timeout(15000) });
+      const paginas = Object.values(((await r2.json()).query || {}).pages || {}).filter(p => p.extract);
+      for (const p of paginas) fontes.push({ titulo: p.title + ' — Wikipédia', url: 'https://pt.wikipedia.org/wiki/' + encodeURIComponent(String(p.title).replace(/ /g, '_')), texto: String(p.extract).slice(0, 1500) });
+    }
+  } catch (e) {}
+  try {
+    const r = await fetch('https://html.duckduckgo.com/html/?q=' + encodeURIComponent(termo), { headers: { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) casa-rebocl' }, signal: AbortSignal.timeout(15000) });
+    const h = await r.text();
+    for (const b of h.split('class="result__body').slice(1, 6)) {
+      const href = (b.match(/class="result__a"[^>]*href="([^"]+)"/) || [])[1] || '';
+      const u = (href.match(/[?&]uddg=([^&]+)/) || [])[1];
+      const url = u ? decodeURIComponent(u) : (/^https?:/.test(href) ? href : '');
+      const titulo = tiraHtml((b.match(/class="result__a"[^>]*>([\s\S]*?)<\/a>/) || [])[1] || '').trim();
+      const texto = tiraHtml((b.match(/class="result__snippet"[^>]*>([\s\S]*?)<\/(?:a|div|td)>/) || [])[1] || '').trim();
+      if (url && texto && !/duckduckgo\.com/.test(url) && !fontes.some(f => f.url === url)) fontes.push({ titulo: titulo || url, url, texto });
+    }
+  } catch (e) {}
+  return fontes.slice(0, 5);
+}
+async function respondePesquisa(termo) {
+  const fontes = await buscaFontes(termo);
+  console.log('🔎 pesquisa: ' + fontes.length + ' fonte(s)');
+  if (!fontes.length) return 'Pesquisei "' + termo + '", mas não consegui consultar as fontes agora (Wikipédia e buscador). Tente de novo em alguns minutos.';
+  const pedido = 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' O dono pediu uma PESQUISA: "' + termo + '". Responda em português claro (máx 10 linhas) usando SOMENTE as fontes abaixo e cite [1], [2]… depois de cada informação. Se as fontes não responderem, diga isso. Não escreva a lista de fontes (a casa acrescenta).' + NL + NL + fontes.map((f, i) => '[' + (i + 1) + '] ' + f.titulo + NL + f.texto.slice(0, 1200)).join(NL + NL);
+  let r = await cerebro(pedido, null);
+  if (!r) { const l = await cerebroLocal(pedido); if (l) r = { texto: l.texto }; }
+  const corpo = r ? limpaVazamento(r.texto) : 'Achei estas fontes sobre "' + termo + '" (os motores de texto estão fora agora, então vai um trecho de cada uma):' + NL + NL + fontes.map((f, i) => '[' + (i + 1) + '] ' + f.texto.slice(0, 280) + '…').join(NL + NL);
+  return corpo + NL + NL + 'Fontes:' + NL + fontes.map((f, i) => '[' + (i + 1) + '] ' + f.titulo + ' — ' + f.url).join(NL);
+}
+// ⏰🔎 v12.16: comandos da casa (antes dos motores): lembrete, lembretes, cancelar lembrete N, pesquisa
+async function comandosDaCasa(corpo, de, msgId, assunto) {
+  const linha = String(corpo || '').trim().split(NL)[0].trim();
+  if (/^(meus\s+)?lembretes\s*\??$/i.test(linha)) {
+    const lista = await comCaixaSeparada(c => lerLembretes(c, de));
+    return lista.length ? 'Seus lembretes (horário de Brasília):' + NL + lista.map((r, i) => (i + 1) + ') ' + quandoBR(r.quando) + ' — ' + r.texto).join(NL) + NL + NL + 'Para cancelar, escreva "cancelar lembrete 1" (com o número).' : 'Você não tem lembretes marcados.';
+  }
+  let m = linha.match(/^(cancel[ae]r?|apag[ae]r?|remov[ae]r?)\s+(o\s+)?lembrete\s+(\d+)/i);
+  if (m) {
+    const n = Number(m[3]);
+    const feito = await comCaixaSeparada(async c => {
+      const lista = await lerLembretes(c, de);
+      const alvo = lista[n - 1];
+      if (!alvo) return null;
+      const lock = await c.getMailboxLock(PASTA_LEMBRETES);
+      try { await c.messageDelete(alvo.uid, { uid: true }); } finally { lock.release(); }
+      return alvo;
+    });
+    return feito ? 'Cancelado: ' + quandoBR(feito.quando) + ' — ' + feito.texto + '.' : 'Não achei o lembrete ' + n + '. Escreva "lembretes" para ver a lista.';
+  }
+  if (/^(lembrete|lembrar)\s*[:\-]/i.test(linha) || /(^|\s)(me lembr[ae]r?|lembre-me|lembra-me)(\s|$)/i.test(linha)) {
+    const r = entendeQuando(linha, new Date());
+    if (!r || !r.resto) return 'Não entendi QUANDO te lembrar. Escreva, por exemplo: "lembrete: amanhã às 7h regar a horta" ou "me lembra daqui a 2 horas de ligar pro pedreiro" (horário de Brasília).';
+    const corpoLembrete = ['From: "Lembretes da casa" <' + USER + '>', 'To: ' + USER, 'Subject: lembrete ' + r.quando.toISOString(), 'Date: ' + new Date().toUTCString(),
+      'X-Rebocl-Quando: ' + r.quando.toISOString(), 'X-Rebocl-Para: ' + de, 'X-Rebocl-Responder: ' + (msgId || ''), 'X-Rebocl-Assunto: ' + Buffer.from(String(assunto || ''), 'utf-8').toString('base64'),
+      'MIME-Version: 1.0', 'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: base64', '', Buffer.from(r.resto, 'utf-8').toString('base64')].join('\r\n');
+    await comCaixaSeparada(async c => { try { await c.mailboxCreate(PASTA_LEMBRETES); } catch (e) {} await c.append(PASTA_LEMBRETES, Buffer.from(corpoLembrete), ['\\Seen']); });
+    console.log('⏰ lembrete guardado para ' + quandoBR(r.quando));
+    return 'Combinado! Vou te lembrar em ' + quandoBR(r.quando) + ' (horário de Brasília): ' + r.resto + '.' + NL + NL + 'Para ver os lembretes, escreva "lembretes"; para cancelar, "cancelar lembrete 1".';
+  }
+  m = linha.match(/^(pesquisa|pesquise|pesquisar|busque|buscar|procure|procurar)(\s+na\s+internet)?\s*[:\-]?\s+(.{2,200})$/i);
+  if (m) return await respondePesquisa(m[3].trim());
+  return null;
+}
+// 📎 v12.16: RESPOSTA COM ARQUIVO — "faça uma planilha…" vira .xlsx anexo; "…em PDF" vira PDF anexo
+function pedidoDeArquivo(corpo, temAnexo) {
+  if (temAnexo) return null;   // "na planilha anexa" é para LER, não para fazer
+  const t = String(corpo || '');
+  const verbo = '(fa[çc]a|fazer|crie|criar|monte|montar|gere|gerar|elabore|prepare|me (?:manda|mande|envie|envia)|quero|preciso de)';
+  if (new RegExp(verbo + '[^.?!\\n]{0,60}(planilha|excel|xlsx)', 'i').test(t)) return 'planilha';
+  if (new RegExp(verbo + '[^.?!\\n]{0,60}\\bpdf\\b', 'i').test(t) || /\bem pdf\b/i.test(t)) return 'pdf';
+  return null;
+}
+function csvParaXlsx(csv) {
+  const py = 'import sys, csv, io, openpyxl\nwb = openpyxl.Workbook()\nws = wb.active\nws.title = "Planilha"\ntexto = sys.stdin.read().strip()\nsep = ";" if texto.count(";") >= texto.count(",") else ","\nfor linha in csv.reader(io.StringIO(texto), delimiter=sep):\n    cel = []\n    for v in linha:\n        v = v.strip()\n        try:\n            if v.lstrip("-").isdigit():\n                cel.append(int(v))\n            elif v.count(",") == 1 and v.replace(".", "").replace(",", "").lstrip("-").isdigit():\n                cel.append(float(v.replace(".", "").replace(",", ".")))\n            else:\n                cel.append(v)\n        except Exception:\n            cel.append(v)\n    ws.append(cel)\nfor col in ws.columns:\n    ws.column_dimensions[col[0].column_letter].width = min(45, max(10, max(len(str(c.value or "")) for c in col) + 2))\nbuf = io.BytesIO()\nwb.save(buf)\nsys.stdout.buffer.write(buf.getvalue())';
+  const r = require('child_process').spawnSync('python3', ['-c', py], { input: String(csv || ''), maxBuffer: 10 * 1024 * 1024, timeout: 60000 });
+  return (r.status === 0 && r.stdout && r.stdout.length > 100) ? r.stdout : null;
+}
+function textoParaPdf(texto) {
+  const py = 'import sys, os\nfrom fpdf import FPDF\npdf = FPDF()\npdf.set_auto_page_break(True, 15)\npdf.add_page()\nf = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"\nif os.path.exists(f):\n    pdf.add_font("dv", "", f)\n    pdf.set_font("dv", size=11)\nelse:\n    pdf.set_font("Helvetica", size=11)\nfor linha in sys.stdin.read().split("\\n"):\n    pdf.multi_cell(0, 6, linha if linha.strip() else " ", new_x="LMARGIN", new_y="NEXT")\nsys.stdout.buffer.write(bytes(pdf.output()))';
+  const r = require('child_process').spawnSync('python3', ['-c', py], { input: semMarcacao(texto), maxBuffer: 20 * 1024 * 1024, timeout: 60000 });
+  return (r.status === 0 && r.stdout && r.stdout.length > 300) ? r.stdout : null;
+}
+// 🎬 v12.16: VÍDEO CURTO — 4 quadros (montagem numerada) + o áudio (transcrito). Até ~25 MB.
+function extraiVideo(bruto) {
+  for (const f of folhasMime(bruto)) {
+    let tipo = tipoMime(f.cab);
+    const ext = (nomeMime(f.cab).toLowerCase().match(/\.([a-z0-9]+)$/) || [])[1] || '';
+    if (!/^video\//.test(tipo) && /^(mp4|mov|m4v|3gp|webm|mkv)$/.test(ext)) tipo = 'video/' + (ext === 'mov' ? 'quicktime' : ext);
+    if (!/^video\//.test(tipo)) continue;
+    const corpo = f.corpo.replace(/[^A-Za-z0-9+/=]/g, '');
+    if (corpo.length < 2000 || corpo.length > 34000000) continue;
+    return { tipo, b64: corpo, bytes: Math.floor(corpo.length * 3 / 4), nome: nomeMime(f.cab) };
+  }
+  return null;
+}
+function processaVideo(v) {
+  const { spawnSync } = require('child_process');
+  const fsLocal = require('fs');
+  const base = '/tmp/video-' + Date.now() + '-' + Math.floor(Math.random() * 1e6);
+  const saida = { quadros: [], audio: null, info: '' };
+  try {
+    fsLocal.writeFileSync(base + '.bin', Buffer.from(v.b64, 'base64'));
+    const dur = parseFloat(String(spawnSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', base + '.bin'], { encoding: 'utf8', timeout: 30000 }).stdout || '').trim()) || 0;
+    if (!dur) { saida.info = 'não consegui ler o vídeo'; return saida; }
+    [0.1, 0.37, 0.63, 0.9].forEach((frac, i) => {
+      const arq = base + '-q' + (i + 1) + '.jpg';
+      spawnSync('ffmpeg', ['-y', '-loglevel', 'error', '-ss', (dur * frac).toFixed(2), '-i', base + '.bin', '-frames:v', '1', '-vf', 'scale=1024:-2', '-q:v', '4', arq], { timeout: 60000 });
+      if (fsLocal.existsSync(arq)) { const b = fsLocal.readFileSync(arq); if (b.length > 1500) saida.quadros.push({ tipo: 'image/jpeg', b64: b.toString('base64'), bytes: b.length }); fsLocal.unlinkSync(arq); }
+    });
+    spawnSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', base + '.bin', '-vn', '-ac', '1', '-ar', '16000', '-t', '120', base + '.wav'], { timeout: 90000 });
+    if (fsLocal.existsSync(base + '.wav')) { const b = fsLocal.readFileSync(base + '.wav'); if (b.length > 8000) saida.audio = { tipo: 'audio/wav', b64: b.toString('base64'), bytes: b.length }; fsLocal.unlinkSync(base + '.wav'); }
+    saida.info = dur.toFixed(1) + ' s · ' + saida.quadros.length + ' quadro(s)' + (saida.audio ? ' + áudio' : ' (sem áudio)');
+  } catch (e) { saida.info = 'erro: ' + String(e.message || e).slice(0, 60); }
+  finally { try { fsLocal.unlinkSync(base + '.bin'); } catch (e) {} }
+  return saida;
+}
 function preparaFoto(img) {
   return new Promise(resolve => {
     if (!img || !img.b64) return resolve(img);
@@ -924,6 +1160,10 @@ async function processOnce() {
     proximaAuditoria = Date.now() + (process.env.CHAT_AUDITORIA_SEG !== undefined ? Number(process.env.CHAT_AUDITORIA_SEG) : 300) * 1000;   // 5 min (teste: CHAT_AUDITORIA_SEG)
     try { await auditaSemResposta(client); } catch (e) { console.log('♻️ auditoria falhou (sigo normal): ' + String(e.message || e).slice(0, 100)); }
   }
+  if (Date.now() >= proximaEntrega) {   // ⏰ v12.16: lembretes vencidos são entregues
+    proximaEntrega = Date.now() + 60 * 1000;
+    try { await entregaLembretes(); } catch (e) { console.log('⏰ entrega de lembretes falhou (sigo normal): ' + String(e.message || e).slice(0, 100)); }
+  }
   const lock = await client.getMailboxLock('INBOX');
   let respondidos = 0;
   try {
@@ -964,9 +1204,12 @@ async function processOnce() {
         const anexos = extraiAnexos(bruto);
         const audioAnexo = (anexos.length ? null : extraiAudio(bruto));
         if (anexos.length || audioAnexo || /filename=|Content-Disposition:\s*attachment/i.test(bruto)) await esperaFerramentas();
-        const fotos = anexos.slice(0, 4);   // 📷 v12.14: até 4 fotos por e-mail, numa montagem numerada
+        const videoAnexo = (!anexos.length && !audioAnexo) ? extraiVideo(bruto) : null;   // 🎬 v12.16
+        let quadrosVideo = [], falaVideo = '';
+        if (videoAnexo) { const v = processaVideo(videoAnexo); quadrosVideo = v.quadros; if (v.audio) falaVideo = await ouve(v.audio); console.log('🎬 vídeo: ' + v.info + (falaVideo ? ' · áudio transcrito (' + falaVideo.length + ' caracteres)' : '')); }
+        const fotos = (anexos.length ? anexos : quadrosVideo).slice(0, 4);   // 📷 v12.14: até 4 fotos por e-mail, numa montagem numerada
         const imagem = fotos.length > 1 ? await montaFotos(fotos) : (fotos[0] || null);
-        const notaFotos = (imagem && imagem.varias) ? ' (Atenção: o dono mandou ' + anexos.length + ' fotos' + (anexos.length > 4 ? ', e aqui estão as 4 primeiras' : '') + '; elas estão juntas nesta imagem, numeradas de 1 a ' + imagem.varias + ' no canto de cada uma. Fale de cada foto pelo número.)' : '';
+        const notaFotos = videoAnexo ? ' (Atenção: o dono mandou um VÍDEO; ' + (imagem && imagem.varias ? 'estes são ' + imagem.varias + ' quadros dele, numerados na ordem do tempo' : 'este é um quadro dele') + '.' + (falaVideo ? ' O áudio do vídeo diz (transcrição automática, pode errar nomes): "' + falaVideo.slice(0, 600) + '".' : ' Não deu para entender fala no áudio do vídeo.') + ' Descreva o que acontece no vídeo e responda a pergunta.)' : (imagem && imagem.varias) ? ' (Atenção: o dono mandou ' + anexos.length + ' fotos' + (anexos.length > 4 ? ', e aqui estão as 4 primeiras' : '') + '; elas estão juntas nesta imagem, numeradas de 1 a ' + imagem.varias + ' no canto de cada uma. Fale de cada foto pelo número.)' : '';
         const perguntaDono = (corpoMsg || assunto) + notaFotos;
         let transcrito = '';
         if (audioAnexo) {
@@ -1028,9 +1271,11 @@ async function processOnce() {
             } else console.log('🔤 OCR local ignorado (pouco sinal de texto: ' + palavras + ' palavras · confiança ' + conf + '%)');
           }
         }
+        const pedeArquivo = pedidoDeArquivo(corpoMsg, !!(docAnexo || imagem || audioAnexo || videoAnexo));   // 📎 v12.16
+        const notaArquivo = pedeArquivo === 'planilha' ? NL + NL + 'IMPORTANTE: o dono pediu uma PLANILHA. Responda curto e inclua a tabela completa em CSV (separador ponto e vírgula; 1ª linha com os títulos das colunas) entre ```csv e ```.' : (pedeArquivo === 'pdf' ? NL + NL + 'O dono pediu a resposta em PDF: escreva o conteúdo completo e bem organizado, com títulos e listas.' : '');
         const pergunta = imagemVisao
           ? 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + (imagem ? ' O dono mandou uma FOTO por e-mail' : ' O dono mandou um PDF DIGITALIZADO (a 1ª página foi renderizada aqui)') + '; descreva com precisão o que você vê e responda a pergunta dele, em português claro (máx 15 linhas). Se houver texto visível, leia o texto.\n\nPergunta dele: ' + perguntaDono + (textoDoc ? NL + NL + 'O dono TAMBÉM anexou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído dele (pode estar truncado):' + NL + textoDoc + NL + 'Leve o arquivo em conta na resposta.' : '') + blocoCtx + dicaOlho + ocrFoto
-          : 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' Responda este e-mail em português claro (máx 15 linhas):\n\n' + assunto + '\n\n' + corpoMsg + (fotoIlegivel ? NL + NL + '(O dono anexou uma foto num formato que não deu para abrir aqui — não descreva a foto; responda o texto.)' : '') + (transcrito ? NL + NL + 'O dono TAMBÉM mandou um ÁUDIO; transcrição (motor pequeno — pode errar nomes): "' + transcrito + '". Responda ao conteúdo do áudio e mostre que ouviu.' : '') + (textoDoc ? NL + NL + 'O dono TAMBÉM mandou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído dele (pode estar truncado):' + NL + textoDoc + NL + 'Responda ao conteúdo do arquivo, citando o que está nele.' : '') + blocoCtx;
+          : 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' Responda este e-mail em português claro (máx 15 linhas):\n\n' + assunto + '\n\n' + corpoMsg + (fotoIlegivel ? NL + NL + '(O dono anexou uma foto num formato que não deu para abrir aqui — não descreva a foto; responda o texto.)' : '') + notaArquivo + (transcrito ? NL + NL + 'O dono TAMBÉM mandou um ÁUDIO; transcrição (motor pequeno — pode errar nomes): "' + transcrito + '". Responda ao conteúdo do áudio e mostre que ouviu.' : '') + (textoDoc ? NL + NL + 'O dono TAMBÉM mandou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído dele (pode estar truncado):' + NL + textoDoc + NL + 'Responda ao conteúdo do arquivo, citando o que está nele.' : '') + blocoCtx;
         let respostaFerramenta = null, anexoVoz = null;
         const mVoz = (!imagem && !audioAnexo) ? corpoMsg.trim().match(/^voz\s*:\s*([\s\S]{1,700})$/) : null;
         if (mVoz) {
@@ -1038,6 +1283,9 @@ async function processOnce() {
           console.log(anexoVoz ? '🎙️ áudio gerado (' + anexoVoz.via + ', ' + Math.round(anexoVoz.buf.length / 1024) + 'KB)' : '🎙️ não consegui gerar o áudio');
         }
         if (!imagem && !audioAnexo && !docAnexo && !mVoz) respostaFerramenta = await ferramenta(corpoMsg);
+        if (!respostaFerramenta && !imagem && !audioAnexo && !docAnexo && !mVoz) {   // ⏰🔎 v12.16
+          try { respostaFerramenta = await comandosDaCasa(corpoMsg, de, msg.envelope.messageId, assunto); } catch (e) { console.log('⏰🔎 comando da casa falhou: ' + String(e.message || e).slice(0, 100)); }
+        }
         if (respostaFerramenta) console.log('🧰 respondido por ferramenta (sem motor)');
         // 🎯 v12: resposta curta demais para uma foto = UMA nova tentativa exigindo concretude
         let respostaMotor = null;
@@ -1118,7 +1366,17 @@ async function processOnce() {
           anexoVoz = await fala(resposta);
           if (anexoVoz) console.log('🎙️ resposta falada a pedido (' + anexoVoz.via + ')');
         }
+        const anexosGerados = [];   // 📎 v12.16: planilha/PDF pedidos pelo dono
+        if (pedeArquivo === 'planilha' && resposta) {
+          const mCsv = resposta.match(/```(?:csv)?[ \t]*\r?\n([\s\S]*?)```/i);
+          const xlsx = mCsv ? csvParaXlsx(mCsv[1]) : null;
+          if (xlsx) { anexosGerados.push({ filename: 'planilha.xlsx', content: xlsx }); resposta = resposta.replace(mCsv[0], '(A planilha vai em anexo: planilha.xlsx.)'); console.log('📎 planilha gerada (' + Math.round(xlsx.length / 1024) + ' KB)'); }
+        } else if (pedeArquivo === 'pdf' && resposta) {
+          const pdf = textoParaPdf(resposta);
+          if (pdf) { anexosGerados.push({ filename: 'resposta.pdf', content: pdf }); resposta = resposta + NL + NL + '(Vai também em PDF, em anexo: resposta.pdf.)'; console.log('📎 PDF gerado (' + Math.round(pdf.length / 1024) + ' KB)'); }
+        }
         const avisosFoto = [];   // 📷📱 v12.14
+        if (videoAnexo && !quadrosVideo.length) avisosFoto.push('Recebi um vídeo, mas não consegui abri-lo aqui — se puder, mande um trecho menor ou algumas fotos.');   // 🎬 v12.16
         if (fotoIlegivel) avisosFoto.push('A foto veio no formato HEIC (o padrão do iPhone) e não consegui abri-la aqui. Mande de novo como JPEG — no iPhone: Ajustes › Câmera › Formatos › Mais Compatível — ou mande um print da foto.');
         if (anexos.length > 4) avisosFoto.push('Você mandou ' + anexos.length + ' fotos; olhei as 4 primeiras.');
         if (anexos.grandes) avisosFoto.push((anexos.grandes > 1 ? anexos.grandes + ' fotos passaram' : 'Uma foto passou') + ' de ~22 MB e não deu para abrir — mande uma versão menor.');
@@ -1127,6 +1385,7 @@ async function processOnce() {
         const textoFinal = (resposta.indexOf('Assistente Rebocl') >= 0 ? resposta : resposta + '\n\n— Assistente Rebocl (casa Rebocl Brank)');   // 🎨 v12.14
         const opcoes = { from: '"Assistente Rebocl" <' + USER + '>', to: de, subject: 'Re: ' + assunto, text: semMarcacao(textoFinal), html: paraHtml(textoFinal), inReplyTo: msg.envelope.messageId, references: msg.envelope.messageId, headers: { 'Auto-Submitted': 'auto-replied', 'X-Auto-Response-Suppress': 'All' } };   // 🤖 v12.13
         if (anexoVoz) opcoes.attachments = [{ filename: anexoVoz.nome, content: anexoVoz.buf }];
+        if (anexosGerados.length) opcoes.attachments = (opcoes.attachments || []).concat(anexosGerados);   // 📎 v12.16
         await transporte.sendMail(opcoes);
         console.log('✉️ respondido via', r ? r.via + (r.modelo ? ' · ' + r.modelo : '') : 'sem cérebro');
         try { require('fs').appendFileSync('email-log.md', '- ' + new Date().toISOString().slice(0, 16) + ' UTC — ' + mascaraEndereco(de) + ' | "' + assuntoPublico(assunto) + '" → respondido via ' + (r ? r.via + (r.modelo ? ' (' + r.modelo + ')' : '') : 'fallback') + (anexoVoz ? ' + áudio' : '') + '\n'); } catch (e) {}
