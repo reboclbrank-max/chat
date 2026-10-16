@@ -1,0 +1,38 @@
+name: Teste do GitHub Models (motor gratuito do próprio GitHub)
+# 🔬 1 clique: o token do próprio Actions (permissão models: read) chama o GitHub Models — texto e foto — e mostra o
+# limite de uso. Sem chave nova, sem custo (cota gratuita do GitHub).
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  models: read
+jobs:
+  teste:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Texto e foto pelo GitHub Models
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import base64, json, os, time, urllib.request, urllib.error
+          tok = os.environ['GITHUB_TOKEN']
+          def pede(modelo, conteudo):
+              corpo = json.dumps({'model': modelo, 'messages': [{'role': 'user', 'content': conteudo}], 'max_tokens': 120}).encode()
+              rq = urllib.request.Request('https://models.github.ai/inference/chat/completions', data=corpo, headers={'Authorization': 'Bearer ' + tok, 'Content-Type': 'application/json', 'Accept': 'application/json'})
+              t0 = time.time()
+              try:
+                  with urllib.request.urlopen(rq, timeout=90) as r:
+                      j = json.load(r)
+                      lim = {k: v for k, v in r.headers.items() if 'ratelimit' in k.lower()}
+                      return 'OK %.1f s → %s · limites: %s' % (time.time() - t0, j['choices'][0]['message']['content'].strip().replace('\n', ' ')[:160], json.dumps(lim)[:200])
+              except urllib.error.HTTPError as e:
+                  return 'HTTP %s → %s' % (e.code, e.read().decode('utf-8', 'replace')[:200])
+          img = base64.b64encode(open('tools/teste-visao3.png', 'rb').read()).decode()
+          for m in ('openai/gpt-4o-mini', 'openai/gpt-4.1-mini', 'meta/Llama-3.3-70B-Instruct'):
+              print('TEXTO', m, '·', pede(m, 'Responda em português, em uma frase: qual é a capital de Sergipe?'))
+          for m in ('openai/gpt-4o-mini', 'openai/gpt-4.1-mini'):
+              print('FOTO ', m, '·', pede(m, [{'type': 'text', 'text': 'Em português: que formas, cores e texto aparecem nesta imagem?'}, {'type': 'image_url', 'image_url': {'url': 'data:image/png;base64,' + img}}]))
+          PY
