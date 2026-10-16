@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-10-16T14:24:01.192Z",
+ "verificado_em": "2026-10-16T14:59:49.709Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -22,12 +22,12 @@
    "falhas": 0
   },
   "itch Ceifalume": {
-   "ok": false,
-   "falhas": 1
+   "ok": true,
+   "falhas": 0
   },
   "itch Prancheta": {
-   "ok": false,
-   "falhas": 1
+   "ok": true,
+   "falhas": 0
   },
   "Caixa de e-mail": {
    "ok": true,
