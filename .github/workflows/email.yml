@@ -19,16 +19,16 @@ jobs:
       VISAO_MODELO: qwen3vl-4b
       VISAO_CACHE: /home/runner/.cache/visao-casa
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Restaura a visão local (cache do modelo)
         id: cache-visao
         uses: actions/cache/restore@v4
         with:
           path: /home/runner/.cache/visao-casa
           key: visao-${{ env.VISAO_MODELO }}-b11635-v1
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '22'
       - run: npm install --no-save imapflow@2.4.3 nodemailer@10.1.1
       - run: |
           # 🧰 v12.7: ferramentas Python (voz, OCR, olho) e a visão local ficam prontas em 2º plano — o escutador
@@ -100,10 +100,10 @@ jobs:
       VISAO_MODELO: qwen3vl-4b
       VISAO_CACHE: /home/runner/.cache/visao-casa
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '22'
       - run: |
           npm install --no-save imapflow@2.4.3 nodemailer@10.1.1
           python3 -m pip install --quiet --disable-pip-version-check --break-system-packages "numpy<2.5" Pillow pillow-heif==1.8.1 openpyxl==3.1.5 fpdf2==2.8.9 edge-tts gTTS vosk soundfile pywhispercpp pypdf python-docx opencv-python-headless==4.10.0.84 || python3 -m pip install --quiet --disable-pip-version-check "numpy<2.5" Pillow pillow-heif==1.8.1 openpyxl==3.1.5 fpdf2==2.8.9 edge-tts gTTS vosk soundfile pywhispercpp pypdf python-docx opencv-python-headless==4.10.0.84 || true

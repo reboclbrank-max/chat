@@ -16,7 +16,7 @@ jobs:
       VISAO_MODELO: qwen3vl-4b
       VISAO_CACHE: /home/runner/.cache/visao-casa
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Já está no cache?
         id: cache-visao
         uses: actions/cache/restore@v4
