@@ -28,6 +28,7 @@ jobs:
       - name: Arquivos de prova gerados na hora (foto de ~6 MB, HEIC, nota de voz, planilha, PDF escaneado)
         run: |
           python3 -m pip install --quiet --disable-pip-version-check --break-system-packages Pillow pillow-heif==1.8.1 gTTS openpyxl==3.1.5 || python3 -m pip install --quiet --disable-pip-version-check Pillow pillow-heif==1.8.1 gTTS openpyxl==3.1.5 || true
+          command -v ffmpeg >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg) || true   # vídeo e nota de voz .ogg
           python3 tools/gerar-fixtures.py || echo "⚠️ fotos de prova não geradas"
       - name: Envia o teste e captura as respostas
         run: |

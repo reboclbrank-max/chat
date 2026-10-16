@@ -16,6 +16,8 @@
 //        PDF escaneado de 2 páginas (R3-30); anexos genéricos (áudio, planilha, PDF) gerados na hora.
 // v3.14: lembrete entregue na hora (R3-31, 2 respostas), pesquisa com fonte (R3-32), planilha gerada (R3-33) e
 //        vídeo curto (R3-34); a resposta registra os nomes dos anexos (📎 anexos: …).
+// v3.15: o registro do envio guarda a marca do lembrete (o robô esperava só 1 resposta e encerrava antes da hora);
+//        os links da resposta são lidos do e-mail bruto (o leitor do chat tira links do texto de entrada).
 // Melhorias sobre a v2: usa o MESMO parser do canal (pegaTexto), casa cada resposta com o e-mail
 // que a originou (In-Reply-To = thread exata) e roda CHECAGENS AUTOMÁTICAS por caso no relatório.
 const fs = require('fs');
@@ -263,7 +265,8 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
           if (quando < t0 - 180000) continue;                                  // só esta rodada
           const fonte = (m.source || '').toString();
           const nomesAnexos = [...fonte.matchAll(/filename\*?="?([^"\r\n;]+)/gi)].map(x => x[1]);   // v3.14
-          const texto = pegaTexto(fonte, String(m.envelope.subject || '')) + (nomesAnexos.length ? '\n📎 anexos: ' + nomesAnexos.join(', ') : '');
+          const links = [...new Set([...fonte.replace(/=\r?\n/g, '').matchAll(/https?:\/\/[^\s"<>()=]+/g)].map(x => x[0]))].slice(0, 6);   // v3.15
+          const texto = pegaTexto(fonte, String(m.envelope.subject || '')) + (nomesAnexos.length ? '\n📎 anexos: ' + nomesAnexos.join(', ') : '') + (links.length ? '\n🔗 links: ' + links.join(' ') : '');
           const antigo = porMensagem.get(id);
           if (!antigo || texto.length > antigo.texto.length || (caixa === 'INBOX' && antigo.caixa !== 'INBOX'))
             porMensagem.set(id, { texto, caixa, quando, assunto: String(m.envelope.subject || ''), inReplyTo: m.envelope.inReplyTo || '' });
@@ -285,7 +288,7 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
     let lock;
     try { lock = await client.getMailboxLock('INBOX'); await client.append('INBOX', Buffer.from(bruto), caso.lido ? ['\\Seen'] : []); }
     finally { if (lock) lock.release(); }
-    enviados.push({ n: caso.n, assunto: caso.assunto, corpo: caso.corpo, esperado: caso.esperado, check: caso.check, id, enviadoEm: Date.now(), foto: !!(caso.foto || caso.fotoArq || caso.fotos), pdf: !!caso.pdf, semResposta: !!caso.semResposta, lido: !!caso.lido });
+    enviados.push({ n: caso.n, assunto: caso.assunto, corpo: caso.corpo, esperado: caso.esperado, check: caso.check, id, enviadoEm: Date.now(), foto: !!(caso.foto || caso.fotoArq || caso.fotos), pdf: !!caso.pdf, semResposta: !!caso.semResposta, lido: !!caso.lido, lembrete: !!caso.lembrete });
     console.log('📤', caso.n, '—', caso.assunto.replace(MARCA + ' ', ''), (caso.foto || caso.fotoArq) ? '(com foto)' : '');
     await sleep(1300);
   }
@@ -376,7 +379,7 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
   for (const r of [...porMensagem.values()].sort((a, b) => a.quando - b.quando)) L.push('- ' + new Date(r.quando).toISOString().slice(11, 16) + ' · ' + r.caixa + ' · ' + r.assunto.replace(MARCA + ' ', '').slice(0, 70));
   L.push('');
   L.push('---');
-  L.push('_Gerado por `tools/teste-email.js` v3.14 (workflow `teste-email.yml`)._');
+  L.push('_Gerado por `tools/teste-email.js` v3.15 (workflow `teste-email.yml`)._');
   const ts = new Date().toISOString().slice(0, 16).split(':').join('').split('T').join('-');
   const destino = path.join(__dirname, '..', 'provas', 'teste-email-r3-' + ts + '.md');
   fs.mkdirSync(path.dirname(destino), { recursive: true });
