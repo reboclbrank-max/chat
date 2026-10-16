@@ -263,3 +263,8 @@
 - 2026-10-16T00:52 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-34 — vídeo curto" → respondido via visão local (qwen3vl-4b) + frota (nvidia/nemotron-3-ultra-550b-a55b)
 - 2026-10-16T00:52 UTC — bog***+alias@gmail.com | "Re: [TESTE-REBOCL] R3-8 — memória (1/2)" → respondido via reserva (gpt-oss-20b)
 - 2026-10-16T00:52 UTC — bog***+alias@gmail.com | "Re: [TESTE-REBOCL] R3-8 — memória (1/2)" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T16:28 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-1 — recursos" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T16:28 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-2 — clima local" → respondido via ferramenta
+- 2026-10-16T16:28 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-3 — poema" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T16:28 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-4 — tradução" → respondido via reserva (gpt-oss-20b)
+- 2026-10-16T16:28 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-5 — código" → respondido via reserva (gpt-oss-20b)
