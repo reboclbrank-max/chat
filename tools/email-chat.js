@@ -31,6 +31,8 @@
 // 🖨️ PDF escaneado com até 4 páginas (nome único por e-mail); 📄 documento de até 15 mil caracteres.
 // v12.16: ⏰ lembretes (guardados na caixa, entregues na hora); 🔎 pesquisa com fonte; 📎 resposta com planilha/PDF;
 // 🎬 vídeo curto (4 quadros + áudio transcrito).
+// v12.17: 📲 base do chat no Telegram — exporta o que tools/telegram-chat.js reaproveita; lembrete marcado pelo
+// Telegram é entregue pelo Telegram.
 const { ImapFlow } = require('imapflow');
 const nodemailer = require('nodemailer');
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
@@ -615,6 +617,16 @@ async function lerLembretes(c, para) {
   } finally { lock.release(); }
   return lista.sort((a, b) => a.quando - b.quando);
 }
+// 📲 v12.17: manda uma mensagem pelo bot do Telegram (lembretes marcados pelo Telegram voltam por lá)
+async function enviaTelegram(chatId, texto) {
+  const tok = String(process.env.TELEGRAM_BOT_TOKEN || '').trim();
+  if (!tok) throw new Error('sem TELEGRAM_BOT_TOKEN');
+  const r = await fetch('https://api.telegram.org/bot' + tok + '/sendMessage', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text: semMarcacao(texto).slice(0, 4000) }), signal: AbortSignal.timeout(30000) });
+  const j = await r.json().catch(() => ({}));
+  if (!j.ok) throw new Error('Telegram: ' + String(j.description || r.status).slice(0, 80));
+  return j.result;
+}
 let proximaEntrega = 0;
 async function entregaLembretes() {
   let entregues = 0;
@@ -627,6 +639,13 @@ async function entregaLembretes() {
     try {
       for (const r of vencidos) {
         const texto = '⏰ Lembrete: ' + r.texto + NL + NL + '(Você pediu para eu te lembrar em ' + quandoBR(r.quando) + ', horário de Brasília.)' + NL + NL + '— Assistente Rebocl (casa Rebocl Brank)';
+        if (/^tg:/.test(r.para)) {   // 📲 v12.17: marcado pelo Telegram → entregue pelo Telegram
+          await enviaTelegram(r.para.slice(3), texto.replace(NL + NL + '— Assistente Rebocl (casa Rebocl Brank)', ''));
+          if (lixeira) await c.messageMove(r.uid, lixeira, { uid: true }); else await c.messageDelete(r.uid, { uid: true });
+          console.log('⏰ lembrete entregue pelo Telegram (marcado para ' + quandoBR(r.quando) + ')');
+          entregues++;
+          continue;
+        }
         await tr.sendMail({ from: '"Assistente Rebocl" <' + USER + '>', to: r.para, subject: r.assunto ? 'Re: ' + String(r.assunto).replace(/^(re:\s*)+/i, '') : '⏰ Lembrete', text: semMarcacao(texto), html: paraHtml(texto),
           inReplyTo: r.msgId || undefined, references: r.msgId || undefined, headers: { 'Auto-Submitted': 'auto-generated', 'X-Auto-Response-Suppress': 'All' } });
         if (lixeira) await c.messageMove(r.uid, lixeira, { uid: true }); else await c.messageDelete(r.uid, { uid: true });
@@ -1403,5 +1422,8 @@ async function processOnce() {
   } finally { lock.release(); await client.logout(); await fechaLeitor(); }
   return respondidos;
 }
-module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar, extraiAnexoTexto, docTexto, olhoDaFoto, olhoPistas, leTextoLocal, leTextoLocalInfo, pareceCego, SO_TEXTO, mascaraEndereco, assuntoPublico, falhasPorUid, visaoLocal, iniciaVisaoLocal, esperaFerramentas, renderPdf, buscaRota, corre };
+module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar, extraiAnexoTexto, docTexto, olhoDaFoto, olhoPistas, leTextoLocal, leTextoLocalInfo, pareceCego, SO_TEXTO, mascaraEndereco, assuntoPublico, falhasPorUid, visaoLocal, iniciaVisaoLocal, esperaFerramentas, renderPdf, buscaRota, corre,
+  // 📲 v12.17: reaproveitados pelo chat no Telegram (tools/telegram-chat.js)
+  comCaixaSeparada, comandosDaCasa, preparaFoto, montaFotos, cerebroLocal, semMarcacao, limpaVazamento, CAPS, processaVideo,
+  csvParaXlsx, textoParaPdf, pedidoDeArquivo, renderPdfPaginas, entendeQuando, quandoBR, enviaTelegram, entregaLembretes };
 if (require.main === module) { processOnce().then(n => console.log('ciclo único:', n, 'respondidos')).catch(e => { console.error('ERRO:', e.message); process.exit(0); }); }

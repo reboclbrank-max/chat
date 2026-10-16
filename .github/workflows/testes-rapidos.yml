@@ -7,6 +7,7 @@ on:
     paths:
       - 'tools/email-chat.js'
       - 'tools/email-poll.js'
+      - 'tools/telegram-chat.js'
       - 'tools/prepara-foto.py'
       - 'tools/visao-local.py'
       - 'tools/ocr-local.py'
@@ -35,7 +36,7 @@ jobs:
           python3 -m pip install --quiet --disable-pip-version-check --break-system-packages "numpy<2.5" Pillow pillow-heif==1.8.1 openpyxl==3.1.5 pypdf || python3 -m pip install --quiet --disable-pip-version-check Pillow pillow-heif==1.8.1 openpyxl==3.1.5 pypdf
       - name: Sintaxe
         run: |
-          for f in tools/email-chat.js tools/email-poll.js tools/teste-email.js tools/testes/*.js; do node --check "$f"; done
+          for f in tools/email-chat.js tools/email-poll.js tools/telegram-chat.js tools/teste-email.js tools/testes/*.js; do node --check "$f"; done
           for f in tools/prepara-foto.py tools/visao-local.py tools/ocr-local.py tools/olho.py; do python3 -m py_compile "$f"; done
       - name: Testes rápidos (IMAP, SMTP e motores falsos)
         run: node tools/testes/roda-testes.js

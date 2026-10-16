@@ -51,6 +51,8 @@ jobs:
           GMAIL_CHAT_PASS: ${{ secrets.GMAIL_CHAT_PASS }}
           CHAT_DONO: ${{ secrets.CHAT_DONO }}
           CHAT_REMETENTES: ${{ secrets.CHAT_REMETENTES }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_PAREAR: ${{ secrets.TELEGRAM_PAREAR }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Salva o log
         run: |
@@ -117,6 +119,8 @@ jobs:
           GMAIL_CHAT_PASS: ${{ secrets.GMAIL_CHAT_PASS }}
           CHAT_DONO: ${{ secrets.CHAT_DONO }}
           CHAT_REMETENTES: ${{ secrets.CHAT_REMETENTES }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_PAREAR: ${{ secrets.TELEGRAM_PAREAR }}
       - name: Acorda o vigia da casa
         run: |
           curl -s -o /dev/null -w "vigia: %{http_code}\n" -X POST \

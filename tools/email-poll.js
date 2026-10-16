@@ -1,6 +1,7 @@
 // 🔁 TURNO 24H — fica acordado 5h45 varrendo a caixa a cada 50s; o cron do workflow o reconvoca 4x/dia
 // e, para não depender do cron do GitHub (que neste repositório não disparou nenhuma vez),
 // cada turno deixa o PRÓXIMO TURNO na fila — o grupo 'email-casa' garante que só um roda por vez.
+// v4.4 (16/10/2026): 📲 CHAT NO TELEGRAM — liga o tools/telegram-chat.js junto com o e-mail (mesmo turno).
 // v4.3 (16/10/2026): ⚡ AVISO IMEDIATO DO GMAIL (IMAP IDLE) — uma conexão escuta a caixa e acorda o ciclo assim que
 // chega e-mail (antes, até 50 s de espera); rajada segue sem pausa; 🚦 BARREIRA DE TESTES — código novo só entra no ar
 // se os "testes rápidos" do commit passaram (reprovado = fica a versão atual; sem resultado em 30 min = troca assim mesmo).
@@ -31,7 +32,7 @@ const proximoTurno = () => despacha('email.yml', '🔗 próximo turno na fila');
 
 // 🔄 v4: o que conta como CÓDIGO do turno (robô de teste, relatórios e README não derrubam o turno)
 const SHA_INICIO = process.env.GITHUB_SHA || '';
-const CODIGO = /^tools\/(email-chat\.js|email-poll\.js|olho\.py|ocr-local\.py|transcreve\.py|visao-local\.py|prepara-foto\.py)$|^\.github\/workflows\/email\.yml$/;
+const CODIGO = /^tools\/(email-chat\.js|email-poll\.js|olho\.py|ocr-local\.py|transcreve\.py|visao-local\.py|prepara-foto\.py|telegram-chat\.js)$|^\.github\/workflows\/email\.yml$/;
 async function codigoMudou() {   // → { arquivos: [código mudado desde que o turno começou], commits: Set(sha dos commits novos) }
   if (!SHA_INICIO) return { arquivos: [], commits: new Set() };
   const r = await api('/compare/' + SHA_INICIO + '...main');
@@ -83,6 +84,7 @@ async function escuta() {
 const FIM = Date.now() + (5 * 60 + 45) * 60 * 1000;   // 5h45; varredura a cada 50 s + aviso imediato do Gmail (v4.3)
 (async () => {
   escuta();   // ⚡ em paralelo, para sempre (reconecta sozinha)
+  try { require('./telegram-chat.js').inicia(FIM); } catch (e) { console.log('📲 Telegram não iniciou: ' + String(e.message || e).slice(0, 80)); }   // 📲 v4.4
   let varreduras = 0, respondidos = 0, motivo = 'fim do horário';
   let proximoAviso = Date.now() + 5 * 60 * 1000;
   let proximaChecagem = Date.now() + 10 * 60 * 1000;
