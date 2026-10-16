@@ -72,6 +72,15 @@ Para mudar o visual ou o texto, edite `index.html` e faça commit. O GitHub Page
 - **Privacidade:** o `email-log.md` e o log de execução do Actions (ambos públicos) levam o endereço mascarado e só o assunto de e-mails de teste; transcrição de áudio e nome de arquivo do dono não aparecem (v12.12). A memória da conversa é guardada por remetente + assunto (outra pessoa com o mesmo assunto não vê a sua conversa). **Só o dono (e quem ele autorizar) usa o chat:** quem não está autorizado recebe uma resposta curta, sem IA e sem os anexos serem abertos. O endereço do dono fica num segredo do repositório, não no código. O remetente só vale como o dono se o Gmail confirmar que o e-mail é autêntico (DKIM/DMARC) — "De" falsificado recebe a resposta curta.
 - **Provas:** robô de teste com 35 casos (`teste-email.yml`) e **exame das ferramentas** de 1 clique (`ferramentas.yml`, que também compara modelos de visão local); os relatórios ficam em `provas/`. Última rodada (27): **35/35 PASS**, com lembrete entregue na hora, pesquisa com fonte, planilha gerada, vídeo, nota de voz, planilha e PDF escaneado lidos, remetente falsificado barrado, e-mails no formato real do Gmail e do iPhone, 3 fotos, HEIC, foto de 6 MB, memória pela conversa, remetente não autorizado, e-mail perdido (chega como lido), e-mail automático (não responder), foto + PDF, bilhete, foto complexa, foto de celular de 12 MP e o modo "sem visão"; falha em modo de pane (motores da internet fora) aparece separada no relatório como "PANE". A cada mudança de código roda uma **barreira de testes rápidos** (`testes-rapidos.yml`) — o turno só troca para o código novo se ela passar. Os workflows ficam fixados no Ubuntu 24.04 (o `ubuntu-latest` migra para o Ubuntu 26 em 19/10/2026).
 
+## v12.18 — mais comandos locais e turno à prova de queda (16/10/2026)
+
+- **`conta:`** — conta rápida que responde na hora, sem internet e sem motor: `conta: (1250*0,15)+80`, `conta: 7x8`, `conta: 2^10`, `conta: 20% de 150` (aceita vírgula decimal, "x" como vezes e milhar brasileiro). Conta que não dá para ler devolve uma ajuda amigável em vez de resposta inventada.
+- **`feriado:`** — próximos feriados nacionais com dia da semana; `feriado: 2027` lista o ano inteiro. Dados da BrasilAPI (grátis, sem chave).
+- **`cep:`** — endereço do CEP (rua, bairro, cidade/UF) pela BrasilAPI; CEP que não existe é avisado em vez de chutar.
+- Os três funcionam **por e-mail e pelo Telegram** (as mesmas ferramentas), e já aparecem no `ajuda` e no CAPS da Assistente.
+- **Turno à prova de queda (escutador v4.5):** uma rejeição/exceção inesperada (no e-mail, no Telegram ou numa biblioteca) podia derrubar o processo do turno inteiro; agora ela é registrada no log e o turno segue vivo.
+- **Testes:** nova suíte `conta-e-comandos.js` na barreira (13 verificações) e 3 casos novos no robô (R3-35 a R3-37) — a rodada agora tem 38 e-mails.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código

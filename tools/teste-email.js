@@ -18,6 +18,8 @@
 //        vídeo curto (R3-34); a resposta registra os nomes dos anexos (📎 anexos: …).
 // v3.15: o registro do envio guarda a marca do lembrete (o robô esperava só 1 resposta e encerrava antes da hora);
 //        os links da resposta são lidos do e-mail bruto (o leitor do chat tira links do texto de entrada).
+// v3.16: casos R3-35 a R3-37 — os comandos novos da v12.18: conta: (local, 267,5 na hora), feriado: (datas + nomes)
+//        e cep: 49300000 (Tobias Barreto — SE, pela BrasilAPI).
 // Melhorias sobre a v2: usa o MESMO parser do canal (pegaTexto), casa cada resposta com o e-mail
 // que a originou (In-Reply-To = thread exata) e roda CHECAGENS AUTOMÁTICAS por caso no relatório.
 const fs = require('fs');
@@ -163,7 +165,16 @@ const CASOS = [
   { n: 'R3-34', assunto: MARCA + ' R3-34 — vídeo curto', arquivos: [['video-curto.mp4']],
     esperado: 'VÍDEO CURTO (6 s: a horta e depois o bilhete, com uma fala): o chat tira quadros e o áudio — tem de dizer a palavra falada (JABUTICABA) e algo do que aparece.',
     check: t => (/jabuticaba/i.test(t) && /horta|regador|cachorr|canteir|bilhete|marta|planta|jardim/i.test(t)) ? 'PASS (viu os quadros e ouviu a fala do vídeo)' : (/jabuticaba/i.test(t) ? 'FALHOU (ouviu, mas não descreveu o que aparece)' : 'FALHOU (não ouviu a fala do vídeo)'),
-    corpo: 'Mandei um vídeo curto. O que aparece nele e qual é a palavra falada no vídeo?' }
+    corpo: 'Mandei um vídeo curto. O que aparece nele e qual é a palavra falada no vídeo?' },
+  { n: 'R3-35', assunto: MARCA + ' R3-35 — conta rápida', esperado: 'CONTA LOCAL: (1250*0,15)+80 volta = 267,5 na hora, sem motor.',
+    check: t => /267[.,]5/.test(t) ? 'PASS (267,5 na hora)' : 'FALHOU (não veio 267,5)',
+    corpo: 'conta: (1250*0,15)+80' },
+  { n: 'R3-36', assunto: MARCA + ' R3-36 — próximos feriados', esperado: 'FERIADOS NACIONAIS pela ferramenta: datas DD/MM/AAAA com nome.',
+    check: t => (/[0-9]{2}\/[0-9]{2}\/[0-9]{4}/.test(t) && /consci[êe]ncia|independ[êe]ncia|finados|natal|padroeira|trabalh|carnaval|tiradentes|sexta-feira santa/i.test(t)) ? 'PASS (datas + feriados)' : 'FALHOU (sem feriado com data)',
+    corpo: 'feriado:' },
+  { n: 'R3-37', assunto: MARCA + ' R3-37 — endereço por CEP', esperado: 'ENDEREÇO DO CEP 49300-000 pela ferramenta (Tobias Barreto — SE).',
+    check: t => /Tobias Barreto|Sergipe/i.test(t) ? 'PASS (cidade/UF do CEP)' : 'FALHOU (sem endereço)',
+    corpo: 'cep: 49300000' }
 ];
 const M3 = { n: 'R3-20', assunto: 'Re: ' + MARCA + ' R3-8 — memória (1/2)',
   esperado: 'MEMÓRIA PELA CONVERSA DO GMAIL: a chave [SEM-MEMORIA] faz o chat ignorar a memória do turno e a citação — só a conversa guardada no Gmail pode lembrar JATOBÁ (é a memória que sobrevive à troca de turno).',

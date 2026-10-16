@@ -33,6 +33,9 @@
 // 🎬 vídeo curto (4 quadros + áudio transcrito).
 // v12.17: 📲 base do chat no Telegram — exporta o que tools/telegram-chat.js reaproveita; lembrete marcado pelo
 // Telegram é entregue pelo Telegram.
+// v12.18: 🧮 conta: (conta rápida LOCAL, sem internet e sem motor — aceita (1250*0,15)+80, 7x8, 2^10, 20% de 150);
+// 📅 feriado: (próximos feriados nacionais, ou um ano: feriado: 2027 — BrasilAPI, sem chave); 🏠 cep: 49300000
+// (endereço do CEP — BrasilAPI, sem chave). Ajuda e CAPS atualizados com os três.
 const { ImapFlow } = require('imapflow');
 const nodemailer = require('nodemailer');
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
@@ -161,7 +164,7 @@ function pegaTexto(bruto, assunto) {
 
 
 // 🧰 FERRAMENTAS POR E-MAIL (14/10/2026): comandos que respondem com DADOS REAIS, sem depender de motor.
-// Vale mesmo com todos os cérebros caídos. Comandos: clima:, cambio:, hora:, noticias:, status:, ajuda
+// Vale mesmo com todos os cérebros caídos. Comandos: clima:, cambio:, hora:, noticias:, status:, conta:, feriado:, cep:, ajuda
 const NL = String.fromCharCode(10);
 function semAcento(s) { return String(s || '').toLowerCase(); }
 function decr(s) {
@@ -172,6 +175,30 @@ function decr(s) {
     .split('&#205;').join('Í').split('&#237;').join('í').split('&#211;').join('Ó').split('&#243;').join('ó')
     .split('&#218;').join('Ú').split('&#250;').join('ú').split('&#195;').join('Ã').split('&#227;').join('ã')
     .split('&#199;').join('Ç').split('&#231;').join('ç');
+}
+// 🧮 v12.18: CONTA RÁPIDA LOCAL — nada de internet nem de motor; aceita + - * / % ^ ( ), decimal com vírgula,
+// "x" como vezes, "×"/"÷", milhar no padrão brasileiro (1.250) e "N% de M". Devolve número ou null se não entender.
+function contaLocal(entrada) {
+  const bruto = String(entrada || '').trim();
+  if (!bruto) return null;
+  const mPct = bruto.match(/^([0-9]+(?:[.,][0-9]+)?)\s*%\s*de\s+(.+)$/i);
+  if (mPct) {
+    const p = Number(mPct[1].replace(',', '.'));
+    const base = contaLocal(mPct[2]);
+    if (base === null || !isFinite(p)) return null;
+    return p / 100 * base;
+  }
+  let s = bruto.toLowerCase().replace(/(\d)\s*[x×]\s*(\d)/g, '$1*$2').replace(/÷/g, '/')
+    .replace(/\b(\d{1,3}(?:\.\d{3})+)\b/g, m => m.replace(/\./g, ''))   // 1.250.000 → 1250000 (milhar pt-BR)
+    .replace(/,/g, '.').replace(/\s+/g, '');
+  if (!/^[0-9+\-*/^().%]+$/.test(s)) return null;
+  let i = 0;
+  const numero = () => { let j = i; while (j < s.length && /[0-9.]/.test(s[j])) j++; if (j === i) throw 0; const v = Number(s.slice(i, j)); if (!isFinite(v)) throw 0; i = j; return v; };
+  const fator = () => { if (s[i] === '+') { i++; return fator(); } if (s[i] === '-') { i++; return -fator(); } if (s[i] === '(') { i++; const v = expressao(); if (s[i] !== ')') throw 0; i++; return v; } return numero(); };
+  const potencia = () => { const v = fator(); if (s[i] === '^') { i++; return Math.pow(v, potencia()); } return v; };
+  const termo = () => { let v = potencia(); while (s[i] === '*' || s[i] === '/' || s[i] === '%') { const op = s[i++]; const d = potencia(); v = op === '*' ? v * d : op === '/' ? v / d : v % d; } return v; };
+  function expressao() { let v = termo(); while (s[i] === '+' || s[i] === '-') { const op = s[i++]; const d = termo(); v = op === '+' ? v + d : v - d; } return v; }
+  try { const v = expressao(); if (i !== s.length || !isFinite(v)) return null; return Math.round(v * 1e9) / 1e9; } catch (e) { return null; }
 }
 async function ferramenta(corpo) {
   const txt = String(corpo || '').trim();
@@ -239,6 +266,36 @@ async function ferramenta(corpo) {
       if (!titulos.length) return '📰 Não achei manchetes sobre "' + termo + '" agora. Tente outras palavras (ou o termo em inglês).';
       return '📰 Manchetes sobre "' + termo + '":' + NL + '• ' + titulos.join(NL + '• ');
     }
+    if (cmd === 'conta' || cmd === 'calc') {
+      const v = contaLocal(arg);
+      if (v === null) return '🧮 Não consegui ler essa conta. Escreva, por exemplo: conta: (1250*0,15)+80 · conta: 7x8 · conta: 20% de 150';
+      return '🧮 ' + String(arg).replace(/\s+/g, ' ').trim() + ' = ' + v.toLocaleString('pt-BR', { maximumFractionDigits: 6 });
+    }
+    if (cmd === 'feriado' || cmd === 'feriados') {
+      const hjBR = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);   // data de hoje no fuso de Brasília
+      const anoArg = /^\d{4}$/.test(arg) ? arg : '';
+      const ano = Number(anoArg || hjBR.slice(0, 4));
+      const r = await fetch('https://brasilapi.com.br/api/feriados/v1/' + ano, { signal: AbortSignal.timeout(25000), headers: { 'User-Agent': 'rebocl/1' } });
+      if (!r.ok) return null;
+      const lista = await r.json().catch(() => null);
+      if (!Array.isArray(lista) || !lista.length) return null;
+      const DIAS = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+      const linha = d => DIAS[new Date(d + 'T12:00:00Z').getUTCDay()] + ' ' + d.slice(8, 10) + '/' + d.slice(5, 7) + '/' + d.slice(0, 4);
+      const vindos = lista.filter(f => f.date >= hjBR);
+      const mostrar = anoArg ? lista.slice(0, 12) : vindos.slice(0, 5);
+      if (!mostrar.length) return '📅 Não sobrou feriado nacional em ' + ano + '. Escreva "feriado: ' + (ano + 1) + '" para ver os do ano que vem.';
+      return (anoArg ? '📅 Feriados nacionais de ' + ano + ':' : '📅 Próximos feriados nacionais (a partir de hoje):') + NL + '• ' + mostrar.map(f => linha(f.date) + ' — ' + f.name).join(NL + '• ');
+    }
+    if (cmd === 'cep') {
+      const cep = String(arg || '').replace(/\D/g, '');
+      if (cep.length !== 8) return '🏠 Manda o CEP com 8 números, por exemplo: cep: 49300000';
+      const r = await fetch('https://brasilapi.com.br/api/cep/v1/' + cep, { signal: AbortSignal.timeout(25000), headers: { 'User-Agent': 'rebocl/1' } });
+      if (r.status === 404) return '🏠 CEP ' + cep + ' não encontrado — confere o número.';
+      if (!r.ok) return null;
+      const j = await r.json().catch(() => null);
+      if (!j || !j.city) return null;
+      return '🏠 ' + [j.street, j.neighborhood, j.city + (j.state ? ' — ' + j.state : ''), 'CEP ' + (j.cep || cep)].filter(Boolean).join(' · ');
+    }
     if (cmd === 'status') {
       const r = await fetch('https://raw.githubusercontent.com/reboclbrank-max/chat/main/vigia-estado.json', { signal: AbortSignal.timeout(20000), cache: 'no-store' });
       const j = await r.json();
@@ -259,6 +316,9 @@ const AJUDA = [
   '   • hora: tokyo       (também brasilia, nova york, lisboa, utc…)',
   '   • noticias: godot   (qualquer tema)',
   '   • status:           (como está a casa agora)',
+  '   • conta: (1250*0,15)+80   (conta rápida, sem esperar motor)',
+  '   • feriado:           (próximos feriados nacionais; ou feriado: 2027)',
+  '   • cep: 49300000      (endereço de um CEP)',
   '   • voz: bom dia, dona!   (eu devolvo um áudio falado em anexo)',
   '   • ajuda',
   '',
@@ -291,7 +351,7 @@ function citacaoDoEmail(bruto) {
 
 
 // 🪞 CAPACIDADES (14/10/2026): o chat precisa conhecer os próprios recursos para não errar sobre si mesmo.
-const CAPS = ' Você é o chat por e-mail da casa Rebocl Brank. Seja PRECISA quando falar de si: você RESPONDE e-mails; você VÊ fotos anexadas (visão) e, quando os motores de visão oscilam, ainda lê o TEXTO da foto por uma lupa própria; você OUVE áudios recebidos por e-mail (transcrição por motor pequeno — pode errar nomes) e RESPONDE EM VOZ quando o dono pede, por palavras ("manda em áudio") ou pelo comando voz:, devolvendo um áudio falado em anexo; você LÊ arquivos anexados de texto (PDF, Word, TXT) extraindo o conteúdo; e tem comandos locais que funcionam mesmo com os motores caídos: clima:, cambio:, hora:, noticias:, status: e ajuda. O que você NÃO tem: WhatsApp, anexar arquivos quaisquer (só o áudio falado que VOCÊ mesma gera), memória longa entre e-mails distantes (lembra só o que vier citado na conversa) e os motores gratuitos às vezes oscilam — nesse caso avise e peça reenvio.';
+const CAPS = ' Você é o chat por e-mail da casa Rebocl Brank. Seja PRECISA quando falar de si: você RESPONDE e-mails; você VÊ fotos anexadas (visão) e, quando os motores de visão oscilam, ainda lê o TEXTO da foto por uma lupa própria; você OUVE áudios recebidos por e-mail (transcrição por motor pequeno — pode errar nomes) e RESPONDE EM VOZ quando o dono pede, por palavras ("manda em áudio") ou pelo comando voz:, devolvendo um áudio falado em anexo; você LÊ arquivos anexados de texto (PDF, Word, TXT) extraindo o conteúdo; e tem comandos locais que funcionam mesmo com os motores caídos: clima:, cambio:, hora:, noticias:, status:, conta:, feriado:, cep: e ajuda. O que você NÃO tem: WhatsApp, anexar arquivos quaisquer (só o áudio falado que VOCÊ mesma gera), memória longa entre e-mails distantes (lembra só o que vier citado na conversa) e os motores gratuitos às vezes oscilam — nesse caso avise e peça reenvio.';
 
 async function buscaRota(nome, url, corpo, bearer, pergunta, imagem) {
   try {

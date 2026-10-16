@@ -2,6 +2,8 @@
 // e, para não depender do cron do GitHub (que neste repositório não disparou nenhuma vez),
 // cada turno deixa o PRÓXIMO TURNO na fila — o grupo 'email-casa' garante que só um roda por vez.
 // v4.4 (16/10/2026): 📲 CHAT NO TELEGRAM — liga o tools/telegram-chat.js junto com o e-mail (mesmo turno).
+// v4.5 (16/10/2026): 🛡️ TURNO À PROVA DE QUEDA — rejeição ou exceção inesperada (e-mail, Telegram ou biblioteca)
+// é registrada no log e o turno SEGUE VIVO; antes, uma rejeição sem catch derrubava o processo inteiro.
 // v4.3 (16/10/2026): ⚡ AVISO IMEDIATO DO GMAIL (IMAP IDLE) — uma conexão escuta a caixa e acorda o ciclo assim que
 // chega e-mail (antes, até 50 s de espera); rajada segue sem pausa; 🚦 BARREIRA DE TESTES — código novo só entra no ar
 // se os "testes rápidos" do commit passaram (reprovado = fica a versão atual; sem resultado em 30 min = troca assim mesmo).
@@ -10,6 +12,9 @@
 // v4 (15/10/2026): 🔄 TROCA DE TURNO COM CÓDIGO NOVO — a cada 10 min ele confere se o código do chat mudou no
 // main desde que este turno começou; se mudou, deixa o próximo turno na fila e encerra com calma (o log é salvo).
 // Antes, código novo esperava até 6 h para entrar no ar.
+// 🛡️ v4.5: última rede — os laços (e-mail, escuta, Telegram) já têm try/catch próprio; isto segura o que escapar
+process.on('unhandledRejection', e => console.error('🛡️ rejeição contida — o turno segue:', String((e && e.message) || e).slice(0, 200)));
+process.on('uncaughtException', e => console.error('🛡️ exceção contida — o turno segue:', String((e && e.message) || e).slice(0, 200)));
 const { processOnce } = require('./email-chat.js');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const REPO = 'reboclbrank-max/chat';
