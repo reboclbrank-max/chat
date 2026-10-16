@@ -13,7 +13,7 @@ concurrency:
 jobs:
   turno:
     if: github.event.schedule != '17,47 * * * *'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 350
     env:
       VISAO_MODELO: qwen3vl-4b
@@ -93,7 +93,7 @@ jobs:
           key: visao-${{ env.VISAO_MODELO }}-b11635-v1
   reserva:
     if: github.event.schedule == '17,47 * * * *'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       VISAO_MODELO: qwen3vl-4b
       VISAO_CACHE: /home/runner/.cache/visao-casa

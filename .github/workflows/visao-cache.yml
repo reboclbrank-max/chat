@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   guarda:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
       VISAO_MODELO: qwen3vl-4b
