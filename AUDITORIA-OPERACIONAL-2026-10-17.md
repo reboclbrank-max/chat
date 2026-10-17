@@ -27,7 +27,9 @@ A correção implementada nesta série:
 
 ## Achado da primeira amostra real
 
-A primeira amostra rastreável respondeu corretamente 9 de 10 perguntas segundo o avaliador original. A resposta restante foi “página não encontrada” para HTTP 404: correta, mas rejeitada porque o gabarito aceitava apenas “não encontrado”. O gabarito foi ampliado com formulações equivalentes públicas e recebeu teste unitário; não houve alteração de rota, modelo, canal ou resposta do Chat. A mesma amostra será repetida somente para corrigir essa medição e substituirá, em vez de somar, o registro anterior.
+A primeira amostra rastreável respondeu corretamente 9 de 10 perguntas segundo o avaliador original. A resposta restante foi “página não encontrada” para HTTP 404: correta, mas rejeitada porque o gabarito aceitava apenas “não encontrado”. O gabarito foi ampliado com formulações equivalentes públicas e recebeu teste unitário; não houve alteração de rota, modelo, canal ou resposta do Chat.
+
+Na repetição controlada, houve uma resposta muda para uma pergunta pública simples após as três rotas que a bateria conhecia. A auditoria confirmou que o canal real também dispõe da rota `llm7`, mas ela estava ausente da bateria. A bateria passou a tentar as quatro rotas reais (`frota`, `reserva`, `llm7`, `omni`) antes de classificar indisponibilidade. Isso torna a medição representativa do sistema que atende o dono, sem incluir segredo, rota privada ou nova dependência. A mesma amostra será repetida uma última vez após a barreira para substituir, em vez de somar, o registro anterior.
 
 ## Limites preservados
 

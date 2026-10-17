@@ -1,5 +1,5 @@
 // 🧠 EVOLUÇÃO DIÁRIA DO CHAT v3 — bateria rastreável, com amostras distintas e histórico público sanitizado.
-// A régua mede o sistema de rotas, não "QI". Cada resposta só vale contra o gabarito público da própria questão.
+// A régua mede o sistema de rotas, não "QI". Cada resposta só vale contra o gabarito público da própria questão; tenta 3 rodadas × 4 rotas de texto.
 'use strict';
 const fs = require('fs');
 
@@ -99,14 +99,20 @@ async function rota(nome, url, corpo, bearer) {
   return textoUtil(c) ? c.trim() : null;
 }
 
-async function pergunta(conteudo) {
-  const rotas = [
+// Mantém a mesma família de rotas de texto do canal real. A bateria não deve declarar a casa muda
+// antes de tentar uma reserva que o e-mail/Telegram efetivamente possuem.
+function rotasTexto(conteudo) {
+  return [
     ['frota', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'auto', messages: [{ role: 'user', content: conteudo }], max_tokens: 200 }, true],
     ['reserva', 'https://text.pollinations.ai/openai/chat/completions', { model: 'openai-fast', messages: [{ role: 'user', content: conteudo }], max_tokens: 200 }, false],
+    ['llm7', 'https://api.llm7.io/v1/chat/completions', { model: 'DeepSeek-V4-Flash-0731', messages: [{ role: 'user', content: conteudo }], max_tokens: 200 }, true],
     ['omni', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning', messages: [{ role: 'user', content: conteudo }], max_tokens: 200 }, true]
   ];
+}
+
+async function pergunta(conteudo) {
   for (let rodada = 0; rodada < 3; rodada++) {
-    for (const [nome, url, corpo, bearer] of rotas) {
+    for (const [nome, url, corpo, bearer] of rotasTexto(conteudo)) {
       try {
         const texto = await rota(nome, url, corpo, bearer);
         if (texto) return { texto, via: nome };
@@ -191,4 +197,4 @@ if (require.main === module) {
   executar().catch(erro => { console.error('EXAME FALHOU:', String(erro && erro.message || erro)); process.exitCode = 1; });
 }
 
-module.exports = { normalizaAmostra, selecionaQuestoes, bateriaAnterior, escolheBanco, atualizaHistorico, respostaAceita, textoUtil, executar };
+module.exports = { normalizaAmostra, selecionaQuestoes, bateriaAnterior, escolheBanco, atualizaHistorico, respostaAceita, textoUtil, rotasTexto, executar };
