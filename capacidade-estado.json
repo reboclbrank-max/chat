@@ -1,8 +1,8 @@
 {
   "esquema": "placar-capacidade-v2",
-  "gerado_em": "2026-10-17T19:43:15.683Z",
+  "gerado_em": "2026-10-17T22:17:00.705Z",
   "aviso": "Indicador interno de cobertura; não é resultado observável do produto, não é teste de QI, consciência nem garantia de disponibilidade.",
-  "total_em_100": 100,
+  "total_em_100": 96,
   "canal_real": {
     "nivel": "falha",
     "texto": "última rodada controlada: 37/38 PASS, 1 falha(s); produto não aprovado integralmente; reteste focado de foto mais recente: PASS (amostra única, não substitui a rodada completa)",
@@ -25,14 +25,14 @@
       "nome": "qualidade de respostas",
       "maximo": 20,
       "pontos": 20,
-      "evidencia": "5 bateria(s) recente(s), média 98%, 0 rota(s) muda(s)",
+      "evidencia": "5 bateria(s) recente(s), média 100%, 0 rota(s) muda(s)",
       "comoMelhorar": "manter amostras distintas, corrigir regressões e registrar falhas de rota"
     },
     {
       "nome": "confiabilidade observada",
       "maximo": 20,
-      "pontos": 20,
-      "evidencia": "8/8 itens OK; vigia recente",
+      "pontos": 16,
+      "evidencia": "8/8 itens OK; vigia desatualizado",
       "comoMelhorar": "tratar os itens vermelhos do vigia antes de aumentar a cadência"
     },
     {
@@ -67,14 +67,16 @@
   "sinais": {
     "itens_vigia_ok": 8,
     "itens_vigia_total": 8,
-    "vigia_recente": true,
+    "vigia_recente": false,
     "baterias": 5,
-    "media_bateria": 98,
+    "media_bateria": 100,
     "qualidade_rastreavel": false,
     "cobertura_questoes": 19,
     "respostas_auditadas": 50
   },
-  "proximas_melhorias": [],
+  "proximas_melhorias": [
+    "confiabilidade observada: tratar os itens vermelhos do vigia antes de aumentar a cadência"
+  ],
   "limites": [
     "Serviços gratuitos podem atrasar, interromper agendas ou limitar recursos.",
     "O placar usa evidências locais e não substitui monitoramento de usuário real.",
