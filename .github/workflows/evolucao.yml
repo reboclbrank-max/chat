@@ -14,11 +14,12 @@ jobs:
         with:
           node-version: '22'
       - run: node tools/evolucao-chat.js
+      - run: node tools/indice-capacidade.js
       - name: Salva o histórico
         run: |
           git config user.name "evolucao-casa"
           git config user.email "evolucao@rebocl.local"
-          git add saude-cerebro.md
+          git add saude-cerebro.md capacidade-estado.json CAPACIDADE.md
           git diff --cached --quiet || git commit -m "exame diario $(date -u +%F)"
           ok=0
           for i in 1 2 3; do

@@ -19,7 +19,7 @@ Página de conversa com a **IA gratuita da Rebocl Brank**.
 
 ## Manutenção e continuidade
 
-Antes de qualquer alteração, leia [`CONTINUIDADE.md`](CONTINUIDADE.md) e [`AGENTS.md`](AGENTS.md). Eles registram o mapa técnico, as proteções, a validação e o procedimento obrigatório para quem assumir o trabalho.
+Antes de qualquer alteração, leia [`CONTINUIDADE.md`](CONTINUIDADE.md), [`AGENTS.md`](AGENTS.md) e [`AUTONOMIA.md`](AUTONOMIA.md). Eles registram o mapa técnico, as proteções, a validação, os limites de autonomia e o procedimento obrigatório para quem assumir o trabalho.
 
 Toda atualização autorizada que mude comportamento, segurança, workflow, teste ou capacidade do Chat deve atualizar também `CONTINUIDADE.md` no mesmo conjunto de commits; a barreira rápida verifica essa regra em pushes de código. Depois, registre a decisão/estado pertinente na memória privada `base`, faça commit, push e confirme os hashes remotos.
 
@@ -91,6 +91,12 @@ Para mudar o visual ou o texto, confira também as variantes `direto.html`, `lig
 - Os três funcionam **por e-mail e pelo Telegram** (as mesmas ferramentas), e já aparecem no `ajuda` e no CAPS da Assistente.
 - **Turno à prova de queda (escutador v4.5):** uma rejeição/exceção inesperada (no e-mail, no Telegram ou numa biblioteca) podia derrubar o processo do turno inteiro; agora ela é registrada no log e o turno segue vivo.
 - **Testes:** nova suíte `conta-e-comandos.js` na barreira (13 verificações) e 3 casos novos no robô (R3-35 a R3-37) — a rodada agora tem 38 e-mails.
+
+## v12.19 — autonomia observável e web pública segura (16/10/2026)
+
+- **Placar de capacidade, não “QI”:** a bateria diária agora traduz os sinais verificáveis da casa em qualidade, confiabilidade, resiliência, ferramentas, autonomia e pesquisa/criatividade. O painel `CAPACIDADE.md` deixa explícito que nota não é consciência nem promessa de disponibilidade.
+- **Navegador público isolado:** o dono pode pedir `navegar: https://...` por e-mail/Telegram e consultar depois com `navegador: estado`; a abertura ocorre em Chrome/Chromium sem perfil e sem os segredos do chat. Ela bloqueia localhost/redes privadas, URLs com credencial e portas incomuns, e grava só título/trecho público sanitizado.
+- **Melhoria contínua com freio:** vigia, bateria, oficina e marketing continuam aprendendo e operando com a autorização do dono; mudanças sensíveis, segredos, permissões e ações irreversíveis seguem exigindo revisão, teste e rollback. Tudo continua em **R$ 0** — sem prometer “1 segundo” ou 24 h sem falha de serviços gratuitos.
 
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO

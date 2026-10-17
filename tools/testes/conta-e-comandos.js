@@ -22,6 +22,8 @@ async function t(nome, entrada, re) {
   await t('conta: vazia → ajuda amigável', 'conta:', /Não consegui ler/);
   await t('ajuda: lista o comando conta:', 'ajuda', /conta:/);
   await t('ajuda: lista feriado: e cep:', 'comandos', /feriado:|cep:/);
+  await t('ajuda: lista navegar:', 'ajuda', /navegar:/);
+  await t('navegar: bloqueia IP privado antes de qualquer fila', 'navegar: http://127.0.0.1/', /Não abri: endereço privado não é permitido/);
   await t('hora: segue no ar', 'hora: brasilia', /🕐/);
   for (const f of falhas) console.log('✘ ' + f);
   console.log(ok + '/' + total + ' certos');

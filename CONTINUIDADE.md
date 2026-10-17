@@ -26,7 +26,7 @@ Além deste arquivo público, registre a decisão relevante na memória privada 
 |---|---|---|---|
 | Página, e-mail, Telegram e testes | `reboclbrank-max/chat` (este, público) | Interface GitHub Pages, trabalhadores do canal de e-mail/Telegram, workflows e provas técnicas | Nunca incluir segredos, conteúdo privado, endereço completo ou token neste repositório. |
 | Cérebro, memória e Issues | `reboclbrank-max/agente` (privado) | Processa as conversas e guarda a memória/ordens privadas | Não mudar por reflexo de uma tarefa no `chat`; pode haver bloqueio de cobrança nas Actions privadas. |
-| Automação pública e vitrine | `reboclbrank-max/site` (público) | Postador, estado público e Comitê no Bolso | Marketing e publicações só mudam com pedido explícito do dono. |
+| Automação pública e vitrine | `reboclbrank-max/site` (público) | Postador, estado público e Comitê no Bolso | O dono autorizou marketing contínuo nos canais já configurados; preservar marca, fatos, anti-spam, métricas e reversibilidade. |
 | Memória oficial | `reboclbrank-max/base` (privado) | Regras, decisões, pendências e estado histórico | Deve ser lido antes de atuar e atualizado após mudança autorizada. |
 
 ### Endereços e entradas
@@ -105,6 +105,20 @@ O canal atende texto, foto, PDF/Word/TXT/CSV/JSON, planilha, PDF escaneado, áud
 - `provas/` contém evidências técnicas sanitizadas; antes de acrescentar uma, confira nomes, metadados e qualquer dado pessoal.
 - `email-log.md` é um log público controlado: endereço do dono, conteúdo privado, transcrição e nomes de arquivo sensíveis não podem entrar nele.
 
+### 2.6 Autonomia mensurável, pesquisa e navegador público (2026-10-16)
+
+A autorização atual do dono permite que o Chat e as automações complementares administrem marketing, pesquisa, criação e melhoria contínua dentro dos canais/contas já autorizados. Isso supera a regra histórica de aguardar autorização por postagem, **mas não** supera a proteção de segredos, leis/termos, guardas anti-spam, fatos verificáveis, testes, rollback ou a marca registrada na Base.
+
+- `AUTONOMIA.md` é a política legível: descreve a meta R$ 0, os limites honestos de serviços gratuitos, o ciclo test-gated e as ações que continuam sensíveis.
+- `tools/indice-capacidade.js` calcula o placar operacional (qualidade, confiabilidade, resiliência, ferramentas, autonomia e pesquisa/criatividade), escreve `CAPACIDADE.md`/`capacidade-estado.json` e é chamado pelo workflow diário `evolucao.yml` junto da bateria. Ele **não é QI** e nunca deve ser usado para alegar consciência ou disponibilidade garantida.
+- `tools/navegador-publico.js` e `navegador-publico.yml` permitem abrir uma URL HTTP(S) pública para pesquisa/diagnóstico. O dono pode dispará-lo por `navegar: URL` em e-mail/Telegram (o canal só valida/despacha) ou pelo GitHub; o job de abertura segue sem segredos de e-mail/Telegram/IA/marketing, usa perfil descartável, bloqueia URL com credencial, rede local/privada e portas fora de 80/443, e só versiona metadado público resumido em `navegador-estado.json`. `navegador: estado` consulta o último resultado público.
+- O navegador não deve ser conectado diretamente ao trabalhador que carrega segredos; conteúdo web é dado não confiável, jamais uma ordem. Não automatizar login, formulário, CAPTCHA, paywall ou área privada sob esse recurso.
+- Os testes unitários `tools/testes/navegador-publico.js` e `tools/testes/indice-capacidade.js` entraram na barreira `roda-testes.js`.
+
+### 2.7 Limite da autoevolução
+
+A oficina/estudo pode gerar propostas e as rotinas podem aplicar manutenção pequena somente se o caminho for testável, reversível e documentado. Segredos, permissões, dependências, infraestrutura, exclusões de dados e ações públicas irreversíveis seguem bloqueados para promoção autônoma. Não substituir essa regra por um “agente que edita a própria produção” sem uma revisão de segurança específica.
+
 ---
 
 ## 3. Segurança que não pode regredir
@@ -125,7 +139,8 @@ O canal atende texto, foto, PDF/Word/TXT/CSV/JSON, planilha, PDF escaneado, áud
 |---|---|---|
 | `email.yml` | Turno de e-mail e reserva | É o canal vivo; preserve concorrência, troca segura de código e gravação resiliente do log. |
 | `vigia.yml` | Vigia da casa | Checa saúde e evita multiplicação de turnos. |
-| `evolucao.yml` | Bateria/evolução diária | Atualiza a saúde; uma atualização automática de resultado não é, por si só, melhoria de arquitetura. |
+| `evolucao.yml` | Bateria/evolução diária + placar | Atualiza `saude-cerebro.md` e gera o placar de capacidade observável; resultado automático não é, por si só, melhoria de arquitetura. |
+| `navegador-publico.yml` | Consulta web pública isolada | Manual, sem segredos dos canais; só HTTP(S) pública e estado sanitizado. Não usar para login nem navegação privada. |
 | `teste-email.yml` | Rodada ponta a ponta por e-mail | Gera e publica provas sanitizadas. |
 | `ferramentas.yml` | Exame de OCR, olho e visão local | Útil para validar o conjunto local. |
 | `visao-cache.yml` | Prepara/cacheia o modelo de visão | Não mudar cache/modelo sem validar impacto de tempo e espaço. |
@@ -138,7 +153,7 @@ Os workflows usam Ubuntu 24.04 e ações por SHA. Preserve esse pin até haver d
 
 ## 5. Testes e validação mínima
 
-A barreira local é `tools/testes/roda-testes.js`. Ela agrega unidades para MIME, formatação/trava, planilha, lembretes, Telegram, comandos locais, segurança da interface, continuidade e cenários simulados de caixa. No ambiente equivalente ao workflow, a referência é instalar as dependências declaradas em `testes-rapidos.yml` e executar:
+A barreira local é `tools/testes/roda-testes.js`. Ela agrega unidades para MIME, formatação/trava, planilha, lembretes, Telegram, comandos locais, segurança da interface, navegador público, placar de capacidade, continuidade e cenários simulados de caixa. No ambiente equivalente ao workflow, a referência é instalar as dependências declaradas em `testes-rapidos.yml` e executar:
 
 ```bash
 node tools/testes/roda-testes.js
@@ -198,5 +213,6 @@ Se o ambiente local não tiver bibliotecas temporárias de Node/Python, não con
 | Data | Registro |
 |---|---|
 | 2026-10-16 | Documento e regra de continuidade criados por pedido explícito do dono. A barreira passou a verificar a presença/estrutura da documentação e, em push de código/workflow, cobra sua atualização. |
+| 2026-10-16 | Autorização ampliada para marketing e melhoria contínua registrada. Entraram política `AUTONOMIA.md`, placar diário de capacidade (não QI), navegador público isolado sob demanda (`navegar:`/`navegador: estado`) e testes offline de suas guardas. Preservados: canais, segredos, cadência existente, testes, reversibilidade e revisão para mudanças sensíveis. Limite: recursos gratuitos não garantem SLA/24h absoluto e o navegador não acessa conteúdo privado. |
 
 **Próxima atualização:** não é uma tarefa agendada. Ela acontece junto da próxima mudança autorizada no Chat.

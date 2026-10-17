@@ -1,0 +1,69 @@
+name: Navegador público isolado
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "URL pública http(s), sem login (ex.: https://example.com)"
+        required: true
+        type: string
+permissions:
+  contents: write
+concurrency:
+  group: navegador-publico
+  cancel-in-progress: false
+jobs:
+  navegar:
+    # Não recebe segredos de e-mail, Telegram, IA ou marketing. O Chrome roda antes da etapa de push.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+      - name: Abre somente conteúdo público, sem perfil e sem segredos
+        env:
+          URL_PUBLICA: ${{ inputs.url }}
+        run: |
+          set -euo pipefail
+          node tools/navegador-publico.js --url "$URL_PUBLICA" > /tmp/navegador-resultado.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const r = JSON.parse(fs.readFileSync('/tmp/navegador-resultado.json', 'utf8'));
+          // Registra só metadados públicos resumidos; nunca HTML integral, cookies ou credenciais.
+          const estado = { consultado_em: r.consultadoEm, url: r.url, via: r.via, titulo: r.titulo, trecho_publico: r.texto.slice(0, 500), aviso: r.aviso || '' };
+          fs.writeFileSync('navegador-estado.json', JSON.stringify(estado, null, 2) + '\n');
+          console.log('Página pública consultada:', estado.titulo);
+          NODE
+      - name: Salva a trilha pública depois da navegação
+        # O token só existe nesta etapa posterior ao Chrome e via cabeçalho HTTP, nunca em URL/config/log.
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPOSITORIO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const fs = require('fs');
+          const token = process.env.GITHUB_TOKEN;
+          const repo = process.env.REPOSITORIO;
+          const nome = 'navegador-estado.json';
+          const conteudo = Buffer.from(fs.readFileSync(nome)).toString('base64');
+          const cabecalhos = { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+          async function salva() {
+            for (let tentativa = 1; tentativa <= 3; tentativa++) {
+              const atual = await fetch(`https://api.github.com/repos/${repo}/contents/${nome}?ref=main`, { headers: cabecalhos });
+              const anterior = atual.ok ? (await atual.json()).sha : undefined;
+              if (!atual.ok && atual.status !== 404) throw new Error(`leitura do estado HTTP ${atual.status}`);
+              const r = await fetch(`https://api.github.com/repos/${repo}/contents/${nome}`, {
+                method: 'PUT', headers: Object.assign({ 'Content-Type': 'application/json' }, cabecalhos),
+                body: JSON.stringify({ message: `navegador: consulta publica ${new Date().toISOString().slice(0, 16)}`, content: conteudo, branch: 'main', sha: anterior })
+              });
+              if (r.ok) return;
+              if (r.status === 409 && tentativa < 3) continue;
+              throw new Error(`gravação do estado HTTP ${r.status}`);
+            }
+          }
+          salva().then(() => console.log('trilha pública salva')).catch(e => { console.error(e.message); process.exit(1); });
+          NODE

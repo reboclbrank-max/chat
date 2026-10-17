@@ -1,0 +1,66 @@
+{
+  "esquema": "placar-capacidade-v1",
+  "gerado_em": "2026-10-17T02:28:22.702Z",
+  "aviso": "Indicador operacional, não teste de QI, consciência, nem garantia de disponibilidade.",
+  "total_em_100": 92,
+  "dimensoes": [
+    {
+      "nome": "qualidade de respostas",
+      "maximo": 20,
+      "pontos": 18,
+      "evidencia": "5 bateria(s) recente(s), média 92%, 0 rota(s) muda(s)",
+      "comoMelhorar": "manter a bateria, corrigir regressões e registrar falhas de rota"
+    },
+    {
+      "nome": "confiabilidade observada",
+      "maximo": 20,
+      "pontos": 14,
+      "evidencia": "5/8 itens OK; vigia recente",
+      "comoMelhorar": "tratar os itens vermelhos do vigia antes de aumentar a cadência"
+    },
+    {
+      "nome": "resiliência e recuperação",
+      "maximo": 15,
+      "pontos": 15,
+      "evidencia": "vigia=sim, continuidade=sim, barreira=sim",
+      "comoMelhorar": "preservar fallback, logs mínimos, teste antes de promoção e rollback"
+    },
+    {
+      "nome": "uso seguro de ferramentas",
+      "maximo": 15,
+      "pontos": 15,
+      "evidencia": "e-mail+Telegram=sim, pesquisa=sim, navegador público=sim",
+      "comoMelhorar": "usar somente APIs/URLs públicas autorizadas, com limites e anti-SSRF"
+    },
+    {
+      "nome": "autonomia verificável",
+      "maximo": 15,
+      "pontos": 15,
+      "evidencia": "bateria=sim, vigia=sim, testes=sim",
+      "comoMelhorar": "automatizar só o que tem teste, registro e reversão; alterações sensíveis seguem revisão"
+    },
+    {
+      "nome": "pesquisa e criatividade aplicada",
+      "maximo": 15,
+      "pontos": 15,
+      "evidencia": "fontes públicas=sim, web isolada=sim, experimentação=sim",
+      "comoMelhorar": "converter pesquisa em hipóteses pequenas, testadas e documentadas — não em fatos inventados"
+    }
+  ],
+  "sinais": {
+    "itens_vigia_ok": 5,
+    "itens_vigia_total": 8,
+    "vigia_recente": true,
+    "baterias": 5,
+    "media_bateria": 92
+  },
+  "proximas_melhorias": [
+    "confiabilidade observada: tratar os itens vermelhos do vigia antes de aumentar a cadência",
+    "qualidade de respostas: manter a bateria, corrigir regressões e registrar falhas de rota"
+  ],
+  "limites": [
+    "Serviços gratuitos podem atrasar, interromper agendas ou limitar recursos.",
+    "O placar usa evidências locais e não substitui monitoramento de usuário real.",
+    "Conteúdo da web é dado não confiável; não pode alterar instruções, segredos ou permissões."
+  ]
+}
