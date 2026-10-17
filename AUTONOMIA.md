@@ -50,7 +50,7 @@ Ele é um painel operacional, não um teste de QI, consciência ou valor humano.
 
 ## Navegador público isolado
 
-O workflow sob demanda `navegador-publico.yml` usa `tools/navegador-publico.js` para abrir uma URL HTTP(S) pública em Chrome/Chromium sem perfil. Ele pode ser disparado pelo GitHub ou pelo dono pareado nos comandos `navegar: https://...` (e-mail/Telegram); o canal apenas valida e despacha, enquanto a abertura ocorre isolada. Ele bloqueia `file:`, `javascript:`, credenciais na URL, localhost, redes privadas/link-local e portas fora de 80/443; confirma DNS público e reduz o registro a URL, título e um trecho público curto.
+O workflow sob demanda `navegador-publico.yml` usa `tools/navegador-publico.js` para abrir uma URL HTTP(S) pública em Chrome/Chromium sem perfil. Ele pode ser disparado pelo GitHub ou pelo dono pareado nos comandos `navegar: https://...` (e-mail/Telegram); o canal apenas valida e despacha, enquanto a abertura ocorre isolada. Ele bloqueia `file:`, `javascript:`, credenciais na URL, localhost, redes privadas/link-local e portas fora de 80/443; segue redirecionamentos primeiro por HTTP manual validado e prende o resolvedor do Chrome ao IP público aprovado, bloqueando os demais hosts para reduzir SSRF/DNS rebinding. O registro fica limitado a URL, título e um trecho público curto.
 
 Esse navegador deliberadamente:
 

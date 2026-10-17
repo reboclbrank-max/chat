@@ -95,13 +95,23 @@ function chromeDisponivel() {
   return '';
 }
 
-function abreComChrome(url) {
+function regraResolverChrome(url, ips) {
+  const u = url instanceof URL ? url : urlPublica(url);
+  // O host aprovado fica preso a um IPv4 público; qualquer outro host (inclusive
+  // redirecionamento, subrecurso ou DNS rebinding) recebe 0.0.0.0 no Chrome.
+  const ip = (ips || []).find(x => /^\d+\.\d+\.\d+\.\d+$/.test(x) && !ipPrivado(x));
+  if (!ip) throw new Error('Chrome requer IPv4 público; uso leitura HTTP segura como fallback');
+  return 'MAP ' + u.hostname + ' ' + ip + ', MAP * 0.0.0.0';
+}
+
+function abreComChrome(url, ips) {
   const bin = chromeDisponivel();
   if (!bin) throw new Error('Chrome/Chromium indisponível neste runner');
+  const regras = regraResolverChrome(url, ips);
   const r = spawnSync(bin, [
     '--headless=new', '--incognito', '--disable-gpu', '--disable-dev-shm-usage',
     '--disable-extensions', '--disable-background-networking', '--no-first-run',
-    '--virtual-time-budget=4000', '--dump-dom', url
+    '--host-resolver-rules=' + regras, '--virtual-time-budget=4000', '--dump-dom', url
   ], { encoding: 'utf8', timeout: 25000, maxBuffer: MAX_HTML + 100000, env: { PATH: process.env.PATH, HOME: process.env.RUNNER_TEMP || '/tmp' } });
   if (r.error || r.status !== 0 || !String(r.stdout || '').trim()) throw new Error('Chrome não conseguiu abrir a página');
   const html = String(r.stdout).slice(0, MAX_HTML);
@@ -127,17 +137,21 @@ async function abreComFetch(url) {
   throw new Error('muitos redirecionamentos');
 }
 
-async function abrirPagina(entrada, opcoes = {}) {
-  const u = urlPublica(entrada);
-  await confirmaHostPublico(u);
+async function abrirPagina(entrada) {
+  const inicial = urlPublica(entrada);
+  // Primeiro segue redirecionamentos por HTTP manual, validando cada destino antes
+  // de pedir ao navegador. Assim uma página não consegue redirecionar Chrome para rede interna.
+  const pre = await abreComFetch(inicial.toString());
+  const final = urlPublica(pre.urlFinal || inicial.toString());
+  const ips = await confirmaHostPublico(final);
   let resultado;
-  try { resultado = abreComChrome(u.toString()); }
+  try { resultado = abreComChrome(final.toString(), ips); }
   catch (erroChrome) {
-    resultado = await abreComFetch(u.toString());
-    resultado.aviso = 'Chrome indisponível/falhou; usei leitura HTTP pública.';
+    resultado = pre;
+    resultado.aviso = 'Chrome indisponível/falhou ou não recebeu IPv4 público; usei leitura HTTP pública isolada.';
   }
   return {
-    url: u.toString(),
+    url: final.toString(),
     via: resultado.via,
     titulo: resultado.titulo || '(sem título)',
     texto: resultado.texto || '(a página não trouxe texto legível)',
@@ -164,4 +178,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { ipPrivado, urlPublica, confirmaHostPublico, tiraHtml, tituloHtml, chromeDisponivel, abreComFetch, abrirPagina };
+module.exports = { ipPrivado, urlPublica, confirmaHostPublico, tiraHtml, tituloHtml, corpoLimitado, chromeDisponivel, regraResolverChrome, abreComFetch, abrirPagina };

@@ -25,4 +25,9 @@ ok('detecta faixa privada sem depender da rede', () => {
   assert.equal(nav.ipPrivado('8.8.8.8'), false); assert.equal(nav.ipPrivado('::1'), true); assert.equal(nav.ipPrivado('fc00::1'), true);
   assert.equal(nav.ipPrivado('100.64.0.1'), true); assert.equal(nav.ipPrivado('::ffff:192.168.1.1'), true);
 });
-console.log(`${n}/8 testes do navegador público passaram`);
+ok('Chrome fica preso ao IP público aprovado e bloqueia outros hosts', () => {
+  const regra = nav.regraResolverChrome('https://example.com/', ['93.184.216.34']);
+  assert.match(regra, /^MAP example\.com 93\.184\.216\.34, MAP \* 0\.0\.0\.0$/);
+  assert.throws(() => nav.regraResolverChrome('https://example.com/', ['2001:db8::1']));
+});
+console.log(`${n}/9 testes do navegador público passaram`);
