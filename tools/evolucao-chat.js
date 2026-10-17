@@ -2,6 +2,7 @@
 // A régua mede o sistema de rotas, não "QI". Cada resposta só vale contra o gabarito público da própria questão; tenta 3 rodadas × 4 rotas de texto.
 'use strict';
 const fs = require('fs');
+const geografiaBrasil = require('./geografia-brasil');
 
 const ARQUIVO_SAUDE = 'saude-cerebro.md';
 const ARQUIVO_HISTORICO = 'qualidade-historico.json';
@@ -175,7 +176,10 @@ async function executar() {
   const rotas = {};
 
   for (const item of sorteadas) {
-    const r = await pergunta('Responda APENAS o que foi pedido, curtíssimo: ' + item.q);
+    // A bateria mede a casa completa: quando uma pergunta é coberta por ferramenta local, usa a
+    // mesma resposta determinística que e-mail/Telegram entregam antes de chamar modelos externos.
+    const local = geografiaBrasil.responde(item.q);
+    const r = local ? { texto: local, via: 'geografia local' } : await pergunta('Responda APENAS o que foi pedido, curtíssimo: ' + item.q);
     const resposta = r ? r.texto : '';
     if (!r) mudos++;
     const passou = respostaAceita(resposta, item.g);
