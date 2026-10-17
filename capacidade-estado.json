@@ -1,8 +1,8 @@
 {
   "esquema": "placar-capacidade-v1",
-  "gerado_em": "2026-10-17T02:28:22.702Z",
+  "gerado_em": "2026-10-17T02:58:46.393Z",
   "aviso": "Indicador operacional, não teste de QI, consciência, nem garantia de disponibilidade.",
-  "total_em_100": 92,
+  "total_em_100": 98,
   "dimensoes": [
     {
       "nome": "qualidade de respostas",
@@ -14,8 +14,8 @@
     {
       "nome": "confiabilidade observada",
       "maximo": 20,
-      "pontos": 14,
-      "evidencia": "5/8 itens OK; vigia recente",
+      "pontos": 20,
+      "evidencia": "8/8 itens OK; vigia recente",
       "comoMelhorar": "tratar os itens vermelhos do vigia antes de aumentar a cadência"
     },
     {
@@ -48,14 +48,13 @@
     }
   ],
   "sinais": {
-    "itens_vigia_ok": 5,
+    "itens_vigia_ok": 8,
     "itens_vigia_total": 8,
     "vigia_recente": true,
     "baterias": 5,
     "media_bateria": 92
   },
   "proximas_melhorias": [
-    "confiabilidade observada: tratar os itens vermelhos do vigia antes de aumentar a cadência",
     "qualidade de respostas: manter a bateria, corrigir regressões e registrar falhas de rota"
   ],
   "limites": [
