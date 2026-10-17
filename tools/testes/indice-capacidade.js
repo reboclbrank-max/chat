@@ -1,7 +1,7 @@
 // Teste determinístico do placar: evita chamar qualidade operacional de "QI" e evita inflar a nota por repetição.
 'use strict';
 const assert = require('assert');
-const { bateria, qualidadeRastreavel, avaliar, markdown } = require('../indice-capacidade');
+const { bateria, qualidadeRastreavel, resultadoCanalReal, estadoCanalReal, avaliar, markdown } = require('../indice-capacidade');
 let n = 0;
 let falhas = 0;
 function ok(nome, fn) { try { fn(); n++; console.log('✔ ' + nome); } catch (e) { falhas++; console.error('✘ ' + nome + ' — ' + e.message); } }
@@ -18,7 +18,7 @@ ok('extrai média das baterias recentes', () => {
 });
 ok('placar completo soma 100 sem chamar de QI', () => {
   const p = avaliar({ agora, arquivos: completos, saude: '- agora — 10/10 (mudos: 0)', vigia: estadoVigia });
-  assert.equal(p.total_em_100, 100); assert.match(p.aviso, /não teste de QI/i); assert.equal(p.dimensoes.length, 6);
+  assert.equal(p.total_em_100, 100); assert.match(p.aviso, /não (é )?teste de QI/i); assert.equal(p.dimensoes.length, 6);
 });
 ok('falhas do vigia reduzem o placar de confiabilidade', () => {
   const p = avaliar({ agora, arquivos: completos, saude: '- agora — 10/10 (mudos: 0)', vigia: { verificado_em: agora, itens: { A: { ok: true }, B: { ok: false } } } });
@@ -31,7 +31,7 @@ ok('estado ausente continua explícito e finito', () => {
 });
 ok('painel registra limitações honestas', () => {
   const p = avaliar({ agora, arquivos: completos, saude: '- agora — 10/10 (mudos: 0)', vigia: estadoVigia });
-  assert.match(markdown(p), /Limites honestos/); assert.match(markdown(p), /não teste de QI/i);
+  assert.match(markdown(p), /Limites honestos/); assert.match(markdown(p), /não (é )?teste de QI/i);
 });
 ok('amostras repetidas não certificam qualidade rastreável', () => {
   const h = { baterias: [
@@ -62,6 +62,23 @@ ok('erro recente rastreável reduz a nota em vez de esconder a regressão', () =
   const p = avaliar({ agora, arquivos: completos, saude: '- agora — 10/10 (mudos: 0)', vigia: estadoVigia, qualidade: h });
   const d = p.dimensoes.find(x => x.nome === 'qualidade de respostas');
   assert(d.pontos < 20); assert.equal(p.total_em_100, 99);
+});
+ok('resultado de canal real é separado do indicador interno', () => {
+  const dir = require('fs').mkdtempSync(require('path').join(require('os').tmpdir(), 'capacidade-canal-'));
+  try {
+    require('fs').writeFileSync(require('path').join(dir, 'teste-email-r3-2026-10-17-1510.md'), '# prova\n- enviados: 38 · respondidos: 37 · checagens PASS: 37/38 · falhas: 1\n');
+    const r = resultadoCanalReal(dir);
+    assert.deepEqual(r, { arquivo: 'provas/teste-email-r3-2026-10-17-1510.md', enviados: 38, respondidos: 37, passou: 37, total: 38, falhas: 1 });
+    assert.equal(estadoCanalReal(r).nivel, 'falha');
+  } finally { require('fs').rmSync(dir, { recursive: true, force: true }); }
+});
+ok('falha do canal aparece antes do placar e não é mascarada pelo 100 interno', () => {
+  const canal = { arquivo: 'provas/exemplo.md', enviados: 2, respondidos: 1, passou: 1, total: 2, falhas: 1 };
+  const p = avaliar({ agora, arquivos: completos, saude: '- agora — 10/10 (mudos: 0)', vigia: estadoVigia, canalReal: canal });
+  assert.equal(p.total_em_100, 100);
+  assert.equal(p.canal_real.nivel, 'falha');
+  assert.match(markdown(p), /Estado do canal real/);
+  assert.match(markdown(p), /produto não aprovado integralmente/);
 });
 
 console.log(`${n}/${n + falhas} testes do placar passaram`);

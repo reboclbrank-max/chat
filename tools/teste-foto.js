@@ -28,15 +28,24 @@ function monta(assunto, corpo, imgB64) {
 
 (async () => {
   const imgB64 = fs.existsSync(path.join(__dirname, IMAGEM)) ? fs.readFileSync(path.join(__dirname, IMAGEM)).toString('base64') : null;
-  if (!imgB64) { console.error('imagem ' + IMAGEM + ' não encontrada ao lado do script'); process.exit(0); }
-  const client = new ImapFlow({ host: 'imap.gmail.com', port: 993, secure: true, auth: { user: USER, pass: PASS }, logger: false });
-  await client.connect();
+  if (!imgB64) { console.error('imagem ' + IMAGEM + ' não encontrada ao lado do script'); process.exit(1); }
+  let client = new ImapFlow({ host: 'imap.gmail.com', port: 993, secure: true, auth: { user: USER, pass: PASS }, logger: false });
+  // Uma conexão IMAP caída não pode consumir todo o timeout do workflow nem transformar falta de prova em verde.
+  const comTeto = (p, ms, rotulo) => { Promise.resolve(p).catch(() => {}); return Promise.race([p, new Promise((_, rejeita) => setTimeout(() => rejeita(new Error('teto ' + Math.round(ms / 1000) + 's: ' + rotulo)), ms))]); };
+  async function reconecta(motivo) {
+    try { client.close(); } catch (e) {}
+    client = new ImapFlow({ host: 'imap.gmail.com', port: 993, secure: true, auth: { user: USER, pass: PASS }, logger: false });
+    await comTeto(client.connect(), 45000, 'reconexão');
+    console.log('🔌 reconectado (' + motivo + ')');
+  }
+  await comTeto(client.connect(), 45000, 'conexão inicial');
   const t0 = Date.now();
   const vistas = new Map();
   const caixas = ['INBOX'];
-  try { for (const m of await client.list()) if (/enviad|sent|todos|all mail|spam/i.test(m.path)) caixas.push(m.path); } catch (e) {}
+  try { for (const m of await comTeto(client.list(), 20000, 'lista de caixas')) if (/enviad|sent|todos|all mail|spam/i.test(m.path)) caixas.push(m.path); } catch (e) {}
 
   async function varre() {
+    let caixasOk = 0;
     for (const caixa of caixas) {
       let lock;
       try {
@@ -54,18 +63,36 @@ function monta(assunto, corpo, imgB64) {
           const antigo = vistas.get(id);
           if (!antigo || texto.length > antigo.texto.length) vistas.set(id, { texto, caixa, inReplyTo: m.envelope.inReplyTo || '' });
         }
+        caixasOk++;
       } catch (e) {} finally { if (lock) lock.release(); }
     }
+    if (!caixasOk) throw new Error('nenhuma caixa respondeu');
+  }
+  async function varreSegura() {
+    for (let tentativa = 1; tentativa <= 2; tentativa++) {
+      try {
+        await comTeto(client.status('INBOX', { uidNext: true }), 15000, 'sonda');
+        await comTeto(varre(), 60000, 'varredura');
+        return true;
+      } catch (e) {
+        console.log('⚠️ varredura falhou (' + String(e.message || e).slice(0, 70) + ')');
+        try { await reconecta('varredura'); } catch (e2) {}
+      }
+    }
+    return false;
   }
   console.log('== teste da foto ==');
   const { bruto, id } = monta(MARCA + ' F1 — foto v3', 'Anexei a foto do laboratório. Leia TODO o texto exatamente como aparece e liste as formas e cores.', imgB64);
   let lock;
-  try { lock = await client.getMailboxLock('INBOX'); await client.append('INBOX', Buffer.from(bruto)); } finally { if (lock) lock.release(); }
+  try {
+    lock = await comTeto(client.getMailboxLock('INBOX'), 30000, 'envio');
+    await comTeto(client.append('INBOX', Buffer.from(bruto)), 60000, 'append');
+  } finally { if (lock) lock.release(); }
   console.log('📤 enviado com', IMAGEM);
   let r = null;
   const limite = Date.now() + ESPERA_MIN * 60 * 1000;
   while (Date.now() < limite) {
-    await sleep(20000); await varre();
+    await sleep(20000); await varreSegura();
     for (const v of vistas.values()) if (v.inReplyTo === id) r = v;
     console.log('… respondeu?', r ? '✔ (' + r.caixa + ')' : '—', '· min restantes:', Math.max(0, Math.round((limite - Date.now()) / 60000)));
     if (r) break;
@@ -91,6 +118,6 @@ function monta(assunto, corpo, imgB64) {
   fs.writeFileSync(destino, L.join(NL));
   console.log(NL + L.join(NL));
   console.log('💾 salvo em', destino);
-  try { await client.logout(); } catch (e) {}
-  process.exit(0);
-})().catch(e => { console.error('ERRO:', e.message); process.exit(0); });
+  try { await comTeto(client.logout(), 15000, 'logout'); } catch (e) {}
+  process.exit(veredito.indexOf('PASS') === 0 ? 0 : 1);
+})().catch(e => { console.error('ERRO:', e.message); process.exit(1); });

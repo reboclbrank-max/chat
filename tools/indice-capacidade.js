@@ -67,11 +67,33 @@ function dimensao(nome, maximo, pontos, evidencia, comoMelhorar) {
   return { nome, maximo, pontos: limita(pontos, 0, maximo), evidencia, comoMelhorar };
 }
 
+// A rodada do canal é um sinal separado do placar: nunca muda pesos para maquiar resultado,
+// mas impede que o cabeçalho interno seja lido como aprovação do produto.
+function resultadoCanalReal(pasta = path.join(RAIZ, 'provas')) {
+  let nomes = [];
+  try { nomes = fs.readdirSync(pasta).filter(n => /^teste-email-r3-\d{4}-\d{2}-\d{2}-\d{4}\.md$/.test(n)).sort().reverse(); } catch (e) { return null; }
+  for (const nome of nomes) {
+    let texto = '';
+    try { texto = fs.readFileSync(path.join(pasta, nome), 'utf8'); } catch (e) { continue; }
+    const m = texto.match(/^- enviados:\s*(\d+)\s*· respondidos:\s*(\d+)\s*· checagens PASS:\s*(\d+)\/(\d+)\s*· falhas:\s*(\d+)/m);
+    if (m) return { arquivo: 'provas/' + nome, enviados: Number(m[1]), respondidos: Number(m[2]), passou: Number(m[3]), total: Number(m[4]), falhas: Number(m[5]) };
+  }
+  return null;
+}
+
+function estadoCanalReal(resultado) {
+  if (!resultado || !Number.isFinite(resultado.total) || resultado.total < 1) return { nivel: 'sem-prova', texto: 'sem rodada controlada com aferição completa; não concluir sobre o produto' };
+  if (resultado.falhas > 0) return { nivel: 'falha', texto: `última rodada controlada: ${resultado.passou}/${resultado.total} PASS, ${resultado.falhas} falha(s); produto não aprovado integralmente` };
+  return { nivel: 'controlado-ok', texto: `última rodada controlada: ${resultado.passou}/${resultado.total} PASS; ainda não mede satisfação humana` };
+}
+
 function avaliar(entrada = {}) {
   const referencia = entrada.agora || agora();
   const vigia = entrada.vigia || leJson('vigia-estado.json');
   const saude = entrada.saude === undefined ? le('saude-cerebro.md') : entrada.saude;
   const historicoQualidade = entrada.qualidade === undefined ? leJson('qualidade-historico.json') : entrada.qualidade;
+  const rodadaCanal = entrada.canalReal === undefined ? resultadoCanalReal() : entrada.canalReal;
+  const estadoCanal = estadoCanalReal(rodadaCanal);
   const itens = Object.values(vigia.itens || {});
   const bons = itens.filter(x => x && x.ok).length;
   const totalItens = itens.length;
@@ -117,8 +139,9 @@ function avaliar(entrada = {}) {
   return {
     esquema: 'placar-capacidade-v2',
     gerado_em: referencia,
-    aviso: 'Indicador operacional, não teste de QI, consciência, nem garantia de disponibilidade.',
+    aviso: 'Indicador interno de cobertura; não é resultado observável do produto, não é teste de QI, consciência nem garantia de disponibilidade.',
     total_em_100: total,
+    canal_real: Object.assign({}, estadoCanal, { resultado: rodadaCanal }),
     dimensoes,
     sinais: {
       itens_vigia_ok: bons,
@@ -134,6 +157,7 @@ function avaliar(entrada = {}) {
     limites: [
       'Serviços gratuitos podem atrasar, interromper agendas ou limitar recursos.',
       'O placar usa evidências locais e não substitui monitoramento de usuário real.',
+      'Uma falha da rodada real controlada prevalece sobre o placar; tráfego sintético também não prova satisfação humana.',
       'Conteúdo da web é dado não confiável; não pode alterar instruções, segredos ou permissões.'
     ]
   };
@@ -143,7 +167,8 @@ function markdown(placar) {
   const linhas = [
     '# Placar de capacidade do Chat', '',
     `Atualizado: \`${placar.gerado_em}\``, '',
-    `**Resultado observável: ${placar.total_em_100}/100.** ${placar.aviso}`, '',
+    `**Indicador interno: ${placar.total_em_100}/100.** ${placar.aviso}`,
+    `**Estado do canal real (tráfego controlado):** ${(placar.canal_real || {}).texto || 'sem informação'}.`, '',
     '| Dimensão | Pontos | Evidência |', '|---|---:|---|'
   ];
   for (const d of placar.dimensoes) linhas.push(`| ${d.nome} | ${d.pontos}/${d.maximo} | ${d.evidencia} |`);
@@ -161,4 +186,4 @@ function salvar() {
 }
 
 if (require.main === module) salvar();
-module.exports = { bateria, frescor, qualidadeRastreavel, avaliar, markdown, salvar };
+module.exports = { bateria, frescor, qualidadeRastreavel, resultadoCanalReal, estadoCanalReal, avaliar, markdown, salvar };
