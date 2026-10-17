@@ -21,6 +21,10 @@ on:
       - 'sw.js'
       - 'dna.json'
       - 'tools/testes/**'
+      # Toda ferramenta executável também pode mudar o comportamento do Chat;
+      # assim a porta de continuidade roda para qualquer JS/Python em tools/.
+      - 'tools/**/*.js'
+      - 'tools/**/*.py'
       - 'CONTINUIDADE.md'
       - 'AGENTS.md'
       - 'README.md'

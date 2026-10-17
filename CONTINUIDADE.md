@@ -14,7 +14,7 @@ Toda alteração que mudar comportamento, segurança, privacidade, fluxo operaci
 4. quais testes foram executados e o resultado;
 5. a pendência ou limitação que restar, se houver.
 
-O teste `tools/testes/continuidade.js` mantém esta regra visível e, em um push que altera código ou workflow, exige que `CONTINUIDADE.md` também esteja entre os arquivos alterados. Não use esse mecanismo para iniciar trabalho por conta própria: ele serve para registrar mudanças **já autorizadas**.
+O teste `tools/testes/continuidade.js` mantém esta regra visível e, em um push que altera código ou workflow, exige que `CONTINUIDADE.md` também esteja entre os arquivos alterados. `testes-rapidos.yml` observa as páginas, workflows e todo JavaScript/Python em `tools/`, para que uma ferramenta operacional não escape dessa porta. Não use esse mecanismo para iniciar trabalho por conta própria: ele serve para registrar mudanças **já autorizadas**.
 
 Além deste arquivo público, registre a decisão relevante na memória privada `reboclbrank-max/base`, em `ia-propria/ESTADO-DO-CHAT.md` e `empresa/registro-de-decisoes.md`. Não copie valores de credenciais para nenhum dos dois repositórios.
 
