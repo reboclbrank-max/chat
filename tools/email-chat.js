@@ -535,10 +535,14 @@ function assuntoPublico(a) {
 const SO_TEXTO = /gpt-oss|nemotron-3-(ultra|super)|deepseek/i;
 // 🙈 v12.2: resposta de FOTO que não viu a imagem — diz que não enxerga, ou só repete as medidas do olho local.
 function pareceCego(t) {
+  // Modelos variam entre "visualizar a foto" e "visualizá-la"; normalizar evita aceitar a
+  // segunda forma como se fosse visão. Esta guarda só é usada quando uma imagem foi enviada.
   const s = String(t || '');
-  const naoVe = /n[ãa]o (consigo|posso|[ée] poss[íi]vel) (ver|visualizar|abrir|enxergar|analisar) (a |esta |essa |sua )?(imagem|foto)|n[ãa]o recebi (a |nenhuma )?(imagem|foto)|sem acesso [àa] (imagem|foto)|can(no|')t see|unable to (see|view)/i;
+  const simples = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[‐‑‒–—]/g, '-');
+  const naoVe = /nao (consigo|posso|e possivel) (ver|visualizar|visualiza-?l[ao]|abrir|enxergar|analisar)( (a|esta|essa|sua) )?(imagem|foto)?|nao recebi (a |nenhuma )?(imagem|foto)|sem acesso (a |a )?(imagem|foto)|can(no|')t see|unable to (see|view)/i;
+  const pedeReenvio = /(envie|mande|reenvie).{0,45}(foto|imagem).{0,35}(novamente|de novo)/i;
   const eco = /bloco retangular|blocos de cor|cara de (c[ée]u|parede|[áa]gua|areia|terra)|parede ou fundo/i;
-  return naoVe.test(s) || eco.test(s);
+  return naoVe.test(simples) || (pedeReenvio.test(simples) && /nao consigo|nao posso|sem acesso/i.test(simples)) || eco.test(s);
 }
 async function corre(dupla, pergunta, imagem, valida) {
   return new Promise(function (resolve) {
