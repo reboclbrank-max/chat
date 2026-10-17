@@ -37,6 +37,10 @@ A segunda amostra encontrou outro falso negativo de formato: “R$ 1.300” para
 
 Para tratar a falha factual real de divisas — sem convertê-la artificialmente em acerto de modelo — foi criada a ferramenta local `geografia-brasil.js`. Ela contém o mapa completo de divisas terrestres entre unidades federativas, valida a simetria do mapa em teste e atende e-mail/Telegram antes de qualquer motor quando o pedido é inequivocamente geográfico. Assim, `divisas: Bahia` e a pergunta sobre o maior número de divisas retornam Bahia e seus oito vizinhos sem rede, modelo, dado privado ou custo. A bateria passa a exercitar essa mesma capacidade local; respostas fora desse domínio continuam sendo medidas pelos motores. As próximas amostras usam conjuntos distintos previamente identificados para medir a qualidade agregada, não para apagar falhas reais.
 
+## Achado de observabilidade do vigia
+
+O vigia continuava executando saudável, mas seu arquivo público só era gravado quando algum item mudava. Depois de mais de 90 minutos sem mudança, o placar podia marcar a confiabilidade como desatualizada apesar de haver vigias vivos. `vigia-estado.js` corrige isso: mudança é gravada imediatamente e uma checagem verde igual gera somente um pulso por hora. Há teste para mudança, silêncio curto, pulso de uma hora, estado ausente e relógio futuro.
+
 ## Limites preservados
 
 - O placar continua sendo indicador operacional, não QI, consciência, SLA ou promessa de disponibilidade.

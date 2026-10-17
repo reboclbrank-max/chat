@@ -3,6 +3,7 @@
 // Olha o sistema inteiro DE FORA, cura o que dá (re-dispara turno/exame) e avisa o dono
 // por e-mail SÓ quando o estado muda. Anti-alarme-falso: uma falha só vale após 2 rodadas seguidas.
 const fs = require('fs');
+const { deveSalvarEstado } = require('./vigia-estado');
 let nodemailer = null;
 try { nodemailer = require('nodemailer'); } catch (e) {}
 
@@ -173,9 +174,9 @@ async function acao(rotulo, arquivo) {
   const cb = itens.find(i => i.nome === 'Caixa de e-mail');
   if (cb && !cb.ok) cura.push(await acao('Caixa (turno)', 'email.yml'));
 
-  // grava o estado SÓ quando algo muda (com a corrente de 20 min seria 1 commit por rodada — ruído à toa)
-  const textoAntigo = JSON.stringify((antigo && antigo.itens) || {});
-  if (textoAntigo !== JSON.stringify(novos)) {
+  // Persistência econômica: mudança entra na hora; casa estável deixa um pulso por hora, para que
+  // capacidade/continuidade não confundam estado verde silencioso com vigia parado.
+  if (deveSalvarEstado(antigo, novos, Date.parse(agora))) {
     fs.writeFileSync(ESTADO, JSON.stringify({ verificado_em: agora, itens: novos }, null, 1));
   }
   console.log(linhas.join('\n'));
