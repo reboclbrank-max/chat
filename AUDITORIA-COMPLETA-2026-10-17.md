@@ -39,6 +39,8 @@ A confirmação controlada posterior ainda falhou: a resposta chegou, mas uma ro
 
 Depois da barreira verde, o reteste controlado `39062788679` respondeu e passou texto, data, formas e cores da foto sintética (`provas/teste-foto-2026-10-17-1932.md`). Isso é confirmação observável de **uma amostra controlada** depois da correção. Não reverte nem dilui a rodada ampla de 37/38, não mede satisfação humana e não demonstra disponibilidade contínua; a falha R3-6 permanece no histórico como falha real.
 
+O vigia manual seguro `39063568127` (`teste=nao`, `cadeia=nao`) também concluiu com sucesso e publicou 8/8 itens técnicos verdes às 19:41:56Z. É uma fotografia de saúde técnica, não prova de fila vazia, entrega humana, satisfação ou operação contínua.
+
 O painel `CAPACIDADE.md` também deixa de chamar seu número interno de “resultado observável”: passa a expor separadamente a última rodada real sanitizada e dá precedência textual à falha do canal. Isso não muda pesos para fabricar nota; impede que o `100/100` interno esconda uma falha real.
 
 A investigação encontrou ainda o vigia preso em sua própria checagem IMAP de caixa; a execução foi cancelada, pois uma sonda de saúde não pode ficar pendurada indefinidamente. A correção aplica teto a conexão, trava, busca, leitura e logout IMAP e limita o job do vigia a 15 minutos. Isso preserva a detecção de caixa pendente, sem deixar o monitor inteiro travado. A execução real posterior `39046039694` terminou com sucesso e publicou 8/8 itens técnicos verdes em `2026-10-17T15:40:03.261Z`; é recuperação observada do monitor, não prova de satisfação humana nem de disponibilidade contínua.
