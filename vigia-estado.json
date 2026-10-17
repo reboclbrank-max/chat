@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-10-17T06:34:44.442Z",
+ "verificado_em": "2026-10-17T06:58:40.446Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -10,16 +10,16 @@
    "falhas": 0
   },
   "Casa postando (site)": {
-   "ok": false,
-   "falhas": 1
+   "ok": true,
+   "falhas": 0
   },
   "Chat por e-mail (24h)": {
-   "ok": false,
-   "falhas": 1
+   "ok": true,
+   "falhas": 0
   },
   "Bateria do cérebro": {
-   "ok": false,
-   "falhas": 1
+   "ok": true,
+   "falhas": 0
   },
   "itch Ceifalume": {
    "ok": true,
