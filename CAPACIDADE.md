@@ -1,13 +1,13 @@
 # Placar de capacidade do Chat
 
-Atualizado: `2026-10-17T05:32:30.076Z`
+Atualizado: `2026-10-17T05:47:12.626Z`
 
-**Resultado observável: 96/100.** Indicador operacional, não teste de QI, consciência, nem garantia de disponibilidade.
+**Resultado observável: 100/100.** Indicador operacional, não teste de QI, consciência, nem garantia de disponibilidade.
 
 | Dimensão | Pontos | Evidência |
 |---|---:|---|
 | qualidade de respostas | 20/20 | 4 amostras rastreáveis, 20 questões distintas, média 98%, 0 rota(s) muda(s) |
-| confiabilidade observada | 16/20 | 8/8 itens OK; vigia desatualizado |
+| confiabilidade observada | 20/20 | 8/8 itens OK; vigia recente |
 | resiliência e recuperação | 15/15 | vigia=sim, continuidade=sim, barreira=sim |
 | uso seguro de ferramentas | 15/15 | e-mail+Telegram=sim, pesquisa=sim, navegador público=sim |
 | autonomia verificável | 15/15 | bateria=sim, vigia=sim, testes=sim |
@@ -16,7 +16,6 @@ Atualizado: `2026-10-17T05:32:30.076Z`
 Medição de qualidade: 40 respostas auditadas em 20 questões distintas.
 
 ## Próximas melhorias guiadas por sinal
-- confiabilidade observada: tratar os itens vermelhos do vigia antes de aumentar a cadência
 
 ## Limites honestos
 - Serviços gratuitos podem atrasar, interromper agendas ou limitar recursos.

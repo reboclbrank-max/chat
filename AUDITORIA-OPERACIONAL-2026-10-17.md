@@ -41,6 +41,12 @@ Para tratar a falha factual real de divisas — sem convertê-la artificialmente
 
 O vigia continuava executando saudável, mas seu arquivo público só era gravado quando algum item mudava. Depois de mais de 90 minutos sem mudança, o placar podia marcar a confiabilidade como desatualizada apesar de haver vigias vivos. `vigia-estado.js` corrige isso: mudança é gravada imediatamente e uma checagem verde igual gera somente um pulso por hora. Há teste para mudança, silêncio curto, pulso de uma hora, estado ausente e relógio futuro.
 
+## Evidência consolidada e resultado
+
+A repetição substitutiva da amostra 8 (`39006497660`) concluiu com 10/10 e nenhuma rota muda. A amostra distinta 9 (`39006581289`) também concluiu com 10/10 e incluiu a questão pública 119, completando 20 questões distintas. Com a amostra 1 preservada em 9/10, há quatro amostras rastreáveis, 40 respostas auditadas, média de 97,5% e nenhuma resposta muda.
+
+A barreira oficial do pulso do vigia (`39006900382`) passou. A checagem operacional sem envio de teste e sem encadear outra rodada (`39007488850`) passou e publicou o estado verde de 8/8 itens em `2026-10-17T05:46:37.227Z`. O cálculo reproduzível posterior sobre esse estado produziu **100/100**: qualidade 20/20, confiabilidade 20/20, resiliência 15/15, ferramentas 15/15, autonomia 15/15 e pesquisa/criatividade 15/15. O resultado decorre de comportamento e execuções observados, não de mudança de pesos, relaxamento de gabarito ou duplicação de evidência.
+
 ## Limites preservados
 
 - O placar continua sendo indicador operacional, não QI, consciência, SLA ou promessa de disponibilidade.
