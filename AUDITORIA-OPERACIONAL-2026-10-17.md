@@ -47,6 +47,12 @@ A repetição substitutiva da amostra 8 (`39006497660`) concluiu com 10/10 e nen
 
 A barreira oficial do pulso do vigia (`39006900382`) passou. A checagem operacional sem envio de teste e sem encadear outra rodada (`39007488850`) passou e publicou o estado verde de 8/8 itens em `2026-10-17T05:46:37.227Z`. O cálculo reproduzível posterior sobre esse estado produziu **100/100**: qualidade 20/20, confiabilidade 20/20, resiliência 15/15, ferramentas 15/15, autonomia 15/15 e pesquisa/criatividade 15/15. O resultado decorre de comportamento e execuções observados, não de mudança de pesos, relaxamento de gabarito ou duplicação de evidência.
 
+## Expansão mensurável iniciada após a auditoria
+
+A geografia local foi ampliada de divisas para o conjunto completo das 27 UFs: capital, Grande Região, sigla e divisas. Os dados de capitais/regiões foram conferidos na página de divisão territorial do IBGE Educa e a validação estrutural cobre 27/27 UFs, contagem regional, capitais únicas e simetria das fronteiras. E-mail e Telegram agora respondem localmente `capital: Bahia`, perguntas naturais como “Qual a capital de Sergipe?”, `região: Nordeste` e `uf: BA`, sem rede ou motor; a integração foi testada com `fetch` deliberadamente indisponível.
+
+A auditoria também virou guarda contínua: `tools/testes/auditoria-workflows.js` exige actions fixadas por SHA, permissões explícitas, Ubuntu 24.04, ausência de `pull_request_target`, orçamento conhecido de escrita e isolamento do navegador público antes de qualquer token. O relatório por área, evidências, gargalos e limites está em `AUDITORIA-COMPLETA-2026-10-17.md`.
+
 ## Limites preservados
 
 - O placar continua sendo indicador operacional, não QI, consciência, SLA ou promessa de disponibilidade.

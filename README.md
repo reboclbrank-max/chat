@@ -25,6 +25,8 @@ Toda atualização autorizada que mude comportamento, segurança, workflow, test
 
 Para mudar o visual ou o texto, confira também as variantes `direto.html`, `ligar.html` e `limpar.html` quando a mudança afetar a interface. O GitHub Pages publica sozinho em ~1 minuto.
 
+A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](AUDITORIA-COMPLETA-2026-10-17.md): ela documenta evidências, rotas, workflows, segurança, gargalos e limites. O placar em [`CAPACIDADE.md`](CAPACIDADE.md) é operacional, não QI ou SLA.
+
 ## Segurança e privacidade
 
 - **Token:** informe-o apenas em **⚙️ Configurar acesso**. Por escolha explícita do dono, ele permanece salvo neste navegador para manter as ações autorizadas automáticas após reiniciar; links com `?t=` e comandos `!token` não ativam nem enviam credenciais.
