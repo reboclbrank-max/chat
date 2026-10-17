@@ -70,10 +70,21 @@ function escolheBanco() {
 }
 
 const nm = s => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+function normalizaGabarito(valor) {
+  // Depois de remover pontuação, milhar brasileiro "1.300" vira "1 300". Junta somente
+  // grupos de três dígitos, sem confundir decimais como "1,7" com 17.
+  let texto = nm(valor);
+  let anterior = '';
+  while (texto !== anterior) {
+    anterior = texto;
+    texto = texto.replace(/\b(\d{1,3}) (\d{3})(?!\d)\b/g, '$1$2');
+  }
+  return texto;
+}
 function respostaAceita(resposta, gabarito) {
-  const normalizada = nm(resposta);
+  const normalizada = normalizaGabarito(resposta);
   return (Array.isArray(gabarito) ? gabarito : []).some(g => {
-    const esperado = nm(g);
+    const esperado = normalizaGabarito(g);
     if (!esperado) return false;
     if (esperado.length <= 2) return new RegExp('(^| )' + esperado + '( |$)').test(normalizada);
     return normalizada.indexOf(esperado) >= 0;

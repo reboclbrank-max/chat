@@ -31,7 +31,9 @@ A primeira amostra rastreável respondeu corretamente 9 de 10 perguntas segundo 
 
 Na repetição controlada, houve uma resposta muda para uma pergunta pública simples após as três rotas que a bateria conhecia. A auditoria confirmou que o canal real também dispõe da rota `llm7`, mas ela estava ausente da bateria. A bateria passou a tentar as quatro rotas reais (`frota`, `reserva`, `llm7`, `omni`) antes de classificar indisponibilidade. Isso torna a medição representativa do sistema que atende o dono, sem incluir segredo, rota privada ou nova dependência.
 
-A mesma pergunta geográfica também revelou um erro no próprio gabarito: Bahia é o estado com oito divisas; Minas Gerais tem sete e não pode ser aceito como alternativa correta. O gabarito foi corrigido e ganhou regressão explícita. A resposta “Tocantins” da rota rápida permaneceu contabilizada como erro real — não foi escondida, removida nem convertida em acerto. As próximas amostras usam conjuntos distintos previamente identificados para medir a qualidade agregada, não para apagar essa falha.
+A mesma pergunta geográfica também revelou um erro no próprio gabarito: Bahia é o estado com oito divisas; Minas Gerais tem sete e não pode ser aceito como alternativa correta. O gabarito foi corrigido e ganhou regressão explícita. A resposta “Tocantins” da rota rápida permaneceu contabilizada como erro real — não foi escondida, removida nem convertida em acerto.
+
+A segunda amostra encontrou outro falso negativo de formato: “R$ 1.300” para 1300 era correto, mas o comparador removia o ponto e deixava um espaço entre grupos de milhar. A normalização agora junta somente grupos de três dígitos, sem transformar decimais como 1,7 em 17; testes cobrem ambos os casos. A amostra permanece registrada até ser repetida com o comparador corrigido, substituindo em vez de somar sua evidência. As próximas amostras usam conjuntos distintos previamente identificados para medir a qualidade agregada, não para apagar falhas reais.
 
 ## Limites preservados
 

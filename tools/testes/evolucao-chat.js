@@ -45,6 +45,11 @@ ok('fato geográfico auditado não aceita estado incorreto no gabarito', () => {
   const q = bancoV2.find(x => x.id === 118);
   assert(q); assert.equal(respostaAceita('Bahia', q.g), true); assert.equal(respostaAceita('Minas Gerais', q.g), false);
 });
+ok('número com separador de milhar é comparado ao valor esperado', () => {
+  assert.equal(respostaAceita('R$ 1.300', ['1300']), true);
+  assert.equal(respostaAceita('R$ 1.200', ['1300']), false);
+  assert.equal(respostaAceita('1,7 km', ['1.7']), true);
+});
 
 console.log(`${n}/${n + falhas} testes da evolução passaram`);
 process.exitCode = falhas ? 1 : 0;
