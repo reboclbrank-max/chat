@@ -49,6 +49,8 @@ Correções publicadas nesta série: toda entrada enviada agora entra no denomin
 
 A auditoria de liveness encontrou mais uma margem concreta: o OCR local podia somar várias chamadas de Tesseract sem orçamento comum e o trabalhador aguardava até 200 s. O caminho agora tem orçamento total local de 55 s (limitado a 5–90 s), teto por tentativa e trava externa proporcional; se comparar JPEG higienizado e original local, ambos compartilham 70 s. Se a leitura direta for incerta, tenta variantes locais dentro desse mesmo teto. Uma regressão simula motor preso e confirma retorno de falha antes de travar a fila. Isso reduz o pior caso de anexo problemático sem enviar a imagem à rede, mas não promete leitura universal nem altera a falha histórica da rodada ampla.
 
+A observação dos workflows revelou ainda disparos quase simultâneos do vigia. Como duas sondas IMAP concorrentes podem disputar caixa, estado e push, `vigia.yml` agora usa uma chave de concorrência única, sem cancelar uma sonda já em execução. A mudança preserva o teto global e os tetos por operação; elimina sobreposição futura, mas não é evidência de disponibilidade contínua.
+
 ## Código e rotas
 
 ### Canal de e-mail e Telegram

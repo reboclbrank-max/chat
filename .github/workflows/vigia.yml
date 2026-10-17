@@ -19,6 +19,10 @@ on:
 permissions:
   contents: write
   actions: write
+# Evita duas sondas concorrentes disputando IMAP, estado e push quando o turno pede vigia perto do cron.
+concurrency:
+  group: vigia-casa
+  cancel-in-progress: false
 jobs:
   vigia:
     runs-on: ubuntu-24.04

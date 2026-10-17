@@ -102,6 +102,8 @@ A rodada seguinte, já com aferição corrigida, terminou **37/38 PASS**, latên
 
 Em 2026-10-17 à noite, o OCR foi endurecido também contra lentidão: há orçamento global local de 55 s (configurável apenas pelo ambiente do turno, limitado a 5–90 s), teto por tentativa e trava externa proporcional; a comparação JPEG higienizado/original local compartilha teto de 70 s. Variantes de contraste agora entram quando a leitura direta é incerta, não só vazia. Uma regressão usa um motor propositalmente preso e comprova que a resposta de falha retorna antes de congelar a fila. Isto melhora recuperação/liveness de anexos; não é uma garantia de leitura para qualquer foto nem altera a falha histórica 37/38.
 
+Também foi observado que dois `workflow_dispatch` do vigia podiam iniciar quase juntos e disputar IMAP, o arquivo de estado e o push. `vigia.yml` agora serializa a família `vigia-casa` sem cancelar a sonda em curso; o teto de 15 min e os tetos IMAP continuam. A mudança evita sobreposição futura, não transforma o vigia em prova de disponibilidade humana.
+
 ### 2.4 Telegram
 
 `tools/telegram-chat.js` usa o mesmo núcleo do e-mail para conversa privada, foto, documento, áudio, vídeo, lembretes e pesquisa. O pareamento e os tokens ficam em segredos; mensagens de pessoas não autorizadas recebem somente a resposta pública curta. Não registrar código de pareamento, identificadores privados ou token do bot em arquivos/versionamento.

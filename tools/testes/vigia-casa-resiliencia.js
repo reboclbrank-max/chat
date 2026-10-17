@@ -19,6 +19,9 @@ ok('sonda IMAP do vigia tem tetos para conexão, trava, busca, leitura e logout'
 ok('workflow do vigia tem teto global de execução', () => {
   assert.match(workflow, /vigia:\n\s+runs-on: ubuntu-24\.04\n\s+timeout-minutes: 15\n/);
 });
+ok('workflow serializa vigias para não disputar IMAP e estado', () => {
+  assert.match(workflow, /concurrency:\n\s+group: vigia-casa\n\s+cancel-in-progress: false/);
+});
 
 console.log(`${certos}/${certos + falhas} testes de resiliência do vigia passaram`);
 process.exitCode = falhas ? 1 : 0;
