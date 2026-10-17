@@ -21,6 +21,9 @@ on:
       - 'sw.js'
       - 'dna.json'
       - 'tools/testes/**'
+      - 'CONTINUIDADE.md'
+      - 'AGENTS.md'
+      - 'README.md'
       - '.github/workflows/**'
   workflow_dispatch:
 permissions:

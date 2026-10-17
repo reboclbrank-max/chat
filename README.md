@@ -17,9 +17,13 @@ Página de conversa com a **IA gratuita da Rebocl Brank**.
 - Por conversa: **renomear**, **fechar**, **reenviar** a última mensagem e **copiar** qualquer mensagem.
 - Dica: escreva `anotar: <texto>` para guardar algo na memória permanente.
 
-## Manutenção
+## Manutenção e continuidade
 
-Para mudar o visual ou o texto, edite `index.html` e faça commit. O GitHub Pages publica sozinho em ~1 minuto.
+Antes de qualquer alteração, leia [`CONTINUIDADE.md`](CONTINUIDADE.md) e [`AGENTS.md`](AGENTS.md). Eles registram o mapa técnico, as proteções, a validação e o procedimento obrigatório para quem assumir o trabalho.
+
+Toda atualização autorizada que mude comportamento, segurança, workflow, teste ou capacidade do Chat deve atualizar também `CONTINUIDADE.md` no mesmo conjunto de commits; a barreira rápida verifica essa regra em pushes de código. Depois, registre a decisão/estado pertinente na memória privada `base`, faça commit, push e confirme os hashes remotos.
+
+Para mudar o visual ou o texto, confira também as variantes `direto.html`, `ligar.html` e `limpar.html` quando a mudança afetar a interface. O GitHub Pages publica sozinho em ~1 minuto.
 
 ## Segurança e privacidade
 
