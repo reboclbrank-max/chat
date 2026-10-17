@@ -1,6 +1,6 @@
 {
-  "esquema": "placar-capacidade-v1",
-  "gerado_em": "2026-10-17T02:58:46.393Z",
+  "esquema": "placar-capacidade-v2",
+  "gerado_em": "2026-10-17T04:31:44.637Z",
   "aviso": "Indicador operacional, não teste de QI, consciência, nem garantia de disponibilidade.",
   "total_em_100": 98,
   "dimensoes": [
@@ -9,7 +9,7 @@
       "maximo": 20,
       "pontos": 18,
       "evidencia": "5 bateria(s) recente(s), média 92%, 0 rota(s) muda(s)",
-      "comoMelhorar": "manter a bateria, corrigir regressões e registrar falhas de rota"
+      "comoMelhorar": "manter amostras distintas, corrigir regressões e registrar falhas de rota"
     },
     {
       "nome": "confiabilidade observada",
@@ -52,10 +52,13 @@
     "itens_vigia_total": 8,
     "vigia_recente": true,
     "baterias": 5,
-    "media_bateria": 92
+    "media_bateria": 92,
+    "qualidade_rastreavel": false,
+    "cobertura_questoes": 0,
+    "respostas_auditadas": 0
   },
   "proximas_melhorias": [
-    "qualidade de respostas: manter a bateria, corrigir regressões e registrar falhas de rota"
+    "qualidade de respostas: manter amostras distintas, corrigir regressões e registrar falhas de rota"
   ],
   "limites": [
     "Serviços gratuitos podem atrasar, interromper agendas ou limitar recursos.",

@@ -1,6 +1,6 @@
 # Placar de capacidade do Chat
 
-Atualizado: `2026-10-17T02:58:46.393Z`
+Atualizado: `2026-10-17T04:31:44.637Z`
 
 **Resultado observável: 98/100.** Indicador operacional, não teste de QI, consciência, nem garantia de disponibilidade.
 
@@ -14,7 +14,7 @@ Atualizado: `2026-10-17T02:58:46.393Z`
 | pesquisa e criatividade aplicada | 15/15 | fontes públicas=sim, web isolada=sim, experimentação=sim |
 
 ## Próximas melhorias guiadas por sinal
-- qualidade de respostas: manter a bateria, corrigir regressões e registrar falhas de rota
+- qualidade de respostas: manter amostras distintas, corrigir regressões e registrar falhas de rota
 
 ## Limites honestos
 - Serviços gratuitos podem atrasar, interromper agendas ou limitar recursos.
