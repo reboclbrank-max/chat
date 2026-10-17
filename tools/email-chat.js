@@ -637,6 +637,26 @@ async function leTextoLocalInfo(imagem) {
   finally { limpaTemp(dir); }
 }
 async function leTextoLocal(imagem) { const j = await leTextoLocalInfo(imagem); return j ? j.texto : ''; }
+// O JPEG higienizado protege qualquer rota externa, mas sua recompressão pode reduzir OCR de letras pequenas.
+// Esta reserva lê o original somente no processo local e temporário; nunca o envia à rede.
+function qualidadeOcr(info) {
+  if (!info || !String(info.texto || '').trim()) return -1;
+  const confianca = Number.isFinite(Number(info.confianca)) ? Number(info.confianca) : 0;
+  return confianca * 10000 + Math.min(String(info.texto).length, 500);
+}
+async function leTextoLocalComReserva(imagemPreparada, imagemOriginal) {
+  let melhor = await leTextoLocalInfo(imagemPreparada);
+  const conf = melhor && Number.isFinite(Number(melhor.confianca)) ? Number(melhor.confianca) : 0;
+  const podeComparar = imagemOriginal && imagemOriginal.b64 && imagemPreparada && imagemOriginal.b64 !== imagemPreparada.b64;
+  if (podeComparar && (!melhor || conf < 55)) {
+    const bruto = await leTextoLocalInfo(imagemOriginal);
+    if (qualidadeOcr(bruto) > qualidadeOcr(melhor)) {
+      melhor = bruto;
+      console.log('🔤 OCR local: preservei a leitura melhor do original apenas no processo local');
+    }
+  }
+  return melhor;
+}
 // 👁️‍🗨️ v12.6: VISÃO LOCAL — modelo de visão rodando na CPU do runner (llama.cpp), sem serviço de terceiros.
 // Se o preparo em 2º plano ainda estiver baixando o modelo, o script espera a trava e usa quando ficar pronto.
 // ⚡ v12.7: começa a visão local SEM bloquear — devolve { promessa, para }. "para" encerra o grupo de processos
@@ -1573,7 +1593,7 @@ async function processOnce() {
         // de texto (olho mediu texto, o dono pediu leitura, ou confiança alta) — rabisco de paisagem não entra.
         let ocrFoto = '', ocrAceito = '', ocrIncerto = '', lupaFoto = null;   // v12.8: lupaFoto guarda a leitura da lupa (não chamar duas vezes)
         if (imagemVisao) {
-          const info = await leTextoLocalInfo(imagemVisao);
+          const info = await leTextoLocalComReserva(imagemVisao, imagem || imagemDoPdf);
           if (info && info.texto) {
             const palavras = (info.texto.match(/[A-Za-zÀ-ÿ]{3,}/g) || []).length;
             const conf = (info.confianca == null ? 0 : info.confianca);
@@ -1722,6 +1742,7 @@ async function processOnce() {
 module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar, extraiAnexoTexto, docTexto, olhoDaFoto, olhoPistas, leTextoLocal, leTextoLocalInfo, pareceCego, SO_TEXTO, mascaraEndereco, assuntoPublico, falhasPorUid, visaoLocal, iniciaVisaoLocal, esperaFerramentas, renderPdf, buscaRota, corre,
   // 📲 v12.17: reaproveitados pelo chat no Telegram (tools/telegram-chat.js)
   comCaixaSeparada, comandosDaCasa, preparaFoto, montaFotos, cerebroLocal, semMarcacao, limpaVazamento, CAPS, processaVideo,
+  leTextoLocalComReserva,
   csvParaXlsx, textoParaPdf, pedidoDeArquivo, renderPdfPaginas, entendeQuando, quandoBR, enviaTelegram, entregaLembretes, entregaNavegacoes,
   novaReferenciaNavegacao, serializaPendenciaNavegacao, lePendenciaNavegacao, retornoNavegacaoPendente, resultadoDaReferencia, textoDoResultadoNavegacao, contextoRetornoNavegacao };
 if (require.main === module) { processOnce().then(n => console.log('ciclo único:', n, 'respondidos')).catch(e => { console.error('ERRO:', e.message); process.exit(0); }); }
