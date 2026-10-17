@@ -15,6 +15,13 @@ ok('a coleta IMAP de foto tem teto, sonda e reconexão', () => {
   assert.match(fonte, /client\.status\('INBOX'/);
   assert.match(fonte, /await varreSegura\(\)/);
 });
+ok('varredura prioriza a rodada atual e não a caixa histórica', () => {
+  assert.match(fonte, /since: new Date\(t0 - 3600000\)/);
+  assert.match(fonte, /\(uids \|\| \[\]\)\.slice\(\)\.reverse\(\)/);
+  assert.match(fonte, /const vistos = new Set\(\)/);
+  assert.match(fonte, /enviad\|sent\|spam/);
+  assert.doesNotMatch(fonte, /todos\|all mail\|spam/);
+});
 ok('resultado parcial, ausência e erro encerram o workflow como falha', () => {
   assert.match(fonte, /process\.exit\(veredito\.indexOf\('PASS'\) === 0 \? 0 : 1\)/);
   assert.match(fonte, /catch\(e => \{ console\.error\('ERRO:', e\.message\); process\.exit\(1\); \}\)/);

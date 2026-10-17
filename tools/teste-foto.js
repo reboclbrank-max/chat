@@ -41,8 +41,10 @@ function monta(assunto, corpo, imgB64) {
   await comTeto(client.connect(), 45000, 'conexão inicial');
   const t0 = Date.now();
   const vistas = new Map();
+  const vistos = new Set();
   const caixas = ['INBOX'];
-  try { for (const m of await comTeto(client.list(), 20000, 'lista de caixas')) if (/enviad|sent|todos|all mail|spam/i.test(m.path)) caixas.push(m.path); } catch (e) {}
+  // "Todos" duplica INBOX/Enviados e faz o diagnóstico reler anexos antigos antes da resposta atual.
+  try { for (const m of await comTeto(client.list(), 20000, 'lista de caixas')) if (/enviad|sent|spam/i.test(m.path)) caixas.push(m.path); } catch (e) {}
 
   async function varre() {
     let caixasOk = 0;
@@ -50,10 +52,19 @@ function monta(assunto, corpo, imgB64) {
       let lock;
       try {
         lock = await client.getMailboxLock(caixa);
-        const uids = await client.search({ subject: 'TESTE-REBOCL' });
-        for (const uid of (uids || [])) {
-          const m = await client.fetchOne(uid, { source: true, envelope: true });
+        // Só a rodada atual, mais nova primeiro: o diagnóstico não pode baixar centenas de anexos históricos.
+        const uids = await client.search({ subject: 'TESTE-REBOCL', since: new Date(t0 - 3600000) }, { uid: true });
+        for (const uid of (uids || []).slice().reverse()) {
+          const chave = caixa + '|' + uid;
+          if (vistos.has(chave)) continue;
+          const cab = await client.fetchOne(uid, { envelope: true }, { uid: true });
+          if (!cab || !cab.envelope) { vistos.add(chave); continue; }
+          const deCab = ((cab.envelope.from || [{}])[0].address || '').toLowerCase();
+          const quandoCab = cab.envelope.date ? new Date(cab.envelope.date).getTime() : 0;
+          if (deCab.indexOf(ALIAS.toLowerCase()) >= 0 || quandoCab < t0 - 180000) { vistos.add(chave); continue; }
+          const m = await client.fetchOne(uid, { source: true, envelope: true }, { uid: true });
           if (!m || !m.envelope) continue;
+          vistos.add(chave);
           const de = (m.envelope.from || [{}])[0].address || '';
           if (de.toLowerCase().indexOf(ALIAS.toLowerCase()) >= 0) continue;
           const id = m.envelope.messageId || (caixa + '|' + uid);
@@ -61,10 +72,10 @@ function monta(assunto, corpo, imgB64) {
           if (quando < t0 - 180000) continue;
           const texto = pegaTexto((m.source || '').toString(), String(m.envelope.subject || ''));
           const antigo = vistas.get(id);
-          if (!antigo || texto.length > antigo.texto.length) vistas.set(id, { texto, caixa, inReplyTo: m.envelope.inReplyTo || '' });
+          if (!antigo || texto.length > antigo.texto.length || (caixa === 'INBOX' && antigo.caixa !== 'INBOX')) vistas.set(id, { texto, caixa, inReplyTo: m.envelope.inReplyTo || '' });
         }
         caixasOk++;
-      } catch (e) {} finally { if (lock) lock.release(); }
+      } catch (e) { console.log('caixa ' + caixa + ' falhou: ' + String(e.message || e).slice(0, 70)); } finally { if (lock) lock.release(); }
     }
     if (!caixasOk) throw new Error('nenhuma caixa respondeu');
   }
