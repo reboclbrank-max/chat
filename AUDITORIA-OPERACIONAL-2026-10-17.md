@@ -25,6 +25,10 @@ A correção implementada nesta série:
 5. só deixa a qualidade rastreável substituir a curva legada quando houver ao menos três amostras recentes distintas, trinta respostas e vinte questões diferentes;
 6. reduz a nota imediatamente se uma amostra recente rastreável piorar.
 
+## Achado da primeira amostra real
+
+A primeira amostra rastreável respondeu corretamente 9 de 10 perguntas segundo o avaliador original. A resposta restante foi “página não encontrada” para HTTP 404: correta, mas rejeitada porque o gabarito aceitava apenas “não encontrado”. O gabarito foi ampliado com formulações equivalentes públicas e recebeu teste unitário; não houve alteração de rota, modelo, canal ou resposta do Chat. A mesma amostra será repetida somente para corrigir essa medição e substituirá, em vez de somar, o registro anterior.
+
 ## Limites preservados
 
 - O placar continua sendo indicador operacional, não QI, consciência, SLA ou promessa de disponibilidade.

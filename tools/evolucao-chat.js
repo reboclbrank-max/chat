@@ -70,6 +70,15 @@ function escolheBanco() {
 }
 
 const nm = s => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+function respostaAceita(resposta, gabarito) {
+  const normalizada = nm(resposta);
+  return (Array.isArray(gabarito) ? gabarito : []).some(g => {
+    const esperado = nm(g);
+    if (!esperado) return false;
+    if (esperado.length <= 2) return new RegExp('(^| )' + esperado + '( |$)').test(normalizada);
+    return normalizada.indexOf(esperado) >= 0;
+  });
+}
 
 // Guarda anti-cota: uma mensagem de infraestrutura com HTTP 200 não conta como resposta.
 const COTA_RE = /api key used for this request|(?:has|have) reached (?:its|your|the) (?:limit|quota)|too many requests|rate limit exceeded/i;
@@ -152,13 +161,7 @@ async function executar() {
     const r = await pergunta('Responda APENAS o que foi pedido, curtíssimo: ' + item.q);
     const resposta = r ? r.texto : '';
     if (!r) mudos++;
-    const normalizada = nm(resposta);
-    const passou = item.g.some(g => {
-      const esperado = nm(g);
-      if (!esperado) return false;
-      if (esperado.length <= 2) return new RegExp('(^| )' + esperado + '( |$)').test(normalizada);
-      return normalizada.indexOf(esperado) >= 0;
-    });
+    const passou = respostaAceita(resposta, item.g);
     if (passou) certos++;
     if (r) rotas[r.via] = (rotas[r.via] || 0) + 1;
     detalhes.push((passou ? '✅' : (r ? '❌' : '🔇')) + (r ? ' [' + r.via + '] ' : ' ') + item.q.slice(0, 55) + ' → ' + (resposta || 'mudo').slice(0, 38).replace(/\n/g, ' '));
@@ -188,4 +191,4 @@ if (require.main === module) {
   executar().catch(erro => { console.error('EXAME FALHOU:', String(erro && erro.message || erro)); process.exitCode = 1; });
 }
 
-module.exports = { normalizaAmostra, selecionaQuestoes, bateriaAnterior, escolheBanco, atualizaHistorico, textoUtil, executar };
+module.exports = { normalizaAmostra, selecionaQuestoes, bateriaAnterior, escolheBanco, atualizaHistorico, respostaAceita, textoUtil, executar };

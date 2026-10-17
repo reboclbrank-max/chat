@@ -1,7 +1,7 @@
 // Testes offline da bateria rastreável: seleção, sanitização e deduplicação de evidência.
 'use strict';
 const assert = require('assert');
-const { normalizaAmostra, selecionaQuestoes, atualizaHistorico, textoUtil } = require('../evolucao-chat');
+const { normalizaAmostra, selecionaQuestoes, atualizaHistorico, respostaAceita, textoUtil } = require('../evolucao-chat');
 let n = 0;
 let falhas = 0;
 function ok(nome, fn) { try { fn(); n++; console.log('✔ ' + nome); } catch (e) { falhas++; console.error('✘ ' + nome + ' — ' + e.message); } }
@@ -30,6 +30,10 @@ ok('histórico substitui a mesma amostra e limita retenção', () => {
 ok('texto de cota HTTP 200 não conta como resposta útil', () => {
   assert.equal(textoUtil('The API key used for this request has reached its quota'), false);
   assert.equal(textoUtil('42'), true);
+});
+ok('gabarito reconhece formulação semântica prevista', () => {
+  assert.equal(respostaAceita('Erro que indica página não encontrada.', ['não encontrado', 'página não encontrada']), true);
+  assert.equal(respostaAceita('página encontrada', ['não encontrado', 'página não encontrada']), false);
 });
 
 console.log(`${n}/${n + falhas} testes da evolução passaram`);
