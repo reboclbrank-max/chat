@@ -1,7 +1,7 @@
 // Teste determinístico do placar: evita chamar qualidade operacional de "QI" e evita inflar a nota por repetição.
 'use strict';
 const assert = require('assert');
-const { bateria, qualidadeRastreavel, resultadoCanalReal, estadoCanalReal, avaliar, markdown } = require('../indice-capacidade');
+const { bateria, qualidadeRastreavel, resultadoCanalReal, resultadoFotoControlado, estadoCanalReal, avaliar, markdown } = require('../indice-capacidade');
 let n = 0;
 let falhas = 0;
 function ok(nome, fn) { try { fn(); n++; console.log('✔ ' + nome); } catch (e) { falhas++; console.error('✘ ' + nome + ' — ' + e.message); } }
@@ -70,6 +70,19 @@ ok('resultado de canal real é separado do indicador interno', () => {
     const r = resultadoCanalReal(dir);
     assert.deepEqual(r, { arquivo: 'provas/teste-email-r3-2026-10-17-1510.md', enviados: 38, respondidos: 37, passou: 37, total: 38, falhas: 1 });
     assert.equal(estadoCanalReal(r).nivel, 'falha');
+  } finally { require('fs').rmSync(dir, { recursive: true, force: true }); }
+});
+ok('reteste focado de foto é registrado sem apagar falha da rodada completa', () => {
+  const dir = require('fs').mkdtempSync(require('path').join(require('os').tmpdir(), 'capacidade-foto-'));
+  try {
+    require('fs').writeFileSync(require('path').join(dir, 'teste-foto-2026-10-17-1932.md'), '# prova\n- veredito: PASS (texto + formas + cores)\n');
+    const foto = resultadoFotoControlado(dir);
+    assert.deepEqual(foto, { arquivo: 'provas/teste-foto-2026-10-17-1932.md', passou: true, falhou: false });
+    const canal = { arquivo: 'provas/rodada.md', enviados: 38, respondidos: 37, passou: 37, total: 38, falhas: 1 };
+    const estado = estadoCanalReal(canal, foto);
+    assert.equal(estado.nivel, 'falha');
+    assert.match(estado.texto, /reteste focado de foto mais recente: PASS/);
+    assert.match(estado.texto, /não substitui a rodada completa/);
   } finally { require('fs').rmSync(dir, { recursive: true, force: true }); }
 });
 ok('falha do canal aparece antes do placar e não é mascarada pelo 100 interno', () => {

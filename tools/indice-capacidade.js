@@ -81,10 +81,24 @@ function resultadoCanalReal(pasta = path.join(RAIZ, 'provas')) {
   return null;
 }
 
-function estadoCanalReal(resultado) {
-  if (!resultado || !Number.isFinite(resultado.total) || resultado.total < 1) return { nivel: 'sem-prova', texto: 'sem rodada controlada com aferição completa; não concluir sobre o produto' };
-  if (resultado.falhas > 0) return { nivel: 'falha', texto: `última rodada controlada: ${resultado.passou}/${resultado.total} PASS, ${resultado.falhas} falha(s); produto não aprovado integralmente` };
-  return { nivel: 'controlado-ok', texto: `última rodada controlada: ${resultado.passou}/${resultado.total} PASS; ainda não mede satisfação humana` };
+function resultadoFotoControlado(pasta = path.join(RAIZ, 'provas')) {
+  let nomes = [];
+  try { nomes = fs.readdirSync(pasta).filter(n => /^teste-foto-\d{4}-\d{2}-\d{2}-\d{4}\.md$/.test(n)).sort().reverse(); } catch (e) { return null; }
+  for (const nome of nomes) {
+    let texto = '';
+    try { texto = fs.readFileSync(path.join(pasta, nome), 'utf8'); } catch (e) { continue; }
+    const passou = /^- veredito:\s*PASS \(texto \+ formas \+ cores\)/m.test(texto);
+    const falhou = /^- veredito:\s*FALHOU/m.test(texto);
+    if (passou || falhou) return { arquivo: 'provas/' + nome, passou, falhou };
+  }
+  return null;
+}
+
+function estadoCanalReal(resultado, foto) {
+  const fotoTexto = foto ? `; reteste focado de foto mais recente: ${foto.passou ? 'PASS' : 'FALHOU'} (amostra única, não substitui a rodada completa)` : '';
+  if (!resultado || !Number.isFinite(resultado.total) || resultado.total < 1) return { nivel: 'sem-prova', texto: 'sem rodada controlada com aferição completa; não concluir sobre o produto' + fotoTexto };
+  if (resultado.falhas > 0) return { nivel: 'falha', texto: `última rodada controlada: ${resultado.passou}/${resultado.total} PASS, ${resultado.falhas} falha(s); produto não aprovado integralmente${fotoTexto}` };
+  return { nivel: 'controlado-ok', texto: `última rodada controlada: ${resultado.passou}/${resultado.total} PASS; ainda não mede satisfação humana${fotoTexto}` };
 }
 
 function avaliar(entrada = {}) {
@@ -93,7 +107,8 @@ function avaliar(entrada = {}) {
   const saude = entrada.saude === undefined ? le('saude-cerebro.md') : entrada.saude;
   const historicoQualidade = entrada.qualidade === undefined ? leJson('qualidade-historico.json') : entrada.qualidade;
   const rodadaCanal = entrada.canalReal === undefined ? resultadoCanalReal() : entrada.canalReal;
-  const estadoCanal = estadoCanalReal(rodadaCanal);
+  const fotoControlada = entrada.fotoControlada === undefined ? resultadoFotoControlado() : entrada.fotoControlada;
+  const estadoCanal = estadoCanalReal(rodadaCanal, fotoControlada);
   const itens = Object.values(vigia.itens || {});
   const bons = itens.filter(x => x && x.ok).length;
   const totalItens = itens.length;
@@ -141,7 +156,7 @@ function avaliar(entrada = {}) {
     gerado_em: referencia,
     aviso: 'Indicador interno de cobertura; não é resultado observável do produto, não é teste de QI, consciência nem garantia de disponibilidade.',
     total_em_100: total,
-    canal_real: Object.assign({}, estadoCanal, { resultado: rodadaCanal }),
+    canal_real: Object.assign({}, estadoCanal, { resultado: rodadaCanal, foto_controlada: fotoControlada }),
     dimensoes,
     sinais: {
       itens_vigia_ok: bons,
@@ -186,4 +201,4 @@ function salvar() {
 }
 
 if (require.main === module) salvar();
-module.exports = { bateria, frescor, qualidadeRastreavel, resultadoCanalReal, estadoCanalReal, avaliar, markdown, salvar };
+module.exports = { bateria, frescor, qualidadeRastreavel, resultadoCanalReal, resultadoFotoControlado, estadoCanalReal, avaliar, markdown, salvar };
