@@ -47,6 +47,8 @@ A investigação encontrou ainda o vigia preso em sua própria checagem IMAP de 
 
 Correções publicadas nesta série: toda entrada enviada agora entra no denominador; ausência de resposta passa a ser `FALHOU`, o processo termina com código não zero em falha/erro, a janela padrão foi ajustada de 14 para 25 minutos conforme a fila observada, a coleta deixa de contabilizar mensagens sintéticas de ambos os aliases, mudança em geografia força adoção segura pelo próximo turno, e o diagnóstico de foto deixa de esconder travamento/resultado parcial. A nova janela é uma calibração de observação, não uma promessa de SLA.
 
+A auditoria de liveness encontrou mais uma margem concreta: o OCR local podia somar várias chamadas de Tesseract sem orçamento comum e o trabalhador aguardava até 200 s. O caminho agora tem orçamento total local de 55 s (limitado a 5–90 s), teto por tentativa e trava externa proporcional; se comparar JPEG higienizado e original local, ambos compartilham 70 s. Se a leitura direta for incerta, tenta variantes locais dentro desse mesmo teto. Uma regressão simula motor preso e confirma retorno de falha antes de travar a fila. Isso reduz o pior caso de anexo problemático sem enviar a imagem à rede, mas não promete leitura universal nem altera a falha histórica da rodada ampla.
+
 ## Código e rotas
 
 ### Canal de e-mail e Telegram

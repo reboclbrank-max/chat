@@ -1,14 +1,29 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # 🔤 OCR LOCAL DA CASA — lê texto de imagem sem internet nem terceiros.
-# Tesseract recebe a imagem original e, se a leitura falhar, cópias locais em cinza/alto contraste.
+# Tesseract recebe a imagem original e, se a leitura falhar ou ficar incerta, cópias locais em cinza/alto contraste.
 import json
 import os
 import re
 import subprocess
 import sys
 import tempfile
+import time
 from shutil import which
+
+
+def inteiro_env(nome, padrao, minimo, maximo):
+    try:
+        valor = int(os.environ.get(nome, str(padrao)))
+    except (TypeError, ValueError):
+        valor = padrao
+    return max(minimo, min(maximo, valor))
+
+
+# Um anexo não pode prender a fila do e-mail por vários minutos só no OCR local.
+ORCAMENTO_SEG = inteiro_env('REBOCL_OCR_ORCAMENTO_SEG', 55, 5, 90)
+TENTATIVA_SEG = inteiro_env('REBOCL_OCR_TENTATIVA_SEG', 25, 1, 45)
+CONFIANCA_RAPIDA = 60.0
 
 
 def falha(msg):
@@ -16,21 +31,29 @@ def falha(msg):
     sys.exit(0)
 
 
-def tesseract(caminho, extra):
+def tempo_restante(limite):
+    restante = limite - time.monotonic()
+    if restante <= 0:
+        raise TimeoutError('orçamento local de OCR esgotado')
+    # subprocess.run aceita float; deixar pequena folga evita iniciar chamada sem tempo útil.
+    return max(0.2, min(float(TENTATIVA_SEG), restante))
+
+
+def tesseract(caminho, extra, limite):
     langs = ['por+eng', 'por', 'eng']
     ultima = ''
     for lang in langs:
         r = subprocess.run(['tesseract', caminho, 'stdout', '-l', lang] + extra,
-                           capture_output=True, text=True, timeout=180)
+                           capture_output=True, text=True, timeout=tempo_restante(limite))
         if r.returncode == 0:
             return r.stdout or ''
         ultima = (r.stderr or '')[-160:]
     raise RuntimeError(ultima or 'tesseract não respondeu')
 
 
-def confianca(caminho, psm):
+def confianca(caminho, psm, limite):
     try:
-        t = tesseract(caminho, ['--psm', str(psm), 'tsv'])
+        t = tesseract(caminho, ['--psm', str(psm), 'tsv'], limite)
         vals = []
         for linha in t.splitlines()[1:]:
             p = linha.split('\t')
@@ -49,19 +72,26 @@ def limpa(texto):
 
 
 def pontua(texto, conf):
-    # Confiança do motor é sinal principal; caracteres alfanuméricos evitam escolher saída vazia.
-    uteis = len(re.findall(r'[0-9A-Za-zÀ-ÿ]', texto or ''))
-    return (float(conf) if conf is not None else 0) * 10 + min(uteis, 180)
+    # Confiança do motor é sinal principal, mas uma saída com palavras legíveis vale mais que
+    # símbolos isolados com confiança marginalmente maior. Isso é critério genérico, não gabarito.
+    texto = texto or ''
+    uteis = len(re.findall(r'[0-9A-Za-zÀ-ÿ]', texto))
+    palavras = len(re.findall(r'[A-Za-zÀ-ÿ]{3,}', texto))
+    numeros = len(re.findall(r'\d', texto))
+    return (float(conf) if conf is not None else 0) * 10 + min(uteis, 180) + min(palavras, 20) * 45 + min(numeros, 30)
 
 
-def candidatos(caminho):
-    # Primeiro caminho barato: não cria cópia quando o Tesseract já lê a imagem original.
-    texto = limpa(tesseract(caminho, ['--psm', '3']))
+def candidatos(caminho, limite):
+    # Primeiro caminho barato: não cria cópia quando o Tesseract já lê o original com confiança útil.
+    texto = limpa(tesseract(caminho, ['--psm', '3'], limite))
+    conf = confianca(caminho, 3, limite) if len(texto) >= 3 else None
     if len(texto) >= 3:
-        yield texto, confianca(caminho, 3), 'original'
-        return
+        yield texto, conf, 'original'
+        if conf is not None and conf >= CONFIANCA_RAPIDA:
+            return
 
-    # Fotos/JPEG regravados podem perder contraste em letras pequenas. Tudo abaixo é efêmero e local.
+    # Texto curto, incerto ou JPEG regravado pode perder contraste em letras pequenas.
+    # Tudo abaixo é efêmero e local; o teto global continua valendo para todas as variantes juntas.
     try:
         from PIL import Image, ImageOps, ImageEnhance
     except Exception:
@@ -78,15 +108,18 @@ def candidatos(caminho):
             limiar = contraste.point(lambda x: 255 if x > 165 else 0)
             variantes = [('auto', auto), ('contraste', contraste), ('limiar', limiar)]
             for nome, variante in variantes:
+                if tempo_restante(limite) < 1:
+                    return
                 arquivo = os.path.join(pasta, nome + '.png')
                 variante.save(arquivo, 'PNG', optimize=True)
                 for psm in (6, 11):
                     try:
-                        texto = limpa(tesseract(arquivo, ['--psm', str(psm)]))
+                        texto = limpa(tesseract(arquivo, ['--psm', str(psm)], limite))
                         if len(texto) >= 3:
-                            yield texto, confianca(arquivo, psm), nome + '/psm' + str(psm)
+                            yield texto, confianca(arquivo, psm, limite), nome + '/psm' + str(psm)
                     except Exception:
-                        pass
+                        if limite - time.monotonic() <= 0:
+                            return
 
 
 def main():
@@ -97,8 +130,9 @@ def main():
         falha('a imagem não está aqui: ' + caminho)
 
     if which('tesseract'):
+        limite = time.monotonic() + ORCAMENTO_SEG
         try:
-            opcoes = list(candidatos(caminho))
+            opcoes = list(candidatos(caminho, limite))
             if opcoes:
                 texto, conf, variante = max(opcoes, key=lambda x: pontua(x[0], x[1]))
                 print(json.dumps({'ok': True, 'motor': 'tesseract', 'texto': texto[:3000],
@@ -106,6 +140,8 @@ def main():
                                   'variante': variante}, ensure_ascii=False))
                 return
             falha('o tesseract não achou texto na imagem')
+        except TimeoutError:
+            falha('orçamento local de OCR esgotado')
         except Exception as e:
             falha('tesseract falhou: ' + str(e)[:160])
 

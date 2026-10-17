@@ -622,14 +622,19 @@ async function olhoPistas(imagem) {
 }
 // 🔤 v12: OCR LOCAL — lê o TEXTO de foto/scan SEM internet e SEM terceiros (tesseract no runner).
 // Devolve { texto, confianca, motor } ou null; leTextoLocal() devolve só o texto.
-async function leTextoLocalInfo(imagem) {
+async function leTextoLocalInfo(imagem, orcamentoSeg = 55) {
   const spawnSync = require('child_process').spawnSync;
   const fsLocal = require('fs');
+  const limite = Math.max(5, Math.min(90, Number(orcamentoSeg) || 55));
   const dir = criaTemp('ocr');
   const caminho = path.join(dir, 'imagem.' + extSegura(imagem && imagem.tipo, 'png'));
   try {
     fsLocal.writeFileSync(caminho, Buffer.from(imagem.b64, 'base64'));
-    const r = spawnSync('python3', ['tools/ocr-local.py', caminho], { timeout: 200000, encoding: 'utf8' });
+    // O script tem orçamento próprio; esta trava externa impede que uma imagem corrompida bloqueie a fila.
+    const r = spawnSync('python3', ['tools/ocr-local.py', caminho], {
+      timeout: Math.min(75000, (limite + 10) * 1000), encoding: 'utf8',
+      env: Object.assign({}, process.env, { REBOCL_OCR_ORCAMENTO_SEG: String(limite) })
+    });
     const bruto = String(r.stdout || '').trim();
     const i = bruto.lastIndexOf('{');
     if (i < 0) return null;
@@ -649,11 +654,15 @@ function qualidadeOcr(info) {
   return confianca * 10000 + Math.min(String(info.texto).length, 500);
 }
 async function leTextoLocalComReserva(imagemPreparada, imagemOriginal) {
-  let melhor = await leTextoLocalInfo(imagemPreparada);
+  // Duas leituras (JPEG higienizado + original local) não podem somar minutos na mesma mensagem.
+  const inicio = Date.now();
+  const tetoMs = 70000;
+  let melhor = await leTextoLocalInfo(imagemPreparada, 45);
   const conf = melhor && Number.isFinite(Number(melhor.confianca)) ? Number(melhor.confianca) : 0;
   const podeComparar = imagemOriginal && imagemOriginal.b64 && imagemPreparada && imagemOriginal.b64 !== imagemPreparada.b64;
-  if (podeComparar && (!melhor || conf < 55)) {
-    const bruto = await leTextoLocalInfo(imagemOriginal);
+  const restanteSeg = Math.floor((tetoMs - (Date.now() - inicio)) / 1000);
+  if (podeComparar && (!melhor || conf < 55) && restanteSeg >= 5) {
+    const bruto = await leTextoLocalInfo(imagemOriginal, Math.min(30, restanteSeg));
     if (qualidadeOcr(bruto) > qualidadeOcr(melhor)) {
       melhor = bruto;
       console.log('🔤 OCR local: preservei a leitura melhor do original apenas no processo local');
