@@ -1,8 +1,8 @@
 {
   "esquema": "placar-capacidade-v2",
-  "gerado_em": "2026-10-17T15:31:51.045Z",
+  "gerado_em": "2026-10-17T15:41:21.732Z",
   "aviso": "Indicador interno de cobertura; não é resultado observável do produto, não é teste de QI, consciência nem garantia de disponibilidade.",
-  "total_em_100": 98,
+  "total_em_100": 100,
   "canal_real": {
     "nivel": "falha",
     "texto": "última rodada controlada: 37/38 PASS, 1 falha(s); produto não aprovado integralmente",
@@ -26,8 +26,8 @@
     {
       "nome": "confiabilidade observada",
       "maximo": 20,
-      "pontos": 18,
-      "evidencia": "7/8 itens OK; vigia recente",
+      "pontos": 20,
+      "evidencia": "8/8 itens OK; vigia recente",
       "comoMelhorar": "tratar os itens vermelhos do vigia antes de aumentar a cadência"
     },
     {
@@ -60,7 +60,7 @@
     }
   ],
   "sinais": {
-    "itens_vigia_ok": 7,
+    "itens_vigia_ok": 8,
     "itens_vigia_total": 8,
     "vigia_recente": true,
     "baterias": 5,
@@ -69,9 +69,7 @@
     "cobertura_questoes": 19,
     "respostas_auditadas": 50
   },
-  "proximas_melhorias": [
-    "confiabilidade observada: tratar os itens vermelhos do vigia antes de aumentar a cadência"
-  ],
+  "proximas_melhorias": [],
   "limites": [
     "Serviços gratuitos podem atrasar, interromper agendas ou limitar recursos.",
     "O placar usa evidências locais e não substitui monitoramento de usuário real.",

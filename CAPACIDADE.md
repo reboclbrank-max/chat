@@ -1,21 +1,20 @@
 # Placar de capacidade do Chat
 
-Atualizado: `2026-10-17T15:31:51.045Z`
+Atualizado: `2026-10-17T15:41:21.732Z`
 
-**Indicador interno: 98/100.** Indicador interno de cobertura; não é resultado observável do produto, não é teste de QI, consciência nem garantia de disponibilidade.
+**Indicador interno: 100/100.** Indicador interno de cobertura; não é resultado observável do produto, não é teste de QI, consciência nem garantia de disponibilidade.
 **Estado do canal real (tráfego controlado):** última rodada controlada: 37/38 PASS, 1 falha(s); produto não aprovado integralmente.
 
 | Dimensão | Pontos | Evidência |
 |---|---:|---|
 | qualidade de respostas | 20/20 | 5 bateria(s) recente(s), média 98%, 0 rota(s) muda(s) |
-| confiabilidade observada | 18/20 | 7/8 itens OK; vigia recente |
+| confiabilidade observada | 20/20 | 8/8 itens OK; vigia recente |
 | resiliência e recuperação | 15/15 | vigia=sim, continuidade=sim, barreira=sim |
 | uso seguro de ferramentas | 15/15 | e-mail+Telegram=sim, pesquisa=sim, navegador público=sim |
 | autonomia verificável | 15/15 | bateria=sim, vigia=sim, testes=sim |
 | pesquisa e criatividade aplicada | 15/15 | fontes públicas=sim, web isolada=sim, experimentação=sim |
 
 ## Próximas melhorias guiadas por sinal
-- confiabilidade observada: tratar os itens vermelhos do vigia antes de aumentar a cadência
 
 ## Limites honestos
 - Serviços gratuitos podem atrasar, interromper agendas ou limitar recursos.
