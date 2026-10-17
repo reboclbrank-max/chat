@@ -51,6 +51,12 @@ A auditoria de liveness encontrou mais uma margem concreta: o OCR local podia so
 
 A observação dos workflows revelou ainda disparos quase simultâneos do vigia. Como duas sondas IMAP concorrentes podem disputar caixa, estado e push, `vigia.yml` agora usa uma chave de concorrência única, sem cancelar uma sonda já em execução. A mudança preserva o teto global e os tetos por operação; elimina sobreposição futura, mas não é evidência de disponibilidade contínua.
 
+### Validação separada da visão local e correção de paridade
+
+A execução sanitizada `39080442778` rodou em GitHub Actions apenas as fixtures públicas do repositório, sem caixa, endereço, token ou anexo de pessoa usuária. Usando `qwen3vl-4b` — o modelo configurado no trabalhador de e-mail — ela confirmou OCR local no bilhete e na data e produziu 5/5 para formas/texto, 4/4 para o bilhete, 3/4 para horta e 3/4 para a foto de celular. Os dois 3/4 não foram apagados: a saída reconheceu o cenário, cão e cercas, mas chamou a ferramenta vermelha de “rega”, enquanto o critério estrito exige “regador”. Isso é um limite de expressão/avaliação observado em uma fixture, não uma medida de satisfação nem uma prova de atendimento de e-mail.
+
+A investigação encontrou também uma divergência real de diagnóstico: `ferramentas.yml` escolhia `qwen3vl-2b` quando o campo era deixado no padrão, mas `email.yml` executa `qwen3vl-4b`. O padrão foi alinhado ao turno e entrou uma regressão que falha se os dois valores se separarem. Não se alterou regex, peso, denominador ou score para transformar a saída anterior em verde. O pedido de visão foi refinado de maneira geral para nomear objetos pelo termo específico e usual do Brasil, mantendo a obrigação de declarar incerteza e de não inventar; a única afirmação válida até novo run é que a mudança foi feita e precisa de reexecução controlada.
+
 ## Código e rotas
 
 ### Canal de e-mail e Telegram

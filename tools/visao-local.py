@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# 👁️‍🗨️ VISÃO LOCAL DA CASA v1.6 (16/10/2026) — descreve a foto com um modelo de visão que roda AQUI MESMO
+# 👁️‍🗨️ VISÃO LOCAL DA CASA v1.7 (17/10/2026) — descreve a foto com um modelo de visão que roda AQUI MESMO
 # (llama.cpp na CPU do runner). Nada de serviço de terceiros: quando os motores de visão da internet caem
 # (504/502, como na madrugada de 15/10), a casa ainda VÊ a foto.
 # v1.4: FOTO DE CELULAR — (1) desvira pela marca EXIF (o llama.cpp não lê a orientação: foto em pé chegava
@@ -12,6 +12,9 @@
 # v1.5 (exame #3 no runner): modelo padrão QWEN3-VL-4B (formas 5/5, horta 4/4 — viu o regador —, 58 s/foto; o 2B
 #       dava 3/5 e 3/4, 44 s); o laço é cortado na 2ª ocorrência (a 1ª é conteúdo: o 2B repetia o texto lido e o
 #       corte levava o texto junto); o eco da pergunta do dono e linhas soltas ("parece") saem da descrição.
+# v1.7: o pedido pede nomes específicos e usuais do português brasileiro para objetos visíveis, sem sugerir quais
+#       objetos procurar. Isso reduz descrições vagas (ex.: nomear a ferramenta, não apenas a ação), mantendo incerteza
+#       explícita e a proibição de inventar.
 # v1.6: 🧠 CÉREBRO LOCAL DE TEXTO (--texto): o mesmo modelo responde só com texto (llama-completion, formato de conversa
 #       do Qwen), para quando todos os motores de texto da internet caem; a pergunta pode vir por arquivo.
 # Uso:
@@ -258,12 +261,14 @@ def main():
         responde({'ok': False, 'motivo': 'não consegui preparar a visão local: ' + str(e)[:200]})
     foto, info = prepara_imagem(imagem)
     pedido = ('Descreva esta imagem em português do Brasil, de forma objetiva e curta (até 8 linhas): o que aparece '
-              '(objetos, formas, pessoas, cores, cenário) e transcreva EXATAMENTE qualquer texto visível. '
-              'Use "parece" quando não tiver certeza. Não invente.')
+              '(objetos, formas, pessoas, cores, cenário), nomeando objetos reconhecíveis pelo termo mais específico '
+              'e usual no Brasil, e transcreva EXATAMENTE qualquer texto visível. Use "parece" quando não tiver '
+              'certeza. Não invente.')
     if PEDIDO_MODO == 'detalhado':
         pedido = ('Descreva esta imagem em português do Brasil, em até 10 linhas: o que aparece (objetos, formas, pessoas, '
-                  'animais, cores, cenário), incluindo os objetos pequenos e o que está ao fundo, e transcreva EXATAMENTE '
-                  'qualquer texto visível. Use "parece" quando não tiver certeza. Não invente.')
+                  'animais, cores, cenário), incluindo os objetos pequenos e o que está ao fundo e nomeando objetos '
+                  'reconhecíveis pelo termo mais específico e usual no Brasil. Transcreva EXATAMENTE qualquer texto visível. '
+                  'Use "parece" quando não tiver certeza. Não invente.')
     if pergunta.strip():
         pedido += ' Depois, responda em 1 ou 2 linhas a pergunta do dono: ' + pergunta.strip()[:400]
     env = dict(os.environ, LD_LIBRARY_PATH=os.path.dirname(cli))

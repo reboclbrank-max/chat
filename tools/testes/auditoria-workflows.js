@@ -41,6 +41,16 @@ ok('não há gatilho pull_request_target e o orçamento de escrita é explícito
   }
 });
 
+ok('exame de visão usa por padrão o mesmo modelo local do turno de e-mail', () => {
+  const email = ler('email.yml');
+  const ferramentas = ler('ferramentas.yml');
+  const modeloDoTurno = (email.match(/^\s*VISAO_MODELO:\s*([^\s#]+)\s*$/m) || [])[1];
+  const entrada = /inputs:\n\s+visao:\n[\s\S]*?^\s+default:\s*'([^']+)'\s*$/m.exec(ferramentas);
+  assert(modeloDoTurno, 'email.yml sem VISAO_MODELO explícito');
+  assert(entrada, 'ferramentas.yml sem padrão de visão explícito');
+  assert.equal(entrada[1], modeloDoTurno, 'o exame padrão diverge do modelo usado pelo turno');
+});
+
 ok('navegador público recebe só URL e referência opaca, antes de ter token', () => {
   const texto = ler('navegador-publico.yml');
   const entradas = [...texto.matchAll(/^      ([a-z_]+):\n        description:/gm)].map(x => x[1]);
