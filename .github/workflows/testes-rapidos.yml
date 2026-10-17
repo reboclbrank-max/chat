@@ -47,6 +47,10 @@ jobs:
         run: |
           npm install --no-save imapflow@2.4.3 nodemailer@10.1.1
           python3 -m pip install --quiet --disable-pip-version-check --break-system-packages "numpy<2.5" Pillow pillow-heif==1.8.1 openpyxl==3.1.5 pypdf || python3 -m pip install --quiet --disable-pip-version-check Pillow pillow-heif==1.8.1 openpyxl==3.1.5 pypdf
+          if ! tesseract --list-langs 2>/dev/null | grep -qx por; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq tesseract-ocr tesseract-ocr-por
+          fi
       - name: Sintaxe
         run: |
           for f in tools/email-chat.js tools/email-poll.js tools/telegram-chat.js tools/teste-email.js tools/testes/*.js; do node --check "$f"; done
