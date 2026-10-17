@@ -31,6 +31,8 @@ function urlPublica(entrada) {
   try { u = new URL(String(entrada || '').trim()); } catch (e) { throw new Error('URL inválida'); }
   if (!/^https?:$/.test(u.protocol)) throw new Error('aceito somente http/https');
   if (u.username || u.password) throw new Error('URL com credencial não é permitida');
+  // A URL e o resultado resumido podem entrar no estado público: não aceitar segredo disfarçado de query string.
+  for (const [chave] of u.searchParams) if (/^(?:access[_-]?)?token$|^(?:api[_-]?)?key$|^secret$|^password$|^auth(?:orization)?$|^sig(?:nature)?$|^code$/i.test(chave)) throw new Error('URL com possível segredo não é permitida');
   if (!u.hostname || /(^|\.)(localhost|local|internal|test)$/i.test(u.hostname)) throw new Error('host local não é permitido');
   if (u.port && u.port !== '80' && u.port !== '443') throw new Error('porta fora do navegador público');
   const host = u.hostname.replace(/^\[|\]$/g, '');

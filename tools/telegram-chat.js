@@ -135,7 +135,7 @@ function criaTelegram(opcoes) {
     if (transcrito) texto = (texto ? texto + NL : '') + transcrito;
     // comandos e ferramentas (só texto puro)
     if (texto && !imagem && !textoDoc) {
-      const cmd = (await chat.comandosDaCasa(texto, 'tg:' + chatId, 'tg-' + m.message_id, 'Telegram').catch(() => null)) || (await chat.ferramenta(texto).catch(() => null));
+      const cmd = (await chat.comandosDaCasa(texto, 'tg:' + chatId, 'tg-' + m.message_id, 'Telegram').catch(() => null)) || (await chat.ferramenta(texto, { canal: 'telegram', para: String(chatId), msgId: String(m.message_id) }).catch(() => null));
       if (cmd) return { texto: cmd, via: 'comando/ferramenta' };
     }
     const pedeArquivo = chat.pedidoDeArquivo(texto, !!(imagem || textoDoc));

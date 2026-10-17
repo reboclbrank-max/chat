@@ -11,7 +11,11 @@ ok('aceita HTTPS público e remove fragmento', () => {
 });
 ok('aceita HTTP público na porta padrão', () => assert.equal(nav.urlPublica('http://example.org:80/').hostname, 'example.org'));
 ok('bloqueia esquemas não web', () => { bloqueia('file:///etc/passwd'); bloqueia('javascript:alert(1)'); });
-ok('bloqueia URL com credencial', () => bloqueia('https://usuario:senha@example.com/'));
+ok('bloqueia URL com credencial ou segredo em query', () => {
+  bloqueia('https://usuario:senha@example.com/');
+  bloqueia('https://example.com/?access_token=nao-publicar');
+  bloqueia('https://example.com/?signature=nao-publicar');
+});
 ok('bloqueia localhost, domínios internos e portas incomuns', () => {
   bloqueia('http://localhost/'); bloqueia('https://api.internal/'); bloqueia('https://example.com:8080/');
 });
