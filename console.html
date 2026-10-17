@@ -138,12 +138,10 @@ const API = 'https://api.github.com';
 const REPO = 'reboclbrank-max/agente';
 const ESTADO_URL = 'https://raw.githubusercontent.com/reboclbrank-max/site/main/estado-ia.json';
 const CHAVE_TOKEN = 'assistente_rebocl_token';
-const tokenLegado = localStorage.getItem(CHAVE_TOKEN);
-if (tokenLegado && !sessionStorage.getItem(CHAVE_TOKEN)) {
-  sessionStorage.setItem(CHAVE_TOKEN, tokenLegado);
-  localStorage.removeItem(CHAVE_TOKEN);
-}
-let token = sessionStorage.getItem(CHAVE_TOKEN) || '';
+const tokenDaSessao = sessionStorage.getItem(CHAVE_TOKEN);
+let token = localStorage.getItem(CHAVE_TOKEN) || tokenDaSessao || '';
+if (token && !localStorage.getItem(CHAVE_TOKEN)) localStorage.setItem(CHAVE_TOKEN, token);
+if (token) sessionStorage.setItem(CHAVE_TOKEN, token);
 const $ = (id) => document.getElementById(id);
 
 function api(caminho, opcoes = {}) {

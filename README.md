@@ -23,7 +23,7 @@ Para mudar o visual ou o texto, edite `index.html` e faça commit. O GitHub Page
 
 ## Segurança e privacidade
 
-- **Token:** informe-o apenas em **⚙️ Configurar acesso**. Ele fica na sessão atual do navegador; links com `?t=` e comandos `!token` não ativam nem enviam credenciais. Um token antigo armazenado no navegador é migrado para a sessão e removido do armazenamento persistente.
+- **Token:** informe-o apenas em **⚙️ Configurar acesso**. Por escolha explícita do dono, ele permanece salvo neste navegador para manter as ações autorizadas automáticas após reiniciar; links com `?t=` e comandos `!token` não ativam nem enviam credenciais.
 - **Enxame:** o canal público só pode sugerir motores. Veja candidatos com `!candidatos` e aprove cada um conscientemente com `!plantar <base> | <modelo> | <nome>`; bases e modelos passam por validação antes de entrar na frota.
 - **Dados do dono:** pings automáticos não levam memória/persona e resumos internos não são publicados no canal do enxame.
 - **Fotos por e-mail:** toda foto é regravada sem EXIF/metadados antes do processamento. O OCR externo só é usado quando o e-mail trouxer autorização explícita, por exemplo: `ocr externo: sim`; o OCR local continua sendo a primeira opção.

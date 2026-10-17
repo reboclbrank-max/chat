@@ -249,19 +249,22 @@ function textoUtil(t) {
 const REPO = 'reboclbrank-max/agente';
 const API = 'https://api.github.com';
 const CHAVE_TOKEN = 'assistente_rebocl_token';
-// O token continua funcionando, mas só vive nesta sessão de navegação. Migra uma
-// cópia antiga sem a repetir em URL, issue ou armazenamento persistente.
-const tokenLegado = localStorage.getItem(CHAVE_TOKEN);
-if (tokenLegado && !sessionStorage.getItem(CHAVE_TOKEN)) {
-  sessionStorage.setItem(CHAVE_TOKEN, tokenLegado);
-  localStorage.removeItem(CHAVE_TOKEN);
-}
-let token = sessionStorage.getItem(CHAVE_TOKEN) || '';
-function guardarTokenSeguro(valor) {
+// Escolha explícita do dono: manter o PAT pronto neste navegador para que a
+// interface continue automática. URL, comandos e Issues continuam proibidos
+// como canais de token; só ⚙️ Configurar acesso pode gravá-lo.
+const tokenDaSessao = sessionStorage.getItem(CHAVE_TOKEN);
+let token = localStorage.getItem(CHAVE_TOKEN) || tokenDaSessao || '';
+if (token && !localStorage.getItem(CHAVE_TOKEN)) localStorage.setItem(CHAVE_TOKEN, token);
+if (token) sessionStorage.setItem(CHAVE_TOKEN, token);
+function guardarTokenPersistente(valor) {
   token = String(valor || '').trim();
-  if (token) sessionStorage.setItem(CHAVE_TOKEN, token);
-  else sessionStorage.removeItem(CHAVE_TOKEN);
-  localStorage.removeItem(CHAVE_TOKEN);
+  if (token) {
+    localStorage.setItem(CHAVE_TOKEN, token);
+    sessionStorage.setItem(CHAVE_TOKEN, token);
+  } else {
+    localStorage.removeItem(CHAVE_TOKEN);
+    sessionStorage.removeItem(CHAVE_TOKEN);
+  }
 }
 let conversa = null, intervalo = null, ultimoId = 0, falando = false;
 
@@ -650,7 +653,7 @@ async function enviar() {
   if (!texto) return;
   if (/^!token(?:\s|$)/i.test(texto) || /\b(?:gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,})\b/.test(texto)) {
     caixa.value = ''; caixa.style.height = 'auto';
-    bolha('bot', '🔐 **Token não é mensagem.** Abra ⚙️ Configurar acesso e cole-o somente no campo protegido desta sessão. Nada foi enviado, gravado em issue ou passado a um motor.', new Date().toISOString(), '🔐 proteção');
+    bolha('bot', '🔐 **Token não é mensagem.** Abra ⚙️ Configurar acesso e cole-o somente no campo protegido deste navegador. Nada foi enviado, gravado em issue ou passado a um motor.', new Date().toISOString(), '🔐 proteção');
     rolarFim();
     return;
   }
@@ -1012,7 +1015,7 @@ async function trabalhar() {
 
 async function maosDaCasa(msg) {
   const m = (msg || '').trim().toLowerCase();
-  if (m.startsWith('!token ')) return '🔐 Por segurança, token não é aceito por comando. Abra ⚙️ Configurar acesso e cole-o somente no campo protegido da sessão.';
+  if (m.startsWith('!token ')) return '🔐 Por segurança, token não é aceito por comando. Abra ⚙️ Configurar acesso e cole-o somente no campo protegido deste navegador.';
   if (m.startsWith('!statuscasa')) { (async () => { bolha('bot', '🏠 lendo o pulso da casa…', new Date().toISOString(), '🏠'); rolarFim(); const fora = []; try { const j = await (await fetch('https://api.github.com/repos/reboclbrank-max/site/actions/workflows/postagem-diaria.yml/runs?per_page=5', { signal: AbortSignal.timeout(15000) })).json(); (j.workflow_runs || []).forEach(r => fora.push('• run #' + r.run_number + ': ' + (r.conclusion === 'success' ? '✅ vivo' : (r.conclusion === 'failure' ? '☠ caiu' : '⏳ ' + r.status)) + ' (' + (r.created_at || '').slice(0, 16).replace('T', ' ') + ' UTC)')); } catch (e) { fora.push('• runs: ' + e.message); } try { const rg = await (await fetch('https://raw.githubusercontent.com/reboclbrank-max/site/main/posts/progresso-metas.md', { signal: AbortSignal.timeout(15000) })).text(); const ult = rg.trim().split('## ').pop(); fora.push('📊 régua: ' + ult.split('\n').slice(0, 2).join(' / ')); } catch (e) {} bolha('bot', '🏠 **ESTADO DA CASA AGORA**\n' + fora.join('\n') + '\n\nMande ⚡ !acordarcasa pra fazê-la postar AGORA.', new Date().toISOString(), '🏠 status'); rolarFim(); })(); return '🏠 consultando o pulso da casa…'; }
   if (m.startsWith('!acordarcasa')) { (async () => { try { const resp = await api('/repos/reboclbrank-max/site/actions/workflows/postagem-diaria.yml/dispatches', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ref: 'main' }) }); bolha('bot', resp && resp.ok ? '⚡ **CASA ACORDADA!** O ciclo dispara agora e o post nasce em ~3 minutos (mãos LIGADAS — token do dono no navegador).' : '⚠️ o GitHub respondeu ' + (resp ? resp.status : 'nada') + ' — o token do dono precisa estar no navegador (console.html).', new Date().toISOString(), '⚡ acordar'); } catch (e) { bolha('bot', '⚠️ sem mão agora: ' + e.message + ' — token do dono no navegador resolve.', new Date().toISOString(), '⚡'); } rolarFim(); })(); return '⚡ acordando a casa…'; }
   if (m.startsWith('!exame')) { (async () => { let banco = []; try { banco = ((await (await fetch('banco-questoes.json', { signal: AbortSignal.timeout(15000) })).json()).questoes) || []; } catch (e) {}try { const curva = JSON.parse(localStorage.getItem('rebocl_exame_historico') || '[]'); if (curva.length >= 2 && curva.slice(-2).every(h => h.ok / h.total >= 0.83)) { const b2 = ((await (await fetch('banco-v2.json', { signal: AbortSignal.timeout(15000) })).json()).questoes) || []; if (b2.length) { banco = b2; }} } catch (e) {} if (!banco.length) { bolha('bot', '🔬 o banco não carregou — tenta de novo.', new Date().toISOString(), '🔬'); rolarFim(); return; } const sorteadas = banco.slice().sort(() => Math.random() - 0.5).slice(0, 6); bolha('bot', '🔬 **EXAME v2** — banco v1 (' + banco.length + ' questões), sorteio de 6. Eu contra o gabarito.', new Date().toISOString(), '🔬'); rolarFim(); const nm = (s) => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim(); let ok = 0; const det = []; for (const item of sorteadas) { let resp = ''; try { const r = await pensarStream([{ role: 'user', content: 'Responda APENAS o que foi pedido, curtíssimo: ' + item.q }], function () {}); resp = (r && r.texto) || ''; } catch (e) {} const rn = nm(resp); const pass = item.g.some(g => { const gn = nm(g); if (!gn) return false; if (gn.length <= 2) return new RegExp('(^| )' + gn + '( |$)').test(rn); return rn.indexOf(gn) >= 0; }); if (pass) ok++; det.push((pass ? '✅' : '❌') + ' ' + item.q.slice(0, 48) + ' → ' + (resp || 'mudo').trim().slice(0, 34)); } let hist = []; try { hist = JSON.parse(localStorage.getItem('rebocl_exame_historico') || '[]'); } catch (e) {} hist.push({ t: new Date().toISOString().slice(0, 16), ok: ok, total: sorteadas.length }); localStorage.setItem('rebocl_exame_historico', JSON.stringify(hist.slice(-40))); const curva = hist.slice(-8).map(h => h.ok + '/' + h.total).join(' · '); bolha('bot', '🔬 **EXAME v2: ' + ok + '/' + sorteadas.length + '**' + String.fromCharCode(10) + det.join(String.fromCharCode(10)) + String.fromCharCode(10) + String.fromCharCode(10) + '📈 últimos exames: ' + curva, new Date().toISOString(), '🔬 exame v2'); rolarFim(); })(); return '🔬 exame v2: sorteando do banco…'; }
@@ -1656,7 +1659,7 @@ async function testarConexao(silencioso) {
 $('btn-salvar').onclick = async () => {
   const valor = $('token').value.trim();
   if (!valor) { alert('cole o token primeiro'); return; }
-  guardarTokenSeguro(valor);
+  guardarTokenPersistente(valor);
   if (await testarConexao(false)) { mostrarConfig(false); carregarLista(); }
 };
 $('btn-config').onclick = () => {
