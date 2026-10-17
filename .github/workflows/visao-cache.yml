@@ -16,10 +16,10 @@ jobs:
       VISAO_MODELO: qwen3vl-4b
       VISAO_CACHE: /home/runner/.cache/visao-casa
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - name: Já está no cache?
         id: cache-visao
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: /home/runner/.cache/visao-casa
           key: visao-${{ env.VISAO_MODELO }}-b11635-v1
@@ -32,7 +32,7 @@ jobs:
         run: python3 tools/visao-local.py tools/teste-visao3.png
       - name: Guarda no cache
         if: steps.cache-visao.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: /home/runner/.cache/visao-casa
           key: visao-${{ env.VISAO_MODELO }}-b11635-v1

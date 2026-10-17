@@ -1,0 +1,6 @@
+# Fixtures binários não devem aparecer como texto em diffs públicos.
+*.pdf binary
+*.docx binary
+*.mp3 binary
+*.png binary
+*.jpg binary

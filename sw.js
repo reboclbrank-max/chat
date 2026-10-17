@@ -1,16 +1,39 @@
-/* Service worker v3 — rede PRIMEIRO (cache só se a internet cair). Nunca guarda conversas. */
-const CACHE = 'rebocl-chat-v3';
-const CASCA = ['./', './index.html', './manifest.json', './icone-192.png', './icone-512.png'];
-self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CASCA)).then(() => self.skipWaiting())); });
-self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then((chaves) => Promise.all(chaves.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
-self.addEventListener('fetch', (e) => {
-  const url = new URL(e.request.url);
-  if (url.hostname === 'api.github.com') return;
-  if (e.request.method !== 'GET') return;
-  e.respondWith(
-    fetch(e.request).then((resp) => {
-      if (resp && resp.ok && url.origin === location.origin) { const copia = resp.clone(); caches.open(CACHE).then((c) => c.put(e.request, copia)); }
-      return resp;
-    }).catch(() => caches.match(e.request).then((r) => r || caches.match('./index.html')))
+/* Service worker v4 — só guarda a casca estática e nunca uma URL com consulta. */
+const CACHE = 'rebocl-chat-v4';
+const CASCA = [
+  './', './index.html', './direto.html', './console.html', './manifest.json',
+  './icone-192.png', './icone-512.png'
+];
+const ARQUIVOS_CACHEAVEIS = new Set(CASCA.map((caminho) => new URL(caminho, self.location.href).pathname));
+
+self.addEventListener('install', (evento) => {
+  evento.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(CASCA)).then(() => self.skipWaiting()));
+});
+
+self.addEventListener('activate', (evento) => {
+  evento.waitUntil(
+    caches.keys()
+      .then((chaves) => Promise.all(chaves.filter((chave) => chave !== CACHE).map((chave) => caches.delete(chave))))
+      .then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', (evento) => {
+  const requisicao = evento.request;
+  const url = new URL(requisicao.url);
+  // API, terceiros, POSTs, páginas com query e qualquer recurso não previsto
+  // seguem direto para a rede e jamais ficam no Cache Storage.
+  if (requisicao.method !== 'GET' || url.origin !== self.location.origin || url.search || !ARQUIVOS_CACHEAVEIS.has(url.pathname)) return;
+
+  evento.respondWith(
+    fetch(requisicao, { cache: 'no-store' })
+      .then((resposta) => {
+        if (resposta && resposta.ok) {
+          const copia = resposta.clone();
+          caches.open(CACHE).then((cache) => cache.put(requisicao, copia)).catch(() => {});
+        }
+        return resposta;
+      })
+      .catch(() => caches.match(requisicao).then((resposta) => resposta || caches.match('./index.html')))
   );
 });

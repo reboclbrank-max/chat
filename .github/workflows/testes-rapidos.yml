@@ -13,9 +13,15 @@ on:
       - 'tools/ocr-local.py'
       - 'tools/olho.py'
       - 'tools/transcreve.py'
+      - 'index.html'
+      - 'direto.html'
+      - 'ligar.html'
+      - 'limpar.html'
+      - 'console.html'
+      - 'sw.js'
+      - 'dna.json'
       - 'tools/testes/**'
-      - '.github/workflows/email.yml'
-      - '.github/workflows/testes-rapidos.yml'
+      - '.github/workflows/**'
   workflow_dispatch:
 permissions:
   contents: read
@@ -26,8 +32,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: '22'
       - name: Bibliotecas (as mesmas versões do turno)

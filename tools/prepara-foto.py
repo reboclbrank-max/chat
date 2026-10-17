@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# 📐 PREPARA A FOTO v2 (15/10/2026) — foto de celular (12 MP, 3–8 MB, às vezes gravada "deitada" com a marca EXIF
-# que manda girar) vira JPEG EM PÉ com até 2048 px no lado maior, ANTES de tudo: a internet recebe um arquivo
-# pequeno (serviço gratuito recusa anexo grande) e a visão local, o leitor de texto e o olho veem a foto em pé.
-# Foto pequena, em pé e em JPEG/PNG passa direto (nada muda). Formato que o Pillow lê (WEBP etc.) vira JPEG.
+# 📐 PREPARA A FOTO v3 (17/10/2026) — foto de celular (12 MP, 3–8 MB, às vezes gravada "deitada" com a marca EXIF
+# que manda girar) vira JPEG EM PÉ com até 2048 px no lado maior, ANTES de tudo. Toda imagem é regravada em JPEG
+# novo: orientação é aplicada e EXIF/metadados (inclusive localização) não seguem para visão/OCR externos.
+# A visão local, o leitor de texto e o olho recebem a mesma cópia higienizada; formatos que o Pillow lê viram JPEG.
 # v2: abre HEIC/HEIF (formato do iPhone) quando o pillow-heif está instalado; --grade junta até 4 fotos numa
 #     MONTAGEM NUMERADA (1, 2, 3, 4 no canto de cada uma), para e-mail com várias fotos.
 # Uso: python3 tools/prepara-foto.py entrada saida.jpg [--lado 2048]          → JSON {"ok", "mudou", "info"}
@@ -125,8 +125,8 @@ def main():
                 orient = int(im.getexif().get(0x0112, 1) or 1)
             except Exception:
                 orient = 1
-            if max(w0, h0) <= lado and orient == 1 and fmt in ('JPEG', 'PNG') and tamanho <= 1500000:
-                sai({'ok': True, 'mudou': False, 'info': '%dx%d %s (já estava boa)' % (w0, h0, fmt)})
+            # Mesmo uma foto pequena e já em pé é regravada: não reutilizamos EXIF,
+            # ICC/thumbnail ou outros metadados do arquivo original em envio externo.
             im2 = em_pe_rgb(im)
             if max(im2.size) > lado:
                 im2.thumbnail((lado, lado), Image.LANCZOS)

@@ -21,6 +21,13 @@ Página de conversa com a **IA gratuita da Rebocl Brank**.
 
 Para mudar o visual ou o texto, edite `index.html` e faça commit. O GitHub Pages publica sozinho em ~1 minuto.
 
+## Segurança e privacidade
+
+- **Token:** informe-o apenas em **⚙️ Configurar acesso**. Ele fica na sessão atual do navegador; links com `?t=` e comandos `!token` não ativam nem enviam credenciais. Um token antigo armazenado no navegador é migrado para a sessão e removido do armazenamento persistente.
+- **Enxame:** o canal público só pode sugerir motores. Veja candidatos com `!candidatos` e aprove cada um conscientemente com `!plantar <base> | <modelo> | <nome>`; bases e modelos passam por validação antes de entrar na frota.
+- **Dados do dono:** pings automáticos não levam memória/persona e resumos internos não são publicados no canal do enxame.
+- **Fotos por e-mail:** toda foto é regravada sem EXIF/metadados antes do processamento. O OCR externo só é usado quando o e-mail trouxer autorização explícita, por exemplo: `ocr externo: sim`; o OCR local continua sendo a primeira opção.
+
 ## v1.3 — a máquina (console + cérebro local turbinado)
 
 - **Console da IA** (`console.html`): um painel único que mostra **tudo junto** — motores e placar, cérebro próprio, piloto automático, fila de publicação, métricas ao vivo, avisos — e manda ordens para o agente (medir, postar, ligar/desligar o piloto, `pensar:`).

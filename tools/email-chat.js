@@ -40,6 +40,21 @@ const { ImapFlow } = require('imapflow');
 const nodemailer = require('nodemailer');
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+const path = require('path');
+const os = require('os');
+// Cada anexo usa diretório privado do processo: nunca reaproveita conteúdo de outra
+// conversa e a limpeza acontece mesmo em erro/timeout.
+function criaTemp(prefixo) {
+  const fsLocal = require('fs');
+  return fsLocal.mkdtempSync(path.join(os.tmpdir(), 'rebocl-' + prefixo + '-'));
+}
+function limpaTemp(dir) {
+  try { require('fs').rmSync(dir, { recursive: true, force: true }); } catch (e) {}
+}
+function extSegura(tipo, padrao) {
+  const ext = String(tipo || '').split('/')[1] || padrao || 'bin';
+  return /^[a-z0-9]{1,8}$/i.test(ext) ? ext.toLowerCase() : (padrao || 'bin');
+}
 function qpDecode(s, enc) {
   s = String(s || '').replace(/=\r?\n/g, '');
   const bytes = []; let out = '';
@@ -437,35 +452,40 @@ async function cerebro(pergunta, imagem, opcoes) {
 async function olhoDaFoto(imagem) {
   const spawnSync = require('child_process').spawnSync;
   const fsLocal = require('fs');
-  const caminho = '/tmp/olho-casa.' + (imagem.tipo.split('/')[1] || 'png');
-  try { fsLocal.writeFileSync(caminho, Buffer.from(imagem.b64, 'base64')); } catch (e) { return ''; }
-  const r = spawnSync('python3', ['tools/olho.py', caminho], { timeout: 90000, encoding: 'utf8' });
+  const dir = criaTemp('olho');
+  const caminho = path.join(dir, 'imagem.' + extSegura(imagem && imagem.tipo, 'png'));
   try {
+    fsLocal.writeFileSync(caminho, Buffer.from(imagem.b64, 'base64'));
+    const r = spawnSync('python3', ['tools/olho.py', caminho], { timeout: 90000, encoding: 'utf8' });
     const j = JSON.parse(String(r.stdout || '').trim().split(NL).pop());
     return String(j.descricao || '').trim();
   } catch (e) { return ''; }
+  finally { limpaTemp(dir); }
 }
 // 🎯 OLHO v4 — pistas medidas (rostos, faixas de cena) para APOIAR os motores de visão no prompt.
 async function olhoPistas(imagem) {
   const spawnSync = require('child_process').spawnSync;
   const fsLocal = require('fs');
-  const caminho = '/tmp/olho-pistas.' + (imagem.tipo.split('/')[1] || 'png');
-  try { fsLocal.writeFileSync(caminho, Buffer.from(imagem.b64, 'base64')); } catch (e) { return ''; }
-  const r = spawnSync('python3', ['tools/olho.py', caminho], { timeout: 90000, encoding: 'utf8' });
+  const dir = criaTemp('pistas');
+  const caminho = path.join(dir, 'imagem.' + extSegura(imagem && imagem.tipo, 'png'));
   try {
+    fsLocal.writeFileSync(caminho, Buffer.from(imagem.b64, 'base64'));
+    const r = spawnSync('python3', ['tools/olho.py', caminho], { timeout: 90000, encoding: 'utf8' });
     const j = JSON.parse(String(r.stdout || '').trim().split(NL).pop());
     return String(j.pistas || '').trim();
   } catch (e) { return ''; }
+  finally { limpaTemp(dir); }
 }
 // 🔤 v12: OCR LOCAL — lê o TEXTO de foto/scan SEM internet e SEM terceiros (tesseract no runner).
 // Devolve { texto, confianca, motor } ou null; leTextoLocal() devolve só o texto.
 async function leTextoLocalInfo(imagem) {
   const spawnSync = require('child_process').spawnSync;
   const fsLocal = require('fs');
-  const caminho = '/tmp/ocr-casa.' + (String(imagem.tipo || 'image/png').split('/')[1] || 'png');
-  try { fsLocal.writeFileSync(caminho, Buffer.from(imagem.b64, 'base64')); } catch (e) { return null; }
-  const r = spawnSync('python3', ['tools/ocr-local.py', caminho], { timeout: 200000, encoding: 'utf8' });
+  const dir = criaTemp('ocr');
+  const caminho = path.join(dir, 'imagem.' + extSegura(imagem && imagem.tipo, 'png'));
   try {
+    fsLocal.writeFileSync(caminho, Buffer.from(imagem.b64, 'base64'));
+    const r = spawnSync('python3', ['tools/ocr-local.py', caminho], { timeout: 200000, encoding: 'utf8' });
     const bruto = String(r.stdout || '').trim();
     const i = bruto.lastIndexOf('{');
     if (i < 0) return null;
@@ -474,6 +494,7 @@ async function leTextoLocalInfo(imagem) {
     console.log('🔤 OCR local (' + j.motor + ') leu ' + String(j.texto).length + ' caracteres' + (j.confianca ? ' · confiança ' + j.confianca + '%' : ''));
     return { texto: String(j.texto).trim(), confianca: (typeof j.confianca === 'number' ? j.confianca : null), motor: j.motor };
   } catch (e) { return null; }
+  finally { limpaTemp(dir); }
 }
 async function leTextoLocal(imagem) { const j = await leTextoLocalInfo(imagem); return j ? j.texto : ''; }
 // 👁️‍🗨️ v12.6: VISÃO LOCAL — modelo de visão rodando na CPU do runner (llama.cpp), sem serviço de terceiros.
@@ -482,7 +503,7 @@ async function leTextoLocal(imagem) { const j = await leTextoLocalInfo(imagem); 
 // (o python e o llama-mtmd-cli) quando a internet respondeu antes, liberando a CPU.
 // 📐 v12.9: foto de celular (12 MP, 3–5 MB, às vezes gravada "deitada" com a marca EXIF que manda girar) vira JPEG
 // EM PÉ com até 2048 px ANTES de tudo — a internet recebe um arquivo pequeno (serviço gratuito recusa anexo grande)
-// e a visão local, o leitor de texto e o olho veem a foto em pé. Foto pequena e em pé passa direto; erro = original.
+// e a visão local, o leitor de texto e o olho veem a foto em pé. Toda foto é regravada sem metadados; erro = original.
 // 🧹 v12.11: tira frases que vazam a instrução interna ("a casa acrescenta o aviso…") — o aviso real vem do código
 function limpaVazamento(texto) {
   const VAZA = /(acrescent|adiciona|coloca|inclui)[^.\n]{0,50}aviso|aviso[^.\n]{0,50}(autom[áa]tic|sozinh)|\ba casa (acrescenta|adiciona)/i;
@@ -844,24 +865,25 @@ function preparaFoto(img) {
   return new Promise(resolve => {
     if (!img || !img.b64) return resolve(img);
     const fsLocal = require('fs');
-    const marca = Date.now() + '-' + Math.floor(Math.random() * 1e6);
-    const ent = '/tmp/foto-entrada-' + marca, sai = '/tmp/foto-pronta-' + marca + '.jpg';
-    try { fsLocal.writeFileSync(ent, Buffer.from(img.b64, 'base64')); } catch (e) { return resolve(img); }
+    let dir = '';
+    try { dir = criaTemp('foto'); } catch (e) { return resolve(img); }
+    const ent = path.join(dir, 'entrada.' + extSegura(img.tipo, 'bin'));
+    const sai = path.join(dir, 'pronta.jpg');
+    try { fsLocal.writeFileSync(ent, Buffer.from(img.b64, 'base64')); } catch (e) { limpaTemp(dir); return resolve(img); }
     require('child_process').execFile('python3', ['tools/prepara-foto.py', ent, sai], { timeout: 45000 }, (err, stdout) => {
       let j = null;
       try { j = JSON.parse(String(stdout || '').trim().split(NL).pop()); } catch (e) {}
-      try { fsLocal.unlinkSync(ent); } catch (e) {}
       if (err || !j || !j.ok || !j.mudou) {
-        try { fsLocal.unlinkSync(sai); } catch (e) {}
         if (j && j.ok === false) console.log('📐 foto não preparada (' + (j.motivo || 'erro') + ') — sigo com a original');
+        limpaTemp(dir);
         return resolve(img);
       }
       try {
         const dados = fsLocal.readFileSync(sai);
-        fsLocal.unlinkSync(sai);
         console.log('📐 foto preparada: ' + j.info);
         resolve(Object.assign({}, img, { tipo: 'image/jpeg', b64: dados.toString('base64'), bytes: dados.length, preparada: j.info }));
       } catch (e) { resolve(img); }
+      finally { limpaTemp(dir); }
     });
   });
 }
@@ -910,17 +932,28 @@ async function esperaFerramentas() {
 async function renderPdf(a) {
   const spawnSync = require('child_process').spawnSync;
   const fsLocal = require('fs');
+  let dir = '';
   try {
-    fsLocal.writeFileSync('/tmp/scan-casa.pdf', Buffer.from(a.b64, 'base64'));
-    spawnSync('pdftoppm', ['-png', '-r', '130', '-f', '1', '-l', '1', '/tmp/scan-casa.pdf', '/tmp/scan-pagina'], { timeout: 120000 });
-    const achados = fsLocal.readdirSync('/tmp').filter(f => f.indexOf('scan-pagina') === 0 && /\.png$/.test(f));
-    if (!achados.length) return null;
-    const buf = fsLocal.readFileSync('/tmp/' + achados[0]);
+    dir = criaTemp('scan');
+    const entrada = path.join(dir, 'entrada.pdf');
+    const prefixo = path.join(dir, 'pagina');
+    fsLocal.writeFileSync(entrada, Buffer.from(a.b64, 'base64'));
+    spawnSync('pdftoppm', ['-png', '-r', '130', '-f', '1', '-l', '1', entrada, prefixo], { timeout: 120000 });
+    const achado = fsLocal.readdirSync(dir).find(f => /^pagina.*\.png$/.test(f));
+    if (!achado) return null;
+    const buf = fsLocal.readFileSync(path.join(dir, achado));
     if (buf.length < 2000) return null;
     return { tipo: 'image/png', b64: buf.toString('base64'), bytes: buf.length };
   } catch (e) { return null; }
+  finally { if (dir) limpaTemp(dir); }
 }
-async function leTextoDaFoto(imagem) {
+// OCR externo é opcional: uma foto nunca sai para OCR.Space sem autorização
+// explícita no texto do e-mail (ex.: "ocr externo: sim").
+function ocrExternoAutorizado(texto) {
+  return /\b(?:ocr\s+externo|leitura\s+externa)\s*(?::|-)?\s*(?:sim|ok|autorizo|permito)\b/i.test(String(texto || ''));
+}
+async function leTextoDaFoto(imagem, permitido) {
+  if (!permitido) return '';
   try {
     const corpo = 'base64Image=' + encodeURIComponent('data:' + imagem.tipo + ';base64,' + imagem.b64) +
       '&apikey=helloworld&language=por&OCREngine=2&scale=true';
@@ -935,8 +968,6 @@ async function leTextoDaFoto(imagem) {
     return limpo.length >= 2 ? limpo.slice(0, 800) : '';
   } catch (e) { return ''; }
 }
-
-
 // ================== 📄 LEITOR DE DOCUMENTOS (14/10/2026) ==================
 // Anexo de texto/PDF/Word → extrai o texto no próprio runner e responde sobre o conteúdo.
 // PDF: pdftotext (poppler) e, se faltar, pypdf. Word: python-docx. Nunca finge: se não der, avisa.
@@ -961,8 +992,10 @@ async function docTexto(a) {
   const fsLocal = require('fs');
   const spawnSync = require('child_process').spawnSync;
   const nome = (String(a.nome).replace(/[^A-Za-z0-9._-]/g, '_') || 'arquivo').slice(-60);
-  const caminho = '/tmp/doc-recebido-' + nome;
-  try { fsLocal.writeFileSync(caminho, Buffer.from(a.b64, 'base64')); } catch (e) { return ''; }
+  const dir = criaTemp('doc');
+  const caminho = path.join(dir, nome);
+  try {
+    try { fsLocal.writeFileSync(caminho, Buffer.from(a.b64, 'base64')); } catch (e) { return ''; }
   const opcoes = { timeout: 120000, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 };
   // texto puro
   if (/^text\//.test(a.tipo) || /\.[a-z0-9]+$/i.test(nome) && /\.(txt|md|csv|json|xml|ya?ml)$/i.test(nome)) {
@@ -991,6 +1024,7 @@ async function docTexto(a) {
     if (r3.status === 0 && String(r3.stdout || '').trim().length >= 2) return String(r3.stdout).trim().slice(0, 15000);
   }
   return '';
+  } finally { limpaTemp(dir); }
 }
 // ================== fim do leitor ==================
 
@@ -1032,52 +1066,58 @@ async function fala(texto) {
   if (falaTexto.length < 3) return null;
   const spawnSync = require('child_process').spawnSync;
   const fsLocal = require('fs');
-  fsLocal.writeFileSync('/tmp/fala-casa.txt', falaTexto);
-  const tentativas = [
-    ['edge-tts', ['--voice', 'pt-BR-FranciscaNeural', '--file', '/tmp/fala-casa.txt', '--write-media', '/tmp/fala-casa.mp3'], '/tmp/fala-casa.mp3', 'rebocl-voz.mp3'],
-    ['python3', ['-m', 'edge_tts', '--voice', 'pt-BR-FranciscaNeural', '--file', '/tmp/fala-casa.txt', '--write-media', '/tmp/fala-casa.mp3'], '/tmp/fala-casa.mp3', 'rebocl-voz.mp3'],
-    ['edge-tts', ['--voice', 'pt-BR-AntonioNeural', '--file', '/tmp/fala-casa.txt', '--write-media', '/tmp/fala-casa.mp3'], '/tmp/fala-casa.mp3', 'rebocl-voz.mp3'],
-    ['gtts-cli', ['--file', '/tmp/fala-casa.txt', '--lang', 'pt', '--output', '/tmp/fala-casa-g.mp3'], '/tmp/fala-casa-g.mp3', 'rebocl-voz.mp3'],
-    ['python3', ['-m', 'gtts.cli', '--file', '/tmp/fala-casa.txt', '--lang', 'pt', '--output', '/tmp/fala-casa-g.mp3'], '/tmp/fala-casa-g.mp3', 'rebocl-voz.mp3'],
-    ['espeak-ng', ['-v', 'pt-br', '-s', '160', '-f', '/tmp/fala-casa.txt', '-w', '/tmp/fala-casa.wav'], '/tmp/fala-casa.wav', 'rebocl-voz.wav'],
-  ];
-  for (const t of tentativas) {
-    try { if (fsLocal.existsSync(t[2])) fsLocal.unlinkSync(t[2]); } catch (e) {}
-    try { spawnSync(t[0], t[1], { timeout: 90000, stdio: 'ignore' }); } catch (e) {}
-    try {
-      if (fsLocal.existsSync(t[2]) && fsLocal.statSync(t[2]).size > 2500) {
-        return { buf: fsLocal.readFileSync(t[2]), nome: t[3], via: t[0] };
-      }
-    } catch (e) {}
-  }
-  return null;
+  let dir = '';
+  try {
+    dir = criaTemp('fala');
+    const entrada = path.join(dir, 'fala.txt');
+    const edge = path.join(dir, 'fala.mp3');
+    const gtts = path.join(dir, 'fala-g.mp3');
+    const wav = path.join(dir, 'fala.wav');
+    fsLocal.writeFileSync(entrada, falaTexto);
+    const tentativas = [
+      ['edge-tts', ['--voice', 'pt-BR-FranciscaNeural', '--file', entrada, '--write-media', edge], edge, 'rebocl-voz.mp3'],
+      ['python3', ['-m', 'edge_tts', '--voice', 'pt-BR-FranciscaNeural', '--file', entrada, '--write-media', edge], edge, 'rebocl-voz.mp3'],
+      ['edge-tts', ['--voice', 'pt-BR-AntonioNeural', '--file', entrada, '--write-media', edge], edge, 'rebocl-voz.mp3'],
+      ['gtts-cli', ['--file', entrada, '--lang', 'pt', '--output', gtts], gtts, 'rebocl-voz.mp3'],
+      ['python3', ['-m', 'gtts.cli', '--file', entrada, '--lang', 'pt', '--output', gtts], gtts, 'rebocl-voz.mp3'],
+      ['espeak-ng', ['-v', 'pt-br', '-s', '160', '-f', entrada, '-w', wav], wav, 'rebocl-voz.wav'],
+    ];
+    for (const t of tentativas) {
+      try { if (fsLocal.existsSync(t[2])) fsLocal.unlinkSync(t[2]); } catch (e) {}
+      try { spawnSync(t[0], t[1], { timeout: 90000, stdio: 'ignore' }); } catch (e) {}
+      try { if (fsLocal.existsSync(t[2]) && fsLocal.statSync(t[2]).size > 2500) return { buf: fsLocal.readFileSync(t[2]), nome: t[3], via: t[0] }; } catch (e) {}
+    }
+    return null;
+  } catch (e) { return null; }
+  finally { if (dir) limpaTemp(dir); }
 }
-
 async function ouve(anexo) {
   const fsLocal = require('fs');
   const spawnSync = require('child_process').spawnSync;
   const ext = ({ 'audio/mpeg': 'mp3', 'audio/mp3': 'mp3', 'audio/ogg': 'ogg', 'audio/opus': 'opus', 'audio/oga': 'ogg', 'audio/wav': 'wav', 'audio/x-wav': 'wav', 'audio/mp4': 'm4a', 'audio/m4a': 'm4a', 'audio/x-m4a': 'm4a', 'audio/aac': 'aac', 'audio/webm': 'webm', 'audio/flac': 'flac' })[anexo.tipo] || 'bin';
-  const caminho = '/tmp/voz-recebida.' + ext;
-  try { fsLocal.writeFileSync(caminho, Buffer.from(anexo.b64, 'base64')); } catch (e) { return ''; }
-  const modelo = '/tmp/vosk-model-small-pt-0.3';
-  if (!fsLocal.existsSync(modelo)) {
-    try {
-      console.log('🎧 baixando o modelo de escuta (31 MB, uma vez por turno)...');
-      const r = await fetch('https://alphacephei.com/vosk/models/vosk-model-small-pt-0.3.zip', { signal: AbortSignal.timeout(240000) });
-      if (r.ok) {
-        fsLocal.writeFileSync('/tmp/vosk-pt.zip', Buffer.from(await r.arrayBuffer()));
-        spawnSync('unzip', ['-q', '-o', '/tmp/vosk-pt.zip', '-d', '/tmp'], { timeout: 180000 });
-      }
-    } catch (e) { console.log('modelo do ouvido falhou:', e.message); }
-  }
-  if (!fsLocal.existsSync(modelo)) return '';
-  const r = spawnSync('python3', ['tools/transcreve.py', caminho], { timeout: 240000, encoding: 'utf8' });
+  let dir = '';
   try {
-    const j = JSON.parse(String(r.stdout || '').trim().split(NL).pop());
-    return String(j.texto || '').trim();
+    dir = criaTemp('voz');
+    const caminho = path.join(dir, 'recebida.' + extSegura('audio/' + ext, 'bin'));
+    fsLocal.writeFileSync(caminho, Buffer.from(anexo.b64, 'base64'));
+    const modelo = '/tmp/vosk-model-small-pt-0.3';
+    if (!fsLocal.existsSync(modelo)) {
+      try {
+        console.log('🎧 baixando o modelo de escuta (31 MB, uma vez por turno)...');
+        const r = await fetch('https://alphacephei.com/vosk/models/vosk-model-small-pt-0.3.zip', { signal: AbortSignal.timeout(240000) });
+        if (r.ok) {
+          const zip = path.join(dir, 'vosk-pt.zip');
+          fsLocal.writeFileSync(zip, Buffer.from(await r.arrayBuffer()));
+          spawnSync('unzip', ['-q', '-o', zip, '-d', '/tmp'], { timeout: 180000 });
+        }
+      } catch (e) { console.log('modelo do ouvido falhou:', e.message); }
+    }
+    if (!fsLocal.existsSync(modelo)) return '';
+    const r = spawnSync('python3', ['tools/transcreve.py', caminho], { timeout: 240000, encoding: 'utf8' });
+    try { const j = JSON.parse(String(r.stdout || '').trim().split(NL).pop()); return String(j.texto || '').trim(); } catch (e) { return ''; }
   } catch (e) { return ''; }
+  finally { if (dir) limpaTemp(dir); }
 }
-
 // O dono pediu resposta falada?
 function pedeAudio(txt) {
   const t = String(txt || '');
@@ -1278,6 +1318,7 @@ async function processOnce() {
           continue;
         }
         let corpoMsg = pegaTexto(bruto, assunto);
+        const permiteOcrExterno = ocrExternoAutorizado(corpoMsg + ' ' + assunto);
         const semMemoria = /\[SEM-MEMORIA\]/i.test(corpoMsg);   // 🧪 v12.14: teste da memória pela conversa do Gmail
         if (semMemoria) corpoMsg = corpoMsg.replace(/\[SEM-MEMORIA\]/ig, '').trim();
         const anexos = extraiAnexos(bruto);
@@ -1402,7 +1443,7 @@ async function processOnce() {
         // anexado, o texto lido na foto) com um motor de texto, dizendo com franqueza que a foto não pôde ser vista
         if (imagemVisao && !respostaMotor && !mVoz && !respostaFerramenta) {
           let lidoFoto = ocrAceito ? ocrAceito.slice(0, 800) : '';
-          if (!lidoFoto) { lupaFoto = await leTextoDaFoto(imagemVisao); lidoFoto = lupaFoto || ''; }
+          if (!lidoFoto) { lupaFoto = await leTextoDaFoto(imagemVisao, permiteOcrExterno); lidoFoto = lupaFoto || ''; }
           if (textoDoc || lidoFoto) {
             const vistoOlho = await olhoDaFoto(imagemVisao);
             const pedidoSemVisao = 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' Os motores de visão estão fora agora e a casa NÃO conseguiu ver a ' + (imagem ? 'foto' : 'página') + ' em detalhe.' + (lidoFoto ? ' Um leitor de texto leu isto na imagem: «' + lidoFoto + '».' : '') + (vistoOlho ? ' Uma análise simples de pixels (só cores e formas, sem entender a cena) indicou: ' + vistoOlho.slice(0, 500) + '.' : '') + (textoDoc ? NL + NL + 'O dono TAMBÉM anexou um ARQUIVO ("' + docAnexo.nome + '"); texto extraído (pode estar truncado):' + NL + textoDoc : '') + NL + NL + 'Pergunta do dono: ' + perguntaDono + NL + NL + 'Responda em português claro (máx 12 linhas): responda tudo o que der com base no texto acima (principalmente o arquivo). Sobre a foto, diga só o que o leitor de texto ou a análise de pixels indicaram, deixando claro que veio deles (por exemplo: "o leitor de texto achou…", "pelas cores, parece…"). Não invente o conteúdo da foto, não fale da qualidade dela e não precisa avisar que ela não foi vista.';
@@ -1428,7 +1469,7 @@ async function processOnce() {
         else if (imagemVisao) {
           let lido = ocrAceito ? ocrAceito.slice(0, 800) : '';
           let viaLeitura = lido ? 'pelo leitor local (sem internet)' : '';
-          if (!lido) { lido = (lupaFoto !== null ? lupaFoto : await leTextoDaFoto(imagemVisao)); if (lido) viaLeitura = 'pela lupa de texto'; }
+          if (!lido) { lido = (lupaFoto !== null ? lupaFoto : await leTextoDaFoto(imagemVisao, permiteOcrExterno)); if (lido) viaLeitura = 'pela lupa de texto'; }
           if (!lido && ocrIncerto) { lido = ocrIncerto.slice(0, 800); viaLeitura = 'pelo leitor local (leitura incerta)'; }
           const visto = await olhoDaFoto(imagemVisao);
           const pedacos = [];

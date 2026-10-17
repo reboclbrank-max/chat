@@ -19,14 +19,14 @@ jobs:
       VISAO_MODELO: qwen3vl-4b
       VISAO_CACHE: /home/runner/.cache/visao-casa
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - name: Restaura a visão local (cache do modelo)
         id: cache-visao
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: /home/runner/.cache/visao-casa
           key: visao-${{ env.VISAO_MODELO }}-b11635-v1
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: '22'
       - run: npm install --no-save imapflow@2.4.3 nodemailer@10.1.1
@@ -89,7 +89,7 @@ jobs:
           if ls /home/runner/.cache/visao-casa/.pronto-* >/dev/null 2>&1; then echo "ok=1" >> "$GITHUB_OUTPUT"; fi
       - name: Guarda a visão local (cache do modelo)
         if: always() && steps.cache-visao.outputs.cache-hit != 'true' && steps.visao-pronta.outputs.ok == '1'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: /home/runner/.cache/visao-casa
           key: visao-${{ env.VISAO_MODELO }}-b11635-v1
@@ -100,8 +100,8 @@ jobs:
       VISAO_MODELO: qwen3vl-4b
       VISAO_CACHE: /home/runner/.cache/visao-casa
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: '22'
       - run: |

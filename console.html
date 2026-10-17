@@ -2,6 +2,8 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="base-uri 'self'; object-src 'none'; form-action 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#0e0e11">
@@ -136,7 +138,12 @@ const API = 'https://api.github.com';
 const REPO = 'reboclbrank-max/agente';
 const ESTADO_URL = 'https://raw.githubusercontent.com/reboclbrank-max/site/main/estado-ia.json';
 const CHAVE_TOKEN = 'assistente_rebocl_token';
-let token = localStorage.getItem(CHAVE_TOKEN) || '';
+const tokenLegado = localStorage.getItem(CHAVE_TOKEN);
+if (tokenLegado && !sessionStorage.getItem(CHAVE_TOKEN)) {
+  sessionStorage.setItem(CHAVE_TOKEN, tokenLegado);
+  localStorage.removeItem(CHAVE_TOKEN);
+}
+let token = sessionStorage.getItem(CHAVE_TOKEN) || '';
 const $ = (id) => document.getElementById(id);
 
 function api(caminho, opcoes = {}) {
@@ -161,6 +168,26 @@ function esc(t) {
 }
 function quando(iso) {
   try { return new Date(iso).toLocaleString('pt-BR').slice(0, 16); } catch (e) { return String(iso || ''); }
+}
+
+function numeroSeguro(v, padrao) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : (padrao == null ? 0 : padrao);
+}
+function substituirComTexto(el, texto, classe) {
+  const no = document.createElement('span');
+  if (classe) no.className = classe;
+  no.textContent = texto;
+  el.replaceChildren(no);
+}
+function linhaConsole(esquerda, direita) {
+  const linha = document.createElement('div'); linha.className = 'linha';
+  const a = document.createElement('span'); a.textContent = esquerda;
+  const b = document.createElement('span'); b.textContent = direita;
+  linha.append(a, b); return linha;
+}
+function tagConsole(texto, classe) {
+  const n = document.createElement('span'); n.className = 'tag' + (classe ? ' ' + classe : ''); n.textContent = texto; return n;
 }
 
 function historicoMetricas() {
@@ -198,27 +225,36 @@ async function carregarEstado() {
 
   // piloto
   const p = est.piloto || {};
-  $('piloto-estado').innerHTML = p.ligado
-    ? '<span class="tag ok">LIGADO</span>' : '<span class="tag off">desligado</span>';
+  substituirComTexto($('piloto-estado'), p.ligado ? 'LIGADO' : 'desligado', p.ligado ? 'tag ok' : 'tag off');
   $('piloto-ultimo').textContent = p.ultimo_post ? (p.ultimo_post.jogo + ' · ' + quando(p.ultimo_post.em)) : 'ainda não postou';
   const fila = est.fila_publicacao || [];
   $('fila-tam').textContent = fila.length ? fila.length + ' pendente(s): ' + fila.map((f) => f.canal).join(', ') : 'vazia ✓';
 
   // motores
-  const mots = est.motores || [];
-  $('motores').innerHTML = mots.length ? mots.map((m) => {
-    const notas = Object.entries(m.notas || {})
-      .map(([cat, n]) => `<span class="tag">${esc(cat)} ${n}</span>`).join(' ');
-    return `<div class="linha"><span><b>${esc(m.nome)}</b><br>${notas}</span>` +
-      `<span style="text-align:right">✅ ${m.ok_total || 0} · ❌ ${m.falhas_total || 0}` +
-      (m.ms_medio ? `<br><span class="tag">${Math.round(m.ms_medio / 100) / 10}s médio</span>` : '') + `</span></div>`;
-  }).join('') : '<p>sem dados ainda</p>';
+  const mots = Array.isArray(est.motores) ? est.motores : [];
+  const caixaMotores = $('motores');
+  caixaMotores.replaceChildren();
+  if (!mots.length) {
+    const vazio = document.createElement('p'); vazio.textContent = 'sem dados ainda'; caixaMotores.appendChild(vazio);
+  } else for (const m of mots.slice(0, 80)) {
+    const linha = document.createElement('div'); linha.className = 'linha';
+    const esquerda = document.createElement('span');
+    const titulo = document.createElement('b'); titulo.textContent = String((m && m.nome) || 'motor').slice(0, 120);
+    esquerda.appendChild(titulo);
+    const notas = (m && m.notas && typeof m.notas === 'object') ? Object.entries(m.notas).slice(0, 12) : [];
+    if (notas.length) { esquerda.appendChild(document.createElement('br')); notas.forEach(([cat, n]) => esquerda.appendChild(tagConsole(String(cat).slice(0, 40) + ' ' + numeroSeguro(n, 0)))); }
+    const direita = document.createElement('span'); direita.style.textAlign = 'right';
+    direita.textContent = '✅ ' + numeroSeguro(m && m.ok_total, 0) + ' · ❌ ' + numeroSeguro(m && m.falhas_total, 0);
+    const ms = numeroSeguro(m && m.ms_medio, 0);
+    if (ms > 0) { direita.appendChild(document.createElement('br')); direita.appendChild(tagConsole((Math.round(ms / 100) / 10) + 's médio')); }
+    linha.append(esquerda, direita); caixaMotores.appendChild(linha);
+  }
 
   // cérebro
   const c = est.cerebro || {};
   $('cerebro-cache').textContent = (c.cache_respostas || 0) + ' respostas guardadas';
   const ult = (c.ultimas || [])[0];
-  $('cerebro-ultima').textContent = ult ? ('“' + esc((ult.p || '').slice(0, 60)) + '…”') : '—';
+  $('cerebro-ultima').textContent = ult ? ('“' + String(ult.p || '').slice(0, 60) + '…”') : '—';
 
   // métricas (+ sparklines com histórico local)
   const mt = est.metricas || {};
@@ -241,11 +277,10 @@ async function carregarEstado() {
   $('canais-saude').textContent = Object.keys(canais).length
     ? Object.entries(canais).map(([c, st]) => (st === 'ok' ? '🟢 ' : '🔴 ') + c).join('  ')
     : '—';
-  const hist = (est.piloto && est.piloto.historico) || [];
-  $('hist-posts').innerHTML = hist.length ? hist.slice().reverse().map((h) =>
-    '<div class="linha"><span>' + (h.jogo === 'ceifalume' ? '🌙 Ceifalume' : '⚽ Prancheta') +
-    ' · ' + (h.canais_ok != null ? h.canais_ok : 6) + '/6 canais</span><span>' + quando(h.em) + '</span></div>'
-  ).join('') : '<p>nenhum post ainda</p>';
+  const hist = Array.isArray(est.piloto && est.piloto.historico) ? est.piloto.historico : [];
+  const caixaHistorico = $('hist-posts'); caixaHistorico.replaceChildren();
+  if (!hist.length) { const vazio = document.createElement('p'); vazio.textContent = 'nenhum post ainda'; caixaHistorico.appendChild(vazio); }
+  else hist.slice(-80).reverse().forEach((h) => caixaHistorico.appendChild(linhaConsole((h && h.jogo === 'ceifalume' ? '🌙 Ceifalume' : '⚽ Prancheta') + ' · ' + numeroSeguro(h && h.canais_ok, 6) + '/6 canais', quando(h && h.em))));
 
   // avisos
   const av = est.avisos || {};
@@ -254,17 +289,21 @@ async function carregarEstado() {
 }
 
 async function carregarOrdens() {
-  const caixa = $('ordens');
-  if (!token) { caixa.innerHTML = '<p>cole o token no chat (⚙️) para ver e mandar ordens.</p>'; return; }
+  const caixa = $('ordens'); caixa.replaceChildren();
+  const mensagem = (texto) => { const p = document.createElement('p'); p.textContent = texto; caixa.appendChild(p); };
+  if (!token) { mensagem('cole o token no chat (⚙️) para ver e mandar ordens.'); return; }
   try {
     const issues = await api(`/repos/${REPO}/issues?state=all&per_page=8&sort=updated&direction=desc`);
-    caixa.innerHTML = issues.length ? issues.map((i) =>
-      `<div class="linha"><span><b>${esc(i.title)}</b> <span class="tag">#${i.number}</span></span>` +
-      `<span>${i.state === 'open' ? 'aberta' : 'fechada'} · ${quando(i.updated_at)}</span></div>`).join('')
-      : '<p>nenhuma conversa ainda</p>';
-  } catch (e) {
-    caixa.innerHTML = '<p>não consegui listar — confira o token.</p>';
-  }
+    if (!Array.isArray(issues) || !issues.length) { mensagem('nenhuma conversa ainda'); return; }
+    issues.slice(0, 20).forEach((i) => {
+      const linha = document.createElement('div'); linha.className = 'linha';
+      const esquerda = document.createElement('span'); const titulo = document.createElement('b');
+      titulo.textContent = String((i && i.title) || '').slice(0, 180); esquerda.appendChild(titulo); esquerda.appendChild(document.createTextNode(' '));
+      esquerda.appendChild(tagConsole('#' + numeroSeguro(i && i.number, 0)));
+      const direita = document.createElement('span'); direita.textContent = (i && i.state === 'open' ? 'aberta' : 'fechada') + ' · ' + quando(i && i.updated_at);
+      linha.append(esquerda, direita); caixa.appendChild(linha);
+    });
+  } catch (e) { mensagem('não consegui listar — confira o token.'); }
 }
 
 async function mandarOrdem(texto) {
