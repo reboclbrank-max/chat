@@ -10,10 +10,11 @@ const fs = require('fs');
 const path = require('path');
 const { ImapFlow } = require('imapflow');
 const { pegaTexto } = require('./email-chat.js');
+const { aliasesDeTeste, ehRemetenteSintetico } = require('./teste-email-remetentes');
 const USER = process.env.GMAIL_CHAT_ADDR || '';
 const PASS = process.env.GMAIL_CHAT_PASS || '';
-const ARROBA = USER.indexOf('@');
-const ALIAS = ARROBA > 0 ? USER.slice(0, ARROBA) + '+teste' + USER.slice(ARROBA) : 'x@y';
+const ALIASES = aliasesDeTeste(USER);
+const ehMensagemDoTeste = endereco => ehRemetenteSintetico(endereco, ALIASES);
 const ESPERA_MIN = Number(process.env.ESPERA_MIN || 6);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const mascarar = a => { const s = String(a || ''); const i = s.indexOf('@'); return i < 3 ? '***' : s.slice(0, 3) + '***' + (s.indexOf('+') >= 0 ? '+alias' : '') + s.slice(i); };
@@ -59,11 +60,11 @@ const CAIXAS = ['INBOX', '[Gmail]/E-mails enviados', '[Gmail]/Spam'];
           const cab = await client.fetchOne(uid, { envelope: true }, { uid: true });   // 🪶 v3.1: envelope barato antes do source
           if (!cab || !cab.envelope) { vistos.add(caixa + '|' + uid); continue; }
           const deCab = ((cab.envelope.from || [{}])[0].address || '').toLowerCase();
-          if (deCab.indexOf(ALIAS.toLowerCase()) >= 0) { vistos.add(caixa + '|' + uid); continue; }   // 🪶 v3.1: envio nosso (anexo pesado) não baixa
+          if (ehMensagemDoTeste(deCab)) { vistos.add(caixa + '|' + uid); continue; }   // envio sintético próprio (inclusive remetente não autorizado) não é resposta
           const m = await client.fetchOne(uid, { source: true, envelope: true }, { uid: true });
           if (!m || !m.envelope) continue;
           const de = (m.envelope.from || [{}])[0].address || '';
-          if (de.toLowerCase().indexOf(ALIAS.toLowerCase()) >= 0) continue;
+          if (ehMensagemDoTeste(de)) continue;
           const id = m.envelope.messageId || (caixa + '|' + uid);
           const assunto = String(m.envelope.subject || '');
           if (assunto.indexOf('TESTE-REBOCL') < 0) continue;

@@ -34,9 +34,11 @@ ok('regiões e resumo de UF são atendidos localmente', () => {
   assert.match(geo.responde('uf: BA'), /Bahia.*Nordeste.*Salvador.*divisas: 8/);
   assert.deepEqual(geo.dadosUF('SE'), { sigla: 'SE', nome: 'Sergipe', capital: 'Aracaju', regiao: 'Nordeste', divisas: ['Alagoas', 'Bahia'] });
 });
-ok('texto sem pedido geográfico brasileiro não é interceptado', () => {
+ok('texto sem pedido geográfico brasileiro ou comando de outra rota não é interceptado', () => {
   assert.equal(geo.responde('escreva um poema sobre a Bahia'), null);
   assert.equal(geo.responde('capital da França'), null);
+  assert.equal(geo.responde('pesquisa: capital de Sergipe'), null);
+  assert.equal(geo.responde('notícias: capital de Sergipe'), null);
   assert.equal(geo.estadoPorNome('Minas Gerais'), 'MG');
   assert.equal(geo.estadoPorNome('estado inventado'), null);
 });

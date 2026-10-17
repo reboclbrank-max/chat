@@ -10,12 +10,24 @@ Esta é uma auditoria de engenharia baseada no repositório e nas provas dispon�
 
 | Área | Evidência observada | Conclusão |
 |---|---|---|
-| Qualidade | 4 amostras rastreáveis; 40 respostas; 20 questões distintas; média 97,5%; 0 rota muda | Critério de qualidade rastreável satisfeito. A falha histórica 9/10 permanece registrada. |
-| Saúde operacional | Vigia com 8/8 itens verdes em `2026-10-17T05:46:37.227Z`; run `39007488850` success | Confiabilidade observada atual, com pulso público de no máximo uma hora. |
-| Barreira | Suíte local de 24 unidades + 8 cenários passou; CI final `39007569602` success | Alterações passam por porta de regressão antes de uso. |
+| Qualidade | 4 amostras rastreáveis; 40 respostas; 20 questões distintas; média 97,5%; 0 rota muda | Cobertura interna de regressão; não mede satisfação nem capacidade geral. A falha histórica 9/10 permanece registrada. |
+| Saúde operacional | Vigia com 8/8 itens verdes em `2026-10-17T05:46:37.227Z`; run `39007488850` success | Fotografia técnica do momento, não disponibilidade contínua. |
+| Barreira | Suíte local de 24 unidades + 8 cenários passou; CI final `39007569602` success | Porta de regressão antes de uso; não substitui teste real do canal. |
 | Workflows | 12 workflows ativos; actions externas fixadas por SHA; runners em Ubuntu 24.04; permissões explícitas | Orçamento de privilégios é verificável e agora tem teste contínuo. |
 | Navegador público | Chrome isolado provado no run `39000200086`; apenas URL pública e referência opaca entram antes do push | Sem segredos de e-mail/Telegram/IA/marketing no processo de navegação. |
 | Canais | E-mail e Telegram usam o mesmo núcleo, com testes de comandos, origem, anexos e filas | Canais preservados; nenhuma conta, segredo ou destino foi alterado. |
+
+## Teste controlado no canal real — 2026-10-17
+
+Uma rodada ponta a ponta foi executada pela caixa real e pelo trabalhador real do canal, mas com mensagens sintéticas, identificáveis e sem publicar conteúdo privado. Portanto, ela é evidência de comportamento do produto sob carga controlada — **não** de satisfação, adoção ou experiência de uma pessoa usuária.
+
+- Foram enviados 38 casos controlados. No corte original de 14 minutos, 26 respostas chegaram; um caso de e-mail automático ficou corretamente sem resposta; 11 casos que deveriam responder continuavam não lidos.
+- O relatório original mostrou `27/27 PASS`, mas esse número era enganoso: o script montava o denominador só com mensagens que já tinham resposta, ocultando as 11 ausências. Isso é uma falha de aferição, não aprovação do lote.
+- Uma coleta posterior confirmou que os casos pendentes foram atendidos cerca de 14–15 minutos após o início da rodada. Há evidência de fila/latência sob rajada; não há evidência de perda silenciosa nessa rodada. A coleta histórica não deve ser usada como contagem de usuários ou de uma rodada, pois agrega mensagens de até 36 horas.
+- A inspeção sanitizada dos retornos tardios encontrou uma regressão funcional concreta: `pesquisa: capital de Sergipe` foi indevidamente respondido pela ferramenta local de geografia e não trouxe URL de fonte. A causa era a interceptação de qualquer texto com tema geográfico antes da rota `pesquisa:`. A correção preserva os comandos geográficos explícitos e deixa todo prefixo de outra ferramenta chegar à sua rota própria.
+- A coleta também ignorava apenas o alias sintético normal, mas não o alias sintético usado para simular remetente não autorizado; por isso seu inventário poderia contar a própria mensagem de teste como se fosse retorno. A filtragem dos dois aliases foi centralizada e coberta por regressão.
+
+Correções publicadas nesta série: toda entrada enviada agora entra no denominador; ausência de resposta passa a ser `FALHOU`, o processo termina com código não zero em falha/erro, a janela padrão foi ajustada de 14 para 25 minutos conforme a fila observada, e a coleta deixa de contabilizar mensagens sintéticas de ambos os aliases. A nova janela é uma calibração de observação, não uma promessa de SLA.
 
 ## Código e rotas
 
@@ -23,7 +35,7 @@ Esta é uma auditoria de engenharia baseada no repositório e nas provas dispon�
 
 - `tools/email-chat.js` concentra comandos locais, respostas por motores, anexos, memória de conversa curta, retorno de navegação e proteções de origem.
 - Testes simulam MIME problemático, remetente não autorizado, foto, PDF, três fotos, memória, e-mail devolvido e indisponibilidade de motores. Todos passaram na barreira atual.
-- A rota local de geografia é consultada antes de motor/rede apenas quando o pedido é inequivocamente brasileiro; texto comum não é interceptado.
+- A rota local de geografia é consultada antes de motor/rede apenas quando o pedido é inequivocamente brasileiro; texto comum e comandos explícitos de outras rotas (por exemplo, `pesquisa:`) não são interceptados.
 - Limite preservado: provedores gratuitos podem falhar ou variar. O fallback local responde quando há cobertura local, mas não transforma uma rota externa em SLA.
 
 ### Página e console
@@ -82,4 +94,6 @@ A expansão é reversível: está isolada em `tools/geografia-brasil.js`, sua in
 
 ## Conclusão
 
-Não foi identificado defeito crítico ativo no escopo auditado. Foram encontrados e tratados dois riscos operacionais concretos: vigia saudável que parecia antigo por falta de pulso persistido e ausência de uma guarda automática para pin/privilégio/isolation de workflows. A expansão seguinte começou por uma capacidade factual completa, local e verificável, preservando todos os limites aprovados.
+O Chat estava acessível nas páginas consultadas e respondeu os casos controlados observados, mas **não está comprovado como pronto, forte em rajadas ou satisfatório para uso humano**. O teste real revelou limites que a barreira e o placar não revelavam: fila suficiente para exceder a janela de 14 minutos, um denominador que ocultava mensagens sem resposta, coleta contaminável por remetente sintético e uma regressão que desviava `pesquisa:` para geografia sem fonte.
+
+As correções são verificáveis por código e regressão, mas a confirmação delas no produto exige uma nova rodada real com a aferição corrigida. Até essa confirmação, a conclusão honesta é: canal funcional nos casos observados, com capacidade de rajada ainda em validação e sem evidência de satisfação de pessoas usuárias.

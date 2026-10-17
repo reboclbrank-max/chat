@@ -167,6 +167,10 @@ function respostaUF(limpo, bruto) {
 
 function responde(texto) {
   const bruto = String(texto || '').trim();
+  // Um comando explícito de outra ferramenta deve chegar à sua própria rota. Sem esta guarda,
+  // `pesquisa: capital de Sergipe` seria respondido localmente e perderia as fontes pedidas.
+  const comando = bruto.match(/^\s*([^:\s]+)\s*:/);
+  if (comando && !/^(divisas?|fronteiras?|capital|capitais|regi[aã]o|regi[oõ]es|uf|estado)$/i.test(comando[1])) return null;
   const limpo = normaliza(bruto);
   if (!limpo) return null;
   return respostaDivisas(limpo, bruto) || respostaCapital(limpo, bruto) || respostaRegiao(limpo, bruto) || respostaUF(limpo, bruto);

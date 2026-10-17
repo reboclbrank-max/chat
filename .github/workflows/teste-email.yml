@@ -5,7 +5,7 @@ on:
       espera:
         description: 'minutos de espera pelas respostas'
         required: false
-        default: '14'
+        default: '25'
       script:
         description: 'qual teste rodar'
         required: false

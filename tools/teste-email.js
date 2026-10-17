@@ -32,6 +32,8 @@
 // que a originou (In-Reply-To = thread exata) e roda CHECAGENS AUTOMÁTICAS por caso no relatório.
 const fs = require('fs');
 const path = require('path');
+const { notaSemResposta, notaDoCaso, resumoDasNotas } = require('./teste-email-resultado');
+const { aliasesDeTeste } = require('./teste-email-remetentes');
 // v3.8: frases que o chat usa quando responde em modo degradado (motores da internet fora)
 const PANE = /vis[ãa]o local|motores[^.\n]{0,40}(fora|oscilando)|c[ée]rebros[^.\n]{0,20}oscilando|n[ãa]o (p[ôo]de|pude|consegui|conseguiu)[^.\n]{0,25}(ver|vista)/i;
 function avalia(e, texto) {
@@ -42,11 +44,11 @@ function avalia(e, texto) {
 
 const USER = process.env.GMAIL_CHAT_ADDR || '';
 const PASS = process.env.GMAIL_CHAT_PASS || '';
-const ESPERA_MIN = Number(process.env.ESPERA_MIN || 16);
-const ARROBA = USER.indexOf('@');
-const ALIAS = ARROBA > 0 ? USER.slice(0, ARROBA) + '+teste' + USER.slice(ARROBA) : 'teste@exemplo.com';
+const ESPERA_MIN = Number(process.env.ESPERA_MIN || 25);
+const ALIASES = aliasesDeTeste(USER);
+const ALIAS = ALIASES.teste;
 const MARCA = '[TESTE-REBOCL]';
-const ALIAS_ESTRANHO = ARROBA > 0 ? USER.slice(0, ARROBA) + '+estranho' + USER.slice(ARROBA) : 'estranho@exemplo.com';   // v3.12: remetente não autorizado
+const ALIAS_ESTRANHO = ALIASES.estranho;   // v3.12: remetente não autorizado
 const CRLF = String.fromCharCode(13, 10);
 const NL = String.fromCharCode(10);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -402,11 +404,12 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
   L.push('Rodada com o canal já corrigido (CAPS + assinatura + memória). Cada resposta é casada com o e-mail que a originou (In-Reply-To) e passa por checagem automática. Leitura pelo MESMO parser do canal.');
   L.push('');
   const resp = enviados.map(e => ({ e, r: casa(e) }));
-  // v3.11: o automático passa se foi LIDO e ficou SEM resposta (o chat viu e decidiu não responder)
-  const notaSemResposta = x => x.r ? 'FALHOU (respondeu um e-mail automático)' : (/LIDO sem resposta/.test(sumico.get(x.e.id) || '') ? 'PASS (lido e não respondido — RFC 3834)' : 'FALHOU (o chat não chegou a olhar o e-mail automático)');
+  // Cada envio entra no denominador. Resposta ausente é falha explícita — nunca pode sumir da evidência.
   const ok = resp.filter(x => x.r && !x.e.semResposta).length;
-  const notas = resp.filter(x => (x.r && x.e.check) || x.e.semResposta).map(x => x.e.semResposta ? notaSemResposta(x) : avalia(x.e, textoDe(x)));
-  L.push('- enviados: ' + enviados.length + ' · respondidos: ' + ok + ' · checagens PASS: ' + notas.filter(n => n.indexOf('PASS') === 0).length + '/' + notas.length + (notas.some(n => n.indexOf('PANE') === 0) ? ' · em modo de pane (motores da internet fora): ' + notas.filter(n => n.indexOf('PANE') === 0).length : ''));
+  const nota = x => notaDoCaso(x, { sumico, avalia, textoDe });
+  const notas = resp.map(nota);
+  const resumo = resumoDasNotas(notas);
+  L.push('- enviados: ' + enviados.length + ' · respondidos: ' + ok + ' · checagens PASS: ' + resumo.passou + '/' + resumo.total + ' · falhas: ' + resumo.falhou + (notas.some(n => n.indexOf('PANE') === 0) ? ' · em modo de pane (motores da internet fora): ' + notas.filter(n => n.indexOf('PANE') === 0).length : ''));
   const lat = resp.filter(x => x.r && !x.e.semResposta).map(x => (x.r.quando - x.e.enviadoEm) / 60000);
   if (lat.length) L.push('- latência: ' + Math.min.apply(null, lat).toFixed(1) + '–' + Math.max.apply(null, lat).toFixed(1) + ' min (média ' + (lat.reduce((a, b) => a + b, 0) / lat.length).toFixed(1) + ')');
   L.push('');
@@ -418,23 +421,24 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
     L.push('');
     L.push('**Espera-se:** ' + x.e.esperado);
     L.push('');
+    const resultado = nota(x);
     if (x.e.semResposta) {
-      L.push('**Checagem automática:** ' + notaSemResposta(x) + ' · **' + (x.r ? 'respondeu em ' + ((x.r.quando - x.e.enviadoEm) / 60000).toFixed(1) + ' min' : 'sem resposta, como esperado') + '**');
+      L.push('**Checagem automática:** ' + resultado + ' · **' + (x.r ? 'respondeu em ' + ((x.r.quando - x.e.enviadoEm) / 60000).toFixed(1) + ' min' : 'sem resposta, como esperado') + '**');
       if (x.r) { L.push(''); L.push('```'); L.push(x.r.texto.slice(0, 800)); L.push('```'); }
     } else if (x.r) {
-      L.push('**Checagem automática:** ' + (x.e.check ? avalia(x.e, textoDe(x)) : '—') + ' · **Resposta em ' + ((x.r.quando - x.e.enviadoEm) / 60000).toFixed(1) + ' min** (' + x.r.caixa + ')');
+      L.push('**Checagem automática:** ' + resultado + ' · **Resposta em ' + ((x.r.quando - x.e.enviadoEm) / 60000).toFixed(1) + ' min** (' + x.r.caixa + ')');
       L.push('');
       L.push('```');
       L.push(textoDe(x).slice(0, 2200) || '(vazio)');
       L.push('```');
-    } else { L.push('**SEM RESPOSTA na janela** ❌' + (sumico.get(x.e.id) ? ' — ' + sumico.get(x.e.id) : '')); }
+    } else { L.push('**Checagem automática:** ' + resultado + ' ❌'); }
     L.push('');
   }
   L.push('## Todas as respostas vistas na janela');
   for (const r of [...porMensagem.values()].sort((a, b) => a.quando - b.quando)) L.push('- ' + new Date(r.quando).toISOString().slice(11, 16) + ' · ' + r.caixa + ' · ' + r.assunto.replace(MARCA + ' ', '').slice(0, 70));
   L.push('');
   L.push('---');
-  L.push('_Gerado por `tools/teste-email.js` v3.19 (workflow `teste-email.yml`)._');
+  L.push('_Gerado por `tools/teste-email.js` v3.20 (workflow `teste-email.yml`)._');
   const ts = new Date().toISOString().slice(0, 16).split(':').join('').split('T').join('-');
   const destino = path.join(__dirname, '..', 'provas', 'teste-email-r3-' + ts + '.md');
   fs.mkdirSync(path.dirname(destino), { recursive: true });
@@ -442,5 +446,5 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
   console.log(NL + L.join(NL).slice(0, 3500));
   console.log('💾 salvo em', destino);
   try { await comTeto(client.logout(), 15000, 'logout'); } catch (e) {}   // 🛡️ v3.17
-  process.exit(0);
-})().catch(e => { console.error('ERRO:', e.message); process.exit(0); });
+  process.exit(resumo.tudoPassou ? 0 : 1);
+})().catch(e => { console.error('ERRO:', e.message); process.exit(1); });
