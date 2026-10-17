@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# 🔤 OCR LOCAL DA CASA v1 (14/10/2026) — lê TEXTO de imagem SEM internet e SEM terceiros.
-# Motor: tesseract (por+eng) quando instalado no runner. Se não houver motor, ele diz que
-# não há — o olho local e a lupa continuam funcionando do jeito que estavam.
-# Uso: python3 tools/ocr-local.py /caminho/imagem.png  → JSON na stdout.
+# 🔤 OCR LOCAL DA CASA — lê texto de imagem sem internet nem terceiros.
+# Tesseract recebe a imagem original e, se a leitura falhar, cópias locais em cinza/alto contraste.
 import json
 import os
+import re
 import subprocess
 import sys
+import tempfile
 from shutil import which
 
 
@@ -28,9 +28,9 @@ def tesseract(caminho, extra):
     raise RuntimeError(ultima or 'tesseract não respondeu')
 
 
-def confianca(caminho):
+def confianca(caminho, psm):
     try:
-        t = tesseract(caminho, ['--psm', '3', 'tsv'])
+        t = tesseract(caminho, ['--psm', str(psm), 'tsv'])
         vals = []
         for linha in t.splitlines()[1:]:
             p = linha.split('\t')
@@ -44,6 +44,51 @@ def confianca(caminho):
         return None
 
 
+def limpa(texto):
+    return ' '.join((texto or '').split())
+
+
+def pontua(texto, conf):
+    # Confiança do motor é sinal principal; caracteres alfanuméricos evitam escolher saída vazia.
+    uteis = len(re.findall(r'[0-9A-Za-zÀ-ÿ]', texto or ''))
+    return (float(conf) if conf is not None else 0) * 10 + min(uteis, 180)
+
+
+def candidatos(caminho):
+    # Primeiro caminho barato: não cria cópia quando o Tesseract já lê a imagem original.
+    texto = limpa(tesseract(caminho, ['--psm', '3']))
+    if len(texto) >= 3:
+        yield texto, confianca(caminho, 3), 'original'
+        return
+
+    # Fotos/JPEG regravados podem perder contraste em letras pequenas. Tudo abaixo é efêmero e local.
+    try:
+        from PIL import Image, ImageOps, ImageEnhance
+    except Exception:
+        return
+    with tempfile.TemporaryDirectory(prefix='rebocl-ocr-') as pasta:
+        with Image.open(caminho) as im:
+            im = ImageOps.exif_transpose(im).convert('L')
+            if max(im.size) < 2200:
+                escala = min(3, max(1, 2200 // max(im.size)))
+                if escala > 1:
+                    im = im.resize((im.width * escala, im.height * escala), Image.Resampling.LANCZOS)
+            auto = ImageOps.autocontrast(im, cutoff=1)
+            contraste = ImageEnhance.Contrast(auto).enhance(1.8)
+            limiar = contraste.point(lambda x: 255 if x > 165 else 0)
+            variantes = [('auto', auto), ('contraste', contraste), ('limiar', limiar)]
+            for nome, variante in variantes:
+                arquivo = os.path.join(pasta, nome + '.png')
+                variante.save(arquivo, 'PNG', optimize=True)
+                for psm in (6, 11):
+                    try:
+                        texto = limpa(tesseract(arquivo, ['--psm', str(psm)]))
+                        if len(texto) >= 3:
+                            yield texto, confianca(arquivo, psm), nome + '/psm' + str(psm)
+                    except Exception:
+                        pass
+
+
 def main():
     if len(sys.argv) < 2:
         falha('sem imagem')
@@ -53,12 +98,12 @@ def main():
 
     if which('tesseract'):
         try:
-            bruto = tesseract(caminho, ['--psm', '3'])
-            texto = ' '.join(bruto.split())
-            if len(texto) >= 3:
+            opcoes = list(candidatos(caminho))
+            if opcoes:
+                texto, conf, variante = max(opcoes, key=lambda x: pontua(x[0], x[1]))
                 print(json.dumps({'ok': True, 'motor': 'tesseract', 'texto': texto[:3000],
-                                  'linhas': len([l for l in bruto.splitlines() if l.strip()]),
-                                  'confianca': confianca(caminho)}, ensure_ascii=False))
+                                  'linhas': max(1, len(texto.splitlines())), 'confianca': conf,
+                                  'variante': variante}, ensure_ascii=False))
                 return
             falha('o tesseract não achou texto na imagem')
         except Exception as e:
