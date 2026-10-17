@@ -1,6 +1,6 @@
 {
   "esquema": "placar-capacidade-v2",
-  "gerado_em": "2026-10-17T05:18:59.926Z",
+  "gerado_em": "2026-10-17T05:21:41.642Z",
   "aviso": "Indicador operacional, não teste de QI, consciência, nem garantia de disponibilidade.",
   "total_em_100": 94,
   "dimensoes": [
@@ -54,8 +54,8 @@
     "baterias": 5,
     "media_bateria": 92,
     "qualidade_rastreavel": false,
-    "cobertura_questoes": 17,
-    "respostas_auditadas": 20
+    "cobertura_questoes": 19,
+    "respostas_auditadas": 30
   },
   "proximas_melhorias": [
     "confiabilidade observada: tratar os itens vermelhos do vigia antes de aumentar a cadência",
