@@ -1,14 +1,14 @@
 {
   "esquema": "placar-capacidade-v2",
-  "gerado_em": "2026-10-17T05:21:41.642Z",
+  "gerado_em": "2026-10-17T05:31:17.471Z",
   "aviso": "Indicador operacional, não teste de QI, consciência, nem garantia de disponibilidade.",
-  "total_em_100": 94,
+  "total_em_100": 95,
   "dimensoes": [
     {
       "nome": "qualidade de respostas",
       "maximo": 20,
-      "pontos": 18,
-      "evidencia": "5 bateria(s) recente(s), média 92%, 1 rota(s) muda(s)",
+      "pontos": 19,
+      "evidencia": "5 bateria(s) recente(s), média 94%, 0 rota(s) muda(s)",
       "comoMelhorar": "manter amostras distintas, corrigir regressões e registrar falhas de rota"
     },
     {
@@ -52,7 +52,7 @@
     "itens_vigia_total": 8,
     "vigia_recente": false,
     "baterias": 5,
-    "media_bateria": 92,
+    "media_bateria": 94,
     "qualidade_rastreavel": false,
     "cobertura_questoes": 19,
     "respostas_auditadas": 30

@@ -1,10 +1,10 @@
 {
   "esquema": "qualidade-chat-v1",
-  "atualizado_em": "2026-10-17T05:21:41.591Z",
+  "atualizado_em": "2026-10-17T05:31:17.424Z",
   "aviso": "Histórico público sanitizado: IDs e placar, sem e-mails, destinos, respostas integrais ou segredos.",
   "baterias": [
     {
-      "quando": "2026-10-17T05:21:41.591Z",
+      "quando": "2026-10-17T05:31:17.424Z",
       "amostra": "auditoria-capacidade-8",
       "banco": "v2",
       "ids": [
@@ -20,12 +20,12 @@
         112
       ],
       "total": 10,
-      "certos": 9,
+      "certos": 10,
       "mudos": 0,
       "rotas": {
-        "frota": 4,
-        "reserva": 4,
-        "llm7": 2
+        "reserva": 6,
+        "frota": 3,
+        "geografia local": 1
       }
     },
     {
