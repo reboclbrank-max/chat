@@ -17,6 +17,8 @@ const TESTE = String(process.env.VIGIA_TESTE || process.argv[2] || '').toLowerCa
 const agora = new Date().toISOString();
 const h = ms => ms / 36e5;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+// Uma checagem de saúde não pode ficar pendurada numa conexão IMAP e deixar de publicar o próprio estado.
+const comTeto = (p, ms, rotulo) => { Promise.resolve(p).catch(() => {}); return Promise.race([p, new Promise((_, rejeita) => setTimeout(() => rejeita(new Error('teto ' + Math.round(ms / 1000) + 's: ' + rotulo)), ms))]); };
 
 async function buscaJSON(url) {
   const r = await fetch(url, { headers: { 'User-Agent': 'vigia-casa/1', 'Accept': 'application/vnd.github+json' }, signal: AbortSignal.timeout(30000) });
@@ -133,20 +135,20 @@ async function acao(rotulo, arquivo) {
     let imap = null;
     try { imap = require('imapflow'); } catch (e) { throw new Error('imapflow ausente nesta execução'); }
     const cli = new imap.ImapFlow({ host: 'imap.gmail.com', port: 993, secure: true, auth: { user: USER, pass: PASS }, logger: false });
-    await cli.connect();
+    await comTeto(cli.connect(), 45000, 'conexão IMAP');
     try {
-      const lock = await cli.getMailboxLock('INBOX');
+      const lock = await comTeto(cli.getMailboxLock('INBOX'), 30000, 'trava da caixa');
       try {
-        const uids = await cli.search({ seen: false });
+        const uids = await comTeto(cli.search({ seen: false }), 30000, 'busca de não lidos');
         const alvo = uids || [];
         if (!alvo.length) return 'nada sem resposta';
-        const m = await cli.fetchOne(alvo[0], { envelope: true });
+        const m = await comTeto(cli.fetchOne(alvo[0], { envelope: true }), 30000, 'leitura do não lido');
         const quando = (m && m.envelope && m.envelope.date) ? new Date(m.envelope.date).getTime() : Date.now();
         const min = (Date.now() - quando) / 60000;
         if (min < 12) return alvo.length + ' e-mail(s) recém-chegado(s) — o turno pega em instantes';
         throw new Error(alvo.length + ' e-mail(s) SEM RESPOSTA, o mais antigo há ' + min.toFixed(0) + ' min');
       } finally { lock.release(); }
-    } finally { try { await cli.logout(); } catch (e) {} }
+    } finally { try { await comTeto(cli.logout(), 15000, 'logout IMAP'); } catch (e) { try { cli.close(); } catch (e2) {} } }
   }));
 
   // ---- estado + anti-alarme-falso (falha só conta após 2 rodadas seguidas) ----
