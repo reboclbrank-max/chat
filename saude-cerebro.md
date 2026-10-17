@@ -1,7 +1,9 @@
-# 🧠 SAÚDE DO CÉREBRO DO CHAT (bateria diária automática v2)
+# 🧠 SAÚDE DO CÉREBRO DO CHAT (bateria automática v3)
 
-Banco v1 (60 questões) · 10/dia rotativo · 3 rodadas × 3 rotas (frota→reserva→omni) · 🔇=infraestrutura muda, não erro de cérebro.
+Banco v1/v2 público · 10 questões por amostra · 3 rodadas × 3 rotas (frota→reserva→omni) · 🔇=infraestrutura muda, não erro de cérebro.
+Cada amostra tem identificador e IDs no `qualidade-historico.json`; reexecução da mesma amostra substitui o registro, não infla a evidência.
 
+- 2026-10-17 04:39 UTC — 9/10 (mudos: 0) · amostra: auditoria-capacidade-1 · banco: v1
 - 2026-10-17 02:58 UTC — 10/10 (mudos: 0) ✨ PERFEITO
 - 2026-10-17 01:31 UTC — 10/10 (mudos: 0) ✨ PERFEITO
 - 2026-10-16 23:54 UTC — 8/10 (mudos: 0)
@@ -18,4 +20,4 @@ Banco v1 (60 questões) · 10/dia rotativo · 3 rodadas × 3 rotas (frota→rese
 - 2026-10-13 21:00 UTC — 9/10 (mudos: 0)
 - 2026-10-13 20:56 UTC — 5/10 (frota→reserva)
 
-**Curva (14 mais recentes):** 5/10 (frota→reserva) | 9/10 (mudos: 0) | 8/10 (mudos: 0) | 10/10 (mudos: 0) ✨ PERFEITO | 10/10 (mudos: 0) ✨ PERFEITO | 9/10 (mudos: 0) | 10/10 (mudos: 0) ✨ PERFEITO | 10/10 (mudos: 0) ✨ PERFEITO | 10/10 (mudos: 0) ✨ PERFEITO | 10/10 (mudos: 0) ✨ PERFEITO | 10/10 (mudos: 0) ✨ PERFEITO | 8/10 (mudos: 0) | 8/10 (mudos: 0) | 10/10 (mudos: 0) ✨ PERFEITO
+**Curva (14 mais recentes):** 8/10 (mudos: 0) | 10/10 (mudos: 0) ✨ PERFEITO | 10/10 (mudos: 0) ✨ PERFEITO | 9/10 (mudos: 0) | 10/10 (mudos: 0) ✨ PERFEITO | 10/10 (mudos: 0) ✨ PERFEITO | 10/10 (mudos: 0) ✨ PERFEITO | 10/10 (mudos: 0) ✨ PERFEITO | 10/10 (mudos: 0) ✨ PERFEITO | 8/10 (mudos: 0) | 8/10 (mudos: 0) | 10/10 (mudos: 0) ✨ PERFEITO | 10/10 (mudos: 0) ✨ PERFEITO | 9/10 (mudos: 0)

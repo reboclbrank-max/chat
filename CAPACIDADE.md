@@ -1,12 +1,12 @@
 # Placar de capacidade do Chat
 
-Atualizado: `2026-10-17T04:31:44.637Z`
+Atualizado: `2026-10-17T04:39:52.623Z`
 
 **Resultado observável: 98/100.** Indicador operacional, não teste de QI, consciência, nem garantia de disponibilidade.
 
 | Dimensão | Pontos | Evidência |
 |---|---:|---|
-| qualidade de respostas | 18/20 | 5 bateria(s) recente(s), média 92%, 0 rota(s) muda(s) |
+| qualidade de respostas | 18/20 | 5 bateria(s) recente(s), média 90%, 0 rota(s) muda(s) |
 | confiabilidade observada | 20/20 | 8/8 itens OK; vigia recente |
 | resiliência e recuperação | 15/15 | vigia=sim, continuidade=sim, barreira=sim |
 | uso seguro de ferramentas | 15/15 | e-mail+Telegram=sim, pesquisa=sim, navegador público=sim |
