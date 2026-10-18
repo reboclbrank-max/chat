@@ -75,7 +75,7 @@ A API de comentários do GitHub entrega no máximo 100 itens por página. Antes 
 
 Agora `paginaFinalComentarios()`/`comentariosRecentes()` carregam uma janela ordenada dos **100 comentários finais** (inclusive quando o último resto tem menos de 100); a interface informa quando o histórico visível é parcial. `comentariosDesde()` usa o cursor `updated_at` com sobreposição de um segundo e deduplicação pelo ID para o polling alcançar comentários recentes sem reler a conversa toda. A emergência busca a mesma janela recente antes de selecionar a última mensagem do dono. Já `todosComentarios()` percorre todas as páginas conhecidas para as exportações geral e da conversa atual.
 
-`tools/testes/paginacao-conversas.js`, incluído em `roda-testes.js`, testa as fronteiras 100/101/201, ordem integral de exportação, cursor com margem e as quatro rotas. A interface continua limitando a renderização a 100 comentários para não degradar o navegador; a exportação é uma fotografia das páginas consultadas e pode não incluir mensagens criadas depois da consulta, nem elimina os limites/rate limits da API.
+`tools/testes/paginacao-conversas.js`, incluído em `roda-testes.js`, testa as fronteiras 100/101/201, ordem integral de exportação, cursor com margem, uma rajada posterior maior que 100 e as quatro rotas. A interface continua limitando a renderização a 100 comentários para não degradar o navegador; a exportação é uma fotografia das páginas consultadas e pode não incluir mensagens criadas depois da consulta, nem elimina os limites/rate limits da API.
 
 #### Catálogo de comandos sem copiar listas defasadas
 

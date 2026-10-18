@@ -332,7 +332,16 @@ function desdeComMargem(iso) {
   return new Date(instante - 1000).toISOString().replace(/\.\d{3}Z$/, 'Z');
 }
 async function comentariosDesde(numero, desde) {
-  return api(caminhoComentarios(numero, 1, desdeComMargem(desde)));
+  const cursor = desdeComMargem(desde);
+  if (!cursor) return api(caminhoComentarios(numero, 1));
+  const todos = [];
+  for (let pagina = 1; ; pagina++) {
+    const lote = await api(caminhoComentarios(numero, pagina, cursor));
+    if (!Array.isArray(lote)) break;
+    todos.push(...lote);
+    if (lote.length < TAMANHO_PAGINA_COMENTARIOS) break;
+  }
+  return todos;
 }
 function registrarComentario(c) {
   if (!c) return;

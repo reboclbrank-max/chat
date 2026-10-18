@@ -83,12 +83,18 @@ async function main() {
     assert.deepEqual(Array.from(todos, (c) => c.id), itens(1, 201).map((c) => c.id));
     assert.deepEqual(r.chamadas.map(paginaDo), [1, 2, 3]);
   });
-  await testaAsync('polling pede somente a janela posterior com margem de um segundo', async () => {
+  await testaAsync('polling pede a janela posterior com margem de um segundo', async () => {
     const r = runtime(src, () => []);
     await r.ctx.desdeTeste(73, '2026-10-18T12:00:00Z');
     assert.equal(r.chamadas.length, 1);
     assert.match(r.chamadas[0], /page=1/);
     assert.match(r.chamadas[0], /since=2026-10-18T11%3A59%3A59Z/);
+  });
+  await testaAsync('polling pagina uma rajada posterior maior que 100 sem perder a cauda', async () => {
+    const r = runtime(src, (caminho) => paginaDo(caminho) === 1 ? itens(301, 400) : itens(401, 401));
+    const novos = await r.ctx.desdeTeste(73, '2026-10-18T12:00:00Z');
+    assert.deepEqual(Array.from(novos, (c) => c.id), itens(301, 401).map((c) => c.id));
+    assert.deepEqual(r.chamadas.map(paginaDo), [1, 2]);
   });
   testa('cursor conserva o maior ID e o instante mais recente', () => {
     const r = runtime(src, () => []);
