@@ -270,6 +270,8 @@ let conversa = null, intervalo = null, ultimoId = 0, ultimoQuando = '', falando 
 
 const $ = (id) => document.getElementById(id);
 const elLista = $('lista'), elMsgs = $('msgs'), elFaixa = $('faixa');
+let paginaLista = 1, listaAtual = [], maisListaDisponivel = false, carregandoMaisLista = false, revisaoLista = 0;
+let filaCacheLista = Promise.resolve();
 
 function api(caminho, opcoes = {}) {
   const uma = () => fetch(API + caminho, {
@@ -340,6 +342,22 @@ async function todasConversas() {
     if (lote.length < TAMANHO_PAGINA_CONVERSAS) break;
   }
   return todas;
+}
+const TAMANHO_PAGINA_LISTA = 50;
+function caminhoListaAberta(pagina = 1) {
+  const p = Math.max(1, Number(pagina) || 1);
+  return `/repos/${REPO}/issues?state=open&per_page=${TAMANHO_PAGINA_LISTA}&sort=updated&page=${p}`;
+}
+function incorporarConversas(lista, lote) {
+  const base = Array.isArray(lista) ? lista.slice() : [];
+  const vistos = new Set(base.map((i) => String((i && i.number) || '')).filter(Boolean));
+  for (const item of (Array.isArray(lote) ? lote : [])) {
+    const chave = String((item && item.number) || '');
+    if (!chave || vistos.has(chave)) continue;
+    vistos.add(chave);
+    base.push(item);
+  }
+  return base;
 }
 function desdeComMargem(iso) {
   const instante = Date.parse(iso || '');
@@ -495,50 +513,126 @@ function voltarLista() {
 function pararPolling() { if (intervalo) { clearInterval(intervalo); intervalo = null; } }
 
 /* ---------- lista ---------- */
+function criarCartaoConversa(i) {
+  const div = document.createElement('div');
+  div.className = 'conv';
+  const rotina = (i.labels || []).some((l) => l.name === 'rotina');
+  div.innerHTML = `<div class="titulo">${rotina ? '📋 ' : ''}${escapar(i.title)}</div>
+    <div class="meta"><span>💬 ${i.comments}</span><span>🕒 ${quando(i.updated_at)}</span></div>`;
+  div.onclick = () => abrir(i.number, i.title);
+  return div;
+}
+function criarCartaoNova() {
+  const nova = document.createElement('div');
+  nova.className = 'conv';
+  nova.id = 'card-nova';
+  nova.style.borderColor = 'var(--ouro-fraco)';
+  nova.innerHTML = '<div class="titulo" style="color:var(--ouro)">＋ Nova conversa</div><div class="meta"><span>fale o que precisa — eu pesquiso, gero imagem, vejo clima…</span></div>';
+  nova.onclick = novaConversa;
+  return nova;
+}
+function criarCartaoMais() {
+  const mais = document.createElement('div');
+  mais.className = 'conv';
+  mais.id = 'card-mais';
+  mais.tabIndex = 0;
+  mais.setAttribute('role', 'button');
+  mais.style.borderColor = 'var(--ouro-fraco)';
+  mais.innerHTML = '<div class="titulo" style="color:var(--ouro)">↓ Carregar mais conversas</div><div class="meta"><span>busca as próximas 50 sem abrir tudo de uma vez</span></div>';
+  mais.onclick = carregarMaisConversas;
+  mais.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); carregarMaisConversas(); } };
+  return mais;
+}
+function salvarListaAtualEmCache() {
+  const fotografia = listaAtual.slice();
+  filaCacheLista = filaCacheLista
+    .catch(() => {})
+    .then(() => cacheSalvarLista(fotografia))
+    .catch(() => {});
+  return filaCacheLista;
+}
+function aplicarFiltroLista() {
+  const busca = $('busca');
+  const termo = busca ? busca.value.trim().toLowerCase() : '';
+  document.querySelectorAll('#lista .conv').forEach((div) => {
+    if (div.id === 'card-nova' || div.id === 'card-mais') { div.style.display = termo ? 'none' : ''; return; }
+    const t = (div.textContent || '').toLowerCase();
+    div.style.display = (!termo || t.indexOf(termo) !== -1) ? '' : 'none';
+  });
+}
+function renderListaAtual(offline = false) {
+  elLista.innerHTML = '';
+  if (!listaAtual.length && !offline) {
+    elLista.innerHTML = '<div class="vazio"><span class="emoji">💬</span>nenhuma conversa ainda.<br>crie a primeira no botão abaixo.</div>';
+  }
+  listaAtual.forEach((i) => elLista.appendChild(criarCartaoConversa(i)));
+  if (!offline && maisListaDisponivel) elLista.appendChild(criarCartaoMais());
+  if (!offline) elLista.appendChild(criarCartaoNova());
+  if (offline) {
+    elFaixa.textContent = '📦 modo offline — mostrando ' + listaAtual.length + ' conversa(s) salvas neste aparelho';
+  } else {
+    elFaixa.textContent = listaAtual.length + ' conversa' + (listaAtual.length === 1 ? '' : 's') + ' carregada' + (listaAtual.length === 1 ? '' : 's') + (maisListaDisponivel ? ' · toque para carregar mais' : '') + ' · tudo fica salvo no GitHub';
+  }
+  aplicarFiltroLista();
+}
 async function carregarLista() {
+  const revisao = ++revisaoLista;
   elLista.innerHTML = '<div class="vazio"><span class="emoji">⏳</span>carregando conversas…</div>';
+  paginaLista = 1;
+  listaAtual = [];
+  maisListaDisponivel = false;
+  carregandoMaisLista = false;
   try {
-    const issues = await api(`/repos/${REPO}/issues?state=open&per_page=50&sort=updated`);
-    elLista.innerHTML = '';
-    if (!issues.length) {
-      elLista.innerHTML = '<div class="vazio"><span class="emoji">💬</span>nenhuma conversa ainda.<br>crie a primeira no botão abaixo.</div>';
-    }
-    issues.forEach((i) => {
-      const div = document.createElement('div');
-      div.className = 'conv';
-      const rotina = (i.labels || []).some((l) => l.name === 'rotina');
-      div.innerHTML = `<div class="titulo">${rotina ? '📋 ' : ''}${escapar(i.title)}</div>
-        <div class="meta"><span>💬 ${i.comments}</span><span>🕒 ${quando(i.updated_at)}</span></div>`;
-      div.onclick = () => abrir(i.number, i.title);
-      elLista.appendChild(div);
-    });
-    const nova = document.createElement('div');
-    nova.className = 'conv';
-    nova.id = 'card-nova';
-    nova.style.borderColor = 'var(--ouro-fraco)';
-    nova.innerHTML = '<div class="titulo" style="color:var(--ouro)">＋ Nova conversa</div><div class="meta"><span>fale o que precisa — eu pesquiso, gero imagem, vejo clima…</span></div>';
-    nova.onclick = novaConversa;
-    elLista.appendChild(nova);
-    elFaixa.textContent = issues.length + ' conversa' + (issues.length === 1 ? '' : 's') + ' · toque para abrir · tudo fica salvo no GitHub';
-    cacheSalvarLista(issues);
+    const issues = await api(caminhoListaAberta(paginaLista));
+    if (revisao !== revisaoLista) return;
+    if (!Array.isArray(issues)) throw new Error('lista de conversas inválida');
+    listaAtual = incorporarConversas([], issues);
+    maisListaDisponivel = issues.length === TAMANHO_PAGINA_LISTA;
+    renderListaAtual();
+    salvarListaAtualEmCache();
   } catch (e) {
+    if (revisao !== revisaoLista) return;
     const cache = await cacheLerLista();
+    if (revisao !== revisaoLista) return;
     if (cache && cache.length) {
-      elLista.innerHTML = '';
-      cache.forEach((i) => {
-        const div = document.createElement('div');
-        div.className = 'conv';
-        div.innerHTML = `<div class="titulo">${escapar(i.title)}</div><div class="meta"><span>💬 ${i.comments}</span><span>🕒 ${quando(i.updated_at)}</span></div>`;
-        div.onclick = () => abrir(i.number, i.title);
-        elLista.appendChild(div);
-      });
-      elFaixa.textContent = '📦 modo offline — mostrando cópias salvas neste aparelho';
+      listaAtual = cache;
+      paginaLista = Math.max(1, Math.ceil(listaAtual.length / TAMANHO_PAGINA_LISTA));
+      maisListaDisponivel = false;
+      renderListaAtual(true);
     } else {
       elLista.innerHTML = `<div class="vazio"><span class="emoji">⚠️</span>não consegui carregar (${escapar(String(e.message))}).<br>confira o token nas configurações ⚙️</div>`;
     }
   }
 }
-
+async function carregarMaisConversas() {
+  if (carregandoMaisLista || !maisListaDisponivel) return;
+  const revisao = revisaoLista;
+  const proximaPagina = paginaLista + 1;
+  const card = $('card-mais');
+  carregandoMaisLista = true;
+  if (card) {
+    card.onclick = null;
+    card.innerHTML = '<div class="titulo">⏳ carregando mais conversas…</div><div class="meta"><span>sem buscar tudo de uma vez</span></div>';
+  }
+  try {
+    const lote = await api(caminhoListaAberta(proximaPagina));
+    if (revisao !== revisaoLista) return;
+    if (!Array.isArray(lote)) throw new Error('página de conversas inválida');
+    paginaLista = proximaPagina;
+    listaAtual = incorporarConversas(listaAtual, lote);
+    maisListaDisponivel = lote.length === TAMANHO_PAGINA_LISTA;
+    renderListaAtual();
+    salvarListaAtualEmCache();
+  } catch (e) {
+    if (revisao !== revisaoLista) return;
+    if (card) {
+      card.innerHTML = '<div class="titulo">↻ Não consegui carregar agora</div><div class="meta"><span>toque para tentar novamente; a lista atual foi preservada</span></div>';
+      card.onclick = carregarMaisConversas;
+    }
+  } finally {
+    if (revisao === revisaoLista) carregandoMaisLista = false;
+  }
+}
 async function novaConversa() {
   const texto = prompt('Primeira mensagem:');
   if (!texto || !texto.trim()) return;
@@ -1939,14 +2033,7 @@ async function importarArquivo(arquivo) {
   }
 }
 function montarBusca() {
-  $('busca').addEventListener('input', (e) => {
-    const termo = e.target.value.trim().toLowerCase();
-    document.querySelectorAll('#lista .conv').forEach((div) => {
-      if (div.id === 'card-nova') { div.style.display = termo ? 'none' : ''; return; }
-      const t = (div.textContent || '').toLowerCase();
-      div.style.display = (!termo || t.indexOf(termo) !== -1) ? '' : 'none';
-    });
-  });
+  $('busca').addEventListener('input', aplicarFiltroLista);
 }
 async function renomearConversa() {
   if (!conversa) return;
