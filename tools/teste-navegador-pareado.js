@@ -41,7 +41,7 @@ function gravaRelatorio(dados) {
   L.push('');
   L.push('## Caminho verificado');
   L.push('');
-  L.push('- e-mail sintético autorizado → validação/filamento do Chat: ' + (dados.inicial ? 'sim' : 'não'));
+  L.push('- e-mail sintético autorizado → validação/fila do Chat: ' + (dados.inicial ? 'sim' : 'não'));
   L.push('- navegador público isolado → estado sanitizado → devolução na mesma conversa: ' + (dados.final ? 'sim' : 'não'));
   L.push('- resumo retornado reconheceu a página pública esperada (`Example Domain`): ' + (dados.conteudo ? 'sim' : 'não'));
   L.push('- respostas correlacionadas à thread exata: ' + (dados.correlacao ? 'sim' : 'não'));
@@ -112,12 +112,16 @@ function inReplyToExato(valor, origem) {
       let lock = null;
       try {
         lock = await comTeto(client.getMailboxLock(caixa), 30000, 'trava IMAP');
-        const uids = await comTeto(client.search({ header: { subject: assunto } }, { uid: true }), 30000, 'busca IMAP');
+        // Busca pela marca curta (a resposta recebe "Re:"), e depois restringe pelo nonce
+        // exclusivo. Assim o próprio coletor não depende de semântica exata do SEARCH do provedor.
+        const uids = await comTeto(client.search({ subject: MARCA + ' N1' }, { uid: true }), 30000, 'busca IMAP');
         for (const uid of uids || []) {
           const m = await comTeto(client.fetchOne(uid, { source: true, envelope: true, internalDate: true }, { uid: true }), 30000, 'leitura IMAP');
-          if (!m || !m.envelope) continue;
+          if (!m || !m.envelope || !String(m.envelope.subject || '').includes(nonce)) continue;
           const id = String(m.envelope.messageId || caixa + '|' + uid);
-          const texto = pegaTexto((m.source || '').toString(), String(m.envelope.subject || ''));
+          // A prova não imprime a resposta; preserva a URL apenas aqui para verificar que o
+          // resumo sanitizado devolveu o endereço público que o navegador realmente abriu.
+          const texto = pegaTexto((m.source || '').toString(), String(m.envelope.subject || ''), { preservaUrls: true });
           const quando = new Date(m.internalDate || m.envelope.date || Date.now()).getTime();
           const anterior = vistas.get(id);
           if (!anterior || texto.length > anterior.texto.length) vistas.set(id, {

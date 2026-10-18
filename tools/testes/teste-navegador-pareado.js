@@ -20,6 +20,8 @@ ok('exige o pareamento pela thread exata, não apenas pelo assunto', () => {
   assert.match(fonte, /function inReplyToExato/);
   assert.match(fonte, /inReplyToExato\(x\.inReplyTo, origem\)/);
   assert.match(fonte, /In-Reply-To/);
+  assert.match(fonte, /client\.search\(\{ subject: MARCA \+ ' N1' \}/);
+  assert.match(fonte, /pegaTexto\([\s\S]{0,180}\{ preservaUrls: true \}/);
 });
 ok('o relatório é sanitizado e declara o limite da evidência controlada', () => {
   assert.match(fonte, /omite endereços, Message-IDs, referências opacas, cabeçalhos e corpos/);
