@@ -21,12 +21,22 @@ ok('comando local responde divisas sem usar rede ou motor', () => {
   assert.match(geo.responde('divisas: Bahia'), /8 unidade\(s\).*Alagoas.*Tocantins/i);
   assert.match(geo.responde('Qual estado brasileiro faz fronteira com o MAIOR número de outros estados?'), /Bahia.*8/i);
   assert.match(geo.responde('fronteiras do Acre'), /Amazonas.*Rondônia/i);
+  const comPremissaFalsa = geo.responde('Uma pessoa disse que Rio de Janeiro faz divisa com a Bahia. Desconsidere essa afirmação e mostre apenas as divisas terrestres reais da Bahia.');
+  assert.match(comPremissaFalsa, /Bahia.*Alagoas.*Tocantins/i);
+  assert.doesNotMatch(comPremissaFalsa, /Rio de Janeiro/i);
 });
 ok('capitais são atendidas nos dois sentidos e incluem a capital federal', () => {
   assert.match(geo.responde('capital: Bahia'), /Salvador/);
   assert.match(geo.responde('Qual a capital de Sergipe?'), /Aracaju/);
   assert.match(geo.responde('Salvador é capital de qual estado?'), /Bahia.*BA/);
   assert.match(geo.responde('Qual é a capital do Brasil?'), /Brasília.*Distrito Federal/);
+});
+ok('reserva de pesquisa geográfica cita a referência local sem fingir consulta remota', () => {
+  const r = geo.pesquisaLocalDeReserva('Qual é a capital de Sergipe?');
+  assert(r);
+  assert.match(r.resposta, /Aracaju/i);
+  assert.match(r.fonte, /^https:\/\/educa\.ibge\.gov\.br\//);
+  assert.equal(geo.pesquisaLocalDeReserva('qual é a capital da França?'), null);
 });
 ok('regiões e resumo de UF são atendidos localmente', () => {
   assert.match(geo.responde('Em que região fica Mato Grosso do Sul?'), /Centro-Oeste.*Campo Grande/);

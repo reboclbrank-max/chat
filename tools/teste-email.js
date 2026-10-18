@@ -34,6 +34,7 @@ const fs = require('fs');
 const path = require('path');
 const { notaSemResposta, notaDoCaso, resumoDasNotas } = require('./teste-email-resultado');
 const { aliasesDeTeste } = require('./teste-email-remetentes');
+const { casosDoPerfil } = require('./avaliacao-profunda-casos');
 // v3.8: frases que o chat usa quando responde em modo degradado (motores da internet fora)
 const PANE = /vis[ãa]o local|motores[^.\n]{0,40}(fora|oscilando)|c[ée]rebros[^.\n]{0,20}oscilando|n[ãa]o (p[ôo]de|pude|consegui|conseguiu)[^.\n]{0,25}(ver|vista)/i;
 function avalia(e, texto) {
@@ -56,7 +57,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const mascarar = a => { const s = String(a || ''); const i = s.indexOf('@'); return i < 3 ? '***' : s.slice(0, 3) + '***' + (s.indexOf('+') >= 0 ? '+alias' : '') + s.slice(i); };
 
 // ---- casos da rodada 3 ----
-const CASOS = [
+const CASOS_R3 = [
   { n: 'R3-1', assunto: MARCA + ' R3-1 — recursos', esperado: 'Dizer os recursos certos: vê fotos, tem comandos (clima/cambio/hora/noticias/status), e o que NÃO tem (WhatsApp etc.).',
     check: t => (/foto/i.test(t) && /whatsapp/i.test(t)) ? 'PASS (cita foto e WhatsApp)' : 'FALHOU (não citou foto/WhatsApp)',
     corpo: 'Me diga, sem enfeite: quais recursos você tem por aqui e quais NÃO tem? (responda em lista curta)' },
@@ -187,8 +188,8 @@ const CASOS = [
     check: t => /Tobias Barreto|Sergipe/i.test(t) ? 'PASS (cidade/UF do CEP)' : 'FALHOU (sem endereço)',
     corpo: 'cep: 49300000' }
 ];
-// Perfil separado: amplia a investigação por dimensão sem alterar a rodada R3, seu histórico ou seu denominador.
-if (PERFIL === 'qualidade-profunda') CASOS.push(...require('./avaliacao-profunda-casos').casosQualidadeProfunda(MARCA));
+// Perfil separado: não reaproveita R3; os dez QP têm relatório e denominador próprios.
+const CASOS = casosDoPerfil(PERFIL, CASOS_R3, MARCA);
 const M3 = { n: 'R3-20', assunto: 'Re: ' + MARCA + ' R3-8 — memória (1/2)',
   esperado: 'MEMÓRIA PELA CONVERSA DO GMAIL: a chave [SEM-MEMORIA] faz o chat ignorar a memória do turno e a citação — só a conversa guardada no Gmail pode lembrar JATOBÁ (é a memória que sobrevive à troca de turno).',
   check: t => /JATOB[ÁA]/i.test(t) ? 'PASS (lembrou JATOBÁ pela conversa do Gmail)' : 'FALHOU (não lembrou pela conversa)' };

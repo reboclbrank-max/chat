@@ -115,6 +115,19 @@ function dadosUF(sigla) {
   return { sigla, nome: NOMES[sigla], capital: CAPITAIS[sigla], regiao: REGIOES[sigla], divisas: nomesDivisas(sigla, true) };
 }
 
+// Em uma pergunta que cita uma premissa falsa, o primeiro estado mencionado pode
+// ser justamente o errado. Para divisas, priorizamos o estado citado depois da
+// ÚLTIMA ocorrência de "divisa/fronteira" — normalmente o alvo do pedido final.
+function estadoAlvoDeDivisas(limpo, bruto) {
+  const pos = Math.max(limpo.lastIndexOf('divisa'), limpo.lastIndexOf('fronteira'));
+  if (pos >= 0) {
+    const trecho = limpo.slice(pos);
+    const todos = Object.entries(NOMES).sort((a, b) => b[1].length - a[1].length);
+    for (const [sigla, nome] of todos) if (contem(trecho, nome)) return sigla;
+  }
+  return estadoPorNome(bruto) || estadoMencionado(bruto);
+}
+
 function respostaDivisas(limpo, bruto) {
   if (!/(divisa|divisas|fronteira|fronteiras)/.test(limpo)) return null;
   const maior = /(maior|mais).{0,45}(numero|quantidade|estado|divisa|fronteira)|(numero|quantidade).{0,45}(maior|mais)/.test(limpo);
@@ -123,7 +136,7 @@ function respostaDivisas(limpo, bruto) {
     const nomes = r.estados.map(x => NOMES[x]).join(', ');
     return '🗺️ ' + nomes + ' é o estado brasileiro com mais divisas: ' + r.maximo + ' outros estados. A Bahia faz divisa com ' + nomesDivisas('BA', false).join(', ') + '.';
   }
-  const sigla = estadoPorNome(bruto) || estadoMencionado(bruto);
+  const sigla = estadoAlvoDeDivisas(limpo, bruto);
   if (!sigla || !DIVISAS[sigla]) return null;
   const vizinhos = nomesDivisas(sigla, true);
   return '🗺️ ' + NOMES[sigla] + ' faz divisa com ' + vizinhos.length + ' unidade(s): ' + vizinhos.join(', ') + '.';
@@ -176,6 +189,16 @@ function responde(texto) {
   return respostaDivisas(limpo, bruto) || respostaCapital(limpo, bruto) || respostaRegiao(limpo, bruto) || respostaUF(limpo, bruto);
 }
 
+// Reserva explícita para pesquisa quando as fontes remotas estão indisponíveis.
+// Não simula consulta ao vivo: informa que o fato vem do mapa local e cita a
+// referência pública usada na auditoria dos dados.
+const FONTE_IBGE_DIVISAO = 'https://educa.ibge.gov.br/jovens/conheca-o-brasil/territorio/19637-divisao-territorial.html';
+function pesquisaLocalDeReserva(texto) {
+  const pergunta = String(texto || '').replace(/^\s*(pesquisa|pesquise|pesquisar|busque|buscar|procure|procurar)(\s+na\s+internet)?\s*[:\-]?\s*/i, '');
+  const resposta = responde(pergunta);
+  return resposta ? { resposta, fonte: FONTE_IBGE_DIVISAO } : null;
+}
+
 function validaMapa() {
   const problemas = [];
   const ufs = Object.keys(NOMES);
@@ -201,4 +224,4 @@ function validaMapa() {
   return problemas;
 }
 
-module.exports = { NOMES, CAPITAIS, REGIOES, DIVISAS, ORDEM_REGIOES, normaliza, estadoPorNome, estadoMencionado, capitalPorNome, capitalMencionada, regiaoMencionada, nomesDivisas, maiorNumeroDeDivisas, dadosUF, responde, validaMapa };
+module.exports = { NOMES, CAPITAIS, REGIOES, DIVISAS, ORDEM_REGIOES, FONTE_IBGE_DIVISAO, normaliza, estadoPorNome, estadoMencionado, estadoAlvoDeDivisas, capitalPorNome, capitalMencionada, regiaoMencionada, nomesDivisas, maiorNumeroDeDivisas, dadosUF, responde, pesquisaLocalDeReserva, validaMapa };

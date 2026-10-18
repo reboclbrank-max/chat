@@ -67,7 +67,7 @@ function casosQualidadeProfunda(marca) {
       check: t => resultado(/267[,.]5/.test(t), 'cálculo local correto', 'não trouxe 267,5')
     },
     {
-      n: 'QP-6', dimensao: 'pesquisa com fonte', fonte: 'fontes públicas consultadas durante a execução; URL deve acompanhar a alegação',
+      n: 'QP-6', dimensao: 'pesquisa com fonte', fonte: 'fonte pública citada; se a consulta remota falhar, reserva local auditada deve declarar esse limite',
       assunto: M + ' QP-6 — pesquisa fundamentada',
       esperado: 'Aracaju e pelo menos uma URL de fonte pública.',
       corpo: 'pesquisa: Qual é a capital de Sergipe? Responda em uma frase e cite as fontes.',
@@ -120,4 +120,10 @@ function casosQualidadeProfunda(marca) {
   ];
 }
 
-module.exports = { METODO, casosQualidadeProfunda, resultado, todos, nenhum };
+// Mantém a rodada R3 e a avaliação profunda mutuamente exclusivas. O perfil
+// profundo não pode enviar casos R3, nem herdar sua memória/denominador.
+function casosDoPerfil(perfil, casosR3, marca) {
+  return perfil === 'qualidade-profunda' ? casosQualidadeProfunda(marca) : (casosR3 || []).slice();
+}
+
+module.exports = { METODO, casosQualidadeProfunda, casosDoPerfil, resultado, todos, nenhum };

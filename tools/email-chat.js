@@ -1011,7 +1011,15 @@ async function buscaFontes(termo) {
 async function respondePesquisa(termo) {
   const fontes = await buscaFontes(termo);
   console.log('🔎 pesquisa: ' + fontes.length + ' fonte(s)');
-  if (!fontes.length) return 'Pesquisei "' + termo + '", mas não consegui consultar as fontes agora (Wikipédia e buscador). Tente de novo em alguns minutos.';
+  if (!fontes.length) {
+    // Reserva só para fatos que o mapa local já traz com referência pública.
+    // A mensagem deixa claro que não houve consulta remota nesta execução.
+    try {
+      const reserva = require('./geografia-brasil').pesquisaLocalDeReserva(termo);
+      if (reserva) return reserva.resposta + NL + NL + 'Fonte local auditada: ' + reserva.fonte + NL + 'Não consegui consultar fontes novas agora; a resposta acima vem da referência local.';
+    } catch (e) {}
+    return 'Pesquisei "' + termo + '", mas não consegui consultar as fontes agora (Wikipédia e buscador). Tente de novo em alguns minutos.';
+  }
   const pedido = 'Você é a Assistente Rebocl, do Brasil, direta e calorosa.' + CAPS + ' O dono pediu uma PESQUISA: "' + termo + '". Responda em português claro (máx 10 linhas) usando SOMENTE as fontes abaixo e cite [1], [2]… depois de cada informação. Se as fontes não responderem, diga isso. Não escreva a lista de fontes (a casa acrescenta).' + NL + NL + fontes.map((f, i) => '[' + (i + 1) + '] ' + f.titulo + NL + f.texto.slice(0, 1200)).join(NL + NL);
   let r = await cerebro(pedido, null);
   if (!r) { const l = await cerebroLocal(pedido); if (l) r = { texto: l.texto }; }

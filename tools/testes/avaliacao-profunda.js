@@ -11,7 +11,7 @@ Module._load = function (pedido) {
   return originalLoad.apply(this, arguments);
 };
 const chat = require(process.argv[2] ? path.resolve(process.argv[2]) : path.join(__dirname, '..', 'email-chat.js'));
-const { METODO, casosQualidadeProfunda } = require('../avaliacao-profunda-casos');
+const { METODO, casosQualidadeProfunda, casosDoPerfil } = require('../avaliacao-profunda-casos');
 let certos = 0;
 let falhas = 0;
 function ok(nome, fn) { try { fn(); certos++; console.log('✔ ' + nome); } catch (e) { falhas++; console.error('✘ ' + nome + ' — ' + e.message); } }
@@ -31,6 +31,15 @@ ok('os dez casos têm ID, dimensão, fonte, pergunta e checagem', () => {
     assert.match(c.n, /^QP-\d+$/); assert(c.dimensao && c.fonte && c.assunto && c.corpo);
     assert.equal(typeof c.check, 'function');
   }
+});
+ok('perfil profundo envia somente os dez QP, separado da rodada R3', () => {
+  const r3 = [{ n: 'R3-1' }, { n: 'R3-2' }];
+  const profundo = casosDoPerfil('qualidade-profunda', r3, '[TESTE-REBOCL]');
+  const normal = casosDoPerfil('rodada-r3', r3, '[TESTE-REBOCL]');
+  assert.equal(profundo.length, 10);
+  assert(profundo.every(c => /^QP-/.test(c.n)), 'perfil profundo não pode herdar R3');
+  assert.deepEqual(normal, r3);
+  assert.notStrictEqual(normal, r3, 'perfil normal recebe cópia para não contaminar a fonte');
 });
 ok('fato local e paráfrase exigem Aracaju', () => {
   assert(passou(porId('QP-1'), 'A capital de Sergipe é Aracaju.'));
