@@ -63,7 +63,15 @@ A rodada é disparada apenas por `teste-email.yml` com `script=tools/teste-quali
 - As respostas da rodada não são usadas para treinar, ajustar prompt de modo a decorar fixture ou remover falhas anteriores.
 - O relatório não é evidência de satisfação. Qualquer futuro feedback humano só pode ser voluntário, explícito, sanitizado e reportado separado dos testes.
 
-## 5. Limites que ainda permanecem
+## 5. Execuções registradas
+
+- **Execução mista, preservada como defeito de aferição:** após barreira `39100942950` e adoção no trabalhador `39101169065`, a execução controlada `39101210050` usou um seletor com defeito e enviou 48 entradas (38 R3 + 10 QP). O relatório sanitizado `provas/avaliacao-profunda-2026-10-18-0603.md` registrou 46/48 PASS; os R3 passaram, enquanto QP-4 e QP-6 falharam. Esse arquivo não é tratado como resultado da bateria profunda de dez casos e não foi apagado.
+- **Correção e rodada isolada:** `casosDoPerfil()` tornou os perfis mutuamente exclusivos; a frase de premissa falsa passou a resolver o estado-alvo depois da referência final a divisa/fronteira; e a consulta geográfica tem reserva local explicitamente identificada quando fontes remotas não respondem. Sintaxe, regressões profundas 12/12, geografia 7/7 e suíte rápida 34/34 passaram localmente; a barreira `39103047903` passou e o trabalhador `39103279033` adotou `dfc5b5d` antes da nova prova.
+- **Evidência de canal corrigida:** a execução controlada `39103304014`, sobre o descendente `b66bb63`, enviou somente 10 QP, recebeu 10 respostas e marcou **10/10 PASS**, sem falhas, com latência de 0,5–1,4 min (média 0,9). O relatório sanitizado é `provas/avaliacao-profunda-2026-10-18-0619.md` no commit `96ead17`. Cada caso traz dimensão e base verificável.
+
+Este resultado reduz incerteza sobre essas dez fixtures no canal naquele intervalo. Ele não apaga o relatório misto, não altera o histórico R3 e não mede pessoas usuárias.
+
+## 6. Limites que ainda permanecem
 
 Mesmo com esta avaliação, não se pode concluir sobre:
 
@@ -75,7 +83,7 @@ Mesmo com esta avaliação, não se pode concluir sobre:
 
 A avaliação reduz incerteza e procura falhas de forma reproduzível; não a elimina. O próximo sinal sobre uso humano continua sendo uma observação normal, voluntária e sanitizada — nunca uma mensagem artificial rebatizada de satisfação.
 
-## 6. Referências metodológicas públicas
+## 7. Referências metodológicas públicas
 
 - NIST AI RMF, função **Measure**: processos TEVV, métricas e detalhes de teste documentados; consulta a especialistas/usuários conforme o contexto. <https://airc.nist.gov/airmf-resources/airmf/5-sec-core/>
 - NIST AI RMF: importância de teste, avaliação, verificação e validação ao longo do ciclo de vida. <https://nvlpubs.nist.gov/nistpubs/ai/nist.ai.100-1.pdf>
