@@ -318,10 +318,16 @@ function markdown(t) {
   s = s.replace(/\n/g, '<br>');
   return s;
 }
-function ehBot(c) { return c.user && c.user.login === 'github-actions[bot]'; }
+const DONO_GITHUB = 'reboclbrank-max';
+const MARCADOR_EMERGENCIA = '<!-- rebocl-emergencia -->';
+function ehRespostaEmergencia(c) {
+  return !!(c && c.user && c.user.login === DONO_GITHUB && String(c.body || '').includes(MARCADOR_EMERGENCIA));
+}
+function ehBot(c) { return !!(c && c.user && c.user.login === 'github-actions[bot]') || ehRespostaEmergencia(c); }
 function limparAssinatura(b) {
   return (b || '')
     .replace(/<!--\s*resp:[^>]*-->/g, '')
+    .replace(/<!--\s*rebocl-emergencia\s*-->/g, '')
     .replace(/^🤖 \*\*Assistente Rebocl\*\*\s*/, '')
     .replace(/\n\n---\n_\(.*?\)_$/s, '')
     .trim();
@@ -456,16 +462,17 @@ async function novaConversa() {
   const texto = prompt('Primeira mensagem:');
   if (!texto || !texto.trim()) return;
   try {
+    const inicio = Date.now();
     const issue = await api(`/repos/${REPO}/issues`, {
       method: 'POST',
       body: JSON.stringify({ title: texto.trim().split('\n')[0].slice(0, 70), body: texto.trim() })
     });
-    abrir(issue.number, issue.title);
+    await abrir(issue.number, issue.title, { inicio, evento: 'issues' });
   } catch (e) { alert('Não consegui criar a conversa: ' + e.message); }
 }
 
 /* ---------- conversa ---------- */
-async function abrir(numero, titulo) {
+async function abrir(numero, titulo, contexto = null) {
   conversa = numero;
   try { localStorage.setItem('rebocl_conv', String(numero)); } catch (e) {}
   ultimoId = 0;
@@ -485,7 +492,7 @@ async function abrir(numero, titulo) {
     rolarFim();
     atualizarBadgeSync();
     if (MODO_LOCAL.ligado) $('faixa-local').classList.remove('oculto');
-    iniciarPolling();
+    iniciarPolling(contexto);
     cacheSalvarConversa(numero, { issue, comentarios });
   } catch (e) {
     const cache = await cacheLerConversa(numero);
@@ -672,11 +679,12 @@ async function enviar() {
     }
     pensando(true);
     try {
+      const inicio = Date.now();
       const nova = await api('/repos/' + REPO + '/issues', { method: 'POST', body: JSON.stringify({ title: texto.trim().split('\n')[0].slice(0, 70), body: texto.trim() }) });
       ultimoId = 0;
-      await abrir(nova.number, nova.title);
+      await abrir(nova.number, nova.title, TURBO ? null : { inicio, evento: 'issues' });
       $('btn-enviar').disabled = true;
-      if (TURBO) emergenciaResponder(nova.number); else iniciarPolling();
+      if (TURBO) emergenciaResponder(nova.number);
     } catch (e) { pensando(false); bolha('bot', '⚠️ não consegui abrir teu caderno: ' + e.message + ' — se der 401, o token venceu; me pede pra trocar.', new Date().toISOString(), '⚠️'); rolarFim(); }
     finally { $('btn-enviar').disabled = false; }
     return;
@@ -700,12 +708,13 @@ async function enviar() {
   $('btn-enviar').disabled = true;
   pensando(true);
   try {
+    const inicio = Date.now();
     const c = await api(`/repos/${REPO}/issues/${conversa}/comments`, {
       method: 'POST', body: JSON.stringify({ body: texto })
     });
     if (c.id > ultimoId) ultimoId = c.id;
     if (TURBO && !MODO_LOCAL.ligado) { emergenciaResponder(conversa); }
-    else iniciarPolling();
+    else iniciarPolling({ inicio, evento: 'issue_comment' });
   } catch (e) {
     pensando(false);
     if (!navigator.onLine && !MODO_LOCAL.ligado) {
@@ -722,10 +731,29 @@ async function enviar() {
   } finally { $('btn-enviar').disabled = false; }
 }
 
-function iniciarPolling() {
+// Quando o workflow privado falha antes de iniciar, a página já possui uma rota de
+// emergência no navegador. Verificar um único run correlacionado evita a espera cega de
+// ~30 s, mas jamais interpreta fila, execução pendente ou ausência de rede como falha.
+async function trabalhadorFalhouRapido(contexto) {
+  if (!contexto || !token || !contexto.evento || !Number.isFinite(Number(contexto.inicio))) return false;
+  const inicio = Number(contexto.inicio);
+  if (Date.now() - inicio > 45000) return false;
+  try {
+    const dados = await api(`/repos/${REPO}/actions/workflows/chat.yml/runs?per_page=10`);
+    const margem = inicio - 4000;
+    return (dados.workflow_runs || []).some((r) => {
+      const quando = Date.parse((r && r.created_at) || '');
+      return r && r.event === contexto.evento && Number.isFinite(quando) && quando >= margem && quando <= Date.now() + 5000 &&
+        r.status === 'completed' && r.conclusion === 'failure';
+    });
+  } catch (e) { return false; }
+}
+
+function iniciarPolling(contexto = null) {
   emergenciaFeita = false;
   pararPolling();
   let tentativas = 0;
+  let checouFalhaRapida = false;
   intervalo = setInterval(async () => {
     tentativas++;
     const estavaNoFim = pertoDoFim();
@@ -743,6 +771,17 @@ function iniciarPolling() {
       });
       if (novos.length) { pensando(false); if (estavaNoFim) rolarFim(); }
       if (respondeu) { pararPolling(); return; }
+      if (!respondeu && contexto && !checouFalhaRapida && tentativas >= 2 && !MODO_LOCAL.ligado && !emergenciaFeita) {
+        checouFalhaRapida = true;
+        if (await trabalhadorFalhouRapido(contexto)) {
+          emergenciaFeita = true;
+          pararPolling();
+          bolha('bot', '⚡ O turno da casa não conseguiu iniciar agora. Vou responder por aqui, sem reenviar sua mensagem.', new Date().toISOString(), '⚡ recuperação');
+          rolarFim();
+          emergenciaResponder(conversa);
+          return;
+        }
+      }
       if (!respondeu && tentativas === 10 && !MODO_LOCAL.ligado && !emergenciaFeita) {
         emergenciaFeita = true;
         emergenciaResponder(conversa);
@@ -1474,13 +1513,22 @@ async function reabrirUltima() {
 }
 async function emergenciaResponder(numero) {
   try {
-    const comentarios = await api('/repos/' + REPO + '/issues/' + numero + '/comments?per_page=100');
-    const hist = comentarios.slice(-12).map((c) => ({
-      role: c.user && c.user.login === 'reboclbrank-max' ? 'user' : 'assistant',
-      content: limparAssinatura(c.body).slice(0, 1200)
-    }));
+    // A abertura da Issue não aparece em /comments. Incluí-la aqui evita que a
+    // rota de emergência responda em branco quando a primeira execução falha.
+    const [issue, comentarios] = await Promise.all([
+      api('/repos/' + REPO + '/issues/' + numero),
+      api('/repos/' + REPO + '/issues/' + numero + '/comments?per_page=100')
+    ]);
+    const inicial = limparAssinatura((issue && issue.body) || '');
+    const hist = (inicial ? [{ role: 'user', content: inicial.slice(0, 1200) }] : []).concat(
+      comentarios.slice(-12).map((c) => ({
+        role: ehBot(c) ? 'assistant' : 'user',
+        content: limparAssinatura(c.body).slice(0, 1200)
+      }))
+    ).slice(-12);
     pararPolling();
-    const minhaMsg = limparAssinatura(([...comentarios].reverse().find((c) => c.user && c.user.login === 'reboclbrank-max') || {}).body || '');
+    const ultimaDoDono = [...comentarios].reverse().find((c) => !ehBot(c) && c.user && c.user.login === DONO_GITHUB);
+    const minhaMsg = limparAssinatura((ultimaDoDono && ultimaDoDono.body) || inicial);
     const maos = await maosDaCasa(minhaMsg);
     if (maos) {
       pensando(false);
@@ -1488,7 +1536,7 @@ async function emergenciaResponder(numero) {
       rolarFim();
       if (autoVoz()) falar(maos, null);
       avisar('Mãos da casa', maos.slice(0, 120));
-      try { await api('/repos/' + REPO + '/issues/' + numero + '/comments', { method: 'POST', body: JSON.stringify({ body: maos }) }); } catch (e) {}
+      try { await api('/repos/' + REPO + '/issues/' + numero + '/comments', { method: 'POST', body: JSON.stringify({ body: MARCADOR_EMERGENCIA + '\n' + maos }) }); } catch (e) {}
       return;
     }
     const div = bolha('bot', '⏳ chamando os motores do ouro…', new Date().toISOString(), TURBO ? '⚡TURBO · navegador' : 'navegador · ouro keyless');
@@ -1507,7 +1555,7 @@ async function emergenciaResponder(numero) {
     if (autoVoz()) falar(limparAssinatura(corpo), null);
     avisar('Assistente Rebocl (emergência)', r.texto.slice(0, 120));
     try {
-      await api('/repos/' + REPO + '/issues/' + numero + '/comments', { method: 'POST', body: JSON.stringify({ body: corpo }) });
+      await api('/repos/' + REPO + '/issues/' + numero + '/comments', { method: 'POST', body: JSON.stringify({ body: MARCADOR_EMERGENCIA + '\n' + corpo }) });
     } catch (e) {}
   } catch (e) {
     pensando(false);

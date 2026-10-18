@@ -2,7 +2,7 @@
 
 > **Documento operacional obrigatório para qualquer pessoa ou agente que for mexer neste repositório.**
 >
-> **Retrato consolidado em 2026-10-17.** Ele descreve o estado de `main` após o pacote de segurança, a expansão local e a correção da aferição do teste real de e-mail. Antes de agir, confira a `main` remota: ela sempre vence este retrato se algo tiver mudado depois.
+> **Retrato consolidado em 2026-10-18.** Ele descreve o estado de `main` após o pacote de segurança, a expansão local, a correção da aferição do teste real de e-mail e a recuperação rápida da interface diante da indisponibilidade observada do trabalhador privado. Antes de agir, confira a `main` remota: ela sempre vence este retrato se algo tiver mudado depois.
 
 ## 0. Regra permanente de continuidade
 
@@ -58,6 +58,16 @@ Arquivos de rota que precisam permanecer coerentes quando a interface muda:
 | `sw.js` e `manifest.json` | PWA e cache; o service worker só pode cachear a casca estática aprovada. |
 
 **Regra prática:** as quatro variantes principais (`index`, `direto`, `ligar`, `limpar`) compartilham a mesma lógica de acesso. Não corrija uma sem verificar as outras.
+
+#### Recuperação rápida quando o trabalhador não inicia
+
+Em 18/10/2026, execuções reais do workflow `chat.yml` do repositório privado `agente`, disparadas por uma conversa sintética, falharam **antes de iniciar um job** porque a plataforma informou falha de pagamento/limite de gasto. Essa é uma indisponibilidade operacional externa real; não a corrija ativando cobrança, mudando limite, criando conta ou trocando segredo.
+
+Como contingência de custo zero, as quatro rotas fazem uma **correlação temporal** entre o tipo de evento que acabaram de criar/publicar e os runs recentes do workflow. Depois de duas sondas, antecipam `emergenciaResponder()` **somente** quando há run do mesmo tipo, recente, concluído e `failure`. A API de runs não expõe o número da Issue; portanto a janela curta (início menos 4 s) reduz, mas não elimina, uma associação a outro evento simultâneo do mesmo tipo. Run pendente, sucesso, evento alheio ou falha da consulta continuam aguardando o fluxo normal. A emergência busca em paralelo a Issue e os comentários, para que a primeira mensagem (corpo da Issue) também entre no contexto; ela usa a rota local/sem chave já existente e publica a resposta com `<!-- rebocl-emergencia -->`.
+
+A marca não é exibida: `limparAssinatura()` a remove antes de renderizar ou entregar a motores, e `ehBot()` a reconhece para evitar cadeia de polling. O consumidor privado `agente/responder.py` também precisa ignorá-la tanto no `issue_comment` como no reprocessamento; a alteração correspondente deve ser publicada junto da alteração da interface. A recuperação requer navegador aberto, PAT já autorizado e uma rota de resposta disponível; ela **não** torna o trabalhador disponível, não garante resposta de provedor gratuito e não é SLA.
+
+A regressão `tools/testes/fallback-trabalhador.js` cobre correlação, primeira mensagem, marca, limpeza e persistência. Não remova a marca, não a trate como texto de usuário e não publique uma resposta manual sem ela nesse caminho.
 
 #### Catálogo de comandos sem copiar listas defasadas
 
@@ -184,7 +194,7 @@ Os workflows usam Ubuntu 24.04 e ações por SHA. Preserve esse pin até haver d
 
 ## 5. Testes e validação mínima
 
-A barreira local é `tools/testes/roda-testes.js`. Ela agrega unidades para MIME, formatação/trava, planilha, lembretes, Telegram, comandos locais, segurança da interface, navegador público, placar de capacidade, continuidade e cenários simulados de caixa. No ambiente equivalente ao workflow, a referência é instalar as dependências declaradas em `testes-rapidos.yml` e executar:
+A barreira local é `tools/testes/roda-testes.js`. Ela agrega unidades para MIME, formatação/trava, planilha, lembretes, Telegram, comandos locais, segurança da interface, recuperação do trabalhador, navegador público, placar de capacidade, continuidade e cenários simulados de caixa. No ambiente equivalente ao workflow, a referência é instalar as dependências declaradas em `testes-rapidos.yml` e executar:
 
 ```bash
 node tools/testes/roda-testes.js
@@ -205,7 +215,8 @@ Se o ambiente local não tiver bibliotecas temporárias de Node/Python, não con
 
 ## 6. Estado e limites conhecidos neste retrato
 
-- A página e os canais públicos do `chat` permanecem ativos; o cérebro privado `agente` pode ter limitações de Actions/billing registradas na base. Não tente contornar isso com credenciais, contas ou gasto sem ordem do dono.
+- A página pública permanece acessível na verificação de 18/10; o trabalhador privado `agente` teve runs do `chat.yml` que falharam antes de iniciar job devido ao bloqueio externo de pagamentos/limite de gasto. A recuperação da interface reduz a espera quando o navegador está aberto, mas não substitui o worker. Não tente contornar isso com credenciais, contas, cobrança ou gasto sem ordem do dono.
+- A evidência sanitizada desta auditoria prática está em `provas/auditoria-pratica-2026-10-18-1439.md`: página pública, navegador isolado, interface controlada, diagnósticos de e-mail/Telegram e limites foram separados de satisfação humana.
 - O dono pode usar **⚙️ Configurar acesso** para as mãos manuais no site; depois disso o PAT da interface permanece no navegador autorizado.
 - Rotação de credenciais e proteção adicional de branch/deploy continuam decisões do dono. Não são tarefas automáticas deste repositório.
 - Marketing, posts, métricas, Ceifalume e Prancheta não fazem parte de uma manutenção do Chat, salvo ordem explícita.
@@ -259,5 +270,6 @@ Se o ambiente local não tiver bibliotecas temporárias de Node/Python, não con
 | 2026-10-18 | Por autorização do dono, entrou o protocolo `AVALIACAO-PROFUNDA.md` e uma rodada dedicada de dez casos públicos/sintéticos por dimensão, sem alterar o placar ou a rodada R3. A auditoria de código delimitou texto de anexo como dado não confiável e acrescentou uma regressão contra instrução indireta. O novo perfil é allowlisted no workflow de prova e deve ser executado no canal somente após a barreira e adoção do trabalhador; qualquer resultado será registrado como controlado, não humano. |
 | 2026-10-18 | A primeira execução profunda (`39101210050`) expôs um defeito do próprio perfil: ele misturou 38 R3 aos 10 QP e registrou 46/48 no relatório preservado `provas/avaliacao-profunda-2026-10-18-0603.md`. QP-4 revelou seleção errada do alvo em premissa falsa; QP-6 revelou fonte remota indisponível. `dfc5b5d` separou os perfis, corrigiu a seleção geográfica e criou reserva local explicitamente identificada; regressões 12/12, geografia 7/7, rápida 34/34 e barreira `39103047903` passaram. Após adoção no trabalhador `39103279033`, a rodada isolada `39103304014` enviou apenas 10 QP e passou 10/10 (0,5–1,4 min; média 0,9) no relatório `provas/avaliacao-profunda-2026-10-18-0619.md`, commit automático `96ead17`. São evidências controladas; não satisfação humana/SLA. |
 | 2026-10-18 | O dono autorizou e escolheu participar da avaliação humana inicial. `AVALIACAO-HUMANA-PILOTO.md` separa relato humano de testes técnicos: cinco jornadas não sensíveis, consentimento, possibilidade de desistência, registro sanitizado de utilidade/clareza/esforço/confiança/recuperação/reutilização e proibição de versionar conteúdo privado. Não há resposta de pessoa registrada nesta etapa; a futura amostra é N=1 e não pode representar satisfação universal. |
+| 2026-10-18 | A auditoria prática do agente confirmou que runs reais do trabalhador privado falham antes de iniciar por bloqueio externo de pagamentos/limite de gasto; nenhuma cobrança, conta ou segredo foi alterado. As quatro interfaces passaram a fazer correlação temporal desse `failure` com o tipo de evento recém-publicado e a antecipar a recuperação local após duas sondas; a recuperação agora inclui o corpo inicial da Issue e marca a resposta invisivelmente com `<!-- rebocl-emergencia -->`. A marca é limpa antes da tela e, apenas quando vier da conta esperada do dono, será ignorada pelo trabalhador para impedir reprocessamento quando ele voltar. A suíte local completa passou 35/35, incluindo 16/16 da nova regressão e 44/44 de segurança; a página/interface e os diagnósticos de caixa/Telegram foram examinados sem conteúdo privado. A evidência detalhada é `provas/auditoria-pratica-2026-10-18-1439.md`. É auditoria técnica/controlada, não satisfação humana, SLA ou prova de disponibilidade do worker. |
 
 **Próxima atualização:** não é uma tarefa agendada. Ela acontece junto da próxima mudança autorizada no Chat.

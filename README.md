@@ -11,7 +11,7 @@ Página de conversa com a **IA gratuita da Rebocl Brank**.
 
 - Lista as conversas abertas (issues do repositório privado) e **busca pelo título**.
 - Cria conversa nova e envia mensagens.
-- Mostra as respostas do assistente automaticamente (~1–2 min por resposta) e avisa por notificação.
+- Mostra as respostas do assistente automaticamente quando o trabalhador privado está disponível e avisa por notificação. Se o navegador confirmar que o run correspondente falhou antes de iniciar, tenta uma recuperação local de contingência; isso requer o navegador aberto e não é SLA.
 - Mostra **qual motor respondeu** (tag ao lado de "Assistente") e avisa quando a internet cai.
 - **Exporta e importa conversas**: tudo em JSON, tudo em texto (.md), ou só uma conversa — para guardar fora do navegador ou levar para outro aparelho.
 - Por conversa: **renomear**, **fechar**, **reenviar** a última mensagem e **copiar** qualquer mensagem.
@@ -25,7 +25,7 @@ Toda atualização autorizada que mude comportamento, segurança, workflow, test
 
 Para mudar o visual ou o texto, confira também as variantes `direto.html`, `ligar.html` e `limpar.html` quando a mudança afetar a interface. O GitHub Pages publica sozinho em ~1 minuto.
 
-A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](AUDITORIA-COMPLETA-2026-10-17.md): ela documenta evidências, rotas, workflows, segurança, gargalos e limites. O protocolo [`AVALIACAO-PROFUNDA.md`](AVALIACAO-PROFUNDA.md) adiciona evidência controlada por dimensão, sem confundir teste técnico com satisfação humana. O piloto [`AVALIACAO-HUMANA-PILOTO.md`](AVALIACAO-HUMANA-PILOTO.md) coleta relato voluntário de uma pessoa, com consentimento e sem dados privados; ele não converte uma amostra em satisfação universal. O placar em [`CAPACIDADE.md`](CAPACIDADE.md) é operacional, não QI ou SLA.
+A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](AUDITORIA-COMPLETA-2026-10-17.md): ela documenta evidências, rotas, workflows, segurança, gargalos e limites. A [auditoria prática de 18/10](provas/auditoria-pratica-2026-10-18-1439.md) registrou uma página acessível, mas também que o trabalhador privado falhou antes de iniciar por restrição externa de pagamentos/limite de gasto; por isso foi adicionada uma recuperação no navegador, sem ativar cobrança. É uma contingência técnica controlada, não prova de disponibilidade ou satisfação humana. O protocolo [`AVALIACAO-PROFUNDA.md`](AVALIACAO-PROFUNDA.md) adiciona evidência controlada por dimensão, sem confundir teste técnico com satisfação humana. O piloto [`AVALIACAO-HUMANA-PILOTO.md`](AVALIACAO-HUMANA-PILOTO.md) coleta relato voluntário de uma pessoa, com consentimento e sem dados privados; ele não converte uma amostra em satisfação universal. O placar em [`CAPACIDADE.md`](CAPACIDADE.md) é operacional, não QI ou SLA.
 
 ## Segurança e privacidade
 
