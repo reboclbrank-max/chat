@@ -41,21 +41,16 @@ ok('não há gatilho pull_request_target e o orçamento de escrita é explícito
   }
 });
 
-ok('exame de visão usa por padrão a mesma configuração local dos dois turnos de e-mail', () => {
+ok('exame de visão usa por padrão o mesmo modelo normal dos dois turnos de e-mail', () => {
   const email = ler('email.yml');
   const ferramentas = ler('ferramentas.yml');
   const modelos = [...email.matchAll(/^\s*VISAO_MODELO:\s*([^\s#]+)\s*$/gm)].map(x => x[1]);
-  const modos = [...email.matchAll(/^\s*VISAO_PEDIDO:\s*([^\s#]+)\s*$/gm)].map(x => x[1]);
   const entrada = /inputs:\n\s+visao:\n[\s\S]*?^\s+default:\s*'([^']+)'\s*$/m.exec(ferramentas);
   assert.equal(modelos.length, 2, 'os dois jobs de e-mail precisam declarar VISAO_MODELO');
-  assert.equal(modos.length, 2, 'os dois jobs de e-mail precisam declarar VISAO_PEDIDO');
   assert(modelos.every(x => x === modelos[0]), 'turno e reserva usam modelos de visão diferentes');
-  assert(modos.every(x => x === modos[0]), 'turno e reserva usam pedidos de visão diferentes');
+  assert(!/^\s*VISAO_PEDIDO:/m.test(email), 'modo de visão não pode mudar sem prova e auditoria correspondente');
   assert(entrada, 'ferramentas.yml sem padrão de visão explícito');
-  const [modeloExame, sufixo = ''] = entrada[1].split('+');
-  const modoExame = sufixo === 'det' ? 'detalhado' : 'normal';
-  assert.equal(modeloExame, modelos[0], 'o exame padrão diverge do modelo usado pelo turno');
-  assert.equal(modoExame, modos[0], 'o exame padrão diverge do pedido usado pelo turno');
+  assert.equal(entrada[1], modelos[0], 'o exame padrão diverge do modelo normal usado pelo turno');
 });
 
 ok('navegador público recebe só URL e referência opaca, antes de ter token', () => {
