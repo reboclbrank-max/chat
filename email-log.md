@@ -424,3 +424,5 @@
 - 2026-10-17T14:54 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] R3-15 — visão local [VISA" → respondido via visão local (qwen3vl-4b) + reserva (gpt-oss-20b)
 - 2026-10-17T19:19 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] F1 — foto v3" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
 - 2026-10-17T19:31 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] F1 — foto v3" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-18T03:12 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] N1 — navegador pareado mv" → respondido via ferramenta
+- 2026-10-18T03:46 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] N1 — navegador pareado mv" → respondido via ferramenta
