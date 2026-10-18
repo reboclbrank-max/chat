@@ -68,17 +68,24 @@ function dimensao(nome, maximo, pontos, evidencia, comoMelhorar) {
 }
 
 // A rodada do canal é um sinal separado do placar: nunca muda pesos para maquiar resultado,
-// mas impede que o cabeçalho interno seja lido como aprovação do produto.
-function resultadoCanalReal(pasta = path.join(RAIZ, 'provas')) {
+// mas impede que o cabeçalho interno seja lido como aprovação do produto. Mantemos também as
+// falhas de rodadas anteriores: um reteste verde corrige o comportamento vigente, não reescreve
+// a evidência que revelou o defeito.
+function resultadosCanalReal(pasta = path.join(RAIZ, 'provas')) {
   let nomes = [];
-  try { nomes = fs.readdirSync(pasta).filter(n => /^teste-email-r3-\d{4}-\d{2}-\d{2}-\d{4}\.md$/.test(n)).sort().reverse(); } catch (e) { return null; }
+  try { nomes = fs.readdirSync(pasta).filter(n => /^teste-email-r3-\d{4}-\d{2}-\d{2}-\d{4}\.md$/.test(n)).sort().reverse(); } catch (e) { return []; }
+  const resultados = [];
   for (const nome of nomes) {
     let texto = '';
     try { texto = fs.readFileSync(path.join(pasta, nome), 'utf8'); } catch (e) { continue; }
     const m = texto.match(/^- enviados:\s*(\d+)\s*· respondidos:\s*(\d+)\s*· checagens PASS:\s*(\d+)\/(\d+)\s*· falhas:\s*(\d+)/m);
-    if (m) return { arquivo: 'provas/' + nome, enviados: Number(m[1]), respondidos: Number(m[2]), passou: Number(m[3]), total: Number(m[4]), falhas: Number(m[5]) };
+    if (m) resultados.push({ arquivo: 'provas/' + nome, enviados: Number(m[1]), respondidos: Number(m[2]), passou: Number(m[3]), total: Number(m[4]), falhas: Number(m[5]) });
   }
-  return null;
+  return resultados;
+}
+
+function resultadoCanalReal(pasta = path.join(RAIZ, 'provas')) {
+  return resultadosCanalReal(pasta)[0] || null;
 }
 
 function resultadoFotoControlado(pasta = path.join(RAIZ, 'provas')) {
@@ -94,11 +101,14 @@ function resultadoFotoControlado(pasta = path.join(RAIZ, 'provas')) {
   return null;
 }
 
-function estadoCanalReal(resultado, foto) {
+function estadoCanalReal(resultado, foto, historico = []) {
   const fotoTexto = foto ? `; reteste focado de foto mais recente: ${foto.passou ? 'PASS' : 'FALHOU'} (amostra única, não substitui a rodada completa)` : '';
-  if (!resultado || !Number.isFinite(resultado.total) || resultado.total < 1) return { nivel: 'sem-prova', texto: 'sem rodada controlada com aferição completa; não concluir sobre o produto' + fotoTexto };
-  if (resultado.falhas > 0) return { nivel: 'falha', texto: `última rodada controlada: ${resultado.passou}/${resultado.total} PASS, ${resultado.falhas} falha(s); produto não aprovado integralmente${fotoTexto}` };
-  return { nivel: 'controlado-ok', texto: `última rodada controlada: ${resultado.passou}/${resultado.total} PASS; ainda não mede satisfação humana${fotoTexto}` };
+  const anteriores = Array.isArray(historico) ? historico : [];
+  const falhaAnterior = anteriores.find(x => x && x !== resultado && x.arquivo !== (resultado || {}).arquivo && Number(x.falhas) > 0);
+  const historicoTexto = falhaAnterior ? `; falha ampla anterior preservada: ${falhaAnterior.passou}/${falhaAnterior.total} PASS, ${falhaAnterior.falhas} falha(s) (${falhaAnterior.arquivo})` : '';
+  if (!resultado || !Number.isFinite(resultado.total) || resultado.total < 1) return { nivel: 'sem-prova', texto: 'sem rodada controlada com aferição completa; não concluir sobre o produto' + fotoTexto + historicoTexto };
+  if (resultado.falhas > 0) return { nivel: 'falha', texto: `última rodada controlada: ${resultado.passou}/${resultado.total} PASS, ${resultado.falhas} falha(s); produto não aprovado integralmente${fotoTexto}${historicoTexto}` };
+  return { nivel: falhaAnterior ? 'reteste-controlado-verde' : 'controlado-ok', texto: `última rodada controlada: ${resultado.passou}/${resultado.total} PASS${historicoTexto}; ainda não mede satisfação humana${fotoTexto}` };
 }
 
 function avaliar(entrada = {}) {
@@ -106,9 +116,13 @@ function avaliar(entrada = {}) {
   const vigia = entrada.vigia || leJson('vigia-estado.json');
   const saude = entrada.saude === undefined ? le('saude-cerebro.md') : entrada.saude;
   const historicoQualidade = entrada.qualidade === undefined ? leJson('qualidade-historico.json') : entrada.qualidade;
-  const rodadaCanal = entrada.canalReal === undefined ? resultadoCanalReal() : entrada.canalReal;
+  const rodadasCanal = entrada.rodadasCanal === undefined
+    ? (entrada.canalReal === undefined ? resultadosCanalReal() : [entrada.canalReal])
+    : entrada.rodadasCanal;
+  const rodadaCanal = entrada.canalReal === undefined ? (rodadasCanal[0] || null) : entrada.canalReal;
+  const historicoCanal = entrada.historicoCanal === undefined ? rodadasCanal : entrada.historicoCanal;
   const fotoControlada = entrada.fotoControlada === undefined ? resultadoFotoControlado() : entrada.fotoControlada;
-  const estadoCanal = estadoCanalReal(rodadaCanal, fotoControlada);
+  const estadoCanal = estadoCanalReal(rodadaCanal, fotoControlada, historicoCanal);
   const itens = Object.values(vigia.itens || {});
   const bons = itens.filter(x => x && x.ok).length;
   const totalItens = itens.length;
@@ -156,7 +170,11 @@ function avaliar(entrada = {}) {
     gerado_em: referencia,
     aviso: 'Indicador interno de cobertura; não é resultado observável do produto, não é teste de QI, consciência nem garantia de disponibilidade.',
     total_em_100: total,
-    canal_real: Object.assign({}, estadoCanal, { resultado: rodadaCanal, foto_controlada: fotoControlada }),
+    canal_real: Object.assign({}, estadoCanal, {
+      resultado: rodadaCanal,
+      foto_controlada: fotoControlada,
+      falhas_amplas_anteriores: (Array.isArray(historicoCanal) ? historicoCanal : []).filter(x => x && x !== rodadaCanal && x.arquivo !== (rodadaCanal || {}).arquivo && Number(x.falhas) > 0)
+    }),
     dimensoes,
     sinais: {
       itens_vigia_ok: bons,
@@ -201,4 +219,4 @@ function salvar() {
 }
 
 if (require.main === module) salvar();
-module.exports = { bateria, frescor, qualidadeRastreavel, resultadoCanalReal, resultadoFotoControlado, estadoCanalReal, avaliar, markdown, salvar };
+module.exports = { bateria, frescor, qualidadeRastreavel, resultadosCanalReal, resultadoCanalReal, resultadoFotoControlado, estadoCanalReal, avaliar, markdown, salvar };

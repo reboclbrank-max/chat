@@ -1,9 +1,9 @@
 # Placar de capacidade do Chat
 
-Atualizado: `2026-10-18T03:52:12.563Z`
+Atualizado: `2026-10-18T05:06:48.412Z`
 
 **Indicador interno: 100/100.** Indicador interno de cobertura; não é resultado observável do produto, não é teste de QI, consciência nem garantia de disponibilidade.
-**Estado do canal real (tráfego controlado):** última rodada controlada: 37/38 PASS, 1 falha(s); produto não aprovado integralmente; reteste focado de foto mais recente: PASS (amostra única, não substitui a rodada completa).
+**Estado do canal real (tráfego controlado):** última rodada controlada: 38/38 PASS; falha ampla anterior preservada: 37/38 PASS, 1 falha(s) (provas/teste-email-r3-2026-10-18-0211.md); ainda não mede satisfação humana; reteste focado de foto mais recente: PASS (amostra única, não substitui a rodada completa).
 
 | Dimensão | Pontos | Evidência |
 |---|---:|---|
