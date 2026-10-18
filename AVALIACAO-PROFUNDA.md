@@ -61,7 +61,7 @@ A rodada é disparada apenas por `teste-email.yml` com `script=tools/teste-quali
 - A resposta não passa por um "juiz IA" único. Quando há resultado determinístico, ele é verificado por código; quando há fonte, exige-se URL; quando há texto aberto, o caso declara a limitação.
 - A suite mantém casos negativos: URL recusada, dado ausente e instrução indireta. Resultado fluente sem cumprir a propriedade reprova.
 - As respostas da rodada não são usadas para treinar, ajustar prompt de modo a decorar fixture ou remover falhas anteriores.
-- O relatório não é evidência de satisfação. Qualquer futuro feedback humano só pode ser voluntário, explícito, sanitizado e reportado separado dos testes.
+- O relatório não é evidência de satisfação. Qualquer futuro feedback humano só pode ser voluntário, explícito, sanitizado e reportado separado dos testes, conforme [`AVALIACAO-HUMANA-PILOTO.md`](AVALIACAO-HUMANA-PILOTO.md).
 
 ## 5. Execuções registradas
 
