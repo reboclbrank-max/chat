@@ -22,6 +22,12 @@ ok('workflow do vigia tem teto global de execução', () => {
 ok('workflow serializa vigias para não disputar IMAP e estado', () => {
   assert.match(workflow, /concurrency:\n\s+group: vigia-casa\n\s+cancel-in-progress: false/);
 });
+ok('cron cobre todos os quartos de hora sem corrente que exceda o job', () => {
+  assert.match(workflow, /cron: '12,27,42,57 \* \* \* \*'/);
+  assert(!/VIGIA_CADEIA|VIGIA_CADEIA_MIN/.test(workflow), 'workflow não deve pedir corrente interna');
+  assert(!/setTimeout\(r, min \* 60 \* 1000\)/.test(fonte), 'vigia não pode dormir a corrente dentro do teto de 15 min');
+  assert.match(fonte, /A cadência pertence ao cron de 15 min/);
+});
 
 console.log(`${certos}/${certos + falhas} testes de resiliência do vigia passaram`);
 process.exitCode = falhas ? 1 : 0;

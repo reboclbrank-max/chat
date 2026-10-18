@@ -1,21 +1,13 @@
 name: Vigia da casa (24h grátis)
 on:
   schedule:
-    - cron: '12,27,42 * * * *'
+    - cron: '12,27,42,57 * * * *'
   workflow_dispatch:
     inputs:
       teste:
         description: "manda um e-mail de teste ao dono"
         type: string
         default: 'nao'
-      cadeia:
-        description: "encadeia a próxima rodada (sim/nao)"
-        type: string
-        default: 'sim'
-      cadeia_min:
-        description: "minutos até a próxima rodada da corrente"
-        type: string
-        default: '17'
 permissions:
   contents: write
   actions: write
@@ -40,8 +32,6 @@ jobs:
           VIGIA_PARA: ${{ secrets.CHAT_DONO }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VIGIA_TESTE: ${{ inputs.teste }}
-          VIGIA_CADEIA: ${{ inputs.cadeia }}
-          VIGIA_CADEIA_MIN: ${{ inputs.cadeia_min }}
       - name: Salva o estado do vigia
         run: |
           git config user.name "vigia-casa"

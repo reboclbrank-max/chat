@@ -204,34 +204,9 @@ async function acao(rotulo, arquivo) {
   } else {
     console.log('(sem mudança — nenhum aviso enviado)');
   }
-  // 🔗 CORRENTE DO VIGIA: cada rodada dorme e chama a PRÓXIMA — sem depender de cron.
-  // 🛡 GUARDA ANTI-MULTIPLICAÇÃO: no despertar, se existir outra rodada VIVA mais nova que a minha,
-  //    ela é quem segue (senão cada turno/pulso criaria uma corrente nova e elas se multiplicariam).
-  if (String(process.env.VIGIA_CADEIA || 'sim').toLowerCase() !== 'nao' && TOKEN) {
-    const min = Math.max(5, Number(process.env.VIGIA_CADEIA_MIN || 17));
-    console.log('🔗 corrente: próxima rodada em ' + min + ' min');
-    await new Promise(r => setTimeout(r, min * 60 * 1000));
-    let seguir = true;
-    try {
-      const lista = await fetch('https://api.github.com/repos/' + REPO + '/actions/workflows/vigia.yml/runs?per_page=15', {
-        headers: { 'Authorization': 'Bearer ' + TOKEN, 'User-Agent': 'vigia-casa/1', 'Accept': 'application/vnd.github+json' }, signal: AbortSignal.timeout(30000)
-      });
-      const meu = String(process.env.GITHUB_RUN_ID || '');
-      const j = await lista.json();
-      for (const r of (j.workflow_runs || [])) {
-        if (String(r.id) === meu) continue;
-        const viva = (r.status === 'queued' || r.status === 'in_progress' || r.status === 'pending');
-        if (viva && String(r.id) > meu) { seguir = false; console.log('🔗 há rodada viva mais nova (#' + r.run_number + ') — ela segue, eu paro'); break; }
-      }
-    } catch (e) { console.log('🔗 guarda da corrente não conseguiu checar (sigo):', String(e.message || e).slice(0, 80)); }
-    if (seguir) {
-      try {
-        const rr = await fetch('https://api.github.com/repos/' + REPO + '/actions/workflows/vigia.yml/dispatches', {
-          method: 'POST', headers: { 'Authorization': 'Bearer ' + TOKEN, 'User-Agent': 'vigia-casa/1', 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ref: 'main' }), signal: AbortSignal.timeout(30000)
-        });
-        console.log('🔗 próxima rodada despachada (' + rr.status + ')');
-      } catch (e) { console.log('🔗 dispatch da corrente falhou:', e.message); }
-    }
-  }
+  // A cadência pertence ao cron de 15 min do workflow. A corrente antiga dormia 17 min
+  // dentro de um job limitado a 15 min: era cancelada antes de salvar estado e antes de
+  // despachar a próxima rodada. Não reintroduzir espera/auto-dispatch aqui; a concorrência
+  // do workflow já serializa disparos de cron e despertares de reserva.
+
 })().catch(e => { console.error('ERRO no vigia:', e.message); process.exit(0); });
