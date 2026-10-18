@@ -3,6 +3,7 @@
 Banco v1/v2 público · 10 questões por amostra · 3 rodadas × 3 rotas (frota→reserva→omni) · 🔇=infraestrutura muda, não erro de cérebro.
 Cada amostra tem identificador e IDs no `qualidade-historico.json`; reexecução da mesma amostra substitui o registro, não infla a evidência.
 
+- 2026-10-18 03:52 UTC — 10/10 (mudos: 0) · NÍVEL 2 · amostra: manual-39095074162 · banco: v2 ✨ PERFEITO
 - 2026-10-17 22:17 UTC — 10/10 (mudos: 0) · NÍVEL 2 · amostra: manual-39074357258 · banco: v2 ✨ PERFEITO
 - 2026-10-17 14:07 UTC — 10/10 (mudos: 0) · NÍVEL 2 · amostra: diaria-2026-10-17 · banco: v2 ✨ PERFEITO
 - 2026-10-17 06:35 UTC — 10/10 (mudos: 0) · NÍVEL 2 · amostra: manual-39010451002 · banco: v2 ✨ PERFEITO
@@ -30,4 +31,4 @@ Cada amostra tem identificador e IDs no `qualidade-historico.json`; reexecução
 - 2026-10-13 21:00 UTC — 9/10 (mudos: 0)
 - 2026-10-13 20:56 UTC — 5/10 (frota→reserva)
 
-**Curva (14 mais recentes):** 8/10 (mudos: 0) | 10/10 (mudos: 0) ✨ PERFEITO | 10/10 (mudos: 0) ✨ PERFEITO | 9/10 (mudos: 0) | 9/10 (mudos: 1) | 9/10 (mudos: 0) | 9/10 (mudos: 0) | 10/10 (mudos: 0) | 9/10 (mudos: 0) | 10/10 (mudos: 0) | 10/10 (mudos: 0) | 10/10 (mudos: 0) | 10/10 (mudos: 0) | 10/10 (mudos: 0)
+**Curva (14 mais recentes):** 10/10 (mudos: 0) ✨ PERFEITO | 10/10 (mudos: 0) ✨ PERFEITO | 9/10 (mudos: 0) | 9/10 (mudos: 1) | 9/10 (mudos: 0) | 9/10 (mudos: 0) | 10/10 (mudos: 0) | 9/10 (mudos: 0) | 10/10 (mudos: 0) | 10/10 (mudos: 0) | 10/10 (mudos: 0) | 10/10 (mudos: 0) | 10/10 (mudos: 0) | 10/10 (mudos: 0)
