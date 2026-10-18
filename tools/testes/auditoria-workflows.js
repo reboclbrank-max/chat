@@ -41,6 +41,14 @@ ok('não há gatilho pull_request_target e o orçamento de escrita é explícito
   }
 });
 
+ok('barreira rápida prepara OCR português e renderizador de PDF se a imagem não os trouxer', () => {
+  const rapido = ler('testes-rapidos.yml');
+  assert.match(rapido, /command -v pdftotext >\/dev\/null \|\| faltam="\$faltam poppler-utils"/);
+  assert.match(rapido, /tesseract --list-langs 2>\/dev\/null \| grep -qx por/);
+  assert.match(rapido, /faltam="\$faltam tesseract-ocr tesseract-ocr-por"/);
+  assert.match(rapido, /sudo apt-get install -y -qq \$faltam/);
+});
+
 ok('exame de visão usa por padrão o mesmo modelo normal dos dois turnos de e-mail', () => {
   const email = ler('email.yml');
   const ferramentas = ler('ferramentas.yml');

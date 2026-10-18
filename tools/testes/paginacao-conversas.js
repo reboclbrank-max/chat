@@ -211,12 +211,13 @@ async function main() {
     const lista = r.ctx.incorporarListaTeste([{ number: 9 }, { number: 8 }], [{ number: 9 }, { number: 7 }, { number: 6 }]);
     assert.deepEqual(Array.from(lista, (i) => i.number), [9, 8, 7, 6]);
   });
-  await testaAsync('lista visual carrega próxima página sob toque, deduplica e esconde controles na busca', async () => {
+  await testaAsync('lista visual carrega próxima página sob toque, deduplica e amplia busca já ativa', async () => {
     const primeira = conversas(51, 100);
     const segunda = [{ number: 51 }].concat(conversas(1, 49));
+    const terceira = [{ number: 50, title: 'agulha pesquisável', comments: 0, updated_at: '2026-10-18T12:00:00Z', labels: [] }];
     const r = runtimeLista(src, (caminho) => {
       const pagina = paginaDo(caminho);
-      return pagina === 1 ? primeira : pagina === 2 ? segunda : [];
+      return pagina === 1 ? primeira : pagina === 2 ? segunda : terceira;
     });
     await r.ctx.carregarListaTeste();
     assert.deepEqual(Array.from(r.ctx.estadoListaTeste().numeros), primeira.map((i) => i.number));
@@ -228,16 +229,17 @@ async function main() {
     assert.equal(r.ctx.estadoListaTeste().numeros.length, 99);
     assert.equal(r.ctx.estadoListaTeste().mais, true);
     assert.deepEqual(r.gravacoes, [primeira.map((i) => i.number), r.ctx.estadoListaTeste().numeros]);
-    r.busca.value = 'sem-correspondência';
-    r.ctx.aplicarFiltroListaTeste();
-    assert.equal(r.obter('card-mais').style.display, 'none');
-    r.busca.value = '';
+    r.busca.value = 'agulha';
     r.ctx.aplicarFiltroListaTeste();
     assert.equal(r.obter('card-mais').style.display, '');
+    assert.equal(r.obter('card-nova').style.display, 'none');
     await r.ctx.carregarMaisListaTeste();
     assert.equal(r.ctx.estadoListaTeste().pagina, 3);
     assert.equal(r.ctx.estadoListaTeste().mais, false);
     assert.equal(r.obter('card-mais'), null);
+    const alvo = r.lista.children.find((div) => /agulha pesquisável/i.test(div.textContent));
+    assert(alvo, 'a conversa presente somente na nova página não foi renderizada');
+    assert.equal(alvo.style.display, '');
   });
   await testaAsync('gravação lenta do cache não bloqueia o próximo toque na lista', async () => {
     const primeira = conversas(1, 50);
@@ -350,7 +352,8 @@ async function main() {
       assert.match(html, /salvarListaAtualEmCache\(\);/);
       assert.doesNotMatch(html, /await salvarListaAtualEmCache\(\)/);
       assert.match(html, /revisao !== revisaoLista/);
-      assert.match(html, /div\.id === 'card-nova' \|\| div\.id === 'card-mais'/);
+      assert.match(html, /if \(div\.id === 'card-nova'\)/);
+      assert.match(html, /if \(div\.id === 'card-mais'\) \{ div\.style\.display = ''; return; \}/);
       assert.match(html, /comentariosRecentes\(numero, issue && issue\.comments\)/);
       assert.match(html, /avisoHistoricoParcial\(issue\.comments, comentarios\.length\)/);
       assert.doesNotMatch(html, /comments\?per_page=100/);

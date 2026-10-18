@@ -538,7 +538,7 @@ function criarCartaoMais() {
   mais.tabIndex = 0;
   mais.setAttribute('role', 'button');
   mais.style.borderColor = 'var(--ouro-fraco)';
-  mais.innerHTML = '<div class="titulo" style="color:var(--ouro)">↓ Carregar mais conversas</div><div class="meta"><span>busca as próximas 50 sem abrir tudo de uma vez</span></div>';
+  mais.innerHTML = '<div class="titulo" style="color:var(--ouro)">↓ Carregar mais conversas</div><div class="meta"><span>busca as próximas 50 — use para ampliar a busca</span></div>';
   mais.onclick = carregarMaisConversas;
   mais.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); carregarMaisConversas(); } };
   return mais;
@@ -555,7 +555,9 @@ function aplicarFiltroLista() {
   const busca = $('busca');
   const termo = busca ? busca.value.trim().toLowerCase() : '';
   document.querySelectorAll('#lista .conv').forEach((div) => {
-    if (div.id === 'card-nova' || div.id === 'card-mais') { div.style.display = termo ? 'none' : ''; return; }
+    if (div.id === 'card-nova') { div.style.display = termo ? 'none' : ''; return; }
+    // Durante a busca, ele continua acessível para ampliar explicitamente o conjunto pesquisado.
+    if (div.id === 'card-mais') { div.style.display = ''; return; }
     const t = (div.textContent || '').toLowerCase();
     div.style.display = (!termo || t.indexOf(termo) !== -1) ? '' : 'none';
   });
