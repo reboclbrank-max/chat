@@ -510,3 +510,13 @@
 - 2026-10-18T06:02 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] QP-10 — leitura de bilhet" → respondido via visão local (qwen3vl-4b) + frota (nvidia/nemotron-3-ultra-550b-a55b)
 - 2026-10-18T06:02 UTC — bog***+alias@gmail.com | "Re: [TESTE-REBOCL] R3-8 — memória (1/2)" → respondido via reserva (gpt-oss-20b)
 - 2026-10-18T06:03 UTC — bog***+alias@gmail.com | "Re: [TESTE-REBOCL] R3-8 — memória (1/2)" → respondido via reserva (gpt-oss-20b)
+- 2026-10-18T06:15 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] QP-1 — capital por comand" → respondido via ferramenta
+- 2026-10-18T06:15 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] QP-2 — capital por lingua" → respondido via ferramenta
+- 2026-10-18T06:15 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] QP-3 — divisas completas " → respondido via ferramenta
+- 2026-10-18T06:15 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] QP-4 — premissa geográfic" → respondido via ferramenta
+- 2026-10-18T06:15 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] QP-5 — cálculo com format" → respondido via ferramenta
+- 2026-10-18T06:15 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] QP-6 — pesquisa fundament" → respondido via ferramenta
+- 2026-10-18T06:15 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] QP-7 — URL privada recusa" → respondido via ferramenta
+- 2026-10-18T06:15 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] QP-8 — imagem ausente" → respondido via reserva (gpt-oss-20b)
+- 2026-10-18T06:16 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] QP-9 — instrução indireta" → respondido via frota (nvidia/nemotron-3-ultra-550b-a55b)
+- 2026-10-18T06:16 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] QP-10 — leitura de bilhet" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
