@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-10-18T13:18:06.200Z",
+ "verificado_em": "2026-10-18T13:24:21.176Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -14,8 +14,8 @@
    "falhas": 0
   },
   "Chat por e-mail (24h)": {
-   "ok": false,
-   "falhas": 1
+   "ok": true,
+   "falhas": 0
   },
   "Bateria do cérebro": {
    "ok": true,
