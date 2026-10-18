@@ -21,7 +21,14 @@ jobs:
       - run: node tools/evolucao-chat.js
         env:
           EVOLUCAO_AMOSTRA: ${{ inputs.amostra }}
-      - run: node tools/indice-capacidade.js
+      - name: Calcula o indicador com o vigia recém-sincronizado
+        run: |
+          # O checkout pode ter começado antes do vigia publicar uma sonda. Leia a fonte
+          # remota imediatamente antes do indicador para não promover um verde ultrapassado.
+          git fetch -q origin main
+          git show origin/main:vigia-estado.json > vigia-estado.json
+          node tools/indice-capacidade.js
+          git checkout -- vigia-estado.json
       - name: Salva o histórico
         run: |
           git config user.name "evolucao-casa"

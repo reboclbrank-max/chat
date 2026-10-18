@@ -21,7 +21,11 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const comTeto = (p, ms, rotulo) => { Promise.resolve(p).catch(() => {}); return Promise.race([p, new Promise((_, rejeita) => setTimeout(() => rejeita(new Error('teto ' + Math.round(ms / 1000) + 's: ' + rotulo)), ms))]); };
 
 async function buscaJSON(url) {
-  const r = await fetch(url, { headers: { 'User-Agent': 'vigia-casa/1', 'Accept': 'application/vnd.github+json' }, signal: AbortSignal.timeout(30000) });
+  const headers = { 'User-Agent': 'vigia-casa/1', 'Accept': 'application/vnd.github+json' };
+  // Sem cabeçalho autenticado a API pública pode devolver 403 por limite anônimo e fingir que
+  // site/turnos/exame falharam. O token fica restrito ao cabeçalho para api.github.com e nunca é logado.
+  if (TOKEN && /^https:\/\/api\.github\.com\//.test(url)) headers.Authorization = 'Bearer ' + TOKEN;
+  const r = await fetch(url, { headers, signal: AbortSignal.timeout(30000) });
   if (!r.ok) throw new Error('HTTP ' + r.status);
   return r.json();
 }

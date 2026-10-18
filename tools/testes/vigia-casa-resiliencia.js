@@ -22,6 +22,13 @@ ok('workflow do vigia tem teto global de execução', () => {
 ok('workflow serializa vigias para não disputar IMAP e estado', () => {
   assert.match(workflow, /concurrency:\n\s+group: vigia-casa\n\s+cancel-in-progress: false/);
 });
+ok('sondas da API GitHub usam o token só no cabeçalho da própria API', () => {
+  const trecho = fonte.slice(fonte.indexOf('async function buscaJSON'), fonte.indexOf('async function verifica'));
+  assert(trecho.includes("if (TOKEN && /^https:\\/\\/api\\.github\\.com\\//.test(url))"));
+  assert(trecho.includes("headers.Authorization = 'Bearer ' + TOKEN"));
+  assert(trecho.includes('fetch(url, { headers,'));
+  assert(!/console\.log\([^\n]*TOKEN/.test(trecho), 'a sonda não pode registrar o token');
+});
 ok('cron cobre todos os quartos de hora sem corrente que exceda o job', () => {
   assert.match(workflow, /cron: '12,27,42,57 \* \* \* \*'/);
   assert(!/VIGIA_CADEIA|VIGIA_CADEIA_MIN/.test(workflow), 'workflow não deve pedir corrente interna');

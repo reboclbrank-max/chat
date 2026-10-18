@@ -53,6 +53,17 @@ ok('exame de visão usa por padrão o mesmo modelo normal dos dois turnos de e-m
   assert.equal(entrada[1], modelos[0], 'o exame padrão diverge do modelo normal usado pelo turno');
 });
 
+ok('indicador diário usa a sonda remota mais recente, não o checkout de início', () => {
+  const evolucao = ler('evolucao.yml');
+  const iFetch = evolucao.indexOf('git fetch -q origin main');
+  const iSonda = evolucao.indexOf('git show origin/main:vigia-estado.json > vigia-estado.json');
+  const iIndice = evolucao.indexOf('node tools/indice-capacidade.js');
+  const iRestaura = evolucao.indexOf('git checkout -- vigia-estado.json');
+  assert(iFetch >= 0 && iFetch < iSonda, 'exame precisa buscar main antes da sonda');
+  assert(iSonda >= 0 && iSonda < iIndice, 'indicador não pode usar sonda do checkout antigo');
+  assert(iIndice >= 0 && iIndice < iRestaura, 'fonte temporária do vigia deve ser restaurada depois do indicador');
+});
+
 ok('navegador público recebe só URL e referência opaca, antes de ter token', () => {
   const texto = ler('navegador-publico.yml');
   const entradas = [...texto.matchAll(/^      ([a-z_]+):\n        description:/gm)].map(x => x[1]);
