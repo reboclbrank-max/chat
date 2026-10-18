@@ -545,7 +545,7 @@ function pareceCego(t) {
   // segunda forma como se fosse visão. Esta guarda só é usada quando uma imagem foi enviada.
   const s = String(t || '');
   const simples = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[‐‑‒–—]/g, '-');
-  const naoVe = /nao (consigo|posso|e possivel) (ver|visualizar|visualiza-?l[ao]|abrir|enxergar|analisar)( (a|esta|essa|sua) )?(imagem|foto)?|nao recebi (a |nenhuma )?(imagem|foto)|sem acesso (a |a )?(imagem|foto)|can(no|')t see|unable to (see|view)/i;
+  const naoVe = /nao (consigo|consegui|posso|pude|e possivel|foi possivel) (ver|visualizar|visualiza-?l[ao]|abrir|enxergar|analisar)( (a|esta|essa|sua) )?(imagem|foto)?|nao recebi (a |nenhuma )?(imagem|foto)|sem acesso (a |a )?(imagem|foto)|can(no|')t see|unable to (see|view)/i;
   const pedeReenvio = /(envie|mande|reenvie).{0,45}(foto|imagem).{0,35}(novamente|de novo)/i;
   const eco = /bloco retangular|blocos de cor|cara de (c[ée]u|parede|[áa]gua|areia|terra)|parede ou fundo/i;
   return naoVe.test(simples) || (pedeReenvio.test(simples) && /nao consigo|nao posso|sem acesso/i.test(simples)) || eco.test(s);

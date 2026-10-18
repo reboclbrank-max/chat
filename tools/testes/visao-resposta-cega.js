@@ -12,6 +12,10 @@ ok('descarta variantes normalizadas de não conseguir abrir ou ver a imagem', ()
   assert.equal(pareceCego('Não posso abrir essa imagem agora.'), true);
   assert.equal(pareceCego('Unable to view the image.'), true);
 });
+ok('descarta também a negação no pretérito antes de responder a foto', () => {
+  assert.equal(pareceCego('Desculpe, não consegui enxergar a foto. Por favor, reenvie a imagem.'), true);
+  assert.equal(pareceCego('Não foi possível analisar esta imagem agora.'), true);
+});
 ok('não descarta uma observação concreta da imagem', () => {
   assert.equal(pareceCego('Na foto há um círculo azul e a data está no canto inferior.'), false);
 });
