@@ -1837,7 +1837,8 @@ async function coletarConversas() {
   const saida = [];
   for (const i of issues) {
     let comentarios = [];
-    try { comentarios = await todosComentarios(i.number, i.comments); } catch (e) {}
+    try { comentarios = await todosComentarios(i.number, i.comments); }
+    catch (e) { throw new Error('Não consegui incluir todo o histórico de uma conversa; a exportação foi cancelada sem criar arquivo parcial.'); }
     saida.push({
       numero: i.number, titulo: i.title, estado: i.state, criado_em: i.created_at,
       mensagens: [{ de: 'voce', texto: i.body || '', em: i.created_at }].concat(

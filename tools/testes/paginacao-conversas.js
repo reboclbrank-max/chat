@@ -26,6 +26,22 @@ function extraiHelpers(src) {
   assert(inicio >= 0 && fim > inicio, 'helpers de paginação não encontrados');
   return src.slice(inicio, fim);
 }
+function extraiColetor(src) {
+  const inicio = src.indexOf('async function coletarConversas() {');
+  const fim = src.indexOf('\nasync function exportarTudo(', inicio);
+  assert(inicio >= 0 && fim > inicio, 'coletor de exportação não encontrado');
+  return src.slice(inicio, fim);
+}
+function runtimeColetor(src, issues, comentarios) {
+  const ctx = {
+    todasConversas: async () => issues,
+    todosComentarios: async (numero) => comentarios(numero),
+    ehBot: () => false
+  };
+  vm.createContext(ctx);
+  vm.runInContext(extraiColetor(src) + '\nglobalThis.coletarTeste = coletarConversas;', ctx);
+  return ctx;
+}
 function runtime(src, resposta) {
   const chamadas = [];
   const ctx = {
@@ -97,6 +113,20 @@ async function main() {
     assert.deepEqual(Array.from(todas, (c) => c.number), conversas(1, 201).map((c) => c.number));
     assert.deepEqual(r.chamadas.map(paginaDo), [1, 2, 3]);
   });
+  await testaAsync('exportação cancela em vez de gerar arquivo parcial se faltar o histórico de uma conversa', async () => {
+    const issues = [
+      { number: 1, title: 'uma', state: 'open', created_at: '2026-10-18T12:00:00Z', body: 'início', comments: 1 },
+      { number: 2, title: 'duas', state: 'closed', created_at: '2026-10-18T12:01:00Z', body: 'início', comments: 1 }
+    ];
+    const ok = runtimeColetor(src, issues, async (numero) => [{ body: 'resposta ' + numero, created_at: '2026-10-18T12:02:00Z' }]);
+    const todas = await ok.coletarTeste();
+    assert.deepEqual(Array.from(todas, (c) => c.numero), [1, 2]);
+    const falha = runtimeColetor(src, issues, async (numero) => {
+      if (numero === 2) throw new Error('falha simulada');
+      return [];
+    });
+    await assert.rejects(falha.coletarTeste(), /exportação foi cancelada sem criar arquivo parcial/);
+  });
   await testaAsync('polling pede a janela posterior com margem de um segundo', async () => {
     const r = runtime(src, () => []);
     await r.ctx.desdeTeste(73, '2026-10-18T12:00:00Z');
@@ -127,6 +157,7 @@ async function main() {
       assert.match(html, /todosComentarios\(conversa, issue\.comments\)/);
       assert.match(html, /const issues = await todasConversas\(\);/);
       assert.match(html, /async function todasConversas\(\)/);
+      assert.match(html, /exportação foi cancelada sem criar arquivo parcial/);
       assert.match(html, /comentariosRecentes\(numero, issue && issue\.comments\)/);
       assert.match(html, /avisoHistoricoParcial\(issue\.comments, comentarios\.length\)/);
       assert.doesNotMatch(html, /comments\?per_page=100/);
