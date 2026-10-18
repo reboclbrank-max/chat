@@ -1,6 +1,6 @@
 // Regressão de capacidade da interface: a API do GitHub pagina comentários em
 // lotes de até 100. A tela deve usar a janela mais recente, o polling deve usar
-// cursor temporal com deduplicação por ID e a exportação deve percorrer tudo.
+// cursor temporal com deduplicação por ID e a exportação deve paginar comentários e conversas.
 'use strict';
 const assert = require('assert');
 const fs = require('fs');
@@ -45,6 +45,7 @@ function runtime(src, resposta) {
     globalThis.paginaFinalTeste = paginaFinalComentarios;
     globalThis.recentesTeste = comentariosRecentes;
     globalThis.todosTeste = todosComentarios;
+    globalThis.conversasTeste = todasConversas;
     globalThis.desdeTeste = comentariosDesde;
     globalThis.registrarTeste = registrarComentario;
   `, ctx);
@@ -55,6 +56,9 @@ function paginaDo(caminho) {
 }
 function itens(inicio, fim) {
   return Array.from({ length: fim - inicio + 1 }, (_, i) => ({ id: inicio + i }));
+}
+function conversas(inicio, fim) {
+  return Array.from({ length: fim - inicio + 1 }, (_, i) => ({ number: inicio + i }));
 }
 
 async function main() {
@@ -81,6 +85,16 @@ async function main() {
     });
     const todos = await r.ctx.todosTeste(73, 201);
     assert.deepEqual(Array.from(todos, (c) => c.id), itens(1, 201).map((c) => c.id));
+    assert.deepEqual(r.chamadas.map(paginaDo), [1, 2, 3]);
+  });
+  await testaAsync('exportação geral pagina o catálogo de conversas acima de 100', async () => {
+    const r = runtime(src, (caminho) => {
+      assert.match(caminho, /\/issues\?state=all/);
+      const p = paginaDo(caminho);
+      return p === 1 ? conversas(1, 100) : p === 2 ? conversas(101, 200) : conversas(201, 201);
+    });
+    const todas = await r.ctx.conversasTeste();
+    assert.deepEqual(Array.from(todas, (c) => c.number), conversas(1, 201).map((c) => c.number));
     assert.deepEqual(r.chamadas.map(paginaDo), [1, 2, 3]);
   });
   await testaAsync('polling pede a janela posterior com margem de um segundo', async () => {
@@ -111,6 +125,8 @@ async function main() {
       assert.match(html, /comentariosDesde\(conversa, ultimoQuando\)/);
       assert.match(html, /todosComentarios\(i\.number, i\.comments\)/);
       assert.match(html, /todosComentarios\(conversa, issue\.comments\)/);
+      assert.match(html, /const issues = await todasConversas\(\);/);
+      assert.match(html, /async function todasConversas\(\)/);
       assert.match(html, /comentariosRecentes\(numero, issue && issue\.comments\)/);
       assert.match(html, /avisoHistoricoParcial\(issue\.comments, comentarios\.length\)/);
       assert.doesNotMatch(html, /comments\?per_page=100/);

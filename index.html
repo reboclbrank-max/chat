@@ -326,6 +326,21 @@ async function todosComentarios(numero, total) {
   }
   return todos;
 }
+const TAMANHO_PAGINA_CONVERSAS = 100;
+function caminhoConversas(pagina = 1) {
+  const p = Math.max(1, Number(pagina) || 1);
+  return `/repos/${REPO}/issues?state=all&per_page=${TAMANHO_PAGINA_CONVERSAS}&sort=updated&page=${p}`;
+}
+async function todasConversas() {
+  const todas = [];
+  for (let pagina = 1; ; pagina++) {
+    const lote = await api(caminhoConversas(pagina));
+    if (!Array.isArray(lote)) break;
+    todas.push(...lote);
+    if (lote.length < TAMANHO_PAGINA_CONVERSAS) break;
+  }
+  return todas;
+}
 function desdeComMargem(iso) {
   const instante = Date.parse(iso || '');
   if (!Number.isFinite(instante)) return '';
@@ -1848,7 +1863,7 @@ function baixar(texto, arquivo, tipo) {
   setTimeout(() => URL.revokeObjectURL(a.href), 4000);
 }
 async function coletarConversas() {
-  const issues = await api(`/repos/${REPO}/issues?state=all&per_page=100&sort=updated`);
+  const issues = await todasConversas();
   const saida = [];
   for (const i of issues) {
     let comentarios = [];
