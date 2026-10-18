@@ -321,7 +321,8 @@ function markdown(t) {
 const DONO_GITHUB = 'reboclbrank-max';
 const MARCADOR_EMERGENCIA = '<!-- rebocl-emergencia -->';
 function ehRespostaEmergencia(c) {
-  return !!(c && c.user && c.user.login === DONO_GITHUB && String(c.body || '').includes(MARCADOR_EMERGENCIA));
+  const corpo = String((c && c.body) || '').trimStart();
+  return !!(c && c.user && c.user.login === DONO_GITHUB && corpo.startsWith(MARCADOR_EMERGENCIA));
 }
 function ehBot(c) { return !!(c && c.user && c.user.login === 'github-actions[bot]') || ehRespostaEmergencia(c); }
 function limparAssinatura(b) {

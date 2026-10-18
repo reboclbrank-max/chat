@@ -76,8 +76,10 @@ async function main() {
       const r = runtimeMarca(src);
       const marcadaDoDono = { user: { login: 'reboclbrank-max' }, body: '<!-- rebocl-emergencia -->\nresposta' };
       const marcadaDeOutro = { user: { login: 'outra-pessoa' }, body: '<!-- rebocl-emergencia -->\npergunta' };
+      const marcaNoMeioDoDono = { user: { login: 'reboclbrank-max' }, body: 'pergunta normal\n<!-- rebocl-emergencia -->' };
       assert.equal(r.ehBotTeste(marcadaDoDono), true);
       assert.equal(r.ehBotTeste(marcadaDeOutro), false);
+      assert.equal(r.ehBotTeste(marcaNoMeioDoDono), false);
       assert.equal(r.limparTeste(marcadaDoDono.body), 'resposta');
     });
     await testaAsync(nome + ' antecipa somente falha recente do mesmo evento', async () => {
