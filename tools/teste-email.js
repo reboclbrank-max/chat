@@ -48,6 +48,7 @@ const ESPERA_MIN = Number(process.env.ESPERA_MIN || 25);
 const ALIASES = aliasesDeTeste(USER);
 const ALIAS = ALIASES.teste;
 const MARCA = '[TESTE-REBOCL]';
+const PERFIL = process.env.TESTE_PERFIL === 'qualidade-profunda' ? 'qualidade-profunda' : 'rodada-r3';
 const ALIAS_ESTRANHO = ALIASES.estranho;   // v3.12: remetente não autorizado
 const CRLF = String.fromCharCode(13, 10);
 const NL = String.fromCharCode(10);
@@ -186,6 +187,8 @@ const CASOS = [
     check: t => /Tobias Barreto|Sergipe/i.test(t) ? 'PASS (cidade/UF do CEP)' : 'FALHOU (sem endereço)',
     corpo: 'cep: 49300000' }
 ];
+// Perfil separado: amplia a investigação por dimensão sem alterar a rodada R3, seu histórico ou seu denominador.
+if (PERFIL === 'qualidade-profunda') CASOS.push(...require('./avaliacao-profunda-casos').casosQualidadeProfunda(MARCA));
 const M3 = { n: 'R3-20', assunto: 'Re: ' + MARCA + ' R3-8 — memória (1/2)',
   esperado: 'MEMÓRIA PELA CONVERSA DO GMAIL: a chave [SEM-MEMORIA] faz o chat ignorar a memória do turno e a citação — só a conversa guardada no Gmail pode lembrar JATOBÁ (é a memória que sobrevive à troca de turno).',
   check: t => /JATOB[ÁA]/i.test(t) ? 'PASS (lembrou JATOBÁ pela conversa do Gmail)' : 'FALHOU (não lembrou pela conversa)' };
@@ -345,7 +348,7 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
       } finally { if (lock) { try { lock.release(); } catch (e) {} } }
     }
     if (!enviado) throw ultErr;
-    enviados.push({ n: caso.n, assunto: caso.assunto, corpo: caso.corpo, esperado: caso.esperado, check: caso.check, id, enviadoEm: Date.now(), foto: !!(caso.foto || caso.fotoArq || caso.fotos), pdf: !!caso.pdf, semResposta: !!caso.semResposta, lido: !!caso.lido, lembrete: !!caso.lembrete });
+    enviados.push({ n: caso.n, assunto: caso.assunto, corpo: caso.corpo, esperado: caso.esperado, check: caso.check, id, enviadoEm: Date.now(), foto: !!(caso.foto || caso.fotoArq || caso.fotos), pdf: !!caso.pdf, semResposta: !!caso.semResposta, lido: !!caso.lido, lembrete: !!caso.lembrete, dimensao: caso.dimensao || '', fonte: caso.fonte || '' });
     console.log('📤', caso.n, '—', caso.assunto.replace(MARCA + ' ', ''), (caso.foto || caso.fotoArq) ? '(com foto)' : '');
     await sleep(1300);
   }
@@ -357,10 +360,12 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
     return null;
   }
 
-  console.log('== envio da rodada 3 ==');
+  console.log(PERFIL === 'qualidade-profunda' ? '== envio da avaliação profunda controlada ==' : '== envio da rodada 3 ==');
   for (const c of CASOS) await envia(c);
 
-  let m2Enviado = false;
+  // Só a rodada R3 tem o encadeamento de memória R3-8b/R3-20. Perfis independentes
+  // podem encerrar assim que todos os seus próprios casos forem coletados.
+  let m2Enviado = !CASOS.some(c => c.n === 'R3-8');
   const limite = Date.now() + ESPERA_MIN * 60 * 1000;
   while (Date.now() < limite) {
     await varreSegura();
@@ -398,10 +403,13 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
     } finally { lockS.release(); }
   } catch (err) { console.log('checagem dos sem resposta falhou:', String(err.message || err).slice(0, 80)); }
 
+  const profundo = PERFIL === 'qualidade-profunda';
   const L = [];
-  L.push('# 🧪 Teste do chat por e-mail — RODADA 3 — ' + new Date().toISOString().slice(0, 16) + ' UTC');
+  L.push('# 🧪 ' + (profundo ? 'Avaliação profunda controlada do Chat por e-mail' : 'Teste do chat por e-mail — RODADA 3') + ' — ' + new Date().toISOString().slice(0, 16) + ' UTC');
   L.push('');
-  L.push('Rodada com o canal já corrigido (CAPS + assinatura + memória). Cada resposta é casada com o e-mail que a originou (In-Reply-To) e passa por checagem automática. Leitura pelo MESMO parser do canal.');
+  L.push(profundo
+    ? 'Casos públicos e sintéticos por dimensão (fato, robustez, pesquisa, segurança, honestidade epistêmica, anexo não confiável e leitura multimodal). Cada resposta é casada ao e-mail de origem por In-Reply-To e passa por checagem automática. Isto é teste controlado: não mede satisfação humana, adoção, leitura por pessoa, disponibilidade contínua ou SLA.'
+    : 'Rodada com o canal já corrigido (CAPS + assinatura + memória). Cada resposta é casada com o e-mail que a originou (In-Reply-To) e passa por checagem automática. Leitura pelo MESMO parser do canal.');
   L.push('');
   const resp = enviados.map(e => ({ e, r: casa(e) }));
   // Cada envio entra no denominador. Resposta ausente é falha explícita — nunca pode sumir da evidência.
@@ -421,6 +429,8 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
     L.push('');
     L.push('**Espera-se:** ' + x.e.esperado);
     L.push('');
+    if (x.e.dimensao) { L.push('**Dimensão avaliada:** ' + x.e.dimensao + '.'); L.push(''); }
+    if (x.e.fonte) { L.push('**Base verificável:** ' + x.e.fonte + '.'); L.push(''); }
     const resultado = nota(x);
     if (x.e.semResposta) {
       L.push('**Checagem automática:** ' + resultado + ' · **' + (x.r ? 'respondeu em ' + ((x.r.quando - x.e.enviadoEm) / 60000).toFixed(1) + ' min' : 'sem resposta, como esperado') + '**');
@@ -438,9 +448,9 @@ function qpCodifica(s) {   // quoted-printable (UTF-8) como o Gmail manda, linha
   for (const r of [...porMensagem.values()].sort((a, b) => a.quando - b.quando)) L.push('- ' + new Date(r.quando).toISOString().slice(11, 16) + ' · ' + r.caixa + ' · ' + r.assunto.replace(MARCA + ' ', '').slice(0, 70));
   L.push('');
   L.push('---');
-  L.push('_Gerado por `tools/teste-email.js` v3.20 (workflow `teste-email.yml`)._');
+  L.push('_Gerado por `tools/teste-email.js` (perfil `' + PERFIL + '`, workflow `teste-email.yml`)._');
   const ts = new Date().toISOString().slice(0, 16).split(':').join('').split('T').join('-');
-  const destino = path.join(__dirname, '..', 'provas', 'teste-email-r3-' + ts + '.md');
+  const destino = path.join(__dirname, '..', 'provas', (profundo ? 'avaliacao-profunda-' : 'teste-email-r3-') + ts + '.md');
   fs.mkdirSync(path.dirname(destino), { recursive: true });
   fs.writeFileSync(destino, L.join(NL));
   console.log(NL + L.join(NL).slice(0, 3500));
