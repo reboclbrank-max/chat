@@ -50,7 +50,9 @@ jobs:
           # A suíte exercita OCR e PDF digitalizado; não depende da imagem Ubuntu
           # já trazer o renderizador Poppler nem o idioma português do Tesseract.
           faltam=""
-          command -v pdftotext >/dev/null || faltam="$faltam poppler-utils"
+          if ! command -v pdftotext >/dev/null || ! command -v pdftoppm >/dev/null; then
+            faltam="$faltam poppler-utils"
+          fi
           if ! tesseract --list-langs 2>/dev/null | grep -qx por; then
             faltam="$faltam tesseract-ocr tesseract-ocr-por"
           fi
