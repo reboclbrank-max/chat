@@ -5,9 +5,9 @@ on:
   workflow_dispatch:
     inputs:
       visao:
-        description: 'modelos de visão local a comparar, separados por vírgula (padrão = o mesmo modelo do turno; vazio = pula esta parte)'
+        description: 'modelos de visão local a comparar, separados por vírgula (padrão = a mesma configuração do turno; vazio = pula esta parte)'
         required: false
-        default: 'qwen3vl-4b'
+        default: 'qwen3vl-4b+det'
       cru:
         description: 'sim = mede também a foto de celular pelo caminho antigo (sem desvirar/reduzir), uma vez'
         required: false
