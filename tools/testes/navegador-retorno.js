@@ -9,6 +9,14 @@ function ok(nome, fn) { try { fn(); n++; console.log('✔ ' + nome); } catch (e)
 
 const ref = chat.novaReferenciaNavegacao();
 ok('referência é aleatória, opaca e sem destino', () => assert.match(ref, /^nav-[a-f0-9]{24}$/));
+ok('URL de navegar é preservada só para o parser de comando, não para texto livre', () => {
+  const brutoComando = ['From: teste@exemplo.com', 'To: casa@exemplo.com', 'Subject: comando', 'Content-Type: text/plain; charset=UTF-8', '', 'navegar: https://example.com/'].join('\r\n');
+  assert.equal(chat.pegaTexto(brutoComando, ''), 'navegar:');
+  assert.equal(chat.pegaTexto(brutoComando, '', { preservaUrls: true }), 'navegar: https://example.com/');
+  const fonte = fs.readFileSync(path.resolve(__dirname, '../email-chat.js'), 'utf8');
+  assert.match(fonte, /const corpoComando = pegaTexto\(bruto, assunto, \{ preservaUrls: true \}\)/);
+  assert.match(fonte, /ferramenta\(corpoComando, \{ canal: 'email'/);
+});
 const bruto = chat.serializaPendenciaNavegacao({ referencia: ref, canal: 'email', para: 'dono@exemplo.com', msgId: '<origem@exemplo>', assunto: 'consulta privada', criadoEm: '2026-10-17T00:00:00.000Z' });
 ok('marcador privado não deixa e-mail/assunto em texto claro', () => {
   assert.ok(bruto.includes('X-Rebocl-Navegador-Para: '));
@@ -32,4 +40,4 @@ ok('workflow mantém isolamento e aceita somente referência opaca', () => {
   assert.match(yml, /resultados_recentes/);
   assert.ok(!/GMAIL_CHAT_PASS|TELEGRAM_BOT_TOKEN|CHAT_DONO/.test(yml));
 });
-console.log(`${n}/7 testes de retorno do navegador passaram`);
+console.log(`${n}/8 testes de retorno do navegador passaram`);

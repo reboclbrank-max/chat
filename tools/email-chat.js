@@ -137,8 +137,14 @@ function extraiAnexos(bruto) {
   return anexos;
 }
 
-function limpaTexto(t) {
-  return String(t || '').replace(/--[0-9a-f]{16,}[\s\S]*$/, '').replace(/-----BEGIN PGP[\s\S]*?-----END PGP SIGNATURE-----/g, '').replace(/https?:\/\/\S+/g, '').trim().slice(0, 3000);
+function limpaTexto(t, opcoes) {
+  // O texto que vai ao motor continua sem URLs: links podem ser instruções de terceiros.
+  // Só a camada de COMANDO pede preservação, para que `navegar: https://…` seja utilizável
+  // e ainda passe pela validação rígida do navegador público antes de qualquer despacho.
+  const preservarUrls = !!(opcoes && opcoes.preservaUrls);
+  let saida = String(t || '').replace(/--[0-9a-f]{16,}[\s\S]*$/, '').replace(/-----BEGIN PGP[\s\S]*?-----END PGP SIGNATURE-----/g, '');
+  if (!preservarUrls) saida = saida.replace(/https?:\/\/\S+/g, '');
+  return saida.trim().slice(0, 3000);
 }
 
 function tiraHtml(s) {
@@ -160,22 +166,22 @@ function tiraHtml(s) {
   t = t.split(NL).map(function (l) { return l.trim(); }).join(NL);
   return t.trim();
 }
-function pegaTexto(bruto, assunto) {
+function pegaTexto(bruto, assunto, opcoes) {
   const folhas = folhasMime(bruto);
   if (folhas.length > 1 || /^multipart\//.test(tipoMime(folhas[0].cab))) {
     let html = '';
     for (const f of folhas) {
       if (eAnexoMime(f.cab)) continue;   // 📎 anexo NUNCA é o corpo
       const t = tipoMime(f.cab) || 'text/plain';
-      if (t === 'text/plain') { const x = textoMime(f).trim(); if (x) return limpaTexto(x); }
+      if (t === 'text/plain') { const x = textoMime(f).trim(); if (x) return limpaTexto(x, opcoes); }
       else if (!html && t === 'text/html') html = textoMime(f);
     }
-    if (html) return limpaTexto(tiraHtml(html));   // e-mail só-HTML (celular/webmail)
-    return limpaTexto(assunto);
+    if (html) return limpaTexto(tiraHtml(html), opcoes);   // e-mail só-HTML (celular/webmail)
+    return limpaTexto(assunto, opcoes);
   }
   let corpoMsg = textoMime(folhas[0]) || assunto;
   if (/<[a-z][\s\S]*>/i.test(corpoMsg)) corpoMsg = tiraHtml(corpoMsg);
-  return limpaTexto(corpoMsg);
+  return limpaTexto(corpoMsg, opcoes);
 }
 
 
@@ -1547,6 +1553,9 @@ async function processOnce() {
           continue;
         }
         let corpoMsg = pegaTexto(bruto, assunto);
+        // URLs não chegam aos motores/texto livre, mas o comando estrito `navegar:` precisa
+        // receber a URL original para validá-la (HTTP(S) público, sem segredo/rede interna).
+        const corpoComando = pegaTexto(bruto, assunto, { preservaUrls: true });
         const permiteOcrExterno = ocrExternoAutorizado(corpoMsg + ' ' + assunto);
         const semMemoria = /\[SEM-MEMORIA\]/i.test(corpoMsg);   // 🧪 v12.14: teste da memória pela conversa do Gmail
         if (semMemoria) corpoMsg = corpoMsg.replace(/\[SEM-MEMORIA\]/ig, '').trim();
@@ -1631,7 +1640,7 @@ async function processOnce() {
           anexoVoz = await fala(mVoz[1].trim());
           console.log(anexoVoz ? '🎙️ áudio gerado (' + anexoVoz.via + ', ' + Math.round(anexoVoz.buf.length / 1024) + 'KB)' : '🎙️ não consegui gerar o áudio');
         }
-        if (!imagem && !audioAnexo && !docAnexo && !mVoz) respostaFerramenta = await ferramenta(corpoMsg, { canal: 'email', para: de, msgId: msg.envelope.messageId, assunto });
+        if (!imagem && !audioAnexo && !docAnexo && !mVoz) respostaFerramenta = await ferramenta(corpoComando, { canal: 'email', para: de, msgId: msg.envelope.messageId, assunto });
         if (!respostaFerramenta && !imagem && !audioAnexo && !docAnexo && !mVoz) {   // ⏰🔎 v12.16
           try { respostaFerramenta = await comandosDaCasa(corpoMsg, de, msg.envelope.messageId, assunto); } catch (e) { console.log('⏰🔎 comando da casa falhou: ' + String(e.message || e).slice(0, 100)); }
         }
