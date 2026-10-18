@@ -266,7 +266,7 @@ function guardarTokenPersistente(valor) {
     sessionStorage.removeItem(CHAVE_TOKEN);
   }
 }
-let conversa = null, intervalo = null, ultimoId = 0, falando = false;
+let conversa = null, intervalo = null, ultimoId = 0, ultimoQuando = '', falando = false;
 
 const $ = (id) => document.getElementById(id);
 const elLista = $('lista'), elMsgs = $('msgs'), elFaixa = $('faixa');
@@ -294,6 +294,62 @@ function api(caminho, opcoes = {}) {
     if (permanente) throw e1;
     return new Promise((res2) => setTimeout(res2, 0)).then(uma);
   });
+}
+
+
+const TAMANHO_PAGINA_COMENTARIOS = 100;
+function paginaFinalComentarios(total) {
+  const n = Math.max(0, Number(total) || 0);
+  return Math.max(1, Math.ceil(n / TAMANHO_PAGINA_COMENTARIOS));
+}
+function caminhoComentarios(numero, pagina = 1, desde = '') {
+  const p = Math.max(1, Number(pagina) || 1);
+  const base = `/repos/${REPO}/issues/${numero}/comments?per_page=${TAMANHO_PAGINA_COMENTARIOS}&page=${p}`;
+  return desde ? base + '&since=' + encodeURIComponent(desde) : base;
+}
+async function comentariosRecentes(numero, total) {
+  const final = paginaFinalComentarios(total);
+  // A última página pode ter só um resto (101 comentários => página 2 com 1).
+  // Buscamos também a anterior e mantemos a janela final de 100, em ordem.
+  const paginas = final > 1 ? [final - 1, final] : [final];
+  const lotes = await Promise.all(paginas.map((pagina) => api(caminhoComentarios(numero, pagina))));
+  return lotes.flatMap((lote) => Array.isArray(lote) ? lote : []).slice(-TAMANHO_PAGINA_COMENTARIOS);
+}
+async function todosComentarios(numero, total) {
+  const paginas = Math.ceil(Math.max(0, Number(total) || 0) / TAMANHO_PAGINA_COMENTARIOS);
+  const todos = [];
+  for (let pagina = 1; pagina <= paginas; pagina++) {
+    const lote = await api(caminhoComentarios(numero, pagina));
+    if (!Array.isArray(lote)) break;
+    todos.push(...lote);
+    if (lote.length < TAMANHO_PAGINA_COMENTARIOS) break;
+  }
+  return todos;
+}
+function desdeComMargem(iso) {
+  const instante = Date.parse(iso || '');
+  if (!Number.isFinite(instante)) return '';
+  return new Date(instante - 1000).toISOString().replace(/\.\d{3}Z$/, 'Z');
+}
+async function comentariosDesde(numero, desde) {
+  return api(caminhoComentarios(numero, 1, desdeComMargem(desde)));
+}
+function registrarComentario(c) {
+  if (!c) return;
+  const id = Number(c.id);
+  if (Number.isFinite(id) && id > ultimoId) ultimoId = id;
+  const quando = String(c.updated_at || c.created_at || '');
+  const anterior = Date.parse(ultimoQuando || '');
+  const atual = Date.parse(quando);
+  if (quando && (!Number.isFinite(anterior) || !Number.isFinite(atual) || atual >= anterior)) ultimoQuando = quando;
+}
+function avisoHistoricoParcial(total, carregados) {
+  const n = Math.max(0, Number(total) || 0);
+  if (n <= carregados) return;
+  const aviso = document.createElement('div');
+  aviso.className = 'aviso';
+  aviso.textContent = '📚 Mostrando os últimos ' + carregados + ' de ' + n + ' comentários. A exportação inclui o histórico completo disponível.';
+  elMsgs.appendChild(aviso);
 }
 
 function escapar(t) {
@@ -476,29 +532,32 @@ async function novaConversa() {
 async function abrir(numero, titulo, contexto = null) {
   conversa = numero;
   ultimoId = 0;
+  ultimoQuando = '';
   abrirConversa();
   $('titulo-conv').textContent = titulo || ('Conversa #' + numero);
   elMsgs.innerHTML = '<div class="vazio"><span class="emoji">⏳</span>carregando…</div>';
   try {
     const issue = await api(`/repos/${REPO}/issues/${numero}`);
-    const comentarios = await api(`/repos/${REPO}/issues/${numero}/comments?per_page=100`);
+    const comentarios = await comentariosRecentes(numero, issue.comments);
     elMsgs.innerHTML = '';
     if (issue.body) bolha('user', issue.body, issue.created_at);
+    registrarComentario({ created_at: issue.created_at });
     comentarios.forEach(renderComentario);
+    avisoHistoricoParcial(issue.comments, comentarios.length);
     const ultimo = comentarios[comentarios.length - 1];
     if (ultimo && ehBot(ultimo)) sugestoesPara(limparAssinatura(ultimo.body));
-    ultimoId = comentarios.length ? comentarios[comentarios.length - 1].id : 0;
     rolarFim();
     atualizarBadgeSync();
     if (MODO_LOCAL.ligado) $('faixa-local').classList.remove('oculto');
     iniciarPolling(contexto);
-    cacheSalvarConversa(numero, { issue, comentarios });
+    cacheSalvarConversa(numero, { issue, comentarios, totalComentarios: Number(issue.comments) || 0 });
   } catch (e) {
     const cache = await cacheLerConversa(numero);
     if (cache && (cache.comentarios || []).length) {
       elMsgs.innerHTML = '';
       if (cache.issue && cache.issue.body) bolha('user', cache.issue.body, cache.issue.created_at);
       cache.comentarios.forEach(renderComentario);
+      avisoHistoricoParcial(cache.totalComentarios, cache.comentarios.length);
       faixaOffline(true);
       bolha('bot', '📦 **Modo offline** — mostrando a cópia salva neste aparelho. Quando a internet voltar, sincroniza sozinho.', new Date().toISOString(), '');
       rolarFim();
@@ -595,7 +654,7 @@ function motorDe(c) {
 function renderComentario(c) {
   const deBot = ehBot(c);
   bolha(deBot ? 'bot' : 'user', deBot ? limparAssinatura(c.body) : c.body, c.created_at, deBot ? motorDe(c) : '');
-  if (c.id > ultimoId) ultimoId = c.id;
+  registrarComentario(c);
   return deBot;
 }
 
@@ -686,7 +745,7 @@ async function enviar() {
     const c = await api(`/repos/${REPO}/issues/${conversa}/comments`, {
       method: 'POST', body: JSON.stringify({ body: texto })
     });
-    if (c.id > ultimoId) ultimoId = c.id;
+    registrarComentario(c);
     if (TURBO && !MODO_LOCAL.ligado) { emergenciaResponder(conversa); }
     else iniciarPolling({ inicio, evento: 'issue_comment' });
   } catch (e) {
@@ -732,8 +791,10 @@ function iniciarPolling(contexto = null) {
     tentativas++;
     const estavaNoFim = pertoDoFim();
     try {
-      const comentarios = await api(`/repos/${REPO}/issues/${conversa}/comments?per_page=100`);
-      const novos = comentarios.filter((c) => c.id > ultimoId);
+      const comentarios = await comentariosDesde(conversa, ultimoQuando);
+      const novos = comentarios.filter((c) => Number(c.id) > ultimoId);
+      // O cursor temporal tem margem de um segundo; o ID evita repetir a borda.
+      comentarios.forEach(registrarComentario);
       let respondeu = false;
       novos.forEach((c) => {
         if (renderComentario(c)) {
@@ -1486,10 +1547,10 @@ async function emergenciaResponder(numero) {
   try {
     // A abertura da Issue não aparece em /comments. Incluí-la aqui evita que a
     // rota de emergência responda em branco quando a primeira execução falha.
-    const [issue, comentarios] = await Promise.all([
-      api('/repos/' + REPO + '/issues/' + numero),
-      api('/repos/' + REPO + '/issues/' + numero + '/comments?per_page=100')
-    ]);
+    const issue = await api('/repos/' + REPO + '/issues/' + numero);
+    // A API entrega comentários em páginas de no máximo 100. Na emergência,
+    // interessa a página final: ela contém a pergunta que acabou de ser enviada.
+    const comentarios = await comentariosRecentes(numero, issue && issue.comments);
     const inicial = limparAssinatura((issue && issue.body) || '');
     const hist = (inicial ? [{ role: 'user', content: inicial.slice(0, 1200) }] : []).concat(
       comentarios.slice(-12).map((c) => ({
@@ -1752,7 +1813,7 @@ async function coletarConversas() {
   const saida = [];
   for (const i of issues) {
     let comentarios = [];
-    try { comentarios = await api(`/repos/${REPO}/issues/${i.number}/comments?per_page=100`); } catch (e) {}
+    try { comentarios = await todosComentarios(i.number, i.comments); } catch (e) {}
     saida.push({
       numero: i.number, titulo: i.title, estado: i.state, criado_em: i.created_at,
       mensagens: [{ de: 'voce', texto: i.body || '', em: i.created_at }].concat(
@@ -1787,7 +1848,7 @@ async function exportarConversaAtual() {
   if (!conversa) return;
   try {
     const issue = await api(`/repos/${REPO}/issues/${conversa}`);
-    const comentarios = await api(`/repos/${REPO}/issues/${conversa}/comments?per_page=100`);
+    const comentarios = await todosComentarios(conversa, issue.comments);
     const dados = {
       titulo: issue.title, numero: issue.number,
       mensagens: [{ de: 'voce', texto: issue.body || '', em: issue.created_at }].concat(
@@ -1858,7 +1919,7 @@ async function reenviarUltima() {
   if (!texto) return;
   try {
     const c = await api(`/repos/${REPO}/issues/${conversa}/comments`, { method: 'POST', body: JSON.stringify({ body: texto }) });
-    if (c.id > ultimoId) ultimoId = c.id;
+    registrarComentario(c);
     bolha('user', texto, new Date().toISOString());
     rolarFim();
     iniciarPolling();
