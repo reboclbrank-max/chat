@@ -1,12 +1,21 @@
 {
-  "consultado_em": "2026-10-18T03:13:07.169Z",
+  "consultado_em": "2026-10-18T03:47:07.479Z",
   "url": "https://example.com/",
   "via": "chrome",
   "titulo": "Example Domain",
   "trecho_publico": "Example Domain This domain is for use in documentation examples without needing permission. This is not a service; avoid relying on it for testing and monitoring purposes. هذا النطاق مُخصص للاستخدام في أمثلة التوثيق دون الحاجة إلى إذن. هذه ليست خدمة، يُرجى تجنب الاعتماد عليها لأغراض الاختبار والمراقبة. 该域名仅用于文档示例，无需获得许可。这并非一项服务，请勿将其用于测试和监控目的。 L’usage de ce domaine est réservé à des exemples de documentation, sans autorisation préalable. Il ne s’agit pas d’un service ; son utilisation à des fins ",
   "aviso": "",
-  "referencia": "nav-eb7bc721c5f323afb455718e",
+  "referencia": "nav-5c91bc9124611641b44f1f37",
   "resultados_recentes": [
+    {
+      "consultado_em": "2026-10-18T03:47:07.479Z",
+      "url": "https://example.com/",
+      "via": "chrome",
+      "titulo": "Example Domain",
+      "trecho_publico": "Example Domain This domain is for use in documentation examples without needing permission. This is not a service; avoid relying on it for testing and monitoring purposes. هذا النطاق مُخصص للاستخدام في أمثلة التوثيق دون الحاجة إلى إذن. هذه ليست خدمة، يُرجى تجنب الاعتماد عليها لأغراض الاختبار والمراقبة. 该域名仅用于文档示例，无需获得许可。这并非一项服务，请勿将其用于测试和监控目的。 L’usage de ce domaine est réservé à des exemples de documentation, sans autorisation préalable. Il ne s’agit pas d’un service ; son utilisation à des fins ",
+      "aviso": "",
+      "referencia": "nav-5c91bc9124611641b44f1f37"
+    },
     {
       "consultado_em": "2026-10-18T03:13:07.169Z",
       "url": "https://example.com/",
