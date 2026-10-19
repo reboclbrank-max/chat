@@ -68,4 +68,6 @@ jobs:
           for f in tools/prepara-foto.py tools/visao-local.py tools/ocr-local.py tools/olho.py; do python3 -m py_compile "$f"; done
           for f in tools/testes/*.sh; do bash -n "$f"; done
       - name: Testes rápidos (IMAP, SMTP e motores falsos)
+        env:
+          REBOCL_EXIGIR_MULTIMODAL: '1'
         run: node tools/testes/roda-testes.js

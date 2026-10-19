@@ -41,7 +41,7 @@ ok('não há gatilho pull_request_target e o orçamento de escrita é explícito
   }
 });
 
-ok('barreira rápida prepara OCR português e renderizador de PDF se a imagem não os trouxer', () => {
+ok('barreira rápida prepara e exige OCR português e renderizador de PDF', () => {
   const rapido = ler('testes-rapidos.yml');
   assert.match(rapido, /command -v pdftotext >\/dev\/null/);
   assert.match(rapido, /command -v pdftoppm >\/dev\/null/);
@@ -49,6 +49,7 @@ ok('barreira rápida prepara OCR português e renderizador de PDF se a imagem n�
   assert.match(rapido, /tesseract --list-langs 2>\/dev\/null \| grep -qx por/);
   assert.match(rapido, /faltam="\$faltam tesseract-ocr tesseract-ocr-por"/);
   assert.match(rapido, /sudo apt-get install -y -qq \$faltam/);
+  assert.match(rapido, /REBOCL_EXIGIR_MULTIMODAL: '1'/);
 });
 
 ok('barreira rápida observa e valida a sintaxe de ferramentas Shell', () => {

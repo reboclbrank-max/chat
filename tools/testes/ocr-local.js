@@ -9,15 +9,31 @@ const raiz = path.resolve(__dirname, '../..');
 const { preparaFoto, leTextoLocalComReserva } = require('../email-chat');
 let certos = 0;
 let falhas = 0;
+let ignorados = 0;
 function ok(nome, fn) { try { fn(); certos++; console.log('✔ ' + nome); } catch (e) { falhas++; console.error('✘ ' + nome + ' — ' + e.message); } }
 async function okAsync(nome, fn) { try { await fn(); certos++; console.log('✔ ' + nome); } catch (e) { falhas++; console.error('✘ ' + nome + ' — ' + e.message); } }
+function pular(nome, motivo) { ignorados++; console.log('○ ' + nome + ' — não executado: ' + motivo); }
+function tesseractDisponivel() {
+  const r = spawnSync('tesseract', ['--version'], { encoding: 'utf8', timeout: 5000 });
+  return !r.error && r.status === 0;
+}
+const TEM_TESSERACT = tesseractDisponivel();
+const OCR_OBRIGATORIO = process.env.REBOCL_EXIGIR_MULTIMODAL === '1';
+function exigirOuPular(nome, motivo) {
+  if (OCR_OBRIGATORIO) {
+    ok(nome, () => assert.fail(motivo + ' (a barreira marcou OCR como obrigatório)'));
+    return false;
+  }
+  pular(nome, motivo);
+  return false;
+}
 function jsonFinal(saida) {
   const i = String(saida || '').lastIndexOf('{');
   assert(i >= 0, 'OCR não devolveu JSON');
   return JSON.parse(String(saida).slice(i));
 }
 
-ok('OCR local lê a data da foto sintética sem depender de rede', () => {
+if (TEM_TESSERACT) ok('OCR local lê a data da foto sintética sem depender de rede', () => {
   const imagem = path.join(raiz, 'tools', 'teste-visao3.png');
   assert(fs.existsSync(imagem), 'fixture de foto ausente');
   const r = spawnSync('python3', ['tools/ocr-local.py', imagem], { cwd: raiz, encoding: 'utf8', timeout: 90000 });
@@ -26,6 +42,7 @@ ok('OCR local lê a data da foto sintética sem depender de rede', () => {
   assert.equal(dado.ok, true, 'OCR local não encontrou texto');
   assert.match(String(dado.texto || ''), /14\/10\/2026/, 'OCR não leu a data da foto');
 });
+else exigirOuPular('OCR local lê a data da foto sintética sem depender de rede', 'tesseract não está instalado neste ambiente');
 ok('reserva do OCR original é local e só entra se a cópia preparada perdeu confiança', () => {
   const fonte = fs.readFileSync(path.join(raiz, 'tools', 'email-chat.js'), 'utf8');
   const ocr = fs.readFileSync(path.join(raiz, 'tools', 'ocr-local.py'), 'utf8');
@@ -37,6 +54,15 @@ ok('reserva do OCR original é local e só entra se a cópia preparada perdeu co
   assert.match(fonte, /tetoMs = 70000/);
   assert.match(ocr, /ORCAMENTO_SEG/);
   assert.match(ocr, /CONFIANCA_RAPIDA/);
+});
+ok('a barreira exige OCR e PDF completos, embora o sandbox local possa declará-los como ausentes', () => {
+  const runner = fs.readFileSync(path.join(raiz, 'tools', 'testes', 'roda-testes.js'), 'utf8');
+  const workflow = fs.readFileSync(path.join(raiz, '.github', 'workflows', 'testes-rapidos.yml'), 'utf8');
+  assert.match(runner, /REBOCL_EXIGIR_MULTIMODAL === '1'/);
+  assert.match(runner, /\['pdftotext'\]/);
+  assert.match(workflow, /REBOCL_EXIGIR_MULTIMODAL: '1'/);
+  assert.match(workflow, /tesseract-ocr-por/);
+  assert.match(workflow, /poppler-utils/);
 });
 ok('um motor OCR preso respeita o teto e não congela a fila', () => {
   const pasta = fs.mkdtempSync(path.join(os.tmpdir(), 'ocr-limite-'));
@@ -64,7 +90,7 @@ ok('um motor OCR preso respeita o teto e não congela a fila', () => {
 });
 
 (async () => {
-  await okAsync('reserva usa o original quando JPEG higienizado perdeu a leitura da data', async () => {
+  if (TEM_TESSERACT) await okAsync('reserva usa o original quando JPEG higienizado perdeu a leitura da data', async () => {
     const bruto = fs.readFileSync(path.join(raiz, 'tools', 'teste-visao3.png')).toString('base64');
     const original = { tipo: 'image/png', b64: bruto, bytes: Buffer.byteLength(bruto, 'base64') };
     const preparada = await preparaFoto(original);
@@ -72,6 +98,8 @@ ok('um motor OCR preso respeita o teto e não congela a fila', () => {
     assert.match(String(lida && lida.texto || ''), /14\/10\/2026/, 'reserva não recuperou a data');
     assert(Number(lida && lida.confianca) >= 55, 'reserva não escolheu a leitura mais confiável');
   });
-  console.log(`${certos}/${certos + falhas} testes de OCR local passaram`);
+  else exigirOuPular('reserva usa o original quando JPEG higienizado perdeu a leitura da data', 'tesseract não está instalado neste ambiente');
+  const resumo = `${certos}/${certos + falhas} testes de OCR local passaram`;
+  console.log(ignorados ? `SKIP: ${resumo}; ${ignorados} verificação(ões) não executada(s) por pré-requisito local ausente` : resumo);
   process.exitCode = falhas ? 1 : 0;
 })();

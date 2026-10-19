@@ -184,6 +184,12 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Sem aprisionar a navegação:** Configurações ganhou “← Voltar ao Chat”; Esc e o botão ⚙️ retornam à conversa aberta ou à lista, preservando o compositor.
 - **Cobertura controlada:** novo contrato 22/22 verifica as quatro rotas, a guarda de `fetch` e novas atribuições externas de imagem/mídia antes da rede, desligamento explícito, preparação/confirmação e limites declarados. A suíte integral ficou 47/49; os mesmos dois limites ambientais de OCR/PDF sem visão permanecem, sem relação atribuída a esta interface. Não houve PAT, conversa, API produtiva, modelo, download, rede externa, custo ou infraestrutura. Isto não prova firewall real, isolamento do navegador, inferência local em aparelho real, entrega, uso humano, satisfação, disponibilidade ou SLA.
 
+## v12.33 — pré-requisitos multimodais visíveis, sem falso verde local (19/10/2026)
+
+- **Resultado local honesto:** quando este sandbox não tem `tesseract` ou `pdftotext`, a suíte não chama OCR/PDF de aprovado nem atribui a ausência ao produto. Ela executa o restante, mostra cada verificação não executada como `SKIP` e informa o pré-requisito ausente.
+- **Barreira continua rígida:** no GitHub Actions, `REBOCL_EXIGIR_MULTIMODAL=1` torna esses mesmos pré-requisitos obrigatórios. O workflow já instala Tesseract em português e Poppler; se faltarem, OCR/PDF reprovam a barreira em vez de virar `SKIP`.
+- **Evidência controlada:** neste sandbox, **47/47** verificações executadas passaram e **2** foram explicitamente ignoradas por falta de binários locais; a execução forçada com a variável da barreira falhou como esperado, comprovando que o `SKIP` não mascara CI. Nenhum e-mail, caixa, API produtiva, OCR externo, modelo, mensagem, custo ou infraestrutura foi acionado. Isto ainda não prova OCR em dispositivo real, entrega, visão, satisfação, disponibilidade ou SLA.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código
