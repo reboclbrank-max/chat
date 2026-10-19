@@ -63,11 +63,11 @@ for (const rota of rotas) {
   });
 }
 
-testa('service worker v7 instala sem se ativar sozinho', () => {
+testa('service worker v8 instala sem se ativar sozinho', () => {
   const sw = fonte('sw.js');
   const instalacao = trecho(sw, "self.addEventListener('install'", "self.addEventListener('message'");
   const mensagem = trecho(sw, "self.addEventListener('message'", "self.addEventListener('activate'");
-  assert.match(sw, /rebocl-chat-v7/);
+  assert.match(sw, /rebocl-chat-v8/);
   assert.doesNotMatch(instalacao, /skipWaiting/);
   assert.match(mensagem, /evento\.data\.tipo === 'REBOCL_ATIVAR_ATUALIZACAO'/);
   assert.match(mensagem, /self\.skipWaiting\(\)/);

@@ -163,6 +163,14 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Renderização previsível:** mensagem recebida com mais de 60.000 caracteres é limitada antes do Markdown, com aviso local e escape preservado. Isto evita trabalho ilimitado de renderização no navegador; não altera a cópia já guardada no GitHub e a exportação continua sendo o caminho para o histórico disponível.
 - **Cobertura controlada:** o novo contrato offline passou 19/19 nas quatro rotas; a suíte rápida passou 46/46 e o Chromium controlado continuou 4/4. Foram mocks/VM/fixtures locais, sem PAT, conversa, mensagem, arquivo privado, API produtiva, rede externa, custo ou infraestrutura nova. Não é prova de todos os navegadores, entrega, preservação completa de histórico, uso humano, satisfação, disponibilidade ou SLA.
 
+## v12.30 — rascunho local opt-in e revisão de texto arrastado (19/10/2026)
+
+- **Atualização PWA segura:** a casca avançou para `rebocl-chat-v8`; a mesma escolha explícita de atualização permanece, e um rascunho opt-in já salvo continua local após recarregar.
+- **Rascunho só se você escolher:** em ⚙️, a opção começa desligada. Ao ativar, o Chat guarda até oito rascunhos por conversa/nova conversa **somente neste navegador**. Ele não sincroniza, não envia, não aparece sozinho na tela e pode ser restaurado ou apagado conscientemente. Um envio confirmado remove apenas o rascunho correspondente; resultado incerto o preserva para recuperação.
+- **Proteção de credencial:** texto que pareça token do GitHub não vira rascunho nem mensagem de nova conversa. Use token exclusivamente no campo protegido de ⚙️.
+- **Arquivo de texto revisável:** ao arrastar um `.txt`, `.md` ou outro formato aceito, a tela informa localmente o nome/tamanho e o tamanho do trecho inserido no rascunho. Não é anexo nem envio: a pessoa pode revisar/editar o texto antes de escolher Enviar.
+- **Cobertura controlada:** contrato novo 22/22 em quatro rotas, regressões de limites 19/19, PWA 16/16, segurança/fluxo 30/30 e acessibilidade 29/29 passaram sem PAT, conversa, API produtiva, arquivo privado, rede externa, custo ou infraestrutura. O harness de Chromium foi atualizado e sua guarda estática passou 6/6; este sandbox específico não tinha Chromium para repetir a execução visual. Nada disso prova backup permanente, segurança física do navegador, envio/worker real, uso humano, satisfação, disponibilidade ou SLA.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código

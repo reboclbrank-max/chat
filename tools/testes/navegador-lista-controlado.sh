@@ -112,7 +112,21 @@ teste_lista = """<script>
     botaoPwa.click();
     if (document.documentElement.dataset.pwaUpdateRequest !== 'REBOCL_ATIVAR_ATUALIZACAO') throw new Error('atualização explícita não pediu ativação ao worker controlado');
 
-    document.body.dataset.browserE2e = 'PASS: busca ativa manteve carregar mais; nova conversa oculta; alvo da página 3 visível; PWA protegeu rascunho e só ativou por escolha';
+    document.getElementById('btn-config').click();
+    const optin = document.getElementById('optin-rascunhos');
+    optin.checked = true;
+    optin.dispatchEvent(new Event('change', { bubbles: true }));
+    entrada.value = 'rascunho local controlado';
+    entrada.dispatchEvent(new Event('input', { bubbles: true }));
+    await esperar(() => rascunhoLocalAtual() && rascunhoLocalAtual().texto === 'rascunho local controlado');
+    entrada.value = '';
+    atualizarAvisoRascunho();
+    const avisoRascunho = document.getElementById('aviso-rascunho');
+    if (!visivel(avisoRascunho)) throw new Error('rascunho local não ofereceu restauração explícita');
+    document.getElementById('btn-restaurar-rascunho').click();
+    if (entrada.value !== 'rascunho local controlado') throw new Error('restauração local não devolveu o texto exato');
+
+    document.body.dataset.browserE2e = 'PASS: busca ativa manteve carregar mais; nova conversa oculta; alvo da página 3 visível; PWA protegeu rascunho; rascunho local opt-in restaurou sem rede';
   } catch (erro) {
     document.body.dataset.browserE2e = 'FAIL: ' + String((erro && erro.message) || erro).slice(0, 180);
   }

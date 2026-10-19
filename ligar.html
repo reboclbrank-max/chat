@@ -23,6 +23,11 @@
   body.claro{--fundo:#f4f4f7;--painel:#ffffff;--painel2:#ececf1;--borda:#d5d5df;--texto:#191922;--texto2:#5c5c6a}
   .composer #contador{font-size:10.5px;color:var(--texto2);align-self:center;min-width:58px;text-align:right}
   .composer #contador.excedido{color:var(--vermelho);font-weight:700}
+  .aviso-rascunho,.previsao-arquivo-texto{display:flex;align-items:center;gap:8px;max-width:760px;margin:0 auto 7px;padding:8px 10px;border:1px solid #245c32;border-radius:10px;background:#14281a;color:#a9e0b8;font-size:12px}
+  .aviso-rascunho span,.previsao-arquivo-texto span{flex:1;min-width:0}
+  .aviso-rascunho button{background:var(--painel);border:1px solid #245c32;color:#a9e0b8;border-radius:8px;padding:5px 8px;font:inherit;font-size:12px;cursor:pointer;white-space:nowrap}
+  .opcao-rascunho{display:flex;align-items:flex-start;gap:9px;color:var(--texto);font-size:13.5px;cursor:pointer}
+  .opcao-rascunho input{width:auto;margin:3px 0 0;accent-color:var(--ouro)}
   @media print{header,.composer-wrap,.chips,#sugestoes,#cabecalho-conv .acao,#faixa-local,#progresso-local{display:none !important}body{background:#fff;color:#000}.bolha{break-inside:avoid}}
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -200,6 +205,13 @@
     <div id="seletor-modelo" style="display:flex;flex-direction:column;gap:6px" role="group" aria-label="Modelo do cérebro local"></div>
   </div>
   <div class="cartao">
+    <h2>📝 Rascunhos neste aparelho</h2>
+    <p>Opcional: quando ativado, cada rascunho fica salvo <b>só neste navegador</b> para você restaurar depois. Ele nunca é enviado, sincronizado ou mostrado automaticamente. Desligar ou apagar remove os rascunhos locais.</p>
+    <label class="opcao-rascunho" for="optin-rascunhos"><input type="checkbox" id="optin-rascunhos" aria-describedby="status-rascunhos"> <span>Salvar rascunhos neste aparelho</span></label>
+    <button type="button" id="btn-apagar-rascunhos" style="margin-top:10px;background:var(--painel);border:1px solid #7a2a2a;color:#e0a9a9;font-weight:600">Apagar rascunhos locais</button>
+    <div id="status-rascunhos" role="status" aria-live="polite" aria-atomic="true"></div>
+  </div>
+  <div class="cartao">
     <h2>💾 Minhas conversas fora do navegador</h2>
     <p>Exporte todas as conversas para guardar (ou levar para outro aparelho). Ao importar, o Chat cria uma nova conversa com a primeira mensagem sua de cada arquivo; ele não reenviará respostas ou histórico como instruções novas.</p>
     <button type="button" id="btn-exp-json">⬇ Exportar tudo (JSON)</button>
@@ -239,6 +251,8 @@
   <div id="progresso-local" class="oculto" role="status" aria-live="polite"></div>
   <div class="msgs" id="msgs" role="log" aria-live="polite" aria-relevant="additions text" aria-label="Mensagens da conversa"></div>
   <div class="composer-wrap">
+    <div id="aviso-rascunho" class="aviso-rascunho oculto" role="region" aria-label="Rascunho local disponível"><span id="texto-rascunho"></span><button type="button" id="btn-restaurar-rascunho">Restaurar</button><button type="button" id="btn-descartar-rascunho">Descartar</button></div>
+    <div id="previsao-arquivo-texto" class="previsao-arquivo-texto oculto" role="status" aria-live="polite" aria-atomic="true"><span id="texto-previsao-arquivo"></span></div>
     <div id="sugestoes" class="oculto" style="display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 6px" role="group" aria-label="Sugestões de continuidade"></div>
     <div class="chips" id="chips" role="group" aria-label="Comandos rápidos"></div>
     <div class="composer">
@@ -598,6 +612,7 @@ function alternarMicrofone() {
     for (let i = e.resultIndex; i < e.results.length; i++) parcial += e.results[i][0].transcript;
     $('entrada').value = (base ? base + ' ' : '') + parcial;
     atualizarContador();
+    agendarSalvarRascunho();
   };
   reconhecendo.onerror = () => {};
   reconhecendo.onend = () => { gravando = false; marcarMicrofone(false); };
@@ -610,6 +625,7 @@ function focoSeguro(id) {
   if (alvo) setTimeout(() => alvo.focus(), 0);
 }
 function mostrarConfig(mostrar, focar = false) {
+  atualizarPainelRascunhos();
   $('tela-config').classList.toggle('oculto', !mostrar);
   $('principal').classList.toggle('oculto', mostrar);
   $('tela-conv').classList.add('oculto');
@@ -623,8 +639,13 @@ function abrirConversa() {
   $('tela-conv').style.display = 'flex';
 }
 function voltarLista() {
+  salvarRascunhoAtual($('entrada').value);
+  limparPreviaArquivoTexto();
+  $('entrada').value = '';
+  ajustarCampoDeEntrada();
   pararPolling();
   conversa = null;
+  atualizarAvisoRascunho();
   $('tela-conv').classList.add('oculto');
   $('tela-conv').style.display = 'none';
   $('principal').classList.remove('oculto');
@@ -766,9 +787,12 @@ async function carregarMaisConversas() {
 }
 async function novaConversa() {
   if (criandoNovaConversa) return;
-  const texto = prompt('Primeira mensagem:');
+  const rascunhoNovo = optinRascunhosAtivo() ? lerRascunhosLocais().itens.nova : null;
+  const texto = prompt('Primeira mensagem:', rascunhoNovo ? rascunhoNovo.texto : '');
   if (!texto || !texto.trim()) return;
   if (String(texto).trim().length > LIMITE_MENSAGEM_COMPOSITOR) { alert('A primeira mensagem passa do limite local de ' + LIMITE_MENSAGEM_COMPOSITOR.toLocaleString('pt-BR') + ' caracteres. Encurte antes de criar a conversa.'); return; }
+  if (pareceTokenDeAcesso(texto)) { alert('Token não é mensagem nem rascunho. Abra ⚙️ Configurar acesso e cole-o somente no campo protegido deste navegador.'); return; }
+  salvarRascunhoAtual(texto);
   const card = $('card-nova');
   criandoNovaConversa = true;
   if (card) {
@@ -782,6 +806,8 @@ async function novaConversa() {
       method: 'POST',
       body: JSON.stringify({ title: texto.trim().split('\n')[0].slice(0, 70), body: texto.trim() })
     });
+    limparRascunhoPorChave('nova', texto);
+    limparPreviaArquivoTexto();
     await abrir(issue.number, issue.title, { inicio, evento: 'issues' });
   } catch (e) {
     if (card) {
@@ -794,7 +820,14 @@ async function novaConversa() {
 
 /* ---------- conversa ---------- */
 async function abrir(numero, titulo, contexto = null) {
+  if (conversa !== null && String(conversa) !== String(numero)) salvarRascunhoAtual($('entrada').value);
+  if (conversa !== null && String(conversa) !== String(numero)) {
+    $('entrada').value = '';
+    ajustarCampoDeEntrada();
+    limparPreviaArquivoTexto();
+  }
   conversa = numero;
+  atualizarAvisoRascunho();
   ultimoId = 0;
   ultimoQuando = '';
   abrirConversa();
@@ -1079,7 +1112,10 @@ async function enviar() {
   const texto = caixa.value.trim();
   if (!texto || !conversa) return;
   if (!mensagemDentroDoLimite(texto)) { avisoMensagemLonga(); caixa.focus(); return; }
-  if (/^!token(?:\s|$)/i.test(texto) || /\b(?:gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,})\b/.test(texto)) {
+  salvarRascunhoAtual(caixa.value);
+  if (pareceTokenDeAcesso(texto)) {
+    limparRascunhoPorChave(chaveRascunhoAtual(), texto);
+    limparPreviaArquivoTexto();
     caixa.value = ''; caixa.style.height = 'auto';
     bolha('bot', '🔐 **Token não é mensagem.** Abra ⚙️ Configurar acesso e cole-o somente no campo protegido deste navegador. Nada foi enviado, gravado em issue ou passado a um motor.', new Date().toISOString(), '🔐 proteção');
     rolarFim();
@@ -1091,6 +1127,8 @@ async function enviar() {
     bolha('user', texto, new Date().toISOString());
     rolarFim();
     enviarLocal(texto);
+    limparRascunhoPorChave(chaveRascunhoAtual(), texto);
+    limparPreviaArquivoTexto();
     return;
   }
   try {
@@ -1109,6 +1147,8 @@ async function enviar() {
       method: 'POST', body: JSON.stringify({ body: texto })
     });
     registrarComentario(c);
+    limparRascunhoPorChave(chaveRascunhoAtual(), texto);
+    limparPreviaArquivoTexto();
     atualizarEstadoEntrega('mensagem-criada');
     if (TURBO && !MODO_LOCAL.ligado) {
       atualizarEstadoEntrega('resposta-local-solicitada');
@@ -1116,6 +1156,7 @@ async function enviar() {
     } else iniciarPolling({ inicio, evento: 'issue_comment' });
   } catch (e) {
     encerrarEstadoEntrega(estadoEntregaParaErro(e), '⚠️ entrega', mensagemErroSeguro(e));
+    avisarRascunhoPreservadoAposFalha();
     if (!navigator.onLine && !MODO_LOCAL.ligado) {
       MODO_LOCAL.ligado = true;
       localStorage.setItem('assistente_rebocl_modo_local', '1');
@@ -2037,6 +2078,7 @@ function montarChips() {
       if (prefixo === '@local') { alternarModoLocal(); return; }
       const entrada = $('entrada');
       entrada.value = prefixo;
+      agendarSalvarRascunho();
       entrada.focus();
       if (prefixo.startsWith('/')) enviar();
     };
@@ -2148,6 +2190,10 @@ $('btn-exp-json').onclick = () => exportarTudo('json');
 $('btn-exp-md').onclick = () => exportarTudo('md');
 $('btn-imp-json').onclick = () => $('arq-importar').click();
 $('btn-limpar-copias').onclick = limparCopiasOffline;
+$('optin-rascunhos').onchange = alternarOptinRascunhos;
+$('btn-apagar-rascunhos').onclick = apagarTodosRascunhos;
+$('btn-restaurar-rascunho').onclick = restaurarRascunhoAtual;
+$('btn-descartar-rascunho').onclick = descartarRascunhoAtual;
 $('btn-aplicar-atualizacao').onclick = solicitarAtualizacaoPwa;
 $('arq-importar').onchange = (e) => {
   if (e.target.files && e.target.files[0]) importarArquivo(e.target.files[0]);
@@ -2178,6 +2224,9 @@ $('entrada').addEventListener('keydown', (e) => {
 $('entrada').addEventListener('input', (e) => {
   e.target.style.height = 'auto';
   e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+  if (!String(e.target.value || '').trim()) limparPreviaArquivoTexto();
+  agendarSalvarRascunho();
+  atualizarAvisoRascunho();
   atualizarAvisoAtualizacaoPwa();
 });
 
@@ -2610,10 +2659,197 @@ function lerArquivoDrop(ev) {
     const trecho = texto.slice(0, Math.min(8000, espaco));
     caixa.value = caixa.value + separador + trecho;
     atualizarContador();
+    mostrarPreviaArquivoTexto(arq.name, arq.size, trecho.length, trecho.length < texto.length);
+    agendarSalvarRascunho();
     caixa.focus();
     if (trecho.length < texto.length) alert('Só os primeiros ' + trecho.length.toLocaleString('pt-BR') + ' caracteres que cabiam foram adicionados. Nada foi enviado.');
   };
   leitor.readAsText(arq);
+}
+
+/* ---------- rascunhos locais e prévia de texto anexado (P1D/P1E) ---------- */
+// Armazenamento é opt-in, local ao navegador e por contexto de conversa. O texto não
+// é enviado, sincronizado ou exposto pelo aviso; só a pessoa pode restaurá-lo.
+const CHAVE_OPTIN_RASCUNHOS = 'assistente_rebocl_rascunhos_optin_v1';
+const CHAVE_RASCUNHOS_LOCAIS = 'assistente_rebocl_rascunhos_v1';
+const VERSAO_RASCUNHOS_LOCAIS = 1;
+const LIMITE_RASCUNHOS_LOCAIS = 8;
+let temporizadorRascunho = null;
+function optinRascunhosAtivo() { return localStorage.getItem(CHAVE_OPTIN_RASCUNHOS) === '1'; }
+function chaveRascunhoAtual() {
+  const numero = Number(conversa);
+  return Number.isSafeInteger(numero) && numero > 0 ? 'conversa:' + numero : 'nova';
+}
+function chaveRascunhoValida(chave) { return chave === 'nova' || /^conversa:\d{1,12}$/.test(String(chave || '')); }
+function textoRascunhoValido(texto) {
+  return typeof texto === 'string' && !!texto.trim() && texto.length <= LIMITE_MENSAGEM_COMPOSITOR;
+}
+function pareceTokenDeAcesso(texto) {
+  return /^!token(?:\s|$)/i.test(String(texto || '')) || /\b(?:gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,})\b/.test(String(texto || ''));
+}
+function colecaoRascunhosVazia() { return { versao: VERSAO_RASCUNHOS_LOCAIS, itens: {} }; }
+function lerRascunhosLocais() {
+  const vazio = colecaoRascunhosVazia();
+  try {
+    const bruto = localStorage.getItem(CHAVE_RASCUNHOS_LOCAIS);
+    if (!bruto) return vazio;
+    const dados = JSON.parse(bruto);
+    if (!dados || Number(dados.versao) !== VERSAO_RASCUNHOS_LOCAIS || !dados.itens || typeof dados.itens !== 'object' || Array.isArray(dados.itens)) return vazio;
+    Object.keys(dados.itens).forEach((chave) => {
+      const item = dados.itens[chave];
+      if (!chaveRascunhoValida(chave) || !item || !textoRascunhoValido(item.texto) || !Number.isFinite(Number(item.atualizado_em))) return;
+      vazio.itens[chave] = { texto: item.texto, atualizado_em: Number(item.atualizado_em) };
+    });
+  } catch (e) {}
+  return vazio;
+}
+function gravarRascunhosLocais(dados) {
+  try {
+    const itens = dados && dados.itens && typeof dados.itens === 'object' ? dados.itens : {};
+    if (!Object.keys(itens).length) localStorage.removeItem(CHAVE_RASCUNHOS_LOCAIS);
+    else localStorage.setItem(CHAVE_RASCUNHOS_LOCAIS, JSON.stringify({ versao: VERSAO_RASCUNHOS_LOCAIS, itens }));
+    return true;
+  } catch (e) { return false; }
+}
+function contarRascunhosLocais(dados = lerRascunhosLocais()) { return Object.keys(dados.itens || {}).length; }
+function rascunhoLocalAtual() { return lerRascunhosLocais().itens[chaveRascunhoAtual()] || null; }
+function salvarRascunhoAtual(texto) {
+  if (!optinRascunhosAtivo()) return 'desligado';
+  const dados = lerRascunhosLocais();
+  const chave = chaveRascunhoAtual();
+  const valor = String(texto == null ? '' : texto);
+  if (pareceTokenDeAcesso(valor)) {
+    delete dados.itens[chave];
+    gravarRascunhosLocais(dados);
+    return 'proibido';
+  }
+  if (!valor.trim()) {
+    delete dados.itens[chave];
+    return gravarRascunhosLocais(dados) ? 'removido' : 'falhou';
+  }
+  if (!textoRascunhoValido(valor)) return 'invalido';
+  if (!dados.itens[chave] && contarRascunhosLocais(dados) >= LIMITE_RASCUNHOS_LOCAIS) return 'limite';
+  dados.itens[chave] = { texto: valor, atualizado_em: Date.now() };
+  return gravarRascunhosLocais(dados) ? 'salvo' : 'falhou';
+}
+function limparRascunhoPorChave(chave, textoEsperado) {
+  if (!chaveRascunhoValida(chave)) return false;
+  const dados = lerRascunhosLocais();
+  const item = dados.itens[chave];
+  if (!item) return true;
+  if (typeof textoEsperado === 'string' && item.texto.trim() !== textoEsperado.trim()) return false;
+  delete dados.itens[chave];
+  return gravarRascunhosLocais(dados);
+}
+function mensagemRascunho(quantidade) {
+  if (!optinRascunhosAtivo()) return 'Rascunhos locais estão desligados. Nada é salvo neste navegador.';
+  return quantidade ? quantidade + ' rascunho(s) salvo(s) somente neste navegador.' : 'Rascunhos locais ligados. Ainda não há rascunho salvo.';
+}
+function atualizarPainelRascunhos(aviso) {
+  const dados = lerRascunhosLocais();
+  const quantidade = contarRascunhosLocais(dados);
+  const marcar = $('optin-rascunhos');
+  const botao = $('btn-apagar-rascunhos');
+  const status = $('status-rascunhos');
+  if (marcar) marcar.checked = optinRascunhosAtivo();
+  if (botao) botao.disabled = !quantidade;
+  if (status) status.textContent = aviso || mensagemRascunho(quantidade);
+}
+function avisarRascunhoPreservadoAposFalha() {
+  if (!optinRascunhosAtivo() || !rascunhoLocalAtual()) return;
+  atualizarPainelRascunhos('Não consegui confirmar o envio; o rascunho foi mantido somente neste navegador.');
+  atualizarAvisoRascunho();
+}
+function formatarDataRascunho(quando) {
+  try { return new Date(quando).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }); }
+  catch (e) { return 'em outro momento'; }
+}
+function atualizarAvisoRascunho() {
+  const aviso = $('aviso-rascunho');
+  const texto = $('texto-rascunho');
+  const caixa = $('entrada');
+  if (!aviso || !texto) return;
+  const item = optinRascunhosAtivo() ? rascunhoLocalAtual() : null;
+  const ocupado = !!(caixa && String(caixa.value || '').trim());
+  if (!item || ocupado) { aviso.classList.add('oculto'); return; }
+  texto.textContent = 'Há um rascunho salvo neste aparelho em ' + formatarDataRascunho(item.atualizado_em) + '. Ele não foi enviado.';
+  aviso.classList.remove('oculto');
+}
+function ajustarCampoDeEntrada() {
+  const caixa = $('entrada');
+  if (!caixa) return;
+  caixa.style.height = 'auto';
+  caixa.style.height = Math.min(caixa.scrollHeight, 120) + 'px';
+  atualizarContador();
+  atualizarAvisoAtualizacaoPwa();
+}
+function agendarSalvarRascunho() {
+  if (temporizadorRascunho) clearTimeout(temporizadorRascunho);
+  temporizadorRascunho = setTimeout(() => {
+    const caixa = $('entrada');
+    const resultado = salvarRascunhoAtual(caixa ? caixa.value : '');
+    if (resultado === 'limite') atualizarPainelRascunhos('Limite de ' + LIMITE_RASCUNHOS_LOCAIS + ' rascunhos locais. Restaure ou apague um antes de salvar outro.');
+    else if (resultado === 'proibido') atualizarPainelRascunhos('Token não é rascunho: ele não foi salvo neste navegador. Use somente ⚙️ Configurar acesso.');
+    else if (resultado === 'falhou') atualizarPainelRascunhos('Não consegui guardar este rascunho neste navegador. Ele não foi enviado.');
+    else atualizarPainelRascunhos();
+    atualizarAvisoRascunho();
+  }, 350);
+}
+function restaurarRascunhoAtual() {
+  const item = optinRascunhosAtivo() ? rascunhoLocalAtual() : null;
+  const caixa = $('entrada');
+  if (!item || !caixa) return;
+  if (caixa.value.trim() && !confirm('Substituir o texto atual pelo rascunho salvo neste aparelho?')) return;
+  caixa.value = item.texto;
+  ajustarCampoDeEntrada();
+  atualizarAvisoRascunho();
+  caixa.focus();
+}
+function descartarRascunhoAtual() {
+  const item = rascunhoLocalAtual();
+  if (!item || !confirm('Apagar este rascunho local? Ele não será enviado.')) return;
+  limparRascunhoPorChave(chaveRascunhoAtual());
+  atualizarPainelRascunhos();
+  atualizarAvisoRascunho();
+}
+function apagarTodosRascunhos() {
+  const quantidade = contarRascunhosLocais();
+  if (!quantidade || !confirm('Apagar os ' + quantidade + ' rascunho(s) locais deste navegador? Eles não serão enviados.')) return;
+  try { localStorage.removeItem(CHAVE_RASCUNHOS_LOCAIS); } catch (e) {}
+  atualizarPainelRascunhos('Rascunhos locais apagados deste navegador.');
+  atualizarAvisoRascunho();
+}
+function alternarOptinRascunhos() {
+  const marcar = $('optin-rascunhos');
+  if (!marcar) return;
+  if (marcar.checked) {
+    try { localStorage.setItem(CHAVE_OPTIN_RASCUNHOS, '1'); } catch (e) {}
+    atualizarPainelRascunhos('Rascunhos locais ligados. O próximo texto ficará apenas neste navegador.');
+    agendarSalvarRascunho();
+  } else {
+    if (!confirm('Desligar e apagar todos os rascunhos locais deste navegador?')) { marcar.checked = true; return; }
+    try {
+      localStorage.removeItem(CHAVE_OPTIN_RASCUNHOS);
+      localStorage.removeItem(CHAVE_RASCUNHOS_LOCAIS);
+    } catch (e) {}
+    atualizarPainelRascunhos('Rascunhos locais desligados e apagados deste navegador.');
+    atualizarAvisoRascunho();
+  }
+}
+function mostrarPreviaArquivoTexto(nome, tamanho, caracteres, cortado) {
+  const bloco = $('previsao-arquivo-texto');
+  const texto = $('texto-previsao-arquivo');
+  if (!bloco || !texto) return;
+  const nomeSeguro = String(nome || 'arquivo').replace(/[\r\n]/g, ' ').slice(0, 120);
+  const kb = Math.max(0, Number(tamanho) || 0) / 1024;
+  texto.textContent = '📎 “' + nomeSeguro + '” (' + (kb < 1024 ? Math.ceil(kb) + ' KB' : (kb / 1024).toFixed(1) + ' MB') + '): ' + caracteres.toLocaleString('pt-BR') + ' caracteres foram colocados no rascunho para revisão' + (cortado ? ' (trecho limitado)' : '') + '. Nada foi enviado.';
+  bloco.classList.remove('oculto');
+}
+function limparPreviaArquivoTexto() {
+  const bloco = $('previsao-arquivo-texto');
+  const texto = $('texto-previsao-arquivo');
+  if (texto) texto.textContent = '';
+  if (bloco) bloco.classList.add('oculto');
 }
 
 /* ---------- lightbox das imagens (v1.6) ---------- */
@@ -2652,6 +2888,8 @@ if (MODO_LOCAL.ligado) {
 }
 aplicarTema();
 atualizarContador();
+atualizarPainelRascunhos();
+atualizarAvisoRascunho();
 $('btn-tema').onclick = alternarTema;
 $('btn-imprimir').onclick = () => window.print();
 $('entrada').addEventListener('input', atualizarContador);
