@@ -284,32 +284,8 @@ function erroTransitorio(erro) {
 // Ficam junto do cliente API para que todo POST/PATCH seja observável antes de
 // qualquer troca manual de PWA. Guardas typeof preservam os testes isolados.
 let escritasEmAndamento = 0, importacaoEmAndamento = false, sincronizacaoLocalEmAndamento = false;
-let registroPwa = null, atualizacaoPwaPendente = null, recarregarAposAtualizacaoPwa = false, intervaloAtualizacaoPwa = null;
 function escritaEmAndamento() {
   return escritasEmAndamento > 0 || (typeof criandoNovaConversa !== 'undefined' && criandoNovaConversa) || importacaoEmAndamento || sincronizacaoLocalEmAndamento;
-}
-function atualizarAvisoAtualizacaoPwa() {
-  if (typeof document === 'undefined') return;
-  const aviso = $('aviso-atualizacao');
-  const texto = $('texto-atualizacao');
-  const botao = $('btn-aplicar-atualizacao');
-  if (!aviso || !texto || !botao) return;
-  if (!atualizacaoPwaPendente) {
-    aviso.classList.add('oculto');
-    aviso.setAttribute('aria-hidden', 'true');
-    return;
-  }
-  const haEscrita = escritaEmAndamento();
-  const entrada = $('entrada');
-  const haRascunho = !!(entrada && String(entrada.value || '').trim());
-  texto.textContent = haEscrita
-    ? 'Atualização pronta. Aguarde o envio, a importação ou a sincronização terminar antes de atualizar.'
-    : haRascunho
-      ? 'Atualização pronta. Envie ou copie o rascunho antes de atualizar para não perdê-lo.'
-      : 'Uma atualização está pronta. Você decide quando recarregar esta página.';
-  botao.disabled = haEscrita || haRascunho;
-  aviso.classList.remove('oculto');
-  aviso.setAttribute('aria-hidden', 'false');
 }
 function acompanharEscrita(promessa) {
   escritasEmAndamento++;

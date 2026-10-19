@@ -50,7 +50,7 @@ function contextoBase(respostas) {
 }
 function runtimeApi(html, respostas) {
   const r = contextoBase(respostas);
-  vm.runInContext(blocoCritico(html).api + '\nglobalThis.apiTeste = api; globalThis.erroTeste = mensagemErroSeguro;', r.ctx);
+  vm.runInContext(blocoCritico(html).api + '\nfunction atualizarAvisoAtualizacaoPwa() {}\nglobalThis.apiTeste = api; globalThis.erroTeste = mensagemErroSeguro;', r.ctx);
   return r;
 }
 function runtimeImportacao(html) {
@@ -134,7 +134,7 @@ async function principal() {
 
   const sw = fonte('sw.js');
   testa('service worker inclui as quatro rotas e versão nova de cache', () => {
-    assert.match(sw, /rebocl-chat-v10/);
+    assert.match(sw, /rebocl-chat-v11/);
     assert.match(sw, /'\.\/chat-pwa\.js'/);
     for (const rota of rotas) assert.match(sw, new RegExp("'\\./" + rota.replace('.', '\\.') + "'"));
     assert.match(sw, /url\.search/);

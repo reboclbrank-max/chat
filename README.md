@@ -203,6 +203,12 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Casca offline completa:** `rebocl-chat-v10` precacheia tanto `chat-estilos.css` quanto `chat-pwa.js`. A nova versão continua aguardando escolha explícita e nunca chama `skipWaiting()` na instalação; API, query e terceiros continuam fora do cache.
 - **Cobertura controlada:** contrato PWA **18/18**, segurança/fluxo **30/30** e a suíte rápida **49/49** passaram; permanecem apenas os 2 SKIPs multimodais locais já declarados. As verificações cobrem referências, cliente compartilhado, precache, porta de continuidade e, em VM, que o registro aponta só para `sw.js` e só envia a ordem de ativação após escolha. Smoke HTTP estritamente local respondeu 200 para o cliente e as quatro rotas. Nenhuma conversa, token, API produtiva, rede externa, custo ou infraestrutura foi usada.
 
+## v12.36 — atualização PWA confirma ou devolve o controle (19/10/2026)
+
+- **Sem botão preso:** depois de escolher atualizar, o cliente local aguarda a confirmação de troca do worker por até 15 segundos. Só essa confirmação recarrega a página; se ela não chegar — ou se o aviso ao worker falhar — a página continua aberta, explica o limite e oferece **Tentar atualizar**. Não há recarga, ativação, escrita ou tentativa automática adicional.
+- **Uma regra nas quatro entradas:** o estado e o aviso da atualização também passaram para `chat-pwa.js`; `index`, `direto`, `ligar` e `limpar` continuam responsáveis por seus fluxos e por informar escrita/rascunho. A casca avançou para `rebocl-chat-v11`, com os mesmos arquivos locais aprovados; API, query e terceiros seguem fora do cache e `skipWaiting()` continua proibido na instalação.
+- **Cobertura controlada:** o contrato PWA passou **20/20**, incluindo VM para escolha explícita, confirmação do worker, prazo sem recarga, tentativa posterior e falha de `postMessage`; segurança/fluxo ficou 30/30. Isto confirma código controlado, não atualização em todo navegador, worker disponível, uso humano, satisfação, disponibilidade ou SLA.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código
