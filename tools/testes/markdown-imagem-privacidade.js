@@ -40,11 +40,14 @@ ok('as quatro rotas preservam a mesma proteção de imagem', () => {
   const unicos = new Set([...resultados.values()]);
   assert.equal(unicos.size, 1, 'renderizadores divergentes entre rotas');
 });
-ok('link textual continua sendo uma ação explícita da pessoa', () => {
-  const html = renderizador('index.html', '[fonte](https://exemplo.test/recurso)');
-  assert.match(html, /<a href="https:\/\/exemplo\.test\/recurso"/);
-  assert(!/<img\b/i.test(html));
-});
+for (const rota of rotas) {
+  ok(rota + ' mantém link textual como ação explícita e isolada', () => {
+    const html = renderizador(rota, '[fonte](https://exemplo.test/recurso) https://outro.exemplo.test/pagina');
+    assert.match(html, /<a href="https:\/\/exemplo\.test\/recurso" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">fonte<\/a>/);
+    assert.match(html, /<a href="https:\/\/outro\.exemplo\.test\/pagina" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">https:\/\/outro\.exemplo\.test\/pagina<\/a>/);
+    assert(!/<img\b/i.test(html));
+  });
+}
 
 console.log(`${certos}/${certos + falhas} testes de privacidade de imagem passaram`);
 process.exitCode = falhas ? 1 : 0;

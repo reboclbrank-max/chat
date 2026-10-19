@@ -144,6 +144,20 @@ if (token && !localStorage.getItem(CHAVE_TOKEN)) localStorage.setItem(CHAVE_TOKE
 if (token) sessionStorage.setItem(CHAVE_TOKEN, token);
 const $ = (id) => document.getElementById(id);
 
+function erroDaApi(status) {
+  const erro = new Error('api:' + String(status || 0));
+  erro.status = Number(status) || 0;
+  return erro;
+}
+function mensagemErroSeguro(erro) {
+  const status = Number(erro && erro.status);
+  if (status === 401) return 'Acesso não autorizado. Confira o token no Chat.';
+  if (status === 403) return 'O acesso foi recusado ou está temporariamente limitado.';
+  if (status === 404) return 'O recurso não foi encontrado.';
+  if (status === 408 || status === 429) return 'O serviço pediu para aguardar antes de tentar novamente.';
+  if (status >= 500) return 'O serviço está indisponível agora. Tente mais tarde.';
+  return 'Não foi possível concluir agora. Confira a conexão e tente mais tarde.';
+}
 function api(caminho, opcoes = {}) {
   return fetch(API + caminho, {
     ...opcoes,
@@ -154,11 +168,9 @@ function api(caminho, opcoes = {}) {
       ...(opcoes.headers || {})
     }
   }).then(async (r) => {
+    if (!r.ok) throw erroDaApi(r.status);
     const t = await r.text();
-    let d = null;
-    try { d = t ? JSON.parse(t) : null; } catch (e) { d = t; }
-    if (!r.ok) throw new Error((d && d.message) || ('HTTP ' + r.status));
-    return d;
+    try { return t ? JSON.parse(t) : null; } catch (e) { return t; }
   });
 }
 function esc(t) {
@@ -318,7 +330,7 @@ async function mandarOrdem(texto) {
     });
     carregarOrdens();
   } catch (e) {
-    alert('Não consegui mandar a ordem: ' + e.message);
+    alert('Não consegui mandar a ordem: ' + mensagemErroSeguro(e));
   }
 }
 

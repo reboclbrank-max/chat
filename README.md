@@ -130,6 +130,14 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Menos rastreamento passivo:** o link abre isolado, com `noopener`, `noreferrer` e política de não enviar referer. O conteúdo textual e links comuns continuam disponíveis; só a busca automática da imagem foi retirada.
 - **Paridade nas quatro rotas:** `index`, `direto`, `ligar` e `limpar` usam a mesma regra, coberta por regressão offline. Não houve nova dependência, canal, conta, custo ou consulta externa.
 
+## v12.25 — envio, importação e links com limites claros (19/10/2026)
+
+- **Erro sem vazar detalhe externo:** mensagens de rede/API na página e no Console agora usam categorias curtas e seguras. Não repetem texto arbitrário devolvido por servidor, URL, cabeçalho ou outro detalhe bruto.
+- **Menos risco de duplicar conversa:** a página só repete leitura (`GET`) depois de uma falha transitória. Ao criar conversa, comentar, renomear, fechar ou importar, um resultado incerto não é reenviado automaticamente — atualize a lista antes de tentar de novo.
+- **Importação honesta e limitada:** o JSON exportado traz versão; a importação aceita até 25 conversas e 2 MB por vez e cria somente uma nova conversa com a primeira mensagem sua de cada item. Respostas e histórico não são reenviados como se fossem instruções novas. O Chat mostra se a importação parar no meio, sem esconder o que já foi criado.
+- **Links externos sob escolha e sem referer:** além das imagens, links Markdown e URLs textuais abrem isolados com `noopener`, `noreferrer` e sem referer. O clique continua sendo uma escolha da pessoa.
+- **Quatro rotas e PWA coerentes:** `index`, `direto`, `ligar` e `limpar` passaram a compartilhar um contrato de segurança/fluxo; o cache estático cobre as quatro e verifica atualização periodicamente. Isto não transforma o PWA em fonte de verdade para conversas nem garante disponibilidade.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código

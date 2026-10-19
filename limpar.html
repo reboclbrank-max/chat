@@ -158,7 +158,7 @@
     <h2>🔑 Acesso</h2>
     <p>Para esta página ler e escrever nas suas conversas privadas, ela precisa de um <b>token de acesso do GitHub</b> — guardado apenas neste navegador, nunca aqui no site.</p>
     <ol class="inst">
-      <li>Abra <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a> (entre na conta <b>reboclbrank-max</b>)</li>
+      <li>Abra <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">github.com/settings/personal-access-tokens/new</a> (entre na conta <b>reboclbrank-max</b>)</li>
       <li><b>Token name:</b> <code>chat-site</code> · <b>Expiration:</b> 90 dias (ou o que preferir)</li>
       <li><b>Repository access:</b> Only select repositories → marque <b>agente</b></li>
       <li><b>Permissions:</b> em <i>Repository permissions</i>, ache <b>Issues</b> e mude para <b>Read and write</b></li>
@@ -189,10 +189,10 @@
   </div>
   <div class="cartao">
     <h2>💾 Minhas conversas fora do navegador</h2>
-    <p>Exporte um arquivo com todas as conversas para guardar (ou levar para outro aparelho) e importe de volta quando quiser. Só sai do GitHub se você mandar.</p>
+    <p>Exporte todas as conversas para guardar (ou levar para outro aparelho). Ao importar, o Chat cria uma nova conversa com a primeira mensagem sua de cada arquivo; ele não reenviará respostas ou histórico como instruções novas.</p>
     <button id="btn-exp-json">⬇ Exportar tudo (JSON)</button>
     <button id="btn-exp-md" style="margin-top:8px;background:var(--painel);border:1px solid var(--borda);color:var(--texto);font-weight:600">⬇ Exportar tudo (texto .md)</button>
-    <button id="btn-imp-json" style="margin-top:8px;background:var(--painel);border:1px solid var(--borda);color:var(--texto);font-weight:600">⬆ Importar arquivo (JSON)</button>
+    <button id="btn-imp-json" style="margin-top:8px;background:var(--painel);border:1px solid var(--borda);color:var(--texto);font-weight:600">⬆ Importar inícios de conversa (JSON)</button>
     <input type="file" id="arq-importar" accept="application/json,.json" class="oculto">
     <div id="status-exportar"></div>
   </div>
@@ -273,7 +273,44 @@ const elLista = $('lista'), elMsgs = $('msgs'), elFaixa = $('faixa');
 let paginaLista = 1, listaAtual = [], maisListaDisponivel = false, carregandoMaisLista = false, revisaoLista = 0;
 let filaCacheLista = Promise.resolve();
 
+// Erros de rede/API são dados externos. A interface só mostra categorias fechadas,
+// nunca a mensagem devolvida por servidor, URL, cabeçalho ou outro texto arbitrário.
+function erroDaApi(status) {
+  const erro = new Error('api:' + String(status || 0));
+  erro.status = Number(status) || 0;
+  return erro;
+}
+function erroLocal(codigo) {
+  const erro = new Error('local:' + String(codigo || 'desconhecido'));
+  erro.codigoLocal = String(codigo || 'desconhecido');
+  return erro;
+}
+function mensagemErroSeguro(erro) {
+  const locais = {
+    'arquivo-grande': 'O arquivo passa do limite local de 2 MB.',
+    'arquivo-invalido': 'O arquivo não tem o formato de exportação reconhecido.',
+    'versao-importacao': 'Este arquivo usa uma versão de exportação ainda não suportada.',
+    'importacao-vazia': 'Não encontrei uma primeira mensagem válida para importar.',
+    'importacao-limite': 'A importação aceita até 25 conversas por vez.',
+    'texto-longo': 'Uma primeira mensagem passa do limite seguro de importação.'
+  };
+  const codigoLocal = String((erro && erro.codigoLocal) || '');
+  if (Object.prototype.hasOwnProperty.call(locais, codigoLocal)) return locais[codigoLocal];
+  const status = Number(erro && erro.status);
+  if (status === 401) return 'Acesso não autorizado. Confira o token nas configurações.';
+  if (status === 403) return 'O acesso foi recusado ou está temporariamente limitado.';
+  if (status === 404) return 'O recurso não foi encontrado.';
+  if (status === 408 || status === 429) return 'O serviço pediu para aguardar antes de tentar novamente.';
+  if (status === 409) return 'Houve um conflito; atualize a conversa antes de tentar de novo.';
+  if (status >= 500) return 'O serviço está indisponível agora. Tente mais tarde.';
+  return 'Não foi possível concluir agora. Confira a conexão e tente mais tarde.';
+}
+function erroTransitorio(erro) {
+  const status = Number(erro && erro.status);
+  return !status || status === 408 || status === 429 || status >= 500;
+}
 function api(caminho, opcoes = {}) {
+  const metodo = String(opcoes.method || 'GET').toUpperCase();
   const uma = () => fetch(API + caminho, {
     ...opcoes,
     headers: {
@@ -284,16 +321,14 @@ function api(caminho, opcoes = {}) {
       ...(opcoes.headers || {})
     }
   }).then(async (r) => {
+    if (!r.ok) throw erroDaApi(r.status);
     const texto = await r.text();
-    let dados = null;
-    try { dados = texto ? JSON.parse(texto) : null; } catch (e) { dados = texto; }
-    if (!r.ok) throw new Error((dados && dados.message) || ('HTTP ' + r.status));
-    return dados;
+    try { return texto ? JSON.parse(texto) : null; } catch (e) { return texto; }
   });
   return uma().catch((e1) => {
-    const msg = String((e1 || {}).message || e1);
-    const permanente = /HTTP 4\d\d/.test(msg) && !/HTTP 429|HTTP 408|HTTP 409/.test(msg);
-    if (permanente) throw e1;
+    // Repetir uma escrita após falha ambígua pode duplicar Issue/comentário. Só
+    // leituras idempotentes recebem uma segunda tentativa curta.
+    if (metodo !== 'GET' || !erroTransitorio(e1)) throw e1;
     return new Promise((res2) => setTimeout(res2, 0)).then(uma);
   });
 }
@@ -406,8 +441,8 @@ function markdown(t) {
   s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
   s = s.replace(/\*\*([^*\n]+)\*\*/g, '<b>$1</b>');
   s = s.replace(/_(\(?[^_\n]+\)?)_/g, '<i>$1</i>');
-  s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-  s = s.replace(/(^|\s)(https?:\/\/[^\s<)]+)/g, '$1<a href="$2" target="_blank" rel="noopener">$2</a>');
+  s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">$1</a>');
+  s = s.replace(/(^|\s)(https?:\/\/[^\s<)]+)/g, '$1<a href="$2" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">$2</a>');
   s = s.replace(/^- /gm, '• ');
   s = s.replace(/^\s*\|(.+)\|\s*$/gm, (linha) => {
     const celulas = linha.split('|').filter((c) => c.trim() !== '');
@@ -604,7 +639,7 @@ async function carregarLista() {
       maisListaDisponivel = false;
       renderListaAtual(true);
     } else {
-      elLista.innerHTML = `<div class="vazio"><span class="emoji">⚠️</span>não consegui carregar (${escapar(String(e.message))}).<br>confira o token nas configurações ⚙️</div>`;
+      elLista.innerHTML = `<div class="vazio"><span class="emoji">⚠️</span>não consegui carregar (${escapar(mensagemErroSeguro(e))}).<br>confira o token nas configurações ⚙️</div>`;
     }
   }
 }
@@ -647,7 +682,7 @@ async function novaConversa() {
       body: JSON.stringify({ title: texto.trim().split('\n')[0].slice(0, 70), body: texto.trim() })
     });
     await abrir(issue.number, issue.title, { inicio, evento: 'issues' });
-  } catch (e) { alert('Não consegui criar a conversa: ' + e.message); }
+  } catch (e) { alert('Não consegui criar a conversa: ' + mensagemErroSeguro(e)); }
 }
 
 /* ---------- conversa ---------- */
@@ -686,7 +721,7 @@ async function abrir(numero, titulo, contexto = null) {
       bolha('bot', '📦 **Modo offline** — mostrando a cópia salva neste aparelho. Quando a internet voltar, sincroniza sozinho.', new Date().toISOString(), '');
       rolarFim();
     } else {
-      elMsgs.innerHTML = `<div class="vazio"><span class="emoji">⚠️</span>${escapar(String(e.message))}</div>`;
+      elMsgs.innerHTML = `<div class="vazio"><span class="emoji">⚠️</span>${escapar(mensagemErroSeguro(e))}</div>`;
     }
   }
 }
@@ -823,14 +858,14 @@ function pertoDoFim() {
   return elMsgs.scrollHeight - elMsgs.scrollTop - elMsgs.clientHeight < 140;
 }
 
-function pensando(mostrar) {
+function pensando(mostrar, texto) {
   const velho = $('pensando');
   if (velho) velho.remove();
   if (mostrar) {
     const d = document.createElement('div');
     d.id = 'pensando';
     d.className = 'pensando';
-    d.innerHTML = '<span class="ponto"></span><span class="ponto"></span><span class="ponto"></span> pensando (~1–2 min)…';
+    d.innerHTML = '<span class="ponto"></span><span class="ponto"></span><span class="ponto"></span> ' + escapar(texto || 'mensagem enviada; aguardando resposta…');
     elMsgs.appendChild(d);
     rolarFim();
   }
@@ -853,15 +888,16 @@ async function enviar() {
       bolha('bot', '🖐 Falta UMA coisa: as **mãos** (token do dono neste navegador) — é ele que abre teu caderno de conversa. Abre este link **neste navegador**: ' + location.origin + location.pathname.replace(/[^/]*$/, '') + 'limpar.html — aparece MÃOS LIGADAS, e aí me escreve de novo.', new Date().toISOString(), '🖐'); rolarFim();
       return;
     }
-    pensando(true);
+    pensando(true, 'enviando conversa…');
     try {
       const inicio = Date.now();
       const nova = await api('/repos/' + REPO + '/issues', { method: 'POST', body: JSON.stringify({ title: texto.trim().split('\n')[0].slice(0, 70), body: texto.trim() }) });
       ultimoId = 0;
+      pensando(true, 'conversa criada; aguardando resposta…');
       await abrir(nova.number, nova.title, TURBO ? null : { inicio, evento: 'issues' });
       $('btn-enviar').disabled = true;
       if (TURBO) emergenciaResponder(nova.number);
-    } catch (e) { pensando(false); bolha('bot', '⚠️ não consegui abrir teu caderno: ' + e.message + ' — se der 401, o token venceu; me pede pra trocar.', new Date().toISOString(), '⚠️'); rolarFim(); }
+    } catch (e) { pensando(false); bolha('bot', '⚠️ não consegui abrir teu caderno: ' + mensagemErroSeguro(e) + ' — se der 401, o token venceu; me pede pra trocar.', new Date().toISOString(), '⚠️'); rolarFim(); }
     finally { $('btn-enviar').disabled = false; }
     return;
   }
@@ -882,13 +918,14 @@ async function enviar() {
   bolha('user', texto, new Date().toISOString());
   rolarFim();
   $('btn-enviar').disabled = true;
-  pensando(true);
+  pensando(true, 'enviando mensagem…');
   try {
     const inicio = Date.now();
     const c = await api(`/repos/${REPO}/issues/${conversa}/comments`, {
       method: 'POST', body: JSON.stringify({ body: texto })
     });
     registrarComentario(c);
+    pensando(true, 'mensagem enviada; aguardando resposta…');
     if (TURBO && !MODO_LOCAL.ligado) { emergenciaResponder(conversa); }
     else iniciarPolling({ inicio, evento: 'issue_comment' });
   } catch (e) {
@@ -903,7 +940,7 @@ async function enviar() {
       bolha('bot', '📶 A internet caiu, então liguei o **cérebro 100% local**: suas próximas mensagens são respondidas no seu aparelho, offline. Quando voltar, é só desligar o 🧠.', new Date().toISOString(), '');
       rolarFim();
     }
-    alert('Não consegui enviar: ' + e.message);
+    alert('Não consegui enviar: ' + mensagemErroSeguro(e));
   } finally { $('btn-enviar').disabled = false; }
 }
 
@@ -928,6 +965,7 @@ async function trabalhadorFalhouRapido(contexto) {
 function iniciarPolling(contexto = null) {
   emergenciaFeita = false;
   pararPolling();
+  if (contexto) pensando(true, 'mensagem enviada; aguardando resposta…');
   let tentativas = 0;
   let checouFalhaRapida = false;
   intervalo = setInterval(async () => {
@@ -954,7 +992,7 @@ function iniciarPolling(contexto = null) {
         if (await trabalhadorFalhouRapido(contexto)) {
           emergenciaFeita = true;
           pararPolling();
-          bolha('bot', '⚡ O turno da casa não conseguiu iniciar agora. Vou responder por aqui, sem reenviar sua mensagem.', new Date().toISOString(), '⚡ recuperação');
+          bolha('bot', '⚡ O turno normal não iniciou nesta tentativa. Vou usar uma contingência local sem reenviar sua mensagem; isso não é garantia de disponibilidade.', new Date().toISOString(), '⚡ recuperação');
           rolarFim();
           emergenciaResponder(conversa);
           return;
@@ -962,12 +1000,14 @@ function iniciarPolling(contexto = null) {
       }
       if (!respondeu && tentativas === 10 && !MODO_LOCAL.ligado && !emergenciaFeita) {
         emergenciaFeita = true;
+        pensando(false);
+        bolha('bot', '⌛ A resposta normal está demorando. Vou tentar uma contingência local sem reenviar sua mensagem; isso não garante entrega.', new Date().toISOString(), '⚡ contingência');
         emergenciaResponder(conversa);
       }
       if (novos.length) pensando(true);
       if (tentativas > 72) {
         pensando(false);
-        bolha('bot', '_O assistente está demorando mais que o normal. A resposta pode chegar — reabra em alguns minutos._', new Date().toISOString());
+        bolha('bot', '_A resposta ainda não chegou. Ela pode aparecer depois; nenhuma mensagem foi reenviada automaticamente._', new Date().toISOString());
         pararPolling();
       }
     } catch (e) {
@@ -1233,8 +1273,8 @@ async function trabalhar() {
 async function maosDaCasa(msg) {
   const m = (msg || '').trim().toLowerCase();
   if (m.startsWith('!token ')) return '🔐 Por segurança, token não é aceito por comando. Abra ⚙️ Configurar acesso e cole-o somente no campo protegido deste navegador.';
-  if (m.startsWith('!statuscasa')) { (async () => { bolha('bot', '🏠 lendo o pulso da casa…', new Date().toISOString(), '🏠'); rolarFim(); const fora = []; try { const j = await (await fetch('https://api.github.com/repos/reboclbrank-max/site/actions/workflows/postagem-diaria.yml/runs?per_page=5', { signal: AbortSignal.timeout(15000) })).json(); (j.workflow_runs || []).forEach(r => fora.push('• run #' + r.run_number + ': ' + (r.conclusion === 'success' ? '✅ vivo' : (r.conclusion === 'failure' ? '☠ caiu' : '⏳ ' + r.status)) + ' (' + (r.created_at || '').slice(0, 16).replace('T', ' ') + ' UTC)')); } catch (e) { fora.push('• runs: ' + e.message); } try { const rg = await (await fetch('https://raw.githubusercontent.com/reboclbrank-max/site/main/posts/progresso-metas.md', { signal: AbortSignal.timeout(15000) })).text(); const ult = rg.trim().split('## ').pop(); fora.push('📊 régua: ' + ult.split('\n').slice(0, 2).join(' / ')); } catch (e) {} bolha('bot', '🏠 **ESTADO DA CASA AGORA**\n' + fora.join('\n') + '\n\nMande ⚡ !acordarcasa pra fazê-la postar AGORA.', new Date().toISOString(), '🏠 status'); rolarFim(); })(); return '🏠 consultando o pulso da casa…'; }
-  if (m.startsWith('!acordarcasa')) { (async () => { try { const resp = await api('/repos/reboclbrank-max/site/actions/workflows/postagem-diaria.yml/dispatches', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ref: 'main' }) }); bolha('bot', resp && resp.ok ? '⚡ **CASA ACORDADA!** O ciclo dispara agora e o post nasce em ~3 minutos (mãos LIGADAS — token do dono no navegador).' : '⚠️ o GitHub respondeu ' + (resp ? resp.status : 'nada') + ' — o token do dono precisa estar no navegador (console.html).', new Date().toISOString(), '⚡ acordar'); } catch (e) { bolha('bot', '⚠️ sem mão agora: ' + e.message + ' — token do dono no navegador resolve.', new Date().toISOString(), '⚡'); } rolarFim(); })(); return '⚡ acordando a casa…'; }
+  if (m.startsWith('!statuscasa')) { (async () => { bolha('bot', '🏠 lendo o pulso da casa…', new Date().toISOString(), '🏠'); rolarFim(); const fora = []; try { const j = await (await fetch('https://api.github.com/repos/reboclbrank-max/site/actions/workflows/postagem-diaria.yml/runs?per_page=5', { signal: AbortSignal.timeout(15000) })).json(); (j.workflow_runs || []).forEach(r => fora.push('• run #' + r.run_number + ': ' + (r.conclusion === 'success' ? '✅ vivo' : (r.conclusion === 'failure' ? '☠ caiu' : '⏳ ' + r.status)) + ' (' + (r.created_at || '').slice(0, 16).replace('T', ' ') + ' UTC)')); } catch (e) { fora.push('• runs: ' + mensagemErroSeguro(e)); } try { const rg = await (await fetch('https://raw.githubusercontent.com/reboclbrank-max/site/main/posts/progresso-metas.md', { signal: AbortSignal.timeout(15000) })).text(); const ult = rg.trim().split('## ').pop(); fora.push('📊 régua: ' + ult.split('\n').slice(0, 2).join(' / ')); } catch (e) {} bolha('bot', '🏠 **ESTADO DA CASA AGORA**\n' + fora.join('\n') + '\n\nMande ⚡ !acordarcasa pra fazê-la postar AGORA.', new Date().toISOString(), '🏠 status'); rolarFim(); })(); return '🏠 consultando o pulso da casa…'; }
+  if (m.startsWith('!acordarcasa')) { (async () => { try { const resp = await api('/repos/reboclbrank-max/site/actions/workflows/postagem-diaria.yml/dispatches', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ref: 'main' }) }); bolha('bot', resp && resp.ok ? '⚡ **CASA ACORDADA!** O ciclo dispara agora e o post nasce em ~3 minutos (mãos LIGADAS — token do dono no navegador).' : '⚠️ o GitHub respondeu ' + (resp ? resp.status : 'nada') + ' — o token do dono precisa estar no navegador (console.html).', new Date().toISOString(), '⚡ acordar'); } catch (e) { bolha('bot', '⚠️ sem mão agora: ' + mensagemErroSeguro(e) + ' — token do dono no navegador resolve.', new Date().toISOString(), '⚡'); } rolarFim(); })(); return '⚡ acordando a casa…'; }
   if (m.startsWith('!exame')) { (async () => { let banco = []; try { banco = ((await (await fetch('banco-questoes.json', { signal: AbortSignal.timeout(15000) })).json()).questoes) || []; } catch (e) {}try { const curva = JSON.parse(localStorage.getItem('rebocl_exame_historico') || '[]'); if (curva.length >= 2 && curva.slice(-2).every(h => h.ok / h.total >= 0.83)) { const b2 = ((await (await fetch('banco-v2.json', { signal: AbortSignal.timeout(15000) })).json()).questoes) || []; if (b2.length) { banco = b2; }} } catch (e) {} if (!banco.length) { bolha('bot', '🔬 o banco não carregou — tenta de novo.', new Date().toISOString(), '🔬'); rolarFim(); return; } const sorteadas = banco.slice().sort(() => Math.random() - 0.5).slice(0, 6); bolha('bot', '🔬 **EXAME v2** — banco v1 (' + banco.length + ' questões), sorteio de 6. Eu contra o gabarito.', new Date().toISOString(), '🔬'); rolarFim(); const nm = (s) => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim(); let ok = 0; const det = []; for (const item of sorteadas) { let resp = ''; try { const r = await pensarStream([{ role: 'user', content: 'Responda APENAS o que foi pedido, curtíssimo: ' + item.q }], function () {}); resp = (r && r.texto) || ''; } catch (e) {} const rn = nm(resp); const pass = item.g.some(g => { const gn = nm(g); if (!gn) return false; if (gn.length <= 2) return new RegExp('(^| )' + gn + '( |$)').test(rn); return rn.indexOf(gn) >= 0; }); if (pass) ok++; det.push((pass ? '✅' : '❌') + ' ' + item.q.slice(0, 48) + ' → ' + (resp || 'mudo').trim().slice(0, 34)); } let hist = []; try { hist = JSON.parse(localStorage.getItem('rebocl_exame_historico') || '[]'); } catch (e) {} hist.push({ t: new Date().toISOString().slice(0, 16), ok: ok, total: sorteadas.length }); localStorage.setItem('rebocl_exame_historico', JSON.stringify(hist.slice(-40))); const curva = hist.slice(-8).map(h => h.ok + '/' + h.total).join(' · '); bolha('bot', '🔬 **EXAME v2: ' + ok + '/' + sorteadas.length + '**' + String.fromCharCode(10) + det.join(String.fromCharCode(10)) + String.fromCharCode(10) + String.fromCharCode(10) + '📈 últimos exames: ' + curva, new Date().toISOString(), '🔬 exame v2'); rolarFim(); })(); return '🔬 exame v2: sorteando do banco…'; }
   if (m.startsWith('!profundo ')) { const pergunta = msg.trim().slice(10).trim(); if (!pergunta) return '⚠️ uso: !profundo <pergunta>'; (async () => { bolha('bot', '🧠 **MODO 500**: 3 cérebros pensam → sintetizam → se autocriticam → revisam.', new Date().toISOString(), '🧠 modo 500'); rolarFim(); const cs = []; const bV = new Set(); for (const x of OURO) { if (x.chaveLS || bV.has(x.base)) continue; bV.add(x.base); cs.push(x); if (cs.length >= 3) break; } if (!cs.length) { bolha('bot', '🧠 frota magra agora — tente em instantes.', new Date().toISOString(), '🧠'); rolarFim(); return; } const temps = [0.7, 0.9, 1.05]; const rs = await Promise.all(cs.map((c, i) => (async () => { try { const r = await fetch(c.base + '/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer unused' }, body: JSON.stringify({ model: c.modelo, messages: [{ role: 'user', content: pergunta }], temperature: temps[i], max_tokens: 600 }), signal: AbortSignal.timeout(30000) }); return ((((await r.json()).choices || [])[0] || {}).message || {}).content || ''; } catch (e) { return ''; } })())); const vivas = rs.filter(r => r.trim()); if (!vivas.length) { bolha('bot', '🧠 asas mudas — tente de novo em instantes.', new Date().toISOString(), '🧠'); rolarFim(); return; } let sin = vivas[0]; try { const r1 = await fetch(cs[0].base + '/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer unused' }, body: JSON.stringify({ model: cs[0].modelo, messages: [{ role: 'system', content: 'Junte o melhor de varias respostas irmaos em UMA resposta final, portugues claro, sem comentar o processo.' }, { role: 'user', content: 'PERGUNTA: ' + pergunta + '\n\n' + vivas.map((r, i) => 'RESPOSTA ' + 'ABC'[i] + ': ' + r.slice(0, 600)).join('\n\n') + '\n\nRESPOSTA FINAL:' }], temperature: 0.35, max_tokens: 700 }), signal: AbortSignal.timeout(30000) }); sin = ((((await r1.json()).choices || [])[0] || {}).message || {}).content || sin; } catch (e) {} bolha('bot', '🧠 **SÍNTESE**: ' + sin.slice(0, 800), new Date().toISOString(), '🧠 síntese'); rolarFim(); let crit = ''; try { const c2 = cs[1] || cs[0]; const r2 = await fetch(c2.base + '/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer unused' }, body: JSON.stringify({ model: c2.modelo, messages: [{ role: 'user', content: 'Critique esta resposta em ate 3 bullets objetivos (erros factuais, omissoes, vieses). Responda SO os bullets.\n\nPERGUNTA: ' + pergunta + '\n\nRESPOSTA: ' + sin.slice(0, 700) }], temperature: 0.4, max_tokens: 250 }), signal: AbortSignal.timeout(30000) }); crit = ((((await r2.json()).choices || [])[0] || {}).message || {}).content || ''; } catch (e) {} if (crit.trim()) { let fin = ''; try { const r3 = await fetch(cs[0].base + '/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer unused' }, body: JSON.stringify({ model: cs[0].modelo, messages: [{ role: 'user', content: 'Reescreva a resposta final incorporando as criticas validas (e so as validas). Portugues claro.\n\nPERGUNTA: ' + pergunta + '\n\nRESPOSTA: ' + sin.slice(0, 600) + '\n\nCRITICAS: ' + crit.slice(0, 400) + '\n\nRESPOSTA FINAL REVISADA:' }], temperature: 0.3, max_tokens: 700 }), signal: AbortSignal.timeout(30000) }); fin = ((((await r3.json()).choices || [])[0] || {}).message || {}).content || ''; } catch (e) {} if (fin.trim()) { bolha('bot', '💎 **RESPOSTA REVISADA (pós-crítica)**:\n' + fin.slice(0, 900), new Date().toISOString(), '💎 modo 500'); rolarFim(); } } })(); return '🧠 MODO 500 decolando: pensar → sintetizar → criticar → revisar…'; }
   if (m.startsWith('!genio ')) { const pergunta = msg.trim().slice(7).trim(); if (!pergunta) return '⚠️ uso: !genio <pergunta>'; (async () => { bolha('bot', '🧠 **MODO GÊNIO**: 5 cérebros pensam passo a passo → síntese → 2 autocríticas → revisão final.', new Date().toISOString(), '🧠 gênio'); rolarFim(); const cs = []; const bV = new Set(); for (const x of OURO) { if (x.chaveLS || bV.has(x.base)) continue; bV.add(x.base); cs.push(x); if (cs.length >= 5) break; } if (!cs.length) { bolha('bot', '🧠 frota magra agora — tente em instantes.', new Date().toISOString(), '🧠'); rolarFim(); return; } const temps = [0.6, 0.8, 0.9, 1.0, 1.1]; const rs = await Promise.all(cs.map((c, i) => (async () => { try { const r = await fetch(c.base + '/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer unused' }, body: JSON.stringify({ model: c.modelo, messages: [{ role: 'user', content: 'Pense PASSO A PASSO (etapas numeradas curtas) e responda no fim em até 6 linhas. PERGUNTA: ' + pergunta }], temperature: temps[i], max_tokens: 800 }), signal: AbortSignal.timeout(40000) }); return ((((await r.json()).choices || [])[0] || {}).message || {}).content || ''; } catch (e) { return ''; } })())); const vivas = rs.filter(r2 => r2.trim()); if (!vivas.length) { bolha('bot', '🧠 asas mudas — tente de novo em instantes.', new Date().toISOString(), '🧠'); rolarFim(); return; } bolha('bot', '🧠 ' + vivas.length + '/5 cérebros entregaram. Sintetizando…', new Date().toISOString(), '🧠'); rolarFim(); const chama = async (base, modelo, msgs2, mt) => { try { const r2 = await fetch(base + '/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer unused' }, body: JSON.stringify({ model: modelo, messages: msgs2, temperature: 0.35, max_tokens: mt || 700 }), signal: AbortSignal.timeout(40000) }); return ((((await r2.json()).choices || [])[0] || {}).message || {}).content || ''; } catch (e) { return ''; } }; const entra = 'PERGUNTA: ' + pergunta; let sin = vivas[0]; const j1 = await chama(cs[0].base, cs[0].modelo, [{ role: 'user', content: entra + String.fromCharCode(10) + String.fromCharCode(10) + vivas.slice(0, 4).map((r2, i) => 'RACIOCÍNIO ' + (i + 1) + ': ' + r2.slice(0, 700)).join(String.fromCharCode(10) + String.fromCharCode(10)) + String.fromCharCode(10) + String.fromCharCode(10) + 'Junte o MELHOR raciocínio numa resposta única (máx 8 linhas). RESPOSTA:' }], 800); if (j1.trim()) sin = j1.trim(); bolha('bot', '🧠 **SÍNTESE**: ' + sin.slice(0, 700), new Date().toISOString(), '🧠 síntese'); rolarFim(); const c1 = await chama((cs[1] || cs[0]).base, (cs[1] || cs[0]).modelo, [{ role: 'user', content: entra + String.fromCharCode(10) + 'RESPOSTA: ' + sin.slice(0, 700) + String.fromCharCode(10) + String.fromCharCode(10) + 'Liste 2-3 ERROS ou OMISSÕES objetivos (so os bullets):' }], 250); const c2 = await chama((cs[2] || cs[0]).base, (cs[2] || cs[0]).modelo, [{ role: 'user', content: entra + String.fromCharCode(10) + 'RESPOSTA: ' + sin.slice(0, 700) + String.fromCharCode(10) + String.fromCharCode(10) + 'Falta algum CASO LIMITE ou ÂNGULO importante? 2 bullets, so os bullets:' }], 250); const criticas = [c1, c2].filter(x2 => x2.trim()).join(String.fromCharCode(10)); if (criticas.trim()) { bolha('bot', '🔍 **AUTO-CRÍTICA**: ' + criticas.slice(0, 400), new Date().toISOString(), '🔍 crítica'); rolarFim(); const fin = await chama(cs[0].base, cs[0].modelo, [{ role: 'user', content: entra + String.fromCharCode(10) + 'RESPOSTA: ' + sin.slice(0, 600) + String.fromCharCode(10) + 'CRÍTICAS: ' + criticas.slice(0, 500) + String.fromCharCode(10) + String.fromCharCode(10) + 'REESCREVA a resposta final incorporando as críticas válidas (e só as válidas). Máx 8 linhas. RESPOSTA FINAL:' }], 800); if (fin.trim()) { bolha('bot', '💎 **RESPOSTA DO MODO GÊNIO**:' + String.fromCharCode(10) + fin.slice(0, 900), new Date().toISOString(), '💎 gênio'); rolarFim(); } } })(); return '🧠 MODO GÊNIO decolando: 5 cérebros → síntese → 2 críticas → revisão…'; }
@@ -1261,7 +1301,7 @@ async function maosDaCasa(msg) {
   if (m.startsWith('!enxame')) { let resto = msg.trim().slice(7).trim(); let sabor = ''; if (/^sabio\s/i.test(resto)) { sabor = 'SÁBIA'; resto = resto.replace(/^sabio\s+/i, ''); } else if (/^rapido\s/i.test(resto)) { sabor = 'RÁPIDA'; resto = resto.replace(/^rapido\s+/i, ''); } const pergunta = resto; const cands = []; const bV = new Set(); const PESADOS = ['ultra','ovhoss','ovhl','kimi','ovhm','ovhoss20','ovhq397','g4super','ovhq38','oss120','llama70','gigante3']; const VELOZES = ['llm7','llm7glm','ovhq','ovhq9']; for (const x of OURO) { if (x.chaveLS || bV.has(x.base)) continue; if (sabor === 'SÁBIA' && !PESADOS.includes(x.id)) continue; if (sabor === 'RÁPIDA' && !VELOZES.includes(x.id)) continue; bV.add(x.base); cands.push(x); if (cands.length >= 3) break; } if (cands.length < 2) if (sabor && !cands.length) return '🐝 sem motores do sabor ' + sabor + ' vivos agora.'; return '🐝 enxame precisa de 2+ bases vivas — o turno re-prova a cada 5 min.'; (async () => { bolha('bot', '🐝 enxame solto' + (sabor ? ' (modo ' + sabor + ' — cérebro ' + sabor.toLowerCase() + ')' : '') + ' (' + cands.length + ' asas): ' + cands.map(c => c.nome).join(' · '), new Date().toISOString(), '🐝 enxame'); rolarFim(); const temps = [0.7, 0.9, 1.05]; const rs = await Promise.all(cands.map((c, i) => (async () => { try { const r = await fetch(c.base + '/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer unused' }, body: JSON.stringify({ model: c.modelo, messages: [...(function(){ try { const mm2 = JSON.parse(localStorage.getItem('rebocl_memoria') || '[]'); const pa = JSON.parse(localStorage.getItem('rebocl_persona_ativa') || 'null'); const sis = []; if (mm2.length) sis.push({ role: 'system', content: 'Fatos sobre o dono (memória pessoal): ' + mm2.map(x => x.fato).join(' | ') }); if (pa && pa.estilo) sis.push({ role: 'system', content: 'PERSONA ATIVA \"' + pa.nome + '\": ' + pa.estilo + ' Responda sempre nessa persona.' }); return sis; } catch (e) { return []; } })(), { role: 'user', content: pergunta }], temperature: temps[i], max_tokens: 500 }), signal: AbortSignal.timeout(1000) }); const j = await r.json(); return ((((j.choices || [])[0] || {}).message || {}).content || ''); } catch (e) { return ''; } })())); rs.forEach((r, i) => { if (r.trim()) { bolha('bot', '🐝 **' + cands[i].nome + ':**\n' + r.slice(0, 700) + (r.length > 700 ? '…' : ''), new Date().toISOString(), '🐝 asa ' + (i + 1)); rolarFim(); } }); const sint = cands[0]; try { const r2 = await fetch(sint.base + '/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer unused' }, body: JSON.stringify({ model: sint.modelo, messages: [{ role: 'system', content: 'Você é o síntese do enxame: recebe várias respostas de motores irmãos para a mesma pergunta e produz UMA resposta final — junte o melhor de todas, corte erro e repetição, responda em português claro. Não comente o processo.' }, { role: 'user', content: 'PERGUNTA: ' + pergunta + '\n\n' + rs.map((r, i) => 'RESPOSTA ' + 'ABC'[i] + ' (' + cands[i].nome + '): ' + (r.trim() || '(muda)')).join('\n\n') + '\n\nProduza a RESPOSTA FINAL.' }], temperature: 0.35, max_tokens: 700 }), signal: AbortSignal.timeout(1000) }); const j2 = await r2.json(); const fin = ((((j2.choices || [])[0] || {}).message || {}).content || '').trim(); bolha('bot', '⚡ **SÍNTESE DO ENXAME** (o melhor das ' + cands.length + ' asas):\n\n' + (fin || rs.find(r => r.trim()) || 'asas mudas — tente de novo'), new Date().toISOString(), '⚡ 10+10=20'); rolarFim(); } catch (e) { bolha('bot', '⚡ a síntese tropeçou — mas as asas responderam acima.', new Date().toISOString(), '⚡'); rolarFim(); } })(); return '🐝 enxame decolando — as asas respondem abaixo…'; }
   if (m.startsWith('!varredura')) { (async () => { bolha('bot', '🧹 **VARREDURA MUNDIAL** iniciada: varrendo os catálogos das casas vivas…', new Date().toISOString(), '🧹 varredura'); rolarFim(); const bases = [...new Set(OURO.filter(x => !x.chaveLS).map(x => x.base))]; const novos = []; for (const base of bases) { try { const j = await (await fetch(base + '/models', { signal: AbortSignal.timeout(800) })).json(); const ids = (j.data || []).map(x => x.id); const ja = new Set(OURO.filter(x => x.base === base).map(x => x.modelo)); const naoProvados = ids.filter(id => !ja.has(id) && !/embed|whisper|tts|stable-diffusion|guard/i.test(id)).slice(0, 2); for (const modelo of naoProvados) { try { const r = await fetch(base + '/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer unused' }, body: JSON.stringify({ model: modelo, messages: [...(function(){ try { const mm2 = JSON.parse(localStorage.getItem('rebocl_memoria') || '[]'); const pa = JSON.parse(localStorage.getItem('rebocl_persona_ativa') || 'null'); const sis = []; if (mm2.length) sis.push({ role: 'system', content: 'Fatos sobre o dono (memória pessoal): ' + mm2.map(x => x.fato).join(' | ') }); if (pa && pa.estilo) sis.push({ role: 'system', content: 'PERSONA ATIVA \"' + pa.nome + '\": ' + pa.estilo + ' Responda sempre nessa persona.' }); return sis; } catch (e) { return []; } })(), { role: 'user', content: 'ping' }], max_tokens: 5 }), signal: AbortSignal.timeout(800) }); const jj = await r.json(); const cc = ((((jj.choices || [])[0] || {}).message || {}).content || '').trim(); if (r.ok && cc) novos.push({ base, modelo }); } catch (e2) {} } } catch (e) {} } bolha('bot', novos.length ? ('🧹 **VARREDURA achou ' + novos.length + ' motor(es) novo(s) VIVO(S):**\n' + novos.map(n => '• ' + n.modelo + ' @ ' + n.base.replace('https://', '')).join('\n') + '\nPlante com !plantar') : '🧹 varredura completa: nenhum motor novo nesta rodada (todos os vivos já estão na casa).', new Date().toISOString(), '🧹 varredura'); rolarFim(); })(); return '🧹 varredura mundial decolando — os catálogos das casas vivas serão sondados…'; }
   if (m.startsWith('!imagem ')) { const desc = msg.trim().slice(8).trim(); if (!desc) return '⚠️ uso: !imagem <descrição>'; const url = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(desc) + '?width=768&height=768&nologo=true&seed=' + Math.floor(Math.random() * 99999); bolha('bot', '🎨 **' + desc + '**\n\ngerando no gerador keyless do mundo…', new Date().toISOString(), '🎨 pollinations'); rolarFim(); const div = [...document.querySelectorAll('.bolha.bot')].pop(); const img = new Image(); img.alt = desc; img.style.maxWidth = '94%'; img.style.borderRadius = '12px'; img.style.display = 'block'; img.onload = () => { try { div.insertAdjacentHTML('beforeend', '<br>'); div.appendChild(img); const b2 = document.createElement('button'); b2.textContent = '📋 copiar o link do desenho'; b2.style.cssText = 'margin:6px 8px 0 0;padding:6px 10px;border-radius:8px;border:0;cursor:pointer;font-weight:600'; b2.onclick = () => { navigator.clipboard.writeText(url).then(() => { b2.textContent = '✓ copiado!'; setTimeout(() => { b2.textContent = '📋 copiar o link do desenho'; }, 2000); }).catch(() => { b2.textContent = '❌ o link está na bolha'; }); }; const b3 = document.createElement('button'); b3.textContent = '🔄 outra versão'; b3.style.cssText = 'margin:6px 0 0 0;padding:6px 10px;border-radius:8px;border:0;cursor:pointer'; b3.onclick = () => { img.src = url.split('&seed=')[0] + '&seed=' + Date.now(); b3.textContent = '⏳ pintando…'; }; div.appendChild(b2); div.appendChild(b3); rolarFim(); } catch (e) {} }; img.onerror = () => { try { div.insertAdjacentHTML('beforeend', '\n\n⚠️ a geração travou — mande de novo.'); rolarFim(); } catch (e) {} }; img.src = url; return '🎨 gerando imagem (sem token — gerador aberto do mundo). Chega em segundos…'; }
-  if (m.startsWith('!olhar')) { const pergunta = msg.trim().slice(6).trim() || 'Descreva esta imagem em português.'; const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.style.display = 'none'; document.body.appendChild(inp); inp.onchange = () => { const f = inp.files[0]; inp.remove(); if (!f) return; const rd = new FileReader(); rd.onload = async () => { bolha('bot', '📷 **' + (f.name || 'foto') + '** recebida — 👁 o olho da frota está olhando…', new Date().toISOString(), '👁 visão'); rolarFim(); try { const r = await fetch('https://nvidia.g4f.dev/v1/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer unused' }, body: JSON.stringify({ model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning', messages: [...(function(){ try { const mm2 = JSON.parse(localStorage.getItem('rebocl_memoria') || '[]'); const pa = JSON.parse(localStorage.getItem('rebocl_persona_ativa') || 'null'); const sis = []; if (mm2.length) sis.push({ role: 'system', content: 'Fatos sobre o dono (memória pessoal): ' + mm2.map(x => x.fato).join(' | ') }); if (pa && pa.estilo) sis.push({ role: 'system', content: 'PERSONA ATIVA \"' + pa.nome + '\": ' + pa.estilo + ' Responda sempre nessa persona.' }); return sis; } catch (e) { return []; } })(), { role: 'user', content: [{ type: 'text', text: pergunta }, { type: 'image_url', image_url: { url: rd.result } }] }], max_tokens: 700 }), signal: AbortSignal.timeout(1000) }); const j = await r.json(); const c = ((((j.choices || [])[0] || {}).message || {}).content || '').trim(); bolha('bot', c || '👁 a visão não conseguiu ver (tente outra foto).', new Date().toISOString(), '👁 visão omni'); rolarFim(); } catch (e) { bolha('bot', '👁 a visão tropeçou: ' + e, new Date().toISOString(), '👁'); rolarFim(); } }; rd.readAsDataURL(f); }; inp.click(); return '👁 escolha uma foto (ou tire uma com a câmera) — o motor de VISÃO 72B responde sobre ela. Pergunta: ' + pergunta; }
+  if (m.startsWith('!olhar')) { const pergunta = msg.trim().slice(6).trim() || 'Descreva esta imagem em português.'; const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.style.display = 'none'; document.body.appendChild(inp); inp.onchange = () => { const f = inp.files[0]; inp.remove(); if (!f) return; const rd = new FileReader(); rd.onload = async () => { bolha('bot', '📷 **' + (f.name || 'foto') + '** recebida — 👁 o olho da frota está olhando…', new Date().toISOString(), '👁 visão'); rolarFim(); try { const r = await fetch('https://nvidia.g4f.dev/v1/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer unused' }, body: JSON.stringify({ model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning', messages: [...(function(){ try { const mm2 = JSON.parse(localStorage.getItem('rebocl_memoria') || '[]'); const pa = JSON.parse(localStorage.getItem('rebocl_persona_ativa') || 'null'); const sis = []; if (mm2.length) sis.push({ role: 'system', content: 'Fatos sobre o dono (memória pessoal): ' + mm2.map(x => x.fato).join(' | ') }); if (pa && pa.estilo) sis.push({ role: 'system', content: 'PERSONA ATIVA \"' + pa.nome + '\": ' + pa.estilo + ' Responda sempre nessa persona.' }); return sis; } catch (e) { return []; } })(), { role: 'user', content: [{ type: 'text', text: pergunta }, { type: 'image_url', image_url: { url: rd.result } }] }], max_tokens: 700 }), signal: AbortSignal.timeout(1000) }); const j = await r.json(); const c = ((((j.choices || [])[0] || {}).message || {}).content || '').trim(); bolha('bot', c || '👁 a visão não conseguiu ver (tente outra foto).', new Date().toISOString(), '👁 visão omni'); rolarFim(); } catch (e) { bolha('bot', '👁 a visão tropeçou: ' + mensagemErroSeguro(e), new Date().toISOString(), '👁'); rolarFim(); } }; rd.readAsDataURL(f); }; inp.click(); return '👁 escolha uma foto (ou tire uma com a câmera) — o motor de VISÃO 72B responde sobre ela. Pergunta: ' + pergunta; }
   if (m.startsWith('!falar ')) { const texto = msg.trim().slice(7).trim(); if (!texto) return '⚠️ uso: !falar <texto até 180 caracteres>'; const pedaco = texto.slice(0, 180); const url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=pt&q=' + encodeURIComponent(pedaco); bolha('bot', '🗣 **' + pedaco + '**' + (texto.length > 180 ? '… (cortado em 180)' : ''), new Date().toISOString(), '🗣 voz do mundo'); rolarFim(); const div = [...document.querySelectorAll('.bolha.bot')].pop(); const au = document.createElement('audio'); au.controls = true; au.src = url; au.style.width = '94%'; au.style.marginTop = '6px'; try { div.appendChild(au); au.play().catch(() => {}); } catch (e) {} return '🗣 voz natural gerada (keyless). Aperte o play.'; }
   if (m.startsWith('!aprender ')) { const fato = msg.trim().slice(10).trim(); if (!fato) return '⚠️ uso: !aprender <fato sobre você>'; const mem = JSON.parse(localStorage.getItem('rebocl_memoria') || '[]'); mem.push({ q: new Date().toISOString().slice(5, 16), fato }); localStorage.setItem('rebocl_memoria', JSON.stringify(mem.slice(-30))); return '🧠 **aprendi**: "' + fato + '" — entra no contexto de TODAS as respostas daqui pra frente (todos os motores sabem). !memoria lista · !esquecer N apaga.'; }
   if (m.startsWith('!memoria')) { const mem = JSON.parse(localStorage.getItem('rebocl_memoria') || '[]'); if (!mem.length) return '🧠 memória vazia — me ensine com !aprender <fato>.'; return '🧠 **MEMÓRIA DO DONO** (' + mem.length + '/30):\n' + mem.map((x, i) => (i + 1) + '. ' + x.fato + ' (' + x.q + ')').join('\n'); }
@@ -1269,17 +1309,17 @@ async function maosDaCasa(msg) {
   if (m.startsWith('!capsula ')) { const mm4 = msg.trim().slice(9).trim().match(/^(\d+)([mh])\s+(.+)$/i); if (!mm4) return '⚠️ uso: !capsula 10m <mensagem>  (m=minutos, h=horas)'; const dur = parseInt(mm4[1]) * (mm4[2].toLowerCase() === 'h' ? 3600000 : 60000); const caps = JSON.parse(localStorage.getItem('rebocl_capsulas') || '[]'); caps.push({ quando: Date.now() + dur, msg: mm4[3] }); localStorage.setItem('rebocl_capsulas', JSON.stringify(caps.slice(-20))); return '⏳ **cápsula armada**: entrega em ' + mm4[1] + mm4[2] + '. O turno entrega sozinho (aba aberta).'; }
   if (m.startsWith('!kombat ')) { const q = msg.trim().slice(8).trim(); if (!q) return '⚠️ uso: !kombat <pergunta>'; const cs = []; const bV = new Set(); for (const x of OURO) { if (x.chaveLS || bV.has(x.base)) continue; bV.add(x.base); cs.push(x); if (cs.length >= 3) break; } if (cs.length < 3) return '🥊 kombat precisa de 3 bases vivas — o turno re-prova a cada 5 min.'; (async () => { bolha('bot', '🥊 **KOMBAT**\n🔴 ' + cs[0].nome + '  VS  🔵 ' + cs[1].nome + '\n⚖️ juiz: ' + cs[2].nome, new Date().toISOString(), '🥊 kombat'); rolarFim(); const pega = async (x, msgs2, mt) => { try { const r = await fetch(x.base + '/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ((x.chaveLS && localStorage.getItem(x.chaveLS)) ? localStorage.getItem(x.chaveLS) : 'unused') }, body: JSON.stringify({ model: x.modelo, messages: msgs2, max_tokens: mt || 400 }), signal: AbortSignal.timeout(1000) }); return ((((await r.json()).choices || [])[0] || {}).message || {}).content || ''; } catch (e) { return ''; } }; const ra = await pega(cs[0], [{ role: 'user', content: q }]); const rb = await pega(cs[1], [{ role: 'user', content: q }]); if (ra) { bolha('bot', '🔴 **' + cs[0].nome + ':**\n' + ra.slice(0, 500), new Date().toISOString(), '🥊 A'); rolarFim(); } if (rb) { bolha('bot', '🔵 **' + cs[1].nome + ':**\n' + rb.slice(0, 500), new Date().toISOString(), '🥊 B'); rolarFim(); } const ca = ra && rb ? await pega(cs[0], [{ role: 'user', content: 'Sua resposta foi: "' + ra.slice(0, 400) + '"\nA do rival foi: "' + rb.slice(0, 400) + '"\nEm ATÉ 2 frases, mostre onde o rival errou e a sua é melhor.' }], 150) : ''; const cb = ra && rb ? await pega(cs[1], [{ role: 'user', content: 'Sua resposta foi: "' + rb.slice(0, 400) + '"\nA do rival foi: "' + ra.slice(0, 400) + '"\nEm ATÉ 2 frases, mostre onde o rival errou e a sua é melhor.' }], 150) : ''; if (ca) { bolha('bot', '🔴 golpe: ' + ca, new Date().toISOString(), '🥊 A'); rolarFim(); } if (cb) { bolha('bot', '🔵 golpe: ' + cb, new Date().toISOString(), '🥊 B'); rolarFim(); } const fin = await pega(cs[2], [{ role: 'user', content: 'Debate sobre: ' + q + '\n\n🔴 A disse: ' + (ra || '(mudo)') + '\nCrítica de A: ' + (ca || '—') + '\n\n🔵 B disse: ' + (rb || '(mudo)') + '\nCrítica de B: ' + (cb || '—') + '\n\nVocê é o JUIZ: em até 4 frases, diga quem argumentou melhor e por quê, e declare VENCEDOR.' }], 300); bolha('bot', fin ? ('🏆 **VEREDITO DO JUIZ (' + cs[2].nome + '):**\n' + fin) : '⚖️ o juiz se calou — empate técnico.', new Date().toISOString(), '🏆 kombat'); rolarFim(); })(); return '🥊 KOMBAT começou: A e B debatem, o juiz decide!'; }
   if (m.startsWith('!veredicto ')) { const afirm = msg.trim().slice(11).trim(); if (!afirm) return '⚠️ uso: !veredicto <afirmação>'; const cs = []; const bV = new Set(); for (const x of OURO) { if (x.chaveLS || bV.has(x.base)) continue; bV.add(x.base); cs.push(x); if (cs.length >= 3) break; } if (cs.length < 3) return '🧭 veredicto precisa de 3 bases vivas.'; (async () => { bolha('bot', '🧭 consultando 3 motores sobre: *' + afirm + '*…', new Date().toISOString(), '🧭 veredicto'); rolarFim(); const resp = await Promise.all(cs.map(c => (async () => { try { const r = await fetch(c.base + '/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer unused' }, body: JSON.stringify({ model: c.modelo, messages: [{ role: 'user', content: 'Afirmação: "' + afirm + '"\nResponda em UMA linha, começando com VERDADEIRO, FALSO ou DEPENDE, e justifique em poucas palavras.' }], max_tokens: 150 }), signal: AbortSignal.timeout(1000) }); return ((((await r.json()).choices || [])[0] || {}).message || {}).content || ''; } catch (e) { return ''; } })())); const votos = { VERDADEIRO: 0, FALSO: 0, DEPENDE: 0 }; resp.forEach((r, i) => { const v = ['VERDADEIRO', 'FALSO', 'DEPENDE'].find(k => r.toUpperCase().startsWith(k)); if (v) votos[v]++; bolha('bot', '• ' + cs[i].nome + ': ' + (r || '(mudo)'), new Date().toISOString(), '🧭'); rolarFim(); }); const ganh = Object.entries(votos).sort((a, b) => b[1] - a[1])[0]; const vivos2 = resp.filter(r => r.trim()).length; bolha('bot', '🧭 **VEREDICTO DO ENXAME**: ' + ganh[1] + '/' + vivos2 + ' motores dizem **' + ganh[0] + '** (' + Math.round(100 * ganh[1] / Math.max(1, vivos2)) + '% de concordância entre os que responderam).', new Date().toISOString(), '🧭 veredicto'); rolarFim(); })(); return '🧭 3 motores estão julgando a afirmação…'; }
-  if (m.startsWith('!ouvir')) { if (!navigator.mediaDevices || !window.MediaRecorder) return '🎤 seu navegador não tem microfone via MediaRecorder.'; (async () => { try { const stream = await navigator.mediaDevices.getUserMedia({ audio: true }); bolha('bot', '🎤 **GRAVANDO…** fale agora (até 12s) — vou transcrever com o whisper da casa.', new Date().toISOString(), '🎤 ouvido'); rolarFim(); const pedacos = []; const rec = new MediaRecorder(stream); rec.ondataavailable = ev => { if (ev.data.size) pedacos.push(ev.data); }; rec.onstop = async () => { stream.getTracks().forEach(t => t.stop()); const blob = new Blob(pedacos, { type: rec.mimeType || 'audio/webm' }); bolha('bot', '🎧 ' + Math.round(blob.size / 1024) + 'KB de voz capturados — transcrevendo…', new Date().toISOString(), '🎤'); rolarFim(); try { const fd = new FormData(); fd.append('file', blob, 'voz.webm'); fd.append('model', 'whisper-large-v3-turbo'); const r = await fetch('https://oai.endpoints.kepler.ai.cloud.ovh.net/v1/audio/transcriptions', { method: 'POST', body: fd, signal: AbortSignal.timeout(1000) }); const j = await r.json(); const texto = (j.text || '').trim(); if (texto) { bolha('bot', '🎤 **você disse:** "' + texto + '"\nColoquei no campo de mensagem — aperte Enviar (ou edite antes).', new Date().toISOString(), '🎤 whisper'); rolarFim(); $('entrada').value = texto; $('entrada').focus(); } else { bolha('bot', '🎤 não entendi voz nenhuma — grave de novo mais perto do microfone.', new Date().toISOString(), '🎤'); rolarFim(); } } catch (e) { bolha('bot', '🎤 a transcrição tropeçou (' + e + ') — tente de novo.', new Date().toISOString(), '🎤'); rolarFim(); } }; rec.start(); setTimeout(() => { if (rec.state !== 'inactive') rec.stop(); }, 12000); } catch (e) { bolha('bot', '🎤 microfone negado — autorize o microfone no navegador e mande de novo.', new Date().toISOString(), '🎤'); rolarFim(); } })(); return '🎤 pedindo o microfone ao navegador…'; }
+  if (m.startsWith('!ouvir')) { if (!navigator.mediaDevices || !window.MediaRecorder) return '🎤 seu navegador não tem microfone via MediaRecorder.'; (async () => { try { const stream = await navigator.mediaDevices.getUserMedia({ audio: true }); bolha('bot', '🎤 **GRAVANDO…** fale agora (até 12s) — vou transcrever com o whisper da casa.', new Date().toISOString(), '🎤 ouvido'); rolarFim(); const pedacos = []; const rec = new MediaRecorder(stream); rec.ondataavailable = ev => { if (ev.data.size) pedacos.push(ev.data); }; rec.onstop = async () => { stream.getTracks().forEach(t => t.stop()); const blob = new Blob(pedacos, { type: rec.mimeType || 'audio/webm' }); bolha('bot', '🎧 ' + Math.round(blob.size / 1024) + 'KB de voz capturados — transcrevendo…', new Date().toISOString(), '🎤'); rolarFim(); try { const fd = new FormData(); fd.append('file', blob, 'voz.webm'); fd.append('model', 'whisper-large-v3-turbo'); const r = await fetch('https://oai.endpoints.kepler.ai.cloud.ovh.net/v1/audio/transcriptions', { method: 'POST', body: fd, signal: AbortSignal.timeout(1000) }); const j = await r.json(); const texto = (j.text || '').trim(); if (texto) { bolha('bot', '🎤 **você disse:** "' + texto + '"\nColoquei no campo de mensagem — aperte Enviar (ou edite antes).', new Date().toISOString(), '🎤 whisper'); rolarFim(); $('entrada').value = texto; $('entrada').focus(); } else { bolha('bot', '🎤 não entendi voz nenhuma — grave de novo mais perto do microfone.', new Date().toISOString(), '🎤'); rolarFim(); } } catch (e) { bolha('bot', '🎤 a transcrição tropeçou (' + mensagemErroSeguro(e) + ') — tente de novo.', new Date().toISOString(), '🎤'); rolarFim(); } }; rec.start(); setTimeout(() => { if (rec.state !== 'inactive') rec.stop(); }, 12000); } catch (e) { bolha('bot', '🎤 microfone negado — autorize o microfone no navegador e mande de novo.', new Date().toISOString(), '🎤'); rolarFim(); } })(); return '🎤 pedindo o microfone ao navegador…'; }
   if (m.startsWith('!backup')) { const chaves = ['rebocl_memoria', 'rebocl_personas', 'rebocl_persona_ativa', 'rebocl_extra_frota', 'rebocl_capsulas', 'rebocl_saude', 'rebocl_turno_n']; const pacote = { casa: 'reboclbrank-max', quando: new Date().toISOString(), dados: {} }; chaves.forEach(k => { const v = localStorage.getItem(k); if (v) pacote.dados[k] = JSON.parse(v); }); const blob = new Blob([JSON.stringify(pacote, null, 1)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'casa-backup-' + new Date().toISOString().slice(0, 10) + '.json'; a.click(); return '💾 **backup baixado** (memória + personas + cápsulas + motores plantados). Guarde o arquivo — em outro aparelho, mande !restaurar aqui e escolha ele. (Chaves locais ficam DE FORA por segurança.)'; }
-  if (m.startsWith('!restaurar')) { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json,application/json'; inp.style.display = 'none'; document.body.appendChild(inp); inp.onchange = () => { const f = inp.files[0]; inp.remove(); if (!f) return; const rd = new FileReader(); rd.onload = () => { try { const pacote = JSON.parse(rd.result); if (pacote.casa !== 'reboclbrank-max') throw new Error('não é backup da casa'); let n = 0; for (const [k, v] of Object.entries(pacote.dados || {})) { localStorage.setItem(k, JSON.stringify(v)); n++; } bolha('bot', '💾 **restaurado**: ' + n + ' blocos de volta (memória, personas, cápsulas…). Recarregue a página pra tudo acordar.', new Date().toISOString(), '💾'); rolarFim(); } catch (e) { bolha('bot', '💾 arquivo inválido: ' + e.message, new Date().toISOString(), '💾'); rolarFim(); } }; rd.readAsText(f); }; inp.click(); return '💾 escolha o arquivo de backup da casa…'; }
+  if (m.startsWith('!restaurar')) { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json,application/json'; inp.style.display = 'none'; document.body.appendChild(inp); inp.onchange = () => { const f = inp.files[0]; inp.remove(); if (!f) return; const rd = new FileReader(); rd.onload = () => { try { const pacote = JSON.parse(rd.result); if (pacote.casa !== 'reboclbrank-max') throw new Error('não é backup da casa'); let n = 0; for (const [k, v] of Object.entries(pacote.dados || {})) { localStorage.setItem(k, JSON.stringify(v)); n++; } bolha('bot', '💾 **restaurado**: ' + n + ' blocos de volta (memória, personas, cápsulas…). Recarregue a página pra tudo acordar.', new Date().toISOString(), '💾'); rolarFim(); } catch (e) { bolha('bot', '💾 arquivo inválido: ' + mensagemErroSeguro(e), new Date().toISOString(), '💾'); rolarFim(); } }; rd.readAsText(f); }; inp.click(); return '💾 escolha o arquivo de backup da casa…'; }
   if (m.startsWith('!noticiasespaco')) { fetch('https://api.spaceflightnewsapi.net/v4/articles/?limit=4', { signal: AbortSignal.timeout(800) }).then(r => r.json()).then(j => { const linhas = ((j.results || [])).map(nn => '• [' + nn.title + '](' + nn.url + ')\n  (' + (nn.news_site || '?') + ')'); bolha('bot', '🚀 **NOTÍCIAS DO ESPAÇO AGORA**\n' + linhas.join('\n'), new Date().toISOString(), '🚀 spaceflight'); rolarFim(); }).catch(() => { bolha('bot', '🚀 as antenas espaciais piscaram — tente de novo.', new Date().toISOString(), '🚀'); rolarFim(); }); return '🚀 puxando notícias do espaço…'; }
   if (m.startsWith('!noticias')) { const tema = msg.trim().slice(9).trim() || 'tecnologia'; (async () => { bolha('bot', '📰 caçando notícias vivas sobre *' + tema + '*…', new Date().toISOString(), '📰'); rolarFim(); try { const j = await (await fetch('https://hn.algolia.com/api/v1/search?tags=story&query=' + encodeURIComponent(tema), { signal: AbortSignal.timeout(800) })).json(); const ns = (j.hits || []).slice(0, 5); if (ns.length) { bolha('bot', '📰 **HACKER NEWS — ' + tema + '**\n' + ns.map((n, i) => (i + 1) + '. [' + (n.title || 'sem título') + '](' + (n.url || 'https://news.ycombinator.com/item?id=' + n.objectID) + ')' + (n.points != null ? ' (▲' + n.points + ')' : '')).join('\n'), new Date().toISOString(), '📰 HN'); rolarFim(); } } catch (e) {} try { const j2 = await (await fetch('https://www.reddit.com/search.json?q=' + encodeURIComponent(tema) + '&limit=4', { signal: AbortSignal.timeout(800) })).json(); const rs = ((j2.data || {}).children || []).map(c => c.data); if (rs.length) { bolha('bot', '👽 **REDDIT — ' + tema + '**\n' + rs.map(r => '• r/' + r.subreddit + ': [' + r.title + '](https://reddit.com' + r.permalink + ')').join('\n'), new Date().toISOString(), '👽 reddit'); rolarFim(); } } catch (e) { bolha('bot', '👽 o reddit bloqueou esta sonda do lado deles — mas o HN entregou acima.', new Date().toISOString(), '👽'); rolarFim(); } })(); return '📰 notícias ao vivo decolando…'; }
-  if (m.startsWith('!stack ')) { const q14 = msg.trim().slice(7).trim(); if (!q14) return '⚠️ uso: !stack <dúvida de programação>'; (async () => { try { const j = await (await fetch('https://api.stackexchange.com/2.3/search/advanced?order=desc&sort=relevance&pagesize=3&site=stackoverflow&q=' + encodeURIComponent(q14), { signal: AbortSignal.timeout(800) })).json(); const its = j.items || []; if (!its.length) { bolha('bot', '💻 o Stack não tem nada com esses termos — reformule?', new Date().toISOString(), '💻'); rolarFim(); return; } bolha('bot', '💻 **STACK OVERFLOW** (vivo, da comunidade):\n' + its.map((it, i) => (i + 1) + '. [' + it.title + '](' + it.link + ') — ▲' + (it.score || 0) + ' · ' + (it.is_answered ? '✅ respondida' : '⏳ aberta')).join('\n'), new Date().toISOString(), '💻 stack'); rolarFim(); } catch (e) { bolha('bot', '💻 o stack tropeçou: ' + e, new Date().toISOString(), '💻'); rolarFim(); } })(); return '💻 consultando o Stack Overflow ao vivo…'; }
+  if (m.startsWith('!stack ')) { const q14 = msg.trim().slice(7).trim(); if (!q14) return '⚠️ uso: !stack <dúvida de programação>'; (async () => { try { const j = await (await fetch('https://api.stackexchange.com/2.3/search/advanced?order=desc&sort=relevance&pagesize=3&site=stackoverflow&q=' + encodeURIComponent(q14), { signal: AbortSignal.timeout(800) })).json(); const its = j.items || []; if (!its.length) { bolha('bot', '💻 o Stack não tem nada com esses termos — reformule?', new Date().toISOString(), '💻'); rolarFim(); return; } bolha('bot', '💻 **STACK OVERFLOW** (vivo, da comunidade):\n' + its.map((it, i) => (i + 1) + '. [' + it.title + '](' + it.link + ') — ▲' + (it.score || 0) + ' · ' + (it.is_answered ? '✅ respondida' : '⏳ aberta')).join('\n'), new Date().toISOString(), '💻 stack'); rolarFim(); } catch (e) { bolha('bot', '💻 o stack tropeçou: ' + mensagemErroSeguro(e), new Date().toISOString(), '💻'); rolarFim(); } })(); return '💻 consultando o Stack Overflow ao vivo…'; }
   if (m.startsWith('!bacon')) { fetch('https://baconipsum.com/api/?type=all-meat&paras=2&t=' + Date.now(), { signal: AbortSignal.timeout(800) }).then(r => r.json()).then(j => { bolha('bot', '🥓 **LOREM IPSUM DE VERDADE** (pra encher layout de projeto):\n' + ((j || [])[0] || '').slice(0, 400) + '…', new Date().toISOString(), '🥓 bacon'); rolarFim(); }).catch(() => { bolha('bot', '🥓 o porco escapou — tente de novo.', new Date().toISOString(), '🥓'); rolarFim(); }); return '🥓 gerando texto de enchimento…'; }
-  if (m.startsWith('!mercado')) { (async () => { try { const resultados = await Promise.all([fetch('https://open.er-api.com/v6/latest/USD', { signal: AbortSignal.timeout(800) }).then(r => r.json()).catch(() => null), fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=brl,usd', { signal: AbortSignal.timeout(800) }).then(r => r.json()).catch(() => null)]); let t15 = '💰 **MERCADO AO VIVO**\n'; if (resultados[0] && resultados[0].rates) t15 += '• 1 USD = R$ ' + resultados[0].rates.BRL + ' · 1 EUR = R$ ' + resultados[0].rates.EUR + '\n'; if (resultados[1] && resultados[1].bitcoin) t15 += '• ₿ Bitcoin: R$ ' + resultados[1].bitcoin.brl.toLocaleString('pt-BR') + ' ($ ' + resultados[1].bitcoin.usd.toLocaleString('en-US') + ')\n'; if (resultados[1] && resultados[1].ethereum) t15 += '• Ξ Ethereum: R$ ' + resultados[1].ethereum.brl.toLocaleString('pt-BR') + ' ($ ' + resultados[1].ethereum.usd.toLocaleString('en-US') + ')'; bolha('bot', t15, new Date().toISOString(), '💰 live'); rolarFim(); } catch (e) { bolha('bot', '💰 o mercado piscou: ' + e, new Date().toISOString(), '💰'); rolarFim(); } })(); return '💰 puxando o mercado ao vivo…'; }
-  if (m.startsWith('!clima ')) { const cid = msg.trim().slice(7).trim(); if (!cid) return '⚠️ uso: !clima <cidade> (ex.: !clima Tobias Barreto)'; (async () => { try { const g = await (await fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&language=pt&name=' + encodeURIComponent(cid), { signal: AbortSignal.timeout(800) })).json(); const lug = (g.results || [])[0]; if (!lug) { bolha('bot', '🌦 não achei a cidade *' + cid + '* — tenta com outro nome?', new Date().toISOString(), '🌦'); rolarFim(); return; } const w = await (await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lug.latitude + '&longitude=' + lug.longitude + '&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&forecast_days=1&timezone=auto', { signal: AbortSignal.timeout(800) })).json(); const cur = w.current || {}; const codigos = { 0: 'céu limpo ☀️', 1: 'quase limpo 🌤', 2: 'parcialmente nublado ⛅', 3: 'nublado ☁️', 45: 'névoa 🌫', 48: 'névoa densa 🌫', 51: 'garoa leve 🌦', 53: 'garoa 🌦', 55: 'garoa forte 🌧', 61: 'chuva leve 🌦', 63: 'chuva 🌧', 65: 'chuva forte ⛈', 71: 'neve ❄️', 80: 'pancadas 🌦', 81: 'pancadas 🌧', 82: 'pancadas violentas ⛈', 95: 'tempestade ⛈', 96: 'tempestade com granizo ⛈' }; const desc = codigos[cur.weather_code] || ('código ' + cur.weather_code); const diario = w.daily || {}; bolha('bot', '🌦 **' + lug.name + (lug.admin1 ? ', ' + lug.admin1 : '') + ' — AGORA:**\n• ' + desc + '\n• 🌡 ' + cur.temperature_2m + '°C (hoje: ' + ((diario.temperature_2m_min || ['?'])[0]) + '° a ' + ((diario.temperature_2m_max || ['?'])[0]) + '°)\n• 💧 umidade ' + cur.relative_humidity_2m + '% · 💨 vento ' + cur.wind_speed_10m + ' km/h', new Date().toISOString(), '🌦 open-meteo'); rolarFim(); } catch (e) { bolha('bot', '🌦 o céu tropeçou: ' + e, new Date().toISOString(), '🌦'); rolarFim(); } })(); return '🌦 olhando o céu de *' + cid + '* ao vivo…'; }
+  if (m.startsWith('!mercado')) { (async () => { try { const resultados = await Promise.all([fetch('https://open.er-api.com/v6/latest/USD', { signal: AbortSignal.timeout(800) }).then(r => r.json()).catch(() => null), fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=brl,usd', { signal: AbortSignal.timeout(800) }).then(r => r.json()).catch(() => null)]); let t15 = '💰 **MERCADO AO VIVO**\n'; if (resultados[0] && resultados[0].rates) t15 += '• 1 USD = R$ ' + resultados[0].rates.BRL + ' · 1 EUR = R$ ' + resultados[0].rates.EUR + '\n'; if (resultados[1] && resultados[1].bitcoin) t15 += '• ₿ Bitcoin: R$ ' + resultados[1].bitcoin.brl.toLocaleString('pt-BR') + ' ($ ' + resultados[1].bitcoin.usd.toLocaleString('en-US') + ')\n'; if (resultados[1] && resultados[1].ethereum) t15 += '• Ξ Ethereum: R$ ' + resultados[1].ethereum.brl.toLocaleString('pt-BR') + ' ($ ' + resultados[1].ethereum.usd.toLocaleString('en-US') + ')'; bolha('bot', t15, new Date().toISOString(), '💰 live'); rolarFim(); } catch (e) { bolha('bot', '💰 o mercado piscou: ' + mensagemErroSeguro(e), new Date().toISOString(), '💰'); rolarFim(); } })(); return '💰 puxando o mercado ao vivo…'; }
+  if (m.startsWith('!clima ')) { const cid = msg.trim().slice(7).trim(); if (!cid) return '⚠️ uso: !clima <cidade> (ex.: !clima Tobias Barreto)'; (async () => { try { const g = await (await fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&language=pt&name=' + encodeURIComponent(cid), { signal: AbortSignal.timeout(800) })).json(); const lug = (g.results || [])[0]; if (!lug) { bolha('bot', '🌦 não achei a cidade *' + cid + '* — tenta com outro nome?', new Date().toISOString(), '🌦'); rolarFim(); return; } const w = await (await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lug.latitude + '&longitude=' + lug.longitude + '&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&forecast_days=1&timezone=auto', { signal: AbortSignal.timeout(800) })).json(); const cur = w.current || {}; const codigos = { 0: 'céu limpo ☀️', 1: 'quase limpo 🌤', 2: 'parcialmente nublado ⛅', 3: 'nublado ☁️', 45: 'névoa 🌫', 48: 'névoa densa 🌫', 51: 'garoa leve 🌦', 53: 'garoa 🌦', 55: 'garoa forte 🌧', 61: 'chuva leve 🌦', 63: 'chuva 🌧', 65: 'chuva forte ⛈', 71: 'neve ❄️', 80: 'pancadas 🌦', 81: 'pancadas 🌧', 82: 'pancadas violentas ⛈', 95: 'tempestade ⛈', 96: 'tempestade com granizo ⛈' }; const desc = codigos[cur.weather_code] || ('código ' + cur.weather_code); const diario = w.daily || {}; bolha('bot', '🌦 **' + lug.name + (lug.admin1 ? ', ' + lug.admin1 : '') + ' — AGORA:**\n• ' + desc + '\n• 🌡 ' + cur.temperature_2m + '°C (hoje: ' + ((diario.temperature_2m_min || ['?'])[0]) + '° a ' + ((diario.temperature_2m_max || ['?'])[0]) + '°)\n• 💧 umidade ' + cur.relative_humidity_2m + '% · 💨 vento ' + cur.wind_speed_10m + ' km/h', new Date().toISOString(), '🌦 open-meteo'); rolarFim(); } catch (e) { bolha('bot', '🌦 o céu tropeçou: ' + mensagemErroSeguro(e), new Date().toISOString(), '🌦'); rolarFim(); } })(); return '🌦 olhando o céu de *' + cid + '* ao vivo…'; }
   if (m.startsWith('!busca ')) { const termo = msg.trim().slice(7).trim(); if (!termo) return '⚠️ uso: !busca <termo>'; (async () => { bolha('bot', '🔎 **BUSCA GERAL** varrendo 5 fontes vivas sobre *' + termo + '*…', new Date().toISOString(), '🔎 busca'); rolarFim(); const partes = []; await Promise.all([ fetch('https://api.duckduckgo.com/?q=' + encodeURIComponent(termo) + '&format=json&no_html=1', { signal: AbortSignal.timeout(800) }).then(r => r.json()).then(j => { const ab = (j.AbstractText || '').trim(); const rel = (j.RelatedTopics || []).filter(t => t.Text).slice(0, 2).map(t => '• ' + t.Text); if (ab) partes.push('🦆 **DuckDuckGo:** ' + ab + (rel.length ? '\n' + rel.join('\n') : '')); }).catch(() => {}), fetch('https://pt.wikipedia.org/w/api.php?action=query&list=search&srsearch=' + encodeURIComponent(termo) + '&format=json&origin=*&srlimit=4', { signal: AbortSignal.timeout(800) }).then(r => r.json()).then(j => { const its = (j.query || {}).search || []; if (its.length) partes.push('📚 **Wikipédia:**\n' + its.map(i => '• [' + i.title + '](https://pt.wikipedia.org/wiki/' + encodeURIComponent(i.title.replace(/ /g, '_')) + ') — ' + i.snippet.replace(/<[^>]+>/g, '').slice(0, 120) + '…').join('\n')); }).catch(() => {}), fetch('https://openlibrary.org/search.json?q=' + encodeURIComponent(termo) + '&limit=2', { signal: AbortSignal.timeout(800) }).then(r => r.json()).then(j => { const ds = (j.docs || []).slice(0, 2); if (ds.length) partes.push('📖 **Livros (OpenLibrary):**\n' + ds.map(d2 => '• ' + (d2.title || '?') + (d2.first_publish_year ? ' (' + d2.first_publish_year + ')' : '')).join('\n')); }).catch(() => {}), fetch('https://archive.org/advancedsearch.php?q=' + encodeURIComponent(termo) + '&rows=2&output=json', { signal: AbortSignal.timeout(800) }).then(r => r.json()).then(j => { const ds = ((j.response || {}).docs || []).slice(0, 2); if (ds.length) partes.push('🗄 **Archive.org:**\n' + ds.map(d2 => '• [' + (d2.title || d2.identifier) + '](https://archive.org/details/' + d2.identifier + ')').join('\n')); }).catch(() => {}), fetch('https://hn.algolia.com/api/v1/search?tags=story&query=' + encodeURIComponent(termo), { signal: AbortSignal.timeout(800) }).then(r => r.json()).then(j => { const ns = (j.hits || []).slice(0, 3); if (ns.length) partes.push('📰 **Hacker News:**\n' + ns.map(n => '• [' + (n.title || '?') + '](' + (n.url || 'https://news.ycombinator.com/item?id=' + n.objectID) + ')').join('\n')); }).catch(() => {}) ]); bolha('bot', partes.length ? ('🔎 **BUSCA GERAL — ' + termo + '** (' + partes.length + ' fontes vivas responderam):\n\n' + partes.join('\n\n')) : '🔎 todas as fontes piscaram — tente de novo em instantes.', new Date().toISOString(), '🔎 busca geral'); rolarFim(); })(); return '🔎 busca geral decolando (5 fontes em paralelo)…'; }
-  if (m.startsWith('!traduzir ')) { const tx = msg.trim().slice(10).trim(); if (!tx) return '⚠️ uso: !traduzir <texto> (traduz pra português)'; const pedaco = tx.slice(0, 450); fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=pt&dt=t&q=' + encodeURIComponent(pedaco), { signal: AbortSignal.timeout(800) }).then(r => r.json()).then(j => { const trad = (j[0] || []).map(x => (x && x[0]) || '').join(''); const lang = (typeof j[2] === 'string' ? j[2] : '?'); bolha('bot', '🌍 **TRADUÇÃO** (' + lang + ' → pt):\n' + (trad || '(vazio)'), new Date().toISOString(), '🌍 tradutor'); rolarFim(); }).catch(e => { bolha('bot', '🌍 o tradutor tropeçou: ' + e, new Date().toISOString(), '🌍'); rolarFim(); }); return '🌍 traduzindo (auto-detecção → português)…'; }
+  if (m.startsWith('!traduzir ')) { const tx = msg.trim().slice(10).trim(); if (!tx) return '⚠️ uso: !traduzir <texto> (traduz pra português)'; const pedaco = tx.slice(0, 450); fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=pt&dt=t&q=' + encodeURIComponent(pedaco), { signal: AbortSignal.timeout(800) }).then(r => r.json()).then(j => { const trad = (j[0] || []).map(x => (x && x[0]) || '').join(''); const lang = (typeof j[2] === 'string' ? j[2] : '?'); bolha('bot', '🌍 **TRADUÇÃO** (' + lang + ' → pt):\n' + (trad || '(vazio)'), new Date().toISOString(), '🌍 tradutor'); rolarFim(); }).catch(e => { bolha('bot', '🌍 o tradutor tropeçou: ' + mensagemErroSeguro(e), new Date().toISOString(), '🌍'); rolarFim(); }); return '🌍 traduzindo (auto-detecção → português)…'; }
   if (m.startsWith('!piadabr')) { fetch('https://v2.jokeapi.dev/joke/Any?lang=pt&safe-mode&type=single,twopart&t=' + Date.now(), { signal: AbortSignal.timeout(800) }).then(r => r.json()).then(j => { const txt = j.type === 'twopart' ? (j.setup + '\n\n**' + j.delivery + '**') : (j.joke || '?'); bolha('bot', '🇧🇷 ' + txt, new Date().toISOString(), '🇧🇷 piada'); rolarFim(); }).catch(() => { bolha('bot', '🇧🇷 o humorista brasileiro engasgou — tente de novo.', new Date().toISOString(), '🇧🇷'); rolarFim(); }); return '🇧🇷 buscando piada EM PORTUGUÊS…'; }
   if (m.startsWith('!destaque')) { fetch('https://pt.wikipedia.org/api/rest_v1/feed/featured/' + new Date().toISOString().slice(0, 10).replace(/-/g, '/'), { signal: AbortSignal.timeout(800) }).then(r => r.json()).then(j => { const tfa = ((j.tfa || {}).extract || 'sem artigo do dia hoje').slice(0, 300); const top = ((j.mostread || {}).articles || []).slice(0, 3).map(a2 => '• **' + a2.normalizedtitle + '** (' + (a2.views || 0).toLocaleString('pt-BR') + ' leituras)'); bolha('bot', '⭐ **DESTAQUES DE HOJE (Wikipédia PT)**\n📖 *Artigo do dia:* ' + tfa + '…\n🔥 *Mais lidos:*\n' + top.join('\n'), new Date().toISOString(), '⭐ destaque'); rolarFim(); const potd = j.image; if (potd && potd.thumbnail && potd.thumbnail.source) { const div2 = [...document.querySelectorAll('.bolha.bot')].pop(); const im2 = new Image(); im2.style.maxWidth = '88%'; im2.style.borderRadius = '10px'; im2.onload = () => { try { div2.appendChild(document.createElement('br')); div2.appendChild(im2); rolarFim(); } catch (e) {} }; im2.src = potd.thumbnail.source; } }).catch(() => { bolha('bot', '⭐ o editor cochilou — tente de novo.', new Date().toISOString(), '⭐'); rolarFim(); }); return '⭐ abrindo os destaques da Wikipédia…'; }
   if (m.startsWith('!radio ') || m.startsWith('!rádio ')) { const nome = msg.trim().slice(7).trim(); if (!nome) return '⚠️ uso: !radio <nome da estação>'; fetch('https://de1.api.radio-browser.info/json/stations/search?name=' + encodeURIComponent(nome) + '&limit=3&hidebroken=true', { signal: AbortSignal.timeout(800) }).then(r => r.json()).then(j => { const linhas = (j || []).slice(0, 3).map(x => '• **' + (x.name || '?') + '**' + (x.countrycode && x.countrycode !== 'BR' ? ' (' + x.countrycode + ')' : '') + '\n  [▶️ OUVIR](' + (x.url_resolved || x.url || '#') + ')' + (x.homepage ? ' · [site](' + x.homepage + ')' : '')); bolha('bot', '📻 **RÁDIOS COM "' + nome.toUpperCase() + '"**\n' + (linhas.join('\n') || 'não achei estação com esse nome.'), new Date().toISOString(), '📻 rádio'); rolarFim(); }).catch(() => { bolha('bot', '📻 a antena pegou estática — tente de novo.', new Date().toISOString(), '📻'); rolarFim(); }); return '📻 sintonizando estações…'; }
@@ -1571,7 +1611,7 @@ async function maosDaCasa(msg) {
       const estado = w ? (w.name + ' → ' + (w.conclusion || w.status) + ' (' + w.created_at.slice(11, 16) + 'Z)') : 'sem runs';
       const congelada = w && w.conclusion === 'failure';
       return '🖐 **Mãos da casa — STATUS**\n\n• Última run: ' + estado + '\n• Billing: ' + (congelada ? '🧊 congelado (runs recusadas) — settings/billing → spending limit $0 → $1' : 'respirando') + '\n• Motores: 12 keyless sempre-vivos no chat · museu com 1991 catalogados';
-    } catch (e) { return '🖐 Não consegui apalpar a casa agora (' + e.message + ')'; }
+    } catch (e) { return '🖐 Não consegui apalpar a casa agora (' + mensagemErroSeguro(e) + ')'; }
   }
   if (m.startsWith('!censo') || m.startsWith('censo')) {
     const termo = m.replace(/^!censo\s*/, '').replace(/^censo\s*/, '').trim();
@@ -1600,7 +1640,7 @@ async function maosDaCasa(msg) {
       const j = await r.json();
       if (j.extract) return '📖 **' + (j.title || t) + '**\n\n' + j.extract.slice(0, 800) + '\n\n🔗 ' + (j.content_urls && j.content_urls.desktop ? j.content_urls.desktop.page : 'pt.wikipedia.org');
       return '📖 Nada na Wikipedia por esse nome — tenta outro termo.';
-    } catch (e) { return '📖 busca falhou agora (' + e.message + ')'; }
+    } catch (e) { return '📖 busca falhou agora (' + mensagemErroSeguro(e) + ')'; }
   }
   if (m.startsWith('!caça') || m.startsWith('!caca')) {
     const r = await cacarFrota(false);
@@ -1876,7 +1916,7 @@ async function testarConexao(silencioso) {
     return true;
   } catch (e) {
     if (!silencioso) {
-      el.innerHTML = `<div class="aviso erro">falhou: ${escapar(String(e.message))} — confira se o token tem acesso ao repositório <b>agente</b> e permissão de <b>Issues: Read and write</b>.</div>`;
+      el.innerHTML = `<div class="aviso erro">falhou: ${escapar(mensagemErroSeguro(e))} — confira se o token tem acesso ao repositório <b>agente</b> e permissão de <b>Issues: Read and write</b>.</div>`;
     }
     return false;
   }
@@ -1983,12 +2023,12 @@ async function exportarTudo(formato) {
       ).join('\n\n');
       baixar(md, nomeArquivo('conversas-rebocl') + 'md', 'text/markdown');
     } else {
-      baixar(JSON.stringify({ exportado_em: new Date().toISOString(), conversas: dados }, null, 2),
+      baixar(JSON.stringify({ versao: VERSAO_EXPORTACAO, exportado_em: new Date().toISOString(), conversas: dados }, null, 2),
              nomeArquivo('conversas-rebocl') + 'json', 'application/json');
     }
     st.innerHTML = '<div class="aviso ok">' + dados.length + ' conversa(s) exportada(s) ✓</div>';
   } catch (e) {
-    st.innerHTML = '<div class="aviso erro">falhou: ' + escapar(String(e.message)) + '</div>';
+    st.innerHTML = '<div class="aviso erro">falhou: ' + escapar(mensagemErroSeguro(e)) + '</div>';
   }
 }
 async function exportarConversaAtual() {
@@ -1997,37 +2037,63 @@ async function exportarConversaAtual() {
     const issue = await api(`/repos/${REPO}/issues/${conversa}`);
     const comentarios = await todosComentarios(conversa, issue.comments);
     const dados = {
-      titulo: issue.title, numero: issue.number,
+      versao: VERSAO_EXPORTACAO, titulo: issue.title, numero: issue.number,
       mensagens: [{ de: 'voce', texto: issue.body || '', em: issue.created_at }].concat(
         comentarios.map((c) => ({ de: ehBot(c) ? 'assistente' : 'voce', texto: c.body || '', em: c.created_at })))
     };
     baixar(JSON.stringify(dados, null, 2), nomeArquivo('conversa-' + conversa) + 'json', 'application/json');
-  } catch (e) { alert('Não consegui exportar: ' + e.message); }
+  } catch (e) { alert('Não consegui exportar: ' + mensagemErroSeguro(e)); }
+}
+const VERSAO_EXPORTACAO = 1;
+const LIMITE_IMPORTACAO_BYTES = 2 * 1024 * 1024;
+const LIMITE_IMPORTACAO_CONVERSAS = 25;
+const LIMITE_IMPORTACAO_TEXTO = 12000;
+function prepararImportacao(dados, tamanho) {
+  if (!dados || typeof dados !== 'object' || Array.isArray(dados)) throw erroLocal('arquivo-invalido');
+  if (Number(tamanho) > LIMITE_IMPORTACAO_BYTES) throw erroLocal('arquivo-grande');
+  if (Object.prototype.hasOwnProperty.call(dados, 'versao') && Number(dados.versao) !== VERSAO_EXPORTACAO) throw erroLocal('versao-importacao');
+  const lista = Array.isArray(dados.conversas) ? dados.conversas : (Array.isArray(dados.mensagens) ? [dados] : []);
+  if (!lista.length) throw erroLocal('arquivo-invalido');
+  if (lista.length > LIMITE_IMPORTACAO_CONVERSAS) throw erroLocal('importacao-limite');
+  return lista.map((conversaImportada) => {
+    if (!conversaImportada || typeof conversaImportada !== 'object') throw erroLocal('arquivo-invalido');
+    const mensagens = Array.isArray(conversaImportada.mensagens) ? conversaImportada.mensagens : [];
+    const primeira = mensagens.find((mensagem) => mensagem && mensagem.de === 'voce' && typeof mensagem.texto === 'string' && mensagem.texto.trim());
+    const corpo = String((primeira && primeira.texto) || conversaImportada.titulo || '').trim();
+    if (!corpo) throw erroLocal('importacao-vazia');
+    if (corpo.length > LIMITE_IMPORTACAO_TEXTO) throw erroLocal('texto-longo');
+    const titulo = String(conversaImportada.titulo || corpo).replace(/\s+/g, ' ').trim().slice(0, 70);
+    return { titulo: titulo || 'conversa importada', corpo };
+  });
 }
 async function importarArquivo(arquivo) {
   const st = $('status-exportar');
   try {
-    const dados = JSON.parse(await arquivo.text());
-    const lista = dados.conversas || (dados.mensagens ? [dados] : []);
-    if (!lista.length) throw new Error('arquivo sem conversas reconhecidas');
-    if (!confirm('Importar ' + lista.length + ' conversa(s) para o GitHub?')) return;
-    st.innerHTML = '<div class="aviso">importando…</div>';
+    if (!arquivo || typeof arquivo.text !== 'function') throw erroLocal('arquivo-invalido');
+    if (Number(arquivo.size) > LIMITE_IMPORTACAO_BYTES) throw erroLocal('arquivo-grande');
+    let dados;
+    try { dados = JSON.parse(await arquivo.text()); } catch (e) { throw erroLocal('arquivo-invalido'); }
+    const entradas = prepararImportacao(dados, arquivo.size);
+    const aviso = 'A importação criará ' + entradas.length + ' nova(s) conversa(s) só com a primeira mensagem sua. Respostas e demais mensagens do arquivo não serão reenviadas, para não virarem instruções novas. Continuar?';
+    if (!confirm(aviso)) return;
+    st.innerHTML = '<div class="aviso">importando inícios de conversa…</div>';
     let ok = 0;
-    for (const c of lista) {
+    for (const entrada of entradas) {
       try {
-        const msgs = (c.mensagens || []).filter((m) => m.de === 'voce');
-        const corpo = (msgs[0] && msgs[0].texto) || c.titulo || 'conversa importada';
         await api(`/repos/${REPO}/issues`, {
           method: 'POST',
-          body: JSON.stringify({ title: String(c.titulo || corpo).slice(0, 70), body: corpo })
+          body: JSON.stringify({ title: entrada.titulo, body: entrada.corpo })
         });
         ok++;
-      } catch (e) {}
+      } catch (e) {
+        st.innerHTML = '<div class="aviso erro">importação interrompida após ' + ok + '/' + entradas.length + '. Confira a lista antes de tentar de novo; nada foi reenviado automaticamente.</div>';
+        return;
+      }
     }
-    st.innerHTML = '<div class="aviso ok">' + ok + '/' + lista.length + ' conversa(s) importada(s) ✓</div>';
+    st.innerHTML = '<div class="aviso ok">' + ok + '/' + entradas.length + ' início(s) de conversa importado(s) ✓</div>';
     carregarLista();
   } catch (e) {
-    st.innerHTML = '<div class="aviso erro">falhou: ' + escapar(String(e.message)) + '</div>';
+    st.innerHTML = '<div class="aviso erro">falhou: ' + escapar(mensagemErroSeguro(e)) + '</div>';
   }
 }
 function montarBusca() {
@@ -2041,7 +2107,7 @@ async function renomearConversa() {
     const titulo = novo.trim().slice(0, 120);
     await api(`/repos/${REPO}/issues/${conversa}`, { method: 'PATCH', body: JSON.stringify({ title: titulo }) });
     $('titulo-conv').textContent = titulo;
-  } catch (e) { alert('Não consegui renomear: ' + e.message); }
+  } catch (e) { alert('Não consegui renomear: ' + mensagemErroSeguro(e)); }
 }
 async function fecharConversa() {
   if (!conversa) return;
@@ -2049,7 +2115,7 @@ async function fecharConversa() {
   try {
     await api(`/repos/${REPO}/issues/${conversa}`, { method: 'PATCH', body: JSON.stringify({ state: 'closed' }) });
     voltarLista();
-  } catch (e) { alert('Não consegui fechar: ' + e.message); }
+  } catch (e) { alert('Não consegui fechar: ' + mensagemErroSeguro(e)); }
 }
 async function reenviarUltima() {
   if (!conversa) return;
@@ -2063,7 +2129,7 @@ async function reenviarUltima() {
     bolha('user', texto, new Date().toISOString());
     rolarFim();
     iniciarPolling();
-  } catch (e) { alert('Não consegui reenviar: ' + e.message); }
+  } catch (e) { alert('Não consegui reenviar: ' + mensagemErroSeguro(e)); }
 }
 function faixaOffline(mostrar) {
   if (mostrar) {
@@ -2207,7 +2273,7 @@ async function enviarLocal(texto) {
     rolarFim();
   } catch (e) {
     pensando(false);
-    bolha('bot', '⚠️ Não consegui usar o cérebro local: ' + e.message +
+    bolha('bot', '⚠️ Não consegui usar o cérebro local: ' + mensagemErroSeguro(e) +
       '\n\nSe este navegador não tiver WebGPU, tente o Chrome/Edge. Ou desligue o modo local (🧠) para voltar aos motores online.',
       new Date().toISOString(), '');
     rolarFim();
@@ -2235,7 +2301,7 @@ async function sincronizarLocal() {
     });
     atualizarBadgeSync();
     alert('Sincronizado ✓ (o assistente só arquiva — não responde de novo)');
-  } catch (e) { alert('Falhou ao sincronizar: ' + e.message); }
+  } catch (e) { alert('Falhou ao sincronizar: ' + mensagemErroSeguro(e)); }
 }
 async function alternarModoLocal() {
   MODO_LOCAL.ligado = !MODO_LOCAL.ligado;
@@ -2347,7 +2413,7 @@ _wrap.addEventListener('drop', lerArquivoDrop);
 atualizarBadgeSync();
 if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); } catch (e) {} }
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
+  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(function (registro) { setInterval(function () { try { registro.update(); } catch (e) {} }, 300000); }).catch(() => {});
 }
 (async function iniciar() {
   if (token) {
