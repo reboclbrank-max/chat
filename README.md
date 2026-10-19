@@ -227,6 +227,12 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Cadência sem promessa falsa:** o vigia consulta a execução recente de `postagem-diaria.yml` no site. Se a última rotina bem-sucedida ficar fora da janela técnica de nove horas, informa **cadência do postador atrasada**; se a última execução falhar, informa a falha. Não tenta publicar, reexecutar nem criar fila no site. Nove horas são tolerância para agenda best-effort, não comprovação de cada cron ou de todos os canais externos.
 - **`status:` mais útil:** mostra evidência fechada quando houver, como “rotina agendada recente” ou “turno ativo; sucessor na fila”, e mantém fallback neutro para estado desconhecido. Execução observada não confirma entrega, aceite da plataforma, alcance, disponibilidade ou SLA.
 
+## v12.40 — corrente de e-mail sem cancelamento repetido (19/10/2026)
+
+- **Menos churn, mesma continuidade:** a cada pulso de 40 minutos, o turno consulta a fila de `email.yml`. Se já houver um `workflow_dispatch` pendente ou enfileirado — o sucessor longo da corrente — ele o preserva em vez de disparar outro e cancelar o anterior pelo grupo de concorrência.
+- **Reserva não vira sucessor por engano:** execuções agendadas não contam para essa decisão, porque podem ser a reserva curta. Se a consulta da fila estiver indisponível, o comportamento seguro anterior de pedir um sucessor é mantido, sem afirmar que a fila estava vazia.
+- **Adoção de código preservada:** somente uma troca de código aprovada pela barreira pode substituir deliberadamente o sucessor pendente para que o próximo turno use o checkout novo. A regra pura entrou nos testes e na lista de arquivos que exigem adoção do turno: fila 5/5, contrato do coordenador 3/3 e suíte rápida 50/50 executados passaram (2 SKIPs multimodais ambientais já declarados). Não envia e-mail, Telegram, mensagem, nem cria conta, custo ou infraestrutura.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código

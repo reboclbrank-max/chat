@@ -15,6 +15,13 @@ ok('ferramentas chamadas pelo canal exigem troca de turno após a barreira', () 
   assert.match(linha, /email-poll\\\.js/, 'coordenador ausente da lista de adoção');
   assert.match(linha, /falhas-mensagem\\\.js/, 'agregador sanitizado ausente da lista de adoção');
   assert.match(linha, /turno-liveness\\\.js/, 'guarda de liveness ausente da lista de adoção');
+  assert.match(linha, /fila-turno\\\.js/, 'guarda da fila de sucessor ausente da lista de adoção');
+});
+ok('pulso preserva sucessor manual pendente e só substitui na troca de código', () => {
+  assert.match(origem, /require\('\.\/fila-turno\.js'\)/, 'decisão pura da fila não foi ligada ao coordenador');
+  assert.match(origem, /actions\/workflows\/email\.yml\/runs\?per_page=15/, 'pulso não consulta a fila do próprio workflow');
+  assert.match(origem, /decisaoDeProximoTurno\(/, 'decisão de continuidade não está aplicada');
+  assert.match(origem, /await proximoTurno\(\{ substituir: true \}\)/, 'troca aprovada de código não atualiza o sucessor');
 });
 ok('falha repetida do ciclo encerra com erro sem criar dispatch adicional', () => {
   assert.match(origem, /proximaFalhasConsecutivas\(falhasConsecutivas, false\)/);
