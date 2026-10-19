@@ -2,6 +2,8 @@
 // e, para não depender do cron do GitHub (que neste repositório não disparou nenhuma vez),
 // cada turno deixa o PRÓXIMO TURNO na fila — o grupo 'email-casa' garante que só um roda por vez.
 // v4.4 (16/10/2026): 📲 CHAT NO TELEGRAM — liga o tools/telegram-chat.js junto com o e-mail (mesmo turno).
+// v4.6 (19/10/2026): 🧯 três falhas totais consecutivas de ciclo encerram o turno com erro visível;
+// uma oscilação isolada ainda segue viva e um ciclo saudável zera o contador. Não há re-dispatch cego.
 // v4.5 (16/10/2026): 🛡️ TURNO À PROVA DE QUEDA — rejeição ou exceção inesperada (e-mail, Telegram ou biblioteca)
 // é registrada no log e o turno SEGUE VIVO; antes, uma rejeição sem catch derrubava o processo inteiro.
 // v4.3 (16/10/2026): ⚡ AVISO IMEDIATO DO GMAIL (IMAP IDLE) — uma conexão escuta a caixa e acorda o ciclo assim que
@@ -16,6 +18,7 @@
 process.on('unhandledRejection', e => console.error('🛡️ rejeição contida — o turno segue:', String((e && e.message) || e).slice(0, 200)));
 process.on('uncaughtException', e => console.error('🛡️ exceção contida — o turno segue:', String((e && e.message) || e).slice(0, 200)));
 const { processOnce } = require('./email-chat.js');
+const { LIMITE_FALHAS_CONSECUTIVAS, proximaFalhasConsecutivas, deveEncerrarTurno } = require('./turno-liveness.js');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const REPO = 'reboclbrank-max/chat';
 const TEM_CREDENCIAIS_EMAIL = Boolean(String(process.env.GMAIL_CHAT_ADDR || '').trim() && String(process.env.GMAIL_CHAT_PASS || '').trim());
@@ -38,7 +41,7 @@ const proximoTurno = () => despacha('email.yml', '🔗 próximo turno na fila');
 
 // 🔄 v4: o que conta como CÓDIGO do turno (robô de teste, relatórios e README não derrubam o turno)
 const SHA_INICIO = process.env.GITHUB_SHA || '';
-const CODIGO = /^tools\/(email-chat\.js|email-poll\.js|geografia-brasil\.js|olho\.py|ocr-local\.py|transcreve\.py|visao-local\.py|prepara-foto\.py|telegram-chat\.js)$|^\.github\/workflows\/email\.yml$/;
+const CODIGO = /^tools\/(email-chat\.js|email-poll\.js|turno-liveness\.js|geografia-brasil\.js|olho\.py|ocr-local\.py|transcreve\.py|visao-local\.py|prepara-foto\.py|telegram-chat\.js)$|^\.github\/workflows\/email\.yml$/;
 async function codigoMudou() {   // → { arquivos: [código mudado desde que o turno começou], commits: Set(sha dos commits novos) }
   if (!SHA_INICIO) return { arquivos: [], commits: new Set() };
   const r = await api('/compare/' + SHA_INICIO + '...main');
@@ -99,13 +102,30 @@ const FIM = Date.now() + (5 * 60 + 45) * 60 * 1000;   // 5h45; varredura a cada 
   escuta();   // ⚡ em paralelo, para sempre (reconecta sozinha)
   try { require('./telegram-chat.js').inicia(FIM); } catch (e) { console.log('📲 Telegram não iniciou: ' + String(e.message || e).slice(0, 80)); }   // 📲 v4.4
   let varreduras = 0, respondidos = 0, motivo = 'fim do horário';
+  let falhasConsecutivas = 0, falhaFatalDoCiclo = false;
   let proximoAviso = Date.now() + 5 * 60 * 1000;
   let proximaChecagem = Date.now() + 10 * 60 * 1000;
   let esperaTestesDesde = 0, reprovadoAvisado = '';
   while (Date.now() < FIM) {
     let n = 0;
-    try { n = await processOnce(); varreduras++; respondidos += n; if (n) console.log('📬 respondeu', n, 'email(s)'); }
-    catch (e) { console.error('ciclo com erro (segue vivo):', e.message); }
+    try {
+      n = await processOnce();
+      if (falhasConsecutivas) console.log('🟢 ciclo voltou após ' + falhasConsecutivas + ' falha(s) consecutiva(s)');
+      falhasConsecutivas = proximaFalhasConsecutivas(falhasConsecutivas, true);
+      varreduras++;
+      respondidos += n;
+      if (n) console.log('📬 respondeu', n, 'email(s)');
+    } catch (e) {
+      falhasConsecutivas = proximaFalhasConsecutivas(falhasConsecutivas, false);
+      console.error('⚠️ ciclo de e-mail falhou (' + falhasConsecutivas + '/' + LIMITE_FALHAS_CONSECUTIVAS + ')');
+      if (deveEncerrarTurno(falhasConsecutivas)) {
+        // Não despacha nem reprocessa às cegas: deixa a falha explícita para o vigia e a próxima
+        // execução agendada, em vez de manter um processo vivo que não consegue ler a caixa.
+        motivo = 'falhas consecutivas do ciclo';
+        falhaFatalDoCiclo = true;
+        break;
+      }
+    }
     // ⚡ rajada: ciclo cheio (5) ou e-mail chegou durante o ciclo → quase nenhuma pausa
     const pausa = (n >= 5 || chegouDuranteCiclo) ? 2000 : 50000;
     chegouDuranteCiclo = false;
@@ -135,5 +155,5 @@ const FIM = Date.now() + (5 * 60 + 45) * 60 * 1000;   // 5h45; varredura a cada 
     }
   }
   console.log('turno encerrado (' + motivo + '):', varreduras, 'varreduras,', respondidos, 'emails respondidos');
-  process.exit(0);
+  process.exit(falhaFatalDoCiclo ? 1 : 0);
 })();

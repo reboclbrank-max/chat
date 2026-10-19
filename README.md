@@ -118,6 +118,12 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Estado recuperável:** `vigia-estado.json` com JSON válido mas formato inválido (como `null`) é reconstruído como fotografia sanitizada, em vez de derrubar o vigia. O passo de salvar estado roda mesmo após erro para preservar uma fotografia que já tenha sido escrita.
 - **Sem automação extra:** a mudança não faz dispatch, não envia aviso, não consulta canal real, não muda segredos nem cria custo. Ela só torna mais honesto o sinal de falha já existente.
 
+## v12.23 — trabalhador preso em falha total passa a se declarar falho (19/10/2026)
+
+- **Liveness honesto:** três erros consecutivos que escapem de um ciclo completo de caixa encerram o turno com erro não zero. Assim, um processo incapaz de ler a caixa não fica cinco horas parecendo “em execução”.
+- **Tolerância a oscilação:** a primeira e a segunda falha ainda aguardam o próximo ciclo; uma varredura saudável zera o contador. A proteção não reprocessa e-mail, não cria dispatch nem transforma erro de uma mensagem isolada em pane do turno.
+- **Adoção segura:** a regra pura entra na barreira e na lista de arquivos que pedem troca de turno após testes. Continua sem canal, conta, segredo, custo ou infraestrutura nova.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código

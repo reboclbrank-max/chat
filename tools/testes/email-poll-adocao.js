@@ -13,6 +13,13 @@ ok('geografia local é classificada como código que exige troca de turno', () =
   assert.match(linha, /geografia-brasil\\\.js/, 'geografia-brasil.js ausente da lista de adoção');
   assert.match(linha, /email-chat\\\.js/, 'núcleo do canal ausente da lista de adoção');
   assert.match(linha, /email-poll\\\.js/, 'coordenador ausente da lista de adoção');
+  assert.match(linha, /turno-liveness\\\.js/, 'guarda de liveness ausente da lista de adoção');
+});
+ok('falha repetida do ciclo encerra com erro sem criar dispatch adicional', () => {
+  assert.match(origem, /proximaFalhasConsecutivas\(falhasConsecutivas, false\)/);
+  assert.match(origem, /deveEncerrarTurno\(falhasConsecutivas\)/);
+  assert.match(origem, /motivo = 'falhas consecutivas do ciclo'/);
+  assert.match(origem, /process\.exit\(falhaFatalDoCiclo \? 1 : 0\)/);
 });
 
 console.log(`${certos}/${certos + falhas} testes de adoção do turno passaram`);
