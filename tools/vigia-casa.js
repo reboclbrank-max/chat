@@ -3,7 +3,7 @@
 // Olha o sistema inteiro DE FORA, cura o que dá (re-dispara turno/exame) e avisa o dono
 // por e-mail SÓ quando o estado muda. Anti-alarme-falso: uma falha só vale após 2 rodadas seguidas.
 const fs = require('fs');
-const { deveSalvarEstado } = require('./vigia-estado');
+const { deveSalvarEstado, registrosDeRecuperacao, recuperacaoPermitida, registraRecuperacao, limpaRecuperacao } = require('./vigia-estado');
 let nodemailer = null;
 try { nodemailer = require('nodemailer'); } catch (e) {}
 
@@ -36,15 +36,15 @@ async function verifica(nome, fn) {
 }
 
 async function acao(rotulo, arquivo) {
-  if (!TOKEN) return rotulo + ': sem token para curar';
+  if (!TOKEN) return { tentada: false, texto: rotulo + ': sem token para recuperar' };
   try {
     const r = await fetch('https://api.github.com/repos/' + REPO + '/actions/workflows/' + arquivo + '/dispatches', {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + TOKEN, 'User-Agent': 'vigia-casa/1', 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
       body: JSON.stringify({ ref: 'main' }), signal: AbortSignal.timeout(30000)
     });
-    return rotulo + ': ' + (r.status === 204 ? 'reconvocado ✅' : 'dispatch HTTP ' + r.status);
-  } catch (e) { return rotulo + ': dispatch falhou (' + String(e.message || e).slice(0, 70) + ')'; }
+    return { tentada: true, texto: rotulo + ': ' + (r.status === 204 ? 'reconvocado ✅' : 'dispatch HTTP ' + r.status) };
+  } catch (e) { return { tentada: true, texto: rotulo + ': dispatch falhou (' + String(e.message || e).slice(0, 70) + ')' }; }
 }
 
 (async () => {
@@ -159,11 +159,16 @@ async function acao(rotulo, arquivo) {
   let antigo = { itens: {} };
   try { antigo = JSON.parse(fs.readFileSync(ESTADO, 'utf8')); } catch (e) {}
   const novos = {};
+  // O registro contém somente timestamps de tentativas autorizadas; não inclui destinatário,
+  // conteúdo de caixa, token, URL autenticada ou resultado privado do turno.
+  let recuperacoes = registrosDeRecuperacao(antigo.recuperacoes);
   let mudou = false;
   const linhas = [];
   for (const it of itens) {
     const prev = (antigo.itens || {})[it.nome] || { ok: true, falhas: 0 };
-    const falhas = it.ok ? 0 : (prev.falhas || 0) + 1;
+    // Dois é o único limiar usado pelo alarme. Saturar aqui evita commits contínuos de 3/2,
+    // 4/2, ... durante uma mesma pane persistente.
+    const falhas = it.ok ? 0 : Math.min(2, (prev.falhas || 0) + 1);
     const efetivoAntes = prev.ok || (prev.falhas || 0) < 2;
     const efetivoAgora = it.ok || falhas < 2;
     if (efetivoAntes !== efetivoAgora) mudou = true;
@@ -171,19 +176,41 @@ async function acao(rotulo, arquivo) {
     linhas.push((efetivoAgora ? '✅' : '❌') + ' ' + it.nome + ' — ' + it.detalhe + (it.ok ? '' : ' (falha ' + falhas + '/2)'));
   }
 
-  // ---- cura: turno do e-mail morto → reconvoca; bateria atrasada → dispara ----
+  // ---- recuperação contida: ação autorizada, reversível e nunca em rajada ----
   const cura = [];
   const t = itens.find(i => i.nome === 'Chat por e-mail (24h)');
-  if (t && !t.ok) cura.push(await acao('E-mail (turno)', 'email.yml'));
   const b = itens.find(i => i.nome === 'Bateria do cérebro');
-  if (b && !b.ok) cura.push(await acao('Bateria (exame)', 'evolucao.yml'));
   const cb = itens.find(i => i.nome === 'Caixa de e-mail');
-  if (cb && !cb.ok) cura.push(await acao('Caixa (turno)', 'email.yml'));
+  const referencia = Date.parse(agora);
+
+  // Uma volta saudável remove o freio dessa família: uma nova pane futura pode receber a
+  // primeira tentativa imediatamente, sem herdar uma tentativa antiga.
+  if (t && t.ok && cb && cb.ok) recuperacoes = limpaRecuperacao(recuperacoes, 'email');
+  if (b && b.ok) recuperacoes = limpaRecuperacao(recuperacoes, 'exame');
+
+  async function tentaRecuperar(chave, rotulo, arquivo) {
+    if (!recuperacaoPermitida(recuperacoes, chave, referencia)) {
+      cura.push(rotulo + ': recuperação já tentada no intervalo seguro');
+      return;
+    }
+    const resultado = await acao(rotulo, arquivo);
+    cura.push(resultado.texto);
+    // Mesmo erro de rede/API entra no freio: repetir o mesmo dispatch a cada 15 min só amplia a pane.
+    if (resultado.tentada) recuperacoes = registraRecuperacao(recuperacoes, chave, referencia);
+  }
+
+  // Turno e caixa compartilham a mesma trava: se ambos acusarem falha numa rodada, há no máximo
+  // um dispatch de email.yml. A bateria é uma família independente e mais espaçada.
+  if (t && !t.ok) await tentaRecuperar('email', 'E-mail (turno)', 'email.yml');
+  if (b && !b.ok) await tentaRecuperar('exame', 'Bateria (exame)', 'evolucao.yml');
+  if (cb && !cb.ok) await tentaRecuperar('email', 'Caixa (turno)', 'email.yml');
 
   // Persistência econômica: mudança entra na hora; casa estável deixa um pulso por hora, para que
   // capacidade/continuidade não confundam estado verde silencioso com vigia parado.
-  if (deveSalvarEstado(antigo, novos, Date.parse(agora))) {
-    fs.writeFileSync(ESTADO, JSON.stringify({ verificado_em: agora, itens: novos }, null, 1));
+  if (deveSalvarEstado(antigo, novos, referencia, recuperacoes)) {
+    const estado = { verificado_em: agora, itens: novos };
+    if (Object.keys(recuperacoes).length) estado.recuperacoes = recuperacoes;
+    fs.writeFileSync(ESTADO, JSON.stringify(estado, null, 1));
   }
   console.log(linhas.join('\n'));
   if (cura.length) console.log('cura:', cura.join(' · '));

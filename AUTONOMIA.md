@@ -16,6 +16,7 @@ Com a autorização atual, os sistemas existentes podem, respeitando seus própr
 - pesquisar fontes públicas e usar a pesquisa para responder ou gerar hipóteses;
 - administrar o marketing já configurado em `reboclbrank-max/site` e `reboclbrank-max/agente`: planejar, redigir, publicar nos canais já configurados, medir, aprender com métricas e ajustar a fila;
 - rodar baterias de qualidade, vigia, diagnósticos, autocrítica, coleta de métricas e propostas de ferramentas;
+- recuperar somente workflows internos já aprovados quando uma sonda justificar isso, com trava persistida por família para não criar rajada de dispatches durante uma pane;
 - corrigir estado operacional reversível ou promover mudanças pequenas **somente** quando houver teste automatizado, registro de continuidade e rollback claro.
 
 A liberdade de marketing substitui a regra histórica de esperar um comando para cada publicação; ela não substitui leis, regras da plataforma, fatos verificáveis, anti-spam, limites de frequência, segurança ou a identidade da marca na Base.

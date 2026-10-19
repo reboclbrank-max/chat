@@ -35,6 +35,17 @@ ok('cron cobre todos os quartos de hora sem corrente que exceda o job', () => {
   assert(!/setTimeout\(r, min \* 60 \* 1000\)/.test(fonte), 'vigia não pode dormir a corrente dentro do teto de 15 min');
   assert.match(fonte, /A cadência pertence ao cron de 15 min/);
 });
+ok('recuperação automática tem freio persistido e não faz rajada do mesmo turno', () => {
+  assert.match(fonte, /registrosDeRecuperacao\(antigo\.recuperacoes\)/);
+  assert.match(fonte, /recuperacaoPermitida\(recuperacoes, chave, referencia\)/);
+  assert.match(fonte, /recuperacoes = registraRecuperacao\(recuperacoes, chave, referencia\)/);
+  assert.match(fonte, /if \(Object\.keys\(recuperacoes\)\.length\) estado\.recuperacoes = recuperacoes/);
+  const tentativasEmail = fonte.match(/tentaRecuperar\('email'/g) || [];
+  assert.equal(tentativasEmail.length, 2, 'turno e caixa devem dividir a mesma família email');
+  assert.match(fonte, /recuperação já tentada no intervalo seguro/);
+  assert.match(fonte, /Math\.min\(2, \(prev\.falhas \|\| 0\) \+ 1\)/);
+  assert(!/cura\.push\(await acao/.test(fonte), 'não deve despachar sem passar pelo freio');
+});
 
 console.log(`${certos}/${certos + falhas} testes de resiliência do vigia passaram`);
 process.exitCode = falhas ? 1 : 0;

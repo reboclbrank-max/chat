@@ -2,7 +2,7 @@
 
 > **Documento operacional obrigatório para qualquer pessoa ou agente que for mexer neste repositório.**
 >
-> **Retrato consolidado em 2026-10-18.** Ele descreve o estado de `main` após o pacote de segurança, a expansão local, a correção da aferição do teste real de e-mail e a recuperação rápida da interface diante da indisponibilidade observada do trabalhador privado. Antes de agir, confira a `main` remota: ela sempre vence este retrato se algo tiver mudado depois.
+> **Retrato consolidado em 2026-10-19.** Ele descreve o estado de `main` após o pacote de segurança, a expansão local, a correção da aferição do teste real de e-mail e a recuperação rápida da interface diante da indisponibilidade observada do trabalhador privado. Antes de agir, confira a `main` remota: ela sempre vence este retrato se algo tiver mudado depois.
 
 ## 0. Regra permanente de continuidade
 
@@ -14,7 +14,7 @@ Toda alteração que mudar comportamento, segurança, privacidade, fluxo operaci
 4. quais testes foram executados e o resultado;
 5. a pendência ou limitação que restar, se houver.
 
-O teste `tools/testes/continuidade.js` mantém esta regra visível e, em um push que altera código ou workflow, exige que `CONTINUIDADE.md` também esteja entre os arquivos alterados. `testes-rapidos.yml` observa as páginas, workflows e todo JavaScript/Python em `tools/`, para que uma ferramenta operacional não escape dessa porta. Não use esse mecanismo para iniciar trabalho por conta própria: ele serve para registrar mudanças **já autorizadas**.
+O teste `tools/testes/continuidade.js` mantém esta regra visível e, em um push que altera código ou workflow, exige que `CONTINUIDADE.md` também esteja entre os arquivos alterados. `testes-rapidos.yml` observa as páginas, workflows e todo JavaScript/Python/Shell em `tools/`, para que uma ferramenta operacional não escape dessa porta. Não use esse mecanismo para iniciar trabalho por conta própria: ele serve para registrar mudanças **já autorizadas**.
 
 Além deste arquivo público, registre a decisão relevante na memória privada `reboclbrank-max/base`, em `ia-propria/ESTADO-DO-CHAT.md` e `empresa/registro-de-decisoes.md`. Não copie valores de credenciais para nenhum dos dois repositórios.
 
@@ -146,7 +146,7 @@ Também foi observado que dois `workflow_dispatch` do vigia podiam iniciar quase
 
 ### 2.5 Vigia, evolução e provas
 
-- `tools/vigia-casa.js` verifica a saúde operacional e ajuda a manter um único turno vivo. Desde 2026-10-17, `tools/vigia-estado.js` persiste mudança imediatamente e um pulso verde no máximo a cada hora: evita commits a cada rodada, mas mantém o `vigia-estado.json` recente para a capacidade não confundir silêncio saudável com vigia parado.
+- `tools/vigia-casa.js` verifica a saúde operacional e ajuda a manter um único turno vivo. Desde 2026-10-17, `tools/vigia-estado.js` persiste mudança imediatamente e um pulso verde no máximo a cada hora: evita commits a cada rodada, mas mantém o `vigia-estado.json` recente para a capacidade não confundir silêncio saudável com vigia parado. Desde 2026-10-19, a recuperação automática ganhou contenção persistida e sanitizada: turno/caixa compartilham uma tentativa de `email.yml` por hora, bateria tem uma tentativa de `evolucao.yml` a cada seis horas, e uma recuperação só volta a ficar imediatamente elegível após as duas sondas da família retornarem saudáveis. O estado guarda somente timestamps dessas tentativas, não credencial, destinatário, mensagem ou resultado privado. Falhas consecutivas saturam em `2/2`, evitando commits de `3/2`, `4/2` a cada cron durante a mesma pane. Isso reduz automação repetitiva e custo; não recupera infraestrutura externa, não envia ação pública nova, não é SLA e não substitui observação humana.
 - `tools/evolucao-chat.js` executa a bateria/evolução diária e registra a curva em `saude-cerebro.md`.
 - `tools/teste-email.js` e `tools/coleta-respostas.js` produzem/capturam rodadas de prova.
 - `provas/` contém evidências técnicas sanitizadas; antes de acrescentar uma, confira nomes, metadados e qualquer dado pessoal.
@@ -289,5 +289,6 @@ Se o ambiente local não tiver bibliotecas temporárias de Node/Python, não con
 | 2026-10-18 | A barreira rápida assumiu explicitamente `poppler-utils` e Tesseract português quando ausentes, porque os cenários rápidos exercitam OCR e PDF digitalizado. A guarda estática de workflows passou a exigir isso; não altera o trabalhador de produção, canal, segredo, permissão, custo ou alegação humana. |
 | 2026-10-18 | A auditoria local ganhou `tools/testes/navegador-lista-controlado.sh`: usa Chromium headless somente se já instalado, cria cópia/perfil/servidor em `/tmp`, bloqueia resolução externa e aponta a cópia apenas para uma API local com token inerte. Em fixture de três páginas (com deslocamento deduplicado), o navegador clicou **Carregar mais** duas vezes sob busca, confirmou **Nova conversa** oculta e revelou “Agulha pesquisável” da página 3. O script remove tudo ao fim e não usa PAT, conversa, conta, API real nem `node_modules`; não integra a barreira para não tornar cada push dependente de navegador grande. É prova de navegador controlado, não de produção, pessoa usuária, worker, satisfação, SLA ou disponibilidade contínua. |
 | 2026-10-19 | O harness de navegador foi ampliado para as quatro rotas. `index`, `direto` e `ligar` passaram pela busca e pelas páginas sintéticas 1/2/3; `limpar` foi testada conforme sua função própria, com parâmetro fictício `t` removido e aviso contra token por link antes do redirecionamento planejado. A primeira tentativa revelou que tratá-la como lista comum era uma hipótese errada do teste, não defeito de produto; o harness foi corrigido para separar as semânticas. `navegador-lista-controlado-estatico.js` passou 5/5 e a barreira agora inclui `.sh` e `bash -n`, sem instalar Chromium na CI. Todos os perfis, cópias e servidor continuam efêmeros/localmente isolados. |
+| 2026-10-19 | Pela autorização de ampliar a automação com R$ 0, o vigia passou a conter sua própria recuperação: uma pane simultânea de turno e caixa resulta em no máximo um dispatch de `email.yml`, nova tentativa espera uma hora; a bateria espera seis. O freio é timestamp sanitizado em `vigia-estado.json`, limpo quando a família volta saudável; falhas saturam em 2/2 para não gerar commits constantes. A regressão pura do estado passou 10/10, a resiliência estática 6/6, o fluxo isolado simulou três sondas sem rede/segredo (uma tentativa, consolidação 2/2 e depois silêncio) e a suíte rápida integral passou 38/38. A mudança limita ações já existentes; não cria canal, cobrança, credencial, publicação externa ou promessa de disponibilidade. |
 
 **Próxima atualização:** não é uma tarefa agendada. Ela acontece junto da próxima mudança autorizada no Chat.

@@ -27,6 +27,7 @@ on:
       - 'tools/**/*.py'
       - 'tools/**/*.sh'
       - 'CONTINUIDADE.md'
+      - 'AUTONOMIA.md'
       - 'AGENTS.md'
       - 'README.md'
       - '.github/workflows/**'
