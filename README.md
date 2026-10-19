@@ -138,6 +138,13 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Links externos sob escolha e sem referer:** além das imagens, links Markdown e URLs textuais abrem isolados com `noopener`, `noreferrer` e sem referer. O clique continua sendo uma escolha da pessoa.
 - **Quatro rotas e PWA coerentes:** `index`, `direto`, `ligar` e `limpar` passaram a compartilhar um contrato de segurança/fluxo; o cache estático cobre as quatro e verifica atualização periodicamente. Isto não transforma o PWA em fonte de verdade para conversas nem garante disponibilidade.
 
+## v12.26 — entrega honesta e falha isolada observável (19/10/2026)
+
+- **Envio sem adivinhar:** as quatro rotas agora distinguem “criando”, “mensagem criada e aguardando processamento”, resposta recebida, envio recusado e resultado incerto. Em perda de confirmação, a tela pede atualização antes de nova tentativa e não reenvia sozinha; o cartão de nova conversa e o botão de reenviar também bloqueiam duplo toque durante a escrita.
+- **Contingência só com evidência:** a resposta local de contingência só começa quando uma falha recente e correlacionada do turno foi confirmada. Demora, fila, êxito, evento alheio ou consulta indisponível continuam aguardando; depois de erros repetidos de consulta, o indicador encerra com orientação explícita em vez de spinner infinito. A casca PWA avançou para `rebocl-chat-v6`, sem cachear API, query ou terceiros.
+- **Falhas por mensagem sem expor mensagem:** o turno de e-mail agrega somente classes fechadas (leitura, anexo, processamento, envio, acesso, limite ou serviço) numa janela efêmera de 15 minutos. Três consecutivas viram padrão para **observar**, nunca dispatch/reprocessamento automático; uma conclusão posterior zera apenas a sequência. Não entram UID, remetente, assunto, corpo, URL, nome de anexo, erro bruto ou segredo nesse contador.
+- **Cobertura controlada:** a regressão nova passou 27/27 nas quatro rotas e no agregador; a suíte rápida passou 43/43 e o Chromium controlado percorreu as quatro rotas. Foram mocks/fixtures locais, sem caixa, conversa, PAT real, API produtiva, mensagem, dispatch, custo ou nova infraestrutura. Isto não prova worker disponível, entrega real, satisfação, adoção, privacidade absoluta ou SLA.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código

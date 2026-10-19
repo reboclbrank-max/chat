@@ -8,11 +8,12 @@ let certos = 0;
 let falhas = 0;
 function ok(nome, fn) { try { fn(); certos++; console.log('✔ ' + nome); } catch (e) { falhas++; console.error('✘ ' + nome + ' — ' + e.message); } }
 
-ok('geografia local é classificada como código que exige troca de turno', () => {
+ok('ferramentas chamadas pelo canal exigem troca de turno após a barreira', () => {
   const linha = origem.split(/\r?\n/).find(x => x.indexOf('const CODIGO =') >= 0) || '';
   assert.match(linha, /geografia-brasil\\\.js/, 'geografia-brasil.js ausente da lista de adoção');
   assert.match(linha, /email-chat\\\.js/, 'núcleo do canal ausente da lista de adoção');
   assert.match(linha, /email-poll\\\.js/, 'coordenador ausente da lista de adoção');
+  assert.match(linha, /falhas-mensagem\\\.js/, 'agregador sanitizado ausente da lista de adoção');
   assert.match(linha, /turno-liveness\\\.js/, 'guarda de liveness ausente da lista de adoção');
 });
 ok('falha repetida do ciclo encerra com erro sem criar dispatch adicional', () => {

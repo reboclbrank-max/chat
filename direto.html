@@ -270,7 +270,7 @@ let conversa = null, intervalo = null, ultimoId = 0, ultimoQuando = '', falando 
 
 const $ = (id) => document.getElementById(id);
 const elLista = $('lista'), elMsgs = $('msgs'), elFaixa = $('faixa');
-let paginaLista = 1, listaAtual = [], maisListaDisponivel = false, carregandoMaisLista = false, revisaoLista = 0;
+let paginaLista = 1, listaAtual = [], maisListaDisponivel = false, carregandoMaisLista = false, revisaoLista = 0, criandoNovaConversa = false;
 let filaCacheLista = Promise.resolve();
 
 // Erros de rede/API são dados externos. A interface só mostra categorias fechadas,
@@ -673,8 +673,16 @@ async function carregarMaisConversas() {
   }
 }
 async function novaConversa() {
+  if (criandoNovaConversa) return;
   const texto = prompt('Primeira mensagem:');
   if (!texto || !texto.trim()) return;
+  const card = $('card-nova');
+  criandoNovaConversa = true;
+  if (card) {
+    card.onclick = null;
+    card.setAttribute('aria-busy', 'true');
+    card.innerHTML = '<div class="titulo" style="color:var(--ouro)">⏳ Criando conversa…</div><div class="meta"><span>não vou repetir este envio automaticamente</span></div>';
+  }
   try {
     const inicio = Date.now();
     const issue = await api(`/repos/${REPO}/issues`, {
@@ -682,7 +690,13 @@ async function novaConversa() {
       body: JSON.stringify({ title: texto.trim().split('\n')[0].slice(0, 70), body: texto.trim() })
     });
     await abrir(issue.number, issue.title, { inicio, evento: 'issues' });
-  } catch (e) { alert('Não consegui criar a conversa: ' + mensagemErroSeguro(e)); }
+  } catch (e) {
+    if (card) {
+      card.removeAttribute('aria-busy');
+      card.innerHTML = '<div class="titulo" style="color:var(--ouro)">⚠️ ' + escapar(textoEstadoEntrega(estadoEntregaParaErro(e))) + '</div><div class="meta"><span>toque para decidir se tenta de novo</span></div>';
+      card.onclick = novaConversa;
+    }
+  } finally { criandoNovaConversa = false; }
 }
 
 /* ---------- conversa ---------- */
@@ -856,6 +870,47 @@ function pertoDoFim() {
   return elMsgs.scrollHeight - elMsgs.scrollTop - elMsgs.clientHeight < 140;
 }
 
+// Cada etapa de entrega usa texto fechado. A tela nunca deduz que o trabalhador
+// aceitou, executou ou responderá só porque a escrita local terminou.
+const ESTADOS_ENTREGA = Object.freeze({
+  'criando-conversa': 'Criando a conversa…',
+  'conversa-criada': 'Conversa criada; aguardando o processamento…',
+  'enviando-mensagem': 'Enviando mensagem…',
+  'mensagem-criada': 'Mensagem criada; aguardando o processamento…',
+  'aguardando-resposta': 'Aguardando resposta; ela pode demorar e a mensagem não será reenviada automaticamente.',
+  'contingencia-local': 'Falha do turno confirmada; contingência local em curso sem reenviar sua mensagem.',
+  'resposta-local-solicitada': 'Resposta local solicitada neste navegador; sua mensagem não será reenviada.',
+  'resposta-recebida': 'Resposta recebida.',
+  'envio-recusado': 'O serviço recusou o envio. Nada foi reenviado automaticamente; confira o acesso antes de decidir tentar de novo.',
+  'resultado-incerto': 'Não consegui confirmar o envio. Atualize antes de tentar novamente; sua mensagem não será reenviada automaticamente.',
+  'consulta-interrompida': 'Não consegui confirmar a resposta agora. Atualize mais tarde; sua mensagem não será reenviada automaticamente.',
+  'contingencia-sem-resposta': 'A contingência local não respondeu agora. Sua mensagem não será reenviada automaticamente.'
+});
+let estadoEntregaAtual = 'ocioso';
+function textoEstadoEntrega(estado) {
+  return ESTADOS_ENTREGA[estado] || ESTADOS_ENTREGA['aguardando-resposta'];
+}
+function estadoEntregaParaErro(erro) {
+  const status = Number(erro && erro.status);
+  // Respostas 4xx fechadas permitem afirmar que a API recusou o pedido. Queda,
+  // timeout, limite e 5xx continuam ambíguos: não tentar novamente automaticamente.
+  return status >= 400 && status < 500 && status !== 408 && status !== 429
+    ? 'envio-recusado' : 'resultado-incerto';
+}
+function atualizarEstadoEntrega(estado) {
+  const chave = Object.prototype.hasOwnProperty.call(ESTADOS_ENTREGA, estado) ? estado : 'aguardando-resposta';
+  estadoEntregaAtual = chave;
+  const terminal = chave === 'resposta-recebida' || chave === 'envio-recusado' ||
+    chave === 'resultado-incerto' || chave === 'consulta-interrompida' || chave === 'contingencia-sem-resposta';
+  pensando(!terminal, textoEstadoEntrega(chave));
+  return textoEstadoEntrega(chave);
+}
+function encerrarEstadoEntrega(estado, rotulo, detalhe) {
+  const texto = atualizarEstadoEntrega(estado);
+  bolha('bot', 'ℹ️ ' + texto + (detalhe ? '\n\n' + detalhe : ''), new Date().toISOString(), rotulo || 'ℹ️ entrega');
+  rolarFim();
+  return texto;
+}
 function pensando(mostrar, texto) {
   const velho = $('pensando');
   if (velho) velho.remove();
@@ -863,6 +918,8 @@ function pensando(mostrar, texto) {
     const d = document.createElement('div');
     d.id = 'pensando';
     d.className = 'pensando';
+    d.setAttribute('role', 'status');
+    d.setAttribute('aria-live', 'polite');
     d.innerHTML = '<span class="ponto"></span><span class="ponto"></span><span class="ponto"></span> ' + escapar(texto || 'mensagem enviada; aguardando resposta…');
     elMsgs.appendChild(d);
     rolarFim();
@@ -896,18 +953,20 @@ async function enviar() {
   bolha('user', texto, new Date().toISOString());
   rolarFim();
   $('btn-enviar').disabled = true;
-  pensando(true, 'enviando mensagem…');
+  atualizarEstadoEntrega('enviando-mensagem');
   try {
     const inicio = Date.now();
     const c = await api(`/repos/${REPO}/issues/${conversa}/comments`, {
       method: 'POST', body: JSON.stringify({ body: texto })
     });
     registrarComentario(c);
-    pensando(true, 'mensagem enviada; aguardando resposta…');
-    if (TURBO && !MODO_LOCAL.ligado) { emergenciaResponder(conversa); }
-    else iniciarPolling({ inicio, evento: 'issue_comment' });
+    atualizarEstadoEntrega('mensagem-criada');
+    if (TURBO && !MODO_LOCAL.ligado) {
+      atualizarEstadoEntrega('resposta-local-solicitada');
+      emergenciaResponder(conversa);
+    } else iniciarPolling({ inicio, evento: 'issue_comment' });
   } catch (e) {
-    pensando(false);
+    encerrarEstadoEntrega(estadoEntregaParaErro(e), '⚠️ entrega', mensagemErroSeguro(e));
     if (!navigator.onLine && !MODO_LOCAL.ligado) {
       MODO_LOCAL.ligado = true;
       localStorage.setItem('assistente_rebocl_modo_local', '1');
@@ -915,10 +974,9 @@ async function enviar() {
       const f = $('faixa-local');
       f.textContent = '📶 Sem internet — liguei o 🧠 cérebro local para não te deixar na mão (' + rotuloLocalAtual() + ')';
       f.classList.remove('oculto');
-      bolha('bot', '📶 A internet caiu, então liguei o **cérebro 100% local**: suas próximas mensagens são respondidas no seu aparelho, offline. Quando voltar, é só desligar o 🧠.', new Date().toISOString(), '');
+      bolha('bot', '📶 A internet caiu. A tentativa anterior ficou sem confirmação; o 🧠 cérebro local foi ligado somente para as próximas mensagens.', new Date().toISOString(), '⚡ local');
       rolarFim();
     }
-    alert('Não consegui enviar: ' + mensagemErroSeguro(e));
   } finally { $('btn-enviar').disabled = false; }
 }
 
@@ -940,17 +998,28 @@ async function trabalhadorFalhouRapido(contexto) {
   } catch (e) { return false; }
 }
 
+function iniciarContingenciaConfirmada(numero) {
+  emergenciaFeita = true;
+  pararPolling();
+  atualizarEstadoEntrega('contingencia-local');
+  bolha('bot', '⚡ O turno normal falhou nesta tentativa. Vou usar uma contingência local sem reenviar sua mensagem; isso não é garantia de disponibilidade.', new Date().toISOString(), '⚡ recuperação');
+  rolarFim();
+  emergenciaResponder(numero);
+}
 function iniciarPolling(contexto = null) {
   emergenciaFeita = false;
   pararPolling();
-  if (contexto) pensando(true, 'mensagem enviada; aguardando resposta…');
+  if (contexto) atualizarEstadoEntrega('mensagem-criada');
   let tentativas = 0;
   let checouFalhaRapida = false;
+  let checouFalhaTardia = false;
+  let falhasConsulta = 0;
   intervalo = setInterval(async () => {
     tentativas++;
     const estavaNoFim = pertoDoFim();
     try {
       const comentarios = await comentariosDesde(conversa, ultimoQuando);
+      falhasConsulta = 0;
       const novos = comentarios.filter((c) => Number(c.id) > ultimoId);
       // O cursor temporal tem margem de um segundo; o ID evita repetir a borda.
       comentarios.forEach(registrarComentario);
@@ -963,33 +1032,32 @@ function iniciarPolling(contexto = null) {
           if (autoVoz()) falar(limparAssinatura(c.body), null);
         }
       });
-      if (novos.length) { pensando(false); if (estavaNoFim) rolarFim(); }
-      if (respondeu) { pararPolling(); return; }
+      if (novos.length && estavaNoFim) rolarFim();
+      if (respondeu) { atualizarEstadoEntrega('resposta-recebida'); pararPolling(); return; }
       if (!respondeu && contexto && !checouFalhaRapida && tentativas >= 2 && !MODO_LOCAL.ligado && !emergenciaFeita) {
         checouFalhaRapida = true;
-        if (await trabalhadorFalhouRapido(contexto)) {
-          emergenciaFeita = true;
-          pararPolling();
-          bolha('bot', '⚡ O turno normal não iniciou nesta tentativa. Vou usar uma contingência local sem reenviar sua mensagem; isso não é garantia de disponibilidade.', new Date().toISOString(), '⚡ recuperação');
-          rolarFim();
-          emergenciaResponder(conversa);
-          return;
-        }
+        if (await trabalhadorFalhouRapido(contexto)) { iniciarContingenciaConfirmada(conversa); return; }
       }
-      if (!respondeu && tentativas === 10 && !MODO_LOCAL.ligado && !emergenciaFeita) {
-        emergenciaFeita = true;
-        pensando(false);
-        bolha('bot', '⌛ A resposta normal está demorando. Vou tentar uma contingência local sem reenviar sua mensagem; isso não garante entrega.', new Date().toISOString(), '⚡ contingência');
-        emergenciaResponder(conversa);
+      // Uma segunda consulta curta reduz falso negativo de propagação, mas contingência
+      // só começa se a falha correlacionada do turno estiver realmente confirmada.
+      if (!respondeu && contexto && !checouFalhaTardia && tentativas >= 10 && !MODO_LOCAL.ligado && !emergenciaFeita) {
+        checouFalhaTardia = true;
+        if (await trabalhadorFalhouRapido(contexto)) { iniciarContingenciaConfirmada(conversa); return; }
       }
-      if (novos.length) pensando(true);
+      if (novos.length) atualizarEstadoEntrega('aguardando-resposta');
       if (tentativas > 72) {
-        pensando(false);
-        bolha('bot', '_A resposta ainda não chegou. Ela pode aparecer depois; nenhuma mensagem foi reenviada automaticamente._', new Date().toISOString());
         pararPolling();
+        encerrarEstadoEntrega('consulta-interrompida', '⌛ entrega');
       }
     } catch (e) {
+      falhasConsulta++;
       if (!navigator.onLine) faixaOffline(true);
+      if (falhasConsulta >= 3) {
+        pararPolling();
+        encerrarEstadoEntrega('consulta-interrompida', '⌛ entrega');
+      } else {
+        atualizarEstadoEntrega('aguardando-resposta');
+      }
     }
   }, 3000);  // consulta a cada 3 s (v3.3)
 }
@@ -1724,34 +1792,41 @@ async function emergenciaResponder(numero) {
     const minhaMsg = limparAssinatura((ultimaDoDono && ultimaDoDono.body) || inicial);
     const maos = await maosDaCasa(minhaMsg);
     if (maos) {
-      pensando(false);
+      atualizarEstadoEntrega('resposta-recebida');
       bolha('bot', maos, new Date().toISOString(), '🖐 mãos da casa');
       rolarFim();
       if (autoVoz()) falar(maos, null);
       avisar('Mãos da casa', maos.slice(0, 120));
-      try { await api('/repos/' + REPO + '/issues/' + numero + '/comments', { method: 'POST', body: JSON.stringify({ body: MARCADOR_EMERGENCIA + '\n' + maos }) }); } catch (e) {}
+      try {
+        await api('/repos/' + REPO + '/issues/' + numero + '/comments', { method: 'POST', body: JSON.stringify({ body: MARCADOR_EMERGENCIA + '\n' + maos }) });
+      } catch (e) {
+        bolha('bot', 'ℹ️ A resposta local apareceu neste navegador, mas não consegui confirmar o registro na conversa. Ela não será reenviada automaticamente.', new Date().toISOString(), '⚡ contingência');
+      }
       return;
     }
     const div = bolha('bot', '⏳ chamando os motores do ouro…', new Date().toISOString(), TURBO ? '⚡TURBO · navegador' : 'navegador · ouro keyless');
     rolarFim();
     const r = await pensarStream(hist, (texto) => { renderLive(div, texto); if (pertoDoFim()) rolarFim(); });
-    pensando(false);
     if (!r) {
       renderLive(div, '_A casa está congelada (billing) e os motores keyless não abriram agora. Tente de novo em instantes — ou ligue o 🧠 local._');
+      encerrarEstadoEntrega('contingencia-sem-resposta', '⚡ contingência');
       rolarFim();
       return;
     }
     const corpo = '⚡ **Resposta de emergência' + (TURBO ? ' TURBO' : '') + '** — no navegador (' + r.motor + '):\n\n' + r.texto;
     const quem = div.querySelector('.quem');
     div.innerHTML = (quem ? quem.outerHTML : '') + markdown(corpo);
+    atualizarEstadoEntrega('resposta-recebida');
     rolarFim();
     if (autoVoz()) falar(limparAssinatura(corpo), null);
     avisar('Assistente Rebocl (emergência)', r.texto.slice(0, 120));
     try {
       await api('/repos/' + REPO + '/issues/' + numero + '/comments', { method: 'POST', body: JSON.stringify({ body: MARCADOR_EMERGENCIA + '\n' + corpo }) });
-    } catch (e) {}
+    } catch (e) {
+      bolha('bot', 'ℹ️ A resposta local apareceu neste navegador, mas não consegui confirmar o registro na conversa. Ela não será reenviada automaticamente.', new Date().toISOString(), '⚡ contingência');
+    }
   } catch (e) {
-    pensando(false);
+    encerrarEstadoEntrega('contingencia-sem-resposta', '⚡ contingência');
   }
 }
 function alternarTurbo() {
@@ -2094,17 +2169,24 @@ async function fecharConversa() {
 }
 async function reenviarUltima() {
   if (!conversa) return;
+  const botao = $('btn-reenviar');
+  if (botao && botao.disabled) return;
   const usuarios = elMsgs.querySelectorAll('.bolha.user');
   if (!usuarios.length) { alert('Ainda não tem mensagem sua nesta conversa.'); return; }
   const texto = textoSimples(usuarios[usuarios.length - 1].innerHTML).trim();
   if (!texto) return;
+  if (botao) botao.disabled = true;
+  atualizarEstadoEntrega('enviando-mensagem');
   try {
+    const inicio = Date.now();
     const c = await api(`/repos/${REPO}/issues/${conversa}/comments`, { method: 'POST', body: JSON.stringify({ body: texto }) });
     registrarComentario(c);
     bolha('user', texto, new Date().toISOString());
     rolarFim();
-    iniciarPolling();
-  } catch (e) { alert('Não consegui reenviar: ' + mensagemErroSeguro(e)); }
+    iniciarPolling({ inicio, evento: 'issue_comment' });
+  } catch (e) {
+    encerrarEstadoEntrega(estadoEntregaParaErro(e), '⚠️ entrega', mensagemErroSeguro(e));
+  } finally { if (botao) botao.disabled = false; }
 }
 function faixaOffline(mostrar) {
   if (mostrar) {

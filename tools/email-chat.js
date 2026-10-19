@@ -39,6 +39,7 @@
 const { ImapFlow } = require('imapflow');
 const nodemailer = require('nodemailer');
 const { INTERVALO_PULSO_MS } = require('./vigia-estado');
+const { criaEstadoFalhasMensagem, registraFalhaMensagem, registraSucessoMensagem, resumoFalhaMensagem } = require('./falhas-mensagem');
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const path = require('path');
@@ -1621,6 +1622,20 @@ async function historicoDaConversa(threadId, idAtual) {
   } catch (e) { console.log('🧵 memória da conversa falhou (sigo sem): ' + String(e.message || e).slice(0, 80)); return ''; }
 }
 const falhasPorUid = new Map();
+// Só agrega classes fechadas durante este turno. Identificadores e erro bruto ficam
+// fora do contador para que uma falha isolada não exponha dados nem vire ação cega.
+const estadoFalhasMensagem = criaEstadoFalhasMensagem();
+function anotarFalhaMensagem(erro, classe) {
+  const retrato = registraFalhaMensagem(estadoFalhasMensagem, erro, classe);
+  console.error('⚠️ ' + resumoFalhaMensagem(retrato));
+  return retrato;
+}
+function anotarSucessoMensagem() {
+  const antes = Number(estadoFalhasMensagem.consecutivas) || 0;
+  const retrato = registraSucessoMensagem(estadoFalhasMensagem);
+  if (antes) console.log('🟢 uma mensagem foi concluída; contador sanitizado de falhas consecutivas voltou a zero');
+  return retrato;
+}
 async function processOnce() {
   // Sem os dois segredos, nenhum ciclo consegue ler ou responder a caixa. Retornar 0
   // faria o workflow parecer saudável e enganaria o vigia; o chamador deve marcar falha.
@@ -1649,10 +1664,10 @@ async function processOnce() {
     for (const uid of alvo) {
       try {
         const msg = await client.fetchOne(uid, { source: true, envelope: true, threadId: true }, { uid: true });
-        if (!msg || !msg.envelope) { const n0 = (falhasPorUid.get(uid) || 0) + 1; falhasPorUid.set(uid, n0); console.log('⚠️ uid ' + uid + ': não consegui ler o envelope (' + n0 + 'ª vez) — não marco como lido'); continue; }
+        if (!msg || !msg.envelope) { const n0 = (falhasPorUid.get(uid) || 0) + 1; falhasPorUid.set(uid, n0); anotarFalhaMensagem(null, 'leitura'); console.log('⚠️ mensagem sem envelope legível (' + n0 + 'ª vez) — não marco como lida'); continue; }
         const de = (msg.envelope.from || []).map(f => f.address).join(',').toLowerCase();
         const assunto = (msg.envelope.subject || '(sem assunto)');
-        if (!de) { const n0 = (falhasPorUid.get(uid) || 0) + 1; falhasPorUid.set(uid, n0); console.log('⚠️ uid ' + uid + ': e-mail sem remetente legível (' + n0 + 'ª vez) — não marco como lido'); continue; }
+        if (!de) { const n0 = (falhasPorUid.get(uid) || 0) + 1; falhasPorUid.set(uid, n0); anotarFalhaMensagem(null, 'leitura'); console.log('⚠️ mensagem sem remetente legível (' + n0 + 'ª vez) — não marco como lida'); continue; }
         if (de.split(',').some(a => a.trim() === USER.toLowerCase())) { console.log('↩️ uid ' + uid + ': mensagem da própria casa — marcada como lida, sem resposta'); await client.messageFlagsAdd(uid, ['\\Seen'], { uid: true }); continue; }
         const bruto = (msg.source || '').toString();
         const robo = motivoAutomatico(de, bruto.split(/\r?\n\r?\n/)[0]);   // 🤖 v12.13 (RFC 3834)
@@ -1873,11 +1888,13 @@ async function processOnce() {
         memoria.set(chave, 'Pergunta: ' + String(corpoMsg || assunto).slice(0, 400) + NL + 'Resposta: ' + String(resposta).slice(0, 800));
         if (memoria.size > 25) { const k0 = memoria.keys().next().value; memoria.delete(k0); }
         respondidos++;
+        anotarSucessoMensagem();
         await sleep(2000);
       } catch (e) {
         const n = (falhasPorUid.get(uid) || 0) + 1;
         falhasPorUid.set(uid, n);
-        console.error('⚠️ e-mail uid ' + uid + ' falhou (' + n + 'ª vez): ' + String(e && e.message || e).slice(0, 160) + (n >= 2 ? ' — fica para o próximo turno, sigo com os outros' : ''));
+        anotarFalhaMensagem(e);
+        console.error('⚠️ mensagem não concluída (' + n + 'ª vez)' + (n >= 2 ? ' — fica para o próximo turno; sigo com as demais' : ' — permanece não lida para observação limitada'));
       }
     }
   } finally { lock.release(); await client.logout(); await fechaLeitor(); }
@@ -1886,7 +1903,7 @@ async function processOnce() {
 module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, limpaAssunto, citacaoDoEmail, memoria, extraiAudio, fala, ouve, pedeAudio, limpaPraFalar, extraiAnexoTexto, docTexto, olhoDaFoto, olhoPistas, leTextoLocal, leTextoLocalInfo, pareceCego, SO_TEXTO, mascaraEndereco, assuntoPublico, falhasPorUid, visaoLocal, iniciaVisaoLocal, esperaFerramentas, renderPdf, buscaRota, corre,
   // 📲 v12.17: reaproveitados pelo chat no Telegram (tools/telegram-chat.js)
   comCaixaSeparada, comandosDaCasa, preparaFoto, montaFotos, cerebroLocal, semMarcacao, limpaVazamento, CAPS, processaVideo,
-  leTextoLocalComReserva,
+  leTextoLocalComReserva, estadoFalhasMensagem, anotarFalhaMensagem, anotarSucessoMensagem,
   csvParaXlsx, textoParaPdf, pedidoDeArquivo, renderPdfPaginas, entendeQuando, quandoBR, enviaTelegram, entregaLembretes, entregaNavegacoes,
   novaReferenciaNavegacao, serializaPendenciaNavegacao, lePendenciaNavegacao, retornoNavegacaoPendente, resultadoDaReferencia, textoDoResultadoNavegacao, contextoRetornoNavegacao,
   blocoArquivoNaoConfiavel, resumoEstadoVigiaPublico };

@@ -127,7 +127,7 @@ async function principal() {
 
   const sw = fonte('sw.js');
   testa('service worker inclui as quatro rotas e versão nova de cache', () => {
-    assert.match(sw, /rebocl-chat-v5/);
+    assert.match(sw, /rebocl-chat-v6/);
     for (const rota of rotas) assert.match(sw, new RegExp("'\\./" + rota.replace('.', '\\.') + "'"));
     assert.match(sw, /url\.search/);
     assert.match(sw, /cache: 'no-store'/);
