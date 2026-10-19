@@ -1622,7 +1622,9 @@ async function historicoDaConversa(threadId, idAtual) {
 }
 const falhasPorUid = new Map();
 async function processOnce() {
-  if (!USER || !PASS) { console.error('sem credenciais'); return 0; }
+  // Sem os dois segredos, nenhum ciclo consegue ler ou responder a caixa. Retornar 0
+  // faria o workflow parecer saudável e enganaria o vigia; o chamador deve marcar falha.
+  if (!USER || !PASS) throw new Error('credenciais do canal de e-mail ausentes');
   if (Date.now() >= proximaEntregaNavegacao) {
     proximaEntregaNavegacao = Date.now() + 90 * 1000;
     try { await entregaNavegacoes(); } catch (e) { console.log('🌐 entrega de resultado do navegador falhou (sigo normal): ' + String(e.message || e).slice(0, 100)); }
@@ -1888,4 +1890,13 @@ module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, li
   csvParaXlsx, textoParaPdf, pedidoDeArquivo, renderPdfPaginas, entendeQuando, quandoBR, enviaTelegram, entregaLembretes, entregaNavegacoes,
   novaReferenciaNavegacao, serializaPendenciaNavegacao, lePendenciaNavegacao, retornoNavegacaoPendente, resultadoDaReferencia, textoDoResultadoNavegacao, contextoRetornoNavegacao,
   blocoArquivoNaoConfiavel, resumoEstadoVigiaPublico };
-if (require.main === module) { processOnce().then(n => console.log('ciclo único:', n, 'respondidos')).catch(e => { console.error('ERRO:', e.message); process.exit(0); }); }
+// O modo avulso é usado pela reserva do workflow. Falha irrecuperável não pode virar
+// execução verde: a recuperação causal precisa enxergar o resultado real do job.
+if (require.main === module) {
+  processOnce()
+    .then(n => console.log('ciclo único:', n, 'respondidos'))
+    .catch(() => {
+      console.error('ERRO no ciclo único: canal de e-mail indisponível');
+      process.exitCode = 1;
+    });
+}

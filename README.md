@@ -112,6 +112,12 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Consistência mais rígida:** um item só aparece como saudável quando `ok` e a causa fechada `saudavel` concordam. Estado inconsistente ou data futura recebem diagnóstico neutro; timestamp futuro de recuperação é ignorado, sem ecoar o dado recebido.
 - **Compacto nos dois canais:** mesmo com os oito itens, alerta de frescor e freio de recuperação, o texto fica em até 12 linhas para o Telegram. Continua sem nova sonda, canal, conta, custo ou efeito externo.
 
+## v12.22 — falha operacional não recebe selo verde (19/10/2026)
+
+- **Falha agora é observável:** se o turno principal ou a reserva não tiverem as credenciais de e-mail, encerram com erro em vez de aparentar ciclo vazio bem-sucedido. O vigia também devolve falha ao workflow diante de exceção fora das sondas tratadas.
+- **Estado recuperável:** `vigia-estado.json` com JSON válido mas formato inválido (como `null`) é reconstruído como fotografia sanitizada, em vez de derrubar o vigia. O passo de salvar estado roda mesmo após erro para preservar uma fotografia que já tenha sido escrita.
+- **Sem automação extra:** a mudança não faz dispatch, não envia aviso, não consulta canal real, não muda segredos nem cria custo. Ela só torna mais honesto o sinal de falha já existente.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código

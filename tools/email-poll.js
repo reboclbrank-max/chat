@@ -18,6 +18,7 @@ process.on('uncaughtException', e => console.error('🛡️ exceção contida �
 const { processOnce } = require('./email-chat.js');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const REPO = 'reboclbrank-max/chat';
+const TEM_CREDENCIAIS_EMAIL = Boolean(String(process.env.GMAIL_CHAT_ADDR || '').trim() && String(process.env.GMAIL_CHAT_PASS || '').trim());
 async function api(caminho, opcoes) {
   const tok = process.env.GITHUB_TOKEN || '';
   if (!tok) return null;
@@ -88,6 +89,13 @@ async function escuta() {
 
 const FIM = Date.now() + (5 * 60 + 45) * 60 * 1000;   // 5h45; varredura a cada 50 s + aviso imediato do Gmail (v4.3)
 (async () => {
+  // O turno principal não deve aparentar saúde se nem pode abrir a caixa. Não mostra
+  // valores de segredo; apenas devolve erro para que o workflow e o vigia sejam honestos.
+  if (!TEM_CREDENCIAIS_EMAIL) {
+    console.error('🛑 canal de e-mail não iniciou: credenciais ausentes');
+    process.exitCode = 1;
+    return;
+  }
   escuta();   // ⚡ em paralelo, para sempre (reconecta sozinha)
   try { require('./telegram-chat.js').inicia(FIM); } catch (e) { console.log('📲 Telegram não iniciou: ' + String(e.message || e).slice(0, 80)); }   // 📲 v4.4
   let varreduras = 0, respondidos = 0, motivo = 'fim do horário';

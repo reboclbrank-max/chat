@@ -45,8 +45,12 @@ async function executa(estadoInicial, configuracao = {}) {
   };
   const fsFalso = {
     readFileSync: () => JSON.stringify(estadoInicial),
-    writeFileSync: (_arquivo, conteudo) => escritos.push(JSON.parse(conteudo))
+    writeFileSync: (_arquivo, conteudo) => {
+      if (configuracao.falhaEscrita) throw new Error('persistência indisponível no isolamento');
+      escritos.push(JSON.parse(conteudo));
+    }
   };
+  const processo = { env: { GITHUB_TOKEN: token }, argv: [] };
   const contexto = {
     require: (nome) => {
       if (nome === 'fs') return fsFalso;
@@ -56,7 +60,7 @@ async function executa(estadoInicial, configuracao = {}) {
       if (nome === 'imapflow') throw new Error('imapflow não deve ser carregado sem credenciais');
       throw new Error('require inesperado: ' + nome);
     },
-    process: { env: { GITHUB_TOKEN: token }, argv: [], exit: () => {} },
+    process: processo,
     fetch: fetchFalso,
     AbortSignal,
     Date,
@@ -68,11 +72,11 @@ async function executa(estadoInicial, configuracao = {}) {
     Promise,
     setTimeout,
     clearTimeout,
-    console: { log: () => {}, error: () => {} }
+    console: { log: () => {}, warn: () => {}, error: () => {} }
   };
   const resultado = vm.runInNewContext(fonte, contexto, { filename: 'vigia-casa-isolado.js' });
   await Promise.resolve(resultado);
-  return { escritos, dispatches };
+  return { escritos, dispatches, exitCode: processo.exitCode };
 }
 
 (async () => {
@@ -85,6 +89,11 @@ async function executa(estadoInicial, configuracao = {}) {
   const aposPrimeira = primeira.escritos[0];
   assert.deepEqual(Object.keys(aposPrimeira.recuperacoes || {}), ['email']);
   assert.match(aposPrimeira.recuperacoes.email.ultima_tentativa_em, /^\d{4}-\d\d-\d\dT/);
+
+  const estadoCorrompido = await executa(null);
+  assert.equal(estadoCorrompido.exitCode, undefined, 'estado público inválido deve ser reconstruído, não derrubar o vigia');
+  assert.equal(estadoCorrompido.escritos.length, 1, 'estado reconstruído deve gerar nova fotografia');
+  assert.equal(estadoCorrompido.escritos[0].itens['Página do chat'].ok, true);
 
   const semToken = await executa(inicial, { token: '' });
   assert.equal(semToken.dispatches.length, 0, 'sem token não há dispatch a fingir como recuperação');
@@ -126,7 +135,10 @@ async function executa(estadoInicial, configuracao = {}) {
   const terceira = await executa(aposSegunda);
   assert.equal(terceira.dispatches.length, 0, 'pane persistente continua contida');
   assert.equal(terceira.escritos.length, 0, 'estado 2/2 estável não deve gerar commit a cada 15 min');
-  console.log('✔ fluxo isolado contém recuperação duplicada, ruído e dispatch cego');
+
+  const persistenciaFalha = await executa(inicial, { falhaEscrita: true });
+  assert.equal(persistenciaFalha.exitCode, 1, 'falha fatal de persistência deve reprovar o workflow');
+  console.log('✔ fluxo isolado contém recuperação duplicada, ruído, dispatch cego e falso verde fatal');
 })().catch((erro) => {
   console.error('✘ fluxo isolado da recuperação — ' + (erro && (erro.stack || erro.message) || erro));
   process.exitCode = 1;

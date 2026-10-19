@@ -57,6 +57,16 @@ ok('diagnóstico sanitizado só recupera ausência/atraso comprovados', () => {
   assert.match(fonte, /if \(cb && !cb\.ok && cb\.recuperavel\)/);
   assert.match(fonte, /novos\[it\.nome\] = \{ ok: it\.ok, falhas, causa \}/);
 });
+ok('estado válido porém corrompido é reconstruído sem imprimir detalhe bruto', () => {
+  assert.match(fonte, /function estadoAnteriorSeguro\(\)/);
+  assert.match(fonte, /lido && typeof lido === 'object' && !Array\.isArray\(lido\)/);
+  assert.match(fonte, /reconstruo fotografia sanitizada/);
+});
+ok('falha fatal reprova e ainda permite salvar fotografia já escrita', () => {
+  assert.match(fonte, /ERRO no vigia: execução interrompida antes de concluir a fotografia/);
+  assert.match(fonte, /process\.exitCode = 1/);
+  assert.match(workflow, /- name: Salva o estado do vigia\n\s+if: always\(\)/);
+});
 
 console.log(`${certos}/${certos + falhas} testes de resiliência do vigia passaram`);
 process.exitCode = falhas ? 1 : 0;

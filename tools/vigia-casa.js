@@ -194,8 +194,17 @@ async function acao(rotulo, arquivo) {
   }));
 
   // ---- estado + anti-alarme-falso (falha só conta após 2 rodadas seguidas) ----
-  let antigo = { itens: {} };
-  try { antigo = JSON.parse(fs.readFileSync(ESTADO, 'utf8')); } catch (e) {}
+  // O arquivo é público e pode sobreviver a pushes concorrentes. JSON válido, porém com
+  // formato inútil (por exemplo `null`), não pode derrubar o vigia nem congelar seu pulso.
+  function estadoAnteriorSeguro() {
+    try {
+      const lido = JSON.parse(fs.readFileSync(ESTADO, 'utf8'));
+      if (lido && typeof lido === 'object' && !Array.isArray(lido)) return lido;
+      console.warn('🩺 estado anterior inválido — reconstruo fotografia sanitizada');
+    } catch (e) {}
+    return { itens: {} };
+  }
+  const antigo = estadoAnteriorSeguro();
   const novos = {};
   // O registro contém somente timestamps de tentativas autorizadas; não inclui destinatário,
   // conteúdo de caixa, token, URL autenticada ou resultado privado do turno.
@@ -281,4 +290,9 @@ async function acao(rotulo, arquivo) {
   // despachar a próxima rodada. Não reintroduzir espera/auto-dispatch aqui; a concorrência
   // do workflow já serializa disparos de cron e despertares de reserva.
 
-})().catch(e => { console.error('ERRO no vigia:', e.message); process.exit(0); });
+})().catch(() => {
+  // Um defeito fora das sondas tratadas precisa aparecer como falha do workflow, não como
+  // fotografia verde. A mensagem é deliberadamente genérica para não expor detalhe sensível.
+  console.error('ERRO no vigia: execução interrompida antes de concluir a fotografia');
+  process.exitCode = 1;
+});
