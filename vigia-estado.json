@@ -1,45 +1,53 @@
 {
- "verificado_em": "2026-10-19T20:38:13.963Z",
+ "verificado_em": "2026-10-19T21:26:40.494Z",
  "itens": {
   "Página do chat": {
    "ok": true,
    "falhas": 0,
-   "causa": "saudavel"
+   "causa": "saudavel",
+   "evidencia": "pagina-respondendo"
   },
   "Site oficial": {
    "ok": true,
    "falhas": 0,
-   "causa": "saudavel"
+   "causa": "saudavel",
+   "evidencia": "pagina-respondendo"
   },
   "Casa postando (site)": {
    "ok": true,
    "falhas": 0,
-   "causa": "saudavel"
+   "causa": "saudavel",
+   "evidencia": "postagem-agendada-recente"
   },
   "Chat por e-mail (24h)": {
    "ok": true,
    "falhas": 0,
-   "causa": "saudavel"
+   "causa": "saudavel",
+   "evidencia": "turno-ativo-com-sucessor"
   },
   "Bateria do cérebro": {
    "ok": true,
    "falhas": 0,
-   "causa": "saudavel"
+   "causa": "saudavel",
+   "evidencia": "bateria-recem-executada"
   },
   "itch Ceifalume": {
    "ok": true,
    "falhas": 0,
-   "causa": "saudavel"
+   "causa": "saudavel",
+   "evidencia": "pagina-respondendo"
   },
   "itch Prancheta": {
    "ok": true,
    "falhas": 0,
-   "causa": "saudavel"
+   "causa": "saudavel",
+   "evidencia": "pagina-respondendo"
   },
   "Caixa de e-mail": {
    "ok": true,
    "falhas": 0,
-   "causa": "saudavel"
+   "causa": "saudavel",
+   "evidencia": "caixa-sem-pendencia"
   }
  }
 }
