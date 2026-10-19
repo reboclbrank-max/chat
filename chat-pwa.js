@@ -9,6 +9,10 @@ function limparTemporizadorAtivacaoPwa() {
   clearTimeout(temporizadorAtivacaoPwa);
   temporizadorAtivacaoPwa = null;
 }
+function modoSomenteLocalBloqueiaAtualizacaoPwa() {
+  return typeof modoSomenteLocalAtivo === 'function' && modoSomenteLocalAtivo();
+}
+function atualizacaoPwaEmAndamento() { return ativacaoPwaEmAndamento; }
 function atualizarAvisoAtualizacaoPwa() {
   if (typeof document === 'undefined') return;
   const aviso = $('aviso-atualizacao');
@@ -18,6 +22,14 @@ function atualizarAvisoAtualizacaoPwa() {
   if (!atualizacaoPwaPendente) {
     aviso.classList.add('oculto');
     aviso.setAttribute('aria-hidden', 'true');
+    return;
+  }
+  if (modoSomenteLocalBloqueiaAtualizacaoPwa()) {
+    texto.textContent = 'O modo somente-local está ativo. Desligue-o antes de atualizar esta página.';
+    botao.disabled = true;
+    botao.textContent = 'Atualizar agora';
+    aviso.classList.remove('oculto');
+    aviso.setAttribute('aria-hidden', 'false');
     return;
   }
   if (ativacaoPwaEmAndamento) {
@@ -70,7 +82,7 @@ function observarInstalacaoPwa(registro) {
   });
 }
 function solicitarAtualizacaoPwa() {
-  if (!atualizacaoPwaPendente || ativacaoPwaEmAndamento || escritaEmAndamento()) { atualizarAvisoAtualizacaoPwa(); return; }
+  if (!atualizacaoPwaPendente || ativacaoPwaEmAndamento || escritaEmAndamento() || modoSomenteLocalBloqueiaAtualizacaoPwa()) { atualizarAvisoAtualizacaoPwa(); return; }
   const entrada = $('entrada');
   if (entrada && String(entrada.value || '').trim()) { atualizarAvisoAtualizacaoPwa(); entrada.focus(); return; }
   falhaAtivacaoPwa = false;

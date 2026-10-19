@@ -209,6 +209,12 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Uma regra nas quatro entradas:** o estado e o aviso da atualização também passaram para `chat-pwa.js`; `index`, `direto`, `ligar` e `limpar` continuam responsáveis por seus fluxos e por informar escrita/rascunho. A casca avançou para `rebocl-chat-v11`, com os mesmos arquivos locais aprovados; API, query e terceiros seguem fora do cache e `skipWaiting()` continua proibido na instalação.
 - **Cobertura controlada:** o contrato PWA passou **20/20**, incluindo VM para escolha explícita, confirmação do worker, prazo sem recarga, tentativa posterior e falha de `postMessage`; segurança/fluxo ficou 30/30. Isto confirma código controlado, não atualização em todo navegador, worker disponível, uso humano, satisfação, disponibilidade ou SLA.
 
+## v12.37 — modo somente-local também segura a atualização PWA (19/10/2026)
+
+- **Uma fronteira coerente:** enquanto 🔒 modo somente-local estiver ligado, uma atualização PWA já pronta não pode ser aplicada nem recarregar a página. O aviso explica que é preciso desligar o modo antes de atualizar; ao voltar, a escolha continua manual. O modo também não pode ser ligado no intervalo curto em que uma atualização já escolhida aguarda confirmação.
+- **Sem promessa de firewall:** a guarda impede a ação desta página; não cancela conexão que já começou nem controla navegador, sistema, extensões ou worker já ativo. `rebocl-chat-v12` apenas renova a casca local aprovada, sem API, query ou terceiros no cache e sem ativação silenciosa.
+- **Cobertura controlada:** PWA **21/21** cobre o bloqueio e a retomada manual; modo somente-local **22/22**, segurança/fluxo **30/30** e estilos **4/4** preservam as quatro rotas. São VM/arquivos locais, não prova de isolamento de aparelho, atualização em todo navegador, uso humano, satisfação, disponibilidade ou SLA.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código

@@ -44,6 +44,8 @@ testa('as quatro rotas usam o mesmo cliente PWA externo local', () => {
   assert.match(pwa, /function marcarAtualizacaoPwa\(registro\)/);
   assert.match(pwa, /function atualizarAvisoAtualizacaoPwa\(\)/);
   assert.match(pwa, /TEMPO_MAXIMO_ATIVACAO_PWA = 15000/);
+  assert.match(pwa, /function modoSomenteLocalBloqueiaAtualizacaoPwa\(\)/);
+  assert.match(pwa, /function atualizacaoPwaEmAndamento\(\)/);
   assert.match(pwa, /function iniciarPwaCompartilhado\(\)/);
   assert.match(pwa, /navigator\.serviceWorker\.register\('sw\.js', \{ updateViaCache: 'none' \}\)/);
   assert.doesNotMatch(pwa, /https?:\/\//);
@@ -56,7 +58,8 @@ for (const rota of rotas) {
     assert.match(pwa, /Envie ou copie o rascunho antes de atualizar/);
     assert.match(html, /btn-aplicar-atualizacao/);
     assert.match(pwa, /function solicitarAtualizacaoPwa\(\)/);
-    assert.match(pwa, /if \(!atualizacaoPwaPendente \|\| ativacaoPwaEmAndamento \|\| escritaEmAndamento\(\)\)/);
+    assert.match(pwa, /if \(!atualizacaoPwaPendente \|\| ativacaoPwaEmAndamento \|\| escritaEmAndamento\(\) \|\| modoSomenteLocalBloqueiaAtualizacaoPwa\(\)\)/);
+    assert.match(pwa, /O modo somente-local está ativo\. Desligue-o antes de atualizar esta página\./);
     assert.match(pwa, /atualizacaoPwaPendente\.postMessage\(\{ tipo: 'REBOCL_ATIVAR_ATUALIZACAO' \}\)/);
     assert.match(pwa, /setTimeout\(falharAtivacaoPwa, TEMPO_MAXIMO_ATIVACAO_PWA\)/);
     assert.match(pwa, /if \(recarregar\) window\.location\.reload\(\)/);
@@ -84,7 +87,7 @@ testa('cliente compartilhado é precacheado e observado pela barreira de continu
   const sw = fonte('sw.js');
   const workflow = fonte('.github/workflows/testes-rapidos.yml');
   const continuidade = fonte('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v11/);
+  assert.match(sw, /rebocl-chat-v12/);
   assert.match(sw, /'\.\/chat-pwa\.js'/);
   assert.match(workflow, /'chat-pwa\.js'/);
   assert(continuidade.includes('chat-pwa\\.js'), 'porta de continuidade não observa chat-pwa.js');
@@ -102,11 +105,11 @@ testa('cliente compartilhado é precacheado e observado pela barreira de continu
   } finally { fs.rmSync(pasta, { recursive: true, force: true }); }
 });
 
-testa('service worker v11 instala sem se ativar sozinho', () => {
+testa('service worker v12 instala sem se ativar sozinho', () => {
   const sw = fonte('sw.js');
   const instalacao = trecho(sw, "self.addEventListener('install'", "self.addEventListener('message'");
   const mensagem = trecho(sw, "self.addEventListener('message'", "self.addEventListener('activate'");
-  assert.match(sw, /rebocl-chat-v11/);
+  assert.match(sw, /rebocl-chat-v12/);
   assert.match(sw, /'\.\/chat-pwa\.js'/);
   assert.doesNotMatch(instalacao, /skipWaiting/);
   assert.match(mensagem, /evento\.data\.tipo === 'REBOCL_ATIVAR_ATUALIZACAO'/);
@@ -167,11 +170,14 @@ function runtimePwa(opcoes = {}) {
   contexto.botao = botao;
   contexto.texto = texto;
   contexto.aviso = aviso;
+  contexto.modoSomenteLocalInicial = !!opcoes.modoSomenteLocal;
   vm.runInContext(`
+    let modoSomenteLocalTeste = !!modoSomenteLocalInicial;
+    function modoSomenteLocalAtivo() { return modoSomenteLocalTeste; }
     function escritaEmAndamento() { return false; }
     const $ = (id) => ({ entrada, 'btn-aplicar-atualizacao': botao, 'texto-atualizacao': texto, 'aviso-atualizacao': aviso }[id] || null);
   `, contexto);
-  vm.runInContext(pwa + '\nglobalThis.solicitarTeste = solicitarAtualizacaoPwa; globalThis.iniciarTeste = iniciarPwaCompartilhado;', contexto);
+  vm.runInContext(pwa + '\nglobalThis.solicitarTeste = solicitarAtualizacaoPwa; globalThis.iniciarTeste = iniciarPwaCompartilhado; globalThis.definirModoSomenteLocalTeste = (ativo) => { modoSomenteLocalTeste = !!ativo; atualizarAvisoAtualizacaoPwa(); };', contexto);
   contexto.iniciarTeste();
   return Promise.resolve().then(() => Promise.resolve()).then(() => ({
     contexto, mensagens, chamadaRegistro, intervalo, timers, botao, texto, classes,
@@ -215,6 +221,18 @@ async function principal() {
     repetir.contexto.solicitarTeste();
     assert.equal(repetir.mensagens.length, 2, 'a nova escolha deve mandar uma segunda solicitação explícita');
     assert.equal(repetir.botao.disabled, true);
+  });
+  await testaAsync('modo somente-local bloqueia atualização pendente até nova escolha fora do modo', async () => {
+    const r = await runtimePwa({ modoSomenteLocal: true });
+    assert.equal(r.botao.disabled, true);
+    assert.match(r.texto.textContent, /modo somente-local está ativo/);
+    r.contexto.solicitarTeste();
+    assert.equal(r.mensagens.length, 0);
+    assert.equal(r.recargas(), 0);
+    r.contexto.definirModoSomenteLocalTeste(false);
+    assert.equal(r.botao.disabled, false);
+    r.contexto.solicitarTeste();
+    assert.deepEqual(r.mensagens, [{ tipo: 'REBOCL_ATIVAR_ATUALIZACAO' }]);
   });
   await testaAsync('falha ao avisar o worker devolve o controle sem recarga', async () => {
     const r = await runtimePwa({ falharPostagem: true });

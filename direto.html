@@ -89,7 +89,7 @@
   </div>
   <div class="cartao">
     <h2>🔒 Modo somente-local nesta página</h2>
-    <p>Depois de preparar o cérebro local, este controle bloqueia novas requisições de rede iniciadas pelo JavaScript desta página e links externos. Ele para a consulta da conversa; sincronização, GitHub, pesquisas e downloads ficam indisponíveis até desligar. Não é um firewall do aparelho: não controla navegador, sistema, extensões, worker já ativo nem conexões iniciadas antes do clique. Ao recarregar, ele desliga.</p>
+    <p>Depois de preparar o cérebro local, este controle bloqueia novas requisições de rede iniciadas pelo JavaScript desta página e links externos. Ele para a consulta da conversa; sincronização, GitHub, pesquisas, downloads e a atualização PWA ficam indisponíveis até desligar. Não é um firewall do aparelho: não controla navegador, sistema, extensões, worker já ativo nem conexões iniciadas antes do clique. Ao recarregar, ele desliga.</p>
     <button type="button" class="acao" id="btn-somente-local" aria-pressed="false" style="margin-top:8px;background:var(--painel);border:1px solid var(--borda);color:var(--texto);font-weight:600">🔒 modo somente-local: desligado</button>
     <div id="status-somente-local" role="status" aria-live="polite" aria-atomic="true"></div>
   </div>
@@ -2413,6 +2413,7 @@ function atualizarModoSomenteLocal() {
     const faixa = $('faixa-local');
     if (faixa) { faixa.textContent = textoFaixaModoLocal(); faixa.classList.remove('oculto'); }
   }
+  if (typeof atualizarAvisoAtualizacaoPwa === 'function') atualizarAvisoAtualizacaoPwa();
 }
 function alternarModoSomenteLocal() {
   if (modoSomenteLocalAtivo()) {
@@ -2420,6 +2421,7 @@ function alternarModoSomenteLocal() {
     atualizarModoSomenteLocal();
     return;
   }
+  if (typeof atualizacaoPwaEmAndamento === 'function' && atualizacaoPwaEmAndamento()) { alert('Aguarde a confirmação da atualização antes de ligar o modo somente-local.'); return; }
   if (escritaEmAndamento()) { alert('Aguarde envio, importação ou sincronização terminar antes de bloquear a rede.'); return; }
   if (!conversa) { alert('Abra uma conversa, prepare o cérebro local nela e mantenha-a aberta antes de ligar o modo somente-local.'); return; }
   if (!MODO_LOCAL.engine) {

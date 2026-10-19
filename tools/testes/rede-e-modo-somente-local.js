@@ -49,6 +49,7 @@ for (const rota of rotas) {
     assert.match(html, /id="status-somente-local" role="status"/);
     assert.match(html, /Na primeira preparação, a biblioteca e o modelo podem ser baixados/);
     assert.match(html, /Não é um firewall do aparelho/);
+    assert.match(html, /atualização PWA ficam indisponíveis até desligar/);
     assert.match(html, /Ao recarregar, ele desliga/);
     assert.match(html, /title="Cérebro local; a primeira preparação pode baixar biblioteca e modelo"/);
     for (const [tipo, propriedade] of [['HTMLImageElement', 'src'], ['HTMLMediaElement', 'src'], ['HTMLScriptElement', 'src'], ['HTMLIFrameElement', 'src'], ['HTMLSourceElement', 'src'], ['HTMLLinkElement', 'href']]) {
@@ -63,6 +64,9 @@ for (const rota of rotas) {
     assert.match(modo, /somenteLocalNestaPagina = true/);
     assert.match(modo, /pararPolling\(\)/);
     assert.match(modo, /clearInterval\(intervaloAtualizacaoPwa\)/);
+    assert.match(modo, /typeof atualizarAvisoAtualizacaoPwa === 'function'/);
+    assert.match(modo, /typeof atualizacaoPwaEmAndamento === 'function' && atualizacaoPwaEmAndamento\(\)/);
+    assert.match(modo, /Aguarde a confirmação da atualização antes de ligar o modo somente-local/);
     assert.match(modo, /sincronizar\.disabled = ativo/);
     assert.match(modo, /modoSomenteLocalAtivo\(\)\) return Promise\.reject\(erroLocal\('preparo-local-necessario'\)\)/);
   });
