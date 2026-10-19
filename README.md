@@ -197,6 +197,12 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Offline coerente:** a casca PWA avançou para `rebocl-chat-v9` e passou a precachear explicitamente essa folha local, mantendo a ativação de atualização sob escolha já existente. API, query e terceiros seguem fora do cache.
 - **Cobertura controlada:** contrato novo 4/4 verifica a folha única, as quatro referências, ausência do bloco inline duplicado, precache e a observação da folha pela barreira/porta de continuidade. A suíte rápida integral passou **49/49**, com **2 SKIPs** locais já conhecidos por pré-requisitos multimodais ausentes; smoke HTTP estritamente local respondeu 200 nas quatro rotas e na folha. Sem PAT, conversa, API produtiva, rede externa, custo ou infraestrutura nova.
 
+## v12.35 — atualização PWA em um único cliente local (19/10/2026)
+
+- **Menos duplicação em comportamento sensível:** o cliente que registra o service worker, detecta versão esperando e pede a ativação escolhida saiu das quatro rotas e passou para `chat-pwa.js`, local e da mesma origem. As entradas continuam com seus fluxos específicos; não houve framework, CDN, chamada nova de API ou alteração das regras de atualização.
+- **Casca offline completa:** `rebocl-chat-v10` precacheia tanto `chat-estilos.css` quanto `chat-pwa.js`. A nova versão continua aguardando escolha explícita e nunca chama `skipWaiting()` na instalação; API, query e terceiros continuam fora do cache.
+- **Cobertura controlada:** contrato PWA **18/18**, segurança/fluxo **30/30** e a suíte rápida **49/49** passaram; permanecem apenas os 2 SKIPs multimodais locais já declarados. As verificações cobrem referências, cliente compartilhado, precache, porta de continuidade e, em VM, que o registro aponta só para `sw.js` e só envia a ordem de ativação após escolha. Smoke HTTP estritamente local respondeu 200 para o cliente e as quatro rotas. Nenhuma conversa, token, API produtiva, rede externa, custo ou infraestrutura foi usada.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código

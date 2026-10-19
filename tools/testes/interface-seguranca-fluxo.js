@@ -29,8 +29,7 @@ function blocoCritico(html) {
   return {
     api: trecho(html, 'function erroDaApi(status) {', '\nconst TAMANHO_PAGINA_COMENTARIOS'),
     markdown: trecho(html, 'function escapar(t) {', '\nconst DONO_GITHUB'),
-    importar: trecho(html, 'const VERSAO_EXPORTACAO = 1;', '\nfunction montarBusca()'),
-    worker: (html.match(/navigator\.serviceWorker\.register\([^\n]+/g) || []).join('\n')
+    importar: trecho(html, 'const VERSAO_EXPORTACAO = 1;', '\nfunction montarBusca()')
   };
 }
 function contextoBase(respostas) {
@@ -66,11 +65,19 @@ function resposta(status, corpo) {
 async function principal() {
   const fontes = Object.fromEntries(rotas.map((rota) => [rota, fonte(rota)]));
   const referencias = Object.values(fontes).map(blocoCritico);
-  for (const chave of ['api', 'markdown', 'importar', 'worker']) {
+  for (const chave of ['api', 'markdown', 'importar']) {
     testa('as quatro rotas mantêm paridade crítica: ' + chave, () => {
       assert.equal(new Set(referencias.map((b) => b[chave])).size, 1);
     });
   }
+  const pwa = fonte('chat-pwa.js');
+  testa('as quatro rotas usam o mesmo cliente PWA externo', () => {
+    for (const html of Object.values(fontes)) {
+      assert.match(html, /<script src="chat-pwa\.js"><\/script>/);
+      assert.doesNotMatch(html, /function marcarAtualizacaoPwa\(registro\)/);
+    }
+    assert.match(pwa, /navigator\.serviceWorker\.register\('sw\.js', \{ updateViaCache: 'none' \}\)/);
+  });
 
   for (const rota of rotas) {
     const html = fontes[rota];
@@ -127,7 +134,8 @@ async function principal() {
 
   const sw = fonte('sw.js');
   testa('service worker inclui as quatro rotas e versão nova de cache', () => {
-    assert.match(sw, /rebocl-chat-v9/);
+    assert.match(sw, /rebocl-chat-v10/);
+    assert.match(sw, /'\.\/chat-pwa\.js'/);
     for (const rota of rotas) assert.match(sw, new RegExp("'\\./" + rota.replace('.', '\\.') + "'"));
     assert.match(sw, /url\.search/);
     assert.match(sw, /cache: 'no-store'/);

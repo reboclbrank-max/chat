@@ -2,7 +2,9 @@
 // Sem navegador, token, conversa, API, service worker real ou Cache Storage real.
 'use strict';
 const assert = require('assert');
+const { spawnSync } = require('child_process');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const vm = require('vm');
 
@@ -26,23 +28,34 @@ function trecho(texto, inicio, fim) {
   return texto.slice(a, b);
 }
 function blocoApi(html) { return trecho(html, 'function erroDaApi(status) {', '\nconst TAMANHO_PAGINA_COMENTARIOS'); }
-function blocoPwa(html) { return trecho(html, 'function marcarAtualizacaoPwa(registro) {', '\n(async function iniciar()'); }
 
 const fontes = Object.fromEntries(rotas.map((rota) => [rota, fonte(rota)]));
-testa('as quatro rotas mantêm o mesmo cliente de atualização segura', () => {
-  assert.equal(new Set(Object.values(fontes).map(blocoPwa)).size, 1);
-  assert.equal(new Set(Object.values(fontes).map(blocoApi)).size, 1);
+const pwa = fonte('chat-pwa.js');
+testa('as quatro rotas usam o mesmo cliente PWA externo local', () => {
+  for (const html of Object.values(fontes)) {
+    const cliente = html.indexOf('<script src="chat-pwa.js"></script>');
+    const bind = html.indexOf("$('btn-aplicar-atualizacao').onclick = solicitarAtualizacaoPwa;");
+    assert(cliente >= 0 && cliente < bind, 'cliente precisa definir o handler antes do bind');
+    assert.equal((html.match(/chat-pwa\.js/g) || []).length, 1);
+    assert.match(html, /iniciarPwaCompartilhado\(\);/);
+    assert.doesNotMatch(html, /function marcarAtualizacaoPwa\(registro\)/);
+  }
+  assert.match(pwa, /function marcarAtualizacaoPwa\(registro\)/);
+  assert.match(pwa, /function iniciarPwaCompartilhado\(\)/);
+  assert.match(pwa, /navigator\.serviceWorker\.register\('sw\.js', \{ updateViaCache: 'none' \}\)/);
+  assert.doesNotMatch(pwa, /https?:\/\//);
 });
 
 for (const rota of rotas) {
   const html = fontes[rota];
   testa(rota + ' só oferece atualização após espera explícita', () => {
     assert.match(html, /id="aviso-atualizacao"/);
-    assert.match(html, /function solicitarAtualizacaoPwa\(\)/);
-    assert.match(html, /if \(!atualizacaoPwaPendente \|\| escritaEmAndamento\(\)\)/);
     assert.match(html, /Envie ou copie o rascunho antes de atualizar/);
-    assert.match(html, /worker\.postMessage\(\{ tipo: 'REBOCL_ATIVAR_ATUALIZACAO' \}\)/);
-    assert.match(html, /if \(recarregarAposAtualizacaoPwa\) window\.location\.reload\(\)/);
+    assert.match(html, /btn-aplicar-atualizacao/);
+    assert.match(pwa, /function solicitarAtualizacaoPwa\(\)/);
+    assert.match(pwa, /if \(!atualizacaoPwaPendente \|\| escritaEmAndamento\(\)\)/);
+    assert.match(pwa, /worker\.postMessage\(\{ tipo: 'REBOCL_ATIVAR_ATUALIZACAO' \}\)/);
+    assert.match(pwa, /if \(recarregarAposAtualizacaoPwa\) window\.location\.reload\(\)/);
   });
   testa(rota + ' contabiliza POST/PATCH até a confirmação ou falha', () => {
     const api = blocoApi(html);
@@ -63,11 +76,34 @@ for (const rota of rotas) {
   });
 }
 
-testa('service worker v9 instala sem se ativar sozinho', () => {
+testa('cliente compartilhado é precacheado e observado pela barreira de continuidade', () => {
+  const sw = fonte('sw.js');
+  const workflow = fonte('.github/workflows/testes-rapidos.yml');
+  const continuidade = fonte('tools/testes/continuidade.js');
+  assert.match(sw, /rebocl-chat-v10/);
+  assert.match(sw, /'\.\/chat-pwa\.js'/);
+  assert.match(workflow, /'chat-pwa\.js'/);
+  assert(continuidade.includes('chat-pwa\\.js'), 'porta de continuidade não observa chat-pwa.js');
+  const pasta = fs.mkdtempSync(path.join(os.tmpdir(), 'continuidade-pwa-'));
+  try {
+    const evento = path.join(pasta, 'push.json');
+    fs.writeFileSync(evento, JSON.stringify({ commits: [{ modified: ['chat-pwa.js'] }] }));
+    const r = spawnSync('node', [path.join(raiz, 'tools', 'testes', 'continuidade.js')], {
+      cwd: raiz,
+      encoding: 'utf8',
+      env: Object.assign({}, process.env, { GITHUB_EVENT_PATH: evento })
+    });
+    assert.notEqual(r.status, 0, 'cliente PWA sem continuidade não pode passar');
+    assert.match(String(r.stdout || '') + String(r.stderr || ''), /push operacional atualiza CONTINUIDADE\.md/);
+  } finally { fs.rmSync(pasta, { recursive: true, force: true }); }
+});
+
+testa('service worker v10 instala sem se ativar sozinho', () => {
   const sw = fonte('sw.js');
   const instalacao = trecho(sw, "self.addEventListener('install'", "self.addEventListener('message'");
   const mensagem = trecho(sw, "self.addEventListener('message'", "self.addEventListener('activate'");
-  assert.match(sw, /rebocl-chat-v9/);
+  assert.match(sw, /rebocl-chat-v10/);
+  assert.match(sw, /'\.\/chat-pwa\.js'/);
   assert.doesNotMatch(instalacao, /skipWaiting/);
   assert.match(mensagem, /evento\.data\.tipo === 'REBOCL_ATIVAR_ATUALIZACAO'/);
   assert.match(mensagem, /self\.skipWaiting\(\)/);
@@ -85,7 +121,48 @@ function runtimeApi(html, fetchFalso) {
   vm.runInContext(blocoApi(html) + '\nglobalThis.apiTeste = api; globalThis.escritasTeste = () => escritasEmAndamento;', contexto);
   return contexto;
 }
+function runtimePwa() {
+  const mensagens = [];
+  const entrada = { value: '', focus() {} };
+  const botao = { disabled: false, textContent: 'Atualizar agora' };
+  const worker = { postMessage: (mensagem) => mensagens.push(mensagem), addEventListener() {} };
+  const registro = { waiting: worker, addEventListener() {} };
+  let chamadaRegistro = null;
+  let intervalo = null;
+  const contexto = {
+    Promise, Object, String, setTimeout: (fn) => { fn(); return 0; },
+    setInterval: (fn, ms) => { intervalo = ms; return 1; },
+    navigator: { serviceWorker: {
+      controller: null,
+      addEventListener() {},
+      register: (url, opcoes) => { chamadaRegistro = { url, opcoes }; return Promise.resolve(registro); }
+    } },
+    window: { location: { reload() {} } },
+    globalThis: null
+  };
+  contexto.globalThis = contexto;
+  vm.createContext(contexto);
+  vm.runInContext(`
+    let registroPwa = null, atualizacaoPwaPendente = null, recarregarAposAtualizacaoPwa = false, intervaloAtualizacaoPwa = null;
+    function atualizarAvisoAtualizacaoPwa() {}
+    function escritaEmAndamento() { return false; }
+    const $ = (id) => id === 'entrada' ? entrada : (id === 'btn-aplicar-atualizacao' ? botao : null);
+  `, contexto);
+  contexto.entrada = entrada;
+  contexto.botao = botao;
+  vm.runInContext(pwa + '\nglobalThis.solicitarTeste = solicitarAtualizacaoPwa; globalThis.iniciarTeste = iniciarPwaCompartilhado;', contexto);
+  contexto.iniciarTeste();
+  return Promise.resolve().then(() => Promise.resolve()).then(() => ({ contexto, mensagens, chamadaRegistro, intervalo }));
+}
 async function principal() {
+  await testaAsync('cliente externo registra somente a casca local e só ativa por escolha', async () => {
+    const r = await runtimePwa();
+    assert.deepEqual(r.chamadaRegistro, { url: 'sw.js', opcoes: { updateViaCache: 'none' } });
+    assert.equal(r.intervalo, 300000);
+    assert.equal(r.mensagens.length, 0);
+    r.contexto.solicitarTeste();
+    assert.deepEqual(r.mensagens, [{ tipo: 'REBOCL_ATIVAR_ATUALIZACAO' }]);
+  });
   await testaAsync('POST mantém trava de atualização enquanto a confirmação está pendente', async () => {
     let liberar;
     const contexto = runtimeApi(fontes['index.html'], () => new Promise((res) => { liberar = res; }));

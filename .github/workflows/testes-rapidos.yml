@@ -18,6 +18,7 @@ on:
       - 'ligar.html'
       - 'limpar.html'
       - 'chat-estilos.css'
+      - 'chat-pwa.js'
       - 'console.html'
       - 'sw.js'
       - 'dna.json'

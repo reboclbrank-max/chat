@@ -24,7 +24,8 @@ function extraiHelpers(src) {
   const inicio = src.indexOf('const TAMANHO_PAGINA_COMENTARIOS = 100;');
   const fim = src.indexOf('\nfunction escapar(t) {', inicio);
   assert(inicio >= 0 && fim > inicio, 'helpers de paginação não encontrados');
-  return src.slice(inicio, fim);
+  // A casca pode dividir o script em arquivos locais; a VM testa somente JS.
+  return src.slice(inicio, fim).replace(/<\/?script(?:\s[^>]*)?>\s*/g, '');
 }
 function extraiColetor(src) {
   const inicio = src.indexOf('async function coletarConversas() {');
