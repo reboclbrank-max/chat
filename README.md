@@ -100,6 +100,12 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Navegador público isolado:** o dono pode pedir `navegar: https://...` por e-mail/Telegram e consultar depois com `navegador: estado`; a abertura ocorre em Chrome/Chromium sem perfil e sem os segredos do chat. Ela bloqueia localhost/redes privadas, URLs com credencial e portas incomuns, e grava só título/trecho público sanitizado.
 - **Melhoria contínua com freio:** vigia, bateria, oficina e marketing continuam aprendendo e operando com a autorização do dono; mudanças sensíveis, segredos, permissões e ações irreversíveis seguem exigindo revisão, teste e rollback. Tudo continua em **R$ 0** — sem prometer “1 segundo” ou 24 h sem falha de serviços gratuitos.
 
+## v12.20 — `status:` explica o vigia sem expor detalhes (19/10/2026)
+
+- **Estado técnico explicável:** por e-mail e Telegram, `status:` traduz somente os códigos fechados do vigia em rótulos humanos. A mensagem diferencia causas que podem ser elegíveis à recuperação interna de sinais que só devem ser observados, como API indisponível, fila sem executor ou execução que falhou.
+- **Freio visível e sanitizado:** quando houver uma contenção persistida, mostra apenas a família conhecida (`e-mail` ou `bateria`) e a janela técnica; não mostra erro bruto, mensagem, endereço, URL autenticada, token, chaves desconhecidas nem campos extras do estado público.
+- **Limite honesto:** é a fotografia da última checagem técnica, não uma promessa de resposta, disponibilidade ou SLA. Se a leitura do estado falhar ou vier malformada, devolve um aviso neutro em vez de inventar saúde.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código

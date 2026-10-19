@@ -360,6 +360,79 @@ async function estadoNavegacaoPublica() {
       '• ' + limpaTextoPublico(j.trecho_publico || '(sem texto legível)', 700);
   } catch (e) { return '🌐 Ainda não consegui ler o estado do navegador público. Tente novamente em alguns minutos.'; }
 }
+// O estado do vigia é público/sanitizado, mas nunca deve devolver campos arbitrários: esta
+// apresentação usa lista fechada de itens, causas e famílias. Assim, `status:` explica a
+// automação sem transformar um detalhe técnico ou uma chave desconhecida em texto ao dono.
+const ITENS_STATUS_CASA = Object.freeze([
+  ['Página do chat', 'Página do Chat'],
+  ['Site oficial', 'Site oficial'],
+  ['Casa postando (site)', 'Postagem do site'],
+  ['Chat por e-mail (24h)', 'Turno de e-mail'],
+  ['Bateria do cérebro', 'Bateria do cérebro'],
+  ['itch Ceifalume', 'Ceifalume no itch.io'],
+  ['itch Prancheta', 'Prancheta no itch.io'],
+  ['Caixa de e-mail', 'Caixa de e-mail']
+]);
+const CAUSAS_STATUS_CASA = Object.freeze({
+  saudavel: { texto: 'saudável', recuperavel: false },
+  'sem-execucao': { texto: 'sem execução recente', recuperavel: true },
+  'turno-ausente': { texto: 'turno ausente/atrasado', recuperavel: true },
+  'bateria-atrasada': { texto: 'bateria atrasada', recuperavel: true },
+  'caixa-atrasada': { texto: 'caixa aguardando resposta', recuperavel: true },
+  'api-indisponivel': { texto: 'sonda da API indisponível — sem ação cega', recuperavel: false },
+  'fila-estagnada': { texto: 'fila sem executor — sem adicionar trabalho', recuperavel: false },
+  'execucao-falhou': { texto: 'última execução falhou — sem reexecutar às cegas', recuperavel: false },
+  'sonda-indisponivel': { texto: 'sonda limitada — sem ação automática', recuperavel: false }
+});
+const FAMILIAS_RECUPERACAO_STATUS = Object.freeze({
+  email: { texto: 'e-mail', intervalo: 60 * 60 * 1000 },
+  exame: { texto: 'bateria', intervalo: 6 * 60 * 60 * 1000 }
+});
+const MARGEM_RELOGIO_STATUS_MS = 5 * 60 * 1000;
+
+function instanteStatusSeguro(valor) {
+  const ms = typeof valor === 'number' && Number.isFinite(valor) ? valor : Date.parse(String(valor || ''));
+  return Number.isFinite(ms) ? new Date(ms).toISOString().slice(0, 16).replace('T', ' ') + ' UTC' : '';
+}
+
+function resumoEstadoVigiaPublico(estado, referencia = Date.now()) {
+  const dados = estado && typeof estado === 'object' ? estado : {};
+  const agora = typeof referencia === 'number' && Number.isFinite(referencia) ? referencia : Date.now();
+  const itens = dados.itens && typeof dados.itens === 'object' ? dados.itens : {};
+  const linhas = [];
+  for (const [chave, rotulo] of ITENS_STATUS_CASA) {
+    const item = itens[chave];
+    if (!item || typeof item !== 'object') {
+      linhas.push('⚪ ' + rotulo + ' — sem leitura sanitizada');
+      continue;
+    }
+    if (item.ok === true) {
+      linhas.push('✅ ' + rotulo + ' — saudável');
+      continue;
+    }
+    const codigo = String(item.causa || '');
+    const causa = codigo === 'saudavel' ? null : CAUSAS_STATUS_CASA[codigo];
+    const texto = causa ? causa.texto + (causa.recuperavel ? ' — recuperação interna elegível' : '') : 'diagnóstico sanitizado indisponível';
+    linhas.push('❌ ' + rotulo + ' — ' + texto);
+  }
+  const recuperacoes = dados.recuperacoes && typeof dados.recuperacoes === 'object' ? dados.recuperacoes : {};
+  const freios = [];
+  for (const [chave, familia] of Object.entries(FAMILIAS_RECUPERACAO_STATUS)) {
+    const ms = Date.parse(String(recuperacoes[chave] && recuperacoes[chave].ultima_tentativa_em || ''));
+    if (!Number.isFinite(ms) || ms > agora + MARGEM_RELOGIO_STATUS_MS) continue;
+    const tentativa = instanteStatusSeguro(ms);
+    const libera = ms + familia.intervalo;
+    if (agora < libera) freios.push(familia.texto + ' até ' + instanteStatusSeguro(libera));
+    else freios.push(familia.texto + ' desde ' + tentativa + ' (janela já terminou)');
+  }
+  const msChecagem = Date.parse(String(dados.verificado_em || ''));
+  const checagem = Number.isFinite(msChecagem) && msChecagem <= agora + MARGEM_RELOGIO_STATUS_MS
+    ? instanteStatusSeguro(msChecagem) : 'horário não disponível';
+  return '🩺 Estado técnico da casa (checagem ' + checagem + '):' + NL + linhas.join(NL) +
+    (freios.length ? NL + '♻️ Contenção de recuperação: ' + freios.join(' · ') : '') +
+    NL + 'ℹ️ Fotografia técnica sanitizada; não é promessa de resposta, disponibilidade ou SLA.';
+}
+
 async function ferramenta(corpo, retornoNavegacao) {
   const txt = String(corpo || '').trim();
   if (/^!?ajuda$/i.test(txt) || txt.toLowerCase() === 'ajuda' || txt.toLowerCase() === 'comandos') return AJUDA;
@@ -466,10 +539,13 @@ async function ferramenta(corpo, retornoNavegacao) {
       return await pedeNavegacaoPublica(arg, retornoNavegacao);
     }
     if (cmd === 'status') {
-      const r = await fetch('https://raw.githubusercontent.com/reboclbrank-max/chat/main/vigia-estado.json', { signal: AbortSignal.timeout(20000), cache: 'no-store' });
-      const j = await r.json();
-      const linhas = Object.entries(j.itens || {}).map(function (p) { return (p[1].ok ? '✅' : '❌') + ' ' + p[0]; });
-      return '🩺 Estado da casa (checagem ' + j.verificado_em + ' UTC):' + NL + linhas.join(NL) + NL + NL + '📧 E-mail: respondendo · 🌐 site postando · 🧠 bateria diária';
+      try {
+        const r = await fetch('https://raw.githubusercontent.com/reboclbrank-max/chat/main/vigia-estado.json', { signal: AbortSignal.timeout(20000), cache: 'no-store' });
+        if (!r.ok) return '🩺 Não consegui ler o estado técnico agora. Tente novamente em alguns minutos.';
+        return resumoEstadoVigiaPublico(await r.json());
+      } catch (e) {
+        return '🩺 Não consegui ler o estado técnico agora. Tente novamente em alguns minutos.';
+      }
     }
   } catch (e) { return null; }
   return null;
@@ -486,7 +562,7 @@ const AJUDA = [
   '   • noticias: godot   (qualquer tema)',
   '   • navegar: https://exemplo.com   (abre página pública isolada e devolve o resumo nesta conversa)',
   '   • navegador: estado (vê manualmente o último resultado público)',
-  '   • status:           (como está a casa agora)',
+  '   • status:           (última checagem técnica, causas e freios de recuperação)',
   '   • conta: (1250*0,15)+80   (conta rápida, sem esperar motor)',
   '   • feriado:           (próximos feriados nacionais; ou feriado: 2027)',
   '   • cep: 49300000      (endereço de um CEP)',
@@ -1789,5 +1865,5 @@ module.exports = { processOnce, extraiAnexos, pegaTexto, cerebro, ferramenta, li
   leTextoLocalComReserva,
   csvParaXlsx, textoParaPdf, pedidoDeArquivo, renderPdfPaginas, entendeQuando, quandoBR, enviaTelegram, entregaLembretes, entregaNavegacoes,
   novaReferenciaNavegacao, serializaPendenciaNavegacao, lePendenciaNavegacao, retornoNavegacaoPendente, resultadoDaReferencia, textoDoResultadoNavegacao, contextoRetornoNavegacao,
-  blocoArquivoNaoConfiavel };
+  blocoArquivoNaoConfiavel, resumoEstadoVigiaPublico };
 if (require.main === module) { processOnce().then(n => console.log('ciclo único:', n, 'respondidos')).catch(e => { console.error('ERRO:', e.message); process.exit(0); }); }
