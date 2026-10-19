@@ -5,6 +5,7 @@ const { spawnSync } = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { comandoExecutavelDisponivel } = require('./pre-requisitos');
 const T = path.resolve(__dirname, '..');
 const CHAT = path.join(T, 'email-chat.js');
 let total = 0, falhas = 0, ignorados = 0;
@@ -12,11 +13,7 @@ function registra(nome, ok, detalhe, ignorado = false) {
   if (ignorado) { ignorados++; console.log('○ ' + nome + ' → ' + detalhe); return; }
   total++; if (!ok) falhas++; console.log((ok ? '✔ ' : '✘ ') + nome + (ok ? '' : ' → ' + detalhe));
 }
-function comandoDisponivel(nome) {
-  const r = spawnSync(nome, ['--version'], { encoding: 'utf8', timeout: 5000 });
-  return !r.error && r.status === 0;
-}
-for (const u of ['mime-bateria.js', 'formato-e-trava.js', 'autenticidade-planilha.js', 'lembretes.js', 'telegram.js', 'conta-e-comandos.js', 'seguranca-interface.js', 'markdown-imagem-privacidade.js', 'interface-seguranca-fluxo.js', 'acessibilidade-interface.js', 'pwa-atualizacao-segura.js', 'limites-conteudo-interface.js', 'rascunhos-locais-interface.js', 'leitura-e-inicio-interface.js', 'rede-e-modo-somente-local.js', 'estados-entrega-e-falhas.js', 'fallback-trabalhador.js', 'paginacao-conversas.js', 'navegador-lista-controlado-estatico.js', 'navegador-publico.js', 'navegador-retorno.js', 'navegador-retorno-fluxo.js', 'navegador-comando-email.js', 'teste-navegador-pareado.js', 'geografia-brasil.js', 'vigia-estado.js', 'auditoria-workflows.js', 'teste-email-resultado.js', 'teste-email-remetentes.js', 'email-poll-adocao.js', 'turno-liveness.js', 'falhas-operacionais.js', 'teste-foto-resiliencia.js', 'ocr-local.js', 'visao-resposta-cega.js', 'vigia-casa-resiliencia.js', 'vigia-recuperacao-fluxo.js', 'evolucao-chat.js', 'avaliacao-profunda.js', 'indice-capacidade.js', 'continuidade.js']) {
+for (const u of ['mime-bateria.js', 'formato-e-trava.js', 'autenticidade-planilha.js', 'lembretes.js', 'telegram.js', 'conta-e-comandos.js', 'seguranca-interface.js', 'markdown-imagem-privacidade.js', 'interface-seguranca-fluxo.js', 'acessibilidade-interface.js', 'pwa-atualizacao-segura.js', 'limites-conteudo-interface.js', 'rascunhos-locais-interface.js', 'leitura-e-inicio-interface.js', 'rede-e-modo-somente-local.js', 'estados-entrega-e-falhas.js', 'fallback-trabalhador.js', 'paginacao-conversas.js', 'navegador-lista-controlado-estatico.js', 'navegador-publico.js', 'navegador-retorno.js', 'navegador-retorno-fluxo.js', 'navegador-comando-email.js', 'teste-navegador-pareado.js', 'geografia-brasil.js', 'vigia-estado.js', 'auditoria-workflows.js', 'teste-email-resultado.js', 'teste-email-remetentes.js', 'email-poll-adocao.js', 'turno-liveness.js', 'falhas-operacionais.js', 'teste-foto-resiliencia.js', 'pre-requisitos-multimodais.js', 'ocr-local.js', 'visao-resposta-cega.js', 'vigia-casa-resiliencia.js', 'vigia-recuperacao-fluxo.js', 'evolucao-chat.js', 'avaliacao-profunda.js', 'indice-capacidade.js', 'continuidade.js']) {
   const r = spawnSync('node', [path.join(__dirname, u), CHAT], { encoding: 'utf8', timeout: 120000 });
   const ultima = String(r.stdout || '').trim().split('\n').pop();
   const ignorado = r.status === 0 && /^SKIP:/.test(ultima);
@@ -24,7 +21,7 @@ for (const u of ['mime-bateria.js', 'formato-e-trava.js', 'autenticidade-planilh
     ignorado ? ultima : (r.stdout + r.stderr).split('\n').filter(l => /✘|Error|erro/.test(l)).slice(0, 4).join(' | '), ignorado);
 }
 function cenario(nome, env, exigir, proibir, requisitos = []) {
-  const ausentes = requisitos.filter((nomeComando) => !comandoDisponivel(nomeComando));
+  const ausentes = requisitos.filter((nomeComando) => !comandoExecutavelDisponivel(nomeComando));
   if (ausentes.length) {
     const detalhe = 'pré-requisito local ausente: ' + ausentes.join(', ');
     if (process.env.REBOCL_EXIGIR_MULTIMODAL === '1') registra('cenário · ' + nome, false, detalhe + ' (a barreira marcou multimodal como obrigatório)');
