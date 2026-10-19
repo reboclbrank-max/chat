@@ -355,4 +355,8 @@ Se o ambiente local não tiver bibliotecas temporárias de Node/Python, não con
 | 2026-10-19 | A primeira barreira P1H (`39291420654`) falhou de modo útil antes de executar o cenário PDF: o Poppler estava no runner (a etapa de bibliotecas o detectou), mas `pdftotext --version` devolve status não zero nessa versão e a sonda o tratava incorretamente como ausente. Não houve aprovação artificial nem teste de PDF/OCR alegado: a barreira rígida fez exatamente o bloqueio esperado. `pre-requisitos.js` agora diferencia executável localizado de opção `--version` aceita; sinal/timeout/execução real ainda reprovam, e `pre-requisitos-multimodais.js` cobre um binário válido que sai 64 e um caminho ausente. A suíte local posterior ficou 48/48 verificações executadas e 2 SKIPs ambientais explícitos; a próxima barreira deve executar o cenário PDF real com Poppler/Tesseract preparados. Não houve e-mail, caixa, OCR externo, modelo, API produtiva, mensagem, custo ou infraestrutura. |
 
 
+
+| 2026-10-19 | A correção da sonda multimodal foi confirmada remotamente: `chat@66e23b3c016ad4a9299e03c6ba509a4ff673a7c8` teve a barreira `39292459697`/job `118196347054` em `success`. O log técnico registrou 2/2 da regressão de pré-requisito, 5/5 OCR local e o cenário PDF/foto sem visão; total 50/50 testes rápidos executados, sem `SKIP` no runner preparado. Pages `39292459612` também concluiu `success`. A falha precedente `39291420654` continua registrada como descoberta de harness, não foi reclassificada. Isto confirma execução CI/Pages controlada, não OCR em aparelho real, entrega de canal, uso humano, satisfação, disponibilidade ou SLA. |
+
+
 **Próxima atualização:** não é uma tarefa agendada. Ela acontece junto da próxima mudança autorizada no Chat.
