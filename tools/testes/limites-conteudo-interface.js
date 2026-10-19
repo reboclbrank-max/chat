@@ -31,6 +31,7 @@ function renderizar(rota, entrada) {
 }
 
 const fontes = Object.fromEntries(rotas.map((rota) => [rota, fonte(rota)]));
+const estilos = fonte('chat-estilos.css');
 for (const rota of rotas) {
   const html = fontes[rota];
   testa(rota + ' declara limites fechados para texto, arquivo e Markdown', () => {
@@ -61,7 +62,7 @@ for (const rota of rotas) {
     assert.match(html, /id="contador"/);
     assert.match(html, /tamanho\.toLocaleString\('pt-BR'\) \+ '\/' \+ LIMITE_MENSAGEM_COMPOSITOR/);
     assert.match(html, /el\.classList\.toggle\('excedido', tamanho > LIMITE_MENSAGEM_COMPOSITOR\)/);
-    assert.match(html, /\.composer #contador\.excedido/);
+    assert.match(estilos, /\.composer #contador\.excedido/);
   });
 }
 

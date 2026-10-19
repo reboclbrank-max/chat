@@ -5,7 +5,7 @@ Página de conversa com a **IA gratuita da Rebocl Brank**.
 - **Endereço:** <https://reboclbrank-max.github.io/chat/>
 - Abre no celular ou no computador. Para entrar, a página pede **um token de acesso do GitHub** (criado por você, guardado só no seu navegador — veja as instruções na própria página).
 - **Não contém nenhum dado**: as conversas ficam salvas no repositório **privado** `reboclbrank-max/agente`.
-- Feita em um único arquivo `index.html` (sem dependências externas), hospedada de graça no GitHub Pages.
+- Feita em páginas estáticas locais, sem framework nem dependências externas, hospedada de graça no GitHub Pages.
 
 ## O que ela faz
 
@@ -190,6 +190,12 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Barreira continua rígida:** no GitHub Actions, `REBOCL_EXIGIR_MULTIMODAL=1` torna esses mesmos pré-requisitos obrigatórios. O workflow já instala Tesseract em português e Poppler; se faltarem, OCR/PDF reprovam a barreira em vez de virar `SKIP`.
 - **Evidência controlada:** neste sandbox, **48/48** verificações executadas passaram e **2** foram explicitamente ignoradas por falta de binários locais; a execução forçada com a variável da barreira falhou como esperado, comprovando que o `SKIP` não mascara CI. Nenhum e-mail, caixa, API produtiva, OCR externo, modelo, mensagem, custo ou infraestrutura foi acionado. Isto ainda não prova OCR em dispositivo real, entrega, visão, satisfação, disponibilidade ou SLA.
 - **Correção e evidência remota:** a execução `39291420654` bloqueou antes do cenário PDF porque a sonda confundia o retorno não zero de `pdftotext --version` com binário ausente. Ela foi preservada como falha e corrigida com regressão específica: executável localizado segue para o cenário real; caminho ausente, sinal, timeout ou a própria leitura mal-sucedida continuam reprovando. A barreira final `39292459697` passou **50/50**, incluindo OCR 5/5 e o cenário PDF/foto sem visão; Pages `39292459612` também passou no commit `66e23b3`. Isso prova a execução técnica preparada, não OCR em aparelho real, entrega ou satisfação.
+
+## v12.34 — casca visual compartilhada, sem framework (19/10/2026)
+
+- **Menos cópia, mesma interface:** o CSS comum das quatro entradas passou para `chat-estilos.css`, um arquivo local da mesma origem. `index`, `direto`, `ligar` e `limpar` continuam com seus scripts e fluxos próprios; não houve unificação cega de comportamento, framework, CDN ou dependência nova.
+- **Offline coerente:** a casca PWA avançou para `rebocl-chat-v9` e passou a precachear explicitamente essa folha local, mantendo a ativação de atualização sob escolha já existente. API, query e terceiros seguem fora do cache.
+- **Cobertura controlada:** contrato novo 4/4 verifica a folha única, as quatro referências, ausência do bloco inline duplicado, precache e a observação da folha pela barreira/porta de continuidade. A suíte rápida integral passou **49/49**, com **2 SKIPs** locais já conhecidos por pré-requisitos multimodais ausentes; smoke HTTP estritamente local respondeu 200 nas quatro rotas e na folha. Sem PAT, conversa, API produtiva, rede externa, custo ou infraestrutura nova.
 
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO

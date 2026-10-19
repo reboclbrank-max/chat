@@ -23,6 +23,7 @@ function trechoInterface(html) {
 function ids(html) { return Array.from(html.matchAll(/\bid="([^"]+)"/g), (m) => m[1]); }
 
 const fontes = Object.fromEntries(rotas.map((rota) => [rota, fonte(rota)]));
+const estilos = fonte('chat-estilos.css');
 const cascas = Object.values(fontes).map(trechoInterface);
 testa('as quatro rotas mantêm a mesma casca acessível', () => {
   assert.equal(new Set(cascas).size, 1);
@@ -51,8 +52,8 @@ for (const rota of rotas) {
     assert.match(html, /<label class="visualmente-oculto" for="entrada">/);
   });
   testa(rota + ' preserva foco visível e reduz movimento quando pedido', () => {
-    assert.match(html, /button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible/);
-    assert.match(html, /@media \(prefers-reduced-motion:reduce\)/);
+    assert.match(estilos, /button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible/);
+    assert.match(estilos, /@media \(prefers-reduced-motion:reduce\)/);
     assert.match(html, /function focoSeguro\(id\)/);
     assert.match(html, /focoSeguro\('titulo-conv'\)/);
     assert.match(html, /focoSeguro\('busca'\)/);

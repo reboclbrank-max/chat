@@ -55,6 +55,7 @@ Arquivos de rota que precisam permanecer coerentes quando a interface muda:
 | `limpar.html` | Variante que limpa a experiência/cache e volta para a página; não deve reabrir fluxo inseguro de token. |
 | `console.html` | Painel que consulta o estado e envia ordens autorizadas ao `agente`. |
 | `motor.html`, `motor02.html`, `motor03.html`, `motor04.html` | Células/modelos locais de navegador, sem depender do PAT da página. |
+| `chat-estilos.css` | Casca CSS comum, local e same-origin das quatro rotas principais; não contém fluxos JavaScript específicos. |
 | `sw.js` e `manifest.json` | PWA e cache; o service worker só pode cachear a casca estática aprovada. |
 
 **Regra prática:** as quatro variantes principais (`index`, `direto`, `ligar`, `limpar`) compartilham a mesma lógica de acesso. Não corrija uma sem verificar as outras.
@@ -95,9 +96,15 @@ O exportador JSON passou a declarar `versao: 1`. A importação é deliberadamen
 
 Todo link HTTP(S) produzido pelo Markdown — imagem, texto Markdown ou URL reconhecida — abre somente por clique com `target=_blank`, `noopener`, `noreferrer` e `referrerpolicy=no-referrer`. Isto reduz referer na abertura voluntária, não torna destino confiável nem impede conexão externa se a pessoa clicar.
 
-As quatro rotas permanecem cópias por compatibilidade, mas `tools/testes/interface-seguranca-fluxo.js` compara os blocos críticos de API, Markdown, importação e registro de service worker. `sw.js` usa o cache atual `rebocl-chat-v8`, inclui `index`, `direto`, `ligar`, `limpar` e `console` na casca aprovada e recusa query/API/terceiros. A busca de versão continua periódica, porém a instalação espera: só um clique explícito sem escrita, importação, sincronização ou rascunho envia a ordem fechada de ativação e pode recarregar. Isso é cache local de casca estática, não cache de conversa/API e não promessa de atualização ou operação contínua.
+As quatro rotas permanecem cópias por compatibilidade, mas `tools/testes/interface-seguranca-fluxo.js` compara os blocos críticos de API, Markdown, importação e registro de service worker. `sw.js` usa o cache atual `rebocl-chat-v9`, inclui `index`, `direto`, `ligar`, `limpar`, `console` e `chat-estilos.css` na casca aprovada e recusa query/API/terceiros. A busca de versão continua periódica, porém a instalação espera: só um clique explícito sem escrita, importação, sincronização ou rascunho envia a ordem fechada de ativação e pode recarregar. Isso é cache local de casca estática, não cache de conversa/API e não promessa de atualização ou operação contínua.
 
 A nova regressão offline passou 30/30 (erros sanitizados, GET com retry, POST sem repetição, importação e paridade); Markdown/privacidade passou 9/9; segurança existente 44/44; a suíte rápida completa passou 42/42 com dependências temporárias fora do repositório. Foram usados mocks/VM/fixtures locais: não houve conversa, imagem externa, e-mail, Telegram, consulta real, dispatch manual, segredo, conta, custo ou nova infraestrutura. A pendência humana continua separada: piloto voluntário N=1 e observações naturais não foram simulados.
+
+#### Casca CSS compartilhada (19/10, P1I)
+
+A duplicação byte-idêntica da casca CSS das quatro rotas foi extraída para `chat-estilos.css`. Cada rota usa somente `<link rel="stylesheet" href="chat-estilos.css">`; a folha é local/same-origin, não importa recursos externos e não contém fluxo de API. JavaScript, HTML específico e diferenças de `limpar.html` permanecem em suas rotas — este lote reduz repetição de apresentação, não tenta fundir fluxos distintos.
+
+A casca PWA está em `rebocl-chat-v9` e precacheia explicitamente a nova folha. `tools/testes/estilos-compartilhados.js` (4/4) protege a existência/localidade, as quatro referências, a remoção do `<style>` duplicado, o precache e a observação de `chat-estilos.css` pelo workflow/porta de continuidade. A barreira passa a observar a folha e `continuidade.js` a classifica como arquivo operacional. Na verificação controlada local, a suíte rápida terminou 49/49, com os mesmos dois SKIPs multimodais ambientais, e um servidor HTTP efêmero local devolveu 200 para a folha e as quatro rotas. Não houve consulta externa, PAT, conversa, API produtiva, mensagem, custo ou infraestrutura; isto confirma estrutura/entrega estática controlada, não uso humano ou disponibilidade contínua.
 
 #### Limites de composição e renderização (19/10, P1C)
 
@@ -358,5 +365,7 @@ Se o ambiente local não tiver bibliotecas temporárias de Node/Python, não con
 
 | 2026-10-19 | A correção da sonda multimodal foi confirmada remotamente: `chat@66e23b3c016ad4a9299e03c6ba509a4ff673a7c8` teve a barreira `39292459697`/job `118196347054` em `success`. O log técnico registrou 2/2 da regressão de pré-requisito, 5/5 OCR local e o cenário PDF/foto sem visão; total 50/50 testes rápidos executados, sem `SKIP` no runner preparado. Pages `39292459612` também concluiu `success`. A falha precedente `39291420654` continua registrada como descoberta de harness, não foi reclassificada. Isto confirma execução CI/Pages controlada, não OCR em aparelho real, entrega de canal, uso humano, satisfação, disponibilidade ou SLA. |
 
+
+| 2026-10-19 | P1I reduziu somente a duplicação de apresentação: a folha byte-idêntica das quatro rotas foi movida para `chat-estilos.css`, local/same-origin, enquanto HTML, JavaScript e fluxos específicos continuam separados. `sw.js` avançou para `rebocl-chat-v9` e precacheia explicitamente a folha; a ativação continua explícita. O contrato `estilos-compartilhados.js` passou 4/4 e também garante que a barreira e a porta de continuidade vejam alteração CSS. A suíte rápida local terminou 49/49, com 2 SKIPs multimodais ambientais já declarados; smoke HTTP efêmero/local confirmou 200 da folha e das quatro rotas. Sem PAT, conversa, API produtiva, rede externa, custo ou infraestrutura nova. |
 
 **Próxima atualização:** não é uma tarefa agendada. Ela acontece junto da próxima mudança autorizada no Chat.

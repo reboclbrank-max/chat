@@ -38,7 +38,7 @@ function arquivoOperacional(arquivo) {
   return /^\.github\/workflows\//.test(arquivo) ||
     /^tools\/.*\.(?:js|py|sh)$/.test(arquivo) ||
     /^(?:index|direto|ligar|limpar|console|motor(?:02|03|04)?)\.html$/.test(arquivo) ||
-    /^(?:sw\.js|manifest\.json|dna\.json|AUTONOMIA\.md)$/.test(arquivo);
+    /^(?:chat-estilos\.css|sw\.js|manifest\.json|dna\.json|AUTONOMIA\.md)$/.test(arquivo);
 }
 
 const evento = process.env.GITHUB_EVENT_PATH;

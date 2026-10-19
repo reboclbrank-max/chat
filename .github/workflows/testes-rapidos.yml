@@ -17,6 +17,7 @@ on:
       - 'direto.html'
       - 'ligar.html'
       - 'limpar.html'
+      - 'chat-estilos.css'
       - 'console.html'
       - 'sw.js'
       - 'dna.json'

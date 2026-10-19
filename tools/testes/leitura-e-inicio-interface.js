@@ -21,6 +21,7 @@ function trecho(texto, inicio, fim) {
   return texto.slice(a, b);
 }
 const fontes = Object.fromEntries(rotas.map((rota) => [rota, fonte(rota)]));
+const estilos = fonte('chat-estilos.css');
 function blocoLeitura(html) { return trecho(html, 'const CHAVE_LEITURA_CONFORTAVEL', '\nfunction atualizarContador()'); }
 function blocoGuia(html) { return trecho(html, 'const INICIOS_GUIA', "$('btn-limpar-copias').onclick"); }
 function blocoNova(html) { return trecho(html, 'async function novaConversa(', '\n\n/* ---------- conversa ---------- */'); }
@@ -30,7 +31,7 @@ for (const rota of rotas) {
   testa(rota + ' oferece leitura confortável persistida e acessível', () => {
     assert.match(html, /id="btn-leitura-confortavel"/);
     assert.match(html, /aria-pressed="false"/);
-    assert.match(html, /body\.leitura-confortavel/);
+    assert.match(estilos, /body\.leitura-confortavel/);
     assert.match(html, /function aplicarLeituraConfortavel\(\)/);
     assert.match(html, /function alternarLeituraConfortavel\(\)/);
     assert.match(html, /\$\('btn-leitura-confortavel'\)\.onclick = alternarLeituraConfortavel;/);
