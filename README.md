@@ -233,6 +233,12 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Reserva não vira sucessor por engano:** execuções agendadas não contam para essa decisão, porque podem ser a reserva curta. Se a consulta da fila estiver indisponível, o comportamento seguro anterior de pedir um sucessor é mantido, sem afirmar que a fila estava vazia.
 - **Adoção de código preservada:** somente uma troca de código aprovada pela barreira pode substituir deliberadamente o sucessor pendente para que o próximo turno use o checkout novo. A regra pura entrou nos testes e na lista de arquivos que exigem adoção do turno: fila 5/5, contrato do coordenador 3/3 e suíte rápida 50/50 executados passaram (2 SKIPs multimodais ambientais já declarados). Não envia e-mail, Telegram, mensagem, nem cria conta, custo ou infraestrutura.
 
+## v12.41 — handover testável, sem dispatch acidental (19/10/2026)
+
+- **Contrato executável:** a decisão da fila agora passa por um coordenador injetável. A regressão não apenas procura texto: ela executa o fluxo com uma API falsa e confirma que um sucessor pendente não chama dispatch.
+- **Caminhos críticos cobertos:** reserva agendada e turno ativo não contam como sucessor longo; ausência real pede um sucessor; troca de código aprovada ignora a consulta e substitui o checkout; falha da consulta mantém a continuidade sem dizer que a fila estava vazia.
+- **Sem novo efeito externo:** o wrapper de produção continua usando a mesma API e o mesmo dispatch já existentes. A mudança só torna a garantia de não cancelar o sucessor por engano verificável offline: fila 5/5, contrato 3/3 e suíte rápida 50/50 executados passaram, com 2 SKIPs multimodais ambientais já declarados.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código

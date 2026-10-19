@@ -2,6 +2,8 @@
 // e, para não depender do cron do GitHub (que neste repositório não disparou nenhuma vez),
 // cada turno deixa o PRÓXIMO TURNO na fila — o grupo 'email-casa' garante que só um roda por vez.
 // v4.4 (16/10/2026): 📲 CHAT NO TELEGRAM — liga o tools/telegram-chat.js junto com o e-mail (mesmo turno).
+// v4.8 (19/10/2026): 🧪 o handover passa por coordenador injetável, com contrato que prova
+// que sucessor pendente não produz dispatch; a rotina externa e a corrente permanecem as mesmas.
 // v4.7 (19/10/2026): 🧵 um sucessor manual já pendente é preservado nos pulsos de 40 min;
 // só troca de código aprovada o substitui, reduzindo cancelamentos sem quebrar a corrente.
 // v4.6 (19/10/2026): 🧯 três falhas totais consecutivas de ciclo encerram o turno com erro visível;
@@ -21,7 +23,7 @@ process.on('unhandledRejection', e => console.error('🛡️ rejeição contida 
 process.on('uncaughtException', e => console.error('🛡️ exceção contida — o turno segue:', String((e && e.message) || e).slice(0, 200)));
 const { processOnce } = require('./email-chat.js');
 const { LIMITE_FALHAS_CONSECUTIVAS, proximaFalhasConsecutivas, deveEncerrarTurno } = require('./turno-liveness.js');
-const { decisaoDeProximoTurno } = require('./fila-turno.js');
+const { coordenaProximoTurno } = require('./fila-turno.js');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const REPO = 'reboclbrank-max/chat';
 const TEM_CREDENCIAIS_EMAIL = Boolean(String(process.env.GMAIL_CHAT_ADDR || '').trim() && String(process.env.GMAIL_CHAT_PASS || '').trim());
@@ -40,26 +42,23 @@ async function despacha(arquivo, rotulo) {
   console.log(rotulo + (r ? ' (' + r.status + ')' : ': sem token/sem rede, não despachei'));
 }
 const pedeVigia = () => despacha('vigia.yml', '🛡 vigia despachado');
+async function consultaDaFilaDoTurno() {
+  const r = await api('/actions/workflows/email.yml/runs?per_page=15');
+  if (!r || !r.ok) return null;
+  try {
+    const j = await r.json();
+    return Array.isArray(j.workflow_runs) ? j.workflow_runs : null;
+  } catch (e) { return null; }
+}
 async function proximoTurno(opcoes = {}) {
   // A corrente antes despachava a cada pulso de 40 min e substituía a própria execução pendente.
   // Conservamos um workflow_dispatch pendente; uma reserva schedule não vale como turno longo.
-  let runs = null;
-  if (!opcoes.substituir) {
-    const r = await api('/actions/workflows/email.yml/runs?per_page=15');
-    if (r && r.ok) {
-      try {
-        const j = await r.json();
-        if (Array.isArray(j.workflow_runs)) runs = j.workflow_runs;
-      } catch (e) {}
-    }
-  }
-  const decisao = decisaoDeProximoTurno(runs, { consultaDisponivel: Array.isArray(runs), substituir: Boolean(opcoes.substituir) });
-  if (decisao === 'preservar') {
-    console.log('🔗 próximo turno manual já está na fila; preservo o sucessor');
-    return;
-  }
-  if (decisao === 'despachar-sem-confirmacao') console.log('🔗 não consegui confirmar a fila; preservo a continuidade com um pedido de sucessor');
-  await despacha('email.yml', decisao === 'substituir' ? '🔄 próximo turno atualizado para o código novo' : '🔗 próximo turno na fila');
+  return coordenaProximoTurno({
+    consultaRuns: consultaDaFilaDoTurno,
+    pedirSucessor: decisao => despacha('email.yml', decisao === 'substituir' ? '🔄 próximo turno atualizado para o código novo' : '🔗 próximo turno na fila'),
+    registrar: mensagem => console.log(mensagem),
+    substituir: Boolean(opcoes.substituir)
+  });
 }
 
 // 🔄 v4: o que conta como CÓDIGO do turno (robô de teste, relatórios e README não derrubam o turno)

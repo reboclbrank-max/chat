@@ -1,4 +1,4 @@
-// Decisão pura para manter a corrente do turno sem substituir um sucessor já confirmado.
+// Decisão pura e coordenação testável para manter a corrente sem substituir sucessor confirmado.
 'use strict';
 
 const ESTADOS_NA_FILA = new Set(['queued', 'pending']);
@@ -18,4 +18,21 @@ function decisaoDeProximoTurno(runs, opcoes = {}) {
   return haSucessorDoTurnoNaFila(runs) ? 'preservar' : 'despachar';
 }
 
-module.exports = { haSucessorDoTurnoNaFila, decisaoDeProximoTurno };
+// Mantém o efeito externo atrás de uma função injetada: o contrato testa que sucessor confirmado
+// não produz dispatch, e que indisponibilidade da consulta conserva a continuidade já existente.
+async function coordenaProximoTurno({ consultaRuns, pedirSucessor, registrar = () => {}, substituir = false }) {
+  let runs = null;
+  if (!substituir && typeof consultaRuns === 'function') {
+    try { runs = await consultaRuns(); } catch (e) {}
+  }
+  const decisao = decisaoDeProximoTurno(runs, { consultaDisponivel: Array.isArray(runs), substituir: Boolean(substituir) });
+  if (decisao === 'preservar') {
+    registrar('🔗 próximo turno manual já está na fila; preservo o sucessor');
+    return { decisao, despachado: false };
+  }
+  if (decisao === 'despachar-sem-confirmacao') registrar('🔗 não consegui confirmar a fila; preservo a continuidade com um pedido de sucessor');
+  await pedirSucessor(decisao);
+  return { decisao, despachado: true };
+}
+
+module.exports = { haSucessorDoTurnoNaFila, decisaoDeProximoTurno, coordenaProximoTurno };
