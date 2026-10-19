@@ -215,6 +215,12 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Sem promessa de firewall:** a guarda impede a ação desta página; não cancela conexão que já começou nem controla navegador, sistema, extensões ou worker já ativo. `rebocl-chat-v12` apenas renova a casca local aprovada, sem API, query ou terceiros no cache e sem ativação silenciosa.
 - **Cobertura controlada:** PWA **21/21** cobre o bloqueio e a retomada manual; modo somente-local **22/22**, segurança/fluxo **30/30** e estilos **4/4** preservam as quatro rotas. São VM/arquivos locais, não prova de isolamento de aparelho, atualização em todo navegador, uso humano, satisfação, disponibilidade ou SLA.
 
+## v12.38 — modo somente-local cobre os transportes nativos da página (19/10/2026)
+
+- **Mais cobertura da mesma fronteira:** com 🔒 modo somente-local ativo, o Chat agora bloqueia também novos `XMLHttpRequest`, `WebSocket`, `EventSource` e `sendBeacon` iniciados pela própria página, além de `fetch` e das atribuições novas de recursos já protegidas. Um XHR aberto antes do modo também não pode ser enviado depois dele; ao desligar, os transportes voltam a delegar normalmente.
+- **Limite continua explícito:** a proteção vale para chamadas iniciadas pelo JavaScript desta página. Não cancela conexão que já começou, não controla worker, navegador, sistema ou extensões e não é firewall. `rebocl-chat-v13` apenas renova a casca local aprovada, sem API, query ou terceiros no cache e sem ativação silenciosa.
+- **Cobertura controlada:** modo somente-local **23/23** cobre `fetch`/API, encadeamentos de cache, XHR, WebSocket, EventSource, beacon, mídia e retorno explícito; PWA **21/21**, segurança/fluxo **30/30** e estilos **4/4** preservam as quatro rotas. São VM/arquivos locais, não prova de isolamento de aparelho, atualização em todo navegador, uso humano, satisfação, disponibilidade ou SLA.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código

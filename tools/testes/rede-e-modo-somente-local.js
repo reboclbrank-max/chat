@@ -49,12 +49,17 @@ for (const rota of rotas) {
     assert.match(html, /id="status-somente-local" role="status"/);
     assert.match(html, /Na primeira preparação, a biblioteca e o modelo podem ser baixados/);
     assert.match(html, /Não é um firewall do aparelho/);
+    assert.match(html, /fetch, XHR, conexões WebSocket\/EventSource e beacon quando disponíveis/);
     assert.match(html, /atualização PWA ficam indisponíveis até desligar/);
     assert.match(html, /Ao recarregar, ele desliga/);
     assert.match(html, /title="Cérebro local; a primeira preparação pode baixar biblioteca e modelo"/);
     for (const [tipo, propriedade] of [['HTMLImageElement', 'src'], ['HTMLMediaElement', 'src'], ['HTMLScriptElement', 'src'], ['HTMLIFrameElement', 'src'], ['HTMLSourceElement', 'src'], ['HTMLLinkElement', 'href']]) {
       assert.match(html, new RegExp("protegerAtribuicaoDeRecurso\\(window\\." + tipo + ", '" + propriedade + "'\\)"));
     }
+    assert.match(html, /protegerXMLHttpRequest\(\)/);
+    assert.match(html, /protegerConstrutorDeRede\('WebSocket'\)/);
+    assert.match(html, /protegerConstrutorDeRede\('EventSource'\)/);
+    assert.match(html, /protegerEnvioBeacon\(\)/);
   });
   testa(rota + ' exige cérebro preparado e confirmação antes de bloquear a rede', () => {
     const modo = blocoModo(html);
@@ -149,6 +154,42 @@ async function principal() {
     contexto.ativarTeste();
     await assert.rejects(() => contexto.window.fetch('https://fonte.exemplo.test/dado'), (erro) => erro && erro.codigoLocal === 'rede-bloqueada-local');
     assert.equal(chamadas, 0);
+  });
+  await testaAsync('modo somente-local também bloqueia transportes nativos novos da página', async () => {
+    let aberturas = 0, envios = 0, sockets = 0, eventos = 0, beacons = 0;
+    function XhrFalso() {}
+    XhrFalso.prototype.open = function () { aberturas++; };
+    XhrFalso.prototype.send = function () { envios++; };
+    function WebSocketFalso() { sockets++; }
+    function EventSourceFalso() { eventos++; }
+    const navegador = { sendBeacon() { beacons++; return true; } };
+    const contexto = runtimeRede(fontes['index.html'], () => Promise.resolve({ ok: true, text: async () => '' }), {
+      XMLHttpRequest: XhrFalso, WebSocket: WebSocketFalso, EventSource: EventSourceFalso, navigator: navegador
+    });
+    const xhr = new contexto.XMLHttpRequest();
+    contexto.ativarTeste();
+    assert.throws(() => xhr.open('GET', 'https://exemplo.test/dado'), (erro) => erro && erro.codigoLocal === 'rede-bloqueada-local');
+    assert.throws(() => new contexto.WebSocket('wss://exemplo.test/canal'), (erro) => erro && erro.codigoLocal === 'rede-bloqueada-local');
+    assert.throws(() => new contexto.EventSource('https://exemplo.test/eventos'), (erro) => erro && erro.codigoLocal === 'rede-bloqueada-local');
+    assert.equal(contexto.navigator.sendBeacon('https://exemplo.test/medida', 'inerte'), false);
+    assert.equal(aberturas, 0);
+    assert.equal(sockets, 0);
+    assert.equal(eventos, 0);
+    assert.equal(beacons, 0);
+    contexto.desativarTeste();
+    xhr.open('GET', 'https://exemplo.test/dado');
+    contexto.ativarTeste();
+    assert.throws(() => xhr.send(), (erro) => erro && erro.codigoLocal === 'rede-bloqueada-local');
+    assert.equal(envios, 0, 'um XHR aberto antes do modo não pode ser enviado depois dele');
+    contexto.desativarTeste();
+    xhr.send();
+    new contexto.WebSocket('wss://exemplo.test/liberado');
+    new contexto.EventSource('https://exemplo.test/liberado');
+    assert.equal(contexto.navigator.sendBeacon('https://exemplo.test/liberado', 'inerte'), true);
+    assert.equal(envios, 1);
+    assert.equal(sockets, 1);
+    assert.equal(eventos, 1);
+    assert.equal(beacons, 1);
   });
   await testaAsync('atribuição nova de imagem ou mídia externa também é bloqueada enquanto estrito', async () => {
     function ImagemFalsa() {}

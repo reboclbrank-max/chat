@@ -89,7 +89,7 @@
   </div>
   <div class="cartao">
     <h2>🔒 Modo somente-local nesta página</h2>
-    <p>Depois de preparar o cérebro local, este controle bloqueia novas requisições de rede iniciadas pelo JavaScript desta página e links externos. Ele para a consulta da conversa; sincronização, GitHub, pesquisas, downloads e a atualização PWA ficam indisponíveis até desligar. Não é um firewall do aparelho: não controla navegador, sistema, extensões, worker já ativo nem conexões iniciadas antes do clique. Ao recarregar, ele desliga.</p>
+    <p>Depois de preparar o cérebro local, este controle bloqueia novas requisições de rede iniciadas pelo JavaScript desta página (fetch, XHR, conexões WebSocket/EventSource e beacon quando disponíveis) e links externos. Ele para a consulta da conversa; sincronização, GitHub, pesquisas, downloads e a atualização PWA ficam indisponíveis até desligar. Não é um firewall do aparelho: não controla navegador, sistema, extensões, worker já ativo nem conexões iniciadas antes do clique. Ao recarregar, ele desliga.</p>
     <button type="button" class="acao" id="btn-somente-local" aria-pressed="false" style="margin-top:8px;background:var(--painel);border:1px solid var(--borda);color:var(--texto);font-weight:600">🔒 modo somente-local: desligado</button>
     <div id="status-somente-local" role="status" aria-live="polite" aria-atomic="true"></div>
   </div>
@@ -247,6 +247,47 @@ function protegerAtribuicaoDeRecurso(construtor, propriedade) {
     });
   } catch (e) {}
 }
+function protegerXMLHttpRequest() {
+  try {
+    const prototipo = window.XMLHttpRequest && window.XMLHttpRequest.prototype;
+    if (!prototipo || typeof prototipo.open !== 'function' || typeof prototipo.send !== 'function') return;
+    const abrirOriginal = prototipo.open;
+    const enviarOriginal = prototipo.send;
+    prototipo.open = function abrirXhrProtegido() {
+      if (modoSomenteLocalAtivo()) throw erroLocal('rede-bloqueada-local');
+      return abrirOriginal.apply(this, arguments);
+    };
+    prototipo.send = function enviarXhrProtegido() {
+      if (modoSomenteLocalAtivo()) throw erroLocal('rede-bloqueada-local');
+      return enviarOriginal.apply(this, arguments);
+    };
+  } catch (e) {}
+}
+function protegerConstrutorDeRede(nome) {
+  try {
+    const Original = window[nome];
+    if (typeof Original !== 'function') return;
+    const Protegido = function construtorDeRedeProtegido() {
+      if (!new.target) return Original.apply(this, arguments);
+      if (modoSomenteLocalAtivo()) throw erroLocal('rede-bloqueada-local');
+      return Reflect.construct(Original, Array.prototype.slice.call(arguments));
+    };
+    try { Object.setPrototypeOf(Protegido, Original); } catch (e) {}
+    Protegido.prototype = Original.prototype;
+    window[nome] = Protegido;
+  } catch (e) {}
+}
+function protegerEnvioBeacon() {
+  try {
+    const navegador = window.navigator;
+    if (!navegador || typeof navegador.sendBeacon !== 'function') return;
+    const enviarOriginal = navegador.sendBeacon;
+    navegador.sendBeacon = function enviarBeaconProtegido() {
+      if (modoSomenteLocalAtivo()) return false;
+      return enviarOriginal.apply(navegador, arguments);
+    };
+  } catch (e) {}
+}
 if (typeof window !== 'undefined') {
   protegerAtribuicaoDeRecurso(window.HTMLImageElement, 'src');
   protegerAtribuicaoDeRecurso(window.HTMLMediaElement, 'src');
@@ -254,6 +295,10 @@ if (typeof window !== 'undefined') {
   protegerAtribuicaoDeRecurso(window.HTMLIFrameElement, 'src');
   protegerAtribuicaoDeRecurso(window.HTMLSourceElement, 'src');
   protegerAtribuicaoDeRecurso(window.HTMLLinkElement, 'href');
+  protegerXMLHttpRequest();
+  protegerConstrutorDeRede('WebSocket');
+  protegerConstrutorDeRede('EventSource');
+  protegerEnvioBeacon();
 }
 function mensagemErroSeguro(erro) {
   const locais = {
