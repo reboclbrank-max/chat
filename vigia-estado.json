@@ -1,37 +1,45 @@
 {
- "verificado_em": "2026-10-19T03:25:55.988Z",
+ "verificado_em": "2026-10-19T04:18:33.590Z",
  "itens": {
   "Página do chat": {
    "ok": true,
-   "falhas": 0
+   "falhas": 0,
+   "causa": "saudavel"
   },
   "Site oficial": {
    "ok": true,
-   "falhas": 0
+   "falhas": 0,
+   "causa": "saudavel"
   },
   "Casa postando (site)": {
    "ok": true,
-   "falhas": 0
+   "falhas": 0,
+   "causa": "saudavel"
   },
   "Chat por e-mail (24h)": {
    "ok": true,
-   "falhas": 0
+   "falhas": 0,
+   "causa": "saudavel"
   },
   "Bateria do cérebro": {
    "ok": true,
-   "falhas": 0
+   "falhas": 0,
+   "causa": "saudavel"
   },
   "itch Ceifalume": {
    "ok": true,
-   "falhas": 0
+   "falhas": 0,
+   "causa": "saudavel"
   },
   "itch Prancheta": {
    "ok": true,
-   "falhas": 0
+   "falhas": 0,
+   "causa": "saudavel"
   },
   "Caixa de e-mail": {
    "ok": true,
-   "falhas": 0
+   "falhas": 0,
+   "causa": "saudavel"
   }
  }
 }
