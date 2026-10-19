@@ -1,4 +1,4 @@
-// 🧪 v12.19: comandos locais e status: causal sanitizado; sem motor e sem tráfego externo.
+// 🧪 v12.21: comandos locais e status: causal, fresco e sanitizado; sem motor e sem tráfego externo.
 const CHAT = require(require('path').resolve(process.argv[2]));
 let ok = 0, total = 0;
 const falhas = [];
@@ -78,6 +78,29 @@ function confere(nome, condicao) {
   confere('status causal: causa desconhecida vira fallback neutro', resumoHostil.includes('diagnóstico sanitizado indisponível'));
   confere('status causal: conteúdo arbitrário nunca é refletido', !resumoHostil.includes('DADO-ARBITRARIO-NAO-REFLETIR'));
   confere('status causal: relógio futuro não inventa contenção', !resumoHostil.includes('Contenção de recuperação'));
+  confere('status causal: data ausente avisa que não é estado atual', resumoHostil.includes('Data da checagem indisponível'));
+  const resumoSaudavel = CHAT.resumoEstadoVigiaPublico({
+    verificado_em: '2026-10-19T12:00:00.000Z',
+    itens: { 'Página do chat': { ok: true, causa: 'saudavel' } }
+  }, agoraStatus);
+  confere('status causal: ok + causa saudável confirma saúde', resumoSaudavel.includes('✅ Página do Chat — saudável'));
+  const resumoInconsistente = CHAT.resumoEstadoVigiaPublico({
+    verificado_em: '2026-10-19T12:00:00.000Z',
+    itens: { 'Página do chat': { ok: true, causa: 'DADO-ARBITRARIO-NAO-REFLETIR' } }
+  }, agoraStatus);
+  confere('status causal: ok sem causa saudável não finge saúde', resumoInconsistente.includes('Página do Chat — diagnóstico sanitizado indisponível'));
+  confere('status causal: ok inconsistente não reflete a causa', !resumoInconsistente.includes('DADO-ARBITRARIO-NAO-REFLETIR'));
+  const estadoAtrasado = JSON.parse(JSON.stringify(estadoCausal));
+  estadoAtrasado.verificado_em = new Date(agoraStatus - 2 * 60 * 60 * 1000).toISOString();
+  const resumoAtrasado = CHAT.resumoEstadoVigiaPublico(estadoAtrasado, agoraStatus);
+  confere('status causal: pulso antigo avisa frescor', resumoAtrasado.includes('Checagem com 2 h de atraso'));
+  confere('status causal: aviso, freio e oito itens cabem no Telegram', resumoAtrasado.split('\n').length <= 12);
+  const resumoFuturoProximo = CHAT.resumoEstadoVigiaPublico({
+    verificado_em: new Date(agoraStatus + 60 * 1000).toISOString(),
+    itens: { 'Página do chat': { ok: true, causa: 'saudavel' } },
+    recuperacoes: { email: { ultima_tentativa_em: new Date(agoraStatus + 60 * 1000).toISOString() } }
+  }, agoraStatus);
+  confere('status causal: até pequeno relógio futuro não é exibido', resumoFuturoProximo.includes('horário não disponível') && !resumoFuturoProximo.includes('Contenção de recuperação'));
 
   const fetchOriginal = global.fetch;
   global.fetch = async () => { throw new Error('rede não deveria ser chamada'); };

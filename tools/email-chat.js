@@ -38,6 +38,7 @@
 // (endereço do CEP — BrasilAPI, sem chave). Ajuda e CAPS atualizados com os três.
 const { ImapFlow } = require('imapflow');
 const nodemailer = require('nodemailer');
+const { INTERVALO_PULSO_MS } = require('./vigia-estado');
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const path = require('path');
@@ -388,11 +389,21 @@ const FAMILIAS_RECUPERACAO_STATUS = Object.freeze({
   email: { texto: 'e-mail', intervalo: 60 * 60 * 1000 },
   exame: { texto: 'bateria', intervalo: 6 * 60 * 60 * 1000 }
 });
-const MARGEM_RELOGIO_STATUS_MS = 5 * 60 * 1000;
+// O pulso do vigia é horário. A tolerância evita sinalizar ao dono uma pequena fila do
+// provedor como atraso, mas deixa claro quando a fotografia já não é recente.
+const TOLERANCIA_PULSO_STATUS_MS = 30 * 60 * 1000;
+const IDADE_ALERTA_STATUS_MS = INTERVALO_PULSO_MS + TOLERANCIA_PULSO_STATUS_MS;
 
 function instanteStatusSeguro(valor) {
   const ms = typeof valor === 'number' && Number.isFinite(valor) ? valor : Date.parse(String(valor || ''));
   return Number.isFinite(ms) ? new Date(ms).toISOString().slice(0, 16).replace('T', ' ') + ' UTC' : '';
+}
+function idadeStatusSegura(ms, referencia) {
+  const minutos = Math.max(0, Math.floor((referencia - ms) / 60000));
+  if (minutos < 60) return minutos + ' min';
+  const horas = Math.floor(minutos / 60);
+  const resto = minutos % 60;
+  return horas + ' h' + (resto ? ' ' + resto + ' min' : '');
 }
 
 function resumoEstadoVigiaPublico(estado, referencia = Date.now()) {
@@ -406,11 +417,15 @@ function resumoEstadoVigiaPublico(estado, referencia = Date.now()) {
       linhas.push('⚪ ' + rotulo + ' — sem leitura sanitizada');
       continue;
     }
-    if (item.ok === true) {
+    const codigo = String(item.causa || '');
+    if (item.ok === true && codigo === 'saudavel') {
       linhas.push('✅ ' + rotulo + ' — saudável');
       continue;
     }
-    const codigo = String(item.causa || '');
+    if (item.ok === true) {
+      linhas.push('⚪ ' + rotulo + ' — diagnóstico sanitizado indisponível');
+      continue;
+    }
     const causa = codigo === 'saudavel' ? null : CAUSAS_STATUS_CASA[codigo];
     const texto = causa ? causa.texto + (causa.recuperavel ? ' — recuperação interna elegível' : '') : 'diagnóstico sanitizado indisponível';
     linhas.push('❌ ' + rotulo + ' — ' + texto);
@@ -419,16 +434,23 @@ function resumoEstadoVigiaPublico(estado, referencia = Date.now()) {
   const freios = [];
   for (const [chave, familia] of Object.entries(FAMILIAS_RECUPERACAO_STATUS)) {
     const ms = Date.parse(String(recuperacoes[chave] && recuperacoes[chave].ultima_tentativa_em || ''));
-    if (!Number.isFinite(ms) || ms > agora + MARGEM_RELOGIO_STATUS_MS) continue;
+    // O status não apresenta timestamp futuro, nem mesmo dentro da margem tolerada internamente.
+    if (!Number.isFinite(ms) || ms > agora) continue;
     const tentativa = instanteStatusSeguro(ms);
     const libera = ms + familia.intervalo;
     if (agora < libera) freios.push(familia.texto + ' até ' + instanteStatusSeguro(libera));
     else freios.push(familia.texto + ' desde ' + tentativa + ' (janela já terminou)');
   }
   const msChecagem = Date.parse(String(dados.verificado_em || ''));
-  const checagem = Number.isFinite(msChecagem) && msChecagem <= agora + MARGEM_RELOGIO_STATUS_MS
-    ? instanteStatusSeguro(msChecagem) : 'horário não disponível';
+  const checagemValida = Number.isFinite(msChecagem) && msChecagem <= agora;
+  const checagem = checagemValida ? instanteStatusSeguro(msChecagem) : 'horário não disponível';
+  const alertaFrescor = !checagemValida
+    ? '⚠️ Data da checagem indisponível — não assuma estado atual.'
+    : agora - msChecagem > IDADE_ALERTA_STATUS_MS
+      ? '⚠️ Checagem com ' + idadeStatusSegura(msChecagem, agora) + ' de atraso — os itens podem ter mudado.'
+      : '';
   return '🩺 Estado técnico da casa (checagem ' + checagem + '):' + NL + linhas.join(NL) +
+    (alertaFrescor ? NL + alertaFrescor : '') +
     (freios.length ? NL + '♻️ Contenção de recuperação: ' + freios.join(' · ') : '') +
     NL + 'ℹ️ Fotografia técnica sanitizada; não é promessa de resposta, disponibilidade ou SLA.';
 }
@@ -562,7 +584,7 @@ const AJUDA = [
   '   • noticias: godot   (qualquer tema)',
   '   • navegar: https://exemplo.com   (abre página pública isolada e devolve o resumo nesta conversa)',
   '   • navegador: estado (vê manualmente o último resultado público)',
-  '   • status:           (última checagem técnica, causas e freios de recuperação)',
+  '   • status:           (última checagem, frescor, causas e freios de recuperação)',
   '   • conta: (1250*0,15)+80   (conta rápida, sem esperar motor)',
   '   • feriado:           (próximos feriados nacionais; ou feriado: 2027)',
   '   • cep: 49300000      (endereço de um CEP)',

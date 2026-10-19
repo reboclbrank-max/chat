@@ -106,6 +106,12 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Freio visível e sanitizado:** quando houver uma contenção persistida, mostra apenas a família conhecida (`e-mail` ou `bateria`) e a janela técnica; não mostra erro bruto, mensagem, endereço, URL autenticada, token, chaves desconhecidas nem campos extras do estado público.
 - **Limite honesto:** é a fotografia da última checagem técnica, não uma promessa de resposta, disponibilidade ou SLA. Se a leitura do estado falhar ou vier malformada, devolve um aviso neutro em vez de inventar saúde.
 
+## v12.21 — `status:` não confunde fotografia antiga com saúde atual (19/10/2026)
+
+- **Frescor visível:** como o vigia publica um pulso horário, `status:` avisa quando a última fotografia passa de 1 h 30 min. O aviso não declara pane nem dispara recuperação: só impede que uma leitura antiga pareça disponibilidade presente.
+- **Consistência mais rígida:** um item só aparece como saudável quando `ok` e a causa fechada `saudavel` concordam. Estado inconsistente ou data futura recebem diagnóstico neutro; timestamp futuro de recuperação é ignorado, sem ecoar o dado recebido.
+- **Compacto nos dois canais:** mesmo com os oito itens, alerta de frescor e freio de recuperação, o texto fica em até 12 linhas para o Telegram. Continua sem nova sonda, canal, conta, custo ou efeito externo.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código
