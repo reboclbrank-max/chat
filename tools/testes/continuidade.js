@@ -28,12 +28,12 @@ testa('continuidade declara a regra permanente', /## 0\. Regra permanente de con
 testa('continuidade mapeia segurança, testes e checklist', /## 3\. Segurança que não pode regredir/.test(continuidade) && /## 5\. Testes e validação mínima/.test(continuidade) && /## 7\. Checklist obrigatório/.test(continuidade));
 testa('instruções para agentes exigem atualização da continuidade', /CONTINUIDADE\.md/.test(agentes) && /mesmo conjunto de commits/.test(agentes));
 testa('README aponta a continuidade', /\[[^\]]*CONTINUIDADE\.md[^\]]*\]\(CONTINUIDADE\.md\)/.test(readme));
-testa('barreira observa todo JavaScript/Python em tools', /'tools\/\*\*\/\*\.js'/.test(workflowRapido) && /'tools\/\*\*\/\*\.py'/.test(workflowRapido));
+testa('barreira observa todo JavaScript/Python/Shell em tools', /'tools\/\*\*\/\*\.js'/.test(workflowRapido) && /'tools\/\*\*\/\*\.py'/.test(workflowRapido) && /'tools\/\*\*\/\*\.sh'/.test(workflowRapido));
 testa('documentos novos não trazem padrão de PAT', !/github_pat_[A-Za-z0-9_]{20,}|gh[pousr]_[A-Za-z0-9_]{20,}/.test(continuidade + agentes));
 
 function arquivoOperacional(arquivo) {
   return /^\.github\/workflows\//.test(arquivo) ||
-    /^tools\/.*\.(?:js|py)$/.test(arquivo) ||
+    /^tools\/.*\.(?:js|py|sh)$/.test(arquivo) ||
     /^(?:index|direto|ligar|limpar|console|motor(?:02|03|04)?)\.html$/.test(arquivo) ||
     /^(?:sw\.js|manifest\.json|dna\.json)$/.test(arquivo);
 }

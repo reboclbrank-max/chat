@@ -45,13 +45,16 @@ limpar() {
 }
 trap limpar EXIT
 
-cp index.html "$trabalho/index.html"
-python3 - "$trabalho/index.html" <<'PY'
+rotas=(index.html direto.html ligar.html limpar.html)
+for rota in "${rotas[@]}"; do
+  cp "$rota" "$trabalho/$rota"
+done
+python3 - "$trabalho" "${rotas[@]}" <<'PY'
 from pathlib import Path
 import sys
 
-pagina = Path(sys.argv[1])
-conteudo = pagina.read_text()
+pasta = Path(sys.argv[1])
+paginas = [pasta / nome for nome in sys.argv[2:]]
 preparo = """<script>
 /* Fixture controlada: valor inerte, sem PAT, conversa ou API real. */
 localStorage.setItem('assistente_rebocl_token', 'controle-local-sem-segredo');
@@ -61,7 +64,7 @@ try {
   }
 } catch (e) {}
 </script>"""
-teste = """<script>
+teste_lista = """<script>
 (async () => {
   const esperar = async (predicado, limite = 5000) => {
     const fim = Date.now() + limite;
@@ -101,13 +104,27 @@ teste = """<script>
   }
 })();
 </script>"""
+teste_limpar = """<script>
+try {
+  const texto = document.body.textContent || '';
+  if (new URL(location.href).searchParams.has('t')) throw new Error('parâmetro t permaneceu na URL');
+  if (!texto.includes('Cache limpo.')) throw new Error('aviso de limpeza não apareceu');
+  if (!texto.includes('Tokens nunca são aceitos por link.')) throw new Error('guarda de token por link não apareceu');
+  document.body.dataset.browserE2e = 'PASS: rota limpar removeu t da URL e mostrou a guarda de token';
+} catch (erro) {
+  document.body.dataset.browserE2e = 'FAIL: ' + String((erro && erro.message) || erro).slice(0, 180);
+}
+</script>"""
 
-# A única alteração na cópia temporária redireciona a API para o servidor local.
-assert "const API = 'https://api.github.com';" in conteudo
-conteudo = conteudo.replace("const API = 'https://api.github.com';", "const API = location.origin;", 1)
-conteudo = conteudo.replace('<head>', '<head>' + preparo, 1)
-conteudo = conteudo.replace('</body>', teste + '</body>', 1)
-pagina.write_text(conteudo)
+# A única alteração em cada cópia temporária redireciona a API para o servidor local.
+for pagina in paginas:
+    conteudo = pagina.read_text()
+    assert "const API = 'https://api.github.com';" in conteudo, pagina
+    conteudo = conteudo.replace("const API = 'https://api.github.com';", "const API = location.origin;", 1)
+    conteudo = conteudo.replace('<head>', '<head>' + preparo, 1)
+    teste = teste_limpar if pagina.name == 'limpar.html' else teste_lista
+    conteudo = conteudo.replace('</body>', teste + '</body>', 1)
+    pagina.write_text(conteudo)
 PY
 
 cat > "$trabalho/servidor.js" <<'NODE'
@@ -140,9 +157,10 @@ http.createServer((requisicao, resposta) => {
   if (url.pathname === '/repos/reboclbrank-max/agente/issues') {
     return responderJson(resposta, pagina(Number(url.searchParams.get('page') || 1)));
   }
-  if (url.pathname === '/' || url.pathname === '/index.html') {
+  const arquivo = url.pathname === '/' ? 'index.html' : url.pathname.slice(1);
+  if (new Set(['index.html', 'direto.html', 'ligar.html', 'limpar.html']).has(arquivo)) {
     resposta.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
-    return fs.createReadStream(path.join(raiz, 'index.html')).pipe(resposta);
+    return fs.createReadStream(path.join(raiz, arquivo)).pipe(resposta);
   }
   resposta.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
   resposta.end('fixture sem recurso externo');
@@ -157,23 +175,38 @@ for _ in $(seq 1 30); do
 done
 grep -q 'fixture pronta' "$trabalho/servidor.log" || { cat "$trabalho/servidor.log" >&2; exit 1; }
 
-timeout 60 "$navegador" \
-  --headless --no-sandbox --disable-gpu --no-first-run --disable-background-networking --disable-sync \
-  --host-resolver-rules='MAP * 0.0.0.0, EXCLUDE 127.0.0.1' \
-  --user-data-dir="$trabalho/perfil" --virtual-time-budget=12000 --dump-dom \
-  "http://127.0.0.1:$porta/index.html" > "$trabalho/dom.html" 2>"$trabalho/navegador.err"
+for rota in "${rotas[@]}"; do
+  nome="${rota%.html}"
+  dom="$trabalho/dom-$nome.html"
+  orcamento=12000
+  url="http://127.0.0.1:$porta/$rota"
+  if [ "$rota" = 'limpar.html' ]; then
+    # A rota intencionalmente redireciona após 3 s; observamos sua guarda antes disso.
+    orcamento=2000
+    url="$url?t=controle-ficticio"
+  fi
+  timeout 60 "$navegador" \
+    --headless --no-sandbox --disable-gpu --no-first-run --disable-background-networking --disable-sync \
+    --host-resolver-rules='MAP * 0.0.0.0, EXCLUDE 127.0.0.1' \
+    --user-data-dir="$trabalho/perfil-$nome" --virtual-time-budget="$orcamento" --dump-dom \
+    "$url" > "$dom" 2>"$trabalho/navegador-$nome.err"
 
-python3 - "$trabalho/dom.html" <<'PY'
+  python3 - "$dom" "$rota" <<'PY'
 from pathlib import Path
 import html
 import re
 import sys
 
 conteudo = Path(sys.argv[1]).read_text()
+rota = sys.argv[2]
 resultado = re.search(r'data-browser-e2e="([^"]*)"', conteudo)
-assert resultado, 'resultado do navegador ausente'
+assert resultado, f'{rota}: resultado do navegador ausente'
 texto = html.unescape(resultado.group(1))
-assert texto.startswith('PASS:'), texto
-assert 'Agulha pesquisável' in conteudo, 'cartão alvo não está no DOM final'
-print('✔ navegador controlado · ' + texto)
+assert texto.startswith('PASS:'), f'{rota}: {texto}'
+if rota != 'limpar.html':
+    assert 'Agulha pesquisável' in conteudo, f'{rota}: cartão alvo não está no DOM final'
+else:
+    assert 'Cache limpo.' in conteudo, f'{rota}: aviso de limpeza não está no DOM final'
+print('✔ navegador controlado · ' + rota + ' · ' + texto)
 PY
+done

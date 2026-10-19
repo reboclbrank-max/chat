@@ -51,6 +51,12 @@ ok('barreira rápida prepara OCR português e renderizador de PDF se a imagem n�
   assert.match(rapido, /sudo apt-get install -y -qq \$faltam/);
 });
 
+ok('barreira rápida observa e valida a sintaxe de ferramentas Shell', () => {
+  const rapido = ler('testes-rapidos.yml');
+  assert.match(rapido, /'tools\/\*\*\/\*\.sh'/);
+  assert.match(rapido, /for f in tools\/testes\/\*\.sh; do bash -n "\$f"; done/);
+});
+
 ok('exame de visão usa por padrão o mesmo modelo normal dos dois turnos de e-mail', () => {
   const email = ler('email.yml');
   const ferramentas = ler('ferramentas.yml');
