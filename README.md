@@ -157,6 +157,12 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Cópias offline controláveis:** Configurações agora permite apagar a lista/histórico offline de conversas e trocas locais ainda não sincronizadas, após confirmação clara. A ação preserva as conversas no GitHub, o token autorizado, preferências, caderno e chaves locais; ela não apaga conta nem cria tráfego.
 - **Cobertura controlada:** contrato PWA passou 16/16; suíte rápida 45/45; a fixture Chromium controlada aprovou as quatro rotas e, nas três rotas de conversa, verificou que rascunho bloqueia a ativação e que o worker só recebe a ordem explícita. Sem PAT, conversa, mensagem, API produtiva, caixa, dispatch, custo ou infraestrutura nova. Isto não prova atualização em dispositivos reais, perda zero em todos os navegadores, uso humano, worker disponível, satisfação, SLA ou disponibilidade contínua.
 
+## v12.29 — limites locais de composição e Markdown (19/10/2026)
+
+- **Texto e arquivo com limite declarado:** o compositor mostra `atual/12.000`, bloqueia envio, criação e reenvio acima disso sem mandar nada, e permite arrastar somente texto de até 1 MB. Do arquivo, acrescenta no máximo o trecho que ainda cabe; arquivo grande não é sequer lido e qualquer corte é informado antes do envio.
+- **Renderização previsível:** mensagem recebida com mais de 60.000 caracteres é limitada antes do Markdown, com aviso local e escape preservado. Isto evita trabalho ilimitado de renderização no navegador; não altera a cópia já guardada no GitHub e a exportação continua sendo o caminho para o histórico disponível.
+- **Cobertura controlada:** o novo contrato offline passou 19/19 nas quatro rotas; a suíte rápida passou 46/46 e o Chromium controlado continuou 4/4. Foram mocks/VM/fixtures locais, sem PAT, conversa, mensagem, arquivo privado, API produtiva, rede externa, custo ou infraestrutura nova. Não é prova de todos os navegadores, entrega, preservação completa de histórico, uso humano, satisfação, disponibilidade ou SLA.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código

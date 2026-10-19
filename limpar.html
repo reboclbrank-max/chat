@@ -21,7 +21,8 @@
   --verde:#3ddc84; --vermelho:#e0a9a9;
   }
   body.claro{--fundo:#f4f4f7;--painel:#ffffff;--painel2:#ececf1;--borda:#d5d5df;--texto:#191922;--texto2:#5c5c6a}
-  .composer #contador{font-size:10.5px;color:var(--texto2);align-self:center;min-width:34px;text-align:right}
+  .composer #contador{font-size:10.5px;color:var(--texto2);align-self:center;min-width:58px;text-align:right}
+  .composer #contador.excedido{color:var(--vermelho);font-weight:700}
   @media print{header,.composer-wrap,.chips,#sugestoes,#cabecalho-conv .acao,#faixa-local,#progresso-local{display:none !important}body{background:#fff;color:#000}.bolha{break-inside:avoid}}
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -489,8 +490,17 @@ function avisoHistoricoParcial(total, carregados) {
 function escapar(t) {
   return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
+// A mensagem pode vir de Issue/comentário externo. Antes das substituições de
+// Markdown, limitamos a entrada para não transformar uma resposta gigantesca em
+// trabalho ilimitado do navegador; a exportação continua sendo o caminho para o histórico completo.
+const LIMITE_RENDERIZACAO_MARKDOWN = 60000;
+function limitarMarkdownParaTela(t) {
+  const texto = String(t || '');
+  if (texto.length <= LIMITE_RENDERIZACAO_MARKDOWN) return texto;
+  return texto.slice(0, LIMITE_RENDERIZACAO_MARKDOWN) + '\n\n> ⚠️ Exibição limitada a 60.000 caracteres neste aparelho. Exporte a conversa para guardar o histórico completo disponível.';
+}
 function markdown(t) {
-  let s = escapar(t);
+  let s = escapar(limitarMarkdownParaTela(t));
   s = s.replace(/```([\s\S]*?)```/g, (m, c) => '<pre>' + c.trim() + '</pre>');
   // Conteúdo de conversa é não confiável: imagem remota só abre por decisão explícita da pessoa,
   // evitando busca automática/telemetria ao renderizar uma mensagem. O link não envia referer.
@@ -758,6 +768,7 @@ async function novaConversa() {
   if (criandoNovaConversa) return;
   const texto = prompt('Primeira mensagem:');
   if (!texto || !texto.trim()) return;
+  if (String(texto).trim().length > LIMITE_MENSAGEM_COMPOSITOR) { alert('A primeira mensagem passa do limite local de ' + LIMITE_MENSAGEM_COMPOSITOR.toLocaleString('pt-BR') + ' caracteres. Encurte antes de criar a conversa.'); return; }
   const card = $('card-nova');
   criandoNovaConversa = true;
   if (card) {
@@ -1058,10 +1069,18 @@ function pensando(mostrar, texto) {
   }
 }
 
+const LIMITE_MENSAGEM_COMPOSITOR = 12000;
+const LIMITE_ARQUIVO_TEXTO = 1024 * 1024;
+function mensagemDentroDoLimite(texto) { return String(texto || '').trim().length <= LIMITE_MENSAGEM_COMPOSITOR; }
+function avisoMensagemLonga() {
+  bolha('bot', '⚠️ **Mensagem não enviada.** O limite local é de ' + LIMITE_MENSAGEM_COMPOSITOR.toLocaleString('pt-BR') + ' caracteres. Encurte o texto ou envie em partes; nada foi enviado.', new Date().toISOString(), 'limite local');
+  rolarFim();
+}
 async function enviar() {
   const caixa = $('entrada');
   const texto = caixa.value.trim();
   if (!texto) return;
+  if (!mensagemDentroDoLimite(texto)) { avisoMensagemLonga(); caixa.focus(); return; }
   if (/^!token(?:\s|$)/i.test(texto) || /\b(?:gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,})\b/.test(texto)) {
     caixa.value = ''; caixa.style.height = 'auto';
     bolha('bot', '🔐 **Token não é mensagem.** Abra ⚙️ Configurar acesso e cole-o somente no campo protegido deste navegador. Nada foi enviado, gravado em issue ou passado a um motor.', new Date().toISOString(), '🔐 proteção');
@@ -2340,6 +2359,7 @@ async function reenviarUltima() {
   if (!usuarios.length) { alert('Ainda não tem mensagem sua nesta conversa.'); return; }
   const texto = textoSimples(usuarios[usuarios.length - 1].innerHTML).trim();
   if (!texto) return;
+  if (!mensagemDentroDoLimite(texto)) { alert('A última mensagem visível passa do limite local de reenvio. Encurte ou escreva uma nova mensagem; nada foi reenviado.'); return; }
   if (botao) botao.disabled = true;
   atualizarEstadoEntrega('enviando-mensagem');
   try {
@@ -2591,7 +2611,11 @@ function alternarTema() {
 }
 function atualizarContador() {
   const el = $('contador');
-  if (el) el.textContent = $('entrada').value.length;
+  const caixa = $('entrada');
+  if (!el || !caixa) return;
+  const tamanho = caixa.value.length;
+  el.textContent = tamanho.toLocaleString('pt-BR') + '/' + LIMITE_MENSAGEM_COMPOSITOR.toLocaleString('pt-BR');
+  el.classList.toggle('excedido', tamanho > LIMITE_MENSAGEM_COMPOSITOR);
 }
 function lerArquivoDrop(ev) {
   ev.preventDefault();
@@ -2601,13 +2625,22 @@ function lerArquivoDrop(ev) {
     alert('Só arquivo de texto (.txt, .md, .csv, .json, .html, .js, .py).');
     return;
   }
+  if (Number(arq.size) > LIMITE_ARQUIVO_TEXTO) {
+    alert('O arquivo passa do limite local de 1 MB. Envie somente o trecho necessário; nada foi lido ou enviado.');
+    return;
+  }
   const leitor = new FileReader();
   leitor.onload = () => {
     const texto = String(leitor.result || '');
     const caixa = $('entrada');
-    caixa.value = (caixa.value ? caixa.value + '\n\n' : '') + texto.slice(0, 8000);
+    const separador = caixa.value ? '\n\n' : '';
+    const espaco = Math.max(0, LIMITE_MENSAGEM_COMPOSITOR - caixa.value.length - separador.length);
+    if (!espaco) { alert('A caixa já chegou ao limite local de ' + LIMITE_MENSAGEM_COMPOSITOR.toLocaleString('pt-BR') + ' caracteres. Encurte antes de adicionar arquivo.'); caixa.focus(); return; }
+    const trecho = texto.slice(0, Math.min(8000, espaco));
+    caixa.value = caixa.value + separador + trecho;
     atualizarContador();
     caixa.focus();
+    if (trecho.length < texto.length) alert('Só os primeiros ' + trecho.length.toLocaleString('pt-BR') + ' caracteres que cabiam foram adicionados. Nada foi enviado.');
   };
   leitor.readAsText(arq);
 }
