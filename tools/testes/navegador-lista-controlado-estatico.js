@@ -43,6 +43,13 @@ ok('navegador não resolve rede externa e perfis são efêmeros', () => {
   assert(!/\bcurl\b/.test(texto), 'harness não deve chamar rede por curl');
 });
 
+ok('fixture valida atualização PWA sem ativar worker ou perder rascunho', () => {
+  assert.match(texto, /esperaControlada/);
+  assert.match(texto, /pwaUpdateRequest/);
+  assert.match(texto, /atualização aceitou recarregar com rascunho/);
+  assert.match(texto, /REBOCL_ATIVAR_ATUALIZACAO/);
+});
+
 ok('não contém padrão usual de segredo', () => {
   assert(!/github_pat_[A-Za-z0-9_]{20,}|gh[pousr]_[A-Za-z0-9]{20,}/.test(texto));
   assert(!/-----BEGIN [A-Z ]*PRIVATE KEY-----/.test(texto));

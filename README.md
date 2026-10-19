@@ -151,6 +151,12 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Controles coerentes:** o botão de avisos informa se está aberto, as opções alternáveis expõem estado pressionado e os dois atalhos de ditado passaram a usar um único fluxo. Isso removeu o ID duplicado `btn-mic` e a sobrescrita silenciosa de um dos manipuladores; o ditado só começa por escolha da pessoa e continua sujeito ao suporte do navegador.
 - **Cobertura controlada:** novo contrato estático de acessibilidade passou 29/29 nas quatro rotas; a suíte rápida passou 44/44 e o Chromium controlado aprovou as quatro rotas. As provas usam fixtures/mocks locais, sem PAT, conversa, mensagem, API produtiva, caixa, dispatch, custo ou infraestrutura nova. Não provam uso humano, compreensão, acessibilidade absoluta, entrega real, satisfação, disponibilidade ou SLA.
 
+## v12.28 — atualização PWA sob escolha e cópias offline sob controle (19/10/2026)
+
+- **Atualização não interrompe escrita:** o worker v7 instala a nova casca, mas fica aguardando. A página mostra que há versão pronta e só pede ativação quando não há envio, importação, sincronização ou rascunho na caixa. “Atualizar agora” é uma escolha explícita; a página só recarrega depois da ativação escolhida. API, query e terceiros continuam fora do cache.
+- **Cópias offline controláveis:** Configurações agora permite apagar a lista/histórico offline de conversas e trocas locais ainda não sincronizadas, após confirmação clara. A ação preserva as conversas no GitHub, o token autorizado, preferências, caderno e chaves locais; ela não apaga conta nem cria tráfego.
+- **Cobertura controlada:** contrato PWA passou 16/16; suíte rápida 45/45; a fixture Chromium controlada aprovou as quatro rotas e, nas três rotas de conversa, verificou que rascunho bloqueia a ativação e que o worker só recebe a ordem explícita. Sem PAT, conversa, mensagem, API produtiva, caixa, dispatch, custo ou infraestrutura nova. Isto não prova atualização em dispositivos reais, perda zero em todos os navegadores, uso humano, worker disponível, satisfação, SLA ou disponibilidade contínua.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código

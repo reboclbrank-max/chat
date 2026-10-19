@@ -60,7 +60,8 @@ preparo = """<script>
 localStorage.setItem('assistente_rebocl_token', 'controle-local-sem-segredo');
 try {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register = () => Promise.reject(new Error('fixture controlada'));
+    const esperaControlada = { postMessage: (dado) => { document.documentElement.dataset.pwaUpdateRequest = String((dado || {}).tipo || ''); } };
+    navigator.serviceWorker.register = () => Promise.resolve({ waiting: esperaControlada, installing: null, addEventListener: () => {}, update: () => {} });
   }
 } catch (e) {}
 </script>"""
@@ -98,7 +99,20 @@ teste_lista = """<script>
       .find(elemento => elemento.textContent.includes('Agulha pesquisável'));
     if (!visivel(alvo)) throw new Error('resultado da página 3 não ficou visível');
 
-    document.body.dataset.browserE2e = 'PASS: busca ativa manteve carregar mais; nova conversa oculta; alvo da página 3 visível';
+    const avisoPwa = document.getElementById('aviso-atualizacao');
+    const botaoPwa = document.getElementById('btn-aplicar-atualizacao');
+    const entrada = document.getElementById('entrada');
+    if (!visivel(avisoPwa) || !botaoPwa) throw new Error('aviso de atualização controlada ausente');
+    entrada.value = 'rascunho de fixture';
+    entrada.dispatchEvent(new Event('input', { bubbles: true }));
+    if (!botaoPwa.disabled) throw new Error('atualização aceitou recarregar com rascunho');
+    entrada.value = '';
+    entrada.dispatchEvent(new Event('input', { bubbles: true }));
+    if (botaoPwa.disabled) throw new Error('atualização ficou bloqueada sem escrita ou rascunho');
+    botaoPwa.click();
+    if (document.documentElement.dataset.pwaUpdateRequest !== 'REBOCL_ATIVAR_ATUALIZACAO') throw new Error('atualização explícita não pediu ativação ao worker controlado');
+
+    document.body.dataset.browserE2e = 'PASS: busca ativa manteve carregar mais; nova conversa oculta; alvo da página 3 visível; PWA protegeu rascunho e só ativou por escolha';
   } catch (erro) {
     document.body.dataset.browserE2e = 'FAIL: ' + String((erro && erro.message) || erro).slice(0, 180);
   }

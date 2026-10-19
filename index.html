@@ -132,6 +132,9 @@
   #progresso-local{font-size:12px;padding:7px 14px;border-bottom:1px solid var(--borda);background:#101015;color:var(--texto2);text-align:center}
   .tag-local{font-size:10.5px;color:#a9e0b8;border:1px solid #245c32;border-radius:6px;padding:0 5px;margin-left:6px;white-space:nowrap}
   .rodape{color:#5f5f6e;font-size:11px;text-align:center;padding:12px 8px 30px}
+  .atualizacao-pwa{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#15130a;border-bottom:1px solid #6b5a20;color:#e7d9a8;font-size:12.5px}
+  .atualizacao-pwa span{flex:1}.atualizacao-pwa button{background:var(--painel);border:1px solid var(--ouro-fraco);color:var(--ouro);border-radius:9px;padding:6px 9px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+  .atualizacao-pwa button:disabled{opacity:.55;cursor:not-allowed}
   .visualmente-oculto{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
   button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[role="button"]:focus-visible{outline:3px solid var(--ouro);outline-offset:2px}
   @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;scroll-behavior:auto !important;transition-duration:.01ms !important}}
@@ -148,6 +151,10 @@
   <button type="button" class="hbtn" id="btn-console" title="Console da IA — a máquina completa" aria-label="Abrir Console da IA">🖥️</button>
   <button type="button" class="hbtn" id="btn-config" title="Configurar acesso" aria-label="Configurar acesso">⚙️</button>
 </header>
+<div id="aviso-atualizacao" class="atualizacao-pwa oculto" role="region" aria-label="Atualização do aplicativo" aria-hidden="true">
+  <span id="texto-atualizacao" role="status" aria-live="polite" aria-atomic="true"></span>
+  <button type="button" id="btn-aplicar-atualizacao">Atualizar agora</button>
+</div>
 
 <main id="principal" aria-label="Lista de conversas">
   <div class="faixa" id="faixa" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -199,6 +206,12 @@
     <button type="button" id="btn-imp-json" style="margin-top:8px;background:var(--painel);border:1px solid var(--borda);color:var(--texto);font-weight:600">⬆ Importar inícios de conversa (JSON)</button>
     <input type="file" id="arq-importar" accept="application/json,.json" class="oculto" aria-label="Escolher arquivo JSON para importar inícios de conversa">
     <div id="status-exportar" role="status" aria-live="polite" aria-atomic="true"></div>
+  </div>
+  <div class="cartao">
+    <h2>🧹 Cópias offline neste aparelho</h2>
+    <p>Apaga somente a lista e o histórico de conversa salvos para leitura offline, inclusive trocas locais ainda não sincronizadas. As conversas no GitHub, o token salvo, preferências, caderno e chaves locais não são alterados.</p>
+    <button type="button" id="btn-limpar-copias" style="background:var(--painel);border:1px solid #7a2a2a;color:#e0a9a9;font-weight:600">Apagar cópias offline de conversas</button>
+    <div id="status-dados-locais" role="status" aria-live="polite" aria-atomic="true"></div>
   </div>
   <div class="rodape">Página pública (não contém dados). Suas conversas ficam no repositório privado <b>reboclbrank-max/agente</b>.</div>
 </section>
@@ -313,6 +326,45 @@ function erroTransitorio(erro) {
   const status = Number(erro && erro.status);
   return !status || status === 408 || status === 429 || status >= 500;
 }
+// Ficam junto do cliente API para que todo POST/PATCH seja observável antes de
+// qualquer troca manual de PWA. Guardas typeof preservam os testes isolados.
+let escritasEmAndamento = 0, importacaoEmAndamento = false, sincronizacaoLocalEmAndamento = false;
+let registroPwa = null, atualizacaoPwaPendente = null, recarregarAposAtualizacaoPwa = false;
+function escritaEmAndamento() {
+  return escritasEmAndamento > 0 || (typeof criandoNovaConversa !== 'undefined' && criandoNovaConversa) || importacaoEmAndamento || sincronizacaoLocalEmAndamento;
+}
+function atualizarAvisoAtualizacaoPwa() {
+  if (typeof document === 'undefined') return;
+  const aviso = $('aviso-atualizacao');
+  const texto = $('texto-atualizacao');
+  const botao = $('btn-aplicar-atualizacao');
+  if (!aviso || !texto || !botao) return;
+  if (!atualizacaoPwaPendente) {
+    aviso.classList.add('oculto');
+    aviso.setAttribute('aria-hidden', 'true');
+    return;
+  }
+  const haEscrita = escritaEmAndamento();
+  const entrada = $('entrada');
+  const haRascunho = !!(entrada && String(entrada.value || '').trim());
+  texto.textContent = haEscrita
+    ? 'Atualização pronta. Aguarde o envio, a importação ou a sincronização terminar antes de atualizar.'
+    : haRascunho
+      ? 'Atualização pronta. Envie ou copie o rascunho antes de atualizar para não perdê-lo.'
+      : 'Uma atualização está pronta. Você decide quando recarregar esta página.';
+  botao.disabled = haEscrita || haRascunho;
+  aviso.classList.remove('oculto');
+  aviso.setAttribute('aria-hidden', 'false');
+}
+function acompanharEscrita(promessa) {
+  escritasEmAndamento++;
+  atualizarAvisoAtualizacaoPwa();
+  const concluir = () => { escritasEmAndamento = Math.max(0, escritasEmAndamento - 1); atualizarAvisoAtualizacaoPwa(); };
+  return Promise.resolve(promessa).then(
+    (valor) => { concluir(); return valor; },
+    (erro) => { concluir(); throw erro; }
+  );
+}
 function api(caminho, opcoes = {}) {
   const metodo = String(opcoes.method || 'GET').toUpperCase();
   const uma = () => fetch(API + caminho, {
@@ -329,12 +381,13 @@ function api(caminho, opcoes = {}) {
     const texto = await r.text();
     try { return texto ? JSON.parse(texto) : null; } catch (e) { return texto; }
   });
-  return uma().catch((e1) => {
+  const tentativa = uma().catch((e1) => {
     // Repetir uma escrita após falha ambígua pode duplicar Issue/comentário. Só
     // leituras idempotentes recebem uma segunda tentativa curta.
     if (metodo !== 'GET' || !erroTransitorio(e1)) throw e1;
     return new Promise((res2) => setTimeout(res2, 0)).then(uma);
   });
+  return metodo === 'GET' ? tentativa : acompanharEscrita(tentativa);
 }
 
 
@@ -822,6 +875,50 @@ async function cacheLerConversa(numero) {
       req.onerror = () => res(null);
     });
   } catch (e) { return null; }
+}
+
+// A limpeza é deliberadamente estreita: conversa/cache offline apenas. O token
+// autorizado, preferências, caderno e chaves locais não entram nesta ação.
+const CHAVES_COPIAS_OFFLINE = Object.freeze(['rebocl_conv', 'rebocl_conv_titulo', 'rebocl_direto_h']);
+async function limparCacheConversasOffline() {
+  try {
+    const db = await idbCacheAbrir();
+    await new Promise((res) => {
+      const tx = db.transaction(['conversas', 'lista'], 'readwrite');
+      tx.objectStore('conversas').clear();
+      tx.objectStore('lista').clear();
+      tx.oncomplete = res; tx.onerror = res; tx.onabort = res;
+    });
+    try { db.close(); } catch (e) {}
+    return true;
+  } catch (e) { return false; }
+}
+async function limparTrocasLocaisOffline() {
+  try {
+    const db = await idbAbrir();
+    await new Promise((res) => {
+      const tx = db.transaction('trocas', 'readwrite');
+      tx.objectStore('trocas').clear();
+      tx.oncomplete = res; tx.onerror = res; tx.onabort = res;
+    });
+    try { db.close(); } catch (e) {}
+    return true;
+  } catch (e) { return false; }
+}
+async function limparCopiasOffline() {
+  const status = $('status-dados-locais');
+  const botao = $('btn-limpar-copias');
+  if (!confirm('Apagar as cópias offline de conversas deste aparelho? Isso também apaga trocas do modo local que ainda não foram sincronizadas. As conversas no GitHub, o token e suas preferências não serão alterados.')) return;
+  if (botao) botao.disabled = true;
+  if (status) status.innerHTML = '<div class="aviso">apagando cópias offline deste aparelho…</div>';
+  const [cacheLimpo, trocasLimpas] = await Promise.all([limparCacheConversasOffline(), limparTrocasLocaisOffline()]);
+  for (const chave of CHAVES_COPIAS_OFFLINE) { try { localStorage.removeItem(chave); } catch (e) {} }
+  filaCacheLista = Promise.resolve();
+  atualizarBadgeSync();
+  if (status) status.innerHTML = cacheLimpo || trocasLimpas
+    ? '<div class="aviso ok">cópias offline de conversas apagadas deste aparelho. O token e as conversas no GitHub foram preservados.</div>'
+    : '<div class="aviso erro">não consegui confirmar a limpeza das cópias locais agora. Nada no GitHub foi alterado.</div>';
+  if (botao) botao.disabled = false;
 }
 
 /* ---------- sugestões após resposta do bot (v1.4) ---------- */
@@ -2066,6 +2163,8 @@ $('btn-ler-tudo').onclick = () => {
 $('btn-exp-json').onclick = () => exportarTudo('json');
 $('btn-exp-md').onclick = () => exportarTudo('md');
 $('btn-imp-json').onclick = () => $('arq-importar').click();
+$('btn-limpar-copias').onclick = limparCopiasOffline;
+$('btn-aplicar-atualizacao').onclick = solicitarAtualizacaoPwa;
 $('arq-importar').onchange = (e) => {
   if (e.target.files && e.target.files[0]) importarArquivo(e.target.files[0]);
   e.target.value = '';
@@ -2095,6 +2194,7 @@ $('entrada').addEventListener('keydown', (e) => {
 $('entrada').addEventListener('input', (e) => {
   e.target.style.height = 'auto';
   e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+  atualizarAvisoAtualizacaoPwa();
 });
 
 /* ---------- exportar / importar / buscar / ações da conversa (v1.1) ---------- */
@@ -2190,22 +2290,29 @@ async function importarArquivo(arquivo) {
     const entradas = prepararImportacao(dados, arquivo.size);
     const aviso = 'A importação criará ' + entradas.length + ' nova(s) conversa(s) só com a primeira mensagem sua. Respostas e demais mensagens do arquivo não serão reenviadas, para não virarem instruções novas. Continuar?';
     if (!confirm(aviso)) return;
+    importacaoEmAndamento = true;
+    atualizarAvisoAtualizacaoPwa();
     st.innerHTML = '<div class="aviso">importando inícios de conversa…</div>';
     let ok = 0;
-    for (const entrada of entradas) {
-      try {
-        await api(`/repos/${REPO}/issues`, {
-          method: 'POST',
-          body: JSON.stringify({ title: entrada.titulo, body: entrada.corpo })
-        });
-        ok++;
-      } catch (e) {
-        st.innerHTML = '<div class="aviso erro">importação interrompida após ' + ok + '/' + entradas.length + '. Confira a lista antes de tentar de novo; nada foi reenviado automaticamente.</div>';
-        return;
+    try {
+      for (const entrada of entradas) {
+        try {
+          await api(`/repos/${REPO}/issues`, {
+            method: 'POST',
+            body: JSON.stringify({ title: entrada.titulo, body: entrada.corpo })
+          });
+          ok++;
+        } catch (e) {
+          st.innerHTML = '<div class="aviso erro">importação interrompida após ' + ok + '/' + entradas.length + '. Confira a lista antes de tentar de novo; nada foi reenviado automaticamente.</div>';
+          return;
+        }
       }
+      st.innerHTML = '<div class="aviso ok">' + ok + '/' + entradas.length + ' início(s) de conversa importado(s) ✓</div>';
+      carregarLista();
+    } finally {
+      importacaoEmAndamento = false;
+      atualizarAvisoAtualizacaoPwa();
     }
-    st.innerHTML = '<div class="aviso ok">' + ok + '/' + entradas.length + ' início(s) de conversa importado(s) ✓</div>';
-    carregarLista();
   } catch (e) {
     st.innerHTML = '<div class="aviso erro">falhou: ' + escapar(mensagemErroSeguro(e)) + '</div>';
   }
@@ -2410,18 +2517,25 @@ async function sincronizarLocal() {
     });
     if (!todas.length) { alert('Não tem nada para sincronizar.'); return; }
     if (!confirm('Sincronizar ' + todas.length + ' troca(s) do modo local com esta conversa no GitHub?')) return;
-    let corpo = '[sync-local] 📱 Trocas feitas no **modo 100% local** (offline — saíram só do aparelho):\n';
-    for (const t of todas) {
-      corpo += '\n**Você:** ' + t.pergunta + '\n\n**Cérebro local:** ' + t.resposta + '\n\n---\n';
+    sincronizacaoLocalEmAndamento = true;
+    atualizarAvisoAtualizacaoPwa();
+    try {
+      let corpo = '[sync-local] 📱 Trocas feitas no **modo 100% local** (offline — saíram só do aparelho):\n';
+      for (const t of todas) {
+        corpo += '\n**Você:** ' + t.pergunta + '\n\n**Cérebro local:** ' + t.resposta + '\n\n---\n';
+      }
+      await api(`/repos/${REPO}/issues/${conversa}/comments`, { method: 'POST', body: JSON.stringify({ body: corpo.slice(0, 60000) }) });
+      await new Promise((res) => {
+        const tx = db.transaction('trocas', 'readwrite');
+        tx.objectStore('trocas').clear();
+        tx.oncomplete = res; tx.onerror = res;
+      });
+      atualizarBadgeSync();
+      alert('Sincronizado ✓ (o assistente só arquiva — não responde de novo)');
+    } finally {
+      sincronizacaoLocalEmAndamento = false;
+      atualizarAvisoAtualizacaoPwa();
     }
-    await api(`/repos/${REPO}/issues/${conversa}/comments`, { method: 'POST', body: JSON.stringify({ body: corpo.slice(0, 60000) }) });
-    await new Promise((res) => {
-      const tx = db.transaction('trocas', 'readwrite');
-      tx.objectStore('trocas').clear();
-      tx.oncomplete = res; tx.onerror = res;
-    });
-    atualizarBadgeSync();
-    alert('Sincronizado ✓ (o assistente só arquiva — não responde de novo)');
   } catch (e) { alert('Falhou ao sincronizar: ' + mensagemErroSeguro(e)); }
 }
 async function alternarModoLocal() {
@@ -2548,8 +2662,42 @@ _wrap.addEventListener('dragover', (e) => e.preventDefault());
 _wrap.addEventListener('drop', lerArquivoDrop);
 atualizarBadgeSync();
 if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); } catch (e) {} }
+function marcarAtualizacaoPwa(registro) {
+  if (!registro || !registro.waiting) return;
+  atualizacaoPwaPendente = registro.waiting;
+  atualizarAvisoAtualizacaoPwa();
+}
+function observarInstalacaoPwa(registro) {
+  const worker = registro && registro.installing;
+  if (!worker) return;
+  worker.addEventListener('statechange', () => {
+    if (worker.state !== 'installed') return;
+    // A primeira instalação não interrompe a pessoa. Nas seguintes, a nova
+    // versão espera uma escolha explícita e uma tela sem escrita/rascunho.
+    setTimeout(() => { if (navigator.serviceWorker.controller) marcarAtualizacaoPwa(registro); }, 0);
+  });
+}
+function solicitarAtualizacaoPwa() {
+  if (!atualizacaoPwaPendente || escritaEmAndamento()) { atualizarAvisoAtualizacaoPwa(); return; }
+  const entrada = $('entrada');
+  if (entrada && String(entrada.value || '').trim()) { atualizarAvisoAtualizacaoPwa(); entrada.focus(); return; }
+  const worker = atualizacaoPwaPendente;
+  const botao = $('btn-aplicar-atualizacao');
+  if (botao) { botao.disabled = true; botao.textContent = 'Atualizando…'; }
+  recarregarAposAtualizacaoPwa = true;
+  try { worker.postMessage({ tipo: 'REBOCL_ATIVAR_ATUALIZACAO' }); }
+  catch (e) { recarregarAposAtualizacaoPwa = false; if (botao) botao.textContent = 'Atualizar agora'; atualizarAvisoAtualizacaoPwa(); }
+}
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(function (registro) { setInterval(function () { try { registro.update(); } catch (e) {} }, 300000); }).catch(() => {});
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (recarregarAposAtualizacaoPwa) window.location.reload();
+  });
+  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(function (registro) {
+    registroPwa = registro;
+    marcarAtualizacaoPwa(registro);
+    registro.addEventListener('updatefound', () => observarInstalacaoPwa(registro));
+    setInterval(function () { try { registro.update(); } catch (e) {} }, 300000);
+  }).catch(() => {});
 }
 (async function iniciar() {
   if (token) {
