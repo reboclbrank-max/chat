@@ -74,7 +74,7 @@ for (const rota of rotas) {
   });
   testa(rota + ' protege criação por cartão e reenvio contra duplo toque', () => {
     assert.match(src, /let paginaLista = 1,[\s\S]{0,220}criandoNovaConversa = false/);
-    const inicioNova = src.indexOf('async function novaConversa() {');
+    const inicioNova = src.indexOf("async function novaConversa(sugestao = '') {");
     const fimNova = src.indexOf('\n/* ---------- conversa ---------- */', inicioNova);
     const nova = src.slice(inicioNova, fimNova);
     assert.match(nova, /if \(criandoNovaConversa\) return/);

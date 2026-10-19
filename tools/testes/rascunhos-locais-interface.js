@@ -28,7 +28,7 @@ function blocoCompletoRascunhos(html) {
   return trecho(html, "/* ---------- rascunhos locais e prévia de texto anexado (P1D/P1E) ---------- */", "/* ---------- lightbox das imagens (v1.6) ---------- */");
 }
 function blocoEnviar(html) { return trecho(html, 'async function enviar()', '\n// Quando o workflow privado falha'); }
-function blocoNova(html) { return trecho(html, 'async function novaConversa()', '\n\n/* ---------- conversa ---------- */'); }
+function blocoNova(html) { return trecho(html, 'async function novaConversa(', '\n\n/* ---------- conversa ---------- */'); }
 
 for (const rota of rotas) {
   const html = fontes[rota];
@@ -59,7 +59,8 @@ for (const rota of rotas) {
   testa(rota + ' permite recuperar uma nova conversa explicitamente no prompt', () => {
     const nova = blocoNova(html);
     assert.match(nova, /const rascunhoNovo = optinRascunhosAtivo\(\) \? lerRascunhosLocais\(\)\.itens\.nova : null;/);
-    assert.match(nova, /prompt\('Primeira mensagem:', rascunhoNovo \? rascunhoNovo\.texto : ''\)/);
+    assert.match(nova, /const padrao = rascunhoNovo \? rascunhoNovo\.texto : \(typeof sugestao === 'string' \? sugestao : ''\);/);
+    assert.match(nova, /prompt\('Primeira mensagem:', padrao\)/);
     assert.match(nova, /salvarRascunhoAtual\(texto\);/);
     assert.match(nova, /limparRascunhoPorChave\('nova', texto\);/);
   });

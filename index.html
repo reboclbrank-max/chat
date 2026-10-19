@@ -28,6 +28,12 @@
   .aviso-rascunho button{background:var(--painel);border:1px solid #245c32;color:#a9e0b8;border-radius:8px;padding:5px 8px;font:inherit;font-size:12px;cursor:pointer;white-space:nowrap}
   .opcao-rascunho{display:flex;align-items:flex-start;gap:9px;color:var(--texto);font-size:13.5px;cursor:pointer}
   .opcao-rascunho input{width:auto;margin:3px 0 0;accent-color:var(--ouro)}
+  body.leitura-confortavel{font-size:16.5px;line-height:1.65}
+  body.leitura-confortavel .bolha{max-width:min(92%,720px);font-size:16px;line-height:1.7}
+  body.leitura-confortavel .conv .titulo{font-size:15.5px}
+  .atalhos-inicio{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+  .atalhos-inicio button{width:auto;text-align:left;background:var(--painel);border:1px solid var(--borda);color:var(--texto);font-weight:600;padding:10px 11px}
+  .atalhos-inicio button:hover{border-color:var(--ouro-fraco);color:var(--ouro)}
   @media print{header,.composer-wrap,.chips,#sugestoes,#cabecalho-conv .acao,#faixa-local,#progresso-local{display:none !important}body{background:#fff;color:#000}.bolha{break-inside:avoid}}
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -195,6 +201,18 @@
     <h2>🎨 Aparência</h2>
     <p>Tema claro ou escuro — fica salvo neste aparelho.</p>
     <button type="button" class="acao" id="btn-tema" style="margin-top:8px">☀️ tema claro</button>
+    <button type="button" class="acao" id="btn-leitura-confortavel" aria-pressed="false" style="margin-top:8px;background:var(--painel);border:1px solid var(--borda);color:var(--texto);font-weight:600">📖 leitura confortável: desligada</button>
+  </div>
+  <div class="cartao">
+    <h2>🧭 Comece por uma tarefa</h2>
+    <p>Escolha só um ponto de partida. O texto abre para revisão antes de criar uma conversa; pesquisar pode consultar fontes públicas somente depois da sua confirmação.</p>
+    <div class="atalhos-inicio" id="atalhos-inicio" role="group" aria-label="Pontos de partida do Chat">
+      <button type="button" data-inicio="escrever">✍️ Escrever ou conversar</button>
+      <button type="button" data-inicio="pesquisar">🔎 Pesquisar algo</button>
+      <button type="button" data-inicio="organizar">📝 Guardar uma nota</button>
+      <button type="button" data-inicio="calcular">🧮 Fazer um cálculo</button>
+      <button type="button" data-inicio="explorar">🧰 Explorar ferramentas</button>
+    </div>
   </div>
   <div class="cartao">
     <h2>🧠 Cérebro 100% local (offline)</h2>
@@ -785,10 +803,11 @@ async function carregarMaisConversas() {
     if (revisao === revisaoLista) carregandoMaisLista = false;
   }
 }
-async function novaConversa() {
+async function novaConversa(sugestao = '') {
   if (criandoNovaConversa) return;
   const rascunhoNovo = optinRascunhosAtivo() ? lerRascunhosLocais().itens.nova : null;
-  const texto = prompt('Primeira mensagem:', rascunhoNovo ? rascunhoNovo.texto : '');
+  const padrao = rascunhoNovo ? rascunhoNovo.texto : (typeof sugestao === 'string' ? sugestao : '');
+  const texto = prompt('Primeira mensagem:', padrao);
   if (!texto || !texto.trim()) return;
   if (String(texto).trim().length > LIMITE_MENSAGEM_COMPOSITOR) { alert('A primeira mensagem passa do limite local de ' + LIMITE_MENSAGEM_COMPOSITOR.toLocaleString('pt-BR') + ' caracteres. Encurte antes de criar a conversa.'); return; }
   if (pareceTokenDeAcesso(texto)) { alert('Token não é mensagem nem rascunho. Abra ⚙️ Configurar acesso e cole-o somente no campo protegido deste navegador.'); return; }
@@ -2227,11 +2246,22 @@ $('btn-ler-tudo').onclick = () => {
 $('btn-exp-json').onclick = () => exportarTudo('json');
 $('btn-exp-md').onclick = () => exportarTudo('md');
 $('btn-imp-json').onclick = () => $('arq-importar').click();
+const INICIOS_GUIA = Object.freeze({
+  escrever: '', pesquisar: '!busca ', organizar: '!anotar ', calcular: '!conta ', explorar: '!ferramentas'
+});
+function iniciarPelaTarefa(chave) {
+  if (!Object.prototype.hasOwnProperty.call(INICIOS_GUIA, chave)) return;
+  mostrarConfig(false);
+  novaConversa(INICIOS_GUIA[chave]);
+}
 $('btn-limpar-copias').onclick = limparCopiasOffline;
 $('optin-rascunhos').onchange = alternarOptinRascunhos;
 $('btn-apagar-rascunhos').onclick = apagarTodosRascunhos;
 $('btn-restaurar-rascunho').onclick = restaurarRascunhoAtual;
 $('btn-descartar-rascunho').onclick = descartarRascunhoAtual;
+document.querySelectorAll('[data-inicio]').forEach((botao) => {
+  botao.onclick = () => iniciarPelaTarefa(String(botao.dataset.inicio || ''));
+});
 $('btn-aplicar-atualizacao').onclick = solicitarAtualizacaoPwa;
 $('arq-importar').onchange = (e) => {
   if (e.target.files && e.target.files[0]) importarArquivo(e.target.files[0]);
@@ -2667,6 +2697,20 @@ function alternarTema() {
   localStorage.setItem('assistente_rebocl_tema', claro ? 'escuro' : 'claro');
   aplicarTema();
 }
+const CHAVE_LEITURA_CONFORTAVEL = 'assistente_rebocl_leitura_confortavel';
+function leituraConfortavelAtiva() { return localStorage.getItem(CHAVE_LEITURA_CONFORTAVEL) === '1'; }
+function aplicarLeituraConfortavel() {
+  const ativa = leituraConfortavelAtiva();
+  document.body.classList.toggle('leitura-confortavel', ativa);
+  const botao = $('btn-leitura-confortavel');
+  if (!botao) return;
+  botao.textContent = ativa ? '📖 leitura confortável: ligada' : '📖 leitura confortável: desligada';
+  botao.setAttribute('aria-pressed', ativa ? 'true' : 'false');
+}
+function alternarLeituraConfortavel() {
+  localStorage.setItem(CHAVE_LEITURA_CONFORTAVEL, leituraConfortavelAtiva() ? '0' : '1');
+  aplicarLeituraConfortavel();
+}
 function atualizarContador() {
   const el = $('contador');
   const caixa = $('entrada');
@@ -2925,10 +2969,12 @@ if (MODO_LOCAL.ligado) {
   $('faixa-local').classList.remove('oculto');
 }
 aplicarTema();
+aplicarLeituraConfortavel();
 atualizarContador();
 atualizarPainelRascunhos();
 atualizarAvisoRascunho();
 $('btn-tema').onclick = alternarTema;
+$('btn-leitura-confortavel').onclick = alternarLeituraConfortavel;
 $('btn-imprimir').onclick = () => window.print();
 $('entrada').addEventListener('input', atualizarContador);
 const _wrap = document.querySelector('.composer-wrap');

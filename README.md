@@ -171,6 +171,12 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Arquivo de texto revisável:** ao arrastar um `.txt`, `.md` ou outro formato aceito, a tela informa localmente o nome/tamanho e o tamanho do trecho inserido no rascunho. Não é anexo nem envio: a pessoa pode revisar/editar o texto antes de escolher Enviar.
 - **Cobertura controlada:** contrato novo 22/22 em quatro rotas, regressões de limites 19/19, PWA 16/16, segurança/fluxo 30/30 e acessibilidade 29/29 passaram sem PAT, conversa, API produtiva, arquivo privado, rede externa, custo ou infraestrutura. O harness de Chromium foi atualizado e sua guarda estática passou 6/6; este sandbox específico não tinha Chromium para repetir a execução visual. Nada disso prova backup permanente, segurança física do navegador, envio/worker real, uso humano, satisfação, disponibilidade ou SLA.
 
+## v12.31 — leitura confortável e início guiado sem ação automática (19/10/2026)
+
+- **Leitura como preferência local:** em ⚙️, “📖 leitura confortável” aumenta fonte, espaçamento e largura de leitura das conversas. Começa desligada, não muda mensagens e não envia/sincroniza preferência alguma.
+- **Começar sem decorar comandos:** o cartão “🧭 Comece por uma tarefa” oferece escrever, pesquisar, nota, cálculo e exploração. Ele usa uma lista fechada de sugestões e abre a caixa de criação para a pessoa revisar, editar ou cancelar; nenhuma consulta, conversa ou escrita é iniciada pelo clique sozinho.
+- **Cobertura controlada:** novo contrato 15/15 preserva paridade das quatro rotas, preferência local e allowlist do guia. Não houve PAT, conversa, API produtiva, mensagem, rede externa, custo ou infraestrutura. A melhora não prova compreensão humana, acessibilidade universal, entrega, worker, satisfação, disponibilidade ou SLA.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código

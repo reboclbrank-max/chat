@@ -42,7 +42,7 @@ for (const rota of rotas) {
   });
   testa(rota + ' barra texto longo antes de cada envio, criação e reenvio', () => {
     const enviar = trecho(html, 'async function enviar()', '\nfunction iniciarPolling');
-    const nova = trecho(html, 'async function novaConversa()', '\n/* ---------- conversa ---------- */');
+    const nova = trecho(html, 'async function novaConversa(', '\n/* ---------- conversa ---------- */');
     const reenvio = trecho(html, 'async function reenviarUltima()', '\nfunction faixaOffline');
     assert.match(enviar, /if \(!mensagemDentroDoLimite\(texto\)\) \{ avisoMensagemLonga\(\); caixa\.focus\(\); return; \}/);
     assert.match(nova, /texto\)\.trim\(\)\.length > LIMITE_MENSAGEM_COMPOSITOR/);

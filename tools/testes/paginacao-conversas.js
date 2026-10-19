@@ -71,7 +71,7 @@ function runtime(src, resposta) {
 }
 function extraiLista(src) {
   const inicio = src.indexOf('function criarCartaoConversa(i) {');
-  const fim = src.indexOf('\nasync function novaConversa()', inicio);
+  const fim = src.indexOf('\nasync function novaConversa(', inicio);
   assert(inicio >= 0 && fim > inicio, 'lógica da lista visual não encontrada');
   return src.slice(inicio, fim);
 }
