@@ -145,6 +145,12 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Falhas por mensagem sem expor mensagem:** o turno de e-mail agrega somente classes fechadas (leitura, anexo, processamento, envio, acesso, limite ou serviço) numa janela efêmera de 15 minutos. Três consecutivas viram padrão para **observar**, nunca dispatch/reprocessamento automático; uma conclusão posterior zera apenas a sequência. Não entram UID, remetente, assunto, corpo, URL, nome de anexo, erro bruto ou segredo nesse contador.
 - **Cobertura controlada:** a regressão nova passou 27/27 nas quatro rotas e no agregador; a suíte rápida passou 43/43 e o Chromium controlado percorreu as quatro rotas. Foram mocks/fixtures locais, sem caixa, conversa, PAT real, API produtiva, mensagem, dispatch, custo ou nova infraestrutura. Isto não prova worker disponível, entrega real, satisfação, adoção, privacidade absoluta ou SLA.
 
+## v12.27 — navegação assistiva e ditado sem controles ambíguos (19/10/2026)
+
+- **Navegação por teclado e leitor de tela:** as quatro rotas agora têm nomes acessíveis nos controles principais, regiões de estado anunciadas, log de mensagens, foco visível, respeito a redução de movimento e retorno de foco ao fechar imagem ampliada. Cartões de conversa e “Nova conversa” respondem a Enter/Espaço; ao trocar de tela, o foco chega ao título da conversa ou à busca.
+- **Controles coerentes:** o botão de avisos informa se está aberto, as opções alternáveis expõem estado pressionado e os dois atalhos de ditado passaram a usar um único fluxo. Isso removeu o ID duplicado `btn-mic` e a sobrescrita silenciosa de um dos manipuladores; o ditado só começa por escolha da pessoa e continua sujeito ao suporte do navegador.
+- **Cobertura controlada:** novo contrato estático de acessibilidade passou 29/29 nas quatro rotas; a suíte rápida passou 44/44 e o Chromium controlado aprovou as quatro rotas. As provas usam fixtures/mocks locais, sem PAT, conversa, mensagem, API produtiva, caixa, dispatch, custo ou infraestrutura nova. Não provam uso humano, compreensão, acessibilidade absoluta, entrega real, satisfação, disponibilidade ou SLA.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código

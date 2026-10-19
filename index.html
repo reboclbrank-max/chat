@@ -132,31 +132,34 @@
   #progresso-local{font-size:12px;padding:7px 14px;border-bottom:1px solid var(--borda);background:#101015;color:var(--texto2);text-align:center}
   .tag-local{font-size:10.5px;color:#a9e0b8;border:1px solid #245c32;border-radius:6px;padding:0 5px;margin-left:6px;white-space:nowrap}
   .rodape{color:#5f5f6e;font-size:11px;text-align:center;padding:12px 8px 30px}
+  .visualmente-oculto{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[role="button"]:focus-visible{outline:3px solid var(--ouro);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;scroll-behavior:auto !important;transition-duration:.01ms !important}}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">RB</div>
+<header aria-label="Cabeçalho do Chat">
+  <div class="logo" aria-hidden="true">RB</div>
   <div>
     <h1>Assistente Rebocl</h1>
     <p id="sub">tudo salvo no seu GitHub · grátis</p>
   </div>
-  <button class="hbtn" id="btn-console" title="Console da IA — a máquina completa">🖥️</button>
-  <button class="hbtn" id="btn-config" title="Configurar acesso">⚙️</button>
+  <button type="button" class="hbtn" id="btn-console" title="Console da IA — a máquina completa" aria-label="Abrir Console da IA">🖥️</button>
+  <button type="button" class="hbtn" id="btn-config" title="Configurar acesso" aria-label="Configurar acesso">⚙️</button>
 </header>
 
-<main id="principal">
-  <div class="faixa" id="faixa"></div>
-  <div class="sino oculto" id="sino" title="Avisos automáticos (toque para abrir)"></div>
-  <div class="busca-wrap"><input id="busca" type="search" placeholder="🔎 buscar conversas pelo título…" autocomplete="off"></div>
-  <div class="lista" id="lista"></div>
+<main id="principal" aria-label="Lista de conversas">
+  <div class="faixa" id="faixa" role="status" aria-live="polite" aria-atomic="true"></div>
+  <div class="sino oculto" id="sino" title="Avisos automáticos (toque para abrir)" role="button" tabindex="0" aria-expanded="false" aria-label="Abrir avisos automáticos"></div>
+  <div class="busca-wrap"><label class="visualmente-oculto" for="busca">Buscar conversas pelo título</label><input id="busca" type="search" placeholder="🔎 buscar conversas pelo título…" autocomplete="off"></div>
+  <div class="lista" id="lista" aria-live="polite" aria-busy="false"></div>
 </main>
 
-<div id="tela-config" class="oculto">
+<section id="tela-config" class="oculto" aria-labelledby="titulo-config">
   <div class="cartao" id="cartao-acesso">
-    <h2>🔑 Acesso</h2>
-    <p>Para esta página ler e escrever nas suas conversas privadas, ela precisa de um <b>token de acesso do GitHub</b> — guardado apenas neste navegador, nunca aqui no site.</p>
+    <h2 id="titulo-config" tabindex="-1">🔑 Acesso</h2>
+    <p id="token-ajuda">Para esta página ler e escrever nas suas conversas privadas, ela precisa de um <b>token de acesso do GitHub</b> — guardado apenas neste navegador, nunca aqui no site.</p>
     <ol class="inst">
       <li>Abra <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">github.com/settings/personal-access-tokens/new</a> (entre na conta <b>reboclbrank-max</b>)</li>
       <li><b>Token name:</b> <code>chat-site</code> · <b>Expiration:</b> 90 dias (ou o que preferir)</li>
@@ -164,9 +167,10 @@
       <li><b>Permissions:</b> em <i>Repository permissions</i>, ache <b>Issues</b> e mude para <b>Read and write</b></li>
       <li><b>Generate token</b> → copie o valor (começa com <code>github_pat_</code>) e cole abaixo</li>
     </ol>
-    <input type="password" id="token" placeholder="cole aqui o token github_pat_..." autocomplete="off">
-    <button id="btn-salvar">Salvar e testar</button>
-    <div id="status-conexao"></div>
+    <label class="visualmente-oculto" for="token">Token de acesso do GitHub</label>
+    <input type="password" id="token" placeholder="cole aqui o token github_pat_..." autocomplete="off" aria-describedby="token-ajuda">
+    <button type="button" id="btn-salvar">Salvar e testar</button>
+    <div id="status-conexao" role="status" aria-live="polite" aria-atomic="true"></div>
   </div>
   <div class="cartao">
     <h2>📱 Instalar como aplicativo</h2>
@@ -177,7 +181,7 @@
   <div class="cartao">
     <h2>🎨 Aparência</h2>
     <p>Tema claro ou escuro — fica salvo neste aparelho.</p>
-    <button class="acao" id="btn-tema" style="margin-top:8px">☀️ tema claro</button>
+    <button type="button" class="acao" id="btn-tema" style="margin-top:8px">☀️ tema claro</button>
   </div>
   <div class="cartao">
     <h2>🧠 Cérebro 100% local (offline)</h2>
@@ -185,54 +189,54 @@
     <p>Na primeira vez baixa ~1,1 GB (depois fica salvo neste navegador). Precisa de navegador com <b>WebGPU</b> (Chrome/Edge no computador ou Android). Em aparelho fraco pode ficar lento — é opcional.</p>
     <p>As trocas do modo local ficam <b>só no aparelho</b> até você apertar <b>☁️</b> para sincronizar com o GitHub (o assistente arquiva sem responder de novo).</p>
     <h2 style="margin-top:12px">⚖️ Modelo do cérebro local</h2>
-    <div id="seletor-modelo" style="display:flex;flex-direction:column;gap:6px"></div>
+    <div id="seletor-modelo" style="display:flex;flex-direction:column;gap:6px" role="group" aria-label="Modelo do cérebro local"></div>
   </div>
   <div class="cartao">
     <h2>💾 Minhas conversas fora do navegador</h2>
     <p>Exporte todas as conversas para guardar (ou levar para outro aparelho). Ao importar, o Chat cria uma nova conversa com a primeira mensagem sua de cada arquivo; ele não reenviará respostas ou histórico como instruções novas.</p>
-    <button id="btn-exp-json">⬇ Exportar tudo (JSON)</button>
-    <button id="btn-exp-md" style="margin-top:8px;background:var(--painel);border:1px solid var(--borda);color:var(--texto);font-weight:600">⬇ Exportar tudo (texto .md)</button>
-    <button id="btn-imp-json" style="margin-top:8px;background:var(--painel);border:1px solid var(--borda);color:var(--texto);font-weight:600">⬆ Importar inícios de conversa (JSON)</button>
-    <input type="file" id="arq-importar" accept="application/json,.json" class="oculto">
-    <div id="status-exportar"></div>
+    <button type="button" id="btn-exp-json">⬇ Exportar tudo (JSON)</button>
+    <button type="button" id="btn-exp-md" style="margin-top:8px;background:var(--painel);border:1px solid var(--borda);color:var(--texto);font-weight:600">⬇ Exportar tudo (texto .md)</button>
+    <button type="button" id="btn-imp-json" style="margin-top:8px;background:var(--painel);border:1px solid var(--borda);color:var(--texto);font-weight:600">⬆ Importar inícios de conversa (JSON)</button>
+    <input type="file" id="arq-importar" accept="application/json,.json" class="oculto" aria-label="Escolher arquivo JSON para importar inícios de conversa">
+    <div id="status-exportar" role="status" aria-live="polite" aria-atomic="true"></div>
   </div>
   <div class="rodape">Página pública (não contém dados). Suas conversas ficam no repositório privado <b>reboclbrank-max/agente</b>.</div>
-</div>
+</section>
 
-<div id="tela-conv" class="oculto" style="display:none;flex:1;flex-direction:column;overflow:hidden">
+<section id="tela-conv" class="oculto" style="display:none;flex:1;flex-direction:column;overflow:hidden" aria-labelledby="titulo-conv">
   <div id="cabecalho-conv">
-    <button class="voltar" id="btn-voltar">‹</button>
-    <div class="titulo" id="titulo-conv"></div>
-    <button class="ler-tudo" id="btn-auto-voz" title="Ela fala as respostas novas sozinha">🔈 auto</button>
-    <button class="ler-tudo" id="btn-ler-tudo">🔊 ler</button>
-    <button class="ler-tudo" id="btn-atualizar" title="Atualizar">🔄</button>
-    <button class="acao" id="btn-local" title="Cérebro 100% local (offline, nada sai do aparelho)">🧠</button>
-    <button class="acao oculto" id="btn-sync" title="Sincronizar conversas do modo local com o GitHub">☁️</button>
-    <button class="acao" id="btn-reenviar" title="Reenviar minha última mensagem">🔁</button>
-      <button class="acao" id="btn-turbo" title="⚡ TURBO: responder na hora, aqui no navegador (streaming)">⚡</button>
-      <button class="acao" id="btn-mic" title="Falar com ela (ditado pt-BR)">🎤</button>
-      <select id="sel-cerebro" title="Cérebro da emergência" style="background:#16161a;color:#e8e0c8;border:1px solid #2c2c33;border-radius:8px;padding:6px 8px;font-size:13px;max-width:150px"></select>
-    <button class="acao" id="btn-exportar-conv" title="Exportar só esta conversa">💾</button>
-    <button class="acao" id="btn-imprimir" title="Imprimir / salvar como PDF">🖨️</button>
-    <button class="acao" id="btn-renomear" title="Renomear conversa">✏️</button>
-    <button class="acao" id="btn-fechar-conv" title="Fechar conversa">🗑️</button>
+    <button type="button" class="voltar" id="btn-voltar" aria-label="Voltar à lista de conversas">‹</button>
+    <div class="titulo" id="titulo-conv" tabindex="-1"></div>
+    <button type="button" class="ler-tudo" id="btn-auto-voz" title="Ela fala as respostas novas sozinha" aria-label="Alternar leitura automática de novas respostas" aria-pressed="false">🔈 auto</button>
+    <button type="button" class="ler-tudo" id="btn-ler-tudo" aria-label="Ler todas as respostas visíveis">🔊 ler</button>
+    <button type="button" class="ler-tudo" id="btn-atualizar" title="Atualizar" aria-label="Atualizar conversa">🔄</button>
+    <button type="button" class="acao" id="btn-local" title="Cérebro 100% local (offline, nada sai do aparelho)" aria-label="Alternar cérebro local offline" aria-pressed="false">🧠</button>
+    <button type="button" class="acao oculto" id="btn-sync" title="Sincronizar conversas do modo local com o GitHub" aria-label="Sincronizar trocas locais com o GitHub">☁️</button>
+    <button type="button" class="acao" id="btn-reenviar" title="Reenviar minha última mensagem" aria-label="Reenviar a última mensagem após confirmação">🔁</button>
+    <button type="button" class="acao" id="btn-turbo" title="⚡ TURBO: responder na hora, aqui no navegador (streaming)" aria-label="Alternar modo TURBO local" aria-pressed="false">⚡</button>
+    <button type="button" class="acao" id="btn-mic-top" data-acao="ditado" title="Falar com ela (ditado pt-BR)" aria-label="Iniciar ditado por voz" aria-pressed="false">🎤</button>
+    <label class="visualmente-oculto" for="sel-cerebro">Cérebro da emergência</label><select id="sel-cerebro" title="Cérebro da emergência" style="background:#16161a;color:#e8e0c8;border:1px solid #2c2c33;border-radius:8px;padding:6px 8px;font-size:13px;max-width:150px"></select>
+    <button type="button" class="acao" id="btn-exportar-conv" title="Exportar só esta conversa" aria-label="Exportar esta conversa">💾</button>
+    <button type="button" class="acao" id="btn-imprimir" title="Imprimir / salvar como PDF" aria-label="Imprimir ou salvar a conversa como PDF">🖨️</button>
+    <button type="button" class="acao" id="btn-renomear" title="Renomear conversa" aria-label="Renomear conversa">✏️</button>
+    <button type="button" class="acao" id="btn-fechar-conv" title="Fechar conversa" aria-label="Fechar conversa">🗑️</button>
   </div>
-  <div id="faixa-local" class="oculto"></div>
-  <div id="progresso-local" class="oculto"></div>
-  <div class="msgs" id="msgs"></div>
+  <div id="faixa-local" class="oculto" role="status" aria-live="polite"></div>
+  <div id="progresso-local" class="oculto" role="status" aria-live="polite"></div>
+  <div class="msgs" id="msgs" role="log" aria-live="polite" aria-relevant="additions text" aria-label="Mensagens da conversa"></div>
   <div class="composer-wrap">
-    <div id="sugestoes" class="oculto" style="display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 6px"></div>
-    <div class="chips" id="chips"></div>
+    <div id="sugestoes" class="oculto" style="display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 6px" role="group" aria-label="Sugestões de continuidade"></div>
+    <div class="chips" id="chips" role="group" aria-label="Comandos rápidos"></div>
     <div class="composer">
-      <button class="mic" id="btn-mic" title="Falar">🎙</button>
-      <textarea id="entrada" rows="1" placeholder="Escreva… (ex.: 'noticias:', 'imagem: …', 'lembrar: …') — ou arraste um arquivo .txt/.md aqui"></textarea>
-      <span id="contador" title="Caracteres"></span>
-      <button id="btn-enviar">➤</button>
+      <button type="button" class="mic" id="btn-mic" data-acao="ditado" title="Falar" aria-label="Iniciar ditado por voz" aria-pressed="false">🎙</button>
+      <label class="visualmente-oculto" for="entrada">Mensagem</label><textarea id="entrada" rows="1" placeholder="Escreva… (ex.: 'noticias:', 'imagem: …', 'lembrar: …') — ou arraste um arquivo .txt/.md aqui" aria-describedby="contador"></textarea>
+      <span id="contador" title="Caracteres" aria-live="polite"></span>
+      <button type="button" id="btn-enviar" aria-label="Enviar mensagem">➤</button>
     </div>
   </div>
-</div>
+</section>
 
-<div id="lightbox"><img alt=""></div>
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Imagem ampliada; pressione Esc ou toque para fechar" aria-hidden="true" tabindex="-1"><img alt=""></div>
 <script>
 // 🛡 Guarda anti-cota (14/10/2026): texto de infra da reserva (ex.: "The API key used for this
 // request has reached its limit") NÃO é resposta — a rota seguinte assume. Lei da casa: infra falada
@@ -505,33 +509,49 @@ function falar(texto, botao) {
 }
 
 let reconhecendo = null, gravando = false;
+function botoesMicrofone() { return Array.from(document.querySelectorAll('[data-acao="ditado"]')); }
+function marcarMicrofone(ativo) {
+  botoesMicrofone().forEach((botao) => {
+    botao.classList.toggle('gravando', ativo);
+    botao.classList.toggle('local-ligado', ativo);
+    botao.setAttribute('aria-pressed', ativo ? 'true' : 'false');
+    botao.setAttribute('aria-label', ativo ? 'Parar ditado por voz' : 'Iniciar ditado por voz');
+  });
+  const principal = $('btn-mic');
+  if (principal) principal.textContent = ativo ? '⏹' : '🎙';
+}
 function alternarMicrofone() {
   const Reconhecimento = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!Reconhecimento) { alert('Este navegador não tem reconhecimento de voz. Use o Chrome no Android.'); return; }
-  const botao = $('btn-mic');
   if (gravando) { if (reconhecendo) reconhecendo.stop(); return; }
   reconhecendo = new Reconhecimento();
   reconhecendo.lang = 'pt-BR';
   reconhecendo.interimResults = true;
   reconhecendo.continuous = false;
   let base = '';
-  reconhecendo.onstart = () => { gravando = true; botao.classList.add('gravando'); botao.textContent = '⏹'; base = $('entrada').value; };
+  reconhecendo.onstart = () => { gravando = true; marcarMicrofone(true); base = $('entrada').value; };
   reconhecendo.onresult = (e) => {
     let parcial = '';
     for (let i = e.resultIndex; i < e.results.length; i++) parcial += e.results[i][0].transcript;
     $('entrada').value = (base ? base + ' ' : '') + parcial;
+    atualizarContador();
   };
   reconhecendo.onerror = () => {};
-  reconhecendo.onend = () => { gravando = false; botao.classList.remove('gravando'); botao.textContent = '🎙'; };
+  reconhecendo.onend = () => { gravando = false; marcarMicrofone(false); };
   reconhecendo.start();
 }
 
 /* ---------- telas ---------- */
-function mostrarConfig(mostrar) {
+function focoSeguro(id) {
+  const alvo = $(id);
+  if (alvo) setTimeout(() => alvo.focus(), 0);
+}
+function mostrarConfig(mostrar, focar = false) {
   $('tela-config').classList.toggle('oculto', !mostrar);
   $('principal').classList.toggle('oculto', mostrar);
   $('tela-conv').classList.add('oculto');
   $('tela-conv').style.display = 'none';
+  if (mostrar && focar) focoSeguro('titulo-config');
 }
 function abrirConversa() {
   $('principal').classList.add('oculto');
@@ -546,6 +566,7 @@ function voltarLista() {
   $('tela-conv').style.display = 'none';
   $('principal').classList.remove('oculto');
   carregarLista();
+  focoSeguro('busca');
 }
 function pararPolling() { if (intervalo) { clearInterval(intervalo); intervalo = null; } }
 
@@ -556,7 +577,7 @@ function criarCartaoConversa(i) {
   const rotina = (i.labels || []).some((l) => l.name === 'rotina');
   div.innerHTML = `<div class="titulo">${rotina ? '📋 ' : ''}${escapar(i.title)}</div>
     <div class="meta"><span>💬 ${i.comments}</span><span>🕒 ${quando(i.updated_at)}</span></div>`;
-  div.onclick = () => abrir(i.number, i.title);
+  ativarComoBotao(div, () => abrir(i.number, i.title), 'Abrir conversa: ' + String(i.title || 'sem título'));
   return div;
 }
 function criarCartaoNova() {
@@ -565,7 +586,7 @@ function criarCartaoNova() {
   nova.id = 'card-nova';
   nova.style.borderColor = 'var(--ouro-fraco)';
   nova.innerHTML = '<div class="titulo" style="color:var(--ouro)">＋ Nova conversa</div><div class="meta"><span>fale o que precisa — eu pesquiso, gero imagem, vejo clima…</span></div>';
-  nova.onclick = novaConversa;
+  ativarComoBotao(nova, novaConversa, 'Criar nova conversa');
   return nova;
 }
 function criarCartaoMais() {
@@ -579,6 +600,14 @@ function criarCartaoMais() {
   mais.onclick = carregarMaisConversas;
   mais.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); carregarMaisConversas(); } };
   return mais;
+}
+
+function ativarComoBotao(elemento, acao, rotulo) {
+  elemento.tabIndex = 0;
+  elemento.setAttribute('role', 'button');
+  elemento.setAttribute('aria-label', rotulo);
+  elemento.onclick = acao;
+  elemento.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); acao(); } };
 }
 function salvarListaAtualEmCache() {
   const fotografia = listaAtual.slice();
@@ -708,6 +737,7 @@ async function abrir(numero, titulo, contexto = null) {
   abrirConversa();
   try { localStorage.setItem('rebocl_conv_titulo', titulo || ('Conversa #' + numero)); } catch (e) {}
   $('titulo-conv').textContent = titulo || ('Conversa #' + numero);
+  focoSeguro('titulo-conv');
   elMsgs.innerHTML = '<div class="vazio"><span class="emoji">⏳</span>carregando…</div>';
   try {
     const issue = await api(`/repos/${REPO}/issues/${numero}`);
@@ -832,11 +862,12 @@ function renderComentario(c) {
 }
 
 function bolha(tipo, texto, iso, motor) {
-  const div = document.createElement('div');
+  const div = document.createElement('article');
   div.className = 'bolha ' + tipo;
+  div.setAttribute('aria-label', tipo === 'bot' ? 'Resposta do Assistente' : 'Sua mensagem');
   const html = markdown(texto || '');
   if (tipo === 'bot') {
-    div.innerHTML = `<div class="quem">🤖 Assistente · ${quando(iso)}${motor ? ' <span class="' + (motor.indexOf('local') !== -1 ? 'tag-local' : 'tag-motor') + '">' + escapar(motor) + '</span>' : ''} <button class="falar" title="Ouvir — voz do aparelho (funciona offline)">🔊</button></div>${html}`;
+    div.innerHTML = `<div class="quem">🤖 Assistente · ${quando(iso)}${motor ? ' <span class="' + (motor.indexOf('local') !== -1 ? 'tag-local' : 'tag-motor') + '">' + escapar(motor) + '</span>' : ''} <button type="button" class="falar" title="Ouvir — voz do aparelho (funciona offline)" aria-label="Ouvir esta resposta">🔊</button></div>${html}`;
     const botao = div.querySelector('.falar');
     botao.onclick = () => falar(textoSimples(html), botao);
   } else {
@@ -845,8 +876,10 @@ function bolha(tipo, texto, iso, motor) {
   const acoes = document.createElement('div');
   acoes.className = 'acoes';
   const copiar = document.createElement('button');
+  copiar.type = 'button';
   copiar.textContent = '📋';
   copiar.title = 'Copiar texto';
+  copiar.setAttribute('aria-label', 'Copiar texto desta mensagem');
   copiar.onclick = () => copiarTexto(textoSimples(html), copiar);
   acoes.appendChild(copiar);
   div.appendChild(acoes);
@@ -1003,6 +1036,7 @@ async function enviar() {
       MODO_LOCAL.ligado = true;
       localStorage.setItem('assistente_rebocl_modo_local', '1');
       $('btn-local').classList.add('local-ligado');
+      $('btn-local').setAttribute('aria-pressed', 'true');
       const f = $('faixa-local');
       f.textContent = '📶 Sem internet — liguei o 🧠 cérebro local para não te deixar na mão (' + rotuloLocalAtual() + ')';
       f.classList.remove('oculto');
@@ -1868,32 +1902,16 @@ function alternarTurbo() {
   TURBO = !TURBO;
   localStorage.setItem('rebocl_turbo', TURBO ? '1' : '0');
   const b = $('btn-turbo');
-  if (b) b.classList.toggle('local-ligado', TURBO);
+  if (b) {
+    b.classList.toggle('local-ligado', TURBO);
+    b.setAttribute('aria-pressed', TURBO ? 'true' : 'false');
+  }
   const f = $('faixa-local');
   if (f) {
     f.textContent = TURBO ? '⚡ TURBO LIGADO: as respostas nascem AQUI no seu navegador, palavra por palavra, sem esperar a casa.' : '⚡ TURBO desligado — de volta ao fluxo normal da casa.';
     f.classList.remove('oculto');
     if (!TURBO) setTimeout(() => f.classList.add('oculto'), 3500);
   }
-}
-function falarAgora() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) { alert('Este navegador não tem ditado por voz — digite na caixa. (Chrome tem 🎤)'); return; }
-  const rec = new SR();
-  rec.lang = 'pt-BR'; rec.interimResults = true; rec.continuous = false;
-  const b = $('btn-mic');
-  if (b) b.classList.add('local-ligado');
-  rec.onresult = (ev) => {
-    let final = '', parcial = '';
-    for (let i = ev.resultIndex; i < ev.results.length; i++) {
-      if (ev.results[i].isFinal) final += ev.results[i][0].transcript;
-      else parcial += ev.results[i][0].transcript;
-    }
-    $('entrada').value = (final || parcial).trim();
-  };
-  rec.onend = () => { if (b) b.classList.remove('local-ligado'); };
-  rec.onerror = () => { if (b) b.classList.remove('local-ligado'); };
-  rec.start();
 }
 function montarSeletorCerebro() {
   const sel = $('sel-cerebro');
@@ -1986,7 +2004,15 @@ async function checarSino() {
 }
 (function ligarSino() {
   const el = $('sino');
-  if (el) el.onclick = () => el.classList.toggle('aberto');
+  if (!el) return;
+  const alternar = () => {
+    const aberto = !el.classList.contains('aberto');
+    el.classList.toggle('aberto', aberto);
+    el.setAttribute('aria-expanded', aberto ? 'true' : 'false');
+    el.setAttribute('aria-label', aberto ? 'Fechar avisos automáticos' : 'Abrir avisos automáticos');
+  };
+  el.onclick = alternar;
+  el.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); alternar(); } };
 })();
 
 /* ---------- configuração ---------- */
@@ -2016,7 +2042,7 @@ $('btn-salvar').onclick = async () => {
 $('btn-config').onclick = () => {
   $('token').value = '';
   $('status-conexao').innerHTML = token ? '<div class="aviso ok">já existe um token salvo neste navegador.</div>' : '';
-  mostrarConfig(true);
+  mostrarConfig(true, true);
 };
 $('btn-voltar').onclick = voltarLista;
 $('btn-enviar').onclick = enviar;
@@ -2026,10 +2052,13 @@ $('btn-auto-voz').onclick = () => {
   const ligar = !autoVoz();
   localStorage.setItem('falarAuto', ligar ? '1' : '0');
   $('btn-auto-voz').textContent = ligar ? '🔊 auto' : '🔈 auto';
+  $('btn-auto-voz').setAttribute('aria-pressed', ligar ? 'true' : 'false');
   if (ligar) falar('Pronto! Vou falar as respostas novas sozinha.', null);
 };
 if (autoVoz()) $('btn-auto-voz').textContent = '🔊 auto';
+$('btn-auto-voz').setAttribute('aria-pressed', autoVoz() ? 'true' : 'false');
 $('btn-mic').onclick = alternarMicrofone;
+$('btn-mic-top').onclick = alternarMicrofone;
 $('btn-ler-tudo').onclick = () => {
   const textos = Array.from(elMsgs.querySelectorAll('.bolha.bot')).map((b) => b.textContent).join('. ');
   if (textos) falar(textos, null);
@@ -2046,9 +2075,9 @@ $('btn-fechar-conv').onclick = fecharConversa;
 $('btn-exportar-conv').onclick = exportarConversaAtual;
 $('btn-reenviar').onclick = reenviarUltima;
 $('btn-turbo').onclick = alternarTurbo;
-$('btn-mic').onclick = falarAgora;
 montarSeletorCerebro();
 if (TURBO) $('btn-turbo').classList.add('local-ligado');
+$('btn-turbo').setAttribute('aria-pressed', TURBO ? 'true' : 'false');
 iniciarVigia();
 $('btn-local').onclick = alternarModoLocal;
 $('btn-sync').onclick = sincronizarLocal;
@@ -2058,7 +2087,7 @@ document.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && conversa) { e.preventDefault(); enviar(); return; }
   if (e.key === '/' && document.activeElement !== caixa && !e.ctrlKey && !e.metaKey && !e.altKey) { e.preventDefault(); caixa.focus(); }
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n') { e.preventDefault(); novaConversa(); return; }
-  if (e.key === 'Escape') $('tela-config').classList.add('oculto');
+  if (e.key === 'Escape') { if (_lightbox && _lightbox.classList.contains('aberto')) fecharLightbox(); else $('tela-config').classList.add('oculto'); }
 });
 $('entrada').addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviar(); }
@@ -2399,7 +2428,10 @@ async function alternarModoLocal() {
   MODO_LOCAL.ligado = !MODO_LOCAL.ligado;
   localStorage.setItem('assistente_rebocl_modo_local', MODO_LOCAL.ligado ? '1' : '0');
   const b = $('btn-local');
-  if (b) b.classList.toggle('local-ligado', MODO_LOCAL.ligado);
+  if (b) {
+    b.classList.toggle('local-ligado', MODO_LOCAL.ligado);
+    b.setAttribute('aria-pressed', MODO_LOCAL.ligado ? 'true' : 'false');
+  }
   const f = $('faixa-local');
   if (MODO_LOCAL.ligado) {
     f.textContent = '🧠 modo 100% local ligado (' + rotuloLocalAtual() + ') — responde no seu aparelho, offline, nada sai dele';
@@ -2474,13 +2506,24 @@ function lerArquivoDrop(ev) {
 
 /* ---------- lightbox das imagens (v1.6) ---------- */
 const _lightbox = $('lightbox');
+let focoAntesLightbox = null;
+function fecharLightbox() {
+  if (!_lightbox || !_lightbox.classList.contains('aberto')) return;
+  _lightbox.classList.remove('aberto');
+  _lightbox.setAttribute('aria-hidden', 'true');
+  if (focoAntesLightbox && typeof focoAntesLightbox.focus === 'function') focoAntesLightbox.focus();
+  focoAntesLightbox = null;
+}
 if (_lightbox) {
-  _lightbox.addEventListener('click', () => _lightbox.classList.remove('aberto'));
+  _lightbox.addEventListener('click', fecharLightbox);
   document.addEventListener('click', (e) => {
     const img = e.target && e.target.tagName === 'IMG' && e.target.closest('.bolha');
     if (img) {
+      focoAntesLightbox = document.activeElement;
       _lightbox.querySelector('img').src = e.target.src;
       _lightbox.classList.add('aberto');
+      _lightbox.setAttribute('aria-hidden', 'false');
+      _lightbox.focus();
     }
   });
 }
@@ -2491,6 +2534,7 @@ montarBusca();
 montarSeletorModelo();
 if (MODO_LOCAL.ligado) {
   $('btn-local').classList.add('local-ligado');
+  $('btn-local').setAttribute('aria-pressed', 'true');
   $('faixa-local').textContent = '🧠 modo 100% local ligado (' + rotuloLocalAtual() + ') — responde no seu aparelho, offline, nada sai dele';
   $('faixa-local').classList.remove('oculto');
 }
