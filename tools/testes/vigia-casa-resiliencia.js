@@ -46,6 +46,17 @@ ok('recuperação automática tem freio persistido e não faz rajada do mesmo tu
   assert.match(fonte, /Math\.min\(2, \(prev\.falhas \|\| 0\) \+ 1\)/);
   assert(!/cura\.push\(await acao/.test(fonte), 'não deve despachar sem passar pelo freio');
 });
+ok('diagnóstico sanitizado só recupera ausência/atraso comprovados', () => {
+  assert.match(fonte, /const CAUSAS_VIGIA = Object\.freeze/);
+  assert.match(fonte, /const CAUSAS_RECUPERAVEIS = Object\.freeze\(\['sem-execucao', 'turno-ausente', 'bateria-atrasada', 'caixa-atrasada'\]\)/);
+  assert.match(fonte, /falhaVigia\('api-indisponivel'/);
+  assert.match(fonte, /falhaVigia\('execucao-falhou'/);
+  assert.match(fonte, /falhaVigia\('fila-estagnada'/);
+  assert.match(fonte, /if \(t && !t\.ok && t\.recuperavel\)/);
+  assert.match(fonte, /if \(b && !b\.ok && b\.recuperavel\)/);
+  assert.match(fonte, /if \(cb && !cb\.ok && cb\.recuperavel\)/);
+  assert.match(fonte, /novos\[it\.nome\] = \{ ok: it\.ok, falhas, causa \}/);
+});
 
 console.log(`${certos}/${certos + falhas} testes de resiliência do vigia passaram`);
 process.exitCode = falhas ? 1 : 0;

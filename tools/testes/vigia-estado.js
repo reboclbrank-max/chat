@@ -67,6 +67,11 @@ ok('volta saudável limpa o freio para que uma nova pane tenha primeira tentativ
   assert.equal(recuperacaoPermitida(limpo, 'email', agora + 1), true);
   assert.equal(deveSalvarEstado({ verificado_em: new Date(agora).toISOString(), itens: verde, recuperacoes: registros }, verde, agora + 1, limpo), true);
 });
+ok('mudança de causa sanitizada é persistida sem depender de detalhe bruto', () => {
+  const antigo = { verificado_em: new Date(agora).toISOString(), itens: { Turno: { ok: false, falhas: 2, causa: 'api-indisponivel' } } };
+  const novo = { Turno: { ok: false, falhas: 2, causa: 'turno-ausente' } };
+  assert.equal(deveSalvarEstado(antigo, novo, agora + 1), true);
+});
 
 console.log(`${n}/${n + falhas} testes do estado do vigia passaram`);
 process.exitCode = falhas ? 1 : 0;

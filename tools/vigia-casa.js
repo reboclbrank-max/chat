@@ -30,9 +30,36 @@ async function buscaJSON(url) {
   return r.json();
 }
 
+// Categorias fechadas: o estado público recebe só este código sanitizado, nunca exceção bruta,
+// conteúdo de caixa, destinatário, URL autenticada ou token. Só causas observáveis e conhecidas
+// podem justificar uma recuperação automática.
+const CAUSAS_VIGIA = Object.freeze([
+  'saudavel', 'api-indisponivel', 'sem-execucao', 'execucao-falhou',
+  'fila-estagnada', 'turno-ausente', 'bateria-atrasada', 'caixa-atrasada',
+  'sonda-indisponivel'
+]);
+const CAUSAS_RECUPERAVEIS = Object.freeze(['sem-execucao', 'turno-ausente', 'bateria-atrasada', 'caixa-atrasada']);
+
+function falhaVigia(causa, detalhe, recuperavel = false) {
+  const causaSegura = CAUSAS_VIGIA.includes(causa) ? causa : 'sonda-indisponivel';
+  const erro = new Error(detalhe);
+  erro.causa = causaSegura;
+  erro.recuperavel = Boolean(recuperavel) && CAUSAS_RECUPERAVEIS.includes(causaSegura);
+  return erro;
+}
+
 async function verifica(nome, fn) {
-  try { return { nome, ok: true, detalhe: await fn() }; }
-  catch (e) { return { nome, ok: false, detalhe: String((e && e.message) || e).slice(0, 140) }; }
+  try { return { nome, ok: true, causa: 'saudavel', recuperavel: false, detalhe: await fn() }; }
+  catch (e) {
+    const causa = e && CAUSAS_VIGIA.includes(e.causa) ? e.causa : 'sonda-indisponivel';
+    return {
+      nome,
+      ok: false,
+      causa,
+      recuperavel: Boolean(e && e.recuperavel) && CAUSAS_RECUPERAVEIS.includes(causa),
+      detalhe: String((e && e.message) || e).slice(0, 140)
+    };
+  }
 }
 
 async function acao(rotulo, arquivo) {
@@ -76,7 +103,7 @@ async function acao(rotulo, arquivo) {
   const runsExame = await buscaJSON('https://api.github.com/repos/' + REPO + '/actions/workflows/evolucao.yml/runs?per_page=10').catch(() => null);
 
   itens.push(await verifica('Chat por e-mail (24h)', async () => {
-    if (!runsEmail) throw new Error('API de execuções indisponível');
+    if (!runsEmail) throw falhaVigia('api-indisponivel', 'API de execuções indisponível');
     const meus = runsEmail.workflow_runs;
     const vivos = meus.filter(r => r.status === 'in_progress');
     const naFila = meus.filter(r => r.status === 'queued' || r.status === 'pending');
@@ -102,24 +129,35 @@ async function acao(rotulo, arquivo) {
     if (naFila.length) {
       const maisVelho = Math.max.apply(null, naFila.map(r => Date.now() - new Date(r.created_at).getTime()));
       const min = maisVelho / 60000;
-      if (min > 30) throw new Error('turno na fila há ' + min.toFixed(0) + 'min SEM nada rodando');
+      // Uma fila já congestionada não melhora com mais dispatches: registra e aguarda intervenção/normalização.
+      if (min > 30) throw falhaVigia('fila-estagnada', 'turno na fila há ' + min.toFixed(0) + 'min SEM nada rodando');
       return 'turno na fila há ' + min.toFixed(0) + 'min (nada rodando ainda)';
     }
     const ult = meus[0];
-    if (!ult) throw new Error('nenhuma execução encontrada');
+    if (!ult) throw falhaVigia('sem-execucao', 'nenhuma execução encontrada', true);
+    const conclusao = String(ult.conclusion || '').toLowerCase();
+    // Reexecutar cegamente código que acabou de falhar pode ampliar uma regressão; a falha fica explícita,
+    // mas só ausência/atraso comprovados são auto-recuperáveis.
+    if (ult.status === 'completed' && conclusao && conclusao !== 'success') {
+      throw falhaVigia('execucao-falhou', 'última execução terminou em ' + conclusao.replace(/[^a-z_]/g, '').slice(0, 32));
+    }
     const idade = h(Date.now() - new Date(ult.created_at).getTime());
     // 14/10: corrente nova — sem NADA vivo nem na fila, 45 min já é sinal de corrente quebrada (antes: 7h)
-    if (idade > 0.75) throw new Error('nenhum turno vivo há ' + idade.toFixed(1) + 'h');
+    if (idade > 0.75) throw falhaVigia('turno-ausente', 'nenhum turno vivo há ' + idade.toFixed(1) + 'h', true);
     return 'turno recente há ' + (idade * 60).toFixed(0) + 'min';
   }));
 
   itens.push(await verifica('Bateria do cérebro', async () => {
-    if (!runsExame) throw new Error('API de execuções indisponível');
+    if (!runsExame) throw falhaVigia('api-indisponivel', 'API de execuções indisponível');
     const meus = runsExame.workflow_runs;
     const ult = meus[0];
-    if (!ult) throw new Error('nenhuma execução encontrada');
+    if (!ult) throw falhaVigia('sem-execucao', 'nenhuma execução encontrada', true);
+    const conclusao = String(ult.conclusion || '').toLowerCase();
+    if (ult.status === 'completed' && conclusao && conclusao !== 'success') {
+      throw falhaVigia('execucao-falhou', 'último exame terminou em ' + conclusao.replace(/[^a-z_]/g, '').slice(0, 32));
+    }
     const idade = h(Date.now() - new Date(ult.created_at).getTime());
-    if (idade > 26) throw new Error('último exame há ' + idade.toFixed(1) + 'h');
+    if (idade > 26) throw falhaVigia('bateria-atrasada', 'último exame há ' + idade.toFixed(1) + 'h', true);
     return 'último exame há ' + idade.toFixed(1) + 'h';
   }));
 
@@ -135,9 +173,9 @@ async function acao(rotulo, arquivo) {
 
   // 📬 CAIXA: e-mail parado sem resposta é o problema mais importante da casa (o vigia não pode dormir nele)
   itens.push(await verifica('Caixa de e-mail', async () => {
-    if (!USER || !PASS) throw new Error('sem credenciais nesta execução');
+    if (!USER || !PASS) throw falhaVigia('sonda-indisponivel', 'sem credenciais nesta execução');
     let imap = null;
-    try { imap = require('imapflow'); } catch (e) { throw new Error('imapflow ausente nesta execução'); }
+    try { imap = require('imapflow'); } catch (e) { throw falhaVigia('sonda-indisponivel', 'imapflow ausente nesta execução'); }
     const cli = new imap.ImapFlow({ host: 'imap.gmail.com', port: 993, secure: true, auth: { user: USER, pass: PASS }, logger: false });
     await comTeto(cli.connect(), 45000, 'conexão IMAP');
     try {
@@ -150,7 +188,7 @@ async function acao(rotulo, arquivo) {
         const quando = (m && m.envelope && m.envelope.date) ? new Date(m.envelope.date).getTime() : Date.now();
         const min = (Date.now() - quando) / 60000;
         if (min < 12) return alvo.length + ' e-mail(s) recém-chegado(s) — o turno pega em instantes';
-        throw new Error(alvo.length + ' e-mail(s) SEM RESPOSTA, o mais antigo há ' + min.toFixed(0) + ' min');
+        throw falhaVigia('caixa-atrasada', alvo.length + ' e-mail(s) SEM RESPOSTA, o mais antigo há ' + min.toFixed(0) + ' min', true);
       } finally { lock.release(); }
     } finally { try { await comTeto(cli.logout(), 15000, 'logout IMAP'); } catch (e) { try { cli.close(); } catch (e2) {} } }
   }));
@@ -171,9 +209,12 @@ async function acao(rotulo, arquivo) {
     const falhas = it.ok ? 0 : Math.min(2, (prev.falhas || 0) + 1);
     const efetivoAntes = prev.ok || (prev.falhas || 0) < 2;
     const efetivoAgora = it.ok || falhas < 2;
-    if (efetivoAntes !== efetivoAgora) mudou = true;
-    novos[it.nome] = { ok: it.ok, falhas };
-    linhas.push((efetivoAgora ? '✅' : '❌') + ' ' + it.nome + ' — ' + it.detalhe + (it.ok ? '' : ' (falha ' + falhas + '/2)'));
+    const causa = it.ok ? 'saudavel' : it.causa;
+    // Mudança de causa é relevante mesmo se a pane já estava confirmada: pode tornar a recuperação
+    // elegível ou bloqueá-la, sem registrar detalhe sensível.
+    if (efetivoAntes !== efetivoAgora || (!it.ok && prev.causa && prev.causa !== causa)) mudou = true;
+    novos[it.nome] = { ok: it.ok, falhas, causa };
+    linhas.push((efetivoAgora ? '✅' : '❌') + ' ' + it.nome + ' — ' + it.detalhe + (it.ok ? '' : ' · causa: ' + causa + ' (falha ' + falhas + '/2)'));
   }
 
   // ---- recuperação contida: ação autorizada, reversível e nunca em rajada ----
@@ -201,9 +242,9 @@ async function acao(rotulo, arquivo) {
 
   // Turno e caixa compartilham a mesma trava: se ambos acusarem falha numa rodada, há no máximo
   // um dispatch de email.yml. A bateria é uma família independente e mais espaçada.
-  if (t && !t.ok) await tentaRecuperar('email', 'E-mail (turno)', 'email.yml');
-  if (b && !b.ok) await tentaRecuperar('exame', 'Bateria (exame)', 'evolucao.yml');
-  if (cb && !cb.ok) await tentaRecuperar('email', 'Caixa (turno)', 'email.yml');
+  if (t && !t.ok && t.recuperavel) await tentaRecuperar('email', 'E-mail (turno)', 'email.yml');
+  if (b && !b.ok && b.recuperavel) await tentaRecuperar('exame', 'Bateria (exame)', 'evolucao.yml');
+  if (cb && !cb.ok && cb.recuperavel) await tentaRecuperar('email', 'Caixa (turno)', 'email.yml');
 
   // Persistência econômica: mudança entra na hora; casa estável deixa um pulso por hora, para que
   // capacidade/continuidade não confundam estado verde silencioso com vigia parado.
