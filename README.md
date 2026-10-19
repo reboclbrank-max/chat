@@ -124,6 +124,12 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Tolerância a oscilação:** a primeira e a segunda falha ainda aguardam o próximo ciclo; uma varredura saudável zera o contador. A proteção não reprocessa e-mail, não cria dispatch nem transforma erro de uma mensagem isolada em pane do turno.
 - **Adoção segura:** a regra pura entra na barreira e na lista de arquivos que pedem troca de turno após testes. Continua sem canal, conta, segredo, custo ou infraestrutura nova.
 
+## v12.24 — imagens remotas viram escolha explícita (19/10/2026)
+
+- **Privacidade da conversa:** Markdown de imagem externa não cria mais `<img>` automático na tela. Em vez disso, apresenta um link “Abrir imagem”, para que a pessoa decida se quer buscar o recurso remoto.
+- **Menos rastreamento passivo:** o link abre isolado, com `noopener`, `noreferrer` e política de não enviar referer. O conteúdo textual e links comuns continuam disponíveis; só a busca automática da imagem foi retirada.
+- **Paridade nas quatro rotas:** `index`, `direto`, `ligar` e `limpar` usam a mesma regra, coberta por regressão offline. Não houve nova dependência, canal, conta, custo ou consulta externa.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código

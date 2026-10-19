@@ -400,7 +400,9 @@ function escapar(t) {
 function markdown(t) {
   let s = escapar(t);
   s = s.replace(/```([\s\S]*?)```/g, (m, c) => '<pre>' + c.trim() + '</pre>');
-  s = s.replace(/!\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/g, '<img src="$2" alt="$1" loading="lazy">');
+  // Conteúdo de conversa é não confiável: imagem remota só abre por decisão explícita da pessoa,
+  // evitando busca automática/telemetria ao renderizar uma mensagem. O link não envia referer.
+  s = s.replace(/!\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">🖼️ Abrir imagem: $1</a>');
   s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
   s = s.replace(/\*\*([^*\n]+)\*\*/g, '<b>$1</b>');
   s = s.replace(/_(\(?[^_\n]+\)?)_/g, '<i>$1</i>');
