@@ -177,6 +177,13 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Começar sem decorar comandos:** o cartão “🧭 Comece por uma tarefa” oferece escrever, pesquisar, nota, cálculo e exploração. Ele usa uma lista fechada de sugestões e abre a caixa de criação para a pessoa revisar, editar ou cancelar; nenhuma consulta, conversa ou escrita é iniciada pelo clique sozinho.
 - **Cobertura controlada:** novo contrato 15/15 preserva paridade das quatro rotas, preferência local e allowlist do guia. Não houve PAT, conversa, API produtiva, mensagem, rede externa, custo ou infraestrutura. A melhora não prova compreensão humana, acessibilidade universal, entrega, worker, satisfação, disponibilidade ou SLA.
 
+## v12.32 — transparência de rede e modo somente-local temporário (19/10/2026)
+
+- **Sem promessa escondida:** ⚙️ agora esclarece que preparar o cérebro local pode baixar biblioteca/modelo; a mensagem não é enviada por esse preparo e, uma vez pronto, o cálculo da resposta local roda no aparelho. Recursos diferentes do Chat ainda podem usar rede.
+- **Controle estrito, porém honesto:** em uma conversa aberta com o cérebro já preparado, a pessoa pode confirmar “🔒 modo somente-local”. Até desligar ou recarregar, o Chat bloqueia novas requisições `fetch` iniciadas pela página, GitHub/sincronização/pesquisa/download, links externos e a ida ao Console; também para polling e a checagem PWA futura desta página. Ao desligar, rotinas que ele interrompeu não são religadas sozinhas. Não é firewall: não cancela conexão anterior nem controla navegador, sistema, extensões ou worker já ativo.
+- **Sem aprisionar a navegação:** Configurações ganhou “← Voltar ao Chat”; Esc e o botão ⚙️ retornam à conversa aberta ou à lista, preservando o compositor.
+- **Cobertura controlada:** novo contrato 22/22 verifica as quatro rotas, a guarda de `fetch` e novas atribuições externas de imagem/mídia antes da rede, desligamento explícito, preparação/confirmação e limites declarados. A suíte integral ficou 47/49; os mesmos dois limites ambientais de OCR/PDF sem visão permanecem, sem relação atribuída a esta interface. Não houve PAT, conversa, API produtiva, modelo, download, rede externa, custo ou infraestrutura. Isto não prova firewall real, isolamento do navegador, inferência local em aparelho real, entrega, uso humano, satisfação, disponibilidade ou SLA.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código

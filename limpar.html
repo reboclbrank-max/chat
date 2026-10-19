@@ -176,7 +176,8 @@
 </main>
 
 <section id="tela-config" class="oculto" aria-labelledby="titulo-config">
-  <div class="cartao" id="cartao-acesso">
+  <button type="button" class="acao" id="btn-voltar-config" aria-label="Voltar ao Chat">← Voltar ao Chat</button>
+  <div class="cartao" id="cartao-acesso" style="margin-top:10px">
     <h2 id="titulo-config" tabindex="-1">🔑 Acesso</h2>
     <p id="token-ajuda">Para esta página ler e escrever nas suas conversas privadas, ela precisa de um <b>token de acesso do GitHub</b> — guardado apenas neste navegador, nunca aqui no site.</p>
     <ol class="inst">
@@ -215,12 +216,18 @@
     </div>
   </div>
   <div class="cartao">
-    <h2>🧠 Cérebro 100% local (offline)</h2>
-    <p>Ligue o modo local (botão <b>🧠</b> no topo da conversa) e o chat passa a responder com um <b>modelo que roda dentro do seu navegador</b> — depois do 1º uso funciona <b>sem internet</b> e <b>não envia nada para lugar nenhum</b>. É o cérebro reserva do seu assistente: se todos os motores online caírem, o seu aparelho ainda conversa com você.</p>
-    <p>Na primeira vez baixa ~1,1 GB (depois fica salvo neste navegador). Precisa de navegador com <b>WebGPU</b> (Chrome/Edge no computador ou Android). Em aparelho fraco pode ficar lento — é opcional.</p>
+    <h2>🧠 Cérebro local</h2>
+    <p>Ligue o modo local (botão <b>🧠</b> no topo da conversa) para responder com um <b>modelo que roda dentro do navegador</b>. Na primeira preparação, a biblioteca e o modelo podem ser baixados; sua mensagem não é enviada por esse preparo. Depois de pronto, o cálculo da resposta local roda no aparelho. Outros recursos do Chat podem continuar usando rede.</p>
+    <p>A primeira preparação pode baixar ~1,1 GB e precisa de navegador com <b>WebGPU</b> (Chrome/Edge no computador ou Android). Em aparelho fraco pode ficar lento — é opcional.</p>
     <p>As trocas do modo local ficam <b>só no aparelho</b> até você apertar <b>☁️</b> para sincronizar com o GitHub (o assistente arquiva sem responder de novo).</p>
     <h2 style="margin-top:12px">⚖️ Modelo do cérebro local</h2>
     <div id="seletor-modelo" style="display:flex;flex-direction:column;gap:6px" role="group" aria-label="Modelo do cérebro local"></div>
+  </div>
+  <div class="cartao">
+    <h2>🔒 Modo somente-local nesta página</h2>
+    <p>Depois de preparar o cérebro local, este controle bloqueia novas requisições de rede iniciadas pelo JavaScript desta página e links externos. Ele para a consulta da conversa; sincronização, GitHub, pesquisas e downloads ficam indisponíveis até desligar. Não é um firewall do aparelho: não controla navegador, sistema, extensões, worker já ativo nem conexões iniciadas antes do clique. Ao recarregar, ele desliga.</p>
+    <button type="button" class="acao" id="btn-somente-local" aria-pressed="false" style="margin-top:8px;background:var(--painel);border:1px solid var(--borda);color:var(--texto);font-weight:600">🔒 modo somente-local: desligado</button>
+    <div id="status-somente-local" role="status" aria-live="polite" aria-atomic="true"></div>
   </div>
   <div class="cartao">
     <h2>📝 Rascunhos neste aparelho</h2>
@@ -254,7 +261,7 @@
     <button type="button" class="ler-tudo" id="btn-auto-voz" title="Ela fala as respostas novas sozinha" aria-label="Alternar leitura automática de novas respostas" aria-pressed="false">🔈 auto</button>
     <button type="button" class="ler-tudo" id="btn-ler-tudo" aria-label="Ler todas as respostas visíveis">🔊 ler</button>
     <button type="button" class="ler-tudo" id="btn-atualizar" title="Atualizar" aria-label="Atualizar conversa">🔄</button>
-    <button type="button" class="acao" id="btn-local" title="Cérebro 100% local (offline, nada sai do aparelho)" aria-label="Alternar cérebro local offline" aria-pressed="false">🧠</button>
+    <button type="button" class="acao" id="btn-local" title="Cérebro local; a primeira preparação pode baixar biblioteca e modelo" aria-label="Alternar cérebro local" aria-pressed="false">🧠</button>
     <button type="button" class="acao oculto" id="btn-sync" title="Sincronizar conversas do modo local com o GitHub" aria-label="Sincronizar trocas locais com o GitHub">☁️</button>
     <button type="button" class="acao" id="btn-reenviar" title="Reenviar minha última mensagem" aria-label="Reenviar a última mensagem após confirmação">🔁</button>
     <button type="button" class="acao" id="btn-turbo" title="⚡ TURBO: responder na hora, aqui no navegador (streaming)" aria-label="Alternar modo TURBO local" aria-pressed="false">⚡</button>
@@ -335,6 +342,55 @@ function erroLocal(codigo) {
   erro.codigoLocal = String(codigo || 'desconhecido');
   return erro;
 }
+// Escolha temporária e explícita: dura enquanto esta página estiver aberta e não
+// substitui um firewall do aparelho. A guarda cobre fetches novos desta página.
+let somenteLocalNestaPagina = false;
+function modoSomenteLocalAtivo() { return somenteLocalNestaPagina === true; }
+const fetchOriginalDaPagina = typeof window !== 'undefined' && typeof window.fetch === 'function'
+  ? window.fetch.bind(window) : null;
+if (fetchOriginalDaPagina) {
+  window.fetch = function requisicaoDaPagina() {
+    if (modoSomenteLocalAtivo()) return Promise.reject(erroLocal('rede-bloqueada-local'));
+    return fetchOriginalDaPagina.apply(window, arguments);
+  };
+}
+function recursoNovoApontaParaRede(valor) {
+  if (!valor) return false;
+  const texto = String(valor);
+  if (/^https?:\/\//i.test(texto)) return true;
+  if (typeof location === 'undefined' || !location.href) return false;
+  try {
+    const destino = new URL(texto, location.href);
+    return destino.protocol === 'http:' || destino.protocol === 'https:';
+  } catch (e) { return false; }
+}
+function protegerAtribuicaoDeRecurso(construtor, propriedade) {
+  try {
+    if (!construtor || !construtor.prototype) return;
+    const descritor = Object.getOwnPropertyDescriptor(construtor.prototype, propriedade);
+    if (!descritor || typeof descritor.set !== 'function' || typeof descritor.get !== 'function') return;
+    Object.defineProperty(construtor.prototype, propriedade, {
+      configurable: true,
+      enumerable: descritor.enumerable,
+      get: descritor.get,
+      set: function (valor) {
+        if (modoSomenteLocalAtivo() && recursoNovoApontaParaRede(valor)) {
+          try { if (typeof avisarRedeBloqueada === 'function') avisarRedeBloqueada(); } catch (e) {}
+          return;
+        }
+        return descritor.set.call(this, valor);
+      }
+    });
+  } catch (e) {}
+}
+if (typeof window !== 'undefined') {
+  protegerAtribuicaoDeRecurso(window.HTMLImageElement, 'src');
+  protegerAtribuicaoDeRecurso(window.HTMLMediaElement, 'src');
+  protegerAtribuicaoDeRecurso(window.HTMLScriptElement, 'src');
+  protegerAtribuicaoDeRecurso(window.HTMLIFrameElement, 'src');
+  protegerAtribuicaoDeRecurso(window.HTMLSourceElement, 'src');
+  protegerAtribuicaoDeRecurso(window.HTMLLinkElement, 'href');
+}
 function mensagemErroSeguro(erro) {
   const locais = {
     'arquivo-grande': 'O arquivo passa do limite local de 2 MB.',
@@ -342,7 +398,9 @@ function mensagemErroSeguro(erro) {
     'versao-importacao': 'Este arquivo usa uma versão de exportação ainda não suportada.',
     'importacao-vazia': 'Não encontrei uma primeira mensagem válida para importar.',
     'importacao-limite': 'A importação aceita até 25 conversas por vez.',
-    'texto-longo': 'Uma primeira mensagem passa do limite seguro de importação.'
+    'texto-longo': 'Uma primeira mensagem passa do limite seguro de importação.',
+    'rede-bloqueada-local': 'O modo somente-local bloqueia solicitações de rede desta página. Desligue-o antes de usar GitHub, pesquisa, sincronização ou download.',
+    'preparo-local-necessario': 'O cérebro local não está pronto nesta página. Desligue o modo somente-local, prepare o modelo e tente de novo.'
   };
   const codigoLocal = String((erro && erro.codigoLocal) || '');
   if (Object.prototype.hasOwnProperty.call(locais, codigoLocal)) return locais[codigoLocal];
@@ -362,7 +420,7 @@ function erroTransitorio(erro) {
 // Ficam junto do cliente API para que todo POST/PATCH seja observável antes de
 // qualquer troca manual de PWA. Guardas typeof preservam os testes isolados.
 let escritasEmAndamento = 0, importacaoEmAndamento = false, sincronizacaoLocalEmAndamento = false;
-let registroPwa = null, atualizacaoPwaPendente = null, recarregarAposAtualizacaoPwa = false;
+let registroPwa = null, atualizacaoPwaPendente = null, recarregarAposAtualizacaoPwa = false, intervaloAtualizacaoPwa = null;
 function escritaEmAndamento() {
   return escritasEmAndamento > 0 || (typeof criandoNovaConversa !== 'undefined' && criandoNovaConversa) || importacaoEmAndamento || sincronizacaoLocalEmAndamento;
 }
@@ -399,6 +457,7 @@ function acompanharEscrita(promessa) {
   );
 }
 function api(caminho, opcoes = {}) {
+  if (modoSomenteLocalAtivo()) return Promise.reject(erroLocal('rede-bloqueada-local'));
   const metodo = String(opcoes.method || 'GET').toUpperCase();
   const uma = () => fetch(API + caminho, {
     ...opcoes,
@@ -649,6 +708,15 @@ function mostrarConfig(mostrar, focar = false) {
   $('tela-conv').classList.add('oculto');
   $('tela-conv').style.display = 'none';
   if (mostrar && focar) focoSeguro('titulo-config');
+}
+function fecharConfiguracao() {
+  if (conversa) {
+    abrirConversa();
+    focoSeguro('entrada');
+  } else {
+    mostrarConfig(false);
+    focoSeguro('busca');
+  }
 }
 function abrirConversa() {
   $('principal').classList.add('oculto');
@@ -2072,6 +2140,7 @@ async function emergenciaResponder(numero) {
   }
 }
 function alternarTurbo() {
+  if (modoSomenteLocalAtivo()) { alert('O modo somente-local está ativo. Desligue-o antes de usar o TURBO de rede.'); return; }
   TURBO = !TURBO;
   localStorage.setItem('rebocl_turbo', TURBO ? '1' : '0');
   const b = $('btn-turbo');
@@ -2192,6 +2261,10 @@ async function checarSino() {
 /* ---------- configuração ---------- */
 async function testarConexao(silencioso) {
   const el = $('status-conexao');
+  if (modoSomenteLocalAtivo()) {
+    if (!silencioso) el.innerHTML = '<div class="aviso">🔒 modo somente-local ativo: o teste de conexão não foi iniciado.</div>';
+    return false;
+  }
   if (!token) { el.innerHTML = ''; return false; }
   el.innerHTML = '<div class="aviso">testando…</div>';
   try {
@@ -2214,10 +2287,13 @@ $('btn-salvar').onclick = async () => {
   if (await testarConexao(false)) { mostrarConfig(false); carregarLista(); }
 };
 $('btn-config').onclick = () => {
+  if (!$('tela-config').classList.contains('oculto')) { fecharConfiguracao(); return; }
   $('token').value = '';
   $('status-conexao').innerHTML = token ? '<div class="aviso ok">já existe um token salvo neste navegador.</div>' : '';
   mostrarConfig(true, true);
+  atualizarModoSomenteLocal();
 };
+$('btn-voltar-config').onclick = fecharConfiguracao;
 $('btn-voltar').onclick = voltarLista;
 $('btn-enviar').onclick = enviar;
 $('btn-atualizar').onclick = () => { if (conversa) abrir(conversa, $('titulo-conv').textContent); };
@@ -2272,13 +2348,24 @@ $('btn-turbo').setAttribute('aria-pressed', TURBO ? 'true' : 'false');
 iniciarVigia();
 $('btn-local').onclick = alternarModoLocal;
 $('btn-sync').onclick = sincronizarLocal;
-$('btn-console').onclick = () => { location.href = 'console.html'; };
+$('btn-somente-local').onclick = alternarModoSomenteLocal;
+$('btn-console').onclick = () => { if (modoSomenteLocalAtivo()) { avisarRedeBloqueada(); return; } location.href = 'console.html'; };
+document.addEventListener('click', (evento) => {
+  if (!modoSomenteLocalAtivo()) return;
+  const alvo = evento.target && typeof evento.target.closest === 'function' ? evento.target.closest('a[href]') : null;
+  if (!alvo) return;
+  const protocolo = String(alvo.protocol || '').toLowerCase();
+  if (protocolo === 'http:' || protocolo === 'https:' || protocolo === 'mailto:') {
+    evento.preventDefault();
+    avisarRedeBloqueada();
+  }
+}, true);
 document.addEventListener('keydown', (e) => {
   const caixa = $('entrada');
   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && conversa) { e.preventDefault(); enviar(); return; }
   if (e.key === '/' && document.activeElement !== caixa && !e.ctrlKey && !e.metaKey && !e.altKey) { e.preventDefault(); caixa.focus(); }
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n') { e.preventDefault(); novaConversa(); return; }
-  if (e.key === 'Escape') { if (_lightbox && _lightbox.classList.contains('aberto')) fecharLightbox(); else $('tela-config').classList.add('oculto'); }
+  if (e.key === 'Escape') { if (_lightbox && _lightbox.classList.contains('aberto')) fecharLightbox(); else if (!$('tela-config').classList.contains('oculto')) fecharConfiguracao(); }
 });
 $('entrada').addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviar(); }
@@ -2483,7 +2570,61 @@ function modeloLocalAtual() {
 function rotuloLocalAtual() {
   return (MODO_LOCAL.modelos[MODO_LOCAL.escolha] || MODO_LOCAL.modelos.padrao).rotulo;
 }
+function textoFaixaModoLocal() {
+  return modoSomenteLocalAtivo()
+    ? '🔒 modo somente-local ativo nesta página — respostas pelo cérebro já preparado; novas solicitações de rede foram bloqueadas'
+    : '🧠 modo local ligado (' + rotuloLocalAtual() + ') — prepare o modelo uma vez; depois a resposta local roda no aparelho';
+}
+function avisarRedeBloqueada() {
+  const texto = '🔒 Pedido externo bloqueado pelo modo somente-local. Desligue o controle para decidir usar a rede.';
+  const status = $('status-somente-local');
+  if (status) status.textContent = texto;
+  const faixa = $('faixa-local');
+  if (faixa && MODO_LOCAL.ligado) { faixa.textContent = texto; faixa.classList.remove('oculto'); }
+}
+function atualizarModoSomenteLocal() {
+  const ativo = modoSomenteLocalAtivo();
+  const botao = $('btn-somente-local');
+  const status = $('status-somente-local');
+  if (botao) {
+    botao.textContent = ativo ? '🔒 modo somente-local: ligado nesta página' : '🔒 modo somente-local: desligado';
+    botao.setAttribute('aria-pressed', ativo ? 'true' : 'false');
+  }
+  if (status) status.textContent = ativo
+    ? 'Ligado nesta página. GitHub, sincronização, pesquisas, downloads e links externos novos foram bloqueados pelo Chat.'
+    : 'Desligado. Recursos de rede voltam a exigir sua ação; polling, vigia e checagem PWA interrompidos não são retomados automaticamente.';
+  const sincronizar = $('btn-sync');
+  if (sincronizar) sincronizar.disabled = ativo;
+  if (ativo) {
+    pararPolling();
+    if (typeof vigiaTimer !== 'undefined' && vigiaTimer) { clearInterval(vigiaTimer); vigiaTimer = null; }
+    if (typeof intervaloAtualizacaoPwa !== 'undefined' && intervaloAtualizacaoPwa) { clearInterval(intervaloAtualizacaoPwa); intervaloAtualizacaoPwa = null; }
+    const faixa = $('faixa-local');
+    if (faixa) { faixa.textContent = textoFaixaModoLocal(); faixa.classList.remove('oculto'); }
+  }
+}
+function alternarModoSomenteLocal() {
+  if (modoSomenteLocalAtivo()) {
+    somenteLocalNestaPagina = false;
+    atualizarModoSomenteLocal();
+    return;
+  }
+  if (escritaEmAndamento()) { alert('Aguarde envio, importação ou sincronização terminar antes de bloquear a rede.'); return; }
+  if (!conversa) { alert('Abra uma conversa, prepare o cérebro local nela e mantenha-a aberta antes de ligar o modo somente-local.'); return; }
+  if (!MODO_LOCAL.engine) {
+    alert('Primeiro ligue 🧠, envie uma mensagem local e aguarde “cérebro local pronto”. Depois volte aqui para bloquear novas solicitações de rede nesta página.');
+    return;
+  }
+  if (!confirm('Ligar modo somente-local nesta página? O Chat bloqueará novas requisições de rede e links externos; GitHub, sincronização, pesquisas e downloads não funcionarão até desligar. Isto não cancela conexões já iniciadas nem controla navegador, sistema, extensões ou worker.')) return;
+  MODO_LOCAL.ligado = true;
+  localStorage.setItem('assistente_rebocl_modo_local', '1');
+  const botaoLocal = $('btn-local');
+  if (botaoLocal) { botaoLocal.classList.add('local-ligado'); botaoLocal.setAttribute('aria-pressed', 'true'); }
+  somenteLocalNestaPagina = true;
+  atualizarModoSomenteLocal();
+}
 function carregarScript(src) {
+  if (modoSomenteLocalAtivo()) return Promise.reject(erroLocal('preparo-local-necessario'));
   return new Promise((res, rej) => {
     const sc = document.createElement('script');
     sc.src = src; sc.onload = res; sc.onerror = () => rej(new Error('não consegui carregar a biblioteca do cérebro local'));
@@ -2498,6 +2639,7 @@ function mostrarProgressoLocal(t) {
 async function garantirEngineLocal() {
   const modelo = modeloLocalAtual();
   if (MODO_LOCAL.engine && MODO_LOCAL.modeloCarregado === modelo) return MODO_LOCAL.engine;
+  if (modoSomenteLocalAtivo()) throw erroLocal('preparo-local-necessario');
   if (MODO_LOCAL.engine) {
     try { await MODO_LOCAL.engine.unload(); } catch (e) {}
     MODO_LOCAL.engine = null;
@@ -2517,7 +2659,7 @@ async function garantirEngineLocal() {
       }
     });
     MODO_LOCAL.modeloCarregado = modelo;
-    mostrarProgressoLocal('🧠 cérebro local pronto ✓ (' + rotuloLocalAtual() + ' — offline, 100% no seu aparelho)');
+    mostrarProgressoLocal('🧠 cérebro local pronto ✓ (' + rotuloLocalAtual() + ' — a resposta local roda no seu aparelho)');
     setTimeout(() => mostrarProgressoLocal(''), 6000);
     return MODO_LOCAL.engine;
   } catch (e) {
@@ -2591,7 +2733,7 @@ async function enviarLocal(texto) {
     const resposta = await engine.chat.completions.create({ messages: mensagens, temperature: 0.7, max_tokens: 1024 });
     pensando(false);
     const conteudo = (resposta.choices[0].message.content || '').trim();
-    bolha('bot', conteudo, new Date().toISOString(), '🧠 local (100% offline)');
+    bolha('bot', conteudo, new Date().toISOString(), '🧠 resposta local');
     if (autoVoz()) falar(conteudo, null);
     guardarLocal(texto, conteudo);
     rolarFim();
@@ -2604,6 +2746,7 @@ async function enviarLocal(texto) {
   }
 }
 async function sincronizarLocal() {
+  if (modoSomenteLocalAtivo()) { alert('O modo somente-local bloqueia sincronização. Desligue-o antes de decidir enviar trocas locais ao GitHub.'); return; }
   if (!conversa) { alert('Abra uma conversa antes de sincronizar.'); return; }
   try {
     const db = await idbAbrir();
@@ -2635,6 +2778,7 @@ async function sincronizarLocal() {
   } catch (e) { alert('Falhou ao sincronizar: ' + mensagemErroSeguro(e)); }
 }
 async function alternarModoLocal() {
+  if (modoSomenteLocalAtivo() && MODO_LOCAL.ligado) { alert('O modo somente-local mantém o cérebro local ativo. Desligue primeiro o controle de rede em ⚙️ se quiser voltar ao fluxo online.'); return; }
   MODO_LOCAL.ligado = !MODO_LOCAL.ligado;
   localStorage.setItem('assistente_rebocl_modo_local', MODO_LOCAL.ligado ? '1' : '0');
   const b = $('btn-local');
@@ -2644,7 +2788,7 @@ async function alternarModoLocal() {
   }
   const f = $('faixa-local');
   if (MODO_LOCAL.ligado) {
-    f.textContent = '🧠 modo 100% local ligado (' + rotuloLocalAtual() + ') — responde no seu aparelho, offline, nada sai dele';
+    f.textContent = textoFaixaModoLocal();
     f.classList.remove('oculto');
     atualizarBadgeSync();
   } else {
@@ -2664,6 +2808,7 @@ function montarSeletorModelo() {
       ';border-radius:10px;padding:10px;font:inherit;font-size:13px;cursor:pointer;text-align:left';
     b.textContent = (ativo ? '● ' : '○ ') + MODO_LOCAL.modelos[chave].rotulo;
     b.onclick = () => {
+      if (modoSomenteLocalAtivo()) { alert('Desligue o modo somente-local antes de trocar o cérebro preparado.'); return; }
       MODO_LOCAL.escolha = chave;
       localStorage.setItem('assistente_rebocl_modelo_local', chave);
       if (MODO_LOCAL.engine) {
@@ -2959,7 +3104,7 @@ montarSeletorModelo();
 if (MODO_LOCAL.ligado) {
   $('btn-local').classList.add('local-ligado');
   $('btn-local').setAttribute('aria-pressed', 'true');
-  $('faixa-local').textContent = '🧠 modo 100% local ligado (' + rotuloLocalAtual() + ') — responde no seu aparelho, offline, nada sai dele';
+  $('faixa-local').textContent = textoFaixaModoLocal();
   $('faixa-local').classList.remove('oculto');
 }
 aplicarTema();
@@ -2967,6 +3112,7 @@ aplicarLeituraConfortavel();
 atualizarContador();
 atualizarPainelRascunhos();
 atualizarAvisoRascunho();
+atualizarModoSomenteLocal();
 $('btn-tema').onclick = alternarTema;
 $('btn-leitura-confortavel').onclick = alternarLeituraConfortavel;
 $('btn-imprimir').onclick = () => window.print();
@@ -3010,7 +3156,7 @@ if ('serviceWorker' in navigator) {
     registroPwa = registro;
     marcarAtualizacaoPwa(registro);
     registro.addEventListener('updatefound', () => observarInstalacaoPwa(registro));
-    setInterval(function () { try { registro.update(); } catch (e) {} }, 300000);
+    intervaloAtualizacaoPwa = setInterval(function () { try { registro.update(); } catch (e) {} }, 300000);
   }).catch(() => {});
 }
 (async function iniciar() {
