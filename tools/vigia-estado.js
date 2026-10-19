@@ -10,6 +10,27 @@ const INTERVALOS_RECUPERACAO_MS = Object.freeze({
   exame: 6 * 60 * 60 * 1000
 });
 
+// Evidências fechadas e sem conteúdo externo. Elas qualificam uma fotografia saudável sem
+// transformar texto de API, caixa ou plataforma em estado público ou mensagem ao dono.
+const EVIDENCIAS_VIGIA = Object.freeze([
+  'pagina-respondendo',
+  'postagem-agendada-recente',
+  'postagem-em-andamento',
+  'turno-ativo',
+  'turno-ativo-com-sucessor',
+  'fila-recente-sem-executor',
+  'turno-recente',
+  'bateria-recem-executada',
+  'bateria-em-andamento',
+  'checagem-limitada',
+  'caixa-sem-pendencia',
+  'caixa-recem-chegada'
+]);
+
+function evidenciaVigiaConhecida(valor) {
+  return EVIDENCIAS_VIGIA.includes(valor) ? valor : '';
+}
+
 function registrosDeRecuperacao(valor) {
   const bruto = valor && typeof valor === 'object' && valor.recuperacoes && typeof valor.recuperacoes === 'object'
     ? valor.recuperacoes : valor;
@@ -64,6 +85,8 @@ module.exports = {
   INTERVALO_PULSO_MS,
   MARGEM_RELOGIO_FUTURO_MS,
   INTERVALOS_RECUPERACAO_MS,
+  EVIDENCIAS_VIGIA,
+  evidenciaVigiaConhecida,
   registrosDeRecuperacao,
   recuperacaoPermitida,
   registraRecuperacao,

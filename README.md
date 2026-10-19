@@ -221,6 +221,12 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Limite continua explícito:** a proteção vale para chamadas iniciadas pelo JavaScript desta página. Não cancela conexão que já começou, não controla worker, navegador, sistema ou extensões e não é firewall. `rebocl-chat-v13` apenas renova a casca local aprovada, sem API, query ou terceiros no cache e sem ativação silenciosa.
 - **Cobertura controlada:** modo somente-local **23/23** cobre `fetch`/API, encadeamentos de cache, XHR, WebSocket, EventSource, beacon, mídia e retorno explícito; PWA **21/21**, segurança/fluxo **30/30** e estilos **4/4** preservam as quatro rotas. São VM/arquivos locais, não prova de isolamento de aparelho, atualização em todo navegador, uso humano, satisfação, disponibilidade ou SLA.
 
+## v12.39 — saúde por evidência e cadência do postador (19/10/2026)
+
+- **Estado técnico mais explicável:** o `vigia-estado.json` continua sanitizado, mas cada item saudável pode registrar somente um código fechado de evidência, como página que respondeu, turno ativo com sucessor, bateria recente ou caixa sem pendência. Texto de plataforma, e-mail, API, segredo ou erro bruto não é salvo nem exibido.
+- **Cadência sem promessa falsa:** o vigia consulta a execução recente de `postagem-diaria.yml` no site. Se a última rotina bem-sucedida ficar fora da janela técnica de nove horas, informa **cadência do postador atrasada**; se a última execução falhar, informa a falha. Não tenta publicar, reexecutar nem criar fila no site. Nove horas são tolerância para agenda best-effort, não comprovação de cada cron ou de todos os canais externos.
+- **`status:` mais útil:** mostra evidência fechada quando houver, como “rotina agendada recente” ou “turno ativo; sucessor na fila”, e mantém fallback neutro para estado desconhecido. Execução observada não confirma entrega, aceite da plataforma, alcance, disponibilidade ou SLA.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código

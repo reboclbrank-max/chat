@@ -29,6 +29,13 @@ ok('sondas da API GitHub usam o token só no cabeçalho da própria API', () => 
   assert(trecho.includes('fetch(url, { headers,'));
   assert(!/console\.log\([^\n]*TOKEN/.test(trecho), 'a sonda não pode registrar o token');
 });
+ok('cadência do postador é observada por workflow, sem publicação ou recuperação cega', () => {
+  assert.match(fonte, /postagem-diaria\.yml\/runs\?per_page=30/);
+  assert.match(fonte, /JANELA_POSTAGEM_SITE_MS = 9 \* 60 \* 60 \* 1000/);
+  assert.match(fonte, /'postagem-agendada-recente'/);
+  assert.match(fonte, /falhaVigia\('postagem-atrasada'/);
+  assert(!/tentaRecuperar\('postagem'/.test(fonte), 'vigia não pode tentar publicar ou recuperar o postador às cegas');
+});
 ok('cron cobre todos os quartos de hora sem corrente que exceda o job', () => {
   assert.match(workflow, /cron: '12,27,42,57 \* \* \* \*'/);
   assert(!/VIGIA_CADEIA|VIGIA_CADEIA_MIN/.test(workflow), 'workflow não deve pedir corrente interna');

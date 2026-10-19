@@ -40,7 +40,7 @@ function confere(nome, condicao) {
     itens: {
       'Página do chat': { ok: false, causa: 'sem-execucao' },
       'Site oficial': { ok: false, causa: 'turno-ausente' },
-      'Casa postando (site)': { ok: false, causa: 'bateria-atrasada' },
+      'Casa postando (site)': { ok: false, causa: 'postagem-atrasada' },
       'Chat por e-mail (24h)': { ok: false, causa: 'caixa-atrasada' },
       'Bateria do cérebro': { ok: false, causa: 'api-indisponivel' },
       'itch Ceifalume': { ok: false, causa: 'fila-estagnada' },
@@ -56,7 +56,7 @@ function confere(nome, condicao) {
   for (const trecho of [
     'sem execução recente — recuperação interna elegível',
     'turno ausente/atrasado — recuperação interna elegível',
-    'bateria atrasada — recuperação interna elegível',
+    'cadência do postador atrasada — sem recuperação automática',
     'caixa aguardando resposta — recuperação interna elegível',
     'sonda da API indisponível — sem ação cega',
     'fila sem executor — sem adicionar trabalho',
@@ -64,10 +64,15 @@ function confere(nome, condicao) {
     'sonda limitada — sem ação automática',
     'Contenção de recuperação: e-mail até 2026-10-19 12:30 UTC · bateria até 2026-10-19 14:00 UTC'
   ]) confere('status causal: ' + trecho.slice(0, 34), resumoCausal.includes(trecho));
+  const resumoBateriaAtrasada = CHAT.resumoEstadoVigiaPublico({
+    verificado_em: '2026-10-19T12:00:00.000Z',
+    itens: { 'Bateria do cérebro': { ok: false, causa: 'bateria-atrasada' } }
+  }, agoraStatus);
+  confere('status causal: bateria atrasada preserva recuperação elegível', resumoBateriaAtrasada.includes('bateria atrasada — recuperação interna elegível'));
   const resumoHostil = CHAT.resumoEstadoVigiaPublico({
     verificado_em: 'DADO-ARBITRARIO-NAO-REFLETIR',
     itens: {
-      'Página do chat': { ok: false, causa: 'DADO-ARBITRARIO-NAO-REFLETIR' },
+      'Página do chat': { ok: false, causa: 'DADO-ARBITRARIO-NAO-REFLETIR', evidencia: 'DADO-ARBITRARIO-NAO-REFLETIR' },
       'Chave não prevista DADO-ARBITRARIO-NAO-REFLETIR': { ok: true }
     },
     recuperacoes: {
@@ -84,6 +89,18 @@ function confere(nome, condicao) {
     itens: { 'Página do chat': { ok: true, causa: 'saudavel' } }
   }, agoraStatus);
   confere('status causal: ok + causa saudável confirma saúde', resumoSaudavel.includes('✅ Página do Chat — saudável'));
+  const resumoComEvidencia = CHAT.resumoEstadoVigiaPublico({
+    verificado_em: '2026-10-19T12:00:00.000Z',
+    itens: {
+      'Casa postando (site)': { ok: true, causa: 'saudavel', evidencia: 'postagem-agendada-recente' },
+      'Chat por e-mail (24h)': { ok: true, causa: 'saudavel', evidencia: 'turno-ativo-com-sucessor' },
+      'Caixa de e-mail': { ok: true, causa: 'saudavel', evidencia: 'DADO-ARBITRARIO-NAO-REFLETIR' }
+    }
+  }, agoraStatus);
+  confere('status causal: mostra somente evidência fechada de postagem', resumoComEvidencia.includes('Postagem do site — saudável · rotina agendada recente'));
+  confere('status causal: explica turno ativo e sucessor sem conteúdo de fila', resumoComEvidencia.includes('Turno de e-mail — saudável · turno ativo; sucessor na fila'));
+  confere('status causal: evidência arbitrária não é refletida', !resumoComEvidencia.includes('DADO-ARBITRARIO-NAO-REFLETIR'));
+  confere('status causal: limite separa execução de aceite externo', resumoComEvidencia.includes('rotina observada não confirma entrega/aceite externo'));
   const resumoInconsistente = CHAT.resumoEstadoVigiaPublico({
     verificado_em: '2026-10-19T12:00:00.000Z',
     itens: { 'Página do chat': { ok: true, causa: 'DADO-ARBITRARIO-NAO-REFLETIR' } }

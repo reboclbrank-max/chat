@@ -38,7 +38,7 @@
 // (endereço do CEP — BrasilAPI, sem chave). Ajuda e CAPS atualizados com os três.
 const { ImapFlow } = require('imapflow');
 const nodemailer = require('nodemailer');
-const { INTERVALO_PULSO_MS } = require('./vigia-estado');
+const { INTERVALO_PULSO_MS, evidenciaVigiaConhecida } = require('./vigia-estado');
 const { criaEstadoFalhasMensagem, registraFalhaMensagem, registraSucessoMensagem, resumoFalhaMensagem } = require('./falhas-mensagem');
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -381,11 +381,34 @@ const CAUSAS_STATUS_CASA = Object.freeze({
   'turno-ausente': { texto: 'turno ausente/atrasado', recuperavel: true },
   'bateria-atrasada': { texto: 'bateria atrasada', recuperavel: true },
   'caixa-atrasada': { texto: 'caixa aguardando resposta', recuperavel: true },
+  'postagem-atrasada': { texto: 'cadência do postador atrasada — sem recuperação automática', recuperavel: false },
   'api-indisponivel': { texto: 'sonda da API indisponível — sem ação cega', recuperavel: false },
   'fila-estagnada': { texto: 'fila sem executor — sem adicionar trabalho', recuperavel: false },
   'execucao-falhou': { texto: 'última execução falhou — sem reexecutar às cegas', recuperavel: false },
   'sonda-indisponivel': { texto: 'sonda limitada — sem ação automática', recuperavel: false }
 });
+// Rótulos de evidência também são fechados: `status:` nunca reflete texto arbitrário que
+// possa ter sido gravado no JSON público. “Rotina recente” descreve só a execução observada,
+// não a aceitação da publicação por rede externa, alcance ou resultado humano.
+const EVIDENCIAS_STATUS_CASA = Object.freeze({
+  'pagina-respondendo': 'página respondeu à sonda',
+  'postagem-agendada-recente': 'rotina agendada recente',
+  'postagem-em-andamento': 'rotina agendada em andamento',
+  'turno-ativo': 'turno ativo',
+  'turno-ativo-com-sucessor': 'turno ativo; sucessor na fila',
+  'fila-recente-sem-executor': 'fila recente; sem executor ainda',
+  'turno-recente': 'turno recente',
+  'bateria-recem-executada': 'bateria recente',
+  'bateria-em-andamento': 'bateria em andamento',
+  'checagem-limitada': 'sonda limitada pela plataforma',
+  'caixa-sem-pendencia': 'sem pendência observada',
+  'caixa-recem-chegada': 'e-mail recém-chegado'
+});
+function evidenciaStatusSegura(valor) {
+  const codigo = evidenciaVigiaConhecida(valor);
+  return codigo && Object.prototype.hasOwnProperty.call(EVIDENCIAS_STATUS_CASA, codigo) ? EVIDENCIAS_STATUS_CASA[codigo] : '';
+}
+
 const FAMILIAS_RECUPERACAO_STATUS = Object.freeze({
   email: { texto: 'e-mail', intervalo: 60 * 60 * 1000 },
   exame: { texto: 'bateria', intervalo: 6 * 60 * 60 * 1000 }
@@ -420,7 +443,8 @@ function resumoEstadoVigiaPublico(estado, referencia = Date.now()) {
     }
     const codigo = String(item.causa || '');
     if (item.ok === true && codigo === 'saudavel') {
-      linhas.push('✅ ' + rotulo + ' — saudável');
+      const evidencia = evidenciaStatusSegura(item.evidencia);
+      linhas.push('✅ ' + rotulo + ' — saudável' + (evidencia ? ' · ' + evidencia : ''));
       continue;
     }
     if (item.ok === true) {
@@ -453,7 +477,7 @@ function resumoEstadoVigiaPublico(estado, referencia = Date.now()) {
   return '🩺 Estado técnico da casa (checagem ' + checagem + '):' + NL + linhas.join(NL) +
     (alertaFrescor ? NL + alertaFrescor : '') +
     (freios.length ? NL + '♻️ Contenção de recuperação: ' + freios.join(' · ') : '') +
-    NL + 'ℹ️ Fotografia técnica sanitizada; não é promessa de resposta, disponibilidade ou SLA.';
+    NL + 'ℹ️ Fotografia técnica sanitizada; rotina observada não confirma entrega/aceite externo nem é promessa de disponibilidade ou SLA.';
 }
 
 async function ferramenta(corpo, retornoNavegacao) {

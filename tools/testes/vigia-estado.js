@@ -5,6 +5,8 @@ const {
   INTERVALO_PULSO_MS,
   MARGEM_RELOGIO_FUTURO_MS,
   INTERVALOS_RECUPERACAO_MS,
+  EVIDENCIAS_VIGIA,
+  evidenciaVigiaConhecida,
   registrosDeRecuperacao,
   recuperacaoPermitida,
   registraRecuperacao,
@@ -17,6 +19,11 @@ function ok(nome, fn) { try { fn(); n++; console.log('✔ ' + nome); } catch (e)
 const agora = Date.parse('2026-10-19T04:00:00Z');
 const verde = { Página: { ok: true, falhas: 0 } };
 
+ok('evidências públicas são fechadas e não aceitam texto arbitrário', () => {
+  assert(EVIDENCIAS_VIGIA.includes('postagem-agendada-recente'));
+  assert.equal(evidenciaVigiaConhecida('turno-ativo-com-sucessor'), 'turno-ativo-com-sucessor');
+  assert.equal(evidenciaVigiaConhecida('DADO-ARBITRARIO-NAO-REFLETIR'), '');
+});
 ok('mudança de saúde é persistida imediatamente', () => {
   assert.equal(deveSalvarEstado({ verificado_em: new Date(agora).toISOString(), itens: verde }, { Página: { ok: false, falhas: 1 } }, agora), true);
 });

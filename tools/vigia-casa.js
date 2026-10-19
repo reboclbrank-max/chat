@@ -3,7 +3,7 @@
 // Olha o sistema inteiro DE FORA, cura o que dá (re-dispara turno/exame) e avisa o dono
 // por e-mail SÓ quando o estado muda. Anti-alarme-falso: uma falha só vale após 2 rodadas seguidas.
 const fs = require('fs');
-const { deveSalvarEstado, registrosDeRecuperacao, recuperacaoPermitida, registraRecuperacao, limpaRecuperacao } = require('./vigia-estado');
+const { deveSalvarEstado, registrosDeRecuperacao, recuperacaoPermitida, registraRecuperacao, limpaRecuperacao, evidenciaVigiaConhecida } = require('./vigia-estado');
 let nodemailer = null;
 try { nodemailer = require('nodemailer'); } catch (e) {}
 
@@ -16,6 +16,9 @@ const ESTADO = 'vigia-estado.json';
 const TESTE = String(process.env.VIGIA_TESTE || process.argv[2] || '').toLowerCase() === 'sim';
 const agora = new Date().toISOString();
 const h = ms => ms / 36e5;
+// O postador principal tem janelas de três horas, mas GitHub Actions é melhor esforço. A
+// tolerância de nove horas detecta ausência material sem vender os crons como SLA de minuto.
+const JANELA_POSTAGEM_SITE_MS = 9 * 60 * 60 * 1000;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 // Uma checagem de saúde não pode ficar pendurada numa conexão IMAP e deixar de publicar o próprio estado.
 const comTeto = (p, ms, rotulo) => { Promise.resolve(p).catch(() => {}); return Promise.race([p, new Promise((_, rejeita) => setTimeout(() => rejeita(new Error('teto ' + Math.round(ms / 1000) + 's: ' + rotulo)), ms))]); };
@@ -36,7 +39,7 @@ async function buscaJSON(url) {
 const CAUSAS_VIGIA = Object.freeze([
   'saudavel', 'api-indisponivel', 'sem-execucao', 'execucao-falhou',
   'fila-estagnada', 'turno-ausente', 'bateria-atrasada', 'caixa-atrasada',
-  'sonda-indisponivel'
+  'postagem-atrasada', 'sonda-indisponivel'
 ]);
 const CAUSAS_RECUPERAVEIS = Object.freeze(['sem-execucao', 'turno-ausente', 'bateria-atrasada', 'caixa-atrasada']);
 
@@ -48,9 +51,27 @@ function falhaVigia(causa, detalhe, recuperavel = false) {
   return erro;
 }
 
+// A sonda pode usar detalhe apenas no log do job, mas só um código de evidência fechado
+// atravessa para o estado público. Assim a página/status não ecoa resposta de API, plataforma
+// ou caixa e continua distinguindo “rotina observada” de “resultado externo confirmado”.
+function sondaSaudavel(detalhe, evidencia) {
+  return { detalhe: String(detalhe || ''), evidencia: evidenciaVigiaConhecida(evidencia) };
+}
+
 async function verifica(nome, fn) {
-  try { return { nome, ok: true, causa: 'saudavel', recuperavel: false, detalhe: await fn() }; }
-  catch (e) {
+  try {
+    const resultado = await fn();
+    const estruturado = resultado && typeof resultado === 'object' && !Array.isArray(resultado) &&
+      Object.prototype.hasOwnProperty.call(resultado, 'detalhe');
+    return {
+      nome,
+      ok: true,
+      causa: 'saudavel',
+      recuperavel: false,
+      detalhe: estruturado ? String(resultado.detalhe || '') : String(resultado || ''),
+      evidencia: estruturado ? evidenciaVigiaConhecida(resultado.evidencia) : ''
+    };
+  } catch (e) {
     const causa = e && CAUSAS_VIGIA.includes(e.causa) ? e.causa : 'sonda-indisponivel';
     return {
       nome,
@@ -82,25 +103,48 @@ async function acao(rotulo, arquivo) {
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const t = await r.text();
     if (t.length < 100000) throw new Error('página suspeita (curta)');
-    return 'no ar (' + Math.round(t.length / 1024) + ' KB)';
+    return sondaSaudavel('no ar (' + Math.round(t.length / 1024) + ' KB)', 'pagina-respondendo');
   }));
 
   itens.push(await verifica('Site oficial', async () => {
     const r = await fetch('https://reboclbrank-max.github.io/site/', { signal: AbortSignal.timeout(30000) });
     if (!r.ok) throw new Error('HTTP ' + r.status);
-    return 'no ar';
+    return sondaSaudavel('no ar', 'pagina-respondendo');
   }));
 
-  itens.push(await verifica('Casa postando (site)', async () => {
-    const j = await buscaJSON('https://api.github.com/repos/reboclbrank-max/site/commits?per_page=1');
-    const idade = h(Date.now() - new Date(j[0].commit.committer.date).getTime());
-    if (idade > 9) throw new Error('sem commit há ' + idade.toFixed(1) + 'h');
-    return 'último commit há ' + idade.toFixed(1) + 'h';
-  }));
-
-  // 🔎 consulta POR WORKFLOW (a lista genérica pode "perder" runs antigos no meio de muitas páginas)
+  // 🔎 consulta POR WORKFLOW (a lista genérica pode "perder" runs antigos no meio de muitas páginas).
+  // A execução recente confirma só a rotina técnica; publicação, aceite e alcance de canais externos
+  // continuam fora desta sonda. Não há dispatch nem recuperação automática do postador por aqui.
+  const runsPostagemSite = await buscaJSON('https://api.github.com/repos/reboclbrank-max/site/actions/workflows/postagem-diaria.yml/runs?per_page=30').catch(() => null);
   const runsEmail = await buscaJSON('https://api.github.com/repos/' + REPO + '/actions/workflows/email.yml/runs?per_page=15').catch(() => null);
   const runsExame = await buscaJSON('https://api.github.com/repos/' + REPO + '/actions/workflows/evolucao.yml/runs?per_page=10').catch(() => null);
+
+  itens.push(await verifica('Casa postando (site)', async () => {
+    if (!runsPostagemSite) throw falhaVigia('api-indisponivel', 'API de execuções do postador indisponível');
+    const execucoes = Array.isArray(runsPostagemSite.workflow_runs) ? runsPostagemSite.workflow_runs : [];
+    const quando = run => {
+      const ms = Date.parse(String(run && (run.updated_at || run.created_at) || ''));
+      return Number.isFinite(ms) ? ms : NaN;
+    };
+    const ordenadas = execucoes.filter(run => run && Number.isFinite(quando(run))).sort((a, b) => quando(b) - quando(a));
+    const ultima = ordenadas[0];
+    const sucesso = ordenadas.find(run => run.status === 'completed' && run.conclusion === 'success');
+    const idadeUltima = ultima ? Date.now() - quando(ultima) : Infinity;
+    const idadeSucesso = sucesso ? Date.now() - quando(sucesso) : Infinity;
+    // A leitura é deliberadamente do resultado mais recente: um sucesso anterior não deve
+    // esconder uma falha nova. Ainda assim, nenhum desses estados tenta reexecutar/publicar.
+    if (ultima && ultima.status === 'completed' && String(ultima.conclusion || '').toLowerCase() !== 'success') {
+      throw falhaVigia('execucao-falhou', 'última rotina do postador terminou em ' + String(ultima.conclusion || 'desconhecida').replace(/[^a-z_]/g, '').slice(0, 32));
+    }
+    if (ultima && ['in_progress', 'queued', 'pending'].includes(ultima.status) && idadeUltima <= JANELA_POSTAGEM_SITE_MS) {
+      return sondaSaudavel('rotina automática em andamento há ' + h(idadeUltima).toFixed(1) + 'h', 'postagem-em-andamento');
+    }
+    if (ultima && ultima.status === 'completed' && ultima.conclusion === 'success' && idadeUltima <= JANELA_POSTAGEM_SITE_MS) {
+      return sondaSaudavel('rotina automática concluída há ' + h(idadeUltima).toFixed(1) + 'h', 'postagem-agendada-recente');
+    }
+    if (sucesso) throw falhaVigia('postagem-atrasada', 'última rotina automática há ' + h(idadeSucesso).toFixed(1) + 'h');
+    throw falhaVigia('sem-execucao', 'nenhuma execução recente do postador encontrada');
+  }));
 
   itens.push(await verifica('Chat por e-mail (24h)', async () => {
     if (!runsEmail) throw falhaVigia('api-indisponivel', 'API de execuções indisponível');
@@ -122,16 +166,18 @@ async function acao(rotulo, arquivo) {
           if (rr.status === 202) n++;
         } catch (e) {}
       }
-      return 'turno ACORDADO agora · 🛡 duplicados cancelados: ' + n + '/' + (vivos.length - 1);
+      return sondaSaudavel('turno ACORDADO agora · 🛡 duplicados cancelados: ' + n + '/' + (vivos.length - 1),
+        naFila.length ? 'turno-ativo-com-sucessor' : 'turno-ativo');
     }
-    if (vivos.length) return 'turno ACORDADO agora' + (naFila.length ? ' · 🔗 próximo já na fila' : '');
+    if (vivos.length) return sondaSaudavel('turno ACORDADO agora' + (naFila.length ? ' · 🔗 próximo já na fila' : ''),
+      naFila.length ? 'turno-ativo-com-sucessor' : 'turno-ativo');
     // fila com NADA rodando: aí sim pode ser travamento (na corrente, esperar atrás de um turno vivo é normal)
     if (naFila.length) {
       const maisVelho = Math.max.apply(null, naFila.map(r => Date.now() - new Date(r.created_at).getTime()));
       const min = maisVelho / 60000;
       // Uma fila já congestionada não melhora com mais dispatches: registra e aguarda intervenção/normalização.
       if (min > 30) throw falhaVigia('fila-estagnada', 'turno na fila há ' + min.toFixed(0) + 'min SEM nada rodando');
-      return 'turno na fila há ' + min.toFixed(0) + 'min (nada rodando ainda)';
+      return sondaSaudavel('turno na fila há ' + min.toFixed(0) + 'min (nada rodando ainda)', 'fila-recente-sem-executor');
     }
     const ult = meus[0];
     if (!ult) throw falhaVigia('sem-execucao', 'nenhuma execução encontrada', true);
@@ -144,7 +190,7 @@ async function acao(rotulo, arquivo) {
     const idade = h(Date.now() - new Date(ult.created_at).getTime());
     // 14/10: corrente nova — sem NADA vivo nem na fila, 45 min já é sinal de corrente quebrada (antes: 7h)
     if (idade > 0.75) throw falhaVigia('turno-ausente', 'nenhum turno vivo há ' + idade.toFixed(1) + 'h', true);
-    return 'turno recente há ' + (idade * 60).toFixed(0) + 'min';
+    return sondaSaudavel('turno recente há ' + (idade * 60).toFixed(0) + 'min', 'turno-recente');
   }));
 
   itens.push(await verifica('Bateria do cérebro', async () => {
@@ -158,16 +204,19 @@ async function acao(rotulo, arquivo) {
     }
     const idade = h(Date.now() - new Date(ult.created_at).getTime());
     if (idade > 26) throw falhaVigia('bateria-atrasada', 'último exame há ' + idade.toFixed(1) + 'h', true);
-    return 'último exame há ' + idade.toFixed(1) + 'h';
+    if (['in_progress', 'queued', 'pending'].includes(ult.status)) {
+      return sondaSaudavel('bateria em andamento há ' + idade.toFixed(1) + 'h', 'bateria-em-andamento');
+    }
+    return sondaSaudavel('último exame há ' + idade.toFixed(1) + 'h', 'bateria-recem-executada');
   }));
 
   for (const par of [['itch Ceifalume', 'https://rebocl-brank.itch.io/ceifalume'], ['itch Prancheta', 'https://rebocl-brank.itch.io/prancheta']]) {
     itens.push(await verifica(par[0], async () => {
       const r = await fetch(par[1], { signal: AbortSignal.timeout(25000), redirect: 'follow' });
       // 429 = o próprio itch limitou a checagem (a página está no ar, só não quer conversa agora)
-      if (r.status === 429) return 'no ar (itch limitou a checagem agora — 429, sem alarme)';
+      if (r.status === 429) return sondaSaudavel('no ar (itch limitou a checagem agora — 429, sem alarme)', 'checagem-limitada');
       if (!r.ok) throw new Error('HTTP ' + r.status);
-      return 'no ar';
+      return sondaSaudavel('no ar', 'pagina-respondendo');
     }));
   }
 
@@ -183,11 +232,11 @@ async function acao(rotulo, arquivo) {
       try {
         const uids = await comTeto(cli.search({ seen: false }), 30000, 'busca de não lidos');
         const alvo = uids || [];
-        if (!alvo.length) return 'nada sem resposta';
+        if (!alvo.length) return sondaSaudavel('nada sem resposta', 'caixa-sem-pendencia');
         const m = await comTeto(cli.fetchOne(alvo[0], { envelope: true }), 30000, 'leitura do não lido');
         const quando = (m && m.envelope && m.envelope.date) ? new Date(m.envelope.date).getTime() : Date.now();
         const min = (Date.now() - quando) / 60000;
-        if (min < 12) return alvo.length + ' e-mail(s) recém-chegado(s) — o turno pega em instantes';
+        if (min < 12) return sondaSaudavel(alvo.length + ' e-mail(s) recém-chegado(s) — o turno pega em instantes', 'caixa-recem-chegada');
         throw falhaVigia('caixa-atrasada', alvo.length + ' e-mail(s) SEM RESPOSTA, o mais antigo há ' + min.toFixed(0) + ' min', true);
       } finally { lock.release(); }
     } finally { try { await comTeto(cli.logout(), 15000, 'logout IMAP'); } catch (e) { try { cli.close(); } catch (e2) {} } }
@@ -222,7 +271,11 @@ async function acao(rotulo, arquivo) {
     // Mudança de causa é relevante mesmo se a pane já estava confirmada: pode tornar a recuperação
     // elegível ou bloqueá-la, sem registrar detalhe sensível.
     if (efetivoAntes !== efetivoAgora || (!it.ok && prev.causa && prev.causa !== causa)) mudou = true;
+    // Evidência é sempre um código fechado produzido nesta execução; detalhes transitórios
+    // ficam somente no log do job e nunca entram no JSON público.
+    const evidencia = it.ok ? evidenciaVigiaConhecida(it.evidencia) : '';
     novos[it.nome] = { ok: it.ok, falhas, causa };
+    if (evidencia) novos[it.nome].evidencia = evidencia;
     linhas.push((efetivoAgora ? '✅' : '❌') + ' ' + it.nome + ' — ' + it.detalhe + (it.ok ? '' : ' · causa: ' + causa + ' (falha ' + falhas + '/2)'));
   }
 
