@@ -25,9 +25,10 @@
 
 ## Estado registrado nesta adoção
 
-- Chat remoto consultado: `e28dbb89dd4402e6187c5574d887d38ee220baa3`.
-- Base de decisões/continuidade: `1f41325a047d19cd06b5d7fa0ff9a6ed9b2e935d`.
+- Fotografia do Chat consultada antes da adoção: `e28dbb89dd4402e6187c5574d887d38ee220baa3`.
+- Publicação desta regra no Chat: `8a8f43c8a483b587142cac6c680eef96bf9ffac9`.
+- Base de decisões/continuidade antes do registro 345: `1f41325a047d19cd06b5d7fa0ff9a6ed9b2e935d`; publicação do registro: `b27ceddbdfdf20a0175aaf6d52047de899617eab`.
 - Marketing do Site com cadência protegida e régua honesta: `d7e7cb092a374ba9889c70b82f259bd9f6970cf4`.
 - Agente privado de apoio: `f5f9750ed98014db3933fe796660a54191c116b9`.
 
-A regra não altera canais, cron, custos, segredos, permissões ou conteúdo de conversa. Ela fixa a ordem de responsabilidade para os próximos trabalhos.
+A regra não altera canais, cron, custos, segredos, permissões ou conteúdo de conversa. Ela fixa a ordem de responsabilidade para os próximos trabalhos. A barreira de continuidade desta publicação passou 8/8; o hash remoto deve sempre ser conferido antes da próxima alteração.

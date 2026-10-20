@@ -26,9 +26,9 @@ Material reutilizável e público/sanitizado pertence a este repositório; decis
 
 ### 0.2 Estado consolidado que acompanha esta regra
 
-- `chat@e28dbb89dd4402e6187c5574d887d38ee220baa3` é a fotografia remota consultada para esta adoção.
+- `chat@e28dbb89dd4402e6187c5574d887d38ee220baa3` foi a fotografia remota consultada; a regra foi publicada em `chat@8a8f43c8a483b587142cac6c680eef96bf9ffac9` após barreira local de continuidade 8/8.
 - O Site já publicado em `d7e7cb092a374ba9889c70b82f259bd9f6970cf4` preserva oito ciclos planejados, separa o pulso técnico da concorrência de postagem e registra capacidade/métricas sem confundir sucesso técnico com resultado externo.
-- A Base em `1f41325a047d19cd06b5d7fa0ff9a6ed9b2e935d` preserva a decisão 344; a decisão de governança atual deve ser registrada junto dela.
+- A Base em `1f41325a047d19cd06b5d7fa0ff9a6ed9b2e935d` preservava a decisão 344; a decisão 345 foi publicada em `base@b27ceddbdfdf20a0175aaf6d52047de899617eab`.
 - A página pública foi consultada sem token, mensagem ou conteúdo privado. Conversas privadas continuam dependentes do token guardado somente no navegador do dono; não há bypass por esta regra.
 
 ---
