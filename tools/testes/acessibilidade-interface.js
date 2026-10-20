@@ -52,6 +52,11 @@ testa('voltar da configuração preserva alvo mínimo sem alterar o fluxo', () =
   assert.match(estilos, /#btn-voltar-config\{min-width:24px;min-height:24px;display:inline-flex;align-items:center;justify-content:center\}/);
 });
 
+testa('opt-in de rascunhos preserva alvo nativo mínimo sem mudar a preferência', () => {
+  assert.match(estilos, /\.opcao-rascunho\{display:flex;align-items:center;gap:9px;min-height:24px[^}]*\}/);
+  assert.match(estilos, /#optin-rascunhos\{width:24px;height:24px;min-width:24px;min-height:24px;flex:0 0 24px;margin:0;padding:0;accent-color:var\(--ouro\)\}/);
+});
+
 testa('aviso de acesso em ligar anuncia sem bloquear os controles do cabeçalho', () => {
   const ligar = fontes['ligar.html'];
   assert.match(ligar, /b\.setAttribute\('role','status'\);b\.setAttribute\('aria-live','polite'\)/);

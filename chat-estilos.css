@@ -10,8 +10,8 @@
   .aviso-rascunho,.previsao-arquivo-texto{display:flex;align-items:center;gap:8px;max-width:760px;margin:0 auto 7px;padding:8px 10px;border:1px solid #245c32;border-radius:10px;background:#14281a;color:#a9e0b8;font-size:12px}
   .aviso-rascunho span,.previsao-arquivo-texto span{flex:1;min-width:0}
   .aviso-rascunho button{background:var(--painel);border:1px solid #245c32;color:#a9e0b8;border-radius:8px;padding:5px 8px;font:inherit;font-size:12px;cursor:pointer;white-space:nowrap}
-  .opcao-rascunho{display:flex;align-items:flex-start;gap:9px;color:var(--texto);font-size:13.5px;cursor:pointer}
-  .opcao-rascunho input{width:auto;margin:3px 0 0;accent-color:var(--ouro)}
+  .opcao-rascunho{display:flex;align-items:center;gap:9px;min-height:24px;color:var(--texto);font-size:13.5px;cursor:pointer}
+  #optin-rascunhos{width:24px;height:24px;min-width:24px;min-height:24px;flex:0 0 24px;margin:0;padding:0;accent-color:var(--ouro)}
   body.leitura-confortavel{font-size:16.5px;line-height:1.65}
   body.leitura-confortavel .bolha{max-width:min(92%,720px);font-size:16px;line-height:1.7}
   body.leitura-confortavel .conv .titulo{font-size:15.5px}
