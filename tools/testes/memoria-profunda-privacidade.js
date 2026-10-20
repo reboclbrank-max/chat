@@ -36,7 +36,7 @@ for (const rota of rotas) {
     for (const entrada of ['!lembrar fato privado', '!lembrar', '!criar !minha ferramenta descrição', '!criar', '!fabrica']) assert.equal(fn(entrada), true, entrada);
     for (const entrada of ['!lembrancax', '!criatura tema', '!fabricante']) assert.equal(fn(entrada), false, entrada);
     const criar = entre(html, "if (m === '!criar' || m.startsWith('!criar '))", "\n  if (m === '!fabrica' || m.startsWith('!fabrica '))");
-    const fabrica = entre(html, "if (m === '!fabrica' || m.startsWith('!fabrica '))", "\n  if (m.startsWith('!painel'))");
+    const fabrica = entre(html, "if (m === '!fabrica' || m.startsWith('!fabrica '))", "\n  if (m === '!painel' || m.startsWith('!painel '))");
     assert.match(criar, /rebocl_fabrica/);
     assert.doesNotMatch(criar + fabrica, /fetch\s*\(|api\s*\(/);
     helpers.push(helper);

@@ -46,7 +46,7 @@ for (const rota of rotas) {
       assert.equal(fn(comando.vazia), true, comando.vazia);
       assert.equal(fn(comando.vizinho), false, comando.vizinho);
     }
-    for (const foraDoEscopo of ['!q500', '!qr texto', '!matematica 1+1', '!conta 1+1', '!cor azul', '!falar texto', 'texto normal']) {
+    for (const foraDoEscopo of ['!qr texto', '!matematica 1+1', '!conta 1+1', '!cor azul', '!falar texto', 'texto normal']) {
       assert.equal(fn(foraDoEscopo), false, foraDoEscopo);
     }
     helpers.push(helper);

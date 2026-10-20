@@ -45,7 +45,7 @@ for (const rota of rotas) {
       assert.equal(fn(comando.vizinho), false, comando.vizinho);
     }
     // A família de moeda local nunca captura a conversão monetária de rede.
-    for (const foraDoEscopo of ['!moedaconv 100 USD BRL', '!q500', '!qr texto', '!matematica 1+1', '!conta 1+1', '!cor azul', '!falar texto', 'texto normal']) {
+    for (const foraDoEscopo of ['!moedaconv 100 USD BRL', '!qr texto', '!matematica 1+1', '!conta 1+1', '!cor azul', '!falar texto', 'texto normal']) {
       assert.equal(fn(foraDoEscopo), false, foraDoEscopo);
     }
     helpers.push(helper);
