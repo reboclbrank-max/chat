@@ -35,6 +35,11 @@ testa('ações de cada mensagem permanecem acessíveis por teclado e toque', () 
   assert.match(estilos, /@media \(hover:none\),\(pointer:coarse\)\{\.bolha \.acoes\{opacity:1;pointer-events:auto\}\}/);
 });
 
+testa('ações de cada mensagem reservam espaço e alvo mínimo de toque', () => {
+  assert.match(estilos, /\.bolha\{[^}]*padding:10px 42px 10px 13px[^}]*\}/);
+  assert.match(estilos, /\.bolha \.acoes button\{[^}]*min-width:24px;min-height:24px;display:inline-flex;align-items:center;justify-content:center[^}]*\}/);
+});
+
 for (const rota of rotas) {
   const html = fontes[rota];
   testa(rota + ' não contém IDs duplicados', () => {
