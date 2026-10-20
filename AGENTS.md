@@ -2,6 +2,12 @@
 
 Este repositório tem automações ativas, uma interface pública e integrações que usam segredos fora do código. Trabalhe somente mediante uma tarefa explícita do dono.
 
+## Regra fixa — Chat primeiro
+
+Por decisão expressa do dono em 20/10/2026, este Chat é o trabalhador principal da casa. Antes de um agente externo criar trabalho paralelo, ele deve consultar/usar o estado e o fluxo já existente do Chat. O agente externo só complementa após o Chat executar a parte dele ou declarar uma limitação verificável: investiga erro, corrige falha, valida segurança e propõe ideias depois da execução observada.
+
+A regra vale somente dentro das capacidades, canais e guardas já aprovados. Ela não autoriza burlar a fronteira do token local da interface, criar contas, gastar, alterar segredo/permissão, apagar dados ou substituir revisão humana. A divisão completa e as casas corretas de persistência estão em [`GOVERNANCA-CHAT-PRIMEIRO.md`](GOVERNANCA-CHAT-PRIMEIRO.md).
+
 ## Leitura obrigatória antes de mudar algo
 
 1. Leia [`CONTINUIDADE.md`](CONTINUIDADE.md) inteiro.

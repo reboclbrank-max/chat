@@ -19,7 +19,7 @@ Página de conversa com a **IA gratuita da Rebocl Brank**.
 
 ## Manutenção e continuidade
 
-Antes de qualquer alteração, leia [`CONTINUIDADE.md`](CONTINUIDADE.md), [`AGENTS.md`](AGENTS.md) e [`AUTONOMIA.md`](AUTONOMIA.md). Eles registram o mapa técnico, as proteções, a validação, os limites de autonomia e o procedimento obrigatório para quem assumir o trabalho.
+Antes de qualquer alteração, leia [`CONTINUIDADE.md`](CONTINUIDADE.md), [`AGENTS.md`](AGENTS.md), [`AUTONOMIA.md`](AUTONOMIA.md) e [`GOVERNANCA-CHAT-PRIMEIRO.md`](GOVERNANCA-CHAT-PRIMEIRO.md). Eles registram o mapa técnico, as proteções, a validação, os limites de autonomia, a ordem fixa de trabalho e o procedimento obrigatório para quem assumir o trabalho.
 
 Toda atualização autorizada que mude comportamento, segurança, workflow, teste ou capacidade do Chat deve atualizar também `CONTINUIDADE.md` no mesmo conjunto de commits; a barreira rápida verifica essa regra em pushes de código. Depois, registre a decisão/estado pertinente na memória privada `base`, faça commit, push e confirme os hashes remotos.
 

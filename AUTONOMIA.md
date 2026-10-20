@@ -8,6 +8,12 @@ O objetivo é usar ao máximo os recursos gratuitos já autorizados para o Chat 
 
 A meta operacional é: confirmação/atendimento tão rápido quanto a infraestrutura permitir, recuperação automática quando houver falha, observabilidade pública sanitizada e custos novos de **R$ 0**.
 
+## Ordem fixa de execução — Chat primeiro
+
+O dono definiu em 20/10/2026 que o Chat deve ser o trabalhador principal. A casa usa primeiro as capacidades, memória e fluxos existentes deste sistema; agentes externos são apoio após resultado/limitação observável, não uma segunda casa que duplica o trabalho. Eles podem diagnosticar falha, corrigir erro, validar guardas e acrescentar ideias depois do que o Chat fez.
+
+Esta ordem não remove limites de custo, segurança, privacidade ou revisão humana. Uma indisponibilidade confirmada, tarefa fora de capacidade ou ordem direta do dono permite suporte externo proporcional. O contrato de persistência e responsabilidades está em [`GOVERNANCA-CHAT-PRIMEIRO.md`](GOVERNANCA-CHAT-PRIMEIRO.md).
+
 ## O que pode operar sem nova confirmação
 
 Com a autorização atual, os sistemas existentes podem, respeitando seus próprios limites e termos:

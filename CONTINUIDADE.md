@@ -18,6 +18,19 @@ O teste `tools/testes/continuidade.js` mantém esta regra visível e, em um push
 
 Além deste arquivo público, registre a decisão relevante na memória privada `reboclbrank-max/base`, em `ia-propria/ESTADO-DO-CHAT.md` e `empresa/registro-de-decisoes.md`. Não copie valores de credenciais para nenhum dos dois repositórios.
 
+### 0.1 Regra fixa do dono — Chat primeiro (20/10/2026)
+
+O Chat é o executor principal da casa. Para uma tarefa dentro da capacidade já aprovada, o primeiro passo é usar/consultar o fluxo e o estado do Chat; um agente externo não duplica a tarefa só para parecer mais rápido. Depois da execução ou de uma limitação sanitizada do Chat, o agente externo pode apoiar com diagnóstico, correção, teste, segurança e ideias novas. Falha confirmada, tarefa fora de capacidade ou ordem direta do dono são as exceções.
+
+Material reutilizável e público/sanitizado pertence a este repositório; decisão e contexto privado pertencem à Base; segredo, conteúdo de conversa, anexo e dado pessoal continuam fora dos dois. O workspace temporário de qualquer agente não é fonte de verdade. Leia [`GOVERNANCA-CHAT-PRIMEIRO.md`](GOVERNANCA-CHAT-PRIMEIRO.md) para a divisão completa, limites e pinos atuais.
+
+### 0.2 Estado consolidado que acompanha esta regra
+
+- `chat@e28dbb89dd4402e6187c5574d887d38ee220baa3` é a fotografia remota consultada para esta adoção.
+- O Site já publicado em `d7e7cb092a374ba9889c70b82f259bd9f6970cf4` preserva oito ciclos planejados, separa o pulso técnico da concorrência de postagem e registra capacidade/métricas sem confundir sucesso técnico com resultado externo.
+- A Base em `1f41325a047d19cd06b5d7fa0ff9a6ed9b2e935d` preserva a decisão 344; a decisão de governança atual deve ser registrada junto dela.
+- A página pública foi consultada sem token, mensagem ou conteúdo privado. Conversas privadas continuam dependentes do token guardado somente no navegador do dono; não há bypass por esta regra.
+
 ---
 
 ## 1. Mapa do sistema e limites entre repositórios

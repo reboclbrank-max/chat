@@ -20,25 +20,28 @@ let autonomia = '';
 let agentes = '';
 let readme = '';
 let workflowRapido = '';
+let governanca = '';
 try { continuidade = ler('CONTINUIDADE.md'); } catch (e) { testa('CONTINUIDADE.md existe', false, e.message); }
 try { autonomia = ler('AUTONOMIA.md'); } catch (e) { testa('AUTONOMIA.md existe', false, e.message); }
 try { agentes = ler('AGENTS.md'); } catch (e) { testa('AGENTS.md existe', false, e.message); }
 try { readme = ler('README.md'); } catch (e) { testa('README.md existe', false, e.message); }
 try { workflowRapido = ler('.github/workflows/testes-rapidos.yml'); } catch (e) { testa('workflow de testes rápidos existe', false, e.message); }
+try { governanca = ler('GOVERNANCA-CHAT-PRIMEIRO.md'); } catch (e) { testa('governança Chat primeiro existe', false, e.message); }
 
 testa('continuidade declara a regra permanente', /## 0\. Regra permanente de continuidade/.test(continuidade) && /mesma série de commits/.test(continuidade));
 testa('continuidade mapeia segurança, testes e checklist', /## 3\. Segurança que não pode regredir/.test(continuidade) && /## 5\. Testes e validação mínima/.test(continuidade) && /## 7\. Checklist obrigatório/.test(continuidade));
 testa('instruções para agentes exigem atualização da continuidade', /CONTINUIDADE\.md/.test(agentes) && /mesmo conjunto de commits/.test(agentes));
 testa('README aponta a continuidade', /\[[^\]]*CONTINUIDADE\.md[^\]]*\]\(CONTINUIDADE\.md\)/.test(readme));
+testa('governança fixa Chat primeiro é verificável', /trabalhador principal/.test(governanca) && /agente externo/.test(governanca) && /Chat primeiro/.test(agentes) && /Chat primeiro/.test(continuidade));
 testa('política de autonomia entra na barreira', /R\$ 0/.test(autonomia) && /'AUTONOMIA\.md'/.test(workflowRapido));
 testa('barreira observa todo JavaScript/Python/Shell em tools', /'tools\/\*\*\/\*\.js'/.test(workflowRapido) && /'tools\/\*\*\/\*\.py'/.test(workflowRapido) && /'tools\/\*\*\/\*\.sh'/.test(workflowRapido));
-testa('documentos novos não trazem padrão de PAT', !/github_pat_[A-Za-z0-9_]{20,}|gh[pousr]_[A-Za-z0-9_]{20,}/.test(continuidade + autonomia + agentes));
+testa('documentos novos não trazem padrão de PAT', !/github_pat_[A-Za-z0-9_]{20,}|gh[pousr]_[A-Za-z0-9_]{20,}/.test(continuidade + autonomia + agentes + governanca));
 
 function arquivoOperacional(arquivo) {
   return /^\.github\/workflows\//.test(arquivo) ||
     /^tools\/.*\.(?:js|py|sh)$/.test(arquivo) ||
     /^(?:index|direto|ligar|limpar|console|motor(?:02|03|04)?)\.html$/.test(arquivo) ||
-    /^(?:chat-estilos\.css|chat-pwa\.js|sw\.js|manifest\.json|dna\.json|AUTONOMIA\.md)$/.test(arquivo);
+    /^(?:chat-estilos\.css|chat-pwa\.js|sw\.js|manifest\.json|dna\.json|AUTONOMIA\.md|GOVERNANCA-CHAT-PRIMEIRO\.md)$/.test(arquivo);
 }
 
 const evento = process.env.GITHUB_EVENT_PATH;
