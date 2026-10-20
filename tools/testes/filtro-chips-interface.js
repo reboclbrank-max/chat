@@ -116,12 +116,13 @@ ok('falha fechada se a casca não trouxer os elementos esperados', () => {
   assert.equal(contexto.window.iniciarFiltroChips(), false);
 });
 
-ok('as quatro rotas expõem busca acessível e só a iniciam após montar os chips', () => {
+ok('as quatro rotas declaram busca por nome ou comando e só a iniciam após montar os chips', () => {
   for (const rota of rotas) {
     const html = ler(rota);
     assert.equal((html.match(/id="filtro-chips"/g) || []).length, 1, rota + ': campo único');
-    assert.match(html, /<label class="visualmente-oculto" for="filtro-chips">Procurar comando rápido<\/label>/);
-    assert.match(html, /type="search" autocomplete="off"/);
+    assert.match(html, /<label class="visualmente-oculto" for="filtro-chips">Procurar por nome ou comando<\/label>/);
+    assert.match(html, /type="search" autocomplete="off" placeholder="🔎 nome ou comando…"/);
+    assert.match(html, /title="Pesquise pelo nome do atalho ou pelo comando que ele preenche"/);
     assert.match(html, /aria-controls="chips" aria-describedby="resultado-filtro-chips"/);
     assert.match(html, /id="resultado-filtro-chips"[^>]*role="status"[^>]*aria-live="polite"/);
     const construcao = html.slice(html.indexOf('function montarChips() {'), html.indexOf('/* ---------- sino'));
@@ -142,7 +143,7 @@ ok('PWA, workflow e continuidade observam o filtro local', () => {
   const sw = ler('sw.js');
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v17/);
+  assert.match(sw, /rebocl-chat-v18/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);
   assert.match(workflow, /'chat-filtro-chips\.js'/);
   assert.match(workflow, /chat-filtro-chips\.js tools\/testes\/\*\.js/);
