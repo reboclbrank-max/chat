@@ -69,6 +69,14 @@ testa('console nomeia a atualização sem alterar a consulta existente', () => {
   assert.match(consoleHtml, /\$\('btn-atualizar'\)\.onclick = \(\) => \{ carregarEstado\(\); carregarOrdens\(\); \};/);
 });
 
+testa('console anuncia integralmente o estado publicado sem alterar a consulta', () => {
+  const consoleHtml = fonte('console.html');
+  assert.match(consoleHtml, /<div id="status" role="status" aria-live="polite" aria-atomic="true">atualizando…<\/div>/);
+  assert.match(consoleHtml, /\$\('status'\)\.textContent = 'atualizando…';/);
+  assert.match(consoleHtml, /\$\('status'\)\.textContent = '⚠️ sem estado publicado ainda — o agente publica em site\/estado-ia\.json a cada execução';/);
+  assert.match(consoleHtml, /\$\('status'\)\.textContent = '✓ estado atualizado ' \+ quando\(est\.atualizado\) \+ ' · próxima atualização em 60 s';/);
+});
+
 testa('aviso de acesso em ligar anuncia sem bloquear os controles do cabeçalho', () => {
   const ligar = fontes['ligar.html'];
   assert.match(ligar, /b\.setAttribute\('role','status'\);b\.setAttribute\('aria-live','polite'\)/);
