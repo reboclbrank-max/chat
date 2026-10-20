@@ -39,6 +39,7 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Imagens nas respostas:** a ampliação já existente também pode ser aberta por Enter ou Espaço; o diálogo mantém o foco até Esc ou toque para fechar.
 - **Configuração:** o controle **Voltar ao Chat** preserva alvo mínimo de toque sem mudar a navegação nem o token local.
 - **Rascunhos locais:** a opção de salvar rascunhos neste aparelho preserva alvo nativo mínimo sem alterar a preferência, seus dados ou o token.
+- **Console:** o campo de tema para “pensar bem” preserva um nome acessível mesmo depois de a dica visual ser preenchida; enviar continua sendo uma escolha pelo botão explícito.
 - **Enxame:** o canal público só pode sugerir motores. Veja candidatos com `!candidatos` e aprove cada um conscientemente com `!plantar <base> | <modelo> | <nome>`; bases e modelos passam por validação antes de entrar na frota.
 - **Dados do dono:** pings automáticos não levam memória/persona e resumos internos não são publicados no canal do enxame.
 - **Fotos por e-mail:** toda foto é regravada sem EXIF/metadados antes do processamento. O OCR externo só é usado quando o e-mail trouxer autorização explícita, por exemplo: `ocr externo: sim`; o OCR local continua sendo a primeira opção.

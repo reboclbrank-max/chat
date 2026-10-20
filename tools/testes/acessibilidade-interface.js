@@ -57,6 +57,12 @@ testa('opt-in de rascunhos preserva alvo nativo mínimo sem mudar a preferência
   assert.match(estilos, /#optin-rascunhos\{width:24px;height:24px;min-width:24px;min-height:24px;flex:0 0 24px;margin:0;padding:0;accent-color:var\(--ouro\)\}/);
 });
 
+testa('console dá nome persistente ao tema pensado sem alterar sua ação', () => {
+  const consoleHtml = fonte('console.html');
+  assert.match(consoleHtml, /<input id="pensar-entrada" aria-label="Tema para pensar com dois motores e juiz" placeholder="🧠 pensar bem sobre… \(2 motores \+ juiz\)">/);
+  assert.match(consoleHtml, /\$\('btn-pensar'\)\.onclick = \(\) => \{\n  const t = \$\('pensar-entrada'\)\.value\.trim\(\);\n  if \(t\) mandarOrdem\('pensar: ' \+ t\);\n\};/);
+});
+
 testa('aviso de acesso em ligar anuncia sem bloquear os controles do cabeçalho', () => {
   const ligar = fontes['ligar.html'];
   assert.match(ligar, /b\.setAttribute\('role','status'\);b\.setAttribute\('aria-live','polite'\)/);
