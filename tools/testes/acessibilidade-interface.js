@@ -112,6 +112,17 @@ for (const rota of rotas) {
     assert.match(html, /_lightbox\.setAttribute\('aria-hidden', 'false'\)/);
     assert.match(html, /if \(e\.key === 'Escape'\) \{ if \(_lightbox/);
   });
+  testa(rota + ' torna imagens ampliáveis alcançáveis e mantém o foco no diálogo', () => {
+    assert.match(html, /function prepararImagemAmpliavel\(img\)/);
+    assert.match(html, /img\.tabIndex = 0/);
+    assert.match(html, /img\.setAttribute\('role', 'button'\)/);
+    assert.match(html, /img\.setAttribute\('aria-haspopup', 'dialog'\)/);
+    assert.match(html, /e\.key === 'Enter' \|\| e\.key === ' '/);
+    assert.match(html, /const img = e\.target && e\.target\.tagName === 'IMG' \? e\.target : null/);
+    assert.match(html, /if \(img && img\.closest\('\.bolha'\)\) abrirLightbox\(img\)/);
+    assert.match(html, /_lightbox\.addEventListener\('keydown', \(e\) => \{\n    if \(e\.key === 'Tab'\) \{ e\.preventDefault\(\); _lightbox\.focus\(\); \}/);
+    assert.match(html, /new MutationObserver\(\(mudancas\) =>/);
+  });
 }
 
 console.log(`${certos}/${certos + falhas} testes de acessibilidade da interface passaram`);

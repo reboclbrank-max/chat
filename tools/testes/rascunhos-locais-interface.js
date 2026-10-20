@@ -25,7 +25,7 @@ function blocoRascunhos(html) {
   return trecho(html, "const CHAVE_OPTIN_RASCUNHOS", "\nfunction mensagemRascunho");
 }
 function blocoCompletoRascunhos(html) {
-  return trecho(html, "/* ---------- rascunhos locais e prévia de texto anexado (P1D/P1E) ---------- */", "/* ---------- lightbox das imagens (v1.6) ---------- */");
+  return trecho(html, "/* ---------- rascunhos locais e prévia de texto anexado (P1D/P1E) ---------- */", "/* ---------- lightbox das imagens");
 }
 function blocoEnviar(html) { return trecho(html, 'async function enviar()', '\n// Quando o workflow privado falha'); }
 function blocoNova(html) { return trecho(html, 'async function novaConversa(', '\n\n/* ---------- conversa ---------- */'); }
