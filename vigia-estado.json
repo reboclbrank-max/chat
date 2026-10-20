@@ -1,10 +1,11 @@
 {
- "verificado_em": "2026-10-20T07:06:47.699Z",
+ "verificado_em": "2026-10-20T07:47:14.192Z",
  "itens": {
   "Página do chat": {
-   "ok": false,
-   "falhas": 1,
-   "causa": "sonda-indisponivel"
+   "ok": true,
+   "falhas": 0,
+   "causa": "saudavel",
+   "evidencia": "pagina-respondendo"
   },
   "Site oficial": {
    "ok": true,
