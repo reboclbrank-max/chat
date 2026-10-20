@@ -123,6 +123,8 @@
   .faixa.offline{background:#2a1414;color:#e0a9a9}
   #cabecalho-conv .acao{background:none;border:1px solid var(--borda);color:var(--texto2);border-radius:9px;font-size:13px;padding:5px 8px;cursor:pointer}
   #cabecalho-conv .acao.local-ligado{background:#14281a;border-color:#245c32;color:#a9e0b8}
+  /* Em telas compactas, todas as ações permanecem visíveis; não ficam cortadas fora do cabeçalho. */
+  @media (max-width:700px){#cabecalho-conv{flex-wrap:wrap;align-content:flex-start;row-gap:6px}#cabecalho-conv .titulo{flex:1 1 calc(100% - 48px);min-width:0}}
   #faixa-local{font-size:12px;padding:7px 14px;border-bottom:1px solid #245c32;background:#14281a;color:#a9e0b8;text-align:center}
   #lightbox{position:fixed;inset:0;background:rgba(0,0,0,.93);display:none;align-items:center;justify-content:center;z-index:60;cursor:zoom-out}
   #lightbox.aberto{display:flex}
