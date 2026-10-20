@@ -54,6 +54,13 @@ testa('aviso de acesso em ligar anuncia sem bloquear os controles do cabeçalho'
   assert.match(ligar, /z-index:99999[^']*pointer-events:none/);
 });
 
+testa('aviso de limpeza anuncia a proteção sem mudar a tela deliberada', () => {
+  const limpar = fontes['limpar.html'];
+  assert.match(limpar, /role="alert" aria-live="assertive" aria-atomic="true"/);
+  assert.match(limpar, /navigator\.serviceWorker[^\n]*unregister/);
+  assert.match(limpar, /setTimeout\(function\(\)\{location\.replace\('\/chat\/\?limpo=1'\);\},3000\)/);
+});
+
 for (const rota of rotas) {
   const html = fontes[rota];
   testa(rota + ' não contém IDs duplicados', () => {

@@ -3146,7 +3146,7 @@ try{
  if(tinhaToken){p.delete('t');history.replaceState({},'',location.pathname+'?limpo=1');}
  if(navigator.serviceWorker&&navigator.serviceWorker.getRegistrations){navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister();});}).catch(function(e){});}
  if(window.caches&&caches.keys){caches.keys().then(function(ks){ks.forEach(function(k){caches.delete(k);});}).catch(function(e){});}
- var texto='<div style="position:fixed;inset:0;z-index:99999;background:#0d0d12;color:#e8e4d8;display:flex;align-items:center;justify-content:center;font-family:sans-serif;text-align:center;padding:24px"><div><div style="font-size:52px">🧹🔐</div><div style="font-size:22px;margin:14px 0;color:#b6f0c3"><b>Cache limpo.</b></div><div style="color:#aaa8a0;font-size:15px">Tokens nunca são aceitos por link. Para usar o acesso, abra ⚙️ Configurar acesso e cole-o no campo protegido deste navegador.</div></div></div>';
+ var texto='<div role="alert" aria-live="assertive" aria-atomic="true" style="position:fixed;inset:0;z-index:99999;background:#0d0d12;color:#e8e4d8;display:flex;align-items:center;justify-content:center;font-family:sans-serif;text-align:center;padding:24px"><div><div style="font-size:52px">🧹🔐</div><div style="font-size:22px;margin:14px 0;color:#b6f0c3"><b>Cache limpo.</b></div><div style="color:#aaa8a0;font-size:15px">Tokens nunca são aceitos por link. Para usar o acesso, abra ⚙️ Configurar acesso e cole-o no campo protegido deste navegador.</div></div></div>';
  var marca=function(){document.body.insertAdjacentHTML('beforeend',texto);};
  if(document.body)marca();else window.addEventListener('DOMContentLoaded',marca);
  setTimeout(function(){location.replace('/chat/?limpo=1');},3000);
