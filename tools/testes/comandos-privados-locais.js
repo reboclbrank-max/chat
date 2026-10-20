@@ -47,7 +47,7 @@ for (const rota of rotas) {
     assert(posRota >= 0 && posMaos > posRota && posRascunho > posMaos, 'ordem local antes do rascunho');
     if (posIssue >= 0) assert(posIssue > posRascunho, 'criação de Issue fica depois da rota local');
     assert(posComentario > posRascunho, 'comentário remoto fica depois da rota local');
-    assert.match(envio, /!pareceTokenDeAcesso\(texto\) && ehComandoPrivadoLocal\(texto\)/);
+    assert.match(envio, /if \(ehComandoPrivadoLocal\(texto\)\)/);
     assert.match(envio, /'🔒 comando privado local'/);
     enviados.push(envio.slice(posRota, posRascunho));
   });

@@ -1097,6 +1097,14 @@ async function enviar() {
   const texto = caixa.value.trim();
   if (!texto || !conversa) return;
   if (!mensagemDentroDoLimite(texto)) { avisoMensagemLonga(); caixa.focus(); return; }
+  if (pareceTokenDeAcesso(texto)) {
+    limparRascunhoPorChave(chaveRascunhoAtual(), texto);
+    limparPreviaArquivoTexto();
+    caixa.value = ''; caixa.style.height = 'auto';
+    bolha('bot', '🔐 **Token não é mensagem.** Abra ⚙️ Configurar acesso e cole-o somente no campo protegido deste navegador. Nada foi enviado, gravado em issue ou passado a um motor.', new Date().toISOString(), '🔐 proteção');
+    rolarFim();
+    return;
+  }
   // Roteiro fechado: responde na própria tela antes de guardar rascunho ou criar Issue.
   // Se o ativo local não carregar, a conversa normal segue sem exceção nem fallback de rede.
   const respostaOperacionalLocal = typeof window.respostaComandoOperacionalLocal === 'function'
@@ -1111,7 +1119,7 @@ async function enviar() {
     rolarFim();
     return;
   }
-  if (!pareceTokenDeAcesso(texto) && ehComandoPrivadoLocal(texto)) {
+  if (ehComandoPrivadoLocal(texto)) {
     const respostaPrivadaLocal = await maosDaCasa(texto);
     if (respostaPrivadaLocal) {
       caixa.value = ''; caixa.style.height = 'auto';
@@ -1125,14 +1133,6 @@ async function enviar() {
     }
   }
   salvarRascunhoAtual(caixa.value);
-  if (pareceTokenDeAcesso(texto)) {
-    limparRascunhoPorChave(chaveRascunhoAtual(), texto);
-    limparPreviaArquivoTexto();
-    caixa.value = ''; caixa.style.height = 'auto';
-    bolha('bot', '🔐 **Token não é mensagem.** Abra ⚙️ Configurar acesso e cole-o somente no campo protegido deste navegador. Nada foi enviado, gravado em issue ou passado a um motor.', new Date().toISOString(), '🔐 proteção');
-    rolarFim();
-    return;
-  }
   limparSugestoes();
   if (MODO_LOCAL.ligado) {
     caixa.value = ''; caixa.style.height = 'auto';
