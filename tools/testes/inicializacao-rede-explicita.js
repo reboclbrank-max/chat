@@ -23,7 +23,7 @@ function trecho(texto, inicio, fim) {
 }
 function blocoVigia(html) { return trecho(html, 'let vigiaTimer = null;', '\n\n/* ---------- SISTEMA NERVOSO'); }
 function blocoCatalogos(html) { return trecho(html, '(function () {\n  const FONTES = [', '\n})();;\n\n(function () { const CHAVE =') + '\n})();'; }
-function blocoEstudo(html) { return trecho(html, "(function () { const CHAVE = 'rebocl_caderno';", '\n\n;\n\n(function () { window.profundaSys'); }
+function blocoEstudo(html) { return trecho(html, "(function () { const CHAVE = 'rebocl_caderno';", '\n\n;\n'); }
 function blocoModo(html) { return trecho(html, 'function textoFaixaModoLocal()', '\nfunction mostrarProgressoLocal(t)'); }
 const fontes = Object.fromEntries(rotas.map((rota) => [rota, fonte(rota)]));
 

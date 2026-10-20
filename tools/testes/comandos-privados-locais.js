@@ -29,10 +29,10 @@ for (const rota of rotas) {
   const html = fs.readFileSync(path.join(raiz, rota), 'utf8');
   testa(rota + ' reconhece somente os comandos privados locais previstos', () => {
     const { fonte, fn } = helperPrivado(html);
-    for (const comando of ['!aprender fato', '!aprender', '!memoria', '!esquecer 1', '!persona poeta | fala curto', '!persona', '!personas', '!usar poeta', '!usar', '!backup', '!restaurar', '!chave modelo segredo', '!chave', '!capsula 10m recado', '!capsula', '!anotar comprar leite', '!anotar', '!anotacoes', '!apagarnota 1', '!apagarnota', '!tarefa pagar conta', '!tarefa', '!tarefas', '!feito 1', '!feito', '!apagartarefa 1', '!apagartarefa', '!lembrete 10m ligar']) {
+    for (const comando of ['!aprender fato', '!aprender', '!memoria', '!esquecer 1', '!persona poeta | fala curto', '!persona', '!personas', '!usar poeta', '!usar', '!backup', '!restaurar', '!chave modelo segredo', '!chave', '!capsula 10m recado', '!capsula', '!anotar comprar leite', '!anotar', '!anotacoes', '!apagarnota 1', '!apagarnota', '!tarefa pagar conta', '!tarefa', '!tarefas', '!feito 1', '!feito', '!apagartarefa 1', '!apagartarefa', '!lembrete 10m ligar', '!lembrar fato local', '!lembrar', '!criar !ferramenta descrição local', '!criar', '!fabrica']) {
       assert.equal(fn(comando), true, comando);
     }
-    for (const comando of ['!enxame pergunta', '!olhar', '!sugere', '!varredura', '!aprenderx', '!chaveiro', '!tarefasx', 'texto normal']) {
+    for (const comando of ['!enxame pergunta', '!olhar', '!sugere', '!varredura', '!aprenderx', '!chaveiro', '!tarefasx', '!lembrancax', '!criatura tema', '!fabricante', 'texto normal']) {
       assert.equal(fn(comando), false, comando);
     }
     helpers.push(fonte);
@@ -52,7 +52,7 @@ for (const rota of rotas) {
     enviados.push(envio.slice(posRota, posRascunho));
   });
   testa(rota + ' formas vazias de dados locais devolvem ajuda local', () => {
-    for (const inicio of ["if (m === '!aprender' || m.startsWith('!aprender '))", "if (m === '!esquecer' || m.startsWith('!esquecer '))", "if (m === '!persona' || m.startsWith('!persona '))", "if (m === '!usar' || m.startsWith('!usar '))", "if (m === '!chave' || m.startsWith('!chave '))", "if (m === '!capsula' || m.startsWith('!capsula '))", "if (m === '!anotar' || m.startsWith('!anotar '))", "if (m === '!apagarnota' || m.startsWith('!apagarnota '))", "if (m === '!tarefa' || m.startsWith('!tarefa '))", "if (m === '!feito' || m.startsWith('!feito '))", "if (m === '!apagartarefa' || m.startsWith('!apagartarefa '))", "if (m === '!lembrete' || m.startsWith('!lembrete '))"]) {
+    for (const inicio of ["if (m === '!aprender' || m.startsWith('!aprender '))", "if (m === '!esquecer' || m.startsWith('!esquecer '))", "if (m === '!persona' || m.startsWith('!persona '))", "if (m === '!usar' || m.startsWith('!usar '))", "if (m === '!chave' || m.startsWith('!chave '))", "if (m === '!capsula' || m.startsWith('!capsula '))", "if (m === '!anotar' || m.startsWith('!anotar '))", "if (m === '!apagarnota' || m.startsWith('!apagarnota '))", "if (m === '!tarefa' || m.startsWith('!tarefa '))", "if (m === '!feito' || m.startsWith('!feito '))", "if (m === '!apagartarefa' || m.startsWith('!apagartarefa '))", "if (m === '!lembrete' || m.startsWith('!lembrete '))", "if (m === '!lembrar' || m.startsWith('!lembrar '))", "if (m === '!criar' || m.startsWith('!criar '))", "if (m === '!fabrica' || m.startsWith('!fabrica '))"]) {
       assert.notEqual(html.indexOf(inicio), -1, inicio);
     }
     assert.match(html, /uso: !usar <nome> ou !usar nenhuma/);

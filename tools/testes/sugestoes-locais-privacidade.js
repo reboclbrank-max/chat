@@ -16,7 +16,7 @@ function testa(nome, fn) {
 function fonte(rota) { return fs.readFileSync(path.join(raiz, rota), 'utf8'); }
 function blocoSugere(html) {
   const inicio = "if (m.startsWith('!sugere'))";
-  const fim = "\n  if (m.startsWith('!lembrar ')";
+  const fim = "\n  if (m === '!lembrar' || m.startsWith('!lembrar '))";
   const a = html.indexOf(inicio);
   const b = html.indexOf(fim, a);
   assert(a >= 0 && b > a, 'bloco !sugere ausente');
