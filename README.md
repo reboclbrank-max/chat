@@ -239,6 +239,12 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Caminhos críticos cobertos:** reserva agendada e turno ativo não contam como sucessor longo; ausência real pede um sucessor; troca de código aprovada ignora a consulta e substitui o checkout; falha da consulta mantém a continuidade sem dizer que a fila estava vazia.
 - **Sem novo efeito externo:** o wrapper de produção continua usando a mesma API e o mesmo dispatch já existentes. A mudança só torna a garantia de não cancelar o sucessor por engano verificável offline: fila 5/5, contrato 3/3 e suíte rápida 50/50 executados passaram, com 2 SKIPs multimodais ambientais já declarados.
 
+## v12.42 — pulso do vigia sem repetição desnecessária (20/10/2026)
+
+- **Menos sonda duplicada:** antes de o turno de e-mail pedir o vigia, ele consulta as execuções recentes de `vigia.yml`. Uma sonda bem-sucedida há no máximo 20 minutos — ou ainda em andamento — é preservada; o pulso não cria outra execução por cima dela.
+- **Continuidade acima de otimismo:** falha, data malformada/futura, execução velha ou API indisponível não viram saúde. Nesses casos, o pedido de vigia já existente continua, sem afirmar que a casa foi verificada.
+- **Cobertura controlada:** a regra é pura/injetável e cobre sucesso recente, sonda ativa, falha, idade, dados inválidos e consulta indisponível. Pulso do vigia 5/5, adoção 4/4 e suíte rápida 51/51 executados passaram, com 2 SKIPs multimodais ambientais já declarados. Não lê caixa, envia mensagem nem cria custo, conta ou infraestrutura.
+
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO
 - **47 motores de IA** — incluindo GIGANTES de 550B e 397B parâmetros (rota dupla) e um especialista em código

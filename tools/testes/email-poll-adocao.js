@@ -16,12 +16,18 @@ ok('ferramentas chamadas pelo canal exigem troca de turno após a barreira', () 
   assert.match(linha, /falhas-mensagem\\\.js/, 'agregador sanitizado ausente da lista de adoção');
   assert.match(linha, /turno-liveness\\\.js/, 'guarda de liveness ausente da lista de adoção');
   assert.match(linha, /fila-turno\\\.js/, 'guarda da fila de sucessor ausente da lista de adoção');
+  assert.match(linha, /pulso-vigia\\\.js/, 'guarda contra pulso redundante do vigia ausente da lista de adoção');
 });
 ok('pulso usa coordenador testável, preserva sucessor e só substitui na troca de código', () => {
   assert.match(origem, /coordenaProximoTurno/, 'coordenador testável da fila não foi ligado ao turno');
   assert.match(origem, /consultaDaFilaDoTurno/, 'pulso não isolou a consulta da fila do próprio workflow');
   assert.match(origem, /actions\/workflows\/email\.yml\/runs\?per_page=15/, 'pulso não consulta a fila do próprio workflow');
   assert.match(origem, /await proximoTurno\(\{ substituir: true \}\)/, 'troca aprovada de código não atualiza o sucessor');
+});
+ok('pulso do vigia consulta a própria sonda antes de repetir dispatch', () => {
+  assert.match(origem, /coordenaPulsoVigia/, 'coordenador de pulso do vigia não foi ligado ao turno');
+  assert.match(origem, /consultaDoVigia/, 'consulta do vigia não foi isolada');
+  assert.match(origem, /actions\/workflows\/vigia\.yml\/runs\?per_page=10/, 'pulso não consulta as execuções do vigia');
 });
 ok('falha repetida do ciclo encerra com erro sem criar dispatch adicional', () => {
   assert.match(origem, /proximaFalhasConsecutivas\(falhasConsecutivas, false\)/);
