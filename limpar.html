@@ -2102,11 +2102,15 @@ function montarChips() {
     const b = document.createElement('button');
     b.className = 'chip';
     b.textContent = rotulo;
-    // A busca local também encontra a sintaxe que o chip preencherá, sem executá-la.
-    b.dataset.busca = rotulo + ' ' + prefixo;
-    // A mesma sintaxe fica disponível na dica local e para tecnologia assistiva, sem executar nada.
-    b.title = 'Comando: ' + prefixo;
-    b.setAttribute('aria-label', rotulo + '. Comando: ' + prefixo);
+    // O roteiro local aceita dois nomes fechados; ambos precisam ser encontráveis, sem executá-los.
+    const sintaxes = prefixo === 'trabalho:' ? ['trabalho:', 'prioridades:'] : [prefixo];
+    const descricaoComando = sintaxes.length === 1
+      ? 'Comando: ' + prefixo
+      : 'Comandos: ' + sintaxes.join(' ou ');
+    // A busca, dica e nome acessível usam a mesma lista fechada de sintaxes.
+    b.dataset.busca = rotulo + ' ' + sintaxes.join(' ');
+    b.title = descricaoComando;
+    b.setAttribute('aria-label', rotulo + '. ' + descricaoComando);
     b.onclick = () => {
       if (prefixo === '@nova') { novaConversa(); return; }
       if (prefixo === '@local') { alternarModoLocal(); return; }
