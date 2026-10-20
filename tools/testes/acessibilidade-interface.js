@@ -62,6 +62,11 @@ testa('texto auxiliar dos cartões mantém contraste no tema claro sem alterar o
   assert.match(estilos, /body\.claro \.cartao p,body\.claro \.cartao li\{color:var\(--texto2\)\}/);
 });
 
+testa('cabeçalho de superfície escura mantém texto legível no tema claro sem alterar o escuro', () => {
+  assert.match(estilos, /body\.claro header\{color:#e8e8ee\}/);
+  assert.match(estilos, /body\.claro header p,body\.claro \.hbtn\{color:#9a9aa8\}/);
+});
+
 testa('campo protegido mantém contraste no tema claro sem alterar o tema escuro', () => {
   assert.match(estilos, /\.cartao input\{width:100%;background:#0b0b0f;border:1px solid var\(--borda\);color:var\(--texto\);/);
   assert.match(estilos, /body\.claro #token\{background:var\(--painel\);border-color:var\(--texto2\);color:var\(--texto\)\}/);
