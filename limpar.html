@@ -774,6 +774,27 @@ async function novaConversa(sugestao = '') {
   if (!texto || !texto.trim()) return;
   if (String(texto).trim().length > LIMITE_MENSAGEM_COMPOSITOR) { alert('A primeira mensagem passa do limite local de ' + LIMITE_MENSAGEM_COMPOSITOR.toLocaleString('pt-BR') + ' caracteres. Encurte antes de criar a conversa.'); return; }
   if (pareceTokenDeAcesso(texto)) { alert('Token não é mensagem nem rascunho. Abra ⚙️ Configurar acesso e cole-o somente no campo protegido deste navegador.'); return; }
+  // A primeira mensagem não pode contornar as portas locais já protegidas no compositor.
+  // O ramo privado falha fechado: ausência de resposta local nunca cria Issue nem rascunho.
+  const respostaOperacionalLocal = typeof window.respostaComandoOperacionalLocal === 'function'
+    ? window.respostaComandoOperacionalLocal(texto) : '';
+  if (respostaOperacionalLocal) {
+    abrirConversa();
+    bolha('user', texto, new Date().toISOString());
+    bolha('bot', respostaOperacionalLocal, new Date().toISOString(), '🧭 roteiro local');
+    rolarFim();
+    focoSeguro('entrada');
+    return;
+  }
+  if (ehComandoPrivadoLocal(texto)) {
+    abrirConversa();
+    const respostaPrivadaLocal = await maosDaCasa(texto);
+    bolha('user', texto, new Date().toISOString());
+    bolha('bot', respostaPrivadaLocal || '🔒 **Comando local não concluído.** Nada foi enviado, gravado em issue ou passado a um motor.', new Date().toISOString(), '🔒 comando privado local');
+    rolarFim();
+    focoSeguro('entrada');
+    return;
+  }
   salvarRascunhoAtual(texto);
   const card = $('card-nova');
   criandoNovaConversa = true;

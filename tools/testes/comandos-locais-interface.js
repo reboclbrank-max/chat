@@ -10,6 +10,7 @@ const vm = require('vm');
 const raiz = path.resolve(__dirname, '..', '..');
 const rotas = ['index.html', 'direto.html', 'ligar.html', 'limpar.html'];
 let certos = 0, falhas = 0;
+const primeirasMensagens = [];
 function ok(nome, fn) {
   try { fn(); certos++; console.log('✔ ' + nome); }
   catch (e) { falhas++; console.error('✘ ' + nome + ' — ' + e.message); }
@@ -62,7 +63,36 @@ for (const rota of rotas) {
     // Outras portas locais podem ficar entre este retorno e o rascunho; o roteiro
     // continua antes de ambos e retorna sem chegar à escrita normal.
   });
+  ok(rota + ' mantém comandos locais da primeira mensagem antes de rascunho ou Issue', () => {
+    const nova = trecho(html, "async function novaConversa(sugestao = '') {", '\nasync function abrir(');
+    const limite = nova.indexOf('LIMITE_MENSAGEM_COMPOSITOR');
+    const token = nova.indexOf('pareceTokenDeAcesso(texto)');
+    const operacional = nova.indexOf('if (respostaOperacionalLocal)');
+    const privado = nova.indexOf('if (ehComandoPrivadoLocal(texto))');
+    const rascunho = nova.indexOf('salvarRascunhoAtual(texto)');
+    const issue = nova.indexOf('api(`/repos/${REPO}/issues`');
+    assert(limite >= 0 && token > limite && operacional > token && privado > operacional, 'portas locais ficam depois de limite/token');
+    assert(rascunho > privado && issue > rascunho, 'rascunho e Issue ficam depois das portas locais');
+    const operacionalLocal = nova.slice(operacional, privado);
+    assert.match(operacionalLocal, /if \(respostaOperacionalLocal\)/);
+    assert.match(operacionalLocal, /abrirConversa\(\)/);
+    assert.match(operacionalLocal, /bolha\('user', texto/);
+    assert.match(operacionalLocal, /bolha\('bot', respostaOperacionalLocal/);
+    assert.match(operacionalLocal, /focoSeguro\('entrada'\)[\s\S]{0,100}return;/);
+    assert.doesNotMatch(operacionalLocal, /salvarRascunhoAtual|api\s*\(|fetch\s*\(|localStorage/);
+    const privadoLocal = nova.slice(privado, rascunho);
+    assert.match(privadoLocal, /if \(ehComandoPrivadoLocal\(texto\)\)/);
+    assert.match(privadoLocal, /await maosDaCasa\(texto\)/);
+    assert.match(privadoLocal, /Comando local não concluído/);
+    assert.match(privadoLocal, /focoSeguro\('entrada'\)[\s\S]{0,100}return;/);
+    assert.doesNotMatch(privadoLocal, /salvarRascunhoAtual|api\s*\(|fetch\s*\(/);
+    primeirasMensagens.push(nova.slice(operacional, rascunho));
+  });
 }
+ok('porta local da primeira mensagem mantém paridade entre as quatro rotas', () => {
+  assert.equal(new Set(primeirasMensagens.map((bloco) => bloco)).size, 1);
+});
+
 ok('chip visual oferece o roteiro local sem agendar rascunho ou escrita', () => {
   for (const rota of rotas) {
     const html = ler(rota);
@@ -77,11 +107,11 @@ ok('chip visual oferece o roteiro local sem agendar rascunho ou escrita', () => 
   }
 });
 
-ok('casca PWA v64 inclui os ativos locais e a porta de continuidade o observa', () => {
+ok('casca PWA v65 inclui os ativos locais e a porta de continuidade o observa', () => {
   const sw = ler('sw.js');
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v64/);
+  assert.match(sw, /rebocl-chat-v65/);
   assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);
   assert.match(workflow, /'chat-comandos-locais\.js'/);
