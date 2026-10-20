@@ -98,6 +98,8 @@
   /* No tema claro, texto auxiliar dos cartões precisa acompanhar a variável legível. */
   body.claro .cartao p,body.claro .cartao li{color:var(--texto2)}
   .cartao a{color:var(--ouro)}
+  /* O dourado mais escuro preserva identidade e leitura dos links no tema claro. */
+  body.claro .cartao a{color:#7a5f14}
   .cartao input{width:100%;background:#0b0b0f;border:1px solid var(--borda);color:var(--texto);
     border-radius:10px;padding:11px;font:inherit;font-size:13.5px;margin:8px 0}
   /* O campo protegido mantém superfície e contorno legíveis no tema claro. */

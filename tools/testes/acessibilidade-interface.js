@@ -67,6 +67,11 @@ testa('campo protegido mantém contraste no tema claro sem alterar o tema escuro
   assert.match(estilos, /body\.claro #token\{background:var\(--painel\);border-color:var\(--texto2\);color:var\(--texto\)\}/);
 });
 
+testa('links dos cartões mantêm contraste e sublinhado no tema claro sem alterar o escuro', () => {
+  assert.match(estilos, /\.cartao a\{color:var\(--ouro\)\}/);
+  assert.match(estilos, /body\.claro \.cartao a\{color:#7a5f14\}/);
+});
+
 testa('console dá nome persistente ao tema pensado sem alterar sua ação', () => {
   const consoleHtml = fonte('console.html');
   assert.match(consoleHtml, /<input id="pensar-entrada" aria-label="Tema para pensar com dois motores e juiz" placeholder="🧠 pensar bem sobre… \(2 motores \+ juiz\)">/);
