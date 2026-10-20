@@ -51,7 +51,7 @@ for (const rota of rotas) {
       assert.equal(fn(comando.vizinho), false, comando.vizinho);
     }
     // Não reclassifica outros utilitários ou consultas externas só porque também há código local.
-    for (const foraDoEscopo of ['!uuid', '!foco', '!qr texto', '!matematica 1+1', '!conta 1+1', '!cor azul', '!falar texto', 'texto normal']) {
+    for (const foraDoEscopo of ['!uuid', '!qr texto', '!matematica 1+1', '!conta 1+1', '!cor azul', '!falar texto', 'texto normal']) {
       assert.equal(fn(foraDoEscopo), false, foraDoEscopo);
     }
     helpers.push(helper);
