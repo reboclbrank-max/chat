@@ -123,6 +123,9 @@
   .busca-wrap input{width:100%;background:var(--painel);border:1px solid var(--borda);color:var(--texto);
     border-radius:12px;padding:9px 12px;font:inherit;font-size:13.5px}
   .tag-motor{font-size:10.5px;color:#8a8270;border:1px solid var(--borda);border-radius:6px;padding:0 5px;margin-left:6px;white-space:nowrap}
+  /* Etiquetas preservam distinção sem perder leitura quando a bolha fica clara. */
+  body.claro .tag-motor{color:var(--texto2);border-color:var(--texto2)}
+  body.claro .tag-local{color:#245c32;border-color:#245c32}
   /* Copiar continua discreto com mouse, mas nunca some do teclado ou do toque. */
   .bolha .acoes{position:absolute;top:5px;right:7px;display:block;opacity:0;pointer-events:none}
   .bolha:hover .acoes,.bolha:focus-within .acoes{opacity:1;pointer-events:auto}
