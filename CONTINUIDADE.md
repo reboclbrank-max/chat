@@ -681,6 +681,15 @@ O corte acrescenta somente `atualizarContador()` imediatamente depois dessas dez
 O novo contrato `contador-compositor-limpeza.js` entra no corredor e passou 5/5: enumera as seis/cinco limpezas por rota, exige contador antes da primeira bolha e confirma paridade/ausência de I/O no atualizador. Também passaram token 17/17, rascunhos 22/22, segurança 44/44, segurança/fluxo 30/30, PWA 21/21, comandos locais 8/8, estilos 5/5, filtro 8/8, referências/comandos privados 13/13, navegador estático 6/6, continuidade 9/9, sintaxe, `diff --check` e scanner estreito. O corredor integral ficou 66/71; as cinco falhas continuam ambientais por `imapflow` ausente (quatro importações e `falhas-operacionais` derivada), com um `SKIP` por `pdftotext` ausente; não é verde integral. Foram recusados disparar `input` sintético, criar estado/modal/telemetria, usar mensagem real ou rede para prova e ampliar o aviso de rascunho. Rollback remove as dez chamadas, o contrato e a casca v64 por decisão explícita; não há migração, persistência nova, dado remoto ou segredo a recuperar.
 
 
+#### Nova conversa também tem contrato de token antes de rascunho/Issue (20/10, v65 de cobertura)
+
+A guarda conhecida já existia em `novaConversa()` nas quatro rotas, antes de gravar o rascunho ou criar a Issue, mas o contrato v62/v63 só exercitava `enviar()` e a defesa interna do rascunho. A lacuna era de regressão: uma futura reorganização do prompt de primeira mensagem poderia deslocar esse ramo sem que o corredor percebesse. A auditoria ficou na fonte; não abriu prompt, não usou token, não criou conversa, Issue, comentário, motor ou rede.
+
+O corte amplia `token-antes-rascunho-privacidade.js` para exigir, em cada rota, limite → guarda → `salvarRascunhoAtual()` → API de Issue, além de verificar que o bloco bloqueado só mostra a orientação local e não contém rascunho, API, `fetch` ou `localStorage`. O trecho bloqueado e a paridade das quatro rotas entram no hash do contrato. Não há mudança de produto, PWA, PAT, detector, armazenamento, rascunho, comando, automação ou enxame; a casca continua `rebocl-chat-v64`, pois só o contrato/documentação mudaram.
+
+O contrato ampliado passou 21/21; contador 5/5, rascunhos 22/22, segurança 44/44, segurança/fluxo 30/30, PWA 21/21 e continuidade 9/9 também passaram, com sintaxe, `diff --check` e scanner estreito. O corredor integral permaneceu 66/71: cinco falhas ambientais por `imapflow` ausente e um `SKIP` por `pdftotext` ausente; não é verde integral. Foram recusados inserir token sintético no prompt real, criar fixture de navegador/persistência, ampliar o detector, interceptar texto genérico ou chamar rede para provar a guarda. Rollback remove apenas as quatro asserções e o registro de cobertura; não há migração, estado remoto, persistência nova ou segredo a recuperar.
+
+
 ### 2.2 PAT da interface e comandos manuais
 
 O dono decidiu expressamente que o PAT usado **somente pela interface web** deve ficar automático e persistente no navegador dele:
@@ -874,6 +883,7 @@ Se o ambiente local não tiver bibliotecas temporárias de Node/Python, não con
 
 | Data | Registro |
 |---|---|
+| 2026-10-20 | O contrato de token passa a cobrir também `novaConversa()`: nas quatro rotas, limite → guarda → rascunho → Issue e o bloco bloqueado não contém escrita/transporte. São quatro asserções de regressão, sem mudança de produto/PWA; o contrato ampliado passa 21/21. |
 | 2026-10-20 | Cada limpeza normal de `enviar()` agora chama o atualizador visual do contador antes de bolha/transporte: dez caminhos antes deixavam a contagem do texto removido. Não muda rascunho, aviso, texto, API/motor, detector ou PAT; contrato novo 5/5 entra no corredor e a casca vai para `rebocl-chat-v64` por atualização escolhida. |
 | 2026-10-20 | A recusa local de `!token` já limpava o compositor, mas deixava o contador visual anterior; as quatro rotas agora atualizam contador e aviso logo após a limpeza, sem rede, persistência nova, detector novo ou mudança de PAT/rascunho/comandos. Prova controlada sem credencial confirmou a lacuna; contrato de token isolado e ampliado passa 17/17, e a casca vai para `rebocl-chat-v63` por atualização escolhida. |
 | 2026-10-20 | O detector conhecido de token passa a barrar a entrada antes de roteiro, porta local, rascunho, Issue/comentário ou motor; a recusa da camada de rascunho permanece como defesa em profundidade e rascunho diferente é preservado. PAT automático autorizado, fluxo normal e comandos existentes não mudam; remoção/rotação, inferência ampla, modal/perfil/fila, sincronização, telemetria e tráfego de prova foram recusados. Contrato novo 13/13 entra no corredor; a casca vai para `rebocl-chat-v62`. |

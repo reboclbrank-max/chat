@@ -20,6 +20,7 @@ function entre(texto, inicio, fim) {
   return texto.slice(a, b);
 }
 function envio(html) { return entre(html, 'async function enviar() {', '\n\n// Quando o workflow privado falha'); }
+function novaConversa(html) { return entre(html, "async function novaConversa(sugestao = '') {", '\n\n/* ---------- conversa ---------- */'); }
 function blocoToken(codigo) {
   return entre(codigo, 'if (pareceTokenDeAcesso(texto)) {', '\n  }\n  // Roteiro fechado');
 }
@@ -29,9 +30,11 @@ function blocoRascunho(html) {
 const envios = [];
 const tokens = [];
 const rascunhos = [];
+const novas = [];
 for (const rota of rotas) {
   const html = fs.readFileSync(path.join(raiz, rota), 'utf8');
   const codigo = envio(html);
+  const nova = novaConversa(html);
   testa(rota + ' protege token antes de roteiro, rascunho, Issue ou motor', () => {
     const guarda = codigo.indexOf('if (pareceTokenDeAcesso(texto)) {');
     const roteiro = codigo.indexOf('const respostaOperacionalLocal');
@@ -60,6 +63,17 @@ for (const rota of rotas) {
     const aviso = bloco.indexOf('atualizarAvisoRascunho();');
     assert(limpar >= 0 && contador > limpar && aviso > contador, 'estado visual renovado após limpar');
   });
+  testa(rota + ' nova conversa bloqueia token antes de rascunho ou Issue', () => {
+    const limite = nova.indexOf('if (String(texto).trim().length > LIMITE_MENSAGEM_COMPOSITOR)');
+    const guarda = nova.indexOf('if (pareceTokenDeAcesso(texto))');
+    const rascunho = nova.indexOf('salvarRascunhoAtual(texto);');
+    const issue = nova.indexOf('api(`/repos/${REPO}/issues`');
+    assert(limite >= 0 && guarda > limite && rascunho > guarda && issue > rascunho, 'ordem fechada da nova conversa');
+    const bloqueio = entre(nova, 'if (pareceTokenDeAcesso(texto)) {', '\n  salvarRascunhoAtual(texto);');
+    assert.match(bloqueio, /Token não é mensagem nem rascunho/);
+    assert.doesNotMatch(bloqueio, /salvarRascunhoAtual|\bapi\s*\(|fetch\s*\(|localStorage\./);
+    novas.push(bloqueio);
+  });
   testa(rota + ' camada de rascunhos conserva defesa direta contra token', () => {
     const bloco = blocoRascunho(html);
     assert.match(bloco, /if \(pareceTokenDeAcesso\(valor\)\)/);
@@ -69,7 +83,7 @@ for (const rota of rotas) {
   });
 }
 testa('contrato de token e rascunho mantém paridade nas quatro rotas', () => {
-  for (const grupo of [envios, tokens, rascunhos]) {
+  for (const grupo of [envios, tokens, novas, rascunhos]) {
     assert.equal(new Set(grupo.map((x) => crypto.createHash('sha256').update(x).digest('hex'))).size, 1);
   }
 });
