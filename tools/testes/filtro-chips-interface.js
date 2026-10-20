@@ -127,6 +127,8 @@ ok('as quatro rotas declaram busca por nome ou comando e só a iniciam após mon
     assert.match(html, /id="resultado-filtro-chips"[^>]*role="status"[^>]*aria-live="polite"/);
     const construcao = html.slice(html.indexOf('function montarChips() {'), html.indexOf('/* ---------- sino'));
     assert.match(construcao, /b\.dataset\.busca = rotulo \+ ' ' \+ prefixo;/);
+    assert.match(construcao, /b\.title = 'Comando: ' \+ prefixo;/);
+    assert.match(construcao, /b\.setAttribute\('aria-label', rotulo \+ '\. Comando: ' \+ prefixo\);/);
     const montar = html.indexOf('montarChips();');
     const iniciar = html.indexOf('window.iniciarFiltroChips();');
     assert(montar >= 0 && iniciar > montar, rota + ': filtro só inicia depois dos botões');
@@ -143,7 +145,7 @@ ok('PWA, workflow e continuidade observam o filtro local', () => {
   const sw = ler('sw.js');
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v18/);
+  assert.match(sw, /rebocl-chat-v19/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);
   assert.match(workflow, /'chat-filtro-chips\.js'/);
   assert.match(workflow, /chat-filtro-chips\.js tools\/testes\/\*\.js/);

@@ -2104,6 +2104,9 @@ function montarChips() {
     b.textContent = rotulo;
     // A busca local também encontra a sintaxe que o chip preencherá, sem executá-la.
     b.dataset.busca = rotulo + ' ' + prefixo;
+    // A mesma sintaxe fica disponível na dica local e para tecnologia assistiva, sem executar nada.
+    b.title = 'Comando: ' + prefixo;
+    b.setAttribute('aria-label', rotulo + '. Comando: ' + prefixo);
     b.onclick = () => {
       if (prefixo === '@nova') { novaConversa(); return; }
       if (prefixo === '@local') { alternarModoLocal(); return; }
