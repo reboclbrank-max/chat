@@ -34,6 +34,7 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 ## Segurança e privacidade
 
 - **Token:** informe-o apenas em **⚙️ Configurar acesso**. Por escolha explícita do dono, ele permanece salvo neste navegador para manter as ações autorizadas automáticas após reiniciar; links com `?t=` e comandos `!token` não ativam nem enviam credenciais.
+- **Aviso de acesso:** na rota protegida `ligar`, o lembrete visível é anunciado e não bloqueia os controles do cabeçalho enquanto aparece.
 - **Enxame:** o canal público só pode sugerir motores. Veja candidatos com `!candidatos` e aprove cada um conscientemente com `!plantar <base> | <modelo> | <nome>`; bases e modelos passam por validação antes de entrar na frota.
 - **Dados do dono:** pings automáticos não levam memória/persona e resumos internos não são publicados no canal do enxame.
 - **Fotos por e-mail:** toda foto é regravada sem EXIF/metadados antes do processamento. O OCR externo só é usado quando o e-mail trouxer autorização explícita, por exemplo: `ocr externo: sim`; o OCR local continua sendo a primeira opção.

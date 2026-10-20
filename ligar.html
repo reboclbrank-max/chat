@@ -3109,7 +3109,7 @@ iniciarPwaCompartilhado();
 (function(){try{
 var p=new URLSearchParams(location.search);var tinhaToken=p.has('t');
 if(tinhaToken){p.delete('t');history.replaceState({},'',location.pathname);}
-var aviso=function(){var b=document.createElement('div');b.style.cssText='position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:99999;background:#12351f;color:#b6f0c3;padding:16px 24px;border-radius:14px;font-size:16px;text-align:center;box-shadow:0 4px 18px #0008;font-family:sans-serif';
+var aviso=function(){var b=document.createElement('div');b.setAttribute('role','status');b.setAttribute('aria-live','polite');b.style.cssText='position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:99999;background:#12351f;color:#b6f0c3;padding:16px 24px;border-radius:14px;font-size:16px;text-align:center;box-shadow:0 4px 18px #0008;font-family:sans-serif;pointer-events:none';
 b.textContent=tinhaToken?'🔐 Por segurança, links não ativam token. Abra ⚙️ Configurar acesso e cole-o no campo protegido deste navegador.':'🔐 Abra ⚙️ Configurar acesso para ativar seu token neste navegador.';document.body.appendChild(b);setTimeout(function(){b.remove();},15000);};
 if(document.body)aviso();else window.addEventListener('DOMContentLoaded',aviso);}catch(e){}})();
 </script></body>
