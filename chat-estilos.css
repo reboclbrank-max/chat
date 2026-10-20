@@ -60,7 +60,7 @@
   .bolha.user{align-self:flex-end;background:var(--user);border:1px solid #2f4a66}
   .bolha.bot{align-self:flex-start;background:var(--bot);border:1px solid var(--borda)}
   .bolha .quem{font-size:11px;color:var(--texto2);margin-bottom:4px;display:flex;align-items:center;gap:8px}
-  .bolha .quem .falar{background:none;border:none;color:var(--ouro);cursor:pointer;font-size:13px;padding:0 2px}
+  .bolha .quem .falar{background:none;border:none;color:var(--ouro);cursor:pointer;font-size:13px;padding:0 2px;min-width:24px;min-height:24px;display:inline-flex;align-items:center;justify-content:center}
   .bolha pre{background:#0b0b0f;border:1px solid var(--borda);border-radius:8px;padding:8px;overflow-x:auto;font-size:12.5px}
   .bolha code{background:#0b0b0f;border-radius:5px;padding:1px 5px;font-size:12.8px}
   .bolha a{color:var(--ouro)}

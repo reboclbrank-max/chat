@@ -19,7 +19,7 @@ Página de conversa com a **IA gratuita da Rebocl Brank**.
 - Escreva `trabalho:` ou `prioridades:` no e-mail, Telegram ou nesta interface para o roteiro local e sanitizado das rotinas da casa, próximo passo seguro e o que — se houver — depende do dono. Nesta interface, o chip `🧭 trabalho` é o atalho local correspondente; ele não cria conversa nem chama a rede. A fotografia técnica dinâmica `status:` continua nos canais de e-mail/Telegram.
 - **Procurar comando:** o próprio campo informa **nome ou comando** e filtra os atalhos já existentes, inclusive sem acento (`caca` encontra `caça`) ou pelo texto que o chip vai preencher (`cambio` encontra o atalho `💱 dólar`). O chip `🧭 trabalho` também aparece ao procurar `prioridades`, seu outro nome local fechado. Cada chip expõe sua sintaxe somente na dica local e ao leitor de tela; ao navegar por teclado, o atalho focado é trazido à visão. Digitar, limpar com Esc ou usar os atalhos globais dentro desse campo não envia mensagem, não salva rascunho e não cria conversa; só clicar em um chip preserva a ação que ele já tinha.
 - **Tela compacta:** as ações do cabeçalho da conversa se organizam em linhas quando a largura não comporta todas, em vez de ficarem cortadas fora da tela.
-- **Ações da mensagem:** o controle de copiar aparece ao passar o mouse, ao chegar nele pelo teclado e em telas de toque. Ele preserva espaço no balão e um alvo mínimo de 24 px; copiar continua uma ação local do navegador.
+- **Ações da mensagem:** o controle de copiar aparece ao passar o mouse, ao chegar nele pelo teclado e em telas de toque. Ele preserva espaço no balão e, junto do controle de ouvir respostas, tem alvo mínimo de 24 px; as duas ações continuam locais do navegador.
 
 ## Manutenção e continuidade
 

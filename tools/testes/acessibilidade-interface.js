@@ -40,6 +40,10 @@ testa('ações de cada mensagem reservam espaço e alvo mínimo de toque', () =>
   assert.match(estilos, /\.bolha \.acoes button\{[^}]*min-width:24px;min-height:24px;display:inline-flex;align-items:center;justify-content:center[^}]*\}/);
 });
 
+testa('controle de ouvir resposta preserva alvo mínimo sem ação nova', () => {
+  assert.match(estilos, /\.bolha \.quem \.falar\{[^}]*min-width:24px;min-height:24px;display:inline-flex;align-items:center;justify-content:center[^}]*\}/);
+});
+
 for (const rota of rotas) {
   const html = fontes[rota];
   testa(rota + ' não contém IDs duplicados', () => {
