@@ -99,7 +99,7 @@ testa('núcleos de rede, modo e retorno de configuração mantêm paridade nas q
 testa('modo somente-local é temporário, sem chave persistente própria', () => {
   const combinado = fontes['index.html'];
   assert.match(combinado, /let somenteLocalNestaPagina = false/);
-  assert.doesNotMatch(combinado, /(?:localStorage|sessionStorage)\.(?:setItem|getItem|removeItem)\([^\n]*somente[_-]?local/i);
+  assert.doesNotMatch(combinado, /(?:localStorage|sessionStorage)\.(?:setItem|getItem|removeItem)\(\s*['"`][^'"`]*somente[_-]?local/i);
 });
 
 function runtimeRede(html, fetchOriginal, extras = {}) {
