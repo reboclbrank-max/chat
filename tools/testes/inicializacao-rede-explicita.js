@@ -44,11 +44,14 @@ for (const rota of rotas) {
   });
   testa(rota + ' usa comandos explícitos e modo somente-local para controlar automações', () => {
     const pararVigia = "if (/^!vigia\\s+(?:parar|desligar)\\s*$/.test(m))";
-    const iniciarVigia = "if (m.startsWith('!vigia'))";
+    const iniciarVigia = "if (/^!vigia\\s*$/.test(m))";
+    const usoVigia = "if (m.startsWith('!vigia')) return 'ℹ️ uso: !vigia para iniciar; !vigia parar ou !vigia desligar para encerrar nesta aba.';";
     assert(html.includes(pararVigia));
+    assert(html.includes(iniciarVigia));
+    assert(html.includes(usoVigia));
     assert(html.indexOf(pararVigia) < html.indexOf(iniciarVigia));
+    assert(html.indexOf(iniciarVigia) < html.indexOf(usoVigia));
     assert.match(html, /const estavaAtivo = vigiaAtivoNestaPagina; pararVigiaDeRede\(\);/);
-    assert.match(html, /if \(m\.startsWith\('!vigia'\)\) \{ if \(modoSomenteLocalAtivo\(\)\)/);
     assert.match(html, /const ativou = iniciarVigiaDeRede\(\);/);
     const pararEstudo = "if (/^!estudar\\s+(?:parar|desligar)\\s*$/.test(m))";
     const iniciarEstudo = "if (m.startsWith('!estudar'))";
@@ -57,6 +60,8 @@ for (const rota of rotas) {
     assert.match(html, /window\.pararEstudoAutomatico\(\)/);
     assert.match(html, /if \(m\.startsWith\('!estudar'\)\) \{ if \(modoSomenteLocalAtivo\(\)\)/);
     assert.match(html, /window\.iniciarEstudoAutomatico\(te\)/);
+    assert.match(html, /'!vigia','!vigia parar','!vigia desligar'/);
+    assert.match(html, /'!estudar ','!estudar parar','!estudar desligar'/);
     const modo = blocoModo(html);
     assert.match(modo, /pararVigiaDeRede\(\)/);
     assert.match(modo, /window\.pararEstudoAutomatico\(\)/);
