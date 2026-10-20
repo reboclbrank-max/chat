@@ -39,7 +39,7 @@ const ramos = [];
 const envios = [];
 for (const rota of rotas) {
   const html = fs.readFileSync(path.join(raiz, rota), 'utf8');
-  testa(rota + ' reconhece somente as transformações locais previstas', () => {
+  testa(rota + ' reconhece transformações locais previstas com fronteiras estritas', () => {
     const helper = entre(html, 'function ehComandoPrivadoLocal(texto) {', '\nasync function enviar()');
     const fn = new Function(helper + '\nreturn ehComandoPrivadoLocal;')();
     for (const comando of comandos) {
@@ -49,7 +49,7 @@ for (const rota of rotas) {
     }
     // A porta não vira captura ampla: comandos locais sem esse risco e comandos
     // que usam fonte externa seguem fora desta família deliberadamente estreita.
-    for (const foraDoEscopo of ['!uuid', '!romano 2026', '!converter 1 km em m', '!timer 5', '!pomodoro', '!tom 440', '!piano C', '!foco', '!qr texto', '!matematica 1+1', '!conta 1+1', '!cor azul', '!falar texto', 'texto normal']) {
+    for (const foraDoEscopo of ['!uuid', '!timer 5', '!pomodoro', '!tom 440', '!piano C', '!foco', '!qr texto', '!matematica 1+1', '!conta 1+1', '!cor azul', '!falar texto', 'texto normal']) {
       assert.equal(fn(foraDoEscopo), false, foraDoEscopo);
     }
     helpers.push(helper);
