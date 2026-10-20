@@ -20,6 +20,7 @@ on:
       - 'chat-estilos.css'
       - 'chat-pwa.js'
       - 'chat-comandos-locais.js'
+      - 'chat-filtro-chips.js'
       - 'console.html'
       - 'sw.js'
       - 'dna.json'
@@ -67,7 +68,7 @@ jobs:
           fi
       - name: Sintaxe
         run: |
-          for f in tools/email-chat.js tools/email-poll.js tools/fila-turno.js tools/pulso-vigia.js tools/reserva-turno.js tools/falhas-mensagem.js tools/turno-liveness.js tools/telegram-chat.js tools/teste-email.js tools/teste-qualidade-profunda.js tools/avaliacao-profunda-casos.js chat-comandos-locais.js tools/testes/*.js; do node --check "$f"; done
+          for f in tools/email-chat.js tools/email-poll.js tools/fila-turno.js tools/pulso-vigia.js tools/reserva-turno.js tools/falhas-mensagem.js tools/turno-liveness.js tools/telegram-chat.js tools/teste-email.js tools/teste-qualidade-profunda.js tools/avaliacao-profunda-casos.js chat-comandos-locais.js chat-filtro-chips.js tools/testes/*.js; do node --check "$f"; done
           for f in tools/prepara-foto.py tools/visao-local.py tools/ocr-local.py tools/olho.py; do python3 -m py_compile "$f"; done
           for f in tools/testes/*.sh; do bash -n "$f"; done
       - name: Testes rápidos (IMAP, SMTP e motores falsos)

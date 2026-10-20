@@ -41,7 +41,7 @@ function arquivoOperacional(arquivo) {
   return /^\.github\/workflows\//.test(arquivo) ||
     /^tools\/.*\.(?:js|py|sh)$/.test(arquivo) ||
     /^(?:index|direto|ligar|limpar|console|motor(?:02|03|04)?)\.html$/.test(arquivo) ||
-    /^(?:chat-estilos\.css|chat-pwa\.js|chat-comandos-locais\.js|sw\.js|manifest\.json|dna\.json|AUTONOMIA\.md|GOVERNANCA-CHAT-PRIMEIRO\.md)$/.test(arquivo);
+    /^(?:chat-estilos\.css|chat-pwa\.js|chat-comandos-locais\.js|chat-filtro-chips\.js|sw\.js|manifest\.json|dna\.json|AUTONOMIA\.md|GOVERNANCA-CHAT-PRIMEIRO\.md)$/.test(arquivo);
 }
 
 const evento = process.env.GITHUB_EVENT_PATH;

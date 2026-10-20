@@ -75,14 +75,15 @@ ok('chip visual oferece o roteiro local sem agendar rascunho ou escrita', () => 
   }
 });
 
-ok('casca PWA v15 inclui o ativo local e a porta de continuidade o observa', () => {
+ok('casca PWA v16 inclui os ativos locais e a porta de continuidade o observa', () => {
   const sw = ler('sw.js');
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v15/);
+  assert.match(sw, /rebocl-chat-v16/);
   assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
+  assert.match(sw, /'\.\/chat-filtro-chips\.js'/);
   assert.match(workflow, /'chat-comandos-locais\.js'/);
-  assert.match(workflow, /chat-comandos-locais\.js tools\/testes\/\*\.js/);
+  assert.match(workflow, /chat-comandos-locais\.js chat-filtro-chips\.js tools\/testes\/\*\.js/);
   assert(continuidade.includes('chat-comandos-locais\\.js'));
   const pasta = fs.mkdtempSync(path.join(os.tmpdir(), 'continuidade-comandos-'));
   try {

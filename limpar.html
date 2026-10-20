@@ -143,6 +143,11 @@
     <div id="aviso-rascunho" class="aviso-rascunho oculto" role="region" aria-label="Rascunho local disponível"><span id="texto-rascunho"></span><button type="button" id="btn-restaurar-rascunho">Restaurar</button><button type="button" id="btn-descartar-rascunho">Descartar</button></div>
     <div id="previsao-arquivo-texto" class="previsao-arquivo-texto oculto" role="status" aria-live="polite" aria-atomic="true"><span id="texto-previsao-arquivo"></span></div>
     <div id="sugestoes" class="oculto" style="display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 6px" role="group" aria-label="Sugestões de continuidade"></div>
+    <div class="filtro-chips">
+      <label class="visualmente-oculto" for="filtro-chips">Procurar comando rápido</label>
+      <input id="filtro-chips" type="search" autocomplete="off" placeholder="🔎 procurar comando…" aria-controls="chips" aria-describedby="resultado-filtro-chips">
+      <span id="resultado-filtro-chips" class="resultado-filtro-chips" role="status" aria-live="polite" aria-atomic="true"></span>
+    </div>
     <div class="chips" id="chips" role="group" aria-label="Comandos rápidos"></div>
     <div class="composer">
       <button type="button" class="mic" id="btn-mic" data-acao="ditado" title="Falar" aria-label="Iniciar ditado por voz" aria-pressed="false">🎙</button>
@@ -372,6 +377,7 @@ const TAMANHO_PAGINA_COMENTARIOS = 100;
 </script>
 <script src="chat-pwa.js"></script>
 <script src="chat-comandos-locais.js"></script>
+<script src="chat-filtro-chips.js"></script>
 <script>
 function paginaFinalComentarios(total) {
   const n = Math.max(0, Number(total) || 0);
@@ -3006,6 +3012,7 @@ if (_lightbox) {
 
 /* ---------- inicialização ---------- */
 montarChips();
+if (typeof window.iniciarFiltroChips === 'function') window.iniciarFiltroChips();
 montarBusca();
 montarSeletorModelo();
 if (MODO_LOCAL.ligado) {
