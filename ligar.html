@@ -1101,6 +1101,7 @@ async function enviar() {
     limparRascunhoPorChave(chaveRascunhoAtual(), texto);
     limparPreviaArquivoTexto();
     caixa.value = ''; caixa.style.height = 'auto';
+    atualizarContador(); atualizarAvisoRascunho();
     bolha('bot', '🔐 **Token não é mensagem.** Abra ⚙️ Configurar acesso e cole-o somente no campo protegido deste navegador. Nada foi enviado, gravado em issue ou passado a um motor.', new Date().toISOString(), '🔐 proteção');
     rolarFim();
     return;

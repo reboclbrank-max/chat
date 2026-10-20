@@ -21,7 +21,7 @@ function entre(texto, inicio, fim) {
 }
 function envio(html) { return entre(html, 'async function enviar() {', '\n\n// Quando o workflow privado falha'); }
 function blocoToken(codigo) {
-  return entre(codigo, 'if (pareceTokenDeAcesso(texto)) {', "\n  if (ehComandoPrivadoLocal(texto))");
+  return entre(codigo, 'if (pareceTokenDeAcesso(texto)) {', '\n  }\n  // Roteiro fechado');
 }
 function blocoRascunho(html) {
   return entre(html, 'function salvarRascunhoAtual(texto) {', '\nfunction limparRascunhoPorChave');
@@ -52,6 +52,13 @@ for (const rota of rotas) {
     assert.match(bloco, /limparPreviaArquivoTexto\(\)/);
     assert.doesNotMatch(bloco, /salvarRascunhoAtual|\bapi\s*\(|fetch\s*\(|pensarStream\s*\(|registrarComentario|localStorage\./);
     tokens.push(bloco);
+  });
+  testa(rota + ' ramo de token atualiza contador e aviso após limpar o compositor', () => {
+    const bloco = blocoToken(codigo);
+    const limpar = bloco.indexOf("caixa.value = ''");
+    const contador = bloco.indexOf('atualizarContador();');
+    const aviso = bloco.indexOf('atualizarAvisoRascunho();');
+    assert(limpar >= 0 && contador > limpar && aviso > contador, 'estado visual renovado após limpar');
   });
   testa(rota + ' camada de rascunhos conserva defesa direta contra token', () => {
     const bloco = blocoRascunho(html);
