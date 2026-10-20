@@ -77,6 +77,12 @@ testa('console anuncia integralmente o estado publicado sem alterar a consulta',
   assert.match(consoleHtml, /\$\('status'\)\.textContent = '✓ estado atualizado ' \+ quando\(est\.atualizado\) \+ ' · próxima atualização em 60 s';/);
 });
 
+testa('rodapé do console tem contraste legível sem alterar seu conteúdo', () => {
+  const consoleHtml = fonte('console.html');
+  assert.match(consoleHtml, /\.rodape\{color:#858592;font-size:11px;text-align:center;padding:14px\}/);
+  assert.match(consoleHtml, /<div class="rodape">Console público de leitura \+ controle por conversa/);
+});
+
 testa('aviso de acesso em ligar anuncia sem bloquear os controles do cabeçalho', () => {
   const ligar = fontes['ligar.html'];
   assert.match(ligar, /b\.setAttribute\('role','status'\);b\.setAttribute\('aria-live','polite'\)/);
