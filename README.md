@@ -37,6 +37,7 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Aviso de acesso:** na rota protegida `ligar`, o lembrete visível é anunciado e não bloqueia os controles do cabeçalho enquanto aparece.
 - **Limpeza protegida:** a rota `limpar` anuncia a limpeza local antes do redirecionamento deliberado; ela continua sem aceitar token por link.
 - **Imagens nas respostas:** a ampliação já existente também pode ser aberta por Enter ou Espaço; o diálogo mantém o foco até Esc ou toque para fechar.
+- **Configuração:** o controle **Voltar ao Chat** preserva alvo mínimo de toque sem mudar a navegação nem o token local.
 - **Enxame:** o canal público só pode sugerir motores. Veja candidatos com `!candidatos` e aprove cada um conscientemente com `!plantar <base> | <modelo> | <nome>`; bases e modelos passam por validação antes de entrar na frota.
 - **Dados do dono:** pings automáticos não levam memória/persona e resumos internos não são publicados no canal do enxame.
 - **Fotos por e-mail:** toda foto é regravada sem EXIF/metadados antes do processamento. O OCR externo só é usado quando o e-mail trouxer autorização explícita, por exemplo: `ocr externo: sim`; o OCR local continua sendo a primeira opção.

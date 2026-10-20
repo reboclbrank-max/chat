@@ -91,6 +91,7 @@
   @keyframes pisca{50%{opacity:.55}}
   .composer button:disabled{opacity:.45}
   #tela-config{overflow-y:auto;flex:1;padding:16px 14px 40px}
+  #btn-voltar-config{min-width:24px;min-height:24px;display:inline-flex;align-items:center;justify-content:center}
   .cartao{background:var(--painel);border:1px solid var(--borda);border-radius:16px;padding:16px;margin-bottom:14px}
   .cartao h2{font-size:15px;margin:0 0 8px}
   .cartao p,.cartao li{font-size:13.5px;color:#c9c9d4}

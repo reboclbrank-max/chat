@@ -48,6 +48,10 @@ testa('voltar da conversa preserva alvo mínimo sem alterar o fluxo', () => {
   assert.match(estilos, /#cabecalho-conv button\.voltar\{[^}]*min-width:24px;min-height:24px;display:inline-flex;align-items:center;justify-content:center[^}]*\}/);
 });
 
+testa('voltar da configuração preserva alvo mínimo sem alterar o fluxo', () => {
+  assert.match(estilos, /#btn-voltar-config\{min-width:24px;min-height:24px;display:inline-flex;align-items:center;justify-content:center\}/);
+});
+
 testa('aviso de acesso em ligar anuncia sem bloquear os controles do cabeçalho', () => {
   const ligar = fontes['ligar.html'];
   assert.match(ligar, /b\.setAttribute\('role','status'\);b\.setAttribute\('aria-live','polite'\)/);
