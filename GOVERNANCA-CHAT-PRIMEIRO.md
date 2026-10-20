@@ -10,6 +10,12 @@
 4. **Ideias depois da execução:** novas propostas entram depois de observar o que o Chat fez, mediu ou declarou indisponível. Ideia não substitui evidência nem autoriza contornar regras.
 5. **Exceções explícitas:** pedido direto do dono, indisponibilidade confirmada do Chat ou tarefa fora das capacidades/guardas dele permite suporte externo proporcional. Segredos, permissões, gastos, contas, exclusões, infraestrutura e ações irreversíveis continuam exigindo a revisão aplicável.
 
+## Sinal explícito de continuidade do dono
+
+Quando o dono enviar **“continue trabalhando”** (ou formulação equivalente), isso autoriza **um próximo corte pequeno, seguro e reversível** dentro desta ordem: consultar primeiro o estado/capacidade sanitizados do Chat, identificar uma lacuna concreta, registrar por que a melhoria foi aceita e quais alternativas foram recusadas, implementar/testar, publicar e salvar a continuidade no Chat e na Base. O sinal evita que seja necessário repetir toda a autorização a cada corte, mas não autoriza trabalho em segundo plano entre mensagens, nem substitui confirmação para gasto, segredo, conta, exclusão, infraestrutura, divulgação sensível, canal novo ou ação irreversível.
+
+Cada corte deve continuar autônomo apenas no sentido técnico permitido: custo R$ 0, privacidade, anti-spam, guardas de canal, atualização PWA explícita e limites de evidência permanecem. Não usar o sinal para aumentar cadência, fabricar tráfego, executar dispatch manual, fingir resultado humano ou substituir o trabalho já atribuído ao Site/ao próprio Chat. Ao encerrar, deixar hash remoto confirmado e registro detalhado para que o próximo “continue trabalhando” comece da `main` atual, não de um workspace temporário.
+
 ## Onde a continuidade mora
 
 | Tipo de informação | Casa correta | Regra |

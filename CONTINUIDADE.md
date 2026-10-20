@@ -24,6 +24,8 @@ O Chat é o executor principal da casa. Para uma tarefa dentro da capacidade já
 
 Material reutilizável e público/sanitizado pertence a este repositório; decisão e contexto privado pertencem à Base; segredo, conteúdo de conversa, anexo e dado pessoal continuam fora dos dois. O workspace temporário de qualquer agente não é fonte de verdade. Leia [`GOVERNANCA-CHAT-PRIMEIRO.md`](GOVERNANCA-CHAT-PRIMEIRO.md) para a divisão completa, limites e pinos atuais.
 
+**Sinal de continuidade (20/10):** a mensagem explícita do dono “continue trabalhando” autoriza o próximo corte seguro dentro dessas guardas, com consenso operacional documentado, testes, commit/push e registro na Base. Não cria execução entre mensagens nem libera gasto, segredo, ação pública sensível, irreversibilidade, cron adicional, dispatch manual ou tráfego fabricado. A porta de continuidade cobre esse contrato de forma explícita (9/9 nesta revisão).
+
 ### 0.2 Estado consolidado que acompanha esta regra
 
 - `chat@e28dbb89dd4402e6187c5574d887d38ee220baa3` foi a fotografia remota consultada; a regra foi publicada em `chat@8a8f43c8a483b587142cac6c680eef96bf9ffac9` após barreira local de continuidade 8/8.

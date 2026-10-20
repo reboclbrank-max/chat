@@ -33,6 +33,7 @@ testa('continuidade mapeia segurança, testes e checklist', /## 3\. Segurança q
 testa('instruções para agentes exigem atualização da continuidade', /CONTINUIDADE\.md/.test(agentes) && /mesmo conjunto de commits/.test(agentes));
 testa('README aponta a continuidade', /\[[^\]]*CONTINUIDADE\.md[^\]]*\]\(CONTINUIDADE\.md\)/.test(readme));
 testa('governança fixa Chat primeiro é verificável', /trabalhador principal/.test(governanca) && /agente externo/.test(governanca) && /Chat primeiro/.test(agentes) && /Chat primeiro/.test(continuidade));
+testa('sinal de continuidade preserva corte seguro e sem execução entre mensagens', /continue trabalhando/.test(governanca) && /corte pequeno, seguro e reversível/.test(governanca) && /não autoriza trabalho em segundo plano entre mensagens/.test(governanca) && /Sinal de continuidade/.test(continuidade));
 testa('política de autonomia entra na barreira', /R\$ 0/.test(autonomia) && /'AUTONOMIA\.md'/.test(workflowRapido));
 testa('barreira observa todo JavaScript/Python/Shell em tools', /'tools\/\*\*\/\*\.js'/.test(workflowRapido) && /'tools\/\*\*\/\*\.py'/.test(workflowRapido) && /'tools\/\*\*\/\*\.sh'/.test(workflowRapido));
 testa('documentos novos não trazem padrão de PAT', !/github_pat_[A-Za-z0-9_]{20,}|gh[pousr]_[A-Za-z0-9_]{20,}/.test(continuidade + autonomia + agentes + governanca));
