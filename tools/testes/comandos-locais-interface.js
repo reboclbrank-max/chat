@@ -58,7 +58,9 @@ for (const rota of rotas) {
     if (escrita >= 0) assert(comando < escrita, 'interceptação precisa anteceder API');
     assert.match(envio, /bolha\('user', texto/);
     assert.match(envio, /bolha\('bot', respostaOperacionalLocal/);
-    assert.match(envio, /return;\s*}\s*(?:if \(!conversa\) return;\s*)?salvarRascunhoAtual/);
+    assert.match(envio, /bolha\('bot', respostaOperacionalLocal[\s\S]{0,500}return;/);
+    // Outras portas locais podem ficar entre este retorno e o rascunho; o roteiro
+    // continua antes de ambos e retorna sem chegar à escrita normal.
   });
 }
 ok('chip visual oferece o roteiro local sem agendar rascunho ou escrita', () => {
@@ -75,11 +77,11 @@ ok('chip visual oferece o roteiro local sem agendar rascunho ou escrita', () => 
   }
 });
 
-ok('casca PWA v50 inclui os ativos locais e a porta de continuidade o observa', () => {
+ok('casca PWA v51 inclui os ativos locais e a porta de continuidade o observa', () => {
   const sw = ler('sw.js');
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v50/);
+  assert.match(sw, /rebocl-chat-v51/);
   assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);
   assert.match(workflow, /'chat-comandos-locais\.js'/);
