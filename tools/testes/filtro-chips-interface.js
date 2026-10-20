@@ -47,9 +47,9 @@ ok('filtro executável não tem rede, escrita, rascunho ou armazenamento', () =>
 
 ok('filtra por texto sem acento, informa resultado e restaura todos os chips', () => {
   const e = ambiente([
-    { textContent: '🧭 trabalho', hidden: false },
-    { textContent: '⛏ caça', hidden: false },
-    { textContent: '🌤 clima', hidden: false }
+    { textContent: '🧭 trabalho', hidden: false, dataset: { busca: '🧭 trabalho trabalho:' } },
+    { textContent: '⛏ caça', hidden: false, dataset: { busca: '⛏ caça !caça' } },
+    { textContent: '💱 dólar', hidden: false, dataset: { busca: '💱 dólar cambio: USD' } }
   ]);
   assert.equal(typeof e.iniciar, 'function');
   assert.equal(e.iniciar(), true);
@@ -59,6 +59,11 @@ ok('filtra por texto sem acento, informa resultado e restaura todos os chips', (
   e.entrada.value = 'caca';
   disparar(e.ouvintes, 'input');
   assert.deepEqual(e.chips.map((chip) => chip.hidden), [true, false, true]);
+  assert.equal(e.resultado.textContent, '1 atalho');
+
+  e.entrada.value = 'cambio';
+  disparar(e.ouvintes, 'input');
+  assert.deepEqual(e.chips.map((chip) => chip.hidden), [true, true, false]);
   assert.equal(e.resultado.textContent, '1 atalho');
 
   e.entrada.value = 'não existe';
@@ -95,6 +100,15 @@ ok('teclas do filtro não disparam os atalhos globais de envio, nova conversa ou
   }
 });
 
+ok('filtro usa rótulo como fallback se uma casca antiga não tiver metadado de busca', () => {
+  const e = ambiente([{ textContent: '🌤 clima', hidden: false }]);
+  e.iniciar();
+  e.entrada.value = 'clima';
+  disparar(e.ouvintes, 'input');
+  assert.equal(e.chips[0].hidden, false);
+  assert.equal(e.resultado.textContent, '1 atalho');
+});
+
 ok('falha fechada se a casca não trouxer os elementos esperados', () => {
   const contexto = { window: {}, document: { getElementById: () => null }, String, Array, Object };
   vm.createContext(contexto);
@@ -110,6 +124,8 @@ ok('as quatro rotas expõem busca acessível e só a iniciam após montar os chi
     assert.match(html, /type="search" autocomplete="off"/);
     assert.match(html, /aria-controls="chips" aria-describedby="resultado-filtro-chips"/);
     assert.match(html, /id="resultado-filtro-chips"[^>]*role="status"[^>]*aria-live="polite"/);
+    const construcao = html.slice(html.indexOf('function montarChips() {'), html.indexOf('/* ---------- sino'));
+    assert.match(construcao, /b\.dataset\.busca = rotulo \+ ' ' \+ prefixo;/);
     const montar = html.indexOf('montarChips();');
     const iniciar = html.indexOf('window.iniciarFiltroChips();');
     assert(montar >= 0 && iniciar > montar, rota + ': filtro só inicia depois dos botões');
@@ -126,7 +142,7 @@ ok('PWA, workflow e continuidade observam o filtro local', () => {
   const sw = ler('sw.js');
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v16/);
+  assert.match(sw, /rebocl-chat-v17/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);
   assert.match(workflow, /'chat-filtro-chips\.js'/);
   assert.match(workflow, /chat-filtro-chips\.js tools\/testes\/\*\.js/);

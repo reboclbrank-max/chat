@@ -21,7 +21,8 @@
       const chips = Array.from(caixa.querySelectorAll('button.chip'));
       let visiveis = 0;
       for (const chip of chips) {
-        const mostrar = !consulta || normalizar(chip.textContent).includes(consulta);
+        const corpus = chip.dataset && chip.dataset.busca ? chip.dataset.busca : chip.textContent;
+        const mostrar = !consulta || normalizar(corpus).includes(consulta);
         chip.hidden = !mostrar;
         if (mostrar) visiveis++;
       }

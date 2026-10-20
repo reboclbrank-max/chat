@@ -29,9 +29,9 @@ ok('as quatro rotas referenciam a mesma folha e não duplicam bloco style', () =
     assert.equal((html.match(/chat-estilos\.css/g) || []).length, 1);
   }
 });
-ok('o cache PWA v16 inclui a folha compartilhada local', () => {
+ok('o cache PWA v17 inclui a folha compartilhada local', () => {
   const sw = ler('sw.js');
-  assert.match(sw, /rebocl-chat-v16/);
+  assert.match(sw, /rebocl-chat-v17/);
   assert.match(sw, /'\.\/chat-estilos\.css'/);
   assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);

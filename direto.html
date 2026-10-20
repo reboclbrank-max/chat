@@ -2070,6 +2070,8 @@ function montarChips() {
     const b = document.createElement('button');
     b.className = 'chip';
     b.textContent = rotulo;
+    // A busca local também encontra a sintaxe que o chip preencherá, sem executá-la.
+    b.dataset.busca = rotulo + ' ' + prefixo;
     b.onclick = () => {
       if (prefixo === '@nova') { novaConversa(); return; }
       if (prefixo === '@local') { alternarModoLocal(); return; }
