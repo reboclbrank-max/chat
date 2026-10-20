@@ -29,15 +29,15 @@ for (const rota of rotas) {
   const html = fs.readFileSync(path.join(raiz, rota), 'utf8');
   testa(rota + ' reconhece somente os comandos privados locais previstos', () => {
     const { fonte, fn } = helperPrivado(html);
-    for (const comando of ['!aprender fato', '!aprender', '!memoria', '!esquecer 1', '!persona poeta | fala curto', '!persona', '!personas', '!usar poeta', '!usar', '!backup', '!restaurar']) {
+    for (const comando of ['!aprender fato', '!aprender', '!memoria', '!esquecer 1', '!persona poeta | fala curto', '!persona', '!personas', '!usar poeta', '!usar', '!backup', '!restaurar', '!chave modelo segredo', '!chave', '!capsula 10m recado', '!capsula', '!anotar comprar leite', '!anotar', '!anotacoes', '!apagarnota 1', '!apagarnota', '!tarefa pagar conta', '!tarefa', '!tarefas', '!feito 1', '!feito', '!apagartarefa 1', '!apagartarefa', '!lembrete 10m ligar']) {
       assert.equal(fn(comando), true, comando);
     }
-    for (const comando of ['!enxame pergunta', '!olhar', '!sugere', '!varredura', '!aprenderx', 'texto normal']) {
+    for (const comando of ['!enxame pergunta', '!olhar', '!sugere', '!varredura', '!aprenderx', '!chaveiro', '!tarefasx', 'texto normal']) {
       assert.equal(fn(comando), false, comando);
     }
     helpers.push(fonte);
   });
-  testa(rota + ' intercepta a memória/persona antes de rascunho, Issue ou comentário', () => {
+  testa(rota + ' intercepta dados locais antes de rascunho, Issue ou comentário', () => {
     const envio = entre(html, 'async function enviar() {', '\n\n// Quando o workflow privado falha');
     const posRota = envio.indexOf('ehComandoPrivadoLocal(texto)');
     const posMaos = envio.indexOf('await maosDaCasa(texto)');
@@ -51,8 +51,8 @@ for (const rota of rotas) {
     assert.match(envio, /'🔒 comando privado local'/);
     enviados.push(envio.slice(posRota, posRascunho));
   });
-  testa(rota + ' formas vazias de memória/persona devolvem ajuda local', () => {
-    for (const inicio of ["if (m === '!aprender' || m.startsWith('!aprender '))", "if (m === '!esquecer' || m.startsWith('!esquecer '))", "if (m === '!persona' || m.startsWith('!persona '))", "if (m === '!usar' || m.startsWith('!usar '))"]) {
+  testa(rota + ' formas vazias de dados locais devolvem ajuda local', () => {
+    for (const inicio of ["if (m === '!aprender' || m.startsWith('!aprender '))", "if (m === '!esquecer' || m.startsWith('!esquecer '))", "if (m === '!persona' || m.startsWith('!persona '))", "if (m === '!usar' || m.startsWith('!usar '))", "if (m === '!chave' || m.startsWith('!chave '))", "if (m === '!capsula' || m.startsWith('!capsula '))", "if (m === '!anotar' || m.startsWith('!anotar '))", "if (m === '!apagarnota' || m.startsWith('!apagarnota '))", "if (m === '!tarefa' || m.startsWith('!tarefa '))", "if (m === '!feito' || m.startsWith('!feito '))", "if (m === '!apagartarefa' || m.startsWith('!apagartarefa '))", "if (m === '!lembrete' || m.startsWith('!lembrete '))"]) {
       assert.notEqual(html.indexOf(inicio), -1, inicio);
     }
     assert.match(html, /uso: !usar <nome> ou !usar nenhuma/);
