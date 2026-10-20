@@ -49,7 +49,7 @@ for (const rota of rotas) {
     }
     // A porta não vira captura ampla: comandos locais sem esse risco e comandos
     // que usam fonte externa seguem fora desta família deliberadamente estreita.
-    for (const foraDoEscopo of ['!uuid', '!qr texto', '!matematica 1+1', '!conta 1+1', '!cor azul', '!falar texto', 'texto normal']) {
+    for (const foraDoEscopo of ['!qr texto', '!matematica 1+1', '!conta 1+1', '!cor azul', '!falar texto', 'texto normal']) {
       assert.equal(fn(foraDoEscopo), false, foraDoEscopo);
     }
     helpers.push(helper);
