@@ -40,19 +40,25 @@ for (const rota of rotas) {
     assert.doesNotMatch(html, /setTimeout\(rodar, 15000\)/);
     assert.doesNotMatch(html, /setTimeout\(\(\) => \{ try \{ if \(!window\.estudoRodando\)/);
     assert.match(blocoCatalogos(html), /window\.iniciarVigiaCatalogos = function/);
+    assert.match(blocoCatalogos(html), /window\.atualizarVigiaCatalogos = function/);
     assert.match(blocoEstudo(html), /window\.iniciarEstudoAutomatico = function/);
   });
   testa(rota + ' usa comandos explícitos e modo somente-local para controlar automações', () => {
     const pararVigia = "if (/^!vigia\\s+(?:parar|desligar)\\s*$/.test(m))";
+    const atualizarVigia = "if (/^!vigia\\s+(?:atualizar|agora)\\s*$/.test(m))";
     const iniciarVigia = "if (/^!vigia\\s*$/.test(m))";
-    const usoVigia = "if (m.startsWith('!vigia')) return 'ℹ️ uso: !vigia para iniciar; !vigia parar ou !vigia desligar para encerrar nesta aba.';";
+    const usoVigia = "if (m.startsWith('!vigia')) return 'ℹ️ uso: !vigia para iniciar; !vigia atualizar para varrer; !vigia parar ou !vigia desligar para encerrar nesta aba.';";
     assert(html.includes(pararVigia));
+    assert(html.includes(atualizarVigia));
     assert(html.includes(iniciarVigia));
     assert(html.includes(usoVigia));
-    assert(html.indexOf(pararVigia) < html.indexOf(iniciarVigia));
+    assert(html.indexOf(pararVigia) < html.indexOf(atualizarVigia));
+    assert(html.indexOf(atualizarVigia) < html.indexOf(iniciarVigia));
     assert(html.indexOf(iniciarVigia) < html.indexOf(usoVigia));
     assert.match(html, /const estavaAtivo = vigiaAtivoNestaPagina; pararVigiaDeRede\(\);/);
+    assert.match(html, /window\.atualizarVigiaCatalogos && window\.atualizarVigiaCatalogos\(\)/);
     assert.match(html, /const ativou = iniciarVigiaDeRede\(\);/);
+    assert.doesNotMatch(html, /if \(!ativou\) try \{ window\.vigiaMotores\(\);/);
     const pararEstudo = "if (/^!estudar\\s+(?:parar|desligar)\\s*$/.test(m))";
     const iniciarEstudo = "if (m.startsWith('!estudar'))";
     assert(html.includes(pararEstudo));
@@ -60,7 +66,7 @@ for (const rota of rotas) {
     assert.match(html, /window\.pararEstudoAutomatico\(\)/);
     assert.match(html, /if \(m\.startsWith\('!estudar'\)\) \{ if \(modoSomenteLocalAtivo\(\)\)/);
     assert.match(html, /window\.iniciarEstudoAutomatico\(te\)/);
-    assert.match(html, /'!vigia','!vigia parar','!vigia desligar'/);
+    assert.match(html, /'!vigia','!vigia atualizar','!vigia parar','!vigia desligar'/);
     assert.match(html, /'!estudar ','!estudar parar','!estudar desligar'/);
     const modo = blocoModo(html);
     assert.match(modo, /pararVigiaDeRede\(\)/);
@@ -106,6 +112,30 @@ testa('parar o vigia cancela os agendamentos rastreáveis sem chamar rede', () =
   vm.runInContext(blocoVigia(html) + '\nvigiaTimer = 31; vigiaCanalTimer = 32; vigiaAtivoNestaPagina = true; globalThis.pararTeste = pararVigiaDeRede;', contexto);
   contexto.pararTeste();
   assert.deepEqual(limpos, { intervalo: [31], timeout: [32], catalogos: 1, fetch: 0 });
+});
+
+testa('atualização manual do catálogo exige vigia ativo e não duplica varredura em voo', () => {
+  const html = fontes['index.html'];
+  const estado = { fetch: 0, intervalos: 0 };
+  const contexto = {
+    Promise, Object, String, Number, Array, JSON, Date, Math,
+    AbortSignal: { timeout: () => undefined },
+    fetch: () => { estado.fetch++; return new Promise(() => {}); },
+    setInterval: () => { estado.intervalos++; return 71; },
+    clearInterval: () => {},
+    modoSomenteLocalAtivo: () => false,
+    window: {}
+  };
+  contexto.window.window = contexto.window;
+  vm.createContext(contexto);
+  vm.runInContext(blocoCatalogos(html), contexto);
+  assert.equal(contexto.window.atualizarVigiaCatalogos(), false);
+  assert.equal(estado.fetch, 0);
+  assert.equal(contexto.window.iniciarVigiaCatalogos(), true);
+  assert.equal(estado.fetch, 1);
+  assert.equal(estado.intervalos, 1);
+  assert.equal(contexto.window.atualizarVigiaCatalogos(), false);
+  assert.equal(estado.fetch, 1);
 });
 
 testa('catálogo e estudo não criam timer antes da escolha; estudo cria e para após escolha', () => {
