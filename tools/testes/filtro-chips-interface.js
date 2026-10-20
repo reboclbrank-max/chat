@@ -165,9 +165,11 @@ ok('as quatro rotas declaram busca por nome ou comando e só a iniciam após mon
     const pwa = html.indexOf('<script src="chat-pwa.js"></script>');
     const local = html.indexOf('<script src="chat-comandos-locais.js"></script>');
     const filtro = html.indexOf('<script src="chat-filtro-chips.js"></script>');
-    const inline = html.indexOf('<script>', filtro);
-    assert(pwa >= 0 && local > pwa && filtro > local && inline > filtro, rota + ': ativos locais precisam carregar antes do código da rota');
+    const workspace = html.indexOf('<script src="chat-workspace.js"></script>');
+    const inline = html.indexOf('<script>', workspace);
+    assert(pwa >= 0 && local > pwa && filtro > local && workspace > filtro && inline > workspace, rota + ': ativos locais precisam carregar antes do código da rota');
     assert.equal((html.match(/chat-filtro-chips\.js/g) || []).length, 1, rota + ': ativo único');
+    assert.equal((html.match(/chat-workspace\.js/g) || []).length, 1, rota + ': Workspace único');
   }
 });
 
@@ -175,10 +177,10 @@ ok('PWA, workflow e continuidade observam o filtro local', () => {
   const sw = ler('sw.js');
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v66/);
+  assert.match(sw, /rebocl-chat-v67/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);
   assert.match(workflow, /'chat-filtro-chips\.js'/);
-  assert.match(workflow, /chat-filtro-chips\.js tools\/testes\/\*\.js/);
+  assert.match(workflow, /chat-filtro-chips\.js chat-workspace\.js tools\/testes\/\*\.js/);
   assert(continuidade.includes('chat-filtro-chips\\.js'));
   const pasta = fs.mkdtempSync(path.join(os.tmpdir(), 'continuidade-filtro-chips-'));
   try {

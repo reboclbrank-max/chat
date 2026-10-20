@@ -14,6 +14,7 @@ Página de conversa com a **IA gratuita da Rebocl Brank**.
 - Mostra as respostas do assistente automaticamente quando o trabalhador privado está disponível e avisa por notificação. Se o navegador confirmar que o run correspondente falhou antes de iniciar, tenta uma recuperação local de contingência; isso requer o navegador aberto e não é SLA.
 - Mostra **qual motor respondeu** (tag ao lado de "Assistente") e avisa quando a internet cai.
 - **Exporta e importa conversas**: tudo em JSON, tudo em texto (.md), ou só uma conversa — para guardar fora do navegador ou levar para outro aparelho.
+- **🗂️ Workspace local:** crie projetos e arquivos de texto dentro do Chat, pesquise, salve, recupere versões locais e faça backup/importação JSON. Eles ficam neste navegador; nada é enviado automaticamente. Para revisar um trecho na conversa, selecione-o e use **Levar seleção ao Chat** — isso só preenche o compositor, nunca envia.
 - Por conversa: **renomear**, **fechar**, **reenviar** a última mensagem e **copiar** qualquer mensagem.
 - Dica: escreva `anotar: <texto>` para guardar algo na memória permanente.
 - Escreva `trabalho:` ou `prioridades:` no e-mail, Telegram ou nesta interface para o roteiro local e sanitizado das rotinas da casa, próximo passo seguro e o que — se houver — depende do dono. Nesta interface, o chip `🧭 trabalho` é o atalho local correspondente; ele não cria conversa nem chama a rede. A fotografia técnica dinâmica `status:` continua nos canais de e-mail/Telegram.
@@ -39,6 +40,7 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Imagens nas respostas:** a ampliação já existente também pode ser aberta por Enter ou Espaço; o diálogo mantém o foco até Esc ou toque para fechar.
 - **Configuração:** o controle **Voltar ao Chat** preserva alvo mínimo de toque sem mudar a navegação nem o token local.
 - **Rascunhos locais:** a opção de salvar rascunhos neste aparelho preserva alvo nativo mínimo sem alterar a preferência, seus dados ou o token.
+- **Workspace:** usa IndexedDB separado de token, rascunhos e cópias de conversa; tem limites locais e não é cofre de senhas, sincronização, armazenamento de binários ou backup garantido. Apagar cópias offline de conversas não o apaga; limpar dados do site pode apagar arquivos locais.
 - **Console:** o campo de tema para “pensar bem” preserva um nome acessível depois de a dica visual ser preenchida, e o botão de atualizar anuncia sua ação explicitamente; enviar continua sendo uma escolha pelo botão explícito.
 - **Enxame:** o canal público só pode sugerir motores. Veja candidatos com `!candidatos` e aprove cada um conscientemente com `!plantar <base> | <modelo> | <nome>`; bases e modelos passam por validação antes de entrar na frota.
 - **Dados do dono:** pings automáticos não levam memória/persona e resumos internos não são publicados no canal do enxame.
@@ -254,6 +256,12 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Menos sonda duplicada:** antes de o turno de e-mail pedir o vigia, ele consulta as execuções recentes de `vigia.yml`. Uma sonda bem-sucedida há no máximo 20 minutos — ou ainda em andamento — é preservada; o pulso não cria outra execução por cima dela.
 - **Continuidade acima de otimismo:** falha, data malformada/futura, execução velha ou API indisponível não viram saúde. Nesses casos, o pedido de vigia já existente continua, sem afirmar que a casa foi verificada.
 - **Cobertura controlada:** a regra é pura/injetável e cobre sucesso recente, sonda ativa, falha, idade, dados inválidos e consulta indisponível. Pulso do vigia 5/5, adoção 4/4 e suíte rápida 51/51 executados passaram, com 2 SKIPs multimodais ambientais já declarados. Não lê caixa, envia mensagem nem cria custo, conta ou infraestrutura.
+
+## v12.43 — Workspace interno local-first (20/10/2026)
+
+- **Trabalho dentro do Chat:** o botão 🗂️ abre projetos e arquivos de texto persistidos somente neste navegador, com busca, criação/renomeação/remoção explícita, autosave, até 12 versões locais e backup/importação JSON. Os limites são 20 projetos, 100 arquivos, 512 KB por arquivo e 5 MB no total.
+- **Fronteira explícita:** o Workspace usa IndexedDB separado e não chama API, GitHub, Issue, motor ou rede. A única ponte exige seleção manual e **Levar seleção ao Chat**; ela limita o trecho, tenta bloquear token reconhecível e apenas coloca o texto no compositor para revisão — não clica em enviar.
+- **Limite honesto:** os arquivos dependem do navegador/perfil e podem desaparecer se os dados do site forem limpos; não é sincronização, cofre, criptografia de disco, colaboração, armazenamento de binários nem backup garantido. A atualização PWA v67 continua sendo escolhida pela pessoa, sem ativação silenciosa.
 
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO

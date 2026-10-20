@@ -22,8 +22,9 @@
   <div class="logo" aria-hidden="true">RB</div>
   <div>
     <h1>Assistente Rebocl</h1>
-    <p id="sub">tudo salvo no seu GitHub · grátis</p>
+    <p id="sub">conversas no GitHub · Workspace neste aparelho · grátis</p>
   </div>
+  <button type="button" class="hbtn" id="btn-workspace" title="Abrir Workspace local — arquivos ficam somente neste navegador" aria-label="Abrir Workspace local" aria-pressed="false">🗂️</button>
   <button type="button" class="hbtn" id="btn-console" title="Console da IA — a máquina completa" aria-label="Abrir Console da IA">🖥️</button>
   <button type="button" class="hbtn" id="btn-config" title="Configurar acesso" aria-label="Configurar acesso">⚙️</button>
 </header>
@@ -111,7 +112,7 @@
   </div>
   <div class="cartao">
     <h2>🧹 Cópias offline neste aparelho</h2>
-    <p>Apaga somente a lista e o histórico de conversa salvos para leitura offline, inclusive trocas locais ainda não sincronizadas. As conversas no GitHub, o token salvo, preferências, caderno e chaves locais não são alterados.</p>
+    <p>Apaga somente a lista e o histórico de conversa salvos para leitura offline, inclusive trocas locais ainda não sincronizadas. As conversas no GitHub, o token salvo, preferências, caderno, chaves locais e o Workspace local não são alterados.</p>
     <button type="button" id="btn-limpar-copias" style="background:var(--painel);border:1px solid #7a2a2a;color:#e0a9a9;font-weight:600">Apagar cópias offline de conversas</button>
     <div id="status-dados-locais" role="status" aria-live="polite" aria-atomic="true"></div>
   </div>
@@ -378,6 +379,7 @@ const TAMANHO_PAGINA_COMENTARIOS = 100;
 <script src="chat-pwa.js"></script>
 <script src="chat-comandos-locais.js"></script>
 <script src="chat-filtro-chips.js"></script>
+<script src="chat-workspace.js"></script>
 <script>
 function paginaFinalComentarios(total) {
   const n = Math.max(0, Number(total) || 0);
@@ -597,6 +599,7 @@ function focoSeguro(id) {
   if (alvo) setTimeout(() => alvo.focus(), 0);
 }
 function mostrarConfig(mostrar, focar = false) {
+  if (window.ReboclWorkspace) window.ReboclWorkspace.ocultarParaNavegacao();
   atualizarPainelRascunhos();
   $('tela-config').classList.toggle('oculto', !mostrar);
   $('principal').classList.toggle('oculto', mostrar);
@@ -614,12 +617,14 @@ function fecharConfiguracao() {
   }
 }
 function abrirConversa() {
+  if (window.ReboclWorkspace) window.ReboclWorkspace.ocultarParaNavegacao();
   $('principal').classList.add('oculto');
   $('tela-config').classList.add('oculto');
   $('tela-conv').classList.remove('oculto');
   $('tela-conv').style.display = 'flex';
 }
 function voltarLista() {
+  if (window.ReboclWorkspace) window.ReboclWorkspace.ocultarParaNavegacao();
   salvarRascunhoAtual($('entrada').value);
   limparPreviaArquivoTexto();
   $('entrada').value = '';
