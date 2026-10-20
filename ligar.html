@@ -371,6 +371,7 @@ function api(caminho, opcoes = {}) {
 const TAMANHO_PAGINA_COMENTARIOS = 100;
 </script>
 <script src="chat-pwa.js"></script>
+<script src="chat-comandos-locais.js"></script>
 <script>
 function paginaFinalComentarios(total) {
   const n = Math.max(0, Number(total) || 0);
@@ -1087,6 +1088,20 @@ async function enviar() {
   const texto = caixa.value.trim();
   if (!texto || !conversa) return;
   if (!mensagemDentroDoLimite(texto)) { avisoMensagemLonga(); caixa.focus(); return; }
+  // Roteiro fechado: responde na própria tela antes de guardar rascunho ou criar Issue.
+  // Se o ativo local não carregar, a conversa normal segue sem exceção nem fallback de rede.
+  const respostaOperacionalLocal = typeof window.respostaComandoOperacionalLocal === 'function'
+    ? window.respostaComandoOperacionalLocal(texto) : '';
+  if (respostaOperacionalLocal) {
+    caixa.value = ''; caixa.style.height = 'auto';
+    limparRascunhoPorChave(chaveRascunhoAtual(), texto);
+    limparPreviaArquivoTexto();
+    atualizarContador(); atualizarAvisoRascunho();
+    bolha('user', texto, new Date().toISOString());
+    bolha('bot', respostaOperacionalLocal, new Date().toISOString(), '🧭 roteiro local');
+    rolarFim();
+    return;
+  }
   salvarRascunhoAtual(caixa.value);
   if (pareceTokenDeAcesso(texto)) {
     limparRascunhoPorChave(chaveRascunhoAtual(), texto);

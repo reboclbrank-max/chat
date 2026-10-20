@@ -87,8 +87,9 @@ testa('cliente compartilhado é precacheado e observado pela barreira de continu
   const sw = fonte('sw.js');
   const workflow = fonte('.github/workflows/testes-rapidos.yml');
   const continuidade = fonte('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v13/);
+  assert.match(sw, /rebocl-chat-v14/);
   assert.match(sw, /'\.\/chat-pwa\.js'/);
+  assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
   assert.match(workflow, /'chat-pwa\.js'/);
   assert(continuidade.includes('chat-pwa\\.js'), 'porta de continuidade não observa chat-pwa.js');
   const pasta = fs.mkdtempSync(path.join(os.tmpdir(), 'continuidade-pwa-'));
@@ -105,11 +106,11 @@ testa('cliente compartilhado é precacheado e observado pela barreira de continu
   } finally { fs.rmSync(pasta, { recursive: true, force: true }); }
 });
 
-testa('service worker v13 instala sem se ativar sozinho', () => {
+testa('service worker v14 instala sem se ativar sozinho', () => {
   const sw = fonte('sw.js');
   const instalacao = trecho(sw, "self.addEventListener('install'", "self.addEventListener('message'");
   const mensagem = trecho(sw, "self.addEventListener('message'", "self.addEventListener('activate'");
-  assert.match(sw, /rebocl-chat-v13/);
+  assert.match(sw, /rebocl-chat-v14/);
   assert.match(sw, /'\.\/chat-pwa\.js'/);
   assert.doesNotMatch(instalacao, /skipWaiting/);
   assert.match(mensagem, /evento\.data\.tipo === 'REBOCL_ATIVAR_ATUALIZACAO'/);
