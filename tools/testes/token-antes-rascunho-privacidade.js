@@ -21,6 +21,7 @@ function entre(texto, inicio, fim) {
 }
 function envio(html) { return entre(html, 'async function enviar() {', '\n\n// Quando o workflow privado falha'); }
 function novaConversa(html) { return entre(html, "async function novaConversa(sugestao = '') {", '\n\n/* ---------- conversa ---------- */'); }
+function reenvio(html) { return entre(html, 'async function reenviarUltima() {', '\nfunction faixaOffline'); }
 function blocoToken(codigo) {
   return entre(codigo, 'if (pareceTokenDeAcesso(texto)) {', '\n  }\n  // Roteiro fechado');
 }
@@ -31,10 +32,12 @@ const envios = [];
 const tokens = [];
 const rascunhos = [];
 const novas = [];
+const reenvios = [];
 for (const rota of rotas) {
   const html = fs.readFileSync(path.join(raiz, rota), 'utf8');
   const codigo = envio(html);
   const nova = novaConversa(html);
+  const reenviar = reenvio(html);
   testa(rota + ' protege token antes de roteiro, rascunho, Issue ou motor', () => {
     const guarda = codigo.indexOf('if (pareceTokenDeAcesso(texto)) {');
     const roteiro = codigo.indexOf('const respostaOperacionalLocal');
@@ -74,6 +77,18 @@ for (const rota of rotas) {
     assert.doesNotMatch(bloqueio, /salvarRascunhoAtual|\bapi\s*\(|fetch\s*\(|localStorage\./);
     novas.push(bloqueio);
   });
+  testa(rota + ' reenvio bloqueia token antes de comentário remoto', () => {
+    const limite = reenviar.indexOf('if (!mensagemDentroDoLimite(texto))');
+    const guarda = reenviar.indexOf('if (pareceTokenDeAcesso(texto))');
+    const operacional = reenviar.indexOf('const respostaOperacionalLocal');
+    const comentario = reenviar.indexOf('const c = await api(`/repos/${REPO}/issues/${conversa}/comments`');
+    assert(limite >= 0 && guarda > limite && operacional > guarda && comentario > operacional, 'token precisa ficar antes do comentário');
+    const bloqueio = entre(reenviar, 'if (pareceTokenDeAcesso(texto)) {', '\n  const respostaOperacionalLocal');
+    assert.match(bloqueio, /Token não foi reenviado/);
+    assert.match(bloqueio, /return;/);
+    assert.doesNotMatch(bloqueio, /\bapi\s*\(|fetch\s*\(|localStorage\.|registrarComentario|iniciarPolling/);
+    reenvios.push(bloqueio);
+  });
   testa(rota + ' camada de rascunhos conserva defesa direta contra token', () => {
     const bloco = blocoRascunho(html);
     assert.match(bloco, /if \(pareceTokenDeAcesso\(valor\)\)/);
@@ -83,7 +98,7 @@ for (const rota of rotas) {
   });
 }
 testa('contrato de token e rascunho mantém paridade nas quatro rotas', () => {
-  for (const grupo of [envios, tokens, novas, rascunhos]) {
+  for (const grupo of [envios, tokens, novas, reenvios, rascunhos]) {
     assert.equal(new Set(grupo.map((x) => crypto.createHash('sha256').update(x).digest('hex'))).size, 1);
   }
 });

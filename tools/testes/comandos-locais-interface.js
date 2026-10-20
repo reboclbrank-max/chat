@@ -11,6 +11,7 @@ const raiz = path.resolve(__dirname, '..', '..');
 const rotas = ['index.html', 'direto.html', 'ligar.html', 'limpar.html'];
 let certos = 0, falhas = 0;
 const primeirasMensagens = [];
+const reenviosLocais = [];
 function ok(nome, fn) {
   try { fn(); certos++; console.log('✔ ' + nome); }
   catch (e) { falhas++; console.error('✘ ' + nome + ' — ' + e.message); }
@@ -60,8 +61,14 @@ for (const rota of rotas) {
     assert.match(envio, /bolha\('user', texto/);
     assert.match(envio, /bolha\('bot', respostaOperacionalLocal/);
     assert.match(envio, /bolha\('bot', respostaOperacionalLocal[\s\S]{0,500}return;/);
-    // Outras portas locais podem ficar entre este retorno e o rascunho; o roteiro
-    // continua antes de ambos e retorna sem chegar à escrita normal.
+    const privado = envio.indexOf('if (ehComandoPrivadoLocal(texto))');
+    assert(privado > comando && privado < rascunho, 'porta privada precisa anteceder rascunho');
+    const privadoLocal = envio.slice(privado, rascunho);
+    assert.match(privadoLocal, /try \{ respostaPrivadaLocal = await maosDaCasa\(texto\); \} catch \(_\) \{\}/);
+    assert.match(privadoLocal, /Comando local não concluído/);
+    assert.match(privadoLocal, /rolarFim\(\)[\s\S]{0,100}return;/);
+    assert.doesNotMatch(privadoLocal, /salvarRascunhoAtual|api\s*\(|fetch\s*\(|localStorage/);
+    // A allowlist privada falha fechada; não pode cair no rascunho normal se a mão falhar.
   });
   ok(rota + ' mantém comandos locais da primeira mensagem antes de rascunho ou Issue', () => {
     const nova = trecho(html, "async function novaConversa(sugestao = '') {", '\nasync function abrir(');
@@ -82,13 +89,42 @@ for (const rota of rotas) {
     assert.doesNotMatch(operacionalLocal, /salvarRascunhoAtual|api\s*\(|fetch\s*\(|localStorage/);
     const privadoLocal = nova.slice(privado, rascunho);
     assert.match(privadoLocal, /if \(ehComandoPrivadoLocal\(texto\)\)/);
-    assert.match(privadoLocal, /await maosDaCasa\(texto\)/);
+    assert.match(privadoLocal, /try \{ respostaPrivadaLocal = await maosDaCasa\(texto\); \} catch \(_\) \{\}/);
     assert.match(privadoLocal, /Comando local não concluído/);
     assert.match(privadoLocal, /focoSeguro\('entrada'\)[\s\S]{0,100}return;/);
     assert.doesNotMatch(privadoLocal, /salvarRascunhoAtual|api\s*\(|fetch\s*\(/);
     primeirasMensagens.push(nova.slice(operacional, rascunho));
   });
+  ok(rota + ' reaplica portas locais ao reenviar antes de comentário remoto', () => {
+    const reenvio = trecho(html, 'async function reenviarUltima() {', '\nfunction faixaOffline');
+    const limite = reenvio.indexOf('if (!mensagemDentroDoLimite(texto))');
+    const token = reenvio.indexOf('if (pareceTokenDeAcesso(texto))');
+    const operacional = reenvio.indexOf('const respostaOperacionalLocal');
+    const privado = reenvio.indexOf('if (ehComandoPrivadoLocal(texto))');
+    const comentario = reenvio.indexOf('const c = await api(`/repos/${REPO}/issues/${conversa}/comments`');
+    assert(limite >= 0 && token > limite && operacional > token && privado > operacional, 'portas do reenvio ficam depois do limite');
+    assert(comentario > privado, 'comentário remoto fica depois das portas locais');
+    const tokenLocal = reenvio.slice(token, operacional);
+    assert.match(tokenLocal, /Token não foi reenviado/);
+    assert.match(tokenLocal, /focoSeguro\('entrada'\)[\s\S]{0,100}return;/);
+    assert.doesNotMatch(tokenLocal, /api\s*\(|fetch\s*\(|localStorage/);
+    const operacionalLocal = reenvio.slice(operacional, privado);
+    assert.match(operacionalLocal, /if \(respostaOperacionalLocal\)/);
+    assert.match(operacionalLocal, /bolha\('bot', respostaOperacionalLocal/);
+    assert.match(operacionalLocal, /focoSeguro\('entrada'\)[\s\S]{0,100}return;/);
+    assert.doesNotMatch(operacionalLocal, /api\s*\(|fetch\s*\(|localStorage/);
+    const privadoLocal = reenvio.slice(privado, comentario);
+    assert.match(privadoLocal, /try \{ respostaPrivadaLocal = await maosDaCasa\(texto\); \} catch \(_\) \{\}/);
+    assert.match(privadoLocal, /Comando local não concluído/);
+    assert.match(privadoLocal, /finally \{ if \(botao\) botao\.disabled = false; \}/);
+    assert.doesNotMatch(privadoLocal, /api\s*\(|fetch\s*\(|localStorage/);
+    reenviosLocais.push(reenvio.slice(token, comentario));
+  });
 }
+ok('porta local do reenvio mantém paridade entre as quatro rotas', () => {
+  assert.equal(new Set(reenviosLocais.map((bloco) => bloco)).size, 1);
+});
+
 ok('porta local da primeira mensagem mantém paridade entre as quatro rotas', () => {
   assert.equal(new Set(primeirasMensagens.map((bloco) => bloco)).size, 1);
 });
@@ -107,11 +143,11 @@ ok('chip visual oferece o roteiro local sem agendar rascunho ou escrita', () => 
   }
 });
 
-ok('casca PWA v65 inclui os ativos locais e a porta de continuidade o observa', () => {
+ok('casca PWA v66 inclui os ativos locais e a porta de continuidade o observa', () => {
   const sw = ler('sw.js');
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v65/);
+  assert.match(sw, /rebocl-chat-v66/);
   assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);
   assert.match(workflow, /'chat-comandos-locais\.js'/);

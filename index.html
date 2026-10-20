@@ -788,7 +788,8 @@ async function novaConversa(sugestao = '') {
   }
   if (ehComandoPrivadoLocal(texto)) {
     abrirConversa();
-    const respostaPrivadaLocal = await maosDaCasa(texto);
+    let respostaPrivadaLocal = '';
+    try { respostaPrivadaLocal = await maosDaCasa(texto); } catch (_) {}
     bolha('user', texto, new Date().toISOString());
     bolha('bot', respostaPrivadaLocal || '🔒 **Comando local não concluído.** Nada foi enviado, gravado em issue ou passado a um motor.', new Date().toISOString(), '🔒 comando privado local');
     rolarFim();
@@ -1144,17 +1145,17 @@ async function enviar() {
     return;
   }
   if (ehComandoPrivadoLocal(texto)) {
-    const respostaPrivadaLocal = await maosDaCasa(texto);
-    if (respostaPrivadaLocal) {
-      caixa.value = ''; caixa.style.height = 'auto';
-      limparRascunhoPorChave(chaveRascunhoAtual(), texto);
-      limparPreviaArquivoTexto();
-      atualizarContador(); atualizarAvisoRascunho();
-      bolha('user', texto, new Date().toISOString());
-      bolha('bot', respostaPrivadaLocal, new Date().toISOString(), '🔒 comando privado local');
-      rolarFim();
-      return;
-    }
+    // A allowlist privada nunca volta ao fluxo remoto se a mão local falhar.
+    let respostaPrivadaLocal = '';
+    try { respostaPrivadaLocal = await maosDaCasa(texto); } catch (_) {}
+    caixa.value = ''; caixa.style.height = 'auto';
+    limparRascunhoPorChave(chaveRascunhoAtual(), texto);
+    limparPreviaArquivoTexto();
+    atualizarContador(); atualizarAvisoRascunho();
+    bolha('user', texto, new Date().toISOString());
+    bolha('bot', respostaPrivadaLocal || '🔒 **Comando local não concluído.** Nada foi enviado, gravado em issue ou passado a um motor.', new Date().toISOString(), '🔒 comando privado local');
+    rolarFim();
+    return;
   }
   salvarRascunhoAtual(caixa.value);
   if (!conversa) {
@@ -2517,6 +2518,34 @@ async function reenviarUltima() {
   const texto = textoSimples(usuarios[usuarios.length - 1].innerHTML).trim();
   if (!texto) return;
   if (!mensagemDentroDoLimite(texto)) { alert('A última mensagem visível passa do limite local de reenvio. Encurte ou escreva uma nova mensagem; nada foi reenviado.'); return; }
+  // Reenvio lê texto histórico: aplica as mesmas portas locais antes de novo comentário.
+  if (pareceTokenDeAcesso(texto)) {
+    bolha('bot', '🔐 **Token não foi reenviado.** Abra ⚙️ Configurar acesso e cole-o somente no campo protegido deste navegador. Nada foi enviado, gravado em issue ou passado a um motor.', new Date().toISOString(), '🔐 proteção');
+    rolarFim();
+    focoSeguro('entrada');
+    return;
+  }
+  const respostaOperacionalLocal = typeof window.respostaComandoOperacionalLocal === 'function'
+    ? window.respostaComandoOperacionalLocal(texto) : '';
+  if (respostaOperacionalLocal) {
+    bolha('user', texto, new Date().toISOString());
+    bolha('bot', respostaOperacionalLocal, new Date().toISOString(), '🧭 roteiro local');
+    rolarFim();
+    focoSeguro('entrada');
+    return;
+  }
+  if (ehComandoPrivadoLocal(texto)) {
+    if (botao) botao.disabled = true;
+    try {
+      let respostaPrivadaLocal = '';
+      try { respostaPrivadaLocal = await maosDaCasa(texto); } catch (_) {}
+      bolha('user', texto, new Date().toISOString());
+      bolha('bot', respostaPrivadaLocal || '🔒 **Comando local não concluído.** Nada foi reenviado, gravado em issue ou passado a um motor.', new Date().toISOString(), '🔒 comando privado local');
+      rolarFim();
+      focoSeguro('entrada');
+    } finally { if (botao) botao.disabled = false; }
+    return;
+  }
   if (botao) botao.disabled = true;
   atualizarEstadoEntrega('enviando-mensagem');
   try {
