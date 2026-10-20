@@ -16,6 +16,7 @@ Página de conversa com a **IA gratuita da Rebocl Brank**.
 - **Exporta e importa conversas**: tudo em JSON, tudo em texto (.md), ou só uma conversa — para guardar fora do navegador ou levar para outro aparelho.
 - Por conversa: **renomear**, **fechar**, **reenviar** a última mensagem e **copiar** qualquer mensagem.
 - Dica: escreva `anotar: <texto>` para guardar algo na memória permanente.
+- Nos canais de e-mail e Telegram, escreva `trabalho:` ou `prioridades:` para o roteiro local e sanitizado das rotinas da casa, próximo passo seguro e o que — se houver — depende do dono.
 
 ## Manutenção e continuidade
 

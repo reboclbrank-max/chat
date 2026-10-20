@@ -27,6 +27,9 @@ function confere(nome, condicao) {
   await t('ajuda: lista o comando conta:', 'ajuda', /conta:/);
   await t('ajuda: lista feriado: e cep:', 'comandos', /feriado:|cep:/);
   await t('ajuda: lista navegar:', 'ajuda', /navegar:/);
+  await t('ajuda: lista trabalho:', 'ajuda', /trabalho:/);
+  await t('trabalho: explica rotina sem depender de motor', 'trabalho:', /Trabalho da casa[\s\S]*nada obrigatório[\s\S]*status:/i);
+  await t('prioridades: também abre o roteiro', 'prioridades:', /Próximo passo automático/i);
   await t('ajuda: lista divisas, capital e região:', 'ajuda', /divisas:.*capital:.*região:/s);
   await t('divisas: Bahia responde localmente', 'divisas: Bahia', /Bahia.*8 unidade/);
   await t('capital: Bahia responde localmente', 'capital: Bahia', /Salvador/);
@@ -121,6 +124,8 @@ function confere(nome, condicao) {
 
   const fetchOriginal = global.fetch;
   global.fetch = async () => { throw new Error('rede não deveria ser chamada'); };
+  await t('trabalho: não chama rede', 'trabalho:', /Plano operacional/i);
+  confere('trabalho: roteiro local cabe no Telegram', CHAT.resumoTrabalhoDaCasa().split('\n').length <= 8);
   await t('geografia natural responde sem rede nem motor', 'Qual estado brasileiro faz fronteira com o MAIOR número de outros estados?', /Bahia.*8/);
   await t('capital natural responde sem rede nem motor', 'Qual a capital de Sergipe?', /Aracaju/);
   global.fetch = fetchOriginal;

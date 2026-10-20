@@ -5,7 +5,8 @@ const enviados = [];
 let dono = null;
 const chatFalso = {
   semMarcacao: s => String(s).replace(/\*\*/g, ''), limpaVazamento: s => s, CAPS: ' ',
-  comandosDaCasa: async t => /^lembrete:/i.test(t) ? 'Combinado! Vou te lembrar.' : null, ferramenta: async () => null, pedidoDeArquivo: () => null,
+  comandosDaCasa: async t => /^lembrete:/i.test(t) ? 'Combinado! Vou te lembrar.' : null,
+  ferramenta: async t => /^trabalho:/i.test(t) ? '🧭 Trabalho da casa: roteiro local seguro.' : null, pedidoDeArquivo: () => null,
   cerebro: async (p, img) => ({ texto: img ? 'Na foto vejo um **quadrado azul**.' : 'A resposta é **4**.', via: 'motor-falso' }), cerebroLocal: async () => null,
   preparaFoto: async i => i, visaoLocal: async () => null, ouve: async () => 'quanto é dois mais dois', docTexto: async () => 'texto do documento'
 };
@@ -34,6 +35,8 @@ function confere(nome, cond) { total++; if (cond) ok++; console.log((cond ? '✔
   confere('nota de voz do dono é transcrita e respondida', r === 'respondido' && /<b>4<\/b>/.test(enviados.pop().text));
   r = await tg.trataAtualizacao(msg(555, { text: 'lembrete: amanhã às 7h regar a horta' }));
   confere('lembrete pelo Telegram vai para os comandos da casa', r === 'respondido' && /Vou te lembrar/.test(enviados.pop().text));
+  r = await tg.trataAtualizacao(msg(555, { text: 'trabalho:' }));
+  confere('trabalho pelo Telegram usa a ferramenta compartilhada', r === 'respondido' && /Trabalho da casa/.test(enviados.pop().text));
   r = await tg.trataAtualizacao(msg(777, { text: '/parear 123456' }));
   confere('outra pessoa não consegue parear depois do dono', r === 'pareamento recusado (já tem dono)');
   enviados.length = 0;
