@@ -52,7 +52,7 @@
   .vazio{color:var(--texto2);text-align:center;padding:40px 20px;font-size:14px}
   .vazio .emoji{font-size:34px;display:block;margin-bottom:10px}
   #cabecalho-conv{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--borda);background:#101015}
-  #cabecalho-conv button.voltar{background:none;border:none;color:var(--ouro);font-size:20px;cursor:pointer;padding:2px 8px}
+  #cabecalho-conv button.voltar{background:none;border:none;color:var(--ouro);font-size:20px;cursor:pointer;padding:2px 8px;min-width:24px;min-height:24px;display:inline-flex;align-items:center;justify-content:center}
   #cabecalho-conv .titulo{font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
   #cabecalho-conv button.ler-tudo{background:none;border:1px solid var(--borda);color:var(--texto2);border-radius:9px;font-size:12px;padding:5px 9px;cursor:pointer}
   .msgs{flex:1;overflow-y:auto;padding:14px 12px 150px;display:flex;flex-direction:column;gap:10px}
