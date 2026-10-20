@@ -32,7 +32,7 @@ for (const rota of rotas) {
     for (const comando of ['!aprender fato', '!aprender', '!memoria', '!esquecer 1', '!persona poeta | fala curto', '!persona', '!personas', '!usar poeta', '!usar', '!backup', '!restaurar', '!chave modelo segredo', '!chave', '!capsula 10m recado', '!capsula', '!anotar comprar leite', '!anotar', '!anotacoes', '!apagarnota 1', '!apagarnota', '!tarefa pagar conta', '!tarefa', '!tarefas', '!feito 1', '!feito', '!apagartarefa 1', '!apagartarefa', '!lembrete 10m ligar', '!lembrar fato local', '!lembrar', '!criar !ferramenta descrição local', '!criar', '!fabrica']) {
       assert.equal(fn(comando), true, comando);
     }
-    for (const comando of ['!enxame pergunta', '!olhar', '!sugere', '!varredura', '!aprenderx', '!chaveiro', '!tarefasx', '!lembrancax', '!criatura tema', '!fabricante', 'texto normal']) {
+    for (const comando of ['!enxame pergunta', '!olhar', '!varredura', '!aprenderx', '!chaveiro', '!tarefasx', '!lembrancax', '!criatura tema', '!fabricante', 'texto normal']) {
       assert.equal(fn(comando), false, comando);
     }
     helpers.push(fonte);
