@@ -1138,6 +1138,7 @@ async function enviar() {
   salvarRascunhoAtual(caixa.value);
   if (!conversa) {
     caixa.value = ''; caixa.style.height = 'auto';
+    atualizarContador();
     bolha('user', texto, new Date().toISOString()); rolarFim();
     if (!token) {
       pensando(true);
@@ -1172,6 +1173,7 @@ async function enviar() {
   limparSugestoes();
   if (MODO_LOCAL.ligado) {
     caixa.value = ''; caixa.style.height = 'auto';
+    atualizarContador();
     bolha('user', texto, new Date().toISOString());
     rolarFim();
     enviarLocal(texto);
@@ -1185,6 +1187,7 @@ async function enviar() {
     }
   } catch (e) {}
   caixa.value = ''; caixa.style.height = 'auto';
+  atualizarContador();
   bolha('user', texto, new Date().toISOString());
   rolarFim();
   $('btn-enviar').disabled = true;

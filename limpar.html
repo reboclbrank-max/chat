@@ -1138,6 +1138,7 @@ async function enviar() {
   salvarRascunhoAtual(caixa.value);
   if (!conversa) {
     caixa.value = ''; caixa.style.height = 'auto';
+    atualizarContador();
     bolha('user', texto, new Date().toISOString()); rolarFim();
     if (!token) {
       bolha('bot', '🖐 Falta UMA coisa: as **mãos** (token do dono neste navegador) — é ele que abre teu caderno de conversa. Abre este link **neste navegador**: ' + location.origin + location.pathname.replace(/[^/]*$/, '') + 'limpar.html — aparece MÃOS LIGADAS, e aí me escreve de novo.', new Date().toISOString(), '🖐'); rolarFim();
@@ -1166,6 +1167,7 @@ async function enviar() {
   limparSugestoes();
   if (MODO_LOCAL.ligado) {
     caixa.value = ''; caixa.style.height = 'auto';
+    atualizarContador();
     bolha('user', texto, new Date().toISOString());
     rolarFim();
     enviarLocal(texto);
@@ -1179,6 +1181,7 @@ async function enviar() {
     }
   } catch (e) {}
   caixa.value = ''; caixa.style.height = 'auto';
+  atualizarContador();
   bolha('user', texto, new Date().toISOString());
   rolarFim();
   $('btn-enviar').disabled = true;
