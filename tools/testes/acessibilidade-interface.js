@@ -63,6 +63,12 @@ testa('console dá nome persistente ao tema pensado sem alterar sua ação', () 
   assert.match(consoleHtml, /\$\('btn-pensar'\)\.onclick = \(\) => \{\n  const t = \$\('pensar-entrada'\)\.value\.trim\(\);\n  if \(t\) mandarOrdem\('pensar: ' \+ t\);\n\};/);
 });
 
+testa('console nomeia a atualização sem alterar a consulta existente', () => {
+  const consoleHtml = fonte('console.html');
+  assert.match(consoleHtml, /<button class="hbtn" id="btn-atualizar" aria-label="Atualizar dados do Console" title="Atualizar agora">🔄<\/button>/);
+  assert.match(consoleHtml, /\$\('btn-atualizar'\)\.onclick = \(\) => \{ carregarEstado\(\); carregarOrdens\(\); \};/);
+});
+
 testa('aviso de acesso em ligar anuncia sem bloquear os controles do cabeçalho', () => {
   const ligar = fontes['ligar.html'];
   assert.match(ligar, /b\.setAttribute\('role','status'\);b\.setAttribute\('aria-live','polite'\)/);
