@@ -72,6 +72,11 @@ testa('links dos cartões mantêm contraste e sublinhado no tema claro sem alter
   assert.match(estilos, /body\.claro \.cartao a\{color:#7a5f14\}/);
 });
 
+testa('foco mantém contraste no tema claro sem alterar o anel escuro', () => {
+  assert.match(estilos, /button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,\[role="button"\]:focus-visible\{outline:3px solid var\(--ouro\);outline-offset:2px\}/);
+  assert.match(estilos, /body\.claro button:focus-visible,body\.claro input:focus-visible,body\.claro textarea:focus-visible,body\.claro select:focus-visible,body\.claro \[role="button"\]:focus-visible\{outline-color:#7a5f14\}/);
+});
+
 testa('console dá nome persistente ao tema pensado sem alterar sua ação', () => {
   const consoleHtml = fonte('console.html');
   assert.match(consoleHtml, /<input id="pensar-entrada" aria-label="Tema para pensar com dois motores e juiz" placeholder="🧠 pensar bem sobre… \(2 motores \+ juiz\)">/);

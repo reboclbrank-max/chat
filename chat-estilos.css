@@ -147,4 +147,6 @@
   .atualizacao-pwa button:disabled{opacity:.55;cursor:not-allowed}
   .visualmente-oculto{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
   button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[role="button"]:focus-visible{outline:3px solid var(--ouro);outline-offset:2px}
+  /* No claro, o mesmo ouro escuro conserva o indicador de foco distinguível. */
+  body.claro button:focus-visible,body.claro input:focus-visible,body.claro textarea:focus-visible,body.claro select:focus-visible,body.claro [role="button"]:focus-visible{outline-color:#7a5f14}
   @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;scroll-behavior:auto !important;transition-duration:.01ms !important}}
