@@ -80,7 +80,7 @@ async function proximoTurno(opcoes = {}) {
 
 // 🔄 v4: o que conta como CÓDIGO do turno (robô de teste, relatórios e README não derrubam o turno)
 const SHA_INICIO = process.env.GITHUB_SHA || '';
-const CODIGO = /^tools\/(email-chat\.js|email-poll\.js|fila-turno\.js|pulso-vigia\.js|falhas-mensagem\.js|turno-liveness\.js|geografia-brasil\.js|olho\.py|ocr-local\.py|transcreve\.py|visao-local\.py|prepara-foto\.py|telegram-chat\.js)$|^\.github\/workflows\/email\.yml$/;
+const CODIGO = /^tools\/(email-chat\.js|email-poll\.js|fila-turno\.js|pulso-vigia\.js|reserva-turno\.js|falhas-mensagem\.js|turno-liveness\.js|geografia-brasil\.js|olho\.py|ocr-local\.py|transcreve\.py|visao-local\.py|prepara-foto\.py|telegram-chat\.js)$|^\.github\/workflows\/email\.yml$/;
 async function codigoMudou() {   // → { arquivos: [código mudado desde que o turno começou], commits: Set(sha dos commits novos) }
   if (!SHA_INICIO) return { arquivos: [], commits: new Set() };
   const r = await api('/compare/' + SHA_INICIO + '...main');

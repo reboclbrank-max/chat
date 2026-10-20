@@ -58,13 +58,12 @@ ok('barreira rápida observa e valida a sintaxe de ferramentas Shell', () => {
   assert.match(rapido, /for f in tools\/testes\/\*\.sh; do bash -n "\$f"; done/);
 });
 
-ok('exame de visão usa por padrão o mesmo modelo normal dos dois turnos de e-mail', () => {
+ok('turno de e-mail usa por padrão o mesmo modelo do exame; reserva leve não carrega visão', () => {
   const email = ler('email.yml');
   const ferramentas = ler('ferramentas.yml');
   const modelos = [...email.matchAll(/^\s*VISAO_MODELO:\s*([^\s#]+)\s*$/gm)].map(x => x[1]);
   const entrada = /inputs:\n\s+visao:\n[\s\S]*?^\s+default:\s*'([^']+)'\s*$/m.exec(ferramentas);
-  assert.equal(modelos.length, 2, 'os dois jobs de e-mail precisam declarar VISAO_MODELO');
-  assert(modelos.every(x => x === modelos[0]), 'turno e reserva usam modelos de visão diferentes');
+  assert.equal(modelos.length, 1, 'somente o leitor longo deve preparar VISAO_MODELO');
   assert(!/^\s*VISAO_PEDIDO:/m.test(email), 'modo de visão não pode mudar sem prova e auditoria correspondente');
   assert(entrada, 'ferramentas.yml sem padrão de visão explícito');
   assert.equal(entrada[1], modelos[0], 'o exame padrão diverge do modelo normal usado pelo turno');
