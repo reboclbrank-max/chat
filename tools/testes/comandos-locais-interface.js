@@ -61,11 +61,25 @@ for (const rota of rotas) {
     assert.match(envio, /return;\s*}\s*(?:if \(!conversa\) return;\s*)?salvarRascunhoAtual/);
   });
 }
-ok('casca PWA v14 inclui o ativo local e a porta de continuidade o observa', () => {
+ok('chip visual oferece o roteiro local sem agendar rascunho ou escrita', () => {
+  for (const rota of rotas) {
+    const html = ler(rota);
+    const catalogo = trecho(html, 'const CHIPS = [', 'function montarChips()');
+    const montagem = trecho(html, 'function montarChips() {', '/* ---------- sino');
+    assert.match(catalogo, /\['🧭 trabalho', 'trabalho:'\]/);
+    const atalho = montagem.indexOf("prefixo === 'trabalho:'");
+    const agendar = montagem.indexOf('agendarSalvarRascunho();');
+    assert(atalho >= 0 && atalho < agendar, rota + ': atalho precisa anteceder rascunho');
+    assert.match(montagem, /typeof window\.respostaComandoOperacionalLocal === 'function'/);
+    assert.match(montagem, /enviar\(\); return;/);
+  }
+});
+
+ok('casca PWA v15 inclui o ativo local e a porta de continuidade o observa', () => {
   const sw = ler('sw.js');
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v14/);
+  assert.match(sw, /rebocl-chat-v15/);
   assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
   assert.match(workflow, /'chat-comandos-locais\.js'/);
   assert.match(workflow, /chat-comandos-locais\.js tools\/testes\/\*\.js/);

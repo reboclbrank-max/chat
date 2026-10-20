@@ -16,7 +16,7 @@ Página de conversa com a **IA gratuita da Rebocl Brank**.
 - **Exporta e importa conversas**: tudo em JSON, tudo em texto (.md), ou só uma conversa — para guardar fora do navegador ou levar para outro aparelho.
 - Por conversa: **renomear**, **fechar**, **reenviar** a última mensagem e **copiar** qualquer mensagem.
 - Dica: escreva `anotar: <texto>` para guardar algo na memória permanente.
-- Escreva `trabalho:` ou `prioridades:` no e-mail, Telegram ou nesta interface para o roteiro local e sanitizado das rotinas da casa, próximo passo seguro e o que — se houver — depende do dono. Na interface ele não cria conversa nem chama a rede; a fotografia técnica dinâmica `status:` continua nos canais de e-mail/Telegram.
+- Escreva `trabalho:` ou `prioridades:` no e-mail, Telegram ou nesta interface para o roteiro local e sanitizado das rotinas da casa, próximo passo seguro e o que — se houver — depende do dono. Nesta interface, o chip `🧭 trabalho` é o atalho local correspondente; ele não cria conversa nem chama a rede. A fotografia técnica dinâmica `status:` continua nos canais de e-mail/Telegram.
 
 ## Manutenção e continuidade
 
