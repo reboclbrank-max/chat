@@ -29,6 +29,12 @@ testa('as quatro rotas mantêm a mesma casca acessível', () => {
   assert.equal(new Set(cascas).size, 1);
 });
 
+testa('ações de cada mensagem permanecem acessíveis por teclado e toque', () => {
+  assert.match(estilos, /\.bolha \.acoes\{position:absolute;top:5px;right:7px;display:block;opacity:0;pointer-events:none\}/);
+  assert.match(estilos, /\.bolha:hover \.acoes,\.bolha:focus-within \.acoes\{opacity:1;pointer-events:auto\}/);
+  assert.match(estilos, /@media \(hover:none\),\(pointer:coarse\)\{\.bolha \.acoes\{opacity:1;pointer-events:auto\}\}/);
+});
+
 for (const rota of rotas) {
   const html = fontes[rota];
   testa(rota + ' não contém IDs duplicados', () => {

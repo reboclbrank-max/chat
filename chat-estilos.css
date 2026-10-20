@@ -116,8 +116,10 @@
   .busca-wrap input{width:100%;background:var(--painel);border:1px solid var(--borda);color:var(--texto);
     border-radius:12px;padding:9px 12px;font:inherit;font-size:13.5px}
   .tag-motor{font-size:10.5px;color:#8a8270;border:1px solid var(--borda);border-radius:6px;padding:0 5px;margin-left:6px;white-space:nowrap}
-  .bolha .acoes{position:absolute;top:5px;right:7px;display:none}
-  .bolha:hover .acoes{display:block}
+  /* Copiar continua discreto com mouse, mas nunca some do teclado ou do toque. */
+  .bolha .acoes{position:absolute;top:5px;right:7px;display:block;opacity:0;pointer-events:none}
+  .bolha:hover .acoes,.bolha:focus-within .acoes{opacity:1;pointer-events:auto}
+  @media (hover:none),(pointer:coarse){.bolha .acoes{opacity:1;pointer-events:auto}}
   .bolha .acoes button{background:var(--painel2);border:1px solid var(--borda);color:var(--texto2);
     border-radius:7px;font-size:11px;padding:2px 6px;cursor:pointer}
   .faixa.offline{background:#2a1414;color:#e0a9a9}
