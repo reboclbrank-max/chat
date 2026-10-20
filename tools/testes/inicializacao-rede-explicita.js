@@ -43,8 +43,18 @@ for (const rota of rotas) {
     assert.match(blocoEstudo(html), /window\.iniciarEstudoAutomatico = function/);
   });
   testa(rota + ' usa comandos explícitos e modo somente-local para controlar automações', () => {
+    const pararVigia = "if (/^!vigia\\s+(?:parar|desligar)\\s*$/.test(m))";
+    const iniciarVigia = "if (m.startsWith('!vigia'))";
+    assert(html.includes(pararVigia));
+    assert(html.indexOf(pararVigia) < html.indexOf(iniciarVigia));
+    assert.match(html, /const estavaAtivo = vigiaAtivoNestaPagina; pararVigiaDeRede\(\);/);
     assert.match(html, /if \(m\.startsWith\('!vigia'\)\) \{ if \(modoSomenteLocalAtivo\(\)\)/);
     assert.match(html, /const ativou = iniciarVigiaDeRede\(\);/);
+    const pararEstudo = "if (/^!estudar\\s+(?:parar|desligar)\\s*$/.test(m))";
+    const iniciarEstudo = "if (m.startsWith('!estudar'))";
+    assert(html.includes(pararEstudo));
+    assert(html.indexOf(pararEstudo) < html.indexOf(iniciarEstudo));
+    assert.match(html, /window\.pararEstudoAutomatico\(\)/);
     assert.match(html, /if \(m\.startsWith\('!estudar'\)\) \{ if \(modoSomenteLocalAtivo\(\)\)/);
     assert.match(html, /window\.iniciarEstudoAutomatico\(te\)/);
     const modo = blocoModo(html);
@@ -76,14 +86,31 @@ testa('a inicialização isolada registra só o listener local do PWA', () => {
   assert.deepEqual(timers, { timeout: 0, interval: 0, fetch: 0, listener: 1 });
 });
 
-testa('catálogo e estudo não criam timer antes da escolha; estudo cria após escolha', () => {
+testa('parar o vigia cancela os agendamentos rastreáveis sem chamar rede', () => {
   const html = fontes['index.html'];
-  const timers = { timeout: 0, interval: 0, estudos: 0 };
+  const limpos = { intervalo: [], timeout: [], catalogos: 0, fetch: 0 };
+  const contexto = {
+    setTimeout: () => 1, setInterval: () => 2,
+    clearTimeout: (id) => { limpos.timeout.push(id); },
+    clearInterval: (id) => { limpos.intervalo.push(id); },
+    fetch: () => { limpos.fetch++; return Promise.resolve({ ok: true }); },
+    modoSomenteLocalAtivo: () => false,
+    window: { addEventListener: () => {}, pararVigiaCatalogos: () => { limpos.catalogos++; } }
+  };
+  vm.createContext(contexto);
+  vm.runInContext(blocoVigia(html) + '\nvigiaTimer = 31; vigiaCanalTimer = 32; vigiaAtivoNestaPagina = true; globalThis.pararTeste = pararVigiaDeRede;', contexto);
+  contexto.pararTeste();
+  assert.deepEqual(limpos, { intervalo: [31], timeout: [32], catalogos: 1, fetch: 0 });
+});
+
+testa('catálogo e estudo não criam timer antes da escolha; estudo cria e para após escolha', () => {
+  const html = fontes['index.html'];
+  const timers = { timeout: 0, interval: 0, estudos: 0, limpos: [] };
   const contexto = {
     Promise, Object, String, Number, Array, JSON, Date, Math,
     setTimeout: () => { timers.timeout++; return 1; },
     setInterval: () => { timers.interval++; return 2; },
-    clearInterval: () => {},
+    clearInterval: (id) => { timers.limpos.push(id); },
     modoSomenteLocalAtivo: () => false,
     localStorage: { getItem: () => null, setItem: () => {} },
     window: {}
@@ -97,6 +124,8 @@ testa('catálogo e estudo não criam timer antes da escolha; estudo cria após e
   assert.equal(contexto.window.iniciarEstudoAutomatico('tema escolhido'), true);
   assert.equal(timers.estudos, 1);
   assert.equal(timers.interval, 1);
+  contexto.window.pararEstudoAutomatico();
+  assert.deepEqual(timers.limpos, [2]);
 });
 
 console.log(`${certos}/${certos + falhas} testes de inicialização com rede explícita passaram`);
