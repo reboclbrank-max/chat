@@ -5,9 +5,11 @@
   --verde:#3ddc84; --vermelho:#e0a9a9;
   }
   body.claro{--fundo:#f4f4f7;--painel:#ffffff;--painel2:#ececf1;--borda:#d5d5df;--texto:#191922;--texto2:#5c5c6a}
-  /* A superfície do cabeçalho continua escura; no claro, o texto acompanha essa superfície. */
+  /* Superfícies fixamente escuras preservam texto claro mesmo quando o resto usa o tema claro. */
   body.claro header{color:#e8e8ee}
   body.claro header p,body.claro .hbtn{color:#9a9aa8}
+  body.claro #cabecalho-conv .titulo{color:#e8e8ee}
+  body.claro #cabecalho-conv button.ler-tudo,body.claro #cabecalho-conv .acao:not(.local-ligado){color:#9a9aa8}
   .composer #contador{font-size:10.5px;color:var(--texto2);align-self:center;min-width:58px;text-align:right}
   .composer #contador.excedido{color:var(--vermelho);font-weight:700}
   .aviso-rascunho,.previsao-arquivo-texto{display:flex;align-items:center;gap:8px;max-width:760px;margin:0 auto 7px;padding:8px 10px;border:1px solid #245c32;border-radius:10px;background:#14281a;color:#a9e0b8;font-size:12px}

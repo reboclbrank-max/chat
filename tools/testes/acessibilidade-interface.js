@@ -67,6 +67,12 @@ testa('cabeçalho de superfície escura mantém texto legível no tema claro sem
   assert.match(estilos, /body\.claro header p,body\.claro \.hbtn\{color:#9a9aa8\}/);
 });
 
+testa('cabeçalho da conversa mantém título e ações neutras legíveis no claro sem apagar o estado local', () => {
+  assert.match(estilos, /body\.claro #cabecalho-conv \.titulo\{color:#e8e8ee\}/);
+  assert.match(estilos, /body\.claro #cabecalho-conv button\.ler-tudo,body\.claro #cabecalho-conv \.acao:not\(\.local-ligado\)\{color:#9a9aa8\}/);
+  assert.doesNotMatch(estilos, /body\.claro #cabecalho-conv \.acao\.local-ligado\{color:/);
+});
+
 testa('campo protegido mantém contraste no tema claro sem alterar o tema escuro', () => {
   assert.match(estilos, /\.cartao input\{width:100%;background:#0b0b0f;border:1px solid var\(--borda\);color:var\(--texto\);/);
   assert.match(estilos, /body\.claro #token\{background:var\(--painel\);border-color:var\(--texto2\);color:var\(--texto\)\}/);
