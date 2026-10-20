@@ -24,17 +24,21 @@ function ambiente(chips) {
     addEventListener(tipo, fn) { (ouvintes[tipo] || (ouvintes[tipo] = [])).push(fn); }
   };
   const resultado = { textContent: '' };
+  const ouvintesCaixa = {};
   const caixa = {
+    scrollLeft: 0,
     querySelectorAll(seletor) {
       assert.equal(seletor, 'button.chip');
       return chips;
-    }
+    },
+    getBoundingClientRect() { return { left: 10, right: 380 }; },
+    addEventListener(tipo, fn) { (ouvintesCaixa[tipo] || (ouvintesCaixa[tipo] = [])).push(fn); }
   };
   const elementos = { 'filtro-chips': entrada, chips: caixa, 'resultado-filtro-chips': resultado };
   const contexto = { window: {}, document: { getElementById: (id) => elementos[id] || null }, String, Array, Object };
   vm.createContext(contexto);
   vm.runInContext(fonte, contexto);
-  return { iniciar: contexto.window.iniciarFiltroChips, entrada, resultado, ouvintes, chips };
+  return { iniciar: contexto.window.iniciarFiltroChips, entrada, resultado, ouvintes, ouvintesCaixa, caixa, chips };
 }
 function disparar(ouvintes, tipo, evento = {}) {
   for (const fn of ouvintes[tipo] || []) fn(evento);
@@ -100,6 +104,25 @@ ok('teclas do filtro não disparam os atalhos globais de envio, nova conversa ou
   }
 });
 
+ok('foco por teclado mantém o chip visível sem acionar comando', () => {
+  const direita = {
+    textContent: '💱 dólar', hidden: false, dataset: { busca: '💱 dólar cambio: USD' },
+    matches(seletor) { return seletor === 'button.chip'; },
+    getBoundingClientRect() { return { left: 354.9, right: 429.5 }; }
+  };
+  const esquerda = {
+    textContent: '🗄 dados', hidden: false, dataset: { busca: '🗄 dados dados:' },
+    matches(seletor) { return seletor === 'button.chip'; },
+    getBoundingClientRect() { return { left: 2.2, right: 75 }; }
+  };
+  const e = ambiente([direita, esquerda]);
+  e.iniciar();
+  disparar(e.ouvintesCaixa, 'focusin', { target: direita });
+  assert.equal(e.caixa.scrollLeft, 50, 'leva a borda direita inteira à visão');
+  disparar(e.ouvintesCaixa, 'focusin', { target: esquerda });
+  assert.equal(e.caixa.scrollLeft, 42, 'também corrige retorno por Shift+Tab');
+});
+
 ok('filtro usa rótulo como fallback se uma casca antiga não tiver metadado de busca', () => {
   const e = ambiente([{ textContent: '🌤 clima', hidden: false }]);
   e.iniciar();
@@ -145,7 +168,7 @@ ok('PWA, workflow e continuidade observam o filtro local', () => {
   const sw = ler('sw.js');
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v19/);
+  assert.match(sw, /rebocl-chat-v20/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);
   assert.match(workflow, /'chat-filtro-chips\.js'/);
   assert.match(workflow, /chat-filtro-chips\.js tools\/testes\/\*\.js/);

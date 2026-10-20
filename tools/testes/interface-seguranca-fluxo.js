@@ -134,7 +134,7 @@ async function principal() {
 
   const sw = fonte('sw.js');
   testa('service worker inclui as quatro rotas e versão nova de cache', () => {
-    assert.match(sw, /rebocl-chat-v19/);
+    assert.match(sw, /rebocl-chat-v20/);
     assert.match(sw, /'\.\/chat-pwa\.js'/);
     assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);

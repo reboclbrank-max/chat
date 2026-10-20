@@ -17,7 +17,7 @@ Página de conversa com a **IA gratuita da Rebocl Brank**.
 - Por conversa: **renomear**, **fechar**, **reenviar** a última mensagem e **copiar** qualquer mensagem.
 - Dica: escreva `anotar: <texto>` para guardar algo na memória permanente.
 - Escreva `trabalho:` ou `prioridades:` no e-mail, Telegram ou nesta interface para o roteiro local e sanitizado das rotinas da casa, próximo passo seguro e o que — se houver — depende do dono. Nesta interface, o chip `🧭 trabalho` é o atalho local correspondente; ele não cria conversa nem chama a rede. A fotografia técnica dinâmica `status:` continua nos canais de e-mail/Telegram.
-- **Procurar comando:** o próprio campo informa **nome ou comando** e filtra os atalhos já existentes, inclusive sem acento (`caca` encontra `caça`) ou pelo texto que o chip vai preencher (`cambio` encontra o atalho `💱 dólar`). Cada chip expõe sua sintaxe somente na dica local e ao leitor de tela. Digitar, limpar com Esc ou usar os atalhos globais dentro desse campo não envia mensagem, não salva rascunho e não cria conversa; só clicar em um chip preserva a ação que ele já tinha.
+- **Procurar comando:** o próprio campo informa **nome ou comando** e filtra os atalhos já existentes, inclusive sem acento (`caca` encontra `caça`) ou pelo texto que o chip vai preencher (`cambio` encontra o atalho `💱 dólar`). Cada chip expõe sua sintaxe somente na dica local e ao leitor de tela; ao navegar por teclado, o atalho focado é trazido à visão. Digitar, limpar com Esc ou usar os atalhos globais dentro desse campo não envia mensagem, não salva rascunho e não cria conversa; só clicar em um chip preserva a ação que ele já tinha.
 
 ## Manutenção e continuidade
 

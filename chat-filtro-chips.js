@@ -33,6 +33,15 @@
 
     entrada.addEventListener('input', aplicar);
     entrada.addEventListener('search', aplicar);
+    // A faixa é horizontal: foco por teclado não pode ficar cortado fora da visão.
+    caixa.addEventListener('focusin', function (evento) {
+      const chip = evento.target;
+      if (!chip || typeof chip.matches !== 'function' || !chip.matches('button.chip')) return;
+      const area = caixa.getBoundingClientRect();
+      const posicao = chip.getBoundingClientRect();
+      if (posicao.left < area.left) caixa.scrollLeft -= Math.ceil(area.left - posicao.left);
+      else if (posicao.right > area.right) caixa.scrollLeft += Math.ceil(posicao.right - area.right);
+    });
     entrada.addEventListener('keydown', function (evento) {
       const tecla = String(evento.key || '');
       const atalhoGlobal = (evento.ctrlKey || evento.metaKey) && (tecla === 'Enter' || tecla.toLowerCase() === 'n');
