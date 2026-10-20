@@ -41,6 +41,7 @@ for (const rota of rotas) {
     assert.doesNotMatch(html, /setTimeout\(\(\) => \{ try \{ if \(!window\.estudoRodando\)/);
     assert.match(blocoCatalogos(html), /window\.iniciarVigiaCatalogos = function/);
     assert.match(blocoCatalogos(html), /window\.atualizarVigiaCatalogos = function/);
+    assert.match(blocoEstudo(html), /const rodarEstudo = \(tema\) =>/);
     assert.match(blocoEstudo(html), /window\.iniciarEstudoAutomatico = function/);
   });
   testa(rota + ' usa comandos explícitos e modo somente-local para controlar automações', () => {
@@ -60,14 +61,23 @@ for (const rota of rotas) {
     assert.match(html, /const ativou = iniciarVigiaDeRede\(\);/);
     assert.doesNotMatch(html, /if \(!ativou\) try \{ window\.vigiaMotores\(\);/);
     const pararEstudo = "if (/^!estudar\\s+(?:parar|desligar)\\s*$/.test(m))";
-    const iniciarEstudo = "if (m.startsWith('!estudar'))";
+    const aleatorioEstudo = "if (/^!estudar\\s+aleat[oó]rio\\s*$/.test(m))";
+    const usoEstudo = "if (/^!estudar\\s*$/.test(m)) return 'ℹ️ uso: !estudar tema para pesquisar um assunto; !estudar aleatorio para escolher um tema; !estudar parar para encerrar.';";
+    const iniciarEstudo = "if (m.startsWith('!estudar '))";
+    const usoPrefixoEstudo = "if (m.startsWith('!estudar')) return 'ℹ️ uso: !estudar tema para pesquisar um assunto; !estudar aleatorio para escolher um tema; !estudar parar para encerrar.';";
     assert(html.includes(pararEstudo));
-    assert(html.indexOf(pararEstudo) < html.indexOf(iniciarEstudo));
+    assert(html.includes(aleatorioEstudo));
+    assert(html.includes(usoEstudo));
+    assert(html.includes(iniciarEstudo));
+    assert(html.includes(usoPrefixoEstudo));
+    assert(html.indexOf(pararEstudo) < html.indexOf(aleatorioEstudo));
+    assert(html.indexOf(aleatorioEstudo) < html.indexOf(usoEstudo));
+    assert(html.indexOf(usoEstudo) < html.indexOf(iniciarEstudo));
+    assert(html.indexOf(iniciarEstudo) < html.indexOf(usoPrefixoEstudo));
     assert.match(html, /window\.pararEstudoAutomatico\(\)/);
-    assert.match(html, /if \(m\.startsWith\('!estudar'\)\) \{ if \(modoSomenteLocalAtivo\(\)\)/);
-    assert.match(html, /window\.iniciarEstudoAutomatico\(te\)/);
+    assert.match(html, /window\.iniciarEstudoAutomatico && window\.iniciarEstudoAutomatico\(te\)/);
     assert.match(html, /'!vigia','!vigia atualizar','!vigia parar','!vigia desligar'/);
-    assert.match(html, /'!estudar ','!estudar parar','!estudar desligar'/);
+    assert.match(html, /'!estudar ','!estudar aleatorio','!estudar parar','!estudar desligar'/);
     const modo = blocoModo(html);
     assert.match(modo, /pararVigiaDeRede\(\)/);
     assert.match(modo, /window\.pararEstudoAutomatico\(\)/);
@@ -138,7 +148,7 @@ testa('atualização manual do catálogo exige vigia ativo e não duplica varred
   assert.equal(estado.fetch, 1);
 });
 
-testa('catálogo e estudo não criam timer antes da escolha; estudo cria e para após escolha', () => {
+testa('catálogo e estudo não criam timer antes da escolha; estudo escolhido não duplica em voo', () => {
   const html = fontes['index.html'];
   const timers = { timeout: 0, interval: 0, estudos: 0, limpos: [] };
   const contexto = {
@@ -155,12 +165,19 @@ testa('catálogo e estudo não criam timer antes da escolha; estudo cria e para 
   vm.runInContext(blocoCatalogos(html) + blocoEstudo(html), contexto);
   assert.equal(timers.timeout, 0);
   assert.equal(timers.interval, 0);
-  contexto.window.estudoDaCasa = async () => { timers.estudos++; return 1; };
+  contexto.window.estudoDaCasa = () => { timers.estudos++; return new Promise(() => {}); };
   assert.equal(contexto.window.iniciarEstudoAutomatico('tema escolhido'), true);
+  assert.equal(timers.estudos, 1);
+  assert.equal(timers.interval, 1);
+  assert.equal(contexto.window.iniciarEstudoAutomatico('outro tema'), false);
   assert.equal(timers.estudos, 1);
   assert.equal(timers.interval, 1);
   contexto.window.pararEstudoAutomatico();
   assert.deepEqual(timers.limpos, [2]);
+  contexto.window.estudoRodando = false;
+  contexto.window.estudoDaCasa = () => { throw new Error('falha local simulada'); };
+  assert.equal(contexto.window.iniciarEstudoAutomatico('tema com falha'), false);
+  assert.equal(contexto.window.estudoRodando, false);
 });
 
 console.log(`${certos}/${certos + falhas} testes de inicialização com rede explícita passaram`);
