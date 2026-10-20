@@ -57,6 +57,11 @@ testa('opt-in de rascunhos preserva alvo nativo mínimo sem mudar a preferência
   assert.match(estilos, /#optin-rascunhos\{width:24px;height:24px;min-width:24px;min-height:24px;flex:0 0 24px;margin:0;padding:0;accent-color:var\(--ouro\)\}/);
 });
 
+testa('texto auxiliar dos cartões mantém contraste no tema claro sem alterar o tema escuro', () => {
+  assert.match(estilos, /\.cartao p,\.cartao li\{font-size:13\.5px;color:#c9c9d4\}/);
+  assert.match(estilos, /body\.claro \.cartao p,body\.claro \.cartao li\{color:var\(--texto2\)\}/);
+});
+
 testa('console dá nome persistente ao tema pensado sem alterar sua ação', () => {
   const consoleHtml = fonte('console.html');
   assert.match(consoleHtml, /<input id="pensar-entrada" aria-label="Tema para pensar com dois motores e juiz" placeholder="🧠 pensar bem sobre… \(2 motores \+ juiz\)">/);
