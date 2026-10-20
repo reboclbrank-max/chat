@@ -50,8 +50,8 @@ for (const rota of rotas) {
       assert.equal(fn(comando.vazia), true, comando.vazia);
       assert.equal(fn(comando.vizinho), false, comando.vizinho);
     }
-    // Não reclassifica jogos, decisão ou consultas externas só porque também há código local.
-    for (const foraDoEscopo of ['!moeda', '!dado 6', '!sorteio ana, bia', '!decidir sim ou não', '!uuid', '!foco', '!qr texto', '!matematica 1+1', '!conta 1+1', '!cor azul', '!falar texto', 'texto normal']) {
+    // Não reclassifica outros utilitários ou consultas externas só porque também há código local.
+    for (const foraDoEscopo of ['!uuid', '!foco', '!qr texto', '!matematica 1+1', '!conta 1+1', '!cor azul', '!falar texto', 'texto normal']) {
       assert.equal(fn(foraDoEscopo), false, foraDoEscopo);
     }
     helpers.push(helper);
