@@ -202,8 +202,10 @@ teste_lista = """<script>
 
     const exportarCompleto = document.getElementById('btn-workspace-exportar-completo');
     const restaurarCompleto = document.getElementById('btn-workspace-restaurar-completo');
+    const desfazerCompleto = document.getElementById('btn-workspace-desfazer-restauracao');
     const entradaCompleta = document.getElementById('workspace-arquivo-completo-importar');
-    if (!exportarCompleto || !restaurarCompleto || !entradaCompleta) throw new Error('controles do arquivo completo do Workspace ausentes');
+    if (!exportarCompleto || !restaurarCompleto || !desfazerCompleto || !entradaCompleta) throw new Error('controles do arquivo completo do Workspace ausentes');
+    if (!desfazerCompleto.disabled) throw new Error('desfazer completo começou ativo sem uma restauração controlada');
     exportarCompleto.click();
     await esperarWorkspace(() => window.__blobsBackupsLocais.length === 3, 'exportar arquivo completo do Workspace');
     const arquivoCompletoExportado = JSON.parse(await window.__blobsBackupsLocais[2].text());
@@ -221,6 +223,7 @@ teste_lista = """<script>
     if (!porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjeto) || !porTexto(document, '#workspace-lista-lixeira .workspace-lixeira-item', nomeArquivoLixeira)) {
       throw new Error('arquivo completo inválido alterou a fixture local');
     }
+    if (!desfazerCompleto.disabled) throw new Error('arquivo completo inválido criou ponto de desfazer');
 
     const projetoPosterior = 'Projeto posterior à fixture';
     novoProjeto.value = projetoPosterior;
@@ -236,6 +239,7 @@ teste_lista = """<script>
     await esperarWorkspace(() => document.getElementById('workspace-status').textContent.includes('cancelada'), 'cancelar restauração completa');
     await esperarWorkspace(() => !exportarCompleto.disabled && !entradaCompleta.disabled, 'liberar controles após cancelamento completo');
     if (!porTexto(document, '#workspace-lista-projetos .workspace-projeto', projetoPosterior)) throw new Error('cancelamento do arquivo completo alterou a fixture local');
+    if (!desfazerCompleto.disabled) throw new Error('cancelamento do arquivo completo criou ponto de desfazer');
     window.confirm = confirmarAnterior;
     const transferenciaFinal = new DataTransfer();
     transferenciaFinal.items.add(new File([JSON.stringify(arquivoCompletoExportado)], 'workspace-completo-fixture-final.json', { type: 'application/json' }));
@@ -251,11 +255,20 @@ teste_lista = """<script>
     if (!document.getElementById('workspace-status').textContent.includes('Arquivo completo restaurado')) {
       throw new Error('restauração completa não informou a substituição local controlada');
     }
+    await esperarWorkspace(() => !desfazerCompleto.disabled, 'liberar ponto temporário após restauração completa');
+    const projetoDepoisDaRestauracao = 'Alteração posterior à restauração';
+    novoProjeto.value = projetoDepoisDaRestauracao;
+    document.getElementById('btn-workspace-criar-projeto').click();
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-projetos .workspace-projeto', projetoDepoisDaRestauracao), 'alterar Workspace depois da restauração completa');
+    desfazerCompleto.click();
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-projetos .workspace-projeto', projetoPosterior) && !porTexto(document, '#workspace-lista-projetos .workspace-projeto', projetoDepoisDaRestauracao) && document.getElementById('workspace-status').textContent.includes('desfeita'), 'desfazer restauração completa para o estado anterior');
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-lixeira .workspace-lixeira-item', nomeArquivoLixeira), 'lixeira no ponto temporário restaurado');
+    if (!desfazerCompleto.disabled) throw new Error('ponto temporário não foi consumido depois de desfazer a restauração');
 
     if (!document.getElementById('workspace-status').textContent.toLowerCase().includes('nada foi enviado')) {
       throw new Error('ciclo local não declarou a ausência de envio');
     }
-    return ' · Workspace criou, versionou, recuperou e rejeitou/cancelou/arquivou/restaurou arquivo, versão e lixeira somente na fixture';
+    return ' · Workspace criou, versionou, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture';
   };
   try {
     await esperar(() => document.querySelectorAll('#lista .conv').length >= 52, 5000, 'lista inicial');
@@ -557,7 +570,7 @@ if rota != 'limpar.html':
 else:
     assert 'Cache limpo.' in conteudo, f'{rota}: aviso de limpeza não está no DOM final'
 if rota == 'index.html':
-    assert 'Workspace criou, versionou, recuperou e rejeitou/cancelou/arquivou/restaurou arquivo, versão e lixeira somente na fixture' in texto, f'{rota}: ciclo Workspace não foi concluído'
+    assert 'Workspace criou, versionou, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture' in texto, f'{rota}: ciclo Workspace não foi concluído'
 print('✔ navegador controlado · padrão · ' + rota + ' · ' + texto)
 PY
 done

@@ -140,9 +140,26 @@ testa('a substituição completa usa uma transação única que limpa e recria s
   assert.doesNotMatch(substituir, /\b(fetch|api\s*\(|localStorage|sessionStorage)\b/);
 });
 
+testa('ponto temporário permite desfazer uma única restauração sem armazenamento persistente', () => {
+  const importar = entre(fonte, 'async function importarArquivoCompleto(file)', '\n  async function desfazerUltimaRestauracaoArquivoCompleto');
+  const desfazer = entre(fonte, 'async function desfazerUltimaRestauracaoArquivoCompleto()', '\n\n  async function exportarWorkspace');
+  assert.match(importar, /const pontoAnterior = await montarArquivoCompleto\(\)/);
+  assert.match(importar, /estado\.reversaoArquivoCompleto = pontoAnterior\.dados/);
+  assert.match(importar, /enquanto esta página permanecer aberta/);
+  assert.doesNotMatch(importar, /\b(localStorage|sessionStorage|fetch|XMLHttpRequest|WebSocket|EventSource|sendBeacon)\b/);
+  assert.match(desfazer, /Desfazer a última restauração completa\?/);
+  assert.match(desfazer, /Alterações feitas depois da restauração serão substituídas/);
+  assert.match(desfazer, /await substituirArquivoCompleto\(ponto\)/);
+  assert.match(desfazer, /estado\.reversaoArquivoCompleto = null/);
+  assert.match(desfazer, /ponto temporário foi consumido/);
+  assert.doesNotMatch(desfazer, /\b(localStorage|sessionStorage|fetch|XMLHttpRequest|WebSocket|EventSource|sendBeacon)\b/);
+});
+
 testa('interface exige ação manual explícita e descreve que a restauração substitui o Workspace', () => {
   assert.match(fonte, /id="btn-workspace-exportar-completo"/);
   assert.match(fonte, /id="btn-workspace-restaurar-completo"/);
+  assert.match(fonte, /id="btn-workspace-desfazer-restauracao"[^>]*disabled/);
+  assert.match(fonte, /ponto de retorno fica apenas nesta página/);
   assert.match(fonte, /id="workspace-arquivo-completo-importar"[^>]*accept="application\/json,\.json"/);
   assert.match(fonte, /function exportarArquivoCompleto\(\)/);
   assert.match(fonte, /function importarArquivoCompleto\(file\)/);

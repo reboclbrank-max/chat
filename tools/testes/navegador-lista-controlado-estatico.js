@@ -101,8 +101,10 @@ ok('exercita recuperação do Workspace e prova o layout em navegador real', () 
   assert.match(texto, /arquivo completo não preservou arquivo, versão e lixeira sintéticos/);
   assert.match(texto, /arquivo completo inválido alterou a fixture local/);
   assert.match(texto, /cancelamento do arquivo completo alterou a fixture local/);
+  assert.match(texto, /Alteração posterior à restauração/);
+  assert.match(texto, /ponto temporário não foi consumido depois de desfazer a restauração/);
   assert.match(texto, /restauração completa não informou a substituição local controlada/);
-  assert.match(texto, /Workspace criou, versionou, recuperou e rejeitou\/cancelou\/arquivou\/restaurou arquivo, versão e lixeira somente na fixture/);
+  assert.match(texto, /Workspace criou, versionou, recuperou e rejeitou\/cancelou\/arquivou\/restaurou\/desfez arquivo, versão e lixeira somente na fixture/);
   assert.match(texto, /somente-layout=1/);
   assert.match(texto, /Workspace não preservou o layout de três painéis no viewport desktop/);
   assert.match(texto, /Workspace não empilhou os painéis no viewport estreito/);

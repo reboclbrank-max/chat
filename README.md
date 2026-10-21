@@ -277,6 +277,12 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Navegador real, fixture local:** `tools/testes/navegador-lista-controlado.sh` passa pelas quatro rotas com API sintética em `127.0.0.1`, perfil e IndexedDB efêmeros, resolução externa bloqueada e token inerte. Ele agora carrega a casca local real, abre o Workspace, cria/versiona e recupera projeto/arquivo sintéticos; também verifica a grade desktop e mobile e descarta as capturas locais ao terminar.
 - **Limites da prova:** é evidência de interface e armazenamento controlados, não conversa, conta, PAT, arquivo do dono, rede produtiva, entrega, uso humano, satisfação, disponibilidade ou SLA. O descarte definitivo continua coberto pelo teste de integridade local; não foi substituído por simulação visual.
 
+## v12.51 — desfazer temporário da recuperação completa (21/10/2026)
+
+- **Retorno imediato, sem esconder outra cópia:** depois de uma restauração completa confirmada, o Workspace guarda em memória, apenas naquela página, o estado que existia imediatamente antes. O botão **Desfazer última restauração** volta uma única vez para esse ponto local; alterações feitas depois da restauração são substituídas somente após nova confirmação.
+- **Limite honesto da reversão:** o ponto não vai para IndexedDB, `localStorage`, rede, GitHub ou arquivo automático. Ele desaparece ao desfazer, atualizar ou fechar o Chat. Para uma cópia duradoura, a pessoa continua usando **Baixar arquivo completo** antes da troca. Arquivo inválido ou restauração cancelada não criam ponto de retorno.
+- **Cobertura controlada:** arquivo completo **6/6**, Workspace **11/11**, integridade **8/8** e corredor multimodal obrigatório **77/77** passaram. Chromium sintético comprovou restauração, rejeição, cancelamento, uma alteração posterior descartada pela reversão e consumo do ponto temporário, sem rede externa. A PWA v74 chega apenas pela atualização escolhida pela pessoa.
+
 ## v12.50 — arquivo completo recuperável do Workspace (21/10/2026)
 
 - **Recuperação que não descarta o histórico por acidente:** o backup normal continua levando apenas projetos e arquivos ativos e os adiciona ao Workspace atual. Dentro do próprio Workspace, **Arquivo completo e recuperação** agora oferece um download separado que inclui arquivos ativos, versões locais e itens recuperáveis da lixeira. É uma escolha manual porque o arquivo pode conter o seu texto de trabalho.

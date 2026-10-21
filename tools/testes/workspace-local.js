@@ -62,6 +62,9 @@ testa('Arquivo completo do Workspace é separado, explícito e cobre recuperaç�
   assert.match(workspace, /function substituirArquivoCompleto\(backup\)/);
   assert.match(workspace, /id=\"btn-workspace-exportar-completo\"/);
   assert.match(workspace, /id=\"btn-workspace-restaurar-completo\"/);
+  assert.match(workspace, /id=\"btn-workspace-desfazer-restauracao\"[^>]*disabled/);
+  assert.match(workspace, /function desfazerUltimaRestauracaoArquivoCompleto\(\)/);
+  assert.match(workspace, /ponto de retorno fica apenas nesta página/);
   assert.match(workspace, /id=\"workspace-arquivo-completo-importar\"/);
   assert.match(workspace, /lixeira e versões locais/);
   assert.match(workspace, /substituirá projetos, arquivos ativos, versões e lixeira deste navegador/);
@@ -112,7 +115,7 @@ testa('as quatro rotas expõem o mesmo acesso e carregam uma só cópia do Works
 });
 
 testa('casca PWA, workflow, corredor e porta de continuidade observam o ativo', () => {
-  assert.match(sw, /rebocl-chat-v73/);
+  assert.match(sw, /rebocl-chat-v74/);
   assert.match(sw, /'\.\/chat-workspace\.js'/);
   assert.match(workflow, /'chat-workspace\.js'/);
   assert.match(workflow, /chat-workspace\.js tools\/testes\/\*\.js/);
@@ -122,7 +125,7 @@ testa('casca PWA, workflow, corredor e porta de continuidade observam o ativo', 
   assert.match(corredor, /'workspace-integridade-local\.js'/);
   assert.match(retrato, /Workspace interno local-first/);
   assert.match(retrato, /rebocl-workspace-local-v1/);
-  assert.match(retrato, /rebocl-chat-v73/);
+  assert.match(retrato, /rebocl-chat-v74/);
 });
 
 testa('porta de continuidade exige retrato quando o ativo local muda', () => {

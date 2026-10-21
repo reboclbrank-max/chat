@@ -40,6 +40,9 @@
     operacaoLixeira: false,
     lixeiraRenderizacao: 0,
     operacaoArquivoCompleto: false,
+    // Ponto apenas em memória: permite desfazer a última restauração completa
+    // nesta página, sem criar cópia persistente ou sincronizada.
+    reversaoArquivoCompleto: null,
     alterado: false,
     edicao: 0,
     salvando: false,
@@ -134,6 +137,7 @@
       'arquivo-completo-invalido': 'O arquivo completo do Workspace está inválido. Nada foi substituído.',
       'arquivo-completo-grande': 'O arquivo completo passa do limite local de 12 MB e não foi aberto.',
       'arquivo-completo-excesso': 'O arquivo completo excede os limites locais de registros recuperáveis.',
+      'sem-reversao-arquivo-completo': 'Não há uma restauração completa temporária para desfazer nesta página.',
       'projeto-ausente': 'O projeto local de origem não está disponível. O arquivo continua na lixeira.',
       'importacao-grande': 'O arquivo de importação passa do limite local permitido.',
       'sem-selecao': 'Selecione um trecho no editor antes de levá-lo ao Chat.',
@@ -1054,6 +1058,10 @@
       tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
     }));
   }
+  function atualizarControleReversaoArquivoCompleto() {
+    if (!elementos || !elementos.desfazerArquivoCompleto) return;
+    elementos.desfazerArquivoCompleto.disabled = estado.operacaoArquivoCompleto || !estado.reversaoArquivoCompleto;
+  }
   function bloquearOperacaoArquivoCompleto(ocupada) {
     estado.operacaoArquivoCompleto = !!ocupada;
     if (!elementos) return;
@@ -1070,6 +1078,7 @@
         delete controle.dataset.workspaceArquivoCompletoAntes;
       }
     });
+    if (!ocupada) atualizarControleReversaoArquivoCompleto();
   }
   function resumoArquivoCompleto(backup) {
     return backup.projetos.length + ' projeto(s), ' + backup.arquivos.length + ' arquivo(s) e ' + backup.revisoes.length + ' versão(ões)';
@@ -1105,14 +1114,45 @@
       }
       if (estado.temporizadorSalvar) { clearTimeout(estado.temporizadorSalvar); estado.temporizadorSalvar = null; }
       estado.edicao++;
+      definirStatus('', 'Criando ponto temporário para desfazer esta restauração…');
+      const pontoAnterior = await montarArquivoCompleto();
       definirStatus('', 'Restaurando o arquivo completo somente neste navegador…');
       await substituirArquivoCompleto(backup);
+      estado.reversaoArquivoCompleto = pontoAnterior.dados;
       estado.alterado = false;
       estado.projetoAtivo = '';
       estado.arquivoAtivo = '';
       await iniciarDados();
       renderTudo();
-      definirStatus('ok', 'Arquivo completo restaurado: ' + resumo + '. Nada foi enviado pelo Chat.');
+      definirStatus('ok', 'Arquivo completo restaurado: ' + resumo + '. Você pode desfazer esta restauração enquanto esta página permanecer aberta. Nada foi enviado pelo Chat.');
+    } catch (e) { mostrarErro(e); }
+    finally { bloquearOperacaoArquivoCompleto(false); }
+  }
+  async function desfazerUltimaRestauracaoArquivoCompleto() {
+    if (estado.operacaoArquivoCompleto) return;
+    if (estado.salvando) {
+      definirStatus('erro', 'Aguarde o salvamento local terminar antes de desfazer a restauração. Nada foi enviado.');
+      return;
+    }
+    const ponto = estado.reversaoArquivoCompleto;
+    if (!ponto) { mostrarErro(erro('sem-reversao-arquivo-completo')); return; }
+    if (!confirm('Desfazer a última restauração completa? O Workspace voltará ao estado anterior desta página. Alterações feitas depois da restauração serão substituídas. Nada será enviado ao Chat, GitHub ou motor.')) {
+      definirStatus('', 'Desfazer a restauração completa foi cancelado. Nada foi alterado.');
+      return;
+    }
+    bloquearOperacaoArquivoCompleto(true);
+    try {
+      if (estado.temporizadorSalvar) { clearTimeout(estado.temporizadorSalvar); estado.temporizadorSalvar = null; }
+      estado.edicao++;
+      definirStatus('', 'Desfazendo a restauração completa somente neste navegador…');
+      await substituirArquivoCompleto(ponto);
+      estado.reversaoArquivoCompleto = null;
+      estado.alterado = false;
+      estado.projetoAtivo = '';
+      estado.arquivoAtivo = '';
+      await iniciarDados();
+      renderTudo();
+      definirStatus('ok', 'Última restauração completa desfeita neste navegador. O ponto temporário foi consumido e nada foi enviado pelo Chat.');
     } catch (e) { mostrarErro(e); }
     finally { bloquearOperacaoArquivoCompleto(false); }
   }
@@ -1354,7 +1394,8 @@
           <details class="workspace-arquivo-completo">
             <summary>Arquivo completo e recuperação</summary>
             <p>Inclui arquivos ativos, versões locais e itens recuperáveis da lixeira. Pode conter seu conteúdo. Restaurar exige escolher o arquivo e substitui todo o Workspace deste navegador; nada é enviado.</p>
-            <div class="workspace-arquivo-completo-acoes"><button type="button" id="btn-workspace-exportar-completo">⇩ Baixar arquivo completo</button><button type="button" id="btn-workspace-restaurar-completo" class="workspace-perigo">↥ Restaurar arquivo completo</button></div>
+            <div class="workspace-arquivo-completo-acoes"><button type="button" id="btn-workspace-exportar-completo">⇩ Baixar arquivo completo</button><button type="button" id="btn-workspace-restaurar-completo" class="workspace-perigo">↥ Restaurar arquivo completo</button><button type="button" id="btn-workspace-desfazer-restauracao" disabled aria-describedby="workspace-aviso-reversao-completa">↶ Desfazer última restauração</button></div>
+            <p id="workspace-aviso-reversao-completa" class="workspace-aviso">Depois de restaurar, o ponto de retorno fica apenas nesta página até você desfazer, atualizar ou fechar o Chat. Baixe um arquivo completo antes se precisar de uma cópia duradoura.</p>
           </details>
           <input id="workspace-arquivo-importar" type="file" accept=".txt,.md,.markdown,.json,.csv,.html,.css,.js,.py,.ts,.tsx,.jsx,.yml,.yaml,.xml,.log,text/plain,application/json,text/markdown,text/csv" class="oculto" aria-label="Importar arquivo de texto ou backup ativo do Workspace">
           <input id="workspace-arquivo-completo-importar" type="file" accept="application/json,.json" class="oculto" aria-label="Escolher arquivo completo JSON para restaurar o Workspace">
@@ -1380,7 +1421,8 @@
       nomeArquivo: raiz.querySelector('#workspace-nome-arquivo'), editor: raiz.querySelector('#workspace-editor'), salvar: raiz.querySelector('#btn-workspace-salvar'), apagarArquivo: raiz.querySelector('#btn-workspace-apagar-arquivo'),
       copiar: raiz.querySelector('#btn-workspace-copiar'), levarAoChat: raiz.querySelector('#btn-workspace-levar-chat'), revisoes: raiz.querySelector('#workspace-revisoes'), listaRevisoes: raiz.querySelector('#workspace-lista-revisoes'),
       tituloEditor: raiz.querySelector('#workspace-titulo-editor'), metaEditor: raiz.querySelector('#workspace-meta-editor'),
-      importar: raiz.querySelector('#workspace-arquivo-importar'), arquivoCompleto: raiz.querySelector('#workspace-arquivo-completo-importar')
+      importar: raiz.querySelector('#workspace-arquivo-importar'), arquivoCompleto: raiz.querySelector('#workspace-arquivo-completo-importar'),
+      desfazerArquivoCompleto: raiz.querySelector('#btn-workspace-desfazer-restauracao')
     };
     botaoAbrir.setAttribute('aria-pressed', 'false');
     botaoAbrir.onclick = () => raiz.classList.contains('oculto') ? abrir() : fechar();
@@ -1400,6 +1442,8 @@
     raiz.querySelector('#btn-workspace-exportar').onclick = exportarWorkspace;
     raiz.querySelector('#btn-workspace-exportar-completo').onclick = exportarArquivoCompleto;
     raiz.querySelector('#btn-workspace-restaurar-completo').onclick = () => elementos.arquivoCompleto.click();
+    elementos.desfazerArquivoCompleto.onclick = desfazerUltimaRestauracaoArquivoCompleto;
+    atualizarControleReversaoArquivoCompleto();
     elementos.arquivoCompleto.onchange = (evento) => {
       const arquivo = evento.target.files && evento.target.files[0];
       evento.target.value = '';
