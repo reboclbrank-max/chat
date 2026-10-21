@@ -97,7 +97,12 @@ ok('exercita coleções locais controladas sem usar conversa ou rede real', () =
 ok('exercita recuperação do Workspace e prova o layout em navegador real', () => {
   assert.match(texto, /const esperarWorkspace/);
   assert.match(texto, /Projeto de fixture controlada/);
-  assert.match(texto, /Workspace criou, versionou e recuperou arquivo\/projeto somente na fixture/);
+  assert.match(texto, /controles do arquivo completo do Workspace ausentes/);
+  assert.match(texto, /arquivo completo não preservou arquivo, versão e lixeira sintéticos/);
+  assert.match(texto, /arquivo completo inválido alterou a fixture local/);
+  assert.match(texto, /cancelamento do arquivo completo alterou a fixture local/);
+  assert.match(texto, /restauração completa não informou a substituição local controlada/);
+  assert.match(texto, /Workspace criou, versionou, recuperou e rejeitou\/cancelou\/arquivou\/restaurou arquivo, versão e lixeira somente na fixture/);
   assert.match(texto, /somente-layout=1/);
   assert.match(texto, /Workspace não preservou o layout de três painéis no viewport desktop/);
   assert.match(texto, /Workspace não empilhou os painéis no viewport estreito/);

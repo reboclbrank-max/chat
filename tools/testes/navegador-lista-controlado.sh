@@ -188,10 +188,74 @@ teste_lista = """<script>
     await esperarWorkspace(() => porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjeto), 'restaurar projeto');
     await esperarWorkspace(() => porTexto(document, '#workspace-lista-arquivos .workspace-arquivo', nomeArquivo), 'arquivo após restaurar projeto');
 
+    const nomeArquivoLixeira = 'apagado-fixture.md';
+    document.getElementById('btn-workspace-novo-arquivo').click();
+    await esperarWorkspace(() => !nome.disabled && !editor.disabled, 'criar arquivo para lixeira do arquivo completo');
+    nome.value = nomeArquivoLixeira;
+    nome.dispatchEvent(new Event('input', { bubbles: true }));
+    editor.value = 'conteúdo sintético recuperável';
+    editor.dispatchEvent(new Event('input', { bubbles: true }));
+    document.getElementById('btn-workspace-salvar').click();
+    await esperarWorkspace(() => document.getElementById('workspace-status').textContent.includes('Arquivo salvo localmente'), 'salvar arquivo para lixeira do arquivo completo');
+    document.getElementById('btn-workspace-apagar-arquivo').click();
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-lixeira .workspace-lixeira-item', nomeArquivoLixeira), 'arquivo recuperável antes do arquivo completo');
+
+    const exportarCompleto = document.getElementById('btn-workspace-exportar-completo');
+    const restaurarCompleto = document.getElementById('btn-workspace-restaurar-completo');
+    const entradaCompleta = document.getElementById('workspace-arquivo-completo-importar');
+    if (!exportarCompleto || !restaurarCompleto || !entradaCompleta) throw new Error('controles do arquivo completo do Workspace ausentes');
+    exportarCompleto.click();
+    await esperarWorkspace(() => window.__blobsBackupsLocais.length === 3, 'exportar arquivo completo do Workspace');
+    const arquivoCompletoExportado = JSON.parse(await window.__blobsBackupsLocais[2].text());
+    if (arquivoCompletoExportado.formato !== 'rebocl-workspace-arquivo-completo' || arquivoCompletoExportado.versao !== 1 || !arquivoCompletoExportado.arquivos.some(arquivo => arquivo.nome === nomeArquivo) || !arquivoCompletoExportado.arquivos.some(arquivo => arquivo.nome === nomeArquivoLixeira && arquivo.lixeiraRaiz === 'arquivo') || !arquivoCompletoExportado.revisoes.length) {
+      throw new Error('arquivo completo não preservou arquivo, versão e lixeira sintéticos');
+    }
+
+    const arquivoCompletoInvalido = new File([JSON.stringify(Object.assign({}, arquivoCompletoExportado, { versao: 2 }))], 'workspace-completo-invalido.json', { type: 'application/json' });
+    const transferenciaInvalida = new DataTransfer();
+    transferenciaInvalida.items.add(arquivoCompletoInvalido);
+    entradaCompleta.files = transferenciaInvalida.files;
+    entradaCompleta.dispatchEvent(new Event('change', { bubbles: true }));
+    await esperarWorkspace(() => document.getElementById('workspace-status').textContent.includes('está inválido'), 'rejeitar arquivo completo inválido antes da escrita');
+    await esperarWorkspace(() => !exportarCompleto.disabled && !entradaCompleta.disabled, 'liberar controles após arquivo completo inválido');
+    if (!porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjeto) || !porTexto(document, '#workspace-lista-lixeira .workspace-lixeira-item', nomeArquivoLixeira)) {
+      throw new Error('arquivo completo inválido alterou a fixture local');
+    }
+
+    const projetoPosterior = 'Projeto posterior à fixture';
+    novoProjeto.value = projetoPosterior;
+    document.getElementById('btn-workspace-criar-projeto').click();
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-projetos .workspace-projeto', projetoPosterior), 'alterar Workspace após exportação completa');
+    const arquivoRestauracaoCompleta = new File([JSON.stringify(arquivoCompletoExportado)], 'workspace-completo-fixture.json', { type: 'application/json' });
+    const transferenciaCompleta = new DataTransfer();
+    transferenciaCompleta.items.add(arquivoRestauracaoCompleta);
+    const confirmarAnterior = window.confirm;
+    window.confirm = () => false;
+    entradaCompleta.files = transferenciaCompleta.files;
+    entradaCompleta.dispatchEvent(new Event('change', { bubbles: true }));
+    await esperarWorkspace(() => document.getElementById('workspace-status').textContent.includes('cancelada'), 'cancelar restauração completa');
+    await esperarWorkspace(() => !exportarCompleto.disabled && !entradaCompleta.disabled, 'liberar controles após cancelamento completo');
+    if (!porTexto(document, '#workspace-lista-projetos .workspace-projeto', projetoPosterior)) throw new Error('cancelamento do arquivo completo alterou a fixture local');
+    window.confirm = confirmarAnterior;
+    const transferenciaFinal = new DataTransfer();
+    transferenciaFinal.items.add(new File([JSON.stringify(arquivoCompletoExportado)], 'workspace-completo-fixture-final.json', { type: 'application/json' }));
+    entradaCompleta.files = transferenciaFinal.files;
+    entradaCompleta.dispatchEvent(new Event('change', { bubbles: true }));
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjeto) && !porTexto(document, '#workspace-lista-projetos .workspace-projeto', projetoPosterior), 'restaurar arquivo completo substituindo a alteração posterior');
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-lixeira .workspace-lixeira-item', nomeArquivoLixeira), 'lixeira restaurada pelo arquivo completo');
+    const projetoRestaurado = porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjeto);
+    projetoRestaurado.click();
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-arquivos .workspace-arquivo', nomeArquivo), 'arquivo ativo restaurado pelo arquivo completo');
+    porTexto(document, '#workspace-lista-arquivos .workspace-arquivo', nomeArquivo).click();
+    await esperarWorkspace(() => editor.value === conteudoFinal && document.querySelectorAll('#workspace-lista-revisoes .workspace-revisao').length >= 1, 'conteúdo e versão restaurados pelo arquivo completo');
+    if (!document.getElementById('workspace-status').textContent.includes('Arquivo completo restaurado')) {
+      throw new Error('restauração completa não informou a substituição local controlada');
+    }
+
     if (!document.getElementById('workspace-status').textContent.toLowerCase().includes('nada foi enviado')) {
       throw new Error('ciclo local não declarou a ausência de envio');
     }
-    return ' · Workspace criou, versionou e recuperou arquivo/projeto somente na fixture';
+    return ' · Workspace criou, versionou, recuperou e rejeitou/cancelou/arquivou/restaurou arquivo, versão e lixeira somente na fixture';
   };
   try {
     await esperar(() => document.querySelectorAll('#lista .conv').length >= 52, 5000, 'lista inicial');
@@ -493,7 +557,7 @@ if rota != 'limpar.html':
 else:
     assert 'Cache limpo.' in conteudo, f'{rota}: aviso de limpeza não está no DOM final'
 if rota == 'index.html':
-    assert 'Workspace criou, versionou e recuperou arquivo/projeto somente na fixture' in texto, f'{rota}: ciclo Workspace não foi concluído'
+    assert 'Workspace criou, versionou, recuperou e rejeitou/cancelou/arquivou/restaurou arquivo, versão e lixeira somente na fixture' in texto, f'{rota}: ciclo Workspace não foi concluído'
 print('✔ navegador controlado · padrão · ' + rota + ' · ' + texto)
 PY
 done

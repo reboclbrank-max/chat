@@ -17,6 +17,16 @@
   const EXTENSOES_TEXTO = /\.(?:txt|md|markdown|json|csv|html|css|js|py|ts|tsx|jsx|yml|yaml|xml|log)$/i;
   const FORMATO_EXPORTACAO = 'rebocl-workspace-local';
   const VERSAO_EXPORTACAO = 1;
+  // O arquivo completo é separado do backup aditivo de arquivos ativos: ele é
+  // opt-in porque inclui versões e itens recuperáveis da lixeira.
+  const FORMATO_ARQUIVO_COMPLETO = 'rebocl-workspace-arquivo-completo';
+  const VERSAO_ARQUIVO_COMPLETO = 1;
+  const LIMITES_ARQUIVO_COMPLETO = Object.freeze({
+    bytes: 12 * 1024 * 1024,
+    projetos: 200,
+    arquivos: 500,
+    revisoes: 4000
+  });
 
   const estado = {
     banco: null,
@@ -29,6 +39,7 @@
     itensLixeira: 0,
     operacaoLixeira: false,
     lixeiraRenderizacao: 0,
+    operacaoArquivoCompleto: false,
     alterado: false,
     edicao: 0,
     salvando: false,
@@ -57,6 +68,30 @@
     delete limpo.lixeiraRaiz;
     delete limpo.lixeiraProjetoId;
     return limpo;
+  }
+  function chavesExatas(valor, chaves) {
+    if (!valor || typeof valor !== 'object' || Array.isArray(valor)) return false;
+    const recebidas = Object.keys(valor).sort();
+    const esperadas = chaves.slice().sort();
+    return recebidas.length === esperadas.length && recebidas.every((chave, indice) => chave === esperadas[indice]);
+  }
+  function textoEstrito(valor, limite) {
+    if (typeof valor !== 'string' || !valor || valor.length > limite) throw erro('arquivo-completo-invalido');
+    return valor;
+  }
+  function idEstrito(valor) {
+    const id = textoEstrito(valor, 180);
+    if (!/^[a-z][a-z0-9_-]*$/i.test(id)) throw erro('arquivo-completo-invalido');
+    return id;
+  }
+  function dataEstrita(valor) {
+    const textoData = textoEstrito(valor, 40);
+    if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(textoData) || new Date(textoData).toISOString() !== textoData) throw erro('arquivo-completo-invalido');
+    return textoData;
+  }
+  function inteiroEstrito(valor) {
+    if (!Number.isSafeInteger(valor) || valor < 1) throw erro('arquivo-completo-invalido');
+    return valor;
   }
   function busca(valor) {
     return texto(valor).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
@@ -96,6 +131,9 @@
       'workspace-cheio': 'O Workspace chegou ao limite local de 5 MB, incluindo histórico e itens recuperáveis. Exporte um backup ou exclua itens definitivamente para liberar espaço.',
       'arquivo-invalido': 'Esse arquivo não tem um formato de texto aceito pelo Workspace.',
       'backup-invalido': 'O backup do Workspace não tem um formato reconhecido.',
+      'arquivo-completo-invalido': 'O arquivo completo do Workspace está inválido. Nada foi substituído.',
+      'arquivo-completo-grande': 'O arquivo completo passa do limite local de 12 MB e não foi aberto.',
+      'arquivo-completo-excesso': 'O arquivo completo excede os limites locais de registros recuperáveis.',
       'projeto-ausente': 'O projeto local de origem não está disponível. O arquivo continua na lixeira.',
       'importacao-grande': 'O arquivo de importação passa do limite local permitido.',
       'sem-selecao': 'Selecione um trecho no editor antes de levá-lo ao Chat.',
@@ -327,8 +365,8 @@
     });
     const projeto = projetoAtivo();
     elementos.nomeProjeto.value = projeto ? projeto.nome : '';
-    elementos.renomearProjeto.disabled = !projeto;
-    elementos.apagarProjeto.disabled = !projeto;
+    elementos.renomearProjeto.disabled = !projeto || estado.operacaoArquivoCompleto;
+    elementos.apagarProjeto.disabled = !projeto || estado.operacaoArquivoCompleto;
   }
   function renderArquivos() {
     if (!elementos) return;
@@ -360,12 +398,13 @@
   }
   function atualizarControlesEditor(ativo) {
     if (!elementos) return;
-    elementos.nomeArquivo.disabled = !ativo;
-    elementos.editor.disabled = !ativo;
-    elementos.salvar.disabled = !ativo || estado.salvando;
-    elementos.apagarArquivo.disabled = !ativo || estado.salvando;
-    elementos.copiar.disabled = !ativo || estado.salvando;
-    elementos.levarAoChat.disabled = !ativo || estado.salvando;
+    const bloqueado = estado.operacaoArquivoCompleto;
+    elementos.nomeArquivo.disabled = !ativo || bloqueado;
+    elementos.editor.disabled = !ativo || bloqueado;
+    elementos.salvar.disabled = !ativo || estado.salvando || bloqueado;
+    elementos.apagarArquivo.disabled = !ativo || estado.salvando || bloqueado;
+    elementos.copiar.disabled = !ativo || estado.salvando || bloqueado;
+    elementos.levarAoChat.disabled = !ativo || estado.salvando || bloqueado;
   }
   function renderEditor() {
     if (!elementos) return;
@@ -421,7 +460,7 @@
       ].sort((a, b) => texto(b.item.lixeiraEm).localeCompare(texto(a.item.lixeiraEm)) || texto(a.item.nome).localeCompare(texto(b.item.nome), 'pt-BR'));
       estado.itensLixeira = raizes.length;
       elementos.contadorLixeira.textContent = raizes.length ? '(' + raizes.length + ')' : '(vazia)';
-      elementos.esvaziarLixeira.disabled = !raizes.length || estado.operacaoLixeira;
+      elementos.esvaziarLixeira.disabled = !raizes.length || estado.operacaoLixeira || estado.operacaoArquivoCompleto;
       limpar(elementos.listaLixeira);
       if (!raizes.length) {
         const vazio = document.createElement('p');
@@ -442,10 +481,10 @@
         const acoes = document.createElement('div');
         acoes.className = 'workspace-lixeira-acoes';
         const restaurar = botao('Restaurar', '', 'Restaurar ' + (tipo === 'projeto' ? 'projeto' : 'arquivo') + ' local ' + item.nome);
-        restaurar.disabled = estado.operacaoLixeira;
+        restaurar.disabled = estado.operacaoLixeira || estado.operacaoArquivoCompleto;
         restaurar.onclick = () => restaurarDaLixeira(tipo, item.id);
         const descartar = botao('Excluir de vez', 'workspace-perigo', 'Excluir definitivamente ' + (tipo === 'projeto' ? 'projeto' : 'arquivo') + ' local ' + item.nome);
-        descartar.disabled = estado.operacaoLixeira;
+        descartar.disabled = estado.operacaoLixeira || estado.operacaoArquivoCompleto;
         descartar.onclick = () => descartarDaLixeira(tipo, item.id);
         acoes.append(restaurar, descartar);
         linha.append(textoItem, acoes);
@@ -462,6 +501,7 @@
     renderEditor();
     atualizarResumo();
     renderLixeira();
+    if (estado.operacaoArquivoCompleto) bloquearOperacaoArquivoCompleto(true);
   }
 
   async function iniciarDados() {
@@ -845,6 +885,238 @@
     link.click();
     setTimeout(() => URL.revokeObjectURL(link.href), 4000);
   }
+  function marcaLixeiraParaArquivoCompleto(registro) {
+    return {
+      lixeiraEm: registro && registro.lixeiraEm ? texto(registro.lixeiraEm) : null,
+      lixeiraRaiz: registro && (registro.lixeiraRaiz === 'projeto' || registro.lixeiraRaiz === 'arquivo') ? registro.lixeiraRaiz : null,
+      lixeiraProjetoId: registro && registro.lixeiraProjetoId ? texto(registro.lixeiraProjetoId) : null
+    };
+  }
+  function normalizarMarcaLixeiraArquivoCompleto(registro, tipo, id, projetoId) {
+    const lixeiraEm = registro.lixeiraEm;
+    const lixeiraRaiz = registro.lixeiraRaiz;
+    const lixeiraProjetoId = registro.lixeiraProjetoId;
+    if (lixeiraEm === null && lixeiraRaiz === null && lixeiraProjetoId === null) {
+      return { lixeiraEm: null, lixeiraRaiz: null, lixeiraProjetoId: null };
+    }
+    const quando = dataEstrita(lixeiraEm);
+    const raiz = lixeiraRaiz;
+    const dono = textoEstrito(lixeiraProjetoId, 180);
+    if (tipo === 'projeto') {
+      if (raiz !== 'projeto' || dono !== id) throw erro('arquivo-completo-invalido');
+    } else if ((raiz !== null && raiz !== 'arquivo') || dono !== projetoId) {
+      throw erro('arquivo-completo-invalido');
+    }
+    return { lixeiraEm: quando, lixeiraRaiz: raiz, lixeiraProjetoId: dono };
+  }
+  function validarArquivoCompleto(dados, tamanho) {
+    try {
+      const chavesRaiz = ['formato', 'versao', 'exportadoEm', 'projetos', 'arquivos', 'revisoes'];
+      const chavesProjeto = ['id', 'nome', 'criadoEm', 'atualizadoEm', 'lixeiraEm', 'lixeiraRaiz', 'lixeiraProjetoId'];
+      const chavesArquivo = ['id', 'projetoId', 'nome', 'conteudo', 'bytes', 'versao', 'criadoEm', 'atualizadoEm', 'lixeiraEm', 'lixeiraRaiz', 'lixeiraProjetoId'];
+      const chavesRevisao = ['id', 'arquivoId', 'conteudo', 'bytes', 'quando', 'versao'];
+      const tamanhoNumero = tamanho;
+      if (!Number.isSafeInteger(tamanhoNumero) || tamanhoNumero < 0) throw erro('arquivo-completo-invalido');
+      if (tamanhoNumero > LIMITES_ARQUIVO_COMPLETO.bytes) throw erro('arquivo-completo-grande');
+      if (!chavesExatas(dados, chavesRaiz) || dados.formato !== FORMATO_ARQUIVO_COMPLETO || dados.versao !== VERSAO_ARQUIVO_COMPLETO) throw erro('arquivo-completo-invalido');
+      const exportadoEm = dataEstrita(dados.exportadoEm);
+      if (!Array.isArray(dados.projetos) || !Array.isArray(dados.arquivos) || !Array.isArray(dados.revisoes)) throw erro('arquivo-completo-invalido');
+      if (dados.projetos.length > LIMITES_ARQUIVO_COMPLETO.projetos || dados.arquivos.length > LIMITES_ARQUIVO_COMPLETO.arquivos || dados.revisoes.length > LIMITES_ARQUIVO_COMPLETO.revisoes) throw erro('arquivo-completo-excesso');
+      const idsProjetos = new Set();
+      const nomesProjetosAtivos = new Set();
+      const projetos = dados.projetos.map((projeto) => {
+        if (!chavesExatas(projeto, chavesProjeto)) throw erro('arquivo-completo-invalido');
+        const id = idEstrito(projeto.id);
+        const nome = textoEstrito(projeto.nome, 50);
+        if (nomeSeguro(nome, 50, '') !== nome || idsProjetos.has(id)) throw erro('arquivo-completo-invalido');
+        const marca = normalizarMarcaLixeiraArquivoCompleto(projeto, 'projeto', id, id);
+        if (!marca.lixeiraEm) {
+          const chaveNome = busca(nome);
+          if (nomesProjetosAtivos.has(chaveNome)) throw erro('arquivo-completo-invalido');
+          nomesProjetosAtivos.add(chaveNome);
+        }
+        idsProjetos.add(id);
+        return Object.assign({ id, nome, criadoEm: dataEstrita(projeto.criadoEm), atualizadoEm: dataEstrita(projeto.atualizadoEm) }, marca);
+      });
+      const porProjeto = new Map(projetos.map((projeto) => [projeto.id, projeto]));
+      const idsArquivos = new Set();
+      const nomesArquivosAtivos = new Map();
+      let arquivosAtivos = 0;
+      const arquivos = dados.arquivos.map((arquivo) => {
+        if (!chavesExatas(arquivo, chavesArquivo)) throw erro('arquivo-completo-invalido');
+        const id = idEstrito(arquivo.id);
+        const projetoId = idEstrito(arquivo.projetoId);
+        const projeto = porProjeto.get(projetoId);
+        const nome = textoEstrito(arquivo.nome, 80);
+        const conteudo = arquivo.conteudo;
+        if (!projeto || idsArquivos.has(id) || typeof conteudo !== 'string' || nomeArquivoSeguro(nome) !== nome) throw erro('arquivo-completo-invalido');
+        const tamanhoConteudo = bytes(conteudo);
+        if (!Number.isSafeInteger(arquivo.bytes) || arquivo.bytes !== tamanhoConteudo || tamanhoConteudo > LIMITES.arquivoBytes) throw erro('arquivo-completo-invalido');
+        const marca = normalizarMarcaLixeiraArquivoCompleto(arquivo, 'arquivo', id, projetoId);
+        if (marca.lixeiraEm && marca.lixeiraRaiz === null && (!projeto.lixeiraEm || marca.lixeiraEm !== projeto.lixeiraEm)) throw erro('arquivo-completo-invalido');
+        if (marca.lixeiraEm && marca.lixeiraRaiz === 'arquivo' && projeto.lixeiraEm) throw erro('arquivo-completo-invalido');
+        if (!marca.lixeiraEm && projeto.lixeiraEm) throw erro('arquivo-completo-invalido');
+        if (!marca.lixeiraEm) {
+          arquivosAtivos++;
+          const nomes = nomesArquivosAtivos.get(projetoId) || new Set();
+          const chaveNome = busca(nome);
+          if (nomes.has(chaveNome)) throw erro('arquivo-completo-invalido');
+          nomes.add(chaveNome);
+          nomesArquivosAtivos.set(projetoId, nomes);
+        }
+        idsArquivos.add(id);
+        return Object.assign({ id, projetoId, nome, conteudo, bytes: tamanhoConteudo, versao: inteiroEstrito(arquivo.versao), criadoEm: dataEstrita(arquivo.criadoEm), atualizadoEm: dataEstrita(arquivo.atualizadoEm) }, marca);
+      });
+      const projetosAtivos = projetos.filter((projeto) => !projeto.lixeiraEm).length;
+      if (!projetosAtivos) throw erro('arquivo-completo-invalido');
+      if (projetosAtivos > LIMITES.projetos || arquivosAtivos > LIMITES.arquivos) throw erro('arquivo-completo-excesso');
+      const porArquivo = new Map(arquivos.map((arquivo) => [arquivo.id, arquivo]));
+      const idsRevisoes = new Set();
+      const revisoesPorArquivo = new Map();
+      const versoesRevisaoPorArquivo = new Map();
+      const revisoes = dados.revisoes.map((revisao) => {
+        if (!chavesExatas(revisao, chavesRevisao)) throw erro('arquivo-completo-invalido');
+        const id = idEstrito(revisao.id);
+        const arquivoId = idEstrito(revisao.arquivoId);
+        const conteudo = revisao.conteudo;
+        const arquivo = porArquivo.get(arquivoId);
+        if (!arquivo || idsRevisoes.has(id) || typeof conteudo !== 'string') throw erro('arquivo-completo-invalido');
+        const tamanhoConteudo = bytes(conteudo);
+        if (!Number.isSafeInteger(revisao.bytes) || revisao.bytes !== tamanhoConteudo || tamanhoConteudo > LIMITES.arquivoBytes) throw erro('arquivo-completo-invalido');
+        const versao = inteiroEstrito(revisao.versao);
+        const versoesArquivo = versoesRevisaoPorArquivo.get(arquivoId) || new Set();
+        if (versao >= arquivo.versao || versoesArquivo.has(versao)) throw erro('arquivo-completo-invalido');
+        versoesArquivo.add(versao);
+        versoesRevisaoPorArquivo.set(arquivoId, versoesArquivo);
+        const totalArquivo = (revisoesPorArquivo.get(arquivoId) || 0) + 1;
+        if (totalArquivo > LIMITES.revisoesPorArquivo) throw erro('arquivo-completo-excesso');
+        revisoesPorArquivo.set(arquivoId, totalArquivo);
+        idsRevisoes.add(id);
+        return { id, arquivoId, conteudo, bytes: tamanhoConteudo, quando: dataEstrita(revisao.quando), versao };
+      });
+      const total = arquivos.reduce((soma, arquivo) => soma + arquivo.bytes, 0) + revisoes.reduce((soma, revisao) => soma + revisao.bytes, 0);
+      if (total > LIMITES.totalBytes) throw erro('workspace-cheio');
+      return { formato: FORMATO_ARQUIVO_COMPLETO, versao: VERSAO_ARQUIVO_COMPLETO, exportadoEm, projetos, arquivos, revisoes };
+    } catch (causa) {
+      if (causa && ['arquivo-completo-invalido', 'arquivo-completo-grande', 'arquivo-completo-excesso', 'workspace-cheio'].includes(causa.codigoWorkspace)) throw causa;
+      throw erro('arquivo-completo-invalido');
+    }
+  }
+  function registroArquivoCompletoParaBanco(registro) {
+    const salvo = Object.assign({}, registro);
+    if (!salvo.lixeiraEm) {
+      delete salvo.lixeiraEm;
+      delete salvo.lixeiraRaiz;
+      delete salvo.lixeiraProjetoId;
+    } else if (salvo.lixeiraRaiz === null) {
+      salvo.lixeiraRaiz = '';
+    }
+    return salvo;
+  }
+  async function montarArquivoCompleto() {
+    const [projetos, arquivos, revisoes] = await Promise.all([lerTodos(LOJAS.projetos), lerTodos(LOJAS.arquivos), lerTodos(LOJAS.revisoes)]);
+    const dados = {
+      formato: FORMATO_ARQUIVO_COMPLETO,
+      versao: VERSAO_ARQUIVO_COMPLETO,
+      exportadoEm: agora(),
+      projetos: projetos.sort((a, b) => texto(a.id).localeCompare(texto(b.id))).map((projeto) => Object.assign({
+        id: texto(projeto.id), nome: texto(projeto.nome), criadoEm: texto(projeto.criadoEm), atualizadoEm: texto(projeto.atualizadoEm)
+      }, marcaLixeiraParaArquivoCompleto(projeto))),
+      arquivos: arquivos.sort((a, b) => texto(a.id).localeCompare(texto(b.id))).map((arquivo) => Object.assign({
+        id: texto(arquivo.id), projetoId: texto(arquivo.projetoId), nome: texto(arquivo.nome), conteudo: texto(arquivo.conteudo), bytes: bytes(arquivo.conteudo), versao: Number(arquivo.versao), criadoEm: texto(arquivo.criadoEm), atualizadoEm: texto(arquivo.atualizadoEm)
+      }, marcaLixeiraParaArquivoCompleto(arquivo))),
+      revisoes: revisoes.sort((a, b) => texto(a.id).localeCompare(texto(b.id))).map((revisao) => ({
+        id: texto(revisao.id), arquivoId: texto(revisao.arquivoId), conteudo: texto(revisao.conteudo), bytes: bytes(revisao.conteudo), quando: texto(revisao.quando), versao: Number(revisao.versao)
+      }))
+    };
+    const textoArquivo = JSON.stringify(dados);
+    const valido = validarArquivoCompleto(dados, bytes(textoArquivo));
+    const serializado = JSON.stringify(valido);
+    if (bytes(serializado) > LIMITES_ARQUIVO_COMPLETO.bytes) throw erro('arquivo-completo-grande');
+    return { dados: valido, texto: serializado };
+  }
+  function substituirArquivoCompleto(backup) {
+    return abrirBanco().then((banco) => new Promise((resolve, reject) => {
+      const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos, LOJAS.revisoes, LOJAS.meta], 'readwrite');
+      const projetos = tx.objectStore(LOJAS.projetos);
+      const arquivos = tx.objectStore(LOJAS.arquivos);
+      const revisoes = tx.objectStore(LOJAS.revisoes);
+      const meta = tx.objectStore(LOJAS.meta);
+      projetos.clear();
+      arquivos.clear();
+      revisoes.clear();
+      meta.clear();
+      backup.projetos.forEach((projeto) => projetos.put(registroArquivoCompletoParaBanco(projeto)));
+      backup.arquivos.forEach((arquivo) => arquivos.put(registroArquivoCompletoParaBanco(arquivo)));
+      backup.revisoes.forEach((revisao) => revisoes.put(Object.assign({}, revisao)));
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
+      tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
+    }));
+  }
+  function bloquearOperacaoArquivoCompleto(ocupada) {
+    estado.operacaoArquivoCompleto = !!ocupada;
+    if (!elementos) return;
+    elementos.raiz.setAttribute('aria-busy', ocupada ? 'true' : 'false');
+    const controles = [...elementos.raiz.querySelectorAll('button,input,textarea'), elementos.botaoAbrir].filter(Boolean);
+    controles.forEach((controle) => {
+      if (ocupada) {
+        if (!Object.prototype.hasOwnProperty.call(controle.dataset, 'workspaceArquivoCompletoAntes')) {
+          controle.dataset.workspaceArquivoCompletoAntes = controle.disabled ? '1' : '0';
+        }
+        controle.disabled = true;
+      } else if (Object.prototype.hasOwnProperty.call(controle.dataset, 'workspaceArquivoCompletoAntes')) {
+        controle.disabled = controle.dataset.workspaceArquivoCompletoAntes === '1';
+        delete controle.dataset.workspaceArquivoCompletoAntes;
+      }
+    });
+  }
+  function resumoArquivoCompleto(backup) {
+    return backup.projetos.length + ' projeto(s), ' + backup.arquivos.length + ' arquivo(s) e ' + backup.revisoes.length + ' versão(ões)';
+  }
+  async function exportarArquivoCompleto() {
+    if (estado.operacaoArquivoCompleto) return;
+    bloquearOperacaoArquivoCompleto(true);
+    try {
+      if (estado.alterado && !(await salvarArquivoAtual('automatico'))) return;
+      definirStatus('', 'Preparando o arquivo completo local do Workspace…');
+      const arquivo = await montarArquivoCompleto();
+      baixar(arquivo.texto, 'workspace-completo-rebocl-' + new Date().toISOString().slice(0, 10) + '.json', 'application/json');
+      definirStatus('ok', 'Arquivo completo de ' + resumoArquivoCompleto(arquivo.dados) + ' gerado neste aparelho. Ele inclui lixeira e versões locais e não foi enviado pelo Chat.');
+    } catch (e) { mostrarErro(e); }
+    finally { bloquearOperacaoArquivoCompleto(false); }
+  }
+  async function importarArquivoCompleto(file) {
+    if (estado.operacaoArquivoCompleto) return;
+    bloquearOperacaoArquivoCompleto(true);
+    try {
+      if (estado.alterado && !(await salvarArquivoAtual('automatico'))) return;
+      const tamanho = Number(file && file.size);
+      if (!file || typeof file.text !== 'function' || !Number.isFinite(tamanho) || tamanho < 0) throw erro('arquivo-completo-invalido');
+      if (tamanho > LIMITES_ARQUIVO_COMPLETO.bytes) throw erro('arquivo-completo-grande');
+      definirStatus('', 'Lendo e conferindo o arquivo completo neste navegador…');
+      const conteudo = await file.text();
+      if (bytes(conteudo) > LIMITES_ARQUIVO_COMPLETO.bytes) throw erro('arquivo-completo-grande');
+      const backup = validarArquivoCompleto(JSON.parse(conteudo), bytes(conteudo));
+      const resumo = resumoArquivoCompleto(backup);
+      if (!confirm('Restaurar o arquivo completo com ' + resumo + '? Isso substituirá projetos, arquivos ativos, versões e lixeira deste navegador. Nada será enviado ao Chat, GitHub ou motor.')) {
+        definirStatus('', 'Restauração do arquivo completo cancelada. Nada foi alterado.');
+        return;
+      }
+      if (estado.temporizadorSalvar) { clearTimeout(estado.temporizadorSalvar); estado.temporizadorSalvar = null; }
+      estado.edicao++;
+      definirStatus('', 'Restaurando o arquivo completo somente neste navegador…');
+      await substituirArquivoCompleto(backup);
+      estado.alterado = false;
+      estado.projetoAtivo = '';
+      estado.arquivoAtivo = '';
+      await iniciarDados();
+      renderTudo();
+      definirStatus('ok', 'Arquivo completo restaurado: ' + resumo + '. Nada foi enviado pelo Chat.');
+    } catch (e) { mostrarErro(e); }
+    finally { bloquearOperacaoArquivoCompleto(false); }
+  }
+
   async function exportarWorkspace() {
     try {
       if (estado.alterado && !(await salvarArquivoAtual('automatico'))) return;
@@ -1078,8 +1350,14 @@
           <label class="visualmente-oculto" for="workspace-busca-arquivos">Buscar arquivos locais</label><input id="workspace-busca-arquivos" type="search" placeholder="Buscar nome ou conteúdo…" autocomplete="off">
           <div class="workspace-acoes-arquivos"><button type="button" id="btn-workspace-novo-arquivo">＋ Novo</button><button type="button" id="btn-workspace-importar">⇪ Importar</button></div>
           <div id="workspace-lista-arquivos" class="workspace-lista" role="group" aria-label="Lista de arquivos"></div>
-          <button type="button" id="btn-workspace-exportar" class="workspace-secundario">⇩ Exportar Workspace</button>
-          <input id="workspace-arquivo-importar" type="file" accept=".txt,.md,.markdown,.json,.csv,.html,.css,.js,.py,.ts,.tsx,.jsx,.yml,.yaml,.xml,.log,text/plain,application/json,text/markdown,text/csv" class="oculto" aria-label="Importar arquivo de texto ou backup do Workspace">
+          <button type="button" id="btn-workspace-exportar" class="workspace-secundario">⇩ Exportar Workspace ativo</button>
+          <details class="workspace-arquivo-completo">
+            <summary>Arquivo completo e recuperação</summary>
+            <p>Inclui arquivos ativos, versões locais e itens recuperáveis da lixeira. Pode conter seu conteúdo. Restaurar exige escolher o arquivo e substitui todo o Workspace deste navegador; nada é enviado.</p>
+            <div class="workspace-arquivo-completo-acoes"><button type="button" id="btn-workspace-exportar-completo">⇩ Baixar arquivo completo</button><button type="button" id="btn-workspace-restaurar-completo" class="workspace-perigo">↥ Restaurar arquivo completo</button></div>
+          </details>
+          <input id="workspace-arquivo-importar" type="file" accept=".txt,.md,.markdown,.json,.csv,.html,.css,.js,.py,.ts,.tsx,.jsx,.yml,.yaml,.xml,.log,text/plain,application/json,text/markdown,text/csv" class="oculto" aria-label="Importar arquivo de texto ou backup ativo do Workspace">
+          <input id="workspace-arquivo-completo-importar" type="file" accept="application/json,.json" class="oculto" aria-label="Escolher arquivo completo JSON para restaurar o Workspace">
         </aside>
         <section class="workspace-editor" aria-label="Editor de arquivo local">
           <div class="workspace-editor-cabecalho"><div><h3 id="workspace-titulo-editor">Escolha ou crie um arquivo</h3><p id="workspace-meta-editor"></p></div><button type="button" id="btn-workspace-salvar">Salvar localmente</button></div>
@@ -1101,7 +1379,8 @@
       buscaArquivos: raiz.querySelector('#workspace-busca-arquivos'), contadorArquivos: raiz.querySelector('#workspace-contador-arquivos'), listaArquivos: raiz.querySelector('#workspace-lista-arquivos'),
       nomeArquivo: raiz.querySelector('#workspace-nome-arquivo'), editor: raiz.querySelector('#workspace-editor'), salvar: raiz.querySelector('#btn-workspace-salvar'), apagarArquivo: raiz.querySelector('#btn-workspace-apagar-arquivo'),
       copiar: raiz.querySelector('#btn-workspace-copiar'), levarAoChat: raiz.querySelector('#btn-workspace-levar-chat'), revisoes: raiz.querySelector('#workspace-revisoes'), listaRevisoes: raiz.querySelector('#workspace-lista-revisoes'),
-      tituloEditor: raiz.querySelector('#workspace-titulo-editor'), metaEditor: raiz.querySelector('#workspace-meta-editor'), importar: raiz.querySelector('#workspace-arquivo-importar')
+      tituloEditor: raiz.querySelector('#workspace-titulo-editor'), metaEditor: raiz.querySelector('#workspace-meta-editor'),
+      importar: raiz.querySelector('#workspace-arquivo-importar'), arquivoCompleto: raiz.querySelector('#workspace-arquivo-completo-importar')
     };
     botaoAbrir.setAttribute('aria-pressed', 'false');
     botaoAbrir.onclick = () => raiz.classList.contains('oculto') ? abrir() : fechar();
@@ -1119,6 +1398,13 @@
       if (arquivo) importarArquivo(arquivo);
     };
     raiz.querySelector('#btn-workspace-exportar').onclick = exportarWorkspace;
+    raiz.querySelector('#btn-workspace-exportar-completo').onclick = exportarArquivoCompleto;
+    raiz.querySelector('#btn-workspace-restaurar-completo').onclick = () => elementos.arquivoCompleto.click();
+    elementos.arquivoCompleto.onchange = (evento) => {
+      const arquivo = evento.target.files && evento.target.files[0];
+      evento.target.value = '';
+      if (arquivo) importarArquivoCompleto(arquivo);
+    };
     elementos.buscaArquivos.addEventListener('input', renderArquivos);
     elementos.nomeArquivo.addEventListener('input', marcarAlterado);
     elementos.editor.addEventListener('input', marcarAlterado);
@@ -1127,13 +1413,24 @@
     elementos.copiar.onclick = copiarArquivo;
     elementos.levarAoChat.onclick = levarSelecaoAoChat;
     document.addEventListener('keydown', (evento) => {
-      if (!elementos || elementos.raiz.classList.contains('oculto')) return;
+      if (!elementos || elementos.raiz.classList.contains('oculto') || estado.operacaoArquivoCompleto) return;
       if (evento.key === 'Escape') { evento.preventDefault(); evento.stopImmediatePropagation(); fechar(); return; }
       if ((evento.ctrlKey || evento.metaKey) && evento.key.toLowerCase() === 's') { evento.preventDefault(); salvarArquivoAtual('manual'); }
     }, true);
   }
 
-  window.ReboclWorkspace = Object.freeze({ abrir, fechar, ocultarParaNavegacao, limites: Object.freeze({ projetos: LIMITES.projetos, arquivos: LIMITES.arquivos, arquivoBytes: LIMITES.arquivoBytes, totalBytes: LIMITES.totalBytes }) });
+  window.ReboclWorkspace = Object.freeze({
+    abrir,
+    fechar,
+    ocultarParaNavegacao,
+    limites: Object.freeze({ projetos: LIMITES.projetos, arquivos: LIMITES.arquivos, arquivoBytes: LIMITES.arquivoBytes, totalBytes: LIMITES.totalBytes }),
+    arquivoCompleto: Object.freeze({
+      formato: FORMATO_ARQUIVO_COMPLETO,
+      versao: VERSAO_ARQUIVO_COMPLETO,
+      limites: Object.freeze(Object.assign({}, LIMITES_ARQUIVO_COMPLETO)),
+      validar: validarArquivoCompleto
+    })
+  });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', montarInterface, { once: true });
   else montarInterface();
 })();

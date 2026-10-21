@@ -55,6 +55,18 @@ testa('Workspace limita dados locais e mantém exportação/importação validad
   assert.match(workspace, /incluindo histórico e itens recuperáveis/);
 });
 
+testa('Arquivo completo do Workspace é separado, explícito e cobre recuperação de versões e lixeira', () => {
+  assert.match(workspace, /const FORMATO_ARQUIVO_COMPLETO = 'rebocl-workspace-arquivo-completo'/);
+  assert.match(workspace, /bytes: 12 \* 1024 \* 1024/);
+  assert.match(workspace, /function validarArquivoCompleto\(dados, tamanho\)/);
+  assert.match(workspace, /function substituirArquivoCompleto\(backup\)/);
+  assert.match(workspace, /id=\"btn-workspace-exportar-completo\"/);
+  assert.match(workspace, /id=\"btn-workspace-restaurar-completo\"/);
+  assert.match(workspace, /id=\"workspace-arquivo-completo-importar\"/);
+  assert.match(workspace, /lixeira e versões locais/);
+  assert.match(workspace, /substituirá projetos, arquivos ativos, versões e lixeira deste navegador/);
+});
+
 testa('trecho só vai ao compositor por escolha explícita e não é enviado automaticamente', () => {
   const bloco = entre(workspace, 'async function levarSelecaoAoChat()', '\n\n  function telaVisivel()');
   const token = bloco.indexOf('pareceTokenDeAcesso(trecho)');
@@ -100,7 +112,7 @@ testa('as quatro rotas expõem o mesmo acesso e carregam uma só cópia do Works
 });
 
 testa('casca PWA, workflow, corredor e porta de continuidade observam o ativo', () => {
-  assert.match(sw, /rebocl-chat-v72/);
+  assert.match(sw, /rebocl-chat-v73/);
   assert.match(sw, /'\.\/chat-workspace\.js'/);
   assert.match(workflow, /'chat-workspace\.js'/);
   assert.match(workflow, /chat-workspace\.js tools\/testes\/\*\.js/);
@@ -110,7 +122,7 @@ testa('casca PWA, workflow, corredor e porta de continuidade observam o ativo', 
   assert.match(corredor, /'workspace-integridade-local\.js'/);
   assert.match(retrato, /Workspace interno local-first/);
   assert.match(retrato, /rebocl-workspace-local-v1/);
-  assert.match(retrato, /rebocl-chat-v72/);
+  assert.match(retrato, /rebocl-chat-v73/);
 });
 
 testa('porta de continuidade exige retrato quando o ativo local muda', () => {
