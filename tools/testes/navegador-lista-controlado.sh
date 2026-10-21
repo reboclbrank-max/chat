@@ -123,6 +123,24 @@ teste_lista = """<script>
       transacao.onabort = () => { banco.close(); reject(transacao.error || new Error('escrita concorrente controlada cancelada')); };
     };
   });
+  // Uma segunda escrita local controlada representa outra guia atualizada. Ela
+  // usa apenas o IndexedDB efêmero da fixture, sem conversa, perfil ou rede real.
+  const adicionarProjetoWorkspaceControlado = (nome) => new Promise((resolve, reject) => {
+    const abertura = indexedDB.open('rebocl-workspace-local-v1');
+    abertura.onerror = () => reject(abertura.error || new Error('não abriu IndexedDB para projeto concorrente'));
+    abertura.onsuccess = () => {
+      const banco = abertura.result;
+      const transacao = banco.transaction('projetos', 'readwrite');
+      const projeto = {
+        id: 'projeto-concorrente-arquivo-completo', nome,
+        criadoEm: new Date().toISOString(), atualizadoEm: new Date().toISOString()
+      };
+      transacao.objectStore('projetos').put(projeto);
+      transacao.oncomplete = () => { banco.close(); resolve(projeto); };
+      transacao.onerror = () => { banco.close(); reject(transacao.error || new Error('falha ao criar projeto concorrente controlado')); };
+      transacao.onabort = () => { banco.close(); reject(transacao.error || new Error('projeto concorrente controlado cancelado')); };
+    };
+  });
   const lerEstadoArquivoWorkspaceControlado = (id, projetoId) => new Promise((resolve, reject) => {
     const abertura = indexedDB.open('rebocl-workspace-local-v1');
     abertura.onerror = () => reject(abertura.error || new Error('não abriu leitura controlada'));
@@ -483,19 +501,29 @@ teste_lista = """<script>
       throw new Error('restauração completa não informou a substituição local controlada');
     }
     await esperarWorkspace(() => !desfazerCompleto.disabled, 'liberar ponto temporário após restauração completa');
-    const projetoDepoisDaRestauracao = 'Alteração posterior à restauração';
-    novoProjeto.value = projetoDepoisDaRestauracao;
-    document.getElementById('btn-workspace-criar-projeto').click();
-    await esperarWorkspace(() => porTexto(document, '#workspace-lista-projetos .workspace-projeto', projetoDepoisDaRestauracao), 'alterar Workspace depois da restauração completa');
+    const projetoDepoisDaRestauracao = 'Alteração concorrente após a restauração';
+    await adicionarProjetoWorkspaceControlado(projetoDepoisDaRestauracao);
     desfazerCompleto.click();
-    await esperarWorkspace(() => porTexto(document, '#workspace-lista-projetos .workspace-projeto', projetoPosterior) && !porTexto(document, '#workspace-lista-projetos .workspace-projeto', projetoDepoisDaRestauracao) && document.getElementById('workspace-status').textContent.includes('desfeita'), 'desfazer restauração completa para o estado anterior');
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-projetos .workspace-projeto', projetoDepoisDaRestauracao) && document.getElementById('workspace-status').textContent.includes('mudou em outra guia'), 'bloquear desfazer completo desatualizado sem apagar projeto concorrente');
+    if (desfazerCompleto.disabled) throw new Error('conflito do arquivo completo consumiu o ponto temporário');
+
+    // Uma nova restauração cria uma fotografia posterior à escrita concorrente.
+    // Sem mudança após ela, o retorno único volta a ser permitido e consumido.
+    const transferenciaRearmada = new DataTransfer();
+    transferenciaRearmada.items.add(new File([JSON.stringify(arquivoCompletoExportado)], 'workspace-completo-fixture-rearmado.json', { type: 'application/json' }));
+    entradaCompleta.files = transferenciaRearmada.files;
+    entradaCompleta.dispatchEvent(new Event('change', { bubbles: true }));
+    await esperarWorkspace(() => !porTexto(document, '#workspace-lista-projetos .workspace-projeto', projetoDepoisDaRestauracao) && document.getElementById('workspace-status').textContent.includes('Arquivo completo restaurado'), 'restaurar novamente depois do conflito completo');
+    await esperarWorkspace(() => !desfazerCompleto.disabled, 'novo ponto temporário após restauração controlada');
+    desfazerCompleto.click();
+    await esperarWorkspace(() => !porTexto(document, '#workspace-lista-projetos .workspace-projeto', projetoPosterior) && porTexto(document, '#workspace-lista-projetos .workspace-projeto', projetoDepoisDaRestauracao) && document.getElementById('workspace-status').textContent.includes('desfeita'), 'desfazer restauração completa sem alteração posterior');
     await esperarWorkspace(() => porTexto(document, '#workspace-lista-lixeira .workspace-lixeira-item', nomeArquivoLixeira), 'lixeira no ponto temporário restaurado');
-    if (!desfazerCompleto.disabled) throw new Error('ponto temporário não foi consumido depois de desfazer a restauração');
+    if (!desfazerCompleto.disabled) throw new Error('ponto temporário não foi consumido depois de desfazer a restauração sem conflito');
 
     if (!document.getElementById('workspace-status').textContent.toLowerCase().includes('nada foi enviado')) {
       throw new Error('ciclo local não declarou a ausência de envio');
     }
-    return ' · Workspace criou, versionou, protegeu rascunho e lixeira em conflito local, buscou entre projetos sem expor Lixeira, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture';
+    return ' · Workspace criou, versionou, protegeu rascunho e lixeira em conflito local, buscou entre projetos sem expor Lixeira, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture; bloqueou retorno completo diante de escrita concorrente e preservou o ponto';
   };
   try {
     await esperar(() => document.querySelectorAll('#lista .conv').length >= 52, 5000, 'lista inicial');

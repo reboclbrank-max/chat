@@ -127,8 +127,11 @@ ok('exercita recuperação do Workspace e prova o layout em navegador real', () 
   assert.match(texto, /arquivo completo não preservou arquivo, versão e lixeira sintéticos/);
   assert.match(texto, /arquivo completo inválido alterou a fixture local/);
   assert.match(texto, /cancelamento do arquivo completo alterou a fixture local/);
-  assert.match(texto, /Alteração posterior à restauração/);
-  assert.match(texto, /ponto temporário não foi consumido depois de desfazer a restauração/);
+  assert.match(texto, /adicionarProjetoWorkspaceControlado/);
+  assert.match(texto, /bloquear desfazer completo desatualizado sem apagar projeto concorrente/);
+  assert.match(texto, /conflito do arquivo completo consumiu o ponto temporário/);
+  assert.match(texto, /restaurar novamente depois do conflito completo/);
+  assert.match(texto, /ponto temporário não foi consumido depois de desfazer a restauração sem conflito/);
   assert.match(texto, /restauração completa não informou a substituição local controlada/);
   assert.match(texto, /Workspace criou, versionou, protegeu rascunho e lixeira em conflito local, buscou entre projetos sem expor Lixeira, transferiu projeto portátil com nome isolado, recuperou e rejeitou\/cancelou\/arquivou\/restaurou\/desfez arquivo, versão e lixeira somente na fixture/);
   assert.match(texto, /somente-layout=1/);

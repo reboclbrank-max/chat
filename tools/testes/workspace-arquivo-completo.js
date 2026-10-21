@@ -127,9 +127,20 @@ testa('rejeita esquema aberto, bytes divergentes, relações quebradas e versõe
   erroCodigo(() => api.validar(grande, api.limites.bytes + 1), 'arquivo-completo-grande');
 });
 
-testa('a substituição completa usa uma transação única que limpa e recria somente as quatro lojas locais', () => {
-  const substituir = entre(fonte, 'function substituirArquivoCompleto(backup)', '\n  function bloquearOperacaoArquivoCompleto');
+testa('a substituição completa lê, compara e só então limpa as quatro lojas na mesma transação local', () => {
+  const fotografia = entre(fonte, 'function lerFotografiaArquivoCompleto()', '\n  async function montarArquivoCompleto');
+  const montar = entre(fonte, 'async function montarArquivoCompleto()', '\n  function substituirArquivoCompleto');
+  const substituir = entre(fonte, 'function substituirArquivoCompleto(backup, fotografiaEsperada)', '\n  function bloquearOperacaoArquivoCompleto');
+  assert.match(fotografia, /banco\.transaction\(\[LOJAS\.projetos, LOJAS\.arquivos, LOJAS\.revisoes\], 'readonly'\)/);
+  assert.match(fotografia, /const leituraProjetos = projetos\.getAll\(\)/);
+  assert.match(montar, /const fotografia = await lerFotografiaArquivoCompleto\(\)/);
   assert.match(substituir, /banco\.transaction\(\[LOJAS\.projetos, LOJAS\.arquivos, LOJAS\.revisoes, LOJAS\.meta\], 'readwrite'\)/);
+  assert.match(substituir, /const leituraProjetos = projetos\.getAll\(\)/);
+  assert.match(substituir, /const leituraArquivos = arquivos\.getAll\(\)/);
+  assert.match(substituir, /const leituraRevisoes = revisoes\.getAll\(\)/);
+  assert.match(substituir, /fotografiaArquivoCompletoAindaIgual\(atual, fotografiaEsperada\)/);
+  assert(substituir.indexOf('fotografiaArquivoCompletoAindaIgual') < substituir.indexOf('projetos.clear()'), 'a fotografia precisa ser comparada antes do clear');
+  assert.match(substituir, /resultado = \{ substituido: false, conflito: true \}/);
   assert.match(substituir, /projetos\.clear\(\);/);
   assert.match(substituir, /arquivos\.clear\(\);/);
   assert.match(substituir, /revisoes\.clear\(\);/);
@@ -140,16 +151,23 @@ testa('a substituição completa usa uma transação única que limpa e recria s
   assert.doesNotMatch(substituir, /\b(fetch|api\s*\(|localStorage|sessionStorage)\b/);
 });
 
-testa('ponto temporário permite desfazer uma única restauração sem armazenamento persistente', () => {
+testa('ponto temporário só restaura a fotografia confirmada e permanece disponível em conflito', () => {
   const importar = entre(fonte, 'async function importarArquivoCompleto(file)', '\n  async function desfazerUltimaRestauracaoArquivoCompleto');
   const desfazer = entre(fonte, 'async function desfazerUltimaRestauracaoArquivoCompleto()', '\n\n  async function exportarWorkspace');
   assert.match(importar, /const pontoAnterior = await montarArquivoCompleto\(\)/);
-  assert.match(importar, /estado\.reversaoArquivoCompleto = pontoAnterior\.dados/);
-  assert.match(importar, /enquanto esta página permanecer aberta/);
+  assert(importar.indexOf('const pontoAnterior') < importar.indexOf('if (!confirm'), 'a fotografia precisa anteceder a confirmação');
+  assert.match(importar, /await substituirArquivoCompleto\(backup, pontoAnterior\.fotografia\)/);
+  assert.match(importar, /estado\.reversaoArquivoCompleto = \{/);
+  assert.match(importar, /dados: pontoAnterior\.dados/);
+  assert.match(importar, /fotografiaEsperada: fotografiaArquivoCompletoParaBanco\(backup\)/);
+  assert.match(importar, /resultado\.conflito/);
+  assert.match(importar, /enquanto esta página permanecer aberta se o conteúdo não mudar antes/);
   assert.doesNotMatch(importar, /\b(localStorage|sessionStorage|fetch|XMLHttpRequest|WebSocket|EventSource|sendBeacon)\b/);
   assert.match(desfazer, /Desfazer a última restauração completa\?/);
-  assert.match(desfazer, /Alterações feitas depois da restauração serão substituídas/);
-  assert.match(desfazer, /await substituirArquivoCompleto\(ponto\)/);
+  assert.match(desfazer, /nenhum conteúdo tiver mudado em outra guia/);
+  assert.match(desfazer, /await substituirArquivoCompleto\(ponto\.dados, ponto\.fotografiaEsperada\)/);
+  assert.match(desfazer, /if \(resultado\.conflito\)/);
+  assert(desfazer.indexOf('if (resultado.conflito)') < desfazer.indexOf('estado.reversaoArquivoCompleto = null'), 'conflito não pode consumir o ponto temporário');
   assert.match(desfazer, /estado\.reversaoArquivoCompleto = null/);
   assert.match(desfazer, /ponto temporário foi consumido/);
   assert.doesNotMatch(desfazer, /\b(localStorage|sessionStorage|fetch|XMLHttpRequest|WebSocket|EventSource|sendBeacon)\b/);

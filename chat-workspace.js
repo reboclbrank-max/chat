@@ -1427,19 +1427,86 @@
     }
     return salvo;
   }
+  function valorDoBancoAindaIgual(persistido, esperado) {
+    if (persistido === esperado) return true;
+    if (!persistido || !esperado || typeof persistido !== 'object' || typeof esperado !== 'object') return false;
+    const persistidoEhLista = Array.isArray(persistido);
+    if (persistidoEhLista || Array.isArray(esperado)) {
+      return persistidoEhLista && Array.isArray(esperado) && persistido.length === esperado.length &&
+        persistido.every((valor, indice) => valorDoBancoAindaIgual(valor, esperado[indice]));
+    }
+    const chavesPersistidas = Object.keys(persistido).sort();
+    const chavesEsperadas = Object.keys(esperado).sort();
+    return chavesPersistidas.length === chavesEsperadas.length && chavesPersistidas.every((chave, indice) =>
+      chave === chavesEsperadas[indice] && valorDoBancoAindaIgual(persistido[chave], esperado[chave]));
+  }
+  function registrosDoBancoAindaIguais(persistidos, esperados) {
+    if (!Array.isArray(persistidos) || !Array.isArray(esperados) || persistidos.length !== esperados.length) return false;
+    const porId = new Map();
+    for (const esperado of esperados) {
+      if (!esperado || typeof esperado.id !== 'string' || !esperado.id || porId.has(esperado.id)) return false;
+      porId.set(esperado.id, esperado);
+    }
+    return persistidos.every((persistido) => persistido && typeof persistido.id === 'string' &&
+      porId.has(persistido.id) && valorDoBancoAindaIgual(persistido, porId.get(persistido.id)));
+  }
+  function fotografiaArquivoCompletoAindaIgual(atual, esperada) {
+    return !!atual && !!esperada &&
+      registrosDoBancoAindaIguais(atual.projetos, esperada.projetos) &&
+      registrosDoBancoAindaIguais(atual.arquivos, esperada.arquivos) &&
+      registrosDoBancoAindaIguais(atual.revisoes, esperada.revisoes);
+  }
+  function fotografiaArquivoCompletoParaBanco(backup) {
+    return {
+      projetos: backup.projetos.map((projeto) => registroArquivoCompletoParaBanco(projeto)),
+      arquivos: backup.arquivos.map((arquivo) => registroArquivoCompletoParaBanco(arquivo)),
+      revisoes: backup.revisoes.map((revisao) => Object.assign({}, revisao))
+    };
+  }
+  function lerFotografiaArquivoCompleto() {
+    return abrirBanco().then((banco) => new Promise((resolve, reject) => {
+      // A fotografia das três lojas vem de uma única leitura: exportação, ponto
+      // de retorno e posterior comparação observam a mesma base local.
+      const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos, LOJAS.revisoes], 'readonly');
+      const projetos = tx.objectStore(LOJAS.projetos);
+      const arquivos = tx.objectStore(LOJAS.arquivos);
+      const revisoes = tx.objectStore(LOJAS.revisoes);
+      let todosProjetos = null;
+      let todosArquivos = null;
+      let todasRevisoes = null;
+      let fotografia = null;
+      const copiar = (registros) => (Array.isArray(registros) ? registros : []).map((registro) => Object.assign({}, registro));
+      const concluirLeituras = () => {
+        if (todosProjetos === null || todosArquivos === null || todasRevisoes === null) return;
+        fotografia = { projetos: copiar(todosProjetos), arquivos: copiar(todosArquivos), revisoes: copiar(todasRevisoes) };
+      };
+      const leituraProjetos = projetos.getAll();
+      const leituraArquivos = arquivos.getAll();
+      const leituraRevisoes = revisoes.getAll();
+      leituraProjetos.onsuccess = () => { todosProjetos = leituraProjetos.result; concluirLeituras(); };
+      leituraArquivos.onsuccess = () => { todosArquivos = leituraArquivos.result; concluirLeituras(); };
+      leituraRevisoes.onsuccess = () => { todasRevisoes = leituraRevisoes.result; concluirLeituras(); };
+      leituraProjetos.onerror = () => reject(leituraProjetos.error || erro('sem-indexeddb'));
+      leituraArquivos.onerror = () => reject(leituraArquivos.error || erro('sem-indexeddb'));
+      leituraRevisoes.onerror = () => reject(leituraRevisoes.error || erro('sem-indexeddb'));
+      tx.oncomplete = () => fotografia ? resolve(fotografia) : reject(erro('sem-indexeddb'));
+      tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
+      tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
+    }));
+  }
   async function montarArquivoCompleto() {
-    const [projetos, arquivos, revisoes] = await Promise.all([lerTodos(LOJAS.projetos), lerTodos(LOJAS.arquivos), lerTodos(LOJAS.revisoes)]);
+    const fotografia = await lerFotografiaArquivoCompleto();
     const dados = {
       formato: FORMATO_ARQUIVO_COMPLETO,
       versao: VERSAO_ARQUIVO_COMPLETO,
       exportadoEm: agora(),
-      projetos: projetos.sort((a, b) => texto(a.id).localeCompare(texto(b.id))).map((projeto) => Object.assign({
+      projetos: fotografia.projetos.slice().sort((a, b) => texto(a.id).localeCompare(texto(b.id))).map((projeto) => Object.assign({
         id: texto(projeto.id), nome: texto(projeto.nome), criadoEm: texto(projeto.criadoEm), atualizadoEm: texto(projeto.atualizadoEm)
       }, marcaLixeiraParaArquivoCompleto(projeto))),
-      arquivos: arquivos.sort((a, b) => texto(a.id).localeCompare(texto(b.id))).map((arquivo) => Object.assign({
+      arquivos: fotografia.arquivos.slice().sort((a, b) => texto(a.id).localeCompare(texto(b.id))).map((arquivo) => Object.assign({
         id: texto(arquivo.id), projetoId: texto(arquivo.projetoId), nome: texto(arquivo.nome), conteudo: texto(arquivo.conteudo), bytes: bytes(arquivo.conteudo), versao: Number(arquivo.versao), criadoEm: texto(arquivo.criadoEm), atualizadoEm: texto(arquivo.atualizadoEm)
       }, marcaLixeiraParaArquivoCompleto(arquivo))),
-      revisoes: revisoes.sort((a, b) => texto(a.id).localeCompare(texto(b.id))).map((revisao) => ({
+      revisoes: fotografia.revisoes.slice().sort((a, b) => texto(a.id).localeCompare(texto(b.id))).map((revisao) => ({
         id: texto(revisao.id), arquivoId: texto(revisao.arquivoId), conteudo: texto(revisao.conteudo), bytes: bytes(revisao.conteudo), quando: texto(revisao.quando), versao: Number(revisao.versao)
       }))
     };
@@ -1447,23 +1514,47 @@
     const valido = validarArquivoCompleto(dados, bytes(textoArquivo));
     const serializado = JSON.stringify(valido);
     if (bytes(serializado) > LIMITES_ARQUIVO_COMPLETO.bytes) throw erro('arquivo-completo-grande');
-    return { dados: valido, texto: serializado };
+    return { dados: valido, texto: serializado, fotografia };
   }
-  function substituirArquivoCompleto(backup) {
+  function substituirArquivoCompleto(backup, fotografiaEsperada) {
     return abrirBanco().then((banco) => new Promise((resolve, reject) => {
+      // A comparação e a troca dividem um readwrite: uma escrita de outra guia
+      // não pode entrar entre a fotografia confirmada e os clear/put.
       const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos, LOJAS.revisoes, LOJAS.meta], 'readwrite');
       const projetos = tx.objectStore(LOJAS.projetos);
       const arquivos = tx.objectStore(LOJAS.arquivos);
       const revisoes = tx.objectStore(LOJAS.revisoes);
       const meta = tx.objectStore(LOJAS.meta);
-      projetos.clear();
-      arquivos.clear();
-      revisoes.clear();
-      meta.clear();
-      backup.projetos.forEach((projeto) => projetos.put(registroArquivoCompletoParaBanco(projeto)));
-      backup.arquivos.forEach((arquivo) => arquivos.put(registroArquivoCompletoParaBanco(arquivo)));
-      backup.revisoes.forEach((revisao) => revisoes.put(Object.assign({}, revisao)));
-      tx.oncomplete = resolve;
+      let todosProjetos = null;
+      let todosArquivos = null;
+      let todasRevisoes = null;
+      let resultado = { substituido: false, conflito: false };
+      const concluirLeituras = () => {
+        if (todosProjetos === null || todosArquivos === null || todasRevisoes === null) return;
+        const atual = { projetos: todosProjetos, arquivos: todosArquivos, revisoes: todasRevisoes };
+        if (!fotografiaArquivoCompletoAindaIgual(atual, fotografiaEsperada)) {
+          resultado = { substituido: false, conflito: true };
+          return;
+        }
+        projetos.clear();
+        arquivos.clear();
+        revisoes.clear();
+        meta.clear();
+        backup.projetos.forEach((projeto) => projetos.put(registroArquivoCompletoParaBanco(projeto)));
+        backup.arquivos.forEach((arquivo) => arquivos.put(registroArquivoCompletoParaBanco(arquivo)));
+        backup.revisoes.forEach((revisao) => revisoes.put(Object.assign({}, revisao)));
+        resultado = { substituido: true, conflito: false };
+      };
+      const leituraProjetos = projetos.getAll();
+      const leituraArquivos = arquivos.getAll();
+      const leituraRevisoes = revisoes.getAll();
+      leituraProjetos.onsuccess = () => { todosProjetos = Array.isArray(leituraProjetos.result) ? leituraProjetos.result : []; concluirLeituras(); };
+      leituraArquivos.onsuccess = () => { todosArquivos = Array.isArray(leituraArquivos.result) ? leituraArquivos.result : []; concluirLeituras(); };
+      leituraRevisoes.onsuccess = () => { todasRevisoes = Array.isArray(leituraRevisoes.result) ? leituraRevisoes.result : []; concluirLeituras(); };
+      leituraProjetos.onerror = () => reject(leituraProjetos.error || erro('sem-indexeddb'));
+      leituraArquivos.onerror = () => reject(leituraArquivos.error || erro('sem-indexeddb'));
+      leituraRevisoes.onerror = () => reject(leituraRevisoes.error || erro('sem-indexeddb'));
+      tx.oncomplete = () => resolve(resultado);
       tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
       tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
     }));
@@ -1493,6 +1584,16 @@
       atualizarControlesProjetoPortatil();
     }
   }
+  async function informarArquivoCompletoDesatualizado(acao) {
+    const descricao = acao === 'desfazer' ? 'desfazer a restauração' : 'restaurar o arquivo completo';
+    if (estado.alterado || estado.conflitoArquivo) {
+      definirStatus('erro', 'O Workspace mudou em outra guia. Seu texto continua no editor; salve ou resolva a edição antes de tentar ' + descricao + '. Nada foi substituído.');
+      return;
+    }
+    await iniciarDados();
+    renderTudo();
+    definirStatus('erro', 'O Workspace mudou em outra guia antes de ' + descricao + '. Nada foi substituído; a tela foi atualizada para o estado local atual.');
+  }
   function resumoArquivoCompleto(backup) {
     return backup.projetos.length + ' projeto(s), ' + backup.arquivos.length + ' arquivo(s) e ' + backup.revisoes.length + ' versão(ões)';
   }
@@ -1520,24 +1621,32 @@
       const conteudo = await file.text();
       if (bytes(conteudo) > LIMITES_ARQUIVO_COMPLETO.bytes) throw erro('arquivo-completo-grande');
       const backup = validarArquivoCompleto(JSON.parse(conteudo), bytes(conteudo));
+      definirStatus('', 'Criando ponto temporário e conferindo o Workspace local…');
+      // A fotografia nasce antes da confirmação. Se outra guia escrever durante
+      // a decisão, a troca será recusada no mesmo readwrite, sem clear parcial.
+      const pontoAnterior = await montarArquivoCompleto();
       const resumo = resumoArquivoCompleto(backup);
-      if (!confirm('Restaurar o arquivo completo com ' + resumo + '? Isso substituirá projetos, arquivos ativos, versões e lixeira deste navegador. Nada será enviado ao Chat, GitHub ou motor.')) {
+      if (!confirm('Restaurar o arquivo completo com ' + resumo + '? Isso substituirá projetos, arquivos ativos, versões e lixeira deste navegador. Se o conteúdo mudar em outra guia enquanto você confirma, a restauração será interrompida. Nada será enviado ao Chat, GitHub ou motor.')) {
         definirStatus('', 'Restauração do arquivo completo cancelada. Nada foi alterado.');
         return;
       }
       if (estado.temporizadorSalvar) { clearTimeout(estado.temporizadorSalvar); estado.temporizadorSalvar = null; }
       estado.edicao++;
-      definirStatus('', 'Criando ponto temporário para desfazer esta restauração…');
-      const pontoAnterior = await montarArquivoCompleto();
       definirStatus('', 'Restaurando o arquivo completo somente neste navegador…');
-      await substituirArquivoCompleto(backup);
-      estado.reversaoArquivoCompleto = pontoAnterior.dados;
+      const resultado = await substituirArquivoCompleto(backup, pontoAnterior.fotografia);
+      if (resultado.conflito) { await informarArquivoCompletoDesatualizado('restaurar'); return; }
+      estado.reversaoArquivoCompleto = {
+        dados: pontoAnterior.dados,
+        // Depois da restauração, só este conteúdo recém-gravado poderá voltar
+        // ao ponto; qualquer edição posterior mantém o retorno bloqueado.
+        fotografiaEsperada: fotografiaArquivoCompletoParaBanco(backup)
+      };
       estado.alterado = false;
       estado.projetoAtivo = '';
       estado.arquivoAtivo = '';
       await iniciarDados();
       renderTudo();
-      definirStatus('ok', 'Arquivo completo restaurado: ' + resumo + '. Você pode desfazer esta restauração enquanto esta página permanecer aberta. Nada foi enviado pelo Chat.');
+      definirStatus('ok', 'Arquivo completo restaurado: ' + resumo + '. Você pode desfazer esta restauração enquanto esta página permanecer aberta se o conteúdo não mudar antes. Nada foi enviado pelo Chat.');
     } catch (e) { mostrarErro(e); }
     finally { bloquearOperacaoArquivoCompleto(false); }
   }
@@ -1547,9 +1656,13 @@
       definirStatus('erro', 'Aguarde o salvamento local terminar antes de desfazer a restauração. Nada foi enviado.');
       return;
     }
+    if (estado.alterado || estado.conflitoArquivo) {
+      definirStatus('erro', 'Seu texto continua no editor. Salve ou resolva a edição antes de desfazer a restauração completa; nada foi substituído.');
+      return;
+    }
     const ponto = estado.reversaoArquivoCompleto;
-    if (!ponto) { mostrarErro(erro('sem-reversao-arquivo-completo')); return; }
-    if (!confirm('Desfazer a última restauração completa? O Workspace voltará ao estado anterior desta página. Alterações feitas depois da restauração serão substituídas. Nada será enviado ao Chat, GitHub ou motor.')) {
+    if (!ponto || !ponto.dados || !ponto.fotografiaEsperada) { mostrarErro(erro('sem-reversao-arquivo-completo')); return; }
+    if (!confirm('Desfazer a última restauração completa? O Workspace voltará ao estado anterior desta página somente se nenhum conteúdo tiver mudado em outra guia desde a restauração. Caso contrário, o ponto temporário será preservado. Nada será enviado ao Chat, GitHub ou motor.')) {
       definirStatus('', 'Desfazer a restauração completa foi cancelado. Nada foi alterado.');
       return;
     }
@@ -1558,7 +1671,8 @@
       if (estado.temporizadorSalvar) { clearTimeout(estado.temporizadorSalvar); estado.temporizadorSalvar = null; }
       estado.edicao++;
       definirStatus('', 'Desfazendo a restauração completa somente neste navegador…');
-      await substituirArquivoCompleto(ponto);
+      const resultado = await substituirArquivoCompleto(ponto.dados, ponto.fotografiaEsperada);
+      if (resultado.conflito) { await informarArquivoCompletoDesatualizado('desfazer'); return; }
       estado.reversaoArquivoCompleto = null;
       estado.alterado = false;
       estado.projetoAtivo = '';

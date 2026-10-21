@@ -1,5 +1,5 @@
-/* Service worker v78 — casca estática versionada, nunca URL com consulta ou API. */
-const CACHE = 'rebocl-chat-v78';
+/* Service worker v79 — casca estática versionada, nunca URL com consulta ou API. */
+const CACHE = 'rebocl-chat-v79';
 const CASCA = [
   './', './index.html', './direto.html', './ligar.html', './limpar.html', './console.html', './chat-estilos.css', './chat-pwa.js', './chat-comandos-locais.js', './chat-filtro-chips.js', './chat-organizacao-local.js', './chat-colecoes-local.js', './chat-workspace.js', './manifest.json',
   './icone-192.png', './icone-512.png'
