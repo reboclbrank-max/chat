@@ -17,10 +17,11 @@
     '⚙️ Central segura do Chat:',
     '• Já concentra conversa, Workspace local, lembretes, pesquisa pública, navegador isolado, estado e rotinas configuradas.',
     '• Testes: !testarchat pede somente a barreira aprovada do Chat; não altera código, segredos nem a branch principal.',
+    '• Preparo: !prepararchat pede somente uma auditoria interna fixa; ela decide se há base técnica para revisão, sem criar branch ou código.',
     '• Marketing permanece nas rotinas autorizadas do Site, com fatos e anti-spam; este roteiro não publica extra nem cria conta.',
-    '• Próxima etapa: preparar mudança de repositório em branch, teste e revisão; ainda não há promoção cega para a branch principal.',
+    '• Próxima etapa: uma receita pequena poderá preparar mudança reversível em branch, teste e revisão; ainda não há promoção cega para a branch principal.',
     '• Dependem de configuração concreta: e-mail novo, contas, backup externo, identidade pública, credenciais, gasto e permissões.',
-    '• Use: operar: status | pesquisa | navegador | testes | repos | marketing | limites.',
+    '• Use: operar: status | pesquisa | navegador | testes | preparo | repos | marketing | limites.',
     'ℹ️ Mapa local e fechado: não executa texto livre, não cria fila persistente e não promete entrega, uso, satisfação ou SLA.'
   ].join(NL));
 
@@ -29,7 +30,8 @@
     pesquisa: '🔎 Pesquisa: use pesquisa: <tema> por e-mail ou Telegram; fontes públicas continuam separadas de dados privados.',
     navegador: '🌐 Navegador: use navegar: <URL pública> por e-mail ou Telegram. A abertura continua isolada, sem login ou área privada.',
     testes: '🧪 Testes: nesta interface, !testarchat pede somente a barreira Testes rápidos do chat já aprovada. Exige o acesso já configurado neste navegador e não promove mudança.',
-    repos: '🧩 Repositórios: esta etapa ainda não edita nem promove código. A próxima capacidade prevista é preparar uma mudança limitada em branch, executar testes e deixar revisão/rollback claros.',
+    preparo: '🧩 Preparo: nesta interface, !prepararchat pede somente a auditoria interna fixa. Ela roda guardas fechadas e devolve um resumo sanitizado; não aceita tarefa livre, não cria branch, código ou promoção.',
+    repos: '🧩 Repositórios: esta etapa não edita nem promove código. !prepararchat só mede a prontidão para revisão; uma receita futura poderá preparar mudança limitada em branch, teste e rollback claros.',
     marketing: '📣 Marketing: a rotina autorizada vive no Site e preserva fatos, cadência e anti-spam. A Central não cria conta, não publica fora da rotina nem fabrica tráfego.',
     limites: '🔒 Limites: não há executor genérico, terminal remoto, segredo, conta nova, backup externo, gasto, permissão ou identidade pública sem configuração e guarda próprias.'
   });

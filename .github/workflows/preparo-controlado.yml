@@ -1,0 +1,22 @@
+name: Preparo controlado de mudança do Chat
+# Oficina estreita: só mede guardas fixas e deixa um resumo sanitizado no run.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: preparo-controlado-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+      - name: Executa a receita interna fixa
+        run: |
+          set -o pipefail
+          node tools/preparo-controlado.js | tee -a "$GITHUB_STEP_SUMMARY"

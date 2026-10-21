@@ -197,7 +197,7 @@ testa('as quatro rotas expõem o mesmo acesso e carregam uma só cópia do Works
 });
 
 testa('casca PWA, workflow, corredor e porta de continuidade observam o ativo', () => {
-  assert.match(sw, /rebocl-chat-v84/);
+  assert.match(sw, /rebocl-chat-v85/);
   assert.match(sw, /'\.\/chat-workspace\.js'/);
   assert.match(workflow, /'chat-workspace\.js'/);
   assert.match(workflow, /chat-workspace\.js tools\/testes\/\*\.js/);
@@ -207,7 +207,7 @@ testa('casca PWA, workflow, corredor e porta de continuidade observam o ativo', 
   assert.match(corredor, /'workspace-integridade-local\.js'/);
   assert.match(retrato, /Workspace interno local-first/);
   assert.match(retrato, /rebocl-workspace-local-v1/);
-  assert.match(retrato, /rebocl-chat-v84/);
+  assert.match(retrato, /rebocl-chat-v85/);
 });
 
 testa('porta de continuidade exige retrato quando o ativo local muda', () => {
@@ -223,11 +223,17 @@ testa('porta de continuidade exige retrato quando o ativo local muda', () => {
   } finally { fs.rmSync(pasta, { recursive: true, force: true }); }
 });
 
-testa('autosave preserva edição pendente se a validação falhar ou houver nova digitação', () => {
+testa('autosave preserva edição pendente e a ação escolhida aguarda gravação já iniciada', () => {
   const salvar = entre(workspace, 'async function salvarArquivoAtual(origem)', '\n  async function apagarArquivo');
   assert.match(workspace, /edicao: 0/);
+  assert.match(workspace, /promessaSalvar: null/);
   assert.match(workspace, /function agendarSalvarAutomatico\(\)/);
   assert.match(workspace, /estado\.edicao\+\+/);
+  assert.match(salvar, /const pendente = estado\.promessaSalvar/);
+  assert.match(salvar, /await pendente/);
+  assert.match(salvar, /return !estado\.salvando && !estado\.alterado && !estado\.conflitoArquivo/);
+  assert.match(salvar, /estado\.promessaSalvar = new Promise/);
+  assert.match(salvar, /estado\.promessaSalvar = null/);
   assert.match(salvar, /const edicaoNoInicio = estado\.edicao/);
   assert.match(salvar, /houveEdicaoDurante = estado\.edicao !== edicaoNoInicio/);
   assert.match(salvar, /if \(estado\.alterado\) \{\n        atualizarControlesEditor/);

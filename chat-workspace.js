@@ -59,6 +59,10 @@
     conflitoArquivo: null,
     edicao: 0,
     salvando: false,
+    // Toda ação estrutural que precisa preservar o rascunho pode aguardar uma
+    // gravação automática que já começou; ela não abandona a importação por
+    // uma corrida local entre temporizador e escolha da pessoa.
+    promessaSalvar: null,
     temporizadorSalvar: null,
     telaAnterior: 'lista',
     pronto: false
@@ -1217,9 +1221,18 @@
       if (origem !== 'automatico') definirStatus('erro', 'Este arquivo mudou em outra guia. Resolva o conflito antes de salvar o original.');
       return false;
     }
-    if (estado.salvando) return false;
+    // Um clique estrutural pode ocorrer enquanto o autosave já escreveu a
+    // mesma edição. Esperar a promessa evita descartar a ação escolhida sem
+    // criar um segundo gravador ou aceitar uma fotografia antiga.
+    if (estado.salvando) {
+      const pendente = estado.promessaSalvar;
+      if (!pendente) return false;
+      await pendente;
+      return !estado.salvando && !estado.alterado && !estado.conflitoArquivo;
+    }
     const edicaoNoInicio = estado.edicao;
     let houveEdicaoDurante = false;
+    let concluirSalvar = null;
     try {
       const nome = nomeArquivoSeguro(elementos.nomeArquivo.value);
       const conteudo = texto(elementos.editor.value);
@@ -1232,6 +1245,7 @@
         return true;
       }
       estado.salvando = true;
+      estado.promessaSalvar = new Promise((resolve) => { concluirSalvar = resolve; });
       atualizarControlesEditor(true);
       const atualizado = Object.assign({}, anterior, { nome, conteudo, bytes: tamanho, versao: Number(anterior.versao || 1) + 1, atualizadoEm: agora() });
       const resultado = await gravarArquivoComRevisao(atualizado, anterior);
@@ -1276,6 +1290,9 @@
         renderEditor();
       }
       atualizarResumo();
+      const concluir = concluirSalvar;
+      estado.promessaSalvar = null;
+      if (concluir) concluir();
     }
   }
   async function apagarArquivo() {
