@@ -53,6 +53,10 @@
     // nesta página, sem criar cópia persistente ou sincronizada.
     reversaoArquivoCompleto: null,
     alterado: false,
+    // Quando outra guia atualizada salva primeiro, o rascunho desta guia fica
+    // no editor até a pessoa escolher recarregar, copiar ou baixar; nunca há
+    // substituição silenciosa por último gravador.
+    conflitoArquivo: null,
     edicao: 0,
     salvando: false,
     temporizadorSalvar: null,
@@ -226,19 +230,53 @@
       tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
     }));
   }
+  function arquivoAindaIgual(persistido, anterior) {
+    return !!persistido && !estaNaLixeira(persistido) &&
+      persistido.id === anterior.id && persistido.projetoId === anterior.projetoId &&
+      persistido.nome === anterior.nome && persistido.conteudo === anterior.conteudo &&
+      bytesRegistro(persistido) === bytesRegistro(anterior) &&
+      Number(persistido.versao || 1) === Number(anterior.versao || 1) &&
+      persistido.atualizadoEm === anterior.atualizadoEm;
+  }
   function gravarArquivoComRevisao(arquivo, anterior, plano) {
     return abrirBanco().then((banco) => new Promise((resolve, reject) => {
-      const tx = banco.transaction([LOJAS.arquivos, LOJAS.revisoes], 'readwrite');
+      // A leitura e a escrita dividem a mesma transação readwrite: assim duas
+      // guias atuais não passam pela mesma versão e gravam uma sobre a outra.
+      const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos, LOJAS.revisoes], 'readwrite');
+      const projetos = tx.objectStore(LOJAS.projetos);
+      const arquivos = tx.objectStore(LOJAS.arquivos);
       const revisoes = tx.objectStore(LOJAS.revisoes);
-      tx.objectStore(LOJAS.arquivos).put(arquivo);
-      (plano.removerRevisoes || []).forEach((revisao) => revisoes.delete(revisao.id));
-      if (plano.guardarRevisao && anterior && anterior.conteudo !== arquivo.conteudo) {
-        revisoes.put({
-          id: idNovo('rev'), arquivoId: anterior.id, conteudo: anterior.conteudo,
-          bytes: bytes(anterior.conteudo), quando: anterior.atualizadoEm, versao: anterior.versao
-        });
-      }
-      tx.oncomplete = () => resolve(arquivo);
+      let resultado = { conflito: false, arquivo: null, projeto: null };
+      const leituraArquivo = arquivos.get(anterior.id);
+      leituraArquivo.onsuccess = () => {
+        const persistido = leituraArquivo.result || null;
+        if (!arquivoAindaIgual(persistido, anterior)) {
+          resultado = { conflito: true, arquivo: null, projeto: null };
+          return;
+        }
+        const leituraProjeto = projetos.get(anterior.projetoId);
+        leituraProjeto.onsuccess = () => {
+          const projetoPersistido = leituraProjeto.result || null;
+          if (!projetoPersistido || estaNaLixeira(projetoPersistido)) {
+            resultado = { conflito: true, arquivo: null, projeto: null };
+            return;
+          }
+          const projetoAtualizado = Object.assign({}, projetoPersistido, { atualizadoEm: arquivo.atualizadoEm });
+          arquivos.put(arquivo);
+          projetos.put(projetoAtualizado);
+          (plano.removerRevisoes || []).forEach((revisao) => revisoes.delete(revisao.id));
+          if (plano.guardarRevisao && anterior.conteudo !== arquivo.conteudo) {
+            revisoes.put({
+              id: idNovo('rev'), arquivoId: anterior.id, conteudo: anterior.conteudo,
+              bytes: bytes(anterior.conteudo), quando: anterior.atualizadoEm, versao: anterior.versao
+            });
+          }
+          resultado = { conflito: false, arquivo, projeto: projetoAtualizado };
+        };
+        leituraProjeto.onerror = () => reject(leituraProjeto.error || erro('sem-indexeddb'));
+      };
+      leituraArquivo.onerror = () => reject(leituraArquivo.error || erro('sem-indexeddb'));
+      tx.oncomplete = () => resolve(resultado);
       tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
       tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
     }));
@@ -251,6 +289,26 @@
       projetos.forEach((projeto) => lojaProjetos.put(projeto));
       arquivos.forEach((arquivo) => lojaArquivos.put(arquivo));
       tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
+      tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
+    }));
+  }
+  function gravarCopiaConflito(copia) {
+    return abrirBanco().then((banco) => new Promise((resolve, reject) => {
+      const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos], 'readwrite');
+      const projetos = tx.objectStore(LOJAS.projetos);
+      const arquivos = tx.objectStore(LOJAS.arquivos);
+      let gravada = false;
+      const leituraProjeto = projetos.get(copia.projetoId);
+      leituraProjeto.onsuccess = () => {
+        const projeto = leituraProjeto.result || null;
+        if (!projeto || estaNaLixeira(projeto)) return;
+        arquivos.put(copia);
+        projetos.put(Object.assign({}, projeto, { atualizadoEm: copia.atualizadoEm }));
+        gravada = true;
+      };
+      leituraProjeto.onerror = () => reject(leituraProjeto.error || erro('sem-indexeddb'));
+      tx.oncomplete = () => resolve(gravada);
       tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
       tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
     }));
@@ -449,15 +507,27 @@
       elementos.listaArquivos.appendChild(item);
     });
   }
+  function renderConflitoArquivo() {
+    if (!elementos || !elementos.conflitoArquivo) return;
+    const ativo = !!estado.conflitoArquivo;
+    elementos.conflitoArquivo.classList.toggle('oculto', !ativo);
+    elementos.baixarConflito.disabled = !ativo || estado.operacaoArquivoCompleto;
+    elementos.copiarConflito.disabled = !ativo || estado.operacaoArquivoCompleto;
+    elementos.recarregarConflito.disabled = !ativo || estado.operacaoArquivoCompleto;
+  }
   function atualizarControlesEditor(ativo) {
     if (!elementos) return;
     const bloqueado = estado.operacaoArquivoCompleto;
+    const conflito = !!estado.conflitoArquivo;
+    // O texto continua editável/copíavel para que a pessoa não perca o rascunho,
+    // mas gravar ou mover o registro original fica bloqueado até resolver.
     elementos.nomeArquivo.disabled = !ativo || bloqueado;
     elementos.editor.disabled = !ativo || bloqueado;
-    elementos.salvar.disabled = !ativo || estado.salvando || bloqueado;
-    elementos.apagarArquivo.disabled = !ativo || estado.salvando || bloqueado;
+    elementos.salvar.disabled = !ativo || estado.salvando || bloqueado || conflito;
+    elementos.apagarArquivo.disabled = !ativo || estado.salvando || bloqueado || conflito;
     elementos.copiar.disabled = !ativo || estado.salvando || bloqueado;
     elementos.levarAoChat.disabled = !ativo || estado.salvando || bloqueado;
+    renderConflitoArquivo();
   }
   function renderEditor() {
     if (!elementos) return;
@@ -718,16 +788,115 @@
       salvarArquivoAtual('automatico');
     }, 900);
   }
+  function registrarConflitoArquivo(anterior) {
+    if (estado.temporizadorSalvar) { clearTimeout(estado.temporizadorSalvar); estado.temporizadorSalvar = null; }
+    estado.conflitoArquivo = { arquivoId: anterior.id, projetoId: anterior.projetoId };
+    estado.alterado = true;
+    atualizarControlesEditor(true);
+    definirStatus('erro', 'Este arquivo mudou em outra guia. Seu texto continua no editor e nada foi substituído. Salve uma cópia, baixe o rascunho ou recarregue a versão salva.');
+  }
+  function nomeRascunhoConflito() {
+    const original = nomeArquivoSeguro(elementos && elementos.nomeArquivo ? elementos.nomeArquivo.value : 'rascunho.txt');
+    const ponto = original.lastIndexOf('.');
+    const raiz = ponto > 0 ? original.slice(0, ponto) : original;
+    const extensao = ponto > 0 ? original.slice(ponto) : '.txt';
+    return raiz.slice(0, Math.max(1, 80 - extensao.length - 22)) + '-rascunho-conflito' + extensao;
+  }
+  function baixarRascunhoConflito() {
+    if (!estado.conflitoArquivo || !elementos) return;
+    baixar(texto(elementos.editor.value), nomeRascunhoConflito(), 'text/plain;charset=utf-8');
+    definirStatus('ok', 'Seu rascunho em conflito foi baixado neste aparelho. Nada foi enviado pelo Chat.');
+  }
+  function nomeCopiaConflito(base, arquivos) {
+    const limpo = nomeArquivoSeguro(base);
+    const usados = new Set((arquivos || []).filter((arquivo) => !estaNaLixeira(arquivo)).map((arquivo) => busca(arquivo.nome)));
+    const ponto = limpo.lastIndexOf('.');
+    const raiz = ponto > 0 ? limpo.slice(0, ponto) : limpo;
+    const extensao = ponto > 0 ? limpo.slice(ponto) : '';
+    let n = 1;
+    let tentativa = limpo;
+    do {
+      const sufixo = n === 1 ? ' (minha cópia)' : ' (minha cópia ' + n + ')';
+      tentativa = raiz.slice(0, Math.max(1, 80 - extensao.length - sufixo.length)) + sufixo + extensao;
+      n++;
+    } while (usados.has(busca(tentativa)));
+    return tentativa;
+  }
+  async function salvarConflitoComoCopia() {
+    const conflito = estado.conflitoArquivo;
+    if (!conflito || !elementos || estado.operacaoArquivoCompleto) return;
+    try {
+      const [arquivos, revisoes] = await Promise.all([lerTodos(LOJAS.arquivos), lerTodos(LOJAS.revisoes)]);
+      const conteudo = texto(elementos.editor.value);
+      const tamanho = bytes(conteudo);
+      if (tamanho > LIMITES.arquivoBytes) throw erro('arquivo-grande');
+      if (arquivos.filter((arquivo) => !estaNaLixeira(arquivo)).length >= LIMITES.arquivos) throw erro('limite-arquivos');
+      if (medirOcupacao(arquivos, revisoes) + tamanho > LIMITES.totalBytes) throw erro('workspace-cheio');
+      const quando = agora();
+      const copia = {
+        id: idNovo('arquivo'), projetoId: conflito.projetoId,
+        nome: nomeCopiaConflito(elementos.nomeArquivo.value, arquivos.filter((arquivo) => arquivo.projetoId === conflito.projetoId)),
+        conteudo, bytes: tamanho, versao: 1, criadoEm: quando, atualizadoEm: quando
+      };
+      if (!(await gravarCopiaConflito(copia))) throw erro('projeto-ausente');
+      if (estado.temporizadorSalvar) { clearTimeout(estado.temporizadorSalvar); estado.temporizadorSalvar = null; }
+      estado.edicao++;
+      await iniciarDados();
+      estado.projetoAtivo = copia.projetoId;
+      estado.arquivoAtivo = copia.id;
+      estado.conflitoArquivo = null;
+      estado.alterado = false;
+      await guardarSelecao();
+      renderTudo();
+      definirStatus('ok', 'Seu texto foi salvo como “' + copia.nome + '” somente neste navegador. O arquivo original não foi substituído.');
+      elementos.editor.focus();
+    } catch (e) { mostrarErro(e); }
+  }
+  async function recarregarArquivoConflito() {
+    const conflito = estado.conflitoArquivo;
+    if (!conflito || !elementos || estado.operacaoArquivoCompleto) return;
+    if (!confirm('Recarregar a versão salva deste arquivo? O texto que ficou neste editor será descartado. Baixe ou salve uma cópia antes se quiser mantê-lo. Nada será enviado.')) {
+      definirStatus('', 'Conflito mantido: seu texto continua no editor. Nada foi alterado.');
+      return;
+    }
+    try {
+      if (estado.temporizadorSalvar) { clearTimeout(estado.temporizadorSalvar); estado.temporizadorSalvar = null; }
+      estado.edicao++;
+      await iniciarDados();
+      const recarregado = estado.arquivos.find((arquivo) => arquivo.id === conflito.arquivoId) || null;
+      if (recarregado) {
+        estado.projetoAtivo = recarregado.projetoId;
+        estado.arquivoAtivo = recarregado.id;
+      }
+      estado.conflitoArquivo = null;
+      estado.alterado = false;
+      await guardarSelecao();
+      renderTudo();
+      definirStatus('ok', recarregado
+        ? 'Versão salva recarregada somente neste navegador. O rascunho em conflito foi descartado por sua escolha.'
+        : 'O arquivo não está mais ativo neste navegador. O rascunho em conflito foi descartado por sua escolha.');
+      if (recarregado) elementos.editor.focus();
+    } catch (e) { mostrarErro(e); }
+  }
   function marcarAlterado() {
     if (!arquivoAtivo()) return;
     estado.alterado = true;
     estado.edicao++;
+    if (estado.conflitoArquivo) {
+      definirStatus('erro', 'Este arquivo mudou em outra guia. Seu texto continua no editor; salve uma cópia, baixe o rascunho ou recarregue a versão salva.');
+      return;
+    }
     definirStatus('', 'Alterações pendentes: o Workspace vai salvar apenas neste navegador.');
     agendarSalvarAutomatico();
   }
   async function salvarArquivoAtual(origem) {
     const anterior = arquivoAtivo();
     if (!anterior) { if (origem !== 'automatico') mostrarErro(erro('sem-arquivo')); return false; }
+    if (estado.conflitoArquivo) {
+      atualizarControlesEditor(true);
+      if (origem !== 'automatico') definirStatus('erro', 'Este arquivo mudou em outra guia. Resolva o conflito antes de salvar o original.');
+      return false;
+    }
     if (estado.salvando) return false;
     const edicaoNoInicio = estado.edicao;
     let houveEdicaoDurante = false;
@@ -750,11 +919,14 @@
       atualizarControlesEditor(true);
       const atualizado = Object.assign({}, anterior, { nome, conteudo, bytes: tamanho, versao: Number(anterior.versao || 1) + 1, atualizadoEm: agora() });
       const plano = await planejarArmazenamentoParaSalvar(anterior, atualizado);
-      await gravarArquivoComRevisao(atualizado, anterior, plano);
+      const resultado = await gravarArquivoComRevisao(atualizado, anterior, plano);
+      if (resultado.conflito) {
+        registrarConflitoArquivo(anterior);
+        return false;
+      }
       estado.bytesOcupados = plano.ocupacaoFinal;
       estado.arquivos = estado.arquivos.map((arquivo) => arquivo.id === atualizado.id ? atualizado : arquivo);
-      const projeto = projetoAtivo();
-      if (projeto) { projeto.atualizadoEm = atualizado.atualizadoEm; await gravar(LOJAS.projetos, projeto); }
+      if (resultado.projeto) estado.projetos = estado.projetos.map((projeto) => projeto.id === resultado.projeto.id ? resultado.projeto : projeto);
       houveEdicaoDurante = estado.edicao !== edicaoNoInicio;
       if (!houveEdicaoDurante) {
         estado.alterado = false;
@@ -1650,6 +1822,11 @@
         </aside>
         <section class="workspace-editor" aria-label="Editor de arquivo local">
           <div class="workspace-editor-cabecalho"><div><h3 id="workspace-titulo-editor">Escolha ou crie um arquivo</h3><p id="workspace-meta-editor"></p></div><button type="button" id="btn-workspace-salvar">Salvar localmente</button></div>
+          <section id="workspace-conflito-arquivo" class="workspace-conflito oculto" role="alert" aria-labelledby="workspace-conflito-titulo">
+            <strong id="workspace-conflito-titulo">Este arquivo mudou em outra guia.</strong>
+            <p>Seu texto continua neste editor e nada foi substituído. Salve uma cópia ou baixe o rascunho antes de recarregar a versão salva.</p>
+            <div class="workspace-conflito-acoes"><button type="button" id="btn-workspace-baixar-conflito">⇩ Baixar meu rascunho</button><button type="button" id="btn-workspace-copiar-conflito">⧉ Salvar meu texto como cópia</button><button type="button" id="btn-workspace-recarregar-conflito">↻ Recarregar versão salva</button></div>
+          </section>
           <label class="workspace-rotulo" for="workspace-nome-arquivo">Nome do arquivo</label>
           <input id="workspace-nome-arquivo" maxlength="80" autocomplete="off" disabled>
           <label class="visualmente-oculto" for="workspace-editor">Conteúdo do arquivo</label>
@@ -1668,6 +1845,7 @@
       contadorLixeira: raiz.querySelector('#workspace-contador-lixeira'), listaLixeira: raiz.querySelector('#workspace-lista-lixeira'), esvaziarLixeira: raiz.querySelector('#btn-workspace-esvaziar-lixeira'),
       buscaArquivos: raiz.querySelector('#workspace-busca-arquivos'), buscaGlobal: raiz.querySelector('#btn-workspace-busca-global'), ajudaBusca: raiz.querySelector('#workspace-ajuda-busca'), contadorArquivos: raiz.querySelector('#workspace-contador-arquivos'), listaArquivos: raiz.querySelector('#workspace-lista-arquivos'),
       nomeArquivo: raiz.querySelector('#workspace-nome-arquivo'), editor: raiz.querySelector('#workspace-editor'), salvar: raiz.querySelector('#btn-workspace-salvar'), apagarArquivo: raiz.querySelector('#btn-workspace-apagar-arquivo'),
+      conflitoArquivo: raiz.querySelector('#workspace-conflito-arquivo'), baixarConflito: raiz.querySelector('#btn-workspace-baixar-conflito'), copiarConflito: raiz.querySelector('#btn-workspace-copiar-conflito'), recarregarConflito: raiz.querySelector('#btn-workspace-recarregar-conflito'),
       copiar: raiz.querySelector('#btn-workspace-copiar'), levarAoChat: raiz.querySelector('#btn-workspace-levar-chat'), revisoes: raiz.querySelector('#workspace-revisoes'), listaRevisoes: raiz.querySelector('#workspace-lista-revisoes'),
       tituloEditor: raiz.querySelector('#workspace-titulo-editor'), metaEditor: raiz.querySelector('#workspace-meta-editor'),
       importar: raiz.querySelector('#workspace-arquivo-importar'), arquivoCompleto: raiz.querySelector('#workspace-arquivo-completo-importar'),
@@ -1711,6 +1889,9 @@
     elementos.nomeArquivo.addEventListener('input', marcarAlterado);
     elementos.editor.addEventListener('input', marcarAlterado);
     elementos.salvar.onclick = () => salvarArquivoAtual('manual');
+    elementos.baixarConflito.onclick = baixarRascunhoConflito;
+    elementos.copiarConflito.onclick = salvarConflitoComoCopia;
+    elementos.recarregarConflito.onclick = recarregarArquivoConflito;
     elementos.apagarArquivo.onclick = apagarArquivo;
     elementos.copiar.onclick = copiarArquivo;
     elementos.levarAoChat.onclick = levarSelecaoAoChat;

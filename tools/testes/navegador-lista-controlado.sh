@@ -92,6 +92,59 @@ teste_lista = """<script>
   };
   const visivel = (elemento) => !!elemento && getComputedStyle(elemento).display !== 'none';
   const porTexto = (raiz, seletor, texto) => [...raiz.querySelectorAll(seletor)].find((item) => item.textContent.includes(texto));
+  const porNomeArquivoExato = (nome) => [...document.querySelectorAll('#workspace-lista-arquivos .workspace-arquivo')].find((item) => {
+    const titulo = item.querySelector('strong');
+    return titulo && titulo.textContent === nome;
+  });
+  // Fixture controlada de uma gravação concorrente: altera somente o IndexedDB
+  // efêmero do perfil de teste, sem guia/dado/servidor real nem rede externa.
+  const atualizarArquivoWorkspaceControlado = (id, conteudo) => new Promise((resolve, reject) => {
+    const abertura = indexedDB.open('rebocl-workspace-local-v1');
+    abertura.onerror = () => reject(abertura.error || new Error('não abriu IndexedDB controlado'));
+    abertura.onsuccess = () => {
+      const banco = abertura.result;
+      const transacao = banco.transaction('arquivos', 'readwrite');
+      const loja = transacao.objectStore('arquivos');
+      const leitura = loja.get(id);
+      let atualizado = null;
+      leitura.onsuccess = () => {
+        if (!leitura.result) { transacao.abort(); return; }
+        atualizado = Object.assign({}, leitura.result, {
+          conteudo,
+          bytes: new TextEncoder().encode(conteudo).length,
+          versao: Number(leitura.result.versao || 1) + 1,
+          atualizadoEm: new Date().toISOString()
+        });
+        loja.put(atualizado);
+      };
+      leitura.onerror = () => { try { transacao.abort(); } catch (_) {} };
+      transacao.oncomplete = () => { banco.close(); atualizado ? resolve(atualizado) : reject(new Error('arquivo controlado ausente')); };
+      transacao.onerror = () => { banco.close(); reject(transacao.error || new Error('falha na escrita concorrente controlada')); };
+      transacao.onabort = () => { banco.close(); reject(transacao.error || new Error('escrita concorrente controlada cancelada')); };
+    };
+  });
+  const lerEstadoArquivoWorkspaceControlado = (id, projetoId) => new Promise((resolve, reject) => {
+    const abertura = indexedDB.open('rebocl-workspace-local-v1');
+    abertura.onerror = () => reject(abertura.error || new Error('não abriu leitura controlada'));
+    abertura.onsuccess = () => {
+      const banco = abertura.result;
+      const transacao = banco.transaction(['arquivos', 'revisoes', 'projetos'], 'readonly');
+      const leituraArquivo = transacao.objectStore('arquivos').get(id);
+      const leituraRevisoes = transacao.objectStore('revisoes').getAll();
+      const leituraProjeto = transacao.objectStore('projetos').get(projetoId);
+      let arquivo = null;
+      let revisoes = [];
+      let projeto = null;
+      leituraArquivo.onsuccess = () => { arquivo = leituraArquivo.result || null; };
+      leituraRevisoes.onsuccess = () => { revisoes = (leituraRevisoes.result || []).filter((revisao) => revisao.arquivoId === id); };
+      leituraProjeto.onsuccess = () => { projeto = leituraProjeto.result || null; };
+      leituraArquivo.onerror = () => reject(leituraArquivo.error || new Error('falha na leitura do arquivo controlado'));
+      leituraRevisoes.onerror = () => reject(leituraRevisoes.error || new Error('falha na leitura das revisões controladas'));
+      leituraProjeto.onerror = () => reject(leituraProjeto.error || new Error('falha na leitura do projeto controlado'));
+      transacao.oncomplete = () => { banco.close(); resolve({ arquivo, revisoes, projeto }); };
+      transacao.onerror = () => { banco.close(); reject(transacao.error || new Error('falha na transação controlada')); };
+    };
+  });
   const esperarWorkspace = async (predicado, rotulo, tentativas = 30) => {
     for (let tentativa = 0; tentativa < tentativas; tentativa++) {
       if (predicado()) return;
@@ -249,7 +302,50 @@ teste_lista = """<script>
     buscaArquivos.value = '';
     buscaArquivos.dispatchEvent(new Event('input', { bubbles: true }));
     porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjeto).click();
-    await esperarWorkspace(() => document.getElementById('workspace-nome-projeto').value === nomeProjeto && porTexto(document, '#workspace-lista-arquivos .workspace-arquivo', nomeArquivo), 'retornar ao projeto para transferências posteriores');
+    await esperarWorkspace(() => document.getElementById('workspace-nome-projeto').value === nomeProjeto && porNomeArquivoExato(nomeArquivo), 'retornar ao projeto para transferências posteriores');
+    porNomeArquivoExato(nomeArquivo).click();
+    await esperarWorkspace(() => editor.value === conteudoFinal, 'abrir arquivo para conflito local controlado');
+
+    const rascunhoParaCopia = conteudoFinal + ' com rascunho concorrente para cópia';
+    editor.value = rascunhoParaCopia;
+    const arquivoOriginal = porNomeArquivoExato(nomeArquivo);
+    const estadoAntesConflito = await lerEstadoArquivoWorkspaceControlado(arquivoOriginal.dataset.arquivoId, arquivoOriginal.dataset.projetoId);
+    await atualizarArquivoWorkspaceControlado(arquivoOriginal.dataset.arquivoId, conteudoFinal);
+    const estadoRemotoConflito = await lerEstadoArquivoWorkspaceControlado(arquivoOriginal.dataset.arquivoId, arquivoOriginal.dataset.projetoId);
+    editor.dispatchEvent(new Event('input', { bubbles: true }));
+    await esperarWorkspace(() => document.getElementById('workspace-status').textContent.includes('Alterações pendentes'), 'editar antes da escrita concorrente controlada');
+    document.getElementById('btn-workspace-salvar').click();
+    const painelConflito = document.getElementById('workspace-conflito-arquivo');
+    await esperarWorkspace(() => visivel(painelConflito) && document.getElementById('workspace-status').textContent.includes('mudou em outra guia'), 'detectar conflito sem substituir arquivo');
+    if (editor.value !== rascunhoParaCopia || !document.getElementById('btn-workspace-salvar').disabled || !document.getElementById('btn-workspace-apagar-arquivo').disabled) {
+      throw new Error('conflito não preservou o rascunho ou ainda permitiu substituir o original');
+    }
+    const estadoDepoisConflito = await lerEstadoArquivoWorkspaceControlado(arquivoOriginal.dataset.arquivoId, arquivoOriginal.dataset.projetoId);
+    if (estadoDepoisConflito.arquivo.conteudo !== conteudoFinal || estadoDepoisConflito.arquivo.versao !== estadoRemotoConflito.arquivo.versao) {
+      throw new Error('conflito substituiu o conteúdo ou a versão persistida pela escrita local pendente');
+    }
+    if (estadoDepoisConflito.revisoes.length !== estadoRemotoConflito.revisoes.length || estadoDepoisConflito.projeto.atualizadoEm !== estadoRemotoConflito.projeto.atualizadoEm) {
+      throw new Error('conflito alterou revisão ou metadado de projeto depois da divergência');
+    }
+    if (estadoRemotoConflito.revisoes.length !== estadoAntesConflito.revisoes.length) throw new Error('fixture concorrente alterou revisão em vez de somente o arquivo');
+    document.getElementById('btn-workspace-copiar-conflito').click();
+    await esperarWorkspace(() => !visivel(painelConflito) && editor.value === rascunhoParaCopia && document.getElementById('workspace-nome-arquivo').value.includes('minha cópia'), 'salvar rascunho conflitante como cópia');
+    porNomeArquivoExato(nomeArquivo).click();
+    await esperarWorkspace(() => editor.value === conteudoFinal, 'voltar ao original depois da cópia de conflito');
+
+    const rascunhoParaBaixar = conteudoFinal + ' com rascunho concorrente para baixar';
+    editor.value = rascunhoParaBaixar;
+    const arquivoOriginalReaberto = porNomeArquivoExato(nomeArquivo);
+    await atualizarArquivoWorkspaceControlado(arquivoOriginalReaberto.dataset.arquivoId, conteudoFinal);
+    editor.dispatchEvent(new Event('input', { bubbles: true }));
+    document.getElementById('btn-workspace-salvar').click();
+    await esperarWorkspace(() => visivel(painelConflito), 'detectar segundo conflito local controlado');
+    const blobsAntesConflito = window.__blobsBackupsLocais.length;
+    document.getElementById('btn-workspace-baixar-conflito').click();
+    await esperarWorkspace(() => window.__blobsBackupsLocais.length === blobsAntesConflito + 1, 'baixar rascunho em conflito');
+    if ((await window.__blobsBackupsLocais[window.__blobsBackupsLocais.length - 1].text()) !== rascunhoParaBaixar) throw new Error('download controlado não preservou o rascunho em conflito');
+    document.getElementById('btn-workspace-recarregar-conflito').click();
+    await esperarWorkspace(() => !visivel(painelConflito) && editor.value === conteudoFinal && document.getElementById('workspace-status').textContent.includes('Versão salva recarregada'), 'recarregar versão salva por escolha explícita');
 
     const exportarProjetoPortatil = document.getElementById('btn-workspace-exportar-projeto');
     const importarProjetoPortatil = document.getElementById('btn-workspace-importar-projeto');
@@ -371,7 +467,7 @@ teste_lista = """<script>
     if (!document.getElementById('workspace-status').textContent.toLowerCase().includes('nada foi enviado')) {
       throw new Error('ciclo local não declarou a ausência de envio');
     }
-    return ' · Workspace criou, versionou, buscou entre projetos sem expor Lixeira, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture';
+    return ' · Workspace criou, versionou, protegeu rascunho em conflito local, buscou entre projetos sem expor Lixeira, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture';
   };
   try {
     await esperar(() => document.querySelectorAll('#lista .conv').length >= 52, 5000, 'lista inicial');
@@ -673,7 +769,7 @@ if rota != 'limpar.html':
 else:
     assert 'Cache limpo.' in conteudo, f'{rota}: aviso de limpeza não está no DOM final'
 if rota == 'index.html':
-    assert 'Workspace criou, versionou, buscou entre projetos sem expor Lixeira, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture' in texto, f'{rota}: ciclo Workspace não foi concluído'
+    assert 'Workspace criou, versionou, protegeu rascunho em conflito local, buscou entre projetos sem expor Lixeira, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture' in texto, f'{rota}: ciclo Workspace não foi concluído'
 print('✔ navegador controlado · padrão · ' + rota + ' · ' + texto)
 PY
 done

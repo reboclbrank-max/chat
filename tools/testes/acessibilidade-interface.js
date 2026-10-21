@@ -104,6 +104,16 @@ testa('busca global do Workspace declara escopo, estado e ajuda acessíveis', ()
   assert.match(estilos, /button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible/);
 });
 
+testa('conflito local do Workspace anuncia escolha sem esconder o rascunho', () => {
+  const workspace = fonte('chat-workspace.js');
+  assert.match(workspace, /id="workspace-conflito-arquivo" class="workspace-conflito oculto" role="alert" aria-labelledby="workspace-conflito-titulo"/);
+  assert.match(workspace, /id="workspace-conflito-titulo">Este arquivo mudou em outra guia\./);
+  assert.match(workspace, /id="btn-workspace-baixar-conflito">⇩ Baixar meu rascunho/);
+  assert.match(workspace, /id="btn-workspace-copiar-conflito">⧉ Salvar meu texto como cópia/);
+  assert.match(workspace, /id="btn-workspace-recarregar-conflito">↻ Recarregar versão salva/);
+  assert.match(estilos, /\.workspace-conflito-acoes button\{flex:1 1 150px/);
+});
+
 testa('console dá nome persistente ao tema pensado sem alterar sua ação', () => {
   const consoleHtml = fonte('console.html');
   assert.match(consoleHtml, /<input id="pensar-entrada" aria-label="Tema para pensar com dois motores e juiz" placeholder="🧠 pensar bem sobre… \(2 motores \+ juiz\)">/);

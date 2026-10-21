@@ -102,6 +102,16 @@ testa('Busca global do Workspace é explícita, local e abre o resultado no proj
   assert.doesNotMatch(render + selecionar, /\b(fetch|api\s*\(|localStorage|sessionStorage)\b/);
 });
 
+testa('Workspace detecta conflito entre edições locais e oferece resolução explícita', () => {
+  assert.match(workspace, /conflitoArquivo: null/);
+  assert.match(workspace, /function arquivoAindaIgual\(persistido, anterior\)/);
+  assert.match(workspace, /function gravarArquivoComRevisao\(arquivo, anterior, plano\)/);
+  assert.match(workspace, /function salvarConflitoComoCopia\(\)/);
+  assert.match(workspace, /function recarregarArquivoConflito\(\)/);
+  assert.match(workspace, /id="workspace-conflito-arquivo"/);
+  assert.match(workspace, /Seu texto continua neste editor e nada foi substituído/);
+});
+
 testa('trecho só vai ao compositor por escolha explícita e não é enviado automaticamente', () => {
   const bloco = entre(workspace, 'async function levarSelecaoAoChat()', '\n\n  function telaVisivel()');
   const token = bloco.indexOf('pareceTokenDeAcesso(trecho)');
@@ -147,7 +157,7 @@ testa('as quatro rotas expõem o mesmo acesso e carregam uma só cópia do Works
 });
 
 testa('casca PWA, workflow, corredor e porta de continuidade observam o ativo', () => {
-  assert.match(sw, /rebocl-chat-v76/);
+  assert.match(sw, /rebocl-chat-v77/);
   assert.match(sw, /'\.\/chat-workspace\.js'/);
   assert.match(workflow, /'chat-workspace\.js'/);
   assert.match(workflow, /chat-workspace\.js tools\/testes\/\*\.js/);
@@ -157,7 +167,7 @@ testa('casca PWA, workflow, corredor e porta de continuidade observam o ativo', 
   assert.match(corredor, /'workspace-integridade-local\.js'/);
   assert.match(retrato, /Workspace interno local-first/);
   assert.match(retrato, /rebocl-workspace-local-v1/);
-  assert.match(retrato, /rebocl-chat-v76/);
+  assert.match(retrato, /rebocl-chat-v77/);
 });
 
 testa('porta de continuidade exige retrato quando o ativo local muda', () => {
