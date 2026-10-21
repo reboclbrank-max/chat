@@ -1,40 +1,44 @@
 # Central segura do Chat
 
-**Estado:** etapas 1 e 2A ativas em 21/10/2026.
+**Estado:** etapas 1, 2A e 2B ativas em 21/10/2026.
 **Escolha do dono:** Central segura em etapas (`gradual_seguro`).
-**Objetivo:** transferir para o Chat, progressivamente, a coordenação das tarefas que hoje dependem de apoio externo, sem transformar a página em executor genérico nem ampliar segredo, custo ou poder de publicação.
+**Objetivo:** transferir para o Chat, progressivamente, a coordenação de tarefas hoje assistidas externamente, sem transformar a página em executor genérico nem ampliar segredo, custo, publicação ou promoção automática.
 
-Este contrato complementa `AGENTS.md`, `AUTONOMIA.md`, `GOVERNANCA-CHAT-PRIMEIRO.md` e `CONTINUIDADE.md`. Em conflito, prevalecem as guardas mais restritivas.
+Este contrato complementa `AGENTS.md`, `AUTONOMIA.md`, `GOVERNANCA-CHAT-PRIMEIRO.md` e `CONTINUIDADE.md`. Em conflito, prevalece a guarda mais restritiva.
 
-## 1. O que a etapa 1 entrega
+## 1. Mapa fechado e entradas autorizadas
 
-A Central torna descobrível e coerente o que o Chat já pode fazer, em vez de aceitar uma ordem ampla e fingir que ela foi executada.
+A Central torna descobrível e coerente o que o Chat já pode fazer, em vez de aceitar uma ordem ampla e fingir que a executou.
 
-| Entrada | Canal | Resultado desta etapa |
+| Entrada | Canal | Resultado autorizado |
 |---|---|---|
 | `operar:` / `central:` | Página, e-mail e Telegram | Mostra o mapa fechado de capacidades, limites e próximo estágio, sem rede, armazenamento ou criação de tarefa. |
-| `operar: status` | Página, e-mail e Telegram | Encaminha de forma honesta ao comando existente `status:` nos canais privados; não inventa estado dinâmico na página. |
-| `operar: pesquisa` | Página, e-mail e Telegram | Explica o uso do fluxo de pesquisa pública já existente, separado de conteúdo privado. |
-| `operar: navegador` | Página, e-mail e Telegram | Explica o fluxo `navegar:` já isolado: página pública, sem login, formulário ou área privada. |
+| `operar: status` | Página, e-mail e Telegram | Encaminha honestamente ao `status:` existente nos canais privados; não inventa estado dinâmico na página. |
+| `operar: pesquisa` | Página, e-mail e Telegram | Explica o fluxo de pesquisa pública já existente, separado de conteúdo privado. |
+| `operar: navegador` | Página, e-mail e Telegram | Explica o fluxo `navegar:` isolado: página pública, sem login, formulário ou área privada. |
 | `operar: marketing` | Página, e-mail e Telegram | Declara que o marketing autorizado continua no `site`, sob fatos, cadência e anti-spam; não publica conteúdo adicional. |
 | `operar: testes` | Página, e-mail e Telegram | Explica a barreira fixa já aprovada. |
-| `operar: preparo` | Página, e-mail e Telegram | Explica a receita de auditoria interna fixa; nos canais não despacha ação. |
-| `!testarchat` | Página com acesso protegido já configurado | Pede exclusivamente o workflow existente `testes-rapidos.yml` do `chat`, em `main`. Não recebe argumento, não escolhe outro workflow/ref e não altera código, segredo ou branch principal. |
-| `!prepararchat` | Página com acesso protegido já configurado | Pede exclusivamente `preparo-controlado.yml` em `main`. A receita executa cinco guardas fixas e deixa resumo sanitizado no run; não recebe argumento, não cria branch, código, commit, push, merge ou promoção. |
+| `operar: preparo` | Página, e-mail e Telegram | Explica a auditoria interna fixa; nos canais não despacha ação. |
+| `operar: dossie` | Página, e-mail e Telegram | Explica a receita 2B e seus limites; e-mail/Telegram não a disparam. |
+| `!testarchat` | Página com acesso protegido já configurado | Pede exclusivamente `testes-rapidos.yml` do `chat`, em `main`. Não recebe argumento nem escolhe workflow/ref. |
+| `!prepararchat` | Página com acesso protegido já configurado | Pede exclusivamente `preparo-controlado.yml` em `main`. Executa cinco guardas fixas e deixa resumo sanitizado; não cria branch, código, commit, push, merge ou promoção. |
+| `!dossiechat` | Página com acesso protegido já configurado | Pede exclusivamente `dossie-preparo-controlado.yml` em `main`. Só depois das cinco guardas pode criar **um ramo novo** contendo apenas `propostas/central/dossie-preparo-controlado.md`; não altera código, `main`, PR, merge ou promoção. |
 
-O chip **⚙️ operar** apenas abre `operar:` e é interceptado localmente antes de rascunho, Issue, motor ou API. O texto livre depois de `operar:` não é tratado como plano, código ou instrução; ele recebe somente a sintaxe fechada.
+O chip **⚙️ operar** apenas abre `operar:` e é interceptado localmente antes de rascunho, Issue, motor ou API. Texto livre depois de `operar:` não é plano, código, instrução nem fila; recebe somente a sintaxe fechada.
 
-## 2. Guardas das duas ações manuais
+## 2. Guardas das três ações manuais
 
-`!testarchat` e `!prepararchat` são pontes estreitas, alcançadas somente pela allowlist local. Ambas exigem simultaneamente:
+As três pontes são alcançadas apenas pela allowlist local. Todas exigem:
 
 1. comando exato, sem argumento;
 2. modo somente-local desligado por escolha explícita;
 3. acesso protegido previamente configurado no navegador do dono;
-4. ausência de outro pedido em curso nesta aba;
-5. intervalo local mínimo de cinco minutos desde o último pedido nesta aba.
+4. ausência de outro pedido da Central em curso nesta aba;
+5. destino, workflow e ref literais no código (`reboclbrank-max/chat`, workflow fixo e `main`).
 
-Cada destino, workflow e ref é literal no código. Nenhuma ponte aceita URL, repositório, nome de workflow, shell, texto de tarefa ou ref fornecidos pela pessoa. `!testarchat` só pede a barreira existente. `!prepararchat` só pede a receita interna `preparo-controlado.yml`, com permissões de leitura: ela roda cinco contratos locais pré-definidos e publica apenas um resumo sanitizado no run. Uma resposta de fila é apenas confirmação de pedido: não afirma que a barreira/preparo concluiu, que o código é correto, que houve publicação nem que algum serviço externo está disponível.
+`!testarchat` e `!prepararchat` têm intervalo local mínimo de cinco minutos. `!dossiechat` tem freio local em memória de 24 horas; ele reduz clique repetido nesta aba, mas não é persistência nem uma alegação de bloqueio remoto. O workflow também serializa sua própria família. A cadência não autoriza contornar revisão, nem se transforma em cron, fila persistente ou retry cego.
+
+Nenhuma ponte aceita URL, repositório, caminho, nome de workflow, shell, texto de tarefa ou ref fornecidos pela pessoa. Uma resposta de fila confirma somente o pedido: não afirma que a barreira/preparo concluiu, que o ramo foi criado, que o código é correto ou que algum serviço externo está disponível.
 
 ## 3. Fronteiras preservadas
 
@@ -51,13 +55,31 @@ A Central continua sob R$0. O Workspace local permanece local-first e não vira 
 
 ## 4. Etapa 2A — preparo automatizado, mas com rumo
 
-A primeira automação de repositório é deliberadamente uma **pré-verificação**, não uma mudança automática. `!prepararchat` chama somente `preparo-controlado.yml@main`; ele executa o catálogo interno e imutável de cinco contratos: Central, portas locais, PWA, continuidade e guardas dos workflows. O resultado é `pronto_para_revisao` ou `bloqueado`, sempre com resumo sanitizado. Ele não lê texto livre, não escolhe tarefa, não cria branch, arquivo, commit, push, merge ou promoção.
+`!prepararchat` chama somente `preparo-controlado.yml@main`. Ele executa o catálogo interno e imutável de cinco contratos — Central, portas locais, PWA, continuidade e guardas dos workflows — e produz somente `pronto_para_revisao` ou `bloqueado` em resumo sanitizado. Não lê texto livre, não escolhe tarefa e não cria branch, arquivo, commit, push, merge ou promoção.
 
-Esse freio dá rumo à automação: se uma guarda falhar, ela para e aponta que revisão não pode começar; se todas passarem, ela libera **somente** a revisão humana para escolher uma receita futura. Não existe cron novo, fila persistente, retry cego ou consumo contínuo de Actions.
+Se uma guarda falha, a receita para e bloqueia revisão. Se todas passam, libera somente a consideração humana de uma receita própria. Não existe cron novo, fila persistente, retry cego ou consumo contínuo de Actions.
 
-## 5. Próxima etapa — ainda não implementada
+## 5. Etapa 2B — dossiê revisável de escopo único
 
-A primeira receita que poderá preparar uma mudança reversível só entra depois de corte próprio que entregue e teste, no mínimo:
+Esta é a primeira receita de escrita da Central, desenhada para cumprir a preparação reversível sem se tornar um editor de repositório.
+
+1. `!dossiechat` despacha exclusivamente `dossie-preparo-controlado.yml@main`, sem input. O workflow aceita somente `refs/heads/main`, confirma que o checkout corresponde ao SHA do evento e que `origin` é literalmente `github.com/reboclbrank-max/chat` antes de qualquer escrita.
+2. Ele executa `tools/preparo-controlado.js` primeiro. Se uma das cinco guardas falha, não executa a ferramenta de dossiê, não cria ramo e não faz push.
+3. `tools/dossie-preparo-controlado.js` aceita somente SHA hexadecimal de 40 posições, identificador numérico de execução e a ref literal. Ele escreve somente `propostas/central/dossie-preparo-controlado.md`, com texto estático e metadados públicos mínimos de origem; não lê argumento, conversa, URL, arquivo arbitrário, segredo, anexo ou resultado bruto.
+4. Somente então o workflow abre um ramo novo com prefixo literal `central/dossie-preparo-<execução>`, adiciona exclusivamente aquele caminho e faz push não forçado de `HEAD` para esse ramo. Não abre PR, não faz merge, não toca `main`, tag, release, código, dependência, configuração ou infraestrutura.
+5. O resultado do workflow declara ramo, conteúdo, revisão e rollback em resumo sanitizado. A pessoa compara o ramo com `main` e decide manualmente se há uma receita futura distinta a desenhar. O dossiê não é especificação executável e nunca equivale a autorização para escrever código.
+
+O workflow declara `contents: write` por ser a permissão mínima disponível para criar o ramo remoto. Essa exceção está na allowlist explícita de `tools/testes/auditoria-workflows.js`; não recebe `actions: write`, entradas de dispatch, segredos explícitos, ação de pull request ou qualquer ação externa além do checkout/setup Node fixados por SHA e do push literal. A ferramenta de dossiê não lê credencial e seu conteúdo não contém segredo.
+
+### Rollback específico da 2B
+
+- Remover `!dossiechat`, `operar: dossie`, `dossie-preparo-controlado.yml`, a ferramenta, testes, allowlist de escrita e documentação neste repositório, com nova versão de casca PWA.
+- Apagar manualmente cada ramo `central/dossie-preparo-<execução>` que tenha sido criado após a revisão. A receita não apaga ramo automaticamente, para não ocultar evidência ou transformar rollback em nova automação cega.
+- Como `main` não é alterada e o ramo contém somente o dossiê, não há migração, dado produtivo, conta, segredo, dependência ou infraestrutura para reverter.
+
+## 6. Próximo estágio continua bloqueado
+
+Uma receita que efetivamente prepare mudança de código só poderá entrar após corte próprio que entregue e teste, no mínimo:
 
 1. catálogo pequeno de receitas/tipos de tarefa, sem prompt ou comando arbitrário;
 2. allowlist explícita de repositório e caminho;
@@ -66,29 +88,31 @@ A primeira receita que poderá preparar uma mudança reversível só entra depoi
 5. separação total de segredos e de qualquer conteúdo de conversa;
 6. bloqueio explícito para permissões, dependências, infraestrutura, exclusão, conta, gasto e ação pública irreversível.
 
-Mesmo depois desse corte, autorização ampla do dono não substitui configuração operacional concreta para contas, destino, identidade, segredo, provedor ou publicação.
+Mesmo depois de um corte futuro, autorização ampla do dono não substitui configuração operacional concreta para contas, destino, identidade, segredo, provedor ou publicação.
 
-## 6. Auditoria de paridade com agente (21/10/2026)
+## 7. Auditoria de paridade com agente (21/10/2026)
 
-A pergunta “o Chat já faz tudo que o agente faz?” foi testada contra `main` em `chat@198b0c9e02d5cedaa08bee7effc5e9646f054fec`. A resposta é **não**, de forma deliberada: a Central coordena capacidades configuradas e fechadas; ela não recebe a camada geral de arquivos, repositórios, shell, ferramentas ou credenciais de um ambiente de agente.
+A pergunta “o Chat já faz tudo que o agente faz?” foi testada contra `main` anterior em `chat@198b0c9e02d5cedaa08bee7effc5e9646f054fec`. A resposta continua **não**, de forma deliberada: a Central coordena capacidades configuradas e fechadas; não recebe a camada geral de arquivos, repositórios, shell, ferramentas ou credenciais de um ambiente de agente.
 
-- **O que foi exercitado de forma controlada:** o corredor integral fechou 83/83 com IMAP/SMTP/motores simulados, OCR/PDF locais e sem canal real; o browser isolado passou nas quatro rotas, desktop e móvel, com perfil/IndexedDB temporários e rede externa bloqueada. Uma fixture de UI enviou `operar:` pela página real e confirmou a interceptação local. Outra fixture chamou a ponte com API simulada: aliases retornaram o mapa, argumento/modo somente-local/acesso ausente bloquearam antes da API, e a única forma válida formou exclusivamente o POST literal para `chat/testes-rapidos.yml` em `main`, com repetição bloqueada.
-- **O que o Chat já pode fazer dentro do produto:** responder comandos locais, operar o Workspace local, atender os canais configurados sob suas guardas, orientar pesquisa/navegador público isolado, pedir a barreira fixa e pedir a pré-verificação automatizada fixa quando houver acesso configurado. Isso não transforma resultado técnico em execução remota geral, entrega, uso, disponibilidade ou satisfação.
-- **O que continua fora:** abrir/alterar arquivos arbitrários, executar terminal ou código recebido, escolher URL/repositório/workflow/ref, criar branch/commit/push/merge, revisar/promover `main`, usar ferramentas externas gerais, acessar segredo/conta/identidade, criar conta, backup externo, gasto, permissão ou publicação irreversível. A página também não acessa o workspace nem as ferramentas internas de quem a auxilia.
-- **Limite da prova:** não houve dispatch real de `!testarchat`, e-mail/Telegram real, conversa, segredo, postagem, conta ou tráfego externo fabricado. A simulação verifica guardas e formato, não afirma que uma execução externa concluiria nem substitui revisão humana. A próxima etapa permanece a do item 5, sem salto de escopo.
+- **Exercitado de forma controlada:** o corredor anterior fechou 84/84 com IMAP/SMTP/motores simulados, OCR/PDF locais e sem canal real; o browser isolado passou nas quatro rotas, desktop e móvel, com perfil/IndexedDB temporários e rede externa bloqueada. A 2B amplia somente a simulação offline de uma terceira ponte literal, do arquivo fixo e do workflow. Isso não é dispatch real.
+- **O que o Chat pode fazer agora dentro do produto:** responder comandos locais, operar o Workspace local, atender canais configurados sob suas guardas, orientar pesquisa/navegador público isolado, pedir a barreira fixa, pedir a pré-verificação fixa e pedir o dossiê reversível de escopo único quando houver acesso configurado.
+- **O que continua fora:** abrir/alterar arquivos arbitrários, executar terminal ou código recebido, escolher URL/repositório/workflow/ref, escrever código, revisar/promover `main`, usar ferramentas externas gerais, acessar segredo/conta/identidade, criar conta, backup externo, gasto, permissão ou publicação irreversível.
+- **Limite da prova:** não houve dispatch real de `!testarchat`, `!prepararchat` ou `!dossiechat`, e-mail/Telegram real, conversa, segredo, postagem, conta ou tráfego externo fabricado nesta implementação. Simulação verifica guardas e formato; não afirma que execução externa concluiria, que ramo remoto existiria ou que há qualidade, entrega, uso, disponibilidade ou satisfação.
 
-## 7. Alternativas recusadas nesta etapa
+## 8. Alternativas recusadas
 
 | Alternativa | Motivo da recusa |
 |---|---|
 | Botão ou comando que execute qualquer texto | Transformaria conversa em shell/dispatcher e permitiria mudança não auditável. |
-| Despachar workflow/ref informados pelo usuário | Ampliaria a superfície de execução e permitiria contornar revisão. |
-| Commit automático em `main` depois de teste | Teste não é revisão, e êxito técnico não autoriza promoção irreversível. |
+| Despachar workflow/ref informados pela pessoa | Ampliaria a superfície de execução e permitiria contornar revisão. |
+| Gerar código, diff livre ou patch a partir da conversa | Misturaria conteúdo não confiável à escrita com `contents: write`. |
+| Commit automático em `main` depois de teste | Teste não é revisão; êxito técnico não autoriza promoção irreversível. |
+| Abrir PR automaticamente | Uma PR é ação remota adicional e poderia aparentar aprovação; a revisão começa apenas pelo ramo/artefato. |
 | Cron ou receita que escolha sozinha código/repositório | Repetiria Actions sem objetivo verificável e transformaria observação em automação sem rumo. |
-| Branch/arquivo criado pelo preflight atual | A receita 2A só mede guardas; escrever antes de uma receita e revisão próprias confundiria diagnóstico com mudança. |
+| Branch/arquivo criado pelo preflight 2A | A 2A só mede guardas; escrever ali confundiria diagnóstico com mudança. |
 | Gravar tarefas livres no Workspace ou GitHub como “fila” | Criaria persistência/privacidade e falsa promessa de atendimento sem executor seguro. |
 | Usar Gmail, criar contas ou backup externo como atalho | Não há configuração concreta de conta, destino, retenção ou reversão; essas ações seguem bloqueadas. |
 
-## 8. Rollback
+## 9. Validação exigida deste corte
 
-O rollback desta etapa é estrito: remover as pontes `!testarchat`/`!prepararchat`, o workflow de preparo, a ferramenta local, o roteamento `operar:`, os testes e esta documentação; avançar a versão da casca PWA em uma publicação posterior. Não há migração, banco, fila persistente, segredo, conta, branch, commit ou alteração de dados remotos para desfazer.
+A receita 2B só é aceitável se a revisão local verificar, no mínimo: sintaxe dos scripts novos/alterados e das quatro rotas; contratos da Central, preparo, dossiê, comandos/PWA/continuidade e auditoria de workflows; corredor obrigatório; auditoria estática do workflow; `git diff --check`; scanner de adições sem credencial; e revisão do diff completo. Para front-end, o browser controlado permanece necessário antes de alegar integração visual. Nenhum resultado de CI, número, simulador ou placar substitui resultado real, revisão humana ou a confirmação do ramo remoto quando houver dispatch autorizado.

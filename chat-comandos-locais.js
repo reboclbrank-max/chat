@@ -18,10 +18,11 @@
     '• Já concentra conversa, Workspace local, lembretes, pesquisa pública, navegador isolado, estado e rotinas configuradas.',
     '• Testes: !testarchat pede somente a barreira aprovada do Chat; não altera código, segredos nem a branch principal.',
     '• Preparo: !prepararchat pede somente uma auditoria interna fixa; ela decide se há base técnica para revisão, sem criar branch ou código.',
+    '• Dossiê: !dossiechat pede a única receita de escrita desta etapa. Depois das cinco guardas, ela pode criar um ramo isolado contendo apenas um dossiê estático para revisão humana; não cria código, PR, merge ou promoção.',
     '• Marketing permanece nas rotinas autorizadas do Site, com fatos e anti-spam; este roteiro não publica extra nem cria conta.',
-    '• Próxima etapa: uma receita pequena poderá preparar mudança reversível em branch, teste e revisão; ainda não há promoção cega para a branch principal.',
+    '• Próxima etapa: somente uma receita nova, desenhada e revisada, poderia preparar outro tipo de mudança reversível; ainda não há promoção cega para a branch principal.',
     '• Dependem de configuração concreta: e-mail novo, contas, backup externo, identidade pública, credenciais, gasto e permissões.',
-    '• Use: operar: status | pesquisa | navegador | testes | preparo | repos | marketing | limites.',
+    '• Use: operar: status | pesquisa | navegador | testes | preparo | dossie | repos | marketing | limites.',
     'ℹ️ Mapa local e fechado: não executa texto livre, não cria fila persistente e não promete entrega, uso, satisfação ou SLA.'
   ].join(NL));
 
@@ -31,7 +32,8 @@
     navegador: '🌐 Navegador: use navegar: <URL pública> por e-mail ou Telegram. A abertura continua isolada, sem login ou área privada.',
     testes: '🧪 Testes: nesta interface, !testarchat pede somente a barreira Testes rápidos do chat já aprovada. Exige o acesso já configurado neste navegador e não promove mudança.',
     preparo: '🧩 Preparo: nesta interface, !prepararchat pede somente a auditoria interna fixa. Ela roda guardas fechadas e devolve um resumo sanitizado; não aceita tarefa livre, não cria branch, código ou promoção.',
-    repos: '🧩 Repositórios: esta etapa não edita nem promove código. !prepararchat só mede a prontidão para revisão; uma receita futura poderá preparar mudança limitada em branch, teste e rollback claros.',
+    dossie: '🧾 Dossiê: nesta interface, !dossiechat pede exclusivamente a receita fixa que primeiro executa cinco guardas e, só se passarem, pode criar um ramo novo com um único dossiê estático. Não aceita tarefa livre, não altera código, não abre PR e não promove main; revisão humana e apagar o ramo continuam obrigatórios.',
+    repos: '🧩 Repositórios: esta etapa não edita nem promove código. !dossiechat pode criar somente um artefato estático no ramo reversível `central/dossie-preparo-<execução>`; qualquer mudança de código continua exigindo receita e revisão próprias.',
     marketing: '📣 Marketing: a rotina autorizada vive no Site e preserva fatos, cadência e anti-spam. A Central não cria conta, não publica fora da rotina nem fabrica tráfego.',
     limites: '🔒 Limites: não há executor genérico, terminal remoto, segredo, conta nova, backup externo, gasto, permissão ou identidade pública sem configuração e guarda próprias.'
   });

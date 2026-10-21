@@ -1,0 +1,60 @@
+name: Dossiê de revisão controlada da Central
+
+on:
+  workflow_dispatch:
+
+# Escrita é necessária somente para publicar um ramo novo e reversível com um único dossiê estático.
+# Não há pull request, merge, tag, release, promoção ou modificação de main.
+permissions:
+  contents: write
+
+concurrency:
+  group: dossie-preparo-controlado-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  dossie:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+      - name: Valida origem e gera somente o dossiê estático
+        env:
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          [ "$GITHUB_REF" = 'refs/heads/main' ] || { echo 'ref bloqueada'; exit 1; }
+          [ "$(git rev-parse HEAD)" = "$GITHUB_SHA" ] || { echo 'checkout divergente'; exit 1; }
+          origem="$(git remote get-url origin)"
+          case "$origem" in https://github.com/reboclbrank-max/chat|https://github.com/reboclbrank-max/chat.git) ;; *) echo 'remote bloqueado'; exit 1 ;; esac
+          node tools/preparo-controlado.js | tee -a "$GITHUB_STEP_SUMMARY"
+          node tools/dossie-preparo-controlado.js
+          test -f propostas/central/dossie-preparo-controlado.md
+      - name: Publica um único ramo de revisão, sem promoção
+        env:
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          case "$GITHUB_RUN_ID" in ''|*[!0-9]*) echo 'execução inválida'; exit 1 ;; esac
+          [ "${#GITHUB_RUN_ID}" -le 20 ] || { echo 'execução inválida'; exit 1; }
+          ramo="central/dossie-preparo-${GITHUB_RUN_ID}"
+          git switch -c "$ramo"
+          git config user.name "central-dossie-controlado"
+          git config user.email "central-dossie@rebocl.local"
+          git add -- propostas/central/dossie-preparo-controlado.md
+          if git diff --cached --quiet; then echo 'dossiê ausente'; exit 1; fi
+          git commit -m "docs(central): dossiê de revisão controlada"
+          git push origin "HEAD:refs/heads/$ramo"
+          {
+            echo '## Dossiê de revisão controlada'
+            echo
+            echo "- Ramo novo: \`$ramo\`."
+            echo '- Conteúdo: somente o dossiê sanitizado e estático.'
+            echo '- Próximo passo: revisão humana; não há PR, merge ou promoção automática.'
+            echo '- Rollback: apagar manualmente esse ramo quando a revisão terminar.'
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -29,7 +29,7 @@ ok('todas as actions externas estão fixadas por SHA completo', () => {
 });
 
 ok('não há gatilho pull_request_target e o orçamento de escrita é explícito', () => {
-  const escreveConteudo = new Set(['coleta-email.yml', 'email.yml', 'evolucao.yml', 'ferramentas.yml', 'navegador-publico.yml', 'teste-email.yml', 'vigia.yml']);
+  const escreveConteudo = new Set(['coleta-email.yml', 'dossie-preparo-controlado.yml', 'email.yml', 'evolucao.yml', 'ferramentas.yml', 'navegador-publico.yml', 'teste-email.yml', 'vigia.yml']);
   const escreveAcoes = new Set(['email.yml', 'vigia.yml']);
   for (const nome of arquivos) {
     const texto = ler(nome);
@@ -39,6 +39,21 @@ ok('não há gatilho pull_request_target e o orçamento de escrita é explícito
     assert.equal(conteudo, escreveConteudo.has(nome), nome + ' divergiu do orçamento de contents: write');
     assert.equal(acoes, escreveAcoes.has(nome), nome + ' divergiu do orçamento de actions: write');
   }
+});
+
+ok('dossiê controlado tem escrita mínima, origem fixa e nenhum dado secreto', () => {
+  const dossie = ler('dossie-preparo-controlado.yml');
+  assert.match(dossie, /^permissions:\n  contents: write\s*$/m);
+  assert.doesNotMatch(dossie, /^\s*(?:actions|pull-requests):\s*write\s*$/m);
+  assert.match(dossie, /^on:\n  workflow_dispatch:\s*$/m);
+  assert.match(dossie, /\[ "\$GITHUB_REF" = 'refs\/heads\/main' \] \|\|/);
+  assert.match(dossie, /git remote get-url origin/);
+  assert.match(dossie, /github\.com\/reboclbrank-max\/chat/);
+  assert.match(dossie, /node tools\/preparo-controlado\.js/);
+  assert.match(dossie, /node tools\/dossie-preparo-controlado\.js/);
+  assert.match(dossie, /git add -- propostas\/central\/dossie-preparo-controlado\.md/);
+  assert.match(dossie, /git push origin "HEAD:refs\/heads\/\$ramo"/);
+  assert.doesNotMatch(dossie, /secrets\.|inputs:|--force|git merge|gh pr\b|git push[^\n]*(?:HEAD:main|refs\/heads\/main)/i);
 });
 
 ok('barreira rápida prepara e exige OCR português e renderizador de PDF', () => {

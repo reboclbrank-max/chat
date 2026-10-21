@@ -96,7 +96,7 @@ const pontes = [], allowlists = [];
 for (const rota of rotas) {
   const html = ler(rota);
   testa(rota + ' limita o preparo ao comando exato e ao workflow literal', () => {
-    const ponte = entre(html, "  if (/^!prepararchat(?:\\s|$)/.test(m)) {", "  if (m.startsWith('!statuscasa'))");
+    const ponte = entre(html, "  if (/^!prepararchat(?:\\s|$)/.test(m)) {", "  if (/^!dossiechat(?:\\s|$)/.test(m)) {");
     assert.match(ponte, /\^!prepararchat\(\?:\\s\|\$\)\/\.test\(m\)/);
     assert.match(ponte, /if \(m !== '!prepararchat'\) return '⚠️ uso: !prepararchat/);
     assert.match(ponte, /modoSomenteLocalAtivo\(\)/);
@@ -137,7 +137,7 @@ testa('Central, continuidade e casca documentam o preparo sem promover código',
   assert.match(contrato, /não cria branch/i);
   assert.match(continuidade, /!prepararchat/);
   assert.match(workflowRapido, /tools\/preparo-controlado\.js/);
-  assert.match(sw, /rebocl-chat-v85/);
+  assert.match(sw, /rebocl-chat-v86/);
 });
 
 console.log(`${certos}/${certos + falhas} testes do preparo controlado passaram`);

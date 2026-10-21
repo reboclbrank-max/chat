@@ -34,7 +34,7 @@ ok('o cabeçalho da conversa quebra ações sem corte em tela compacta', () => {
 });
 ok('o cache PWA v85 inclui a folha compartilhada local', () => {
   const sw = ler('sw.js');
-  assert.match(sw, /rebocl-chat-v85/);
+  assert.match(sw, /rebocl-chat-v86/);
   assert.match(sw, /'\.\/chat-estilos\.css'/);
   assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);

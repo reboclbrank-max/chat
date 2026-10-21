@@ -38,6 +38,7 @@ testa('governança fixa Chat primeiro é verificável', /trabalhador principal/.
 testa('sinal de continuidade preserva corte seguro e sem execução entre mensagens', /continue trabalhando/.test(governanca) && /corte pequeno, seguro e reversível/.test(governanca) && /não autoriza trabalho em segundo plano entre mensagens/.test(governanca) && /Sinal de continuidade/.test(continuidade));
 testa('política de autonomia entra na barreira', /R\$ 0/.test(autonomia) && /'AUTONOMIA\.md'/.test(workflowRapido));
 testa('Central segura entra na continuidade e na barreira', /Central segura em etapas/.test(centralOperacional) && /'OPERACAO-CENTRAL\.md'/.test(workflowRapido) && /Central segura em etapas/.test(continuidade));
+testa('dossiê 2B tem limites, rollback e barreira documentados', /!dossiechat/.test(centralOperacional) && /central\/dossie-preparo-/.test(centralOperacional) && /Revisão humana obrigatória|revisão humana/.test(centralOperacional) && /Rollback/.test(centralOperacional) && /!dossiechat/.test(autonomia) && /!dossiechat/.test(continuidade) && /tools\/dossie-preparo-controlado\.js/.test(workflowRapido));
 testa('barreira observa todo JavaScript/Python/Shell em tools', /'tools\/\*\*\/\*\.js'/.test(workflowRapido) && /'tools\/\*\*\/\*\.py'/.test(workflowRapido) && /'tools\/\*\*\/\*\.sh'/.test(workflowRapido));
 testa('documentos novos não trazem padrão de PAT', !/github_pat_[A-Za-z0-9_]{20,}|gh[pousr]_[A-Za-z0-9_]{20,}/.test(continuidade + autonomia + agentes + governanca + centralOperacional));
 
