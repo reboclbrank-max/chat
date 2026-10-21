@@ -114,6 +114,10 @@ testa('Workspace detecta conflito entre edições locais e oferece resolução e
   assert.match(salvarTransacional, /const leituraArquivos = arquivos\.getAll\(\)/);
   assert.match(salvarTransacional, /const leituraRevisoes = revisoes\.getAll\(\)/);
   assert.match(salvarTransacional, /planejarArmazenamentoParaSalvar\(persistido, atualizado, todosArquivos, todasRevisoes\)/);
+  const copiaTransacional = entre(workspace, 'function gravarCopiaConflito(projetoId, nomeBase, conteudo, quando)', '\n  function guardarMeta');
+  assert.match(copiaTransacional, /const leituraArquivos = arquivos\.getAll\(\)/);
+  assert.match(copiaTransacional, /const leituraRevisoes = revisoes\.getAll\(\)/);
+  assert.match(copiaTransacional, /nomeCopiaConflito\(nomeBase, ativos\.filter/);
   assert.match(workspace, /function salvarConflitoComoCopia\(\)/);
   assert.match(workspace, /function recarregarArquivoConflito\(\)/);
   assert.match(workspace, /id="workspace-conflito-arquivo"/);
@@ -165,7 +169,7 @@ testa('as quatro rotas expõem o mesmo acesso e carregam uma só cópia do Works
 });
 
 testa('casca PWA, workflow, corredor e porta de continuidade observam o ativo', () => {
-  assert.match(sw, /rebocl-chat-v81/);
+  assert.match(sw, /rebocl-chat-v82/);
   assert.match(sw, /'\.\/chat-workspace\.js'/);
   assert.match(workflow, /'chat-workspace\.js'/);
   assert.match(workflow, /chat-workspace\.js tools\/testes\/\*\.js/);
@@ -175,7 +179,7 @@ testa('casca PWA, workflow, corredor e porta de continuidade observam o ativo', 
   assert.match(corredor, /'workspace-integridade-local\.js'/);
   assert.match(retrato, /Workspace interno local-first/);
   assert.match(retrato, /rebocl-workspace-local-v1/);
-  assert.match(retrato, /rebocl-chat-v81/);
+  assert.match(retrato, /rebocl-chat-v82/);
 });
 
 testa('porta de continuidade exige retrato quando o ativo local muda', () => {

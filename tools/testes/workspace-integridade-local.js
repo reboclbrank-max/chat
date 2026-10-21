@@ -57,7 +57,7 @@ function criarModuloComBanco(registros) {
   const inicio = fonte.indexOf(marcador);
   assert(inicio >= 0, 'ponto de montagem do módulo não encontrado');
   const fonteTestavel = fonte.slice(0, inicio) + `  window.__workspaceTeste = {
-    estado, criarProjetoTransacional, renomearProjetoTransacional, criarArquivoTransacional, gravarArquivoComRevisao,
+    estado, criarProjetoTransacional, renomearProjetoTransacional, criarArquivoTransacional, gravarArquivoComRevisao, gravarCopiaConflito,
     moverArquivoParaLixeira, moverProjetoParaLixeira, apagarArquivo, apagarProjeto, restaurarDaLixeira, descartarDaLixeira, esvaziarLixeira,
     substituir: (dependencias) => {
       if (dependencias.lerTodos) lerTodos = dependencias.lerTodos;
@@ -248,6 +248,56 @@ async function principal() {
     assert.equal(mapas.arquivos.get('b').bytes, 5 * 1024 * 1024);
     assert.equal(mapas.projetos.get('p').atualizadoEm, projeto.atualizadoEm);
     assert.equal(mapas.revisoes.size, 0);
+  });
+
+  await testa('cópia de conflito escolhe o próximo nome pela fotografia persistida do projeto', async () => {
+    const quando = '2026-10-21T14:00:00.000Z';
+    const projeto = { id: 'p', nome: 'Projeto renomeado remotamente', criadoEm: quando, atualizadoEm: '2026-10-21T14:01:00.000Z' };
+    const original = { id: 'a', projetoId: 'p', nome: 'nota.md', conteudo: 'versão remota', bytes: 13, versao: 2, criadoEm: quando, atualizadoEm: projeto.atualizadoEm };
+    const copiaOcupada = { id: 'b', projetoId: 'p', nome: 'nota (minha cópia).md', conteudo: 'irmão atual', bytes: 11, versao: 1, criadoEm: quando, atualizadoEm: projeto.atualizadoEm };
+    const { modulo, mapas } = criarModuloComBanco({ projetos: [projeto], arquivos: [original, copiaOcupada] });
+    const resultado = await modulo.gravarCopiaConflito('p', 'nota.md', 'rascunho preservado', '2026-10-21T14:02:00.000Z');
+    assert.equal(resultado.gravada, true);
+    assert.equal(resultado.erro, '');
+    assert.equal(resultado.copia.nome, 'nota (minha cópia 2).md');
+    assert.equal(resultado.copia.conteudo, 'rascunho preservado');
+    assert.equal(mapas.arquivos.get('a').conteudo, original.conteudo);
+    assert.equal(mapas.arquivos.get('b').nome, copiaOcupada.nome);
+    assert.equal(mapas.arquivos.get(resultado.copia.id).nome, 'nota (minha cópia 2).md');
+    assert.equal(resultado.projeto.nome, projeto.nome);
+  });
+
+  await testa('cópia de conflito consulta quantidade e capacidade persistidas antes de criar novo arquivo', async () => {
+    const quando = '2026-10-21T14:00:00.000Z';
+    const projeto = { id: 'p', nome: 'Projeto', criadoEm: quando, atualizadoEm: quando };
+    const lotados = Array.from({ length: 100 }, (_, indice) => ({
+      id: 'a' + indice, projetoId: 'p', nome: 'nota-' + indice + '.md', conteudo: '', bytes: 0, versao: 1, criadoEm: quando, atualizadoEm: quando
+    }));
+    const porQuantidade = criarModuloComBanco({ projetos: [projeto], arquivos: lotados });
+    const limiteArquivos = await porQuantidade.modulo.gravarCopiaConflito('p', 'nota.md', 'rascunho', '2026-10-21T14:02:00.000Z');
+    assert.equal(limiteArquivos.gravada, false);
+    assert.equal(limiteArquivos.erro, 'limite-arquivos');
+    assert.equal(porQuantidade.mapas.arquivos.size, 100);
+
+    const porCapacidade = criarModuloComBanco({
+      projetos: [projeto],
+      arquivos: [{ id: 'ocupado', projetoId: 'p', nome: 'ocupado.md', conteudo: '', bytes: 5 * 1024 * 1024, versao: 1, criadoEm: quando, atualizadoEm: quando }]
+    });
+    const limiteEspaco = await porCapacidade.modulo.gravarCopiaConflito('p', 'nota.md', 'rascunho', '2026-10-21T14:02:00.000Z');
+    assert.equal(limiteEspaco.gravada, false);
+    assert.equal(limiteEspaco.erro, 'workspace-cheio');
+    assert.equal(porCapacidade.mapas.arquivos.size, 1);
+  });
+
+  await testa('cópia de conflito não cria filho sob projeto que outra guia moveu à lixeira', async () => {
+    const quando = '2026-10-21T14:00:00.000Z';
+    const projeto = { id: 'p', nome: 'Projeto recuperável', criadoEm: quando, atualizadoEm: quando, lixeiraEm: '2026-10-21T14:01:00.000Z', lixeiraRaiz: 'projeto', lixeiraProjetoId: 'p' };
+    const { modulo, mapas } = criarModuloComBanco({ projetos: [projeto] });
+    const resultado = await modulo.gravarCopiaConflito('p', 'nota.md', 'rascunho', '2026-10-21T14:02:00.000Z');
+    assert.equal(resultado.gravada, false);
+    assert.equal(resultado.erro, 'copia-conflito-projeto-inativo');
+    assert.equal(mapas.arquivos.size, 0);
+    assert.equal(mapas.projetos.get('p').lixeiraEm, projeto.lixeiraEm);
   });
 
   await testa('metadados de lixeira não usam rede nem removem revisões durante o movimento recuperável', () => {

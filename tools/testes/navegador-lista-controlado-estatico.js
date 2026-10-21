@@ -109,6 +109,10 @@ ok('exercita recuperação do Workspace e prova o layout em navegador real', () 
   assert.match(texto, /bloquear renomeação contra irmão persistido/);
   assert.match(texto, /renomeação desatualizada alterou o original, revisão, projeto ou irmão concorrente persistido/);
   assert.match(texto, /manter rascunho após recusa de nome concorrente/);
+  assert.match(texto, /idControlado = 'arquivo-concorrente-renomeacao'/);
+  assert.match(texto, /nomeCopiaConflitoOcupado/);
+  assert.match(texto, /salvar rascunho conflitante com nome isolado atual/);
+  assert.match(texto, /cópia de conflito não preservou rascunho ou substituiu irmão de nome concorrente/);
   assert.match(texto, /conflito não preservou o rascunho ou ainda permitiu substituir o original/);
   assert.match(texto, /conflito substituiu o conteúdo ou a versão persistida pela escrita local pendente/);
   assert.match(texto, /conflito alterou revisão ou metadado de projeto depois da divergência/);
@@ -125,7 +129,7 @@ ok('exercita recuperação do Workspace e prova o layout em navegador real', () 
   assert.match(texto, /bloquear renomeação de projeto movido por outra guia/);
   assert.match(texto, /renomeação estrutural reativou ou sobrescreveu projeto recuperável/);
   assert.match(texto, /retornar ao projeto depois da proteção estrutural/);
-  assert.match(texto, /salvar rascunho conflitante como cópia/);
+  assert.match(texto, /salvar rascunho conflitante com nome isolado atual/);
   assert.match(texto, /download controlado não preservou o rascunho em conflito/);
   assert.match(texto, /recarregar versão salva por escolha explícita/);
   assert.match(texto, /controles do projeto portátil do Workspace ausentes/);

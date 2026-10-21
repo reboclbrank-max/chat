@@ -58,18 +58,28 @@ testa('bloqueia gravar ou apagar o original, mas conserva edição e cópia loca
   assert.match(controles, /elementos\.editor\.disabled = !ativo \|\| bloqueado/);
   const copiar = entre(workspace, 'async function salvarConflitoComoCopia()', '\n  async function recarregarArquivoConflito');
   assert.match(workspace, /function nomeCopiaConflito\(base, arquivos\)/);
-  assert.match(copiar, /const copia = \{/);
-  assert.match(copiar, /if \(!\(await gravarCopiaConflito\(copia\)\)\) throw erro\('projeto-ausente'\)/);
+  assert.match(copiar, /const resultado = await gravarCopiaConflito\(conflito\.projetoId, elementos\.nomeArquivo\.value, conteudo, agora\(\)\)/);
+  assert.match(copiar, /if \(resultado\.erro\) throw erro\(resultado\.erro\)/);
+  assert.match(copiar, /const copia = resultado\.copia/);
+  assert.doesNotMatch(copiar, /Promise\.all\(\[lerTodos/);
   assert.match(copiar, /O arquivo original não foi substituído/);
 });
 
-testa('cópia de conflito confirma o projeto atual em transação e não sobrescreve o nome dele', () => {
-  const gravar = entre(workspace, 'function gravarCopiaConflito(copia)', '\n  function guardarMeta');
-  assert.match(gravar, /const leituraProjeto = projetos\.get\(copia\.projetoId\)/);
-  assert.match(gravar, /if \(!projeto \|\| estaNaLixeira\(projeto\)\) return/);
+testa('cópia de conflito decide projeto, nome, quantidade e capacidade na transação atual', () => {
+  const gravar = entre(workspace, 'function gravarCopiaConflito(projetoId, nomeBase, conteudo, quando)', '\n  function guardarMeta');
+  assert.match(gravar, /\[LOJAS\.projetos, LOJAS\.arquivos, LOJAS\.revisoes\], 'readwrite'/);
+  assert.match(gravar, /const leituraProjeto = projetos\.get\(projetoId\)/);
+  assert.match(gravar, /const leituraArquivos = arquivos\.getAll\(\)/);
+  assert.match(gravar, /const leituraRevisoes = revisoes\.getAll\(\)/);
+  assert.match(gravar, /if \(!projetoAtivoPersistido\(projetoPersistido\)\)/);
+  assert.match(gravar, /erro: 'copia-conflito-projeto-inativo'/);
+  assert.match(workspace, /Seu rascunho continua no editor/);
+  assert.match(gravar, /if \(ativos\.length >= LIMITES\.arquivos\)/);
+  assert.match(gravar, /medirOcupacao\(todosArquivos, todasRevisoes\) \+ tamanho > LIMITES\.totalBytes/);
+  assert.match(gravar, /nomeCopiaConflito\(nomeBase, ativos\.filter/);
   assert.match(gravar, /arquivos\.put\(copia\)/);
-  assert.match(gravar, /Object\.assign\(\{\}, projeto, \{ atualizadoEm: copia\.atualizadoEm \}\)/);
-  assert.doesNotMatch(gravar, /nome:/);
+  assert.match(gravar, /projetos\.put\(projeto\)/);
+  assert(gravar.indexOf('nomeCopiaConflito') < gravar.indexOf('arquivos.put(copia)'), 'o nome corrente precisa ser decidido antes da escrita');
 });
 
 testa('oferece recuperação deliberada e download local antes de descartar o rascunho', () => {

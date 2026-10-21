@@ -155,6 +155,7 @@
       'projeto-portatil-excesso': 'O arquivo portátil do projeto excede os limites locais de registros recuperáveis.',
       'sem-reversao-arquivo-completo': 'Não há uma restauração completa temporária para desfazer nesta página.',
       'projeto-ausente': 'O projeto local de origem não está disponível. O arquivo continua na lixeira.',
+      'copia-conflito-projeto-inativo': 'O projeto desta cópia não está ativo. Seu rascunho continua no editor; baixe-o ou recarregue-o somente se decidir descartar esse texto.',
       'importacao-grande': 'O arquivo de importação passa do limite local permitido.',
       'sem-selecao': 'Selecione um trecho no editor antes de levá-lo ao Chat.',
       'trecho-grande': 'O trecho selecionado passa do limite local para revisão no Chat.',
@@ -463,22 +464,58 @@
       tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
     }));
   }
-  function gravarCopiaConflito(copia) {
+  function gravarCopiaConflito(projetoId, nomeBase, conteudo, quando) {
     return abrirBanco().then((banco) => new Promise((resolve, reject) => {
-      const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos], 'readwrite');
+      // Salvar uma cópia é escolha explícita para preservar rascunho, mas ainda
+      // não pode reaproveitar nome, cota ou projeto de uma fotografia antiga.
+      const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos, LOJAS.revisoes], 'readwrite');
       const projetos = tx.objectStore(LOJAS.projetos);
       const arquivos = tx.objectStore(LOJAS.arquivos);
-      let gravada = false;
-      const leituraProjeto = projetos.get(copia.projetoId);
-      leituraProjeto.onsuccess = () => {
-        const projeto = leituraProjeto.result || null;
-        if (!projeto || estaNaLixeira(projeto)) return;
+      const revisoes = tx.objectStore(LOJAS.revisoes);
+      const tamanho = bytes(conteudo);
+      let projetoPersistido;
+      let todosArquivos = null;
+      let todasRevisoes = null;
+      let resultado = { gravada: false, erro: '', copia: null, projeto: null };
+      const concluirLeituras = () => {
+        if (projetoPersistido === undefined || todosArquivos === null || todasRevisoes === null) return;
+        if (!projetoAtivoPersistido(projetoPersistido)) {
+          resultado = { gravada: false, erro: 'copia-conflito-projeto-inativo', copia: null, projeto: null };
+          return;
+        }
+        const ativos = todosArquivos.filter((arquivo) => arquivo && arquivo.id && arquivo.projetoId && typeof arquivo.conteudo === 'string' && !estaNaLixeira(arquivo));
+        if (tamanho > LIMITES.arquivoBytes) {
+          resultado = { gravada: false, erro: 'arquivo-grande', copia: null, projeto: null };
+          return;
+        }
+        if (ativos.length >= LIMITES.arquivos) {
+          resultado = { gravada: false, erro: 'limite-arquivos', copia: null, projeto: null };
+          return;
+        }
+        if (medirOcupacao(todosArquivos, todasRevisoes) + tamanho > LIMITES.totalBytes) {
+          resultado = { gravada: false, erro: 'workspace-cheio', copia: null, projeto: null };
+          return;
+        }
+        const copia = {
+          id: idNovo('arquivo'), projetoId: projetoPersistido.id,
+          nome: nomeCopiaConflito(nomeBase, ativos.filter((arquivo) => arquivo.projetoId === projetoPersistido.id)),
+          conteudo, bytes: tamanho, versao: 1, criadoEm: quando, atualizadoEm: quando
+        };
+        const projeto = Object.assign({}, projetoPersistido, { atualizadoEm: quando });
         arquivos.put(copia);
-        projetos.put(Object.assign({}, projeto, { atualizadoEm: copia.atualizadoEm }));
-        gravada = true;
+        projetos.put(projeto);
+        resultado = { gravada: true, erro: '', copia, projeto };
       };
+      const leituraProjeto = projetos.get(projetoId);
+      const leituraArquivos = arquivos.getAll();
+      const leituraRevisoes = revisoes.getAll();
+      leituraProjeto.onsuccess = () => { projetoPersistido = leituraProjeto.result || null; concluirLeituras(); };
+      leituraArquivos.onsuccess = () => { todosArquivos = Array.isArray(leituraArquivos.result) ? leituraArquivos.result : []; concluirLeituras(); };
+      leituraRevisoes.onsuccess = () => { todasRevisoes = Array.isArray(leituraRevisoes.result) ? leituraRevisoes.result : []; concluirLeituras(); };
       leituraProjeto.onerror = () => reject(leituraProjeto.error || erro('sem-indexeddb'));
-      tx.oncomplete = () => resolve(gravada);
+      leituraArquivos.onerror = () => reject(leituraArquivos.error || erro('sem-indexeddb'));
+      leituraRevisoes.onerror = () => reject(leituraRevisoes.error || erro('sem-indexeddb'));
+      tx.oncomplete = () => resolve(resultado);
       tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
       tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
     }));
@@ -1057,19 +1094,10 @@
     const conflito = estado.conflitoArquivo;
     if (!conflito || !elementos || estado.operacaoArquivoCompleto) return;
     try {
-      const [arquivos, revisoes] = await Promise.all([lerTodos(LOJAS.arquivos), lerTodos(LOJAS.revisoes)]);
       const conteudo = texto(elementos.editor.value);
-      const tamanho = bytes(conteudo);
-      if (tamanho > LIMITES.arquivoBytes) throw erro('arquivo-grande');
-      if (arquivos.filter((arquivo) => !estaNaLixeira(arquivo)).length >= LIMITES.arquivos) throw erro('limite-arquivos');
-      if (medirOcupacao(arquivos, revisoes) + tamanho > LIMITES.totalBytes) throw erro('workspace-cheio');
-      const quando = agora();
-      const copia = {
-        id: idNovo('arquivo'), projetoId: conflito.projetoId,
-        nome: nomeCopiaConflito(elementos.nomeArquivo.value, arquivos.filter((arquivo) => arquivo.projetoId === conflito.projetoId)),
-        conteudo, bytes: tamanho, versao: 1, criadoEm: quando, atualizadoEm: quando
-      };
-      if (!(await gravarCopiaConflito(copia))) throw erro('projeto-ausente');
+      const resultado = await gravarCopiaConflito(conflito.projetoId, elementos.nomeArquivo.value, conteudo, agora());
+      if (resultado.erro) throw erro(resultado.erro);
+      const copia = resultado.copia;
       if (estado.temporizadorSalvar) { clearTimeout(estado.temporizadorSalvar); estado.temporizadorSalvar = null; }
       estado.edicao++;
       await iniciarDados();

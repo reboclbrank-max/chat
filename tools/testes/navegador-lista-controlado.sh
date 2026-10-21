@@ -125,7 +125,7 @@ teste_lista = """<script>
   });
   // Fixture controlada de um irmão criado por outra guia entre a edição e o
   // salvamento. Só altera o IndexedDB efêmero; não há conteúdo, perfil ou rede real.
-  const adicionarArquivoWorkspaceControlado = (projetoId, nome, conteudo) => new Promise((resolve, reject) => {
+  const adicionarArquivoWorkspaceControlado = (projetoId, nome, conteudo, idControlado = 'arquivo-concorrente-renomeacao') => new Promise((resolve, reject) => {
     const abertura = indexedDB.open('rebocl-workspace-local-v1');
     abertura.onerror = () => reject(abertura.error || new Error('não abriu IndexedDB para nome concorrente'));
     abertura.onsuccess = () => {
@@ -141,7 +141,7 @@ teste_lista = """<script>
         const quando = new Date().toISOString();
         projeto = Object.assign({}, leituraProjeto.result, { atualizadoEm: quando });
         arquivo = {
-          id: 'arquivo-concorrente-renomeacao', projetoId, nome, conteudo,
+          id: idControlado, projetoId, nome, conteudo,
           bytes: new TextEncoder().encode(conteudo).length, versao: 1, criadoEm: quando, atualizadoEm: quando
         };
         arquivos.put(arquivo);
@@ -456,8 +456,20 @@ teste_lista = """<script>
       throw new Error('conflito alterou revisão ou metadado de projeto depois da divergência');
     }
     if (estadoRemotoConflito.revisoes.length !== estadoAntesConflito.revisoes.length) throw new Error('fixture concorrente alterou revisão em vez de somente o arquivo');
+    // Outra guia ocupa o primeiro nome automático da cópia depois do conflito.
+    // A escolha explícita deve preservar o rascunho, mas isolar o nome na
+    // fotografia atual do IndexedDB efêmero, sem substituir esse irmão.
+    const nomeCopiaConflitoOcupado = 'nota-fixture (minha cópia).md';
+    const irmaoCopiaConflito = await adicionarArquivoWorkspaceControlado(arquivoOriginal.dataset.projetoId, nomeCopiaConflitoOcupado, 'irmão sintético da cópia', 'arquivo-concorrente-copia');
     document.getElementById('btn-workspace-copiar-conflito').click();
-    await esperarWorkspace(() => !visivel(painelConflito) && editor.value === rascunhoParaCopia && document.getElementById('workspace-nome-arquivo').value.includes('minha cópia'), 'salvar rascunho conflitante como cópia');
+    const nomeCopiaConflitoIsolado = 'nota-fixture (minha cópia 2).md';
+    await esperarWorkspace(() => !visivel(painelConflito) && editor.value === rascunhoParaCopia && document.getElementById('workspace-nome-arquivo').value === nomeCopiaConflitoIsolado, 'salvar rascunho conflitante com nome isolado atual');
+    const linhaCopiaConflito = porNomeArquivoExato(nomeCopiaConflitoIsolado);
+    const estadoCopiaConflito = await lerEstadoArquivoWorkspaceControlado(linhaCopiaConflito.dataset.arquivoId, linhaCopiaConflito.dataset.projetoId);
+    const estadoIrmaoCopiaConflito = await lerEstadoArquivoWorkspaceControlado(irmaoCopiaConflito.arquivo.id, arquivoOriginal.dataset.projetoId);
+    if (estadoCopiaConflito.arquivo.conteudo !== rascunhoParaCopia || !estadoIrmaoCopiaConflito.arquivo || estadoIrmaoCopiaConflito.arquivo.nome !== nomeCopiaConflitoOcupado) {
+      throw new Error('cópia de conflito não preservou rascunho ou substituiu irmão de nome concorrente');
+    }
     porNomeArquivoExato(nomeArquivo).click();
     await esperarWorkspace(() => editor.value === conteudoFinal, 'voltar ao original depois da cópia de conflito');
 
@@ -665,7 +677,7 @@ teste_lista = """<script>
     if (!document.getElementById('workspace-status').textContent.toLowerCase().includes('nada foi enviado')) {
       throw new Error('ciclo local não declarou a ausência de envio');
     }
-    return ' · Workspace criou, versionou, protegeu rascunho, criação/renomeação e lixeira em conflito local, buscou entre projetos sem expor Lixeira, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture; bloqueou retorno completo diante de escrita concorrente e preservou o ponto';
+    return ' · Workspace criou, versionou, protegeu rascunho, criação/renomeação e lixeira em conflito local, buscou entre projetos sem expor Lixeira, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture; bloqueou retorno completo diante de escrita concorrente e preservou o ponto e isolou a cópia de conflito contra irmão atual';
   };
   try {
     await esperar(() => document.querySelectorAll('#lista .conv').length >= 52, 5000, 'lista inicial');
