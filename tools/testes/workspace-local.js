@@ -157,7 +157,7 @@ testa('as quatro rotas expõem o mesmo acesso e carregam uma só cópia do Works
 });
 
 testa('casca PWA, workflow, corredor e porta de continuidade observam o ativo', () => {
-  assert.match(sw, /rebocl-chat-v77/);
+  assert.match(sw, /rebocl-chat-v78/);
   assert.match(sw, /'\.\/chat-workspace\.js'/);
   assert.match(workflow, /'chat-workspace\.js'/);
   assert.match(workflow, /chat-workspace\.js tools\/testes\/\*\.js/);
@@ -167,7 +167,7 @@ testa('casca PWA, workflow, corredor e porta de continuidade observam o ativo', 
   assert.match(corredor, /'workspace-integridade-local\.js'/);
   assert.match(retrato, /Workspace interno local-first/);
   assert.match(retrato, /rebocl-workspace-local-v1/);
-  assert.match(retrato, /rebocl-chat-v77/);
+  assert.match(retrato, /rebocl-chat-v78/);
 });
 
 testa('porta de continuidade exige retrato quando o ativo local muda', () => {
@@ -218,11 +218,15 @@ testa('Workspace oferece retorno seguro, histórico local e lixeira deliberada',
 testa('lixeira preserva hierarquia, versões e espaço até descarte explícito', () => {
   const apagarProjeto = entre(workspace, 'async function apagarProjeto()', '\n  async function criarArquivo');
   const apagarArquivo = entre(workspace, 'async function apagarArquivo()', '\n  async function restaurarProjetoDaLixeira');
-  const descarte = entre(workspace, 'async function descartarDaLixeira(tipo, id)', '\n  async function esvaziarLixeira');
-  assert.match(apagarProjeto, /lixeiraRaiz: 'projeto'/);
-  assert.match(apagarProjeto, /todosArquivos\.filter/);
-  assert.match(apagarArquivo, /lixeiraRaiz: 'arquivo'/);
-  assert.doesNotMatch(apagarArquivo, /objectStore\(LOJAS\.revisoes\)\.delete/);
+  const moverProjeto = entre(workspace, 'function moverProjetoParaLixeira(projeto, arquivosEsperados, quando)', '\n\n  function projetoAtivo');
+  const moverArquivo = entre(workspace, 'function moverArquivoParaLixeira(arquivo, quando)', '\n  function moverProjetoParaLixeira');
+  const descarte = entre(workspace, 'async function descartarDaLixeira(tipo, id)', '\n  function esvaziarLixeiraTransacional');
+  assert.match(apagarProjeto, /await moverProjetoParaLixeira\(projeto, arquivosEsperados, agora\(\)\)/);
+  assert.match(moverProjeto, /lixeiraRaiz: 'projeto'/);
+  assert.match(moverProjeto, /arquivos\.index\('projetoId'\)\.getAll\(projeto\.id\)/);
+  assert.match(apagarArquivo, /await moverArquivoParaLixeira\(arquivo, agora\(\)\)/);
+  assert.match(moverArquivo, /lixeiraRaiz: 'arquivo'/);
+  assert.doesNotMatch(moverArquivo, /revisoes\.delete/);
   assert.match(descarte, /confirm\('Excluir definitivamente/);
   assert.match(workspace, /itens recuperáveis continuam ocupando espaço local/i);
   assert.match(workspace, /O cálculo inclui arquivos, versões locais e itens recuperáveis da lixeira/);

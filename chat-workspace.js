@@ -230,13 +230,47 @@
       tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
     }));
   }
-  function arquivoAindaIgual(persistido, anterior) {
-    return !!persistido && !estaNaLixeira(persistido) &&
-      persistido.id === anterior.id && persistido.projetoId === anterior.projetoId &&
-      persistido.nome === anterior.nome && persistido.conteudo === anterior.conteudo &&
-      bytesRegistro(persistido) === bytesRegistro(anterior) &&
+  function marcasLixeiraIguais(persistido, anterior) {
+    return texto(persistido && persistido.lixeiraEm) === texto(anterior && anterior.lixeiraEm) &&
+      texto(persistido && persistido.lixeiraRaiz) === texto(anterior && anterior.lixeiraRaiz) &&
+      texto(persistido && persistido.lixeiraProjetoId) === texto(anterior && anterior.lixeiraProjetoId);
+  }
+  function arquivoRegistroAindaIgual(persistido, anterior) {
+    return !!persistido && !!anterior && persistido.id === anterior.id &&
+      persistido.projetoId === anterior.projetoId && persistido.nome === anterior.nome &&
+      persistido.conteudo === anterior.conteudo && bytesRegistro(persistido) === bytesRegistro(anterior) &&
       Number(persistido.versao || 1) === Number(anterior.versao || 1) &&
-      persistido.atualizadoEm === anterior.atualizadoEm;
+      persistido.criadoEm === anterior.criadoEm && persistido.atualizadoEm === anterior.atualizadoEm &&
+      marcasLixeiraIguais(persistido, anterior);
+  }
+  function projetoRegistroAindaIgual(persistido, anterior) {
+    return !!persistido && !!anterior && persistido.id === anterior.id && persistido.nome === anterior.nome &&
+      persistido.criadoEm === anterior.criadoEm && persistido.atualizadoEm === anterior.atualizadoEm &&
+      marcasLixeiraIguais(persistido, anterior);
+  }
+  function listaRegistrosAindaIgual(persistidos, anteriores, comparar) {
+    if (!Array.isArray(persistidos) || !Array.isArray(anteriores) || persistidos.length !== anteriores.length) return false;
+    const porId = new Map(anteriores.map((registro) => [registro.id, registro]));
+    return persistidos.every((registro) => porId.has(registro.id) && comparar(registro, porId.get(registro.id)));
+  }
+  function filhosDoProjetoEstaoRecuperaveis(arquivos, projetoId) {
+    return (arquivos || []).filter((arquivo) => arquivo.projetoId === projetoId)
+      .every((arquivo) => estaNaLixeira(arquivo) && arquivo.lixeiraProjetoId === projetoId);
+  }
+  async function fotografiaFilhosProjetoParaLixeira(projetoId) {
+    // A tela conhece os filhos ativos. Registros já na Lixeira não aparecem
+    // nela, por isso entram na fotografia somente se continuarem recuperáveis
+    // na leitura feita antes da confirmação. Filho criado/restaurado ou mudado
+    // por outra guia não é incorporado silenciosamente ao projeto removido.
+    const ativos = estado.arquivos.filter((arquivo) => arquivo.projetoId === projetoId)
+      .map((arquivo) => Object.assign({}, arquivo));
+    const idsAtivos = new Set(ativos.map((arquivo) => arquivo.id));
+    const recuperaveis = (await lerTodos(LOJAS.arquivos)).filter((arquivo) =>
+      arquivo.projetoId === projetoId && estaNaLixeira(arquivo) && !idsAtivos.has(arquivo.id));
+    return ativos.concat(recuperaveis);
+  }
+  function arquivoAindaIgual(persistido, anterior) {
+    return !!persistido && !estaNaLixeira(persistido) && arquivoRegistroAindaIgual(persistido, anterior);
   }
   function gravarArquivoComRevisao(arquivo, anterior, plano) {
     return abrirBanco().then((banco) => new Promise((resolve, reject) => {
@@ -314,6 +348,76 @@
     }));
   }
   function guardarMeta(chave, valor) { return gravar(LOJAS.meta, { chave, valor }); }
+  async function preservarEdicaoAntesDeAlterarLixeira() {
+    if (!estado.alterado) return true;
+    return salvarArquivoAtual('troca');
+  }
+  async function recarregarAposAlteracaoLixeira(selecao) {
+    await iniciarDados();
+    if (selecao && selecao.projetoId && estado.projetos.some((projeto) => projeto.id === selecao.projetoId)) {
+      estado.projetoAtivo = selecao.projetoId;
+      estado.arquivoAtivo = selecao.arquivoId && estado.arquivos.some((arquivo) => arquivo.id === selecao.arquivoId && arquivo.projetoId === selecao.projetoId) ? selecao.arquivoId : '';
+    }
+    estado.alterado = false;
+    estado.conflitoArquivo = null;
+    await guardarSelecao();
+    renderTudo();
+  }
+  async function informarLixeiraDesatualizada() {
+    if (estado.alterado || estado.conflitoArquivo) {
+      definirStatus('erro', 'O item mudou em outra guia. Seu texto continua no editor; salve ou resolva a edição antes de atualizar a lixeira.');
+      return;
+    }
+    await recarregarAposAlteracaoLixeira();
+    definirStatus('erro', 'A lixeira mudou em outra guia antes desta operação. Nada foi removido; o Workspace local foi recarregado.');
+  }
+  function moverArquivoParaLixeira(arquivo, quando) {
+    return abrirBanco().then((banco) => new Promise((resolve, reject) => {
+      const tx = banco.transaction(LOJAS.arquivos, 'readwrite');
+      const arquivos = tx.objectStore(LOJAS.arquivos);
+      let resultado = { conflito: true, arquivo: null };
+      const leitura = arquivos.get(arquivo.id);
+      leitura.onsuccess = () => {
+        const persistido = leitura.result || null;
+        if (!arquivoAindaIgual(persistido, arquivo)) return;
+        const lixeira = Object.assign({}, persistido, { lixeiraEm: quando, lixeiraRaiz: 'arquivo', lixeiraProjetoId: persistido.projetoId });
+        arquivos.put(lixeira);
+        resultado = { conflito: false, arquivo: lixeira };
+      };
+      leitura.onerror = () => reject(leitura.error || erro('sem-indexeddb'));
+      tx.oncomplete = () => resolve(resultado);
+      tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
+      tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
+    }));
+  }
+  function moverProjetoParaLixeira(projeto, arquivosEsperados, quando) {
+    return abrirBanco().then((banco) => new Promise((resolve, reject) => {
+      const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos], 'readwrite');
+      const projetos = tx.objectStore(LOJAS.projetos);
+      const arquivos = tx.objectStore(LOJAS.arquivos);
+      let projetoPersistido = null;
+      let arquivosPersistidos = null;
+      let resultado = { conflito: true, projeto: null, arquivos: [] };
+      const concluirLeituras = () => {
+        if (projetoPersistido === null || arquivosPersistidos === null) return;
+        if (!projetoRegistroAindaIgual(projetoPersistido, projeto) || !listaRegistrosAindaIgual(arquivosPersistidos, arquivosEsperados, arquivoRegistroAindaIgual)) return;
+        const projetoLixeira = Object.assign({}, projetoPersistido, { lixeiraEm: quando, lixeiraRaiz: 'projeto', lixeiraProjetoId: projetoPersistido.id });
+        const arquivosLixeira = arquivosPersistidos.map((arquivo) => Object.assign({}, arquivo, { lixeiraEm: quando, lixeiraRaiz: '', lixeiraProjetoId: projetoPersistido.id }));
+        projetos.put(projetoLixeira);
+        arquivosLixeira.forEach((arquivo) => arquivos.put(arquivo));
+        resultado = { conflito: false, projeto: projetoLixeira, arquivos: arquivosLixeira };
+      };
+      const leituraProjeto = projetos.get(projeto.id);
+      const leituraArquivos = arquivos.index('projetoId').getAll(projeto.id);
+      leituraProjeto.onsuccess = () => { projetoPersistido = leituraProjeto.result || false; concluirLeituras(); };
+      leituraArquivos.onsuccess = () => { arquivosPersistidos = Array.isArray(leituraArquivos.result) ? leituraArquivos.result : []; concluirLeituras(); };
+      leituraProjeto.onerror = () => reject(leituraProjeto.error || erro('sem-indexeddb'));
+      leituraArquivos.onerror = () => reject(leituraArquivos.error || erro('sem-indexeddb'));
+      tx.oncomplete = () => resolve(resultado);
+      tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
+      tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
+    }));
+  }
 
   function projetoAtivo() { return estado.projetos.find((p) => p.id === estado.projetoAtivo) || null; }
   function arquivoAtivo() { return estado.arquivos.find((a) => a.id === estado.arquivoAtivo) || null; }
@@ -384,8 +488,8 @@
     existentes.add(busca(tentativa));
     return tentativa;
   }
-  function nomeArquivoDisponivel(base, projetoId) {
-    const usados = new Set(arquivosDoProjeto(projetoId).map((arquivo) => busca(arquivo.nome)));
+  function nomeArquivoDisponivelNaLista(base, projetoId, lista) {
+    const usados = new Set((lista || []).filter((arquivo) => arquivo.projetoId === projetoId).map((arquivo) => busca(arquivo.nome)));
     const limpo = nomeArquivoSeguro(base);
     if (!usados.has(busca(limpo))) return limpo;
     const ponto = limpo.lastIndexOf('.');
@@ -399,6 +503,9 @@
       n++;
     }
     return tentativa;
+  }
+  function nomeArquivoDisponivel(base, projetoId) {
+    return nomeArquivoDisponivelNaLista(base, projetoId, arquivosDoProjeto(projetoId));
   }
 
   function definirStatus(tipo, mensagem) {
@@ -702,37 +809,20 @@
     renderLixeira();
   }
   async function apagarProjeto() {
-    const projeto = projetoAtivo();
+    let projeto = projetoAtivo();
     if (!projeto) return;
     try {
-      if (estado.alterado && !(await salvarArquivoAtual('troca'))) return;
+      if (!(await preservarEdicaoAntesDeAlterarLixeira())) return;
+      projeto = projetoAtivo();
+      if (!projeto) return;
+      // A fotografia é fechada antes da confirmação: filhos ativos vêm da tela
+      // e os recuperáveis já ocultos são lidos localmente. A transação só move
+      // o projeto se nada desse conjunto mudou enquanto a decisão era tomada.
+      const arquivosEsperados = await fotografiaFilhosProjetoParaLixeira(projeto.id);
       if (!confirm('Mover o projeto local “' + projeto.nome + '” e seus arquivos para a lixeira? Nada será enviado. Você poderá restaurá-lo ou excluí-lo de vez depois.')) return;
-      const quando = agora();
-      const todosArquivos = await lerTodos(LOJAS.arquivos);
-      const arquivos = todosArquivos.filter((arquivo) => arquivo.projetoId === projeto.id);
-      const projetoLixeira = Object.assign({}, projeto, { lixeiraEm: quando, lixeiraRaiz: 'projeto', lixeiraProjetoId: projeto.id });
-      const arquivosLixeira = arquivos.map((arquivo) => Object.assign({}, arquivo, { lixeiraEm: quando, lixeiraRaiz: '', lixeiraProjetoId: projeto.id }));
-      await abrirBanco().then((banco) => new Promise((resolve, reject) => {
-        const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos], 'readwrite');
-        tx.objectStore(LOJAS.projetos).put(projetoLixeira);
-        arquivosLixeira.forEach((arquivo) => tx.objectStore(LOJAS.arquivos).put(arquivo));
-        tx.oncomplete = resolve;
-        tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
-        tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
-      }));
-      estado.projetos = estado.projetos.filter((item) => item.id !== projeto.id);
-      estado.arquivos = estado.arquivos.filter((item) => item.projetoId !== projeto.id);
-      if (!estado.projetos.length) {
-        const padrao = { id: idNovo('projeto'), nome: 'Meu workspace', criadoEm: agora(), atualizadoEm: agora() };
-        await gravar(LOJAS.projetos, padrao);
-        estado.projetos = [padrao];
-      }
-      estado.projetoAtivo = ordenarProjetos(estado.projetos)[0].id;
-      estado.arquivoAtivo = '';
-      estado.alterado = false;
-      await atualizarOcupacao();
-      await guardarSelecao();
-      renderTudo();
+      const resultado = await moverProjetoParaLixeira(projeto, arquivosEsperados, agora());
+      if (resultado.conflito) { await informarLixeiraDesatualizada(); return; }
+      await recarregarAposAlteracaoLixeira();
       definirStatus('ok', 'Projeto movido para a lixeira local. Nada foi enviado.');
     } catch (e) { mostrarErro(e); }
   }
@@ -957,144 +1047,238 @@
     }
   }
   async function apagarArquivo() {
-    const arquivo = arquivoAtivo();
+    let arquivo = arquivoAtivo();
     if (!arquivo) return;
     try {
-      if (estado.alterado && !(await salvarArquivoAtual('troca'))) return;
+      if (!(await preservarEdicaoAntesDeAlterarLixeira())) return;
+      arquivo = arquivoAtivo();
+      if (!arquivo) return;
       if (!confirm('Mover o arquivo local “' + arquivo.nome + '” para a lixeira? As versões locais serão preservadas para recuperação. Nada será enviado.')) return;
-      const lixeira = Object.assign({}, arquivo, { lixeiraEm: agora(), lixeiraRaiz: 'arquivo', lixeiraProjetoId: arquivo.projetoId });
-      await gravar(LOJAS.arquivos, lixeira);
-      estado.arquivos = estado.arquivos.filter((item) => item.id !== arquivo.id);
-      estado.arquivoAtivo = '';
-      estado.alterado = false;
-      estado.itensLixeira++;
-      await guardarSelecao();
-      renderTudo();
+      const resultado = await moverArquivoParaLixeira(arquivo, agora());
+      if (resultado.conflito) {
+        // Não transforme uma versão que outra guia já atualizou em exclusão
+        // recuperável silenciosa: a pessoa ainda pode salvar/baixar seu texto.
+        registrarConflitoArquivo(arquivo);
+        return;
+      }
+      await recarregarAposAlteracaoLixeira();
       definirStatus('ok', 'Arquivo movido para a lixeira local. Nada foi enviado.');
     } catch (e) { mostrarErro(e); }
   }
   async function restaurarProjetoDaLixeira(id) {
-    const [todosProjetos, todosArquivos] = await Promise.all([lerTodos(LOJAS.projetos), lerTodos(LOJAS.arquivos)]);
-    const projeto = todosProjetos.find((item) => item.id === id && estaNaLixeira(item) && item.lixeiraRaiz === 'projeto');
-    if (!projeto) return;
-    const arquivos = todosArquivos.filter((arquivo) => arquivo.projetoId === projeto.id && estaNaLixeira(arquivo) && arquivo.lixeiraProjetoId === projeto.id);
-    if (estado.projetos.length >= LIMITES.projetos) throw erro('limite-projetos');
-    if (estado.arquivos.length + arquivos.length > LIMITES.arquivos) throw erro('limite-arquivos');
-    const nomes = new Set(estado.projetos.map((item) => busca(item.nome)));
-    const restaurado = tirarDaLixeira(projeto);
-    restaurado.nome = nomeDisponivel(restaurado.nome, nomes);
-    restaurado.atualizadoEm = agora();
-    const arquivosRestaurados = arquivos.map(tirarDaLixeira);
-    await abrirBanco().then((banco) => new Promise((resolve, reject) => {
+    return abrirBanco().then((banco) => new Promise((resolve, reject) => {
       const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos], 'readwrite');
-      tx.objectStore(LOJAS.projetos).put(restaurado);
-      arquivosRestaurados.forEach((arquivo) => tx.objectStore(LOJAS.arquivos).put(arquivo));
-      tx.oncomplete = resolve;
+      const projetos = tx.objectStore(LOJAS.projetos);
+      const arquivos = tx.objectStore(LOJAS.arquivos);
+      let todosProjetos = null;
+      let todosArquivos = null;
+      let projeto = null;
+      let resultado = { restaurado: null, arquivos: [], erro: '' };
+      const concluirLeituras = () => {
+        if (todosProjetos === null || todosArquivos === null || projeto === null) return;
+        if (!projeto || !estaNaLixeira(projeto) || projeto.lixeiraRaiz !== 'projeto') return;
+        if (!filhosDoProjetoEstaoRecuperaveis(todosArquivos, projeto.id)) return;
+        const arquivosProjeto = todosArquivos.filter((arquivo) => arquivo.projetoId === projeto.id);
+        if (todosProjetos.filter((item) => !estaNaLixeira(item)).length >= LIMITES.projetos) { resultado.erro = 'limite-projetos'; return; }
+        if (todosArquivos.filter((item) => !estaNaLixeira(item)).length + arquivosProjeto.length > LIMITES.arquivos) { resultado.erro = 'limite-arquivos'; return; }
+        const nomes = new Set(todosProjetos.filter((item) => !estaNaLixeira(item)).map((item) => busca(item.nome)));
+        const nomeOriginal = projeto.nome;
+        const restaurado = tirarDaLixeira(projeto);
+        restaurado.nome = nomeDisponivel(restaurado.nome, nomes);
+        restaurado.atualizadoEm = agora();
+        const arquivosRestaurados = arquivosProjeto.map(tirarDaLixeira);
+        projetos.put(restaurado);
+        arquivosRestaurados.forEach((arquivo) => arquivos.put(arquivo));
+        resultado = { restaurado, arquivos: arquivosRestaurados, nomeOriginal, erro: '' };
+      };
+      const leituraProjetos = projetos.getAll();
+      const leituraArquivos = arquivos.getAll();
+      const leituraProjeto = projetos.get(id);
+      leituraProjetos.onsuccess = () => { todosProjetos = Array.isArray(leituraProjetos.result) ? leituraProjetos.result : []; concluirLeituras(); };
+      leituraArquivos.onsuccess = () => { todosArquivos = Array.isArray(leituraArquivos.result) ? leituraArquivos.result : []; concluirLeituras(); };
+      leituraProjeto.onsuccess = () => { projeto = leituraProjeto.result || false; concluirLeituras(); };
+      leituraProjetos.onerror = () => reject(leituraProjetos.error || erro('sem-indexeddb'));
+      leituraArquivos.onerror = () => reject(leituraArquivos.error || erro('sem-indexeddb'));
+      leituraProjeto.onerror = () => reject(leituraProjeto.error || erro('sem-indexeddb'));
+      tx.oncomplete = () => resolve(resultado);
       tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
       tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
     }));
-    estado.projetos.push(restaurado);
-    estado.arquivos.push(...arquivosRestaurados);
-    estado.projetoAtivo = restaurado.id;
-    estado.arquivoAtivo = '';
-    estado.itensLixeira = Math.max(0, estado.itensLixeira - 1);
-    await guardarSelecao();
-    renderTudo();
-    definirStatus('ok', 'Projeto restaurado localmente' + (restaurado.nome !== projeto.nome ? ' com um nome disponível' : '') + '. Nada foi enviado.');
   }
   async function restaurarArquivoDaLixeira(id) {
-    const arquivo = await lerUm(LOJAS.arquivos, id);
-    if (!arquivo || !estaNaLixeira(arquivo) || arquivo.lixeiraRaiz !== 'arquivo') return;
-    const projeto = estado.projetos.find((item) => item.id === arquivo.projetoId);
-    if (!projeto) throw erro('projeto-ausente');
-    if (estado.arquivos.length >= LIMITES.arquivos) throw erro('limite-arquivos');
-    const restaurado = tirarDaLixeira(arquivo);
-    restaurado.nome = nomeArquivoDisponivel(restaurado.nome, restaurado.projetoId);
-    restaurado.atualizadoEm = agora();
-    await gravar(LOJAS.arquivos, restaurado);
-    estado.arquivos.push(restaurado);
-    estado.projetoAtivo = restaurado.projetoId;
-    estado.arquivoAtivo = restaurado.id;
-    estado.itensLixeira = Math.max(0, estado.itensLixeira - 1);
-    await guardarSelecao();
-    renderTudo();
-    definirStatus('ok', 'Arquivo restaurado localmente' + (restaurado.nome !== arquivo.nome ? ' com um nome disponível' : '') + '. Nada foi enviado.');
+    return abrirBanco().then((banco) => new Promise((resolve, reject) => {
+      const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos], 'readwrite');
+      const projetos = tx.objectStore(LOJAS.projetos);
+      const arquivos = tx.objectStore(LOJAS.arquivos);
+      let todosProjetos = null;
+      let todosArquivos = null;
+      let arquivo = null;
+      let resultado = { restaurado: null, erro: '' };
+      const concluirLeituras = () => {
+        if (todosProjetos === null || todosArquivos === null || arquivo === null) return;
+        if (!arquivo || !estaNaLixeira(arquivo) || arquivo.lixeiraRaiz !== 'arquivo') return;
+        const projeto = todosProjetos.find((item) => item.id === arquivo.projetoId && !estaNaLixeira(item));
+        if (!projeto) { resultado.erro = 'projeto-ausente'; return; }
+        if (todosArquivos.filter((item) => !estaNaLixeira(item)).length >= LIMITES.arquivos) { resultado.erro = 'limite-arquivos'; return; }
+        const restaurado = tirarDaLixeira(arquivo);
+        restaurado.nome = nomeArquivoDisponivelNaLista(restaurado.nome, restaurado.projetoId, todosArquivos.filter((item) => !estaNaLixeira(item)));
+        restaurado.atualizadoEm = agora();
+        arquivos.put(restaurado);
+        resultado = { restaurado, erro: '' };
+      };
+      const leituraProjetos = projetos.getAll();
+      const leituraArquivos = arquivos.getAll();
+      const leituraArquivo = arquivos.get(id);
+      leituraProjetos.onsuccess = () => { todosProjetos = Array.isArray(leituraProjetos.result) ? leituraProjetos.result : []; concluirLeituras(); };
+      leituraArquivos.onsuccess = () => { todosArquivos = Array.isArray(leituraArquivos.result) ? leituraArquivos.result : []; concluirLeituras(); };
+      leituraArquivo.onsuccess = () => { arquivo = leituraArquivo.result || false; concluirLeituras(); };
+      leituraProjetos.onerror = () => reject(leituraProjetos.error || erro('sem-indexeddb'));
+      leituraArquivos.onerror = () => reject(leituraArquivos.error || erro('sem-indexeddb'));
+      leituraArquivo.onerror = () => reject(leituraArquivo.error || erro('sem-indexeddb'));
+      tx.oncomplete = () => resolve(resultado);
+      tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
+      tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
+    }));
   }
   async function restaurarDaLixeira(tipo, id) {
-    if (estado.operacaoLixeira) return;
+    if (estado.operacaoLixeira || !(await preservarEdicaoAntesDeAlterarLixeira())) return;
     registrarOperacaoLixeira(true);
     try {
-      if (tipo === 'projeto') await restaurarProjetoDaLixeira(id);
-      else await restaurarArquivoDaLixeira(id);
+      const resultado = tipo === 'projeto' ? await restaurarProjetoDaLixeira(id) : await restaurarArquivoDaLixeira(id);
+      if (resultado.erro) throw erro(resultado.erro);
+      if (!resultado.restaurado) { await informarLixeiraDesatualizada(); return; }
+      const restaurado = resultado.restaurado;
+      await recarregarAposAlteracaoLixeira({ projetoId: restaurado.projetoId || restaurado.id, arquivoId: tipo === 'arquivo' ? restaurado.id : '' });
+      const nomeMudou = tipo === 'projeto' ? restaurado.nome !== (resultado.nomeOriginal || restaurado.nome) : false;
+      definirStatus('ok', (tipo === 'projeto' ? 'Projeto' : 'Arquivo') + ' restaurado localmente' + (nomeMudou ? ' com um nome disponível' : '') + '. Nada foi enviado.');
     } catch (e) { mostrarErro(e); }
     finally { registrarOperacaoLixeira(false); }
   }
-  async function apagarDefinitivamenteProjeto(id) {
-    const [todosProjetos, todosArquivos] = await Promise.all([lerTodos(LOJAS.projetos), lerTodos(LOJAS.arquivos)]);
-    const projeto = todosProjetos.find((item) => item.id === id && estaNaLixeira(item) && item.lixeiraRaiz === 'projeto');
-    if (!projeto) return;
-    const arquivos = todosArquivos.filter((arquivo) => arquivo.projetoId === id);
-    const revisoes = [];
-    for (const arquivo of arquivos) revisoes.push(...await lerTodos(LOJAS.revisoes, 'arquivoId', arquivo.id));
-    await abrirBanco().then((banco) => new Promise((resolve, reject) => {
+  function apagarDefinitivamenteProjeto(id) {
+    return abrirBanco().then((banco) => new Promise((resolve, reject) => {
       const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos, LOJAS.revisoes], 'readwrite');
-      tx.objectStore(LOJAS.projetos).delete(projeto.id);
-      arquivos.forEach((arquivo) => tx.objectStore(LOJAS.arquivos).delete(arquivo.id));
-      revisoes.forEach((revisao) => tx.objectStore(LOJAS.revisoes).delete(revisao.id));
-      tx.oncomplete = resolve;
+      const projetos = tx.objectStore(LOJAS.projetos);
+      const arquivos = tx.objectStore(LOJAS.arquivos);
+      const revisoes = tx.objectStore(LOJAS.revisoes);
+      let projeto = null;
+      let todosArquivos = null;
+      let todasRevisoes = null;
+      let removido = false;
+      const concluirLeituras = () => {
+        if (projeto === null || todosArquivos === null || todasRevisoes === null) return;
+        if (!projeto || !estaNaLixeira(projeto) || projeto.lixeiraRaiz !== 'projeto') return;
+        if (!filhosDoProjetoEstaoRecuperaveis(todosArquivos, projeto.id)) return;
+        const filhos = todosArquivos.filter((arquivo) => arquivo.projetoId === projeto.id);
+        const idsArquivos = new Set(filhos.map((arquivo) => arquivo.id));
+        projetos.delete(projeto.id);
+        filhos.forEach((arquivo) => arquivos.delete(arquivo.id));
+        todasRevisoes.filter((revisao) => idsArquivos.has(revisao.arquivoId)).forEach((revisao) => revisoes.delete(revisao.id));
+        removido = true;
+      };
+      const leituraProjeto = projetos.get(id);
+      const leituraArquivos = arquivos.getAll();
+      const leituraRevisoes = revisoes.getAll();
+      leituraProjeto.onsuccess = () => { projeto = leituraProjeto.result || false; concluirLeituras(); };
+      leituraArquivos.onsuccess = () => { todosArquivos = Array.isArray(leituraArquivos.result) ? leituraArquivos.result : []; concluirLeituras(); };
+      leituraRevisoes.onsuccess = () => { todasRevisoes = Array.isArray(leituraRevisoes.result) ? leituraRevisoes.result : []; concluirLeituras(); };
+      leituraProjeto.onerror = () => reject(leituraProjeto.error || erro('sem-indexeddb'));
+      leituraArquivos.onerror = () => reject(leituraArquivos.error || erro('sem-indexeddb'));
+      leituraRevisoes.onerror = () => reject(leituraRevisoes.error || erro('sem-indexeddb'));
+      tx.oncomplete = () => resolve(removido);
       tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
       tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
     }));
   }
-  async function apagarDefinitivamenteArquivo(id) {
-    const arquivo = await lerUm(LOJAS.arquivos, id);
-    if (!arquivo || !estaNaLixeira(arquivo) || arquivo.lixeiraRaiz !== 'arquivo') return;
-    const revisoes = await lerTodos(LOJAS.revisoes, 'arquivoId', arquivo.id);
-    await abrirBanco().then((banco) => new Promise((resolve, reject) => {
+  function apagarDefinitivamenteArquivo(id) {
+    return abrirBanco().then((banco) => new Promise((resolve, reject) => {
       const tx = banco.transaction([LOJAS.arquivos, LOJAS.revisoes], 'readwrite');
-      tx.objectStore(LOJAS.arquivos).delete(arquivo.id);
-      revisoes.forEach((revisao) => tx.objectStore(LOJAS.revisoes).delete(revisao.id));
-      tx.oncomplete = resolve;
+      const arquivos = tx.objectStore(LOJAS.arquivos);
+      const revisoes = tx.objectStore(LOJAS.revisoes);
+      let arquivo = null;
+      let todasRevisoes = null;
+      let removido = false;
+      const concluirLeituras = () => {
+        if (arquivo === null || todasRevisoes === null) return;
+        if (!arquivo || !estaNaLixeira(arquivo) || arquivo.lixeiraRaiz !== 'arquivo') return;
+        arquivos.delete(arquivo.id);
+        todasRevisoes.filter((revisao) => revisao.arquivoId === arquivo.id).forEach((revisao) => revisoes.delete(revisao.id));
+        removido = true;
+      };
+      const leituraArquivo = arquivos.get(id);
+      const leituraRevisoes = revisoes.getAll();
+      leituraArquivo.onsuccess = () => { arquivo = leituraArquivo.result || false; concluirLeituras(); };
+      leituraRevisoes.onsuccess = () => { todasRevisoes = Array.isArray(leituraRevisoes.result) ? leituraRevisoes.result : []; concluirLeituras(); };
+      leituraArquivo.onerror = () => reject(leituraArquivo.error || erro('sem-indexeddb'));
+      leituraRevisoes.onerror = () => reject(leituraRevisoes.error || erro('sem-indexeddb'));
+      tx.oncomplete = () => resolve(removido);
       tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
       tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
     }));
   }
   async function descartarDaLixeira(tipo, id) {
-    if (estado.operacaoLixeira) return;
+    if (estado.operacaoLixeira || !(await preservarEdicaoAntesDeAlterarLixeira())) return;
     const item = tipo === 'projeto' ? await lerUm(LOJAS.projetos, id) : await lerUm(LOJAS.arquivos, id);
-    if (!item || !estaNaLixeira(item) || item.lixeiraRaiz !== tipo) return;
+    if (!item || !estaNaLixeira(item) || item.lixeiraRaiz !== tipo) { await informarLixeiraDesatualizada(); return; }
     if (!confirm('Excluir definitivamente ' + (tipo === 'projeto' ? 'o projeto' : 'o arquivo') + ' local “' + item.nome + '” e todas as versões dele? Isso não poderá ser desfeito neste navegador e nada será enviado.')) return;
     registrarOperacaoLixeira(true);
     try {
-      if (tipo === 'projeto') await apagarDefinitivamenteProjeto(id);
-      else await apagarDefinitivamenteArquivo(id);
-      await atualizarOcupacao();
-      renderTudo();
+      const removido = tipo === 'projeto' ? await apagarDefinitivamenteProjeto(id) : await apagarDefinitivamenteArquivo(id);
+      if (!removido) { await informarLixeiraDesatualizada(); return; }
+      await recarregarAposAlteracaoLixeira();
       definirStatus('ok', 'Item removido definitivamente apenas deste navegador. Nada foi enviado.');
     } catch (e) { mostrarErro(e); }
     finally { registrarOperacaoLixeira(false); }
   }
+  function esvaziarLixeiraTransacional() {
+    return abrirBanco().then((banco) => new Promise((resolve, reject) => {
+      const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos, LOJAS.revisoes], 'readwrite');
+      const lojaProjetos = tx.objectStore(LOJAS.projetos);
+      const lojaArquivos = tx.objectStore(LOJAS.arquivos);
+      const lojaRevisoes = tx.objectStore(LOJAS.revisoes);
+      let projetos = null;
+      let arquivos = null;
+      let revisoes = null;
+      let resultado = { removidos: 0, conflito: false };
+      const concluirLeituras = () => {
+        if (projetos === null || arquivos === null || revisoes === null) return;
+        const projetosLixeira = projetos.filter(estaNaLixeira);
+        // Uma guia antiga pode ter criado ou restaurado filho sob um projeto
+        // que esta guia ainda vê na lixeira. Nesse caso não apague nada: a
+        // pessoa precisa recarregar e decidir a partir da fotografia atual.
+        if (projetosLixeira.some((projeto) => !filhosDoProjetoEstaoRecuperaveis(arquivos, projeto.id))) {
+          resultado = { removidos: 0, conflito: true };
+          return;
+        }
+        const idsProjetosLixeira = new Set(projetosLixeira.map((projeto) => projeto.id));
+        const arquivosLixeira = arquivos.filter((arquivo) => estaNaLixeira(arquivo) || idsProjetosLixeira.has(arquivo.projetoId));
+        const idsArquivos = new Set(arquivosLixeira.map((arquivo) => arquivo.id));
+        projetosLixeira.forEach((projeto) => lojaProjetos.delete(projeto.id));
+        arquivosLixeira.forEach((arquivo) => lojaArquivos.delete(arquivo.id));
+        revisoes.filter((revisao) => idsArquivos.has(revisao.arquivoId)).forEach((revisao) => lojaRevisoes.delete(revisao.id));
+        resultado = { removidos: projetosLixeira.length + arquivosLixeira.length, conflito: false };
+      };
+      const leituraProjetos = lojaProjetos.getAll();
+      const leituraArquivos = lojaArquivos.getAll();
+      const leituraRevisoes = lojaRevisoes.getAll();
+      leituraProjetos.onsuccess = () => { projetos = Array.isArray(leituraProjetos.result) ? leituraProjetos.result : []; concluirLeituras(); };
+      leituraArquivos.onsuccess = () => { arquivos = Array.isArray(leituraArquivos.result) ? leituraArquivos.result : []; concluirLeituras(); };
+      leituraRevisoes.onsuccess = () => { revisoes = Array.isArray(leituraRevisoes.result) ? leituraRevisoes.result : []; concluirLeituras(); };
+      leituraProjetos.onerror = () => reject(leituraProjetos.error || erro('sem-indexeddb'));
+      leituraArquivos.onerror = () => reject(leituraArquivos.error || erro('sem-indexeddb'));
+      leituraRevisoes.onerror = () => reject(leituraRevisoes.error || erro('sem-indexeddb'));
+      tx.oncomplete = () => resolve(resultado);
+      tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
+      tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
+    }));
+  }
   async function esvaziarLixeira() {
-    if (estado.operacaoLixeira || !estado.itensLixeira) return;
+    if (estado.operacaoLixeira || !estado.itensLixeira || !(await preservarEdicaoAntesDeAlterarLixeira())) return;
     if (!confirm('Esvaziar a lixeira local? Todos os projetos, arquivos e versões que estão nela serão excluídos definitivamente deste navegador. Isso não poderá ser desfeito e nada será enviado.')) return;
     registrarOperacaoLixeira(true);
     try {
-      const [projetos, arquivos, revisoes] = await Promise.all([lerTodos(LOJAS.projetos), lerTodos(LOJAS.arquivos), lerTodos(LOJAS.revisoes)]);
-      const projetosLixeira = projetos.filter(estaNaLixeira);
-      const idsProjetosLixeira = new Set(projetosLixeira.map((projeto) => projeto.id));
-      const arquivosLixeira = arquivos.filter((arquivo) => estaNaLixeira(arquivo) || idsProjetosLixeira.has(arquivo.projetoId));
-      const idsArquivos = new Set(arquivosLixeira.map((arquivo) => arquivo.id));
-      await abrirBanco().then((banco) => new Promise((resolve, reject) => {
-        const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos, LOJAS.revisoes], 'readwrite');
-        projetosLixeira.forEach((projeto) => tx.objectStore(LOJAS.projetos).delete(projeto.id));
-        arquivosLixeira.forEach((arquivo) => tx.objectStore(LOJAS.arquivos).delete(arquivo.id));
-        revisoes.filter((revisao) => idsArquivos.has(revisao.arquivoId)).forEach((revisao) => tx.objectStore(LOJAS.revisoes).delete(revisao.id));
-        tx.oncomplete = resolve;
-        tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
-        tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
-      }));
-      await atualizarOcupacao();
-      renderTudo();
+      const resultado = await esvaziarLixeiraTransacional();
+      if (!resultado.removidos || resultado.conflito) { await informarLixeiraDesatualizada(); return; }
+      await recarregarAposAlteracaoLixeira();
       definirStatus('ok', 'Lixeira local esvaziada definitivamente. Nada foi enviado.');
     } catch (e) { mostrarErro(e); }
     finally { registrarOperacaoLixeira(false); }

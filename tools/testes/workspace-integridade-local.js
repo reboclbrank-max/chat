@@ -51,7 +51,7 @@ function criarModuloComBanco(registros) {
   const inicio = fonte.indexOf(marcador);
   assert(inicio >= 0, 'ponto de montagem do módulo não encontrado');
   const fonteTestavel = fonte.slice(0, inicio) + `  window.__workspaceTeste = {
-    estado, apagarArquivo, apagarProjeto, restaurarDaLixeira, descartarDaLixeira, esvaziarLixeira,
+    estado, moverArquivoParaLixeira, moverProjetoParaLixeira, apagarArquivo, apagarProjeto, restaurarDaLixeira, descartarDaLixeira, esvaziarLixeira,
     substituir: (dependencias) => {
       if (dependencias.lerTodos) lerTodos = dependencias.lerTodos;
       if (dependencias.lerUm) lerUm = dependencias.lerUm;
@@ -68,13 +68,45 @@ function criarModuloComBanco(registros) {
   const todos = async (loja, indice, chave) => [...mapas[loja].values()].filter((item) => !indice || item[indice] === chave).map((item) => Object.assign({}, item));
   const banco = {
     transaction: () => {
-      const tx = {
-        objectStore: (loja) => ({
-          put: (item) => mapas[loja].set(item.id || item.chave, Object.assign({}, item)),
-          delete: (chave) => mapas[loja].delete(chave)
-        })
+      let pendentes = 0;
+      let conclusaoAgendada = false;
+      const tx = {};
+      const agendarConclusao = () => {
+        if (conclusaoAgendada) return;
+        conclusaoAgendada = true;
+        queueMicrotask(() => {
+          conclusaoAgendada = false;
+          if (!pendentes && typeof tx.oncomplete === 'function') tx.oncomplete();
+        });
       };
-      queueMicrotask(() => { if (typeof tx.oncomplete === 'function') tx.oncomplete(); });
+      const pedido = (ler) => {
+        pendentes++;
+        const requisicao = { result: undefined, error: null, onsuccess: null, onerror: null };
+        queueMicrotask(() => {
+          try {
+            requisicao.result = ler();
+            if (typeof requisicao.onsuccess === 'function') requisicao.onsuccess();
+          } catch (erro) {
+            requisicao.error = erro;
+            if (typeof requisicao.onerror === 'function') requisicao.onerror();
+          } finally {
+            pendentes--;
+            agendarConclusao();
+          }
+        });
+        return requisicao;
+      };
+      tx.objectStore = (loja) => {
+        const valores = () => [...mapas[loja].values()].map((item) => Object.assign({}, item));
+        return {
+          put: (item) => mapas[loja].set(item.id || item.chave, Object.assign({}, item)),
+          delete: (chave) => mapas[loja].delete(chave),
+          get: (chave) => pedido(() => mapas[loja].has(chave) ? Object.assign({}, mapas[loja].get(chave)) : undefined),
+          getAll: () => pedido(valores),
+          index: (indice) => ({ getAll: (chave) => pedido(() => valores().filter((item) => item[indice] === chave)) })
+        };
+      };
+      agendarConclusao();
       return tx;
     }
   };
@@ -157,11 +189,99 @@ async function principal() {
 
   await testa('metadados de lixeira não usam rede nem removem revisões durante o movimento recuperável', () => {
     assert.match(fonte, /function estaNaLixeira\(registro\) \{ return !!\(registro && registro\.lixeiraEm\); \}/);
-    const moverArquivo = entre(fonte, 'async function apagarArquivo()', '\n  async function restaurarProjetoDaLixeira');
+    const moverArquivo = entre(fonte, 'function moverArquivoParaLixeira(arquivo, quando)', '\n  function moverProjetoParaLixeira');
     assert.match(moverArquivo, /lixeiraRaiz: 'arquivo'/);
+    assert.match(moverArquivo, /const leitura = arquivos\.get\(arquivo\.id\)/);
     assert.doesNotMatch(moverArquivo, /\.delete\(arquivo\.id\)|revisoes\.delete/);
-    assert.match(fonte, /async function apagarDefinitivamenteArquivo\(id\)/);
+    assert.match(fonte, /function apagarDefinitivamenteArquivo\(id\)/);
     assert.match(fonte, /async function esvaziarLixeira\(\)/);
+  });
+
+  await testa('não move arquivo desatualizado para a lixeira e conserva a versão persistida', async () => {
+    const base = { id: 'a', projetoId: 'p', nome: 'nota.txt', conteudo: 'antes', bytes: 6, versao: 1, criadoEm: '2026-01-01T00:00:00.000Z', atualizadoEm: '2026-01-01T00:00:00.000Z' };
+    const remoto = Object.assign({}, base, { conteudo: 'depois', bytes: 7, versao: 2, atualizadoEm: '2026-01-02T00:00:00.000Z' });
+    const { modulo, mapas } = criarModuloComBanco({
+      projetos: [{ id: 'p', nome: 'Projeto', criadoEm: base.criadoEm, atualizadoEm: base.atualizadoEm }], arquivos: [remoto]
+    });
+    const resultado = await modulo.moverArquivoParaLixeira(base, '2026-01-03T00:00:00.000Z');
+    assert.equal(resultado.conflito, true);
+    assert.equal(mapas.arquivos.get('a').conteudo, 'depois');
+    assert.equal(mapas.arquivos.get('a').lixeiraEm, undefined);
+  });
+
+  await testa('não move projeto quando um filho mudou depois da fotografia confirmada', async () => {
+    const projeto = { id: 'p', nome: 'Projeto', criadoEm: '2026-01-01T00:00:00.000Z', atualizadoEm: '2026-01-01T00:00:00.000Z' };
+    const arquivo = { id: 'a', projetoId: 'p', nome: 'nota.txt', conteudo: 'antes', bytes: 6, versao: 1, criadoEm: projeto.criadoEm, atualizadoEm: projeto.atualizadoEm };
+    const remoto = Object.assign({}, arquivo, { conteudo: 'depois', bytes: 7, versao: 2, atualizadoEm: '2026-01-02T00:00:00.000Z' });
+    const { modulo, mapas } = criarModuloComBanco({ projetos: [projeto], arquivos: [remoto] });
+    const resultado = await modulo.moverProjetoParaLixeira(projeto, [arquivo], '2026-01-03T00:00:00.000Z');
+    assert.equal(resultado.conflito, true);
+    assert.equal(mapas.projetos.get('p').lixeiraEm, undefined);
+    assert.equal(mapas.arquivos.get('a').conteudo, 'depois');
+    assert.equal(mapas.arquivos.get('a').lixeiraEm, undefined);
+  });
+
+  await testa('clique de projeto em tela antiga não move filho que outra guia atualizou', async () => {
+    const projeto = { id: 'p', nome: 'Projeto', criadoEm: '2026-01-01T00:00:00.000Z', atualizadoEm: '2026-01-01T00:00:00.000Z' };
+    const antigo = { id: 'a', projetoId: 'p', nome: 'nota.txt', conteudo: 'antes', bytes: 6, versao: 1, criadoEm: projeto.criadoEm, atualizadoEm: projeto.atualizadoEm };
+    const remoto = Object.assign({}, antigo, { conteudo: 'depois', bytes: 7, versao: 2, atualizadoEm: '2026-01-02T00:00:00.000Z' });
+    const { modulo, mapas, status } = criarModuloComBanco({ projetos: [projeto], arquivos: [remoto] });
+    Object.assign(modulo.estado, { projetos: [projeto], arquivos: [antigo], projetoAtivo: 'p', arquivoAtivo: '', alterado: false, itensLixeira: 0 });
+    await modulo.apagarProjeto();
+    assert.equal(mapas.projetos.get('p').lixeiraEm, undefined);
+    assert.equal(mapas.arquivos.get('a').conteudo, 'depois');
+    assert.equal(mapas.arquivos.get('a').lixeiraEm, undefined);
+    assert.match(status(), /mudou em outra guia/i);
+  });
+
+  await testa('clique de projeto em tela antiga não devolve à lixeira filho restaurado por outra guia', async () => {
+    const projeto = { id: 'p', nome: 'Projeto', criadoEm: '2026-01-01T00:00:00.000Z', atualizadoEm: '2026-01-01T00:00:00.000Z' };
+    const restaurado = { id: 'a', projetoId: 'p', nome: 'voltou.txt', conteudo: 'ativo', bytes: 5, versao: 1, criadoEm: projeto.criadoEm, atualizadoEm: '2026-01-02T00:00:00.000Z' };
+    const { modulo, mapas, status } = criarModuloComBanco({ projetos: [projeto], arquivos: [restaurado] });
+    // Esta guia só tinha visto o arquivo quando ele ainda era uma raiz da Lixeira.
+    Object.assign(modulo.estado, { projetos: [projeto], arquivos: [], projetoAtivo: 'p', arquivoAtivo: '', alterado: false, itensLixeira: 1 });
+    await modulo.apagarProjeto();
+    assert.equal(mapas.projetos.get('p').lixeiraEm, undefined);
+    assert.equal(mapas.arquivos.get('a').lixeiraEm, undefined);
+    assert.match(status(), /mudou em outra guia/i);
+  });
+
+  await testa('restauração resolve nome com a fotografia atual da transação', async () => {
+    const { modulo, mapas } = criarModuloComBanco({
+      projetos: [{ id: 'p', nome: 'Projeto', criadoEm: '2026-01-01T00:00:00.000Z', atualizadoEm: '2026-01-01T00:00:00.000Z' }],
+      arquivos: [
+        { id: 'a', projetoId: 'p', nome: 'nota.txt', conteudo: 'recuperar', bytes: 10, versao: 1, criadoEm: '2026-01-01T00:00:00.000Z', atualizadoEm: '2026-01-01T00:00:00.000Z', lixeiraEm: '2026-01-02T00:00:00.000Z', lixeiraRaiz: 'arquivo', lixeiraProjetoId: 'p' },
+        { id: 'b', projetoId: 'p', nome: 'nota.txt', conteudo: 'atual', bytes: 5, versao: 1, criadoEm: '2026-01-01T00:00:00.000Z', atualizadoEm: '2026-01-03T00:00:00.000Z' }
+      ]
+    });
+    Object.assign(modulo.estado, { projetos: [{ id: 'p', nome: 'Projeto' }], arquivos: [], projetoAtivo: 'p', arquivoAtivo: '', alterado: false, itensLixeira: 1 });
+    await modulo.restaurarDaLixeira('arquivo', 'a');
+    assert.equal(mapas.arquivos.get('a').nome, 'nota (2).txt');
+    assert.equal(mapas.arquivos.get('a').lixeiraEm, undefined);
+  });
+
+  await testa('não descarta projeto da lixeira se um filho voltou a ficar ativo em outra guia', async () => {
+    const { modulo, mapas, status } = criarModuloComBanco({
+      projetos: [{ id: 'p', nome: 'Projeto', criadoEm: '2026-01-01T00:00:00.000Z', atualizadoEm: '2026-01-02T00:00:00.000Z', lixeiraEm: '2026-01-02T00:00:00.000Z', lixeiraRaiz: 'projeto', lixeiraProjetoId: 'p' }],
+      arquivos: [{ id: 'a', projetoId: 'p', nome: 'voltou.txt', conteudo: 'ativo', bytes: 5, versao: 1, criadoEm: '2026-01-01T00:00:00.000Z', atualizadoEm: '2026-01-03T00:00:00.000Z' }]
+    });
+    Object.assign(modulo.estado, { projetos: [], arquivos: [], alterado: false, itensLixeira: 1 });
+    await modulo.descartarDaLixeira('projeto', 'p');
+    assert.equal(mapas.projetos.has('p'), true);
+    assert.equal(mapas.arquivos.has('a'), true);
+    assert.match(status(), /mudou em outra guia/i);
+  });
+
+  await testa('esvaziar lixeira também preserva projeto com filho ativo surgido em outra guia', async () => {
+    const { modulo, mapas, status } = criarModuloComBanco({
+      projetos: [{ id: 'p', nome: 'Projeto', criadoEm: '2026-01-01T00:00:00.000Z', atualizadoEm: '2026-01-02T00:00:00.000Z', lixeiraEm: '2026-01-02T00:00:00.000Z', lixeiraRaiz: 'projeto', lixeiraProjetoId: 'p' }],
+      arquivos: [{ id: 'a', projetoId: 'p', nome: 'voltou.txt', conteudo: 'ativo', bytes: 5, versao: 1, criadoEm: '2026-01-01T00:00:00.000Z', atualizadoEm: '2026-01-03T00:00:00.000Z' }]
+    });
+    Object.assign(modulo.estado, { projetos: [], arquivos: [], alterado: false, itensLixeira: 1 });
+    await modulo.esvaziarLixeira();
+    assert.equal(mapas.projetos.has('p'), true);
+    assert.equal(mapas.arquivos.has('a'), true);
+    assert.match(status(), /mudou em outra guia/i);
   });
 
   await testa('arquivo vai à lixeira, mantém revisão, restaura e só libera espaço no descarte definitivo', async () => {

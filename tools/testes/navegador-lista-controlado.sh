@@ -347,6 +347,34 @@ teste_lista = """<script>
     document.getElementById('btn-workspace-recarregar-conflito').click();
     await esperarWorkspace(() => !visivel(painelConflito) && editor.value === conteudoFinal && document.getElementById('workspace-status').textContent.includes('Versão salva recarregada'), 'recarregar versão salva por escolha explícita');
 
+    // A mesma guarda cobre o caminho destrutivo: uma guia desatualizada não
+    // transforma em lixeira o registro que outra escrita local acabou de mudar.
+    const arquivoAntesDaLixeira = porNomeArquivoExato(nomeArquivo);
+    await atualizarArquivoWorkspaceControlado(arquivoAntesDaLixeira.dataset.arquivoId, conteudoFinal);
+    const estadoAntesDaLixeira = await lerEstadoArquivoWorkspaceControlado(arquivoAntesDaLixeira.dataset.arquivoId, arquivoAntesDaLixeira.dataset.projetoId);
+    document.getElementById('btn-workspace-apagar-arquivo').click();
+    await esperarWorkspace(() => visivel(painelConflito) && document.getElementById('workspace-status').textContent.includes('mudou em outra guia'), 'bloquear lixeira desatualizada sem descartar arquivo');
+    const estadoDepoisDaLixeira = await lerEstadoArquivoWorkspaceControlado(arquivoAntesDaLixeira.dataset.arquivoId, arquivoAntesDaLixeira.dataset.projetoId);
+    if (estadoDepoisDaLixeira.arquivo.lixeiraEm || estadoDepoisDaLixeira.arquivo.versao !== estadoAntesDaLixeira.arquivo.versao || estadoDepoisDaLixeira.arquivo.conteudo !== conteudoFinal) {
+      throw new Error('lixeira desatualizada alterou o arquivo persistido pela outra escrita local');
+    }
+    document.getElementById('btn-workspace-recarregar-conflito').click();
+    await esperarWorkspace(() => !visivel(painelConflito) && editor.value === conteudoFinal, 'recarregar depois de bloquear lixeira desatualizada');
+
+    // Projeto também não pode reutilizar a lista antiga de filhos: esta escrita
+    // controlada só atualiza o filho no IndexedDB efêmero, sem tocar o projeto,
+    // e o clique antigo precisa preservar ambos em vez de movê-los à Lixeira.
+    const arquivoAntesProjetoLixeira = porNomeArquivoExato(nomeArquivo);
+    await atualizarArquivoWorkspaceControlado(arquivoAntesProjetoLixeira.dataset.arquivoId, conteudoFinal);
+    const estadoAntesProjetoLixeira = await lerEstadoArquivoWorkspaceControlado(arquivoAntesProjetoLixeira.dataset.arquivoId, arquivoAntesProjetoLixeira.dataset.projetoId);
+    document.getElementById('btn-workspace-apagar-projeto').click();
+    await esperarWorkspace(() => document.getElementById('workspace-status').textContent.includes('A lixeira mudou em outra guia'), 'bloquear projeto com filho desatualizado');
+    const estadoDepoisProjetoLixeira = await lerEstadoArquivoWorkspaceControlado(arquivoAntesProjetoLixeira.dataset.arquivoId, arquivoAntesProjetoLixeira.dataset.projetoId);
+    if (estadoDepoisProjetoLixeira.projeto.lixeiraEm || estadoDepoisProjetoLixeira.arquivo.lixeiraEm || estadoDepoisProjetoLixeira.arquivo.versao !== estadoAntesProjetoLixeira.arquivo.versao || estadoDepoisProjetoLixeira.arquivo.conteudo !== conteudoFinal) {
+      throw new Error('lixeira desatualizada do projeto alterou projeto ou filho persistidos');
+    }
+    await esperarWorkspace(() => porNomeArquivoExato(nomeArquivo) && editor.value === conteudoFinal, 'recarregar depois de bloquear projeto desatualizado');
+
     const exportarProjetoPortatil = document.getElementById('btn-workspace-exportar-projeto');
     const importarProjetoPortatil = document.getElementById('btn-workspace-importar-projeto');
     const entradaProjetoPortatil = document.getElementById('workspace-projeto-portatil-importar');
@@ -467,7 +495,7 @@ teste_lista = """<script>
     if (!document.getElementById('workspace-status').textContent.toLowerCase().includes('nada foi enviado')) {
       throw new Error('ciclo local não declarou a ausência de envio');
     }
-    return ' · Workspace criou, versionou, protegeu rascunho em conflito local, buscou entre projetos sem expor Lixeira, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture';
+    return ' · Workspace criou, versionou, protegeu rascunho e lixeira em conflito local, buscou entre projetos sem expor Lixeira, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture';
   };
   try {
     await esperar(() => document.querySelectorAll('#lista .conv').length >= 52, 5000, 'lista inicial');
@@ -769,7 +797,7 @@ if rota != 'limpar.html':
 else:
     assert 'Cache limpo.' in conteudo, f'{rota}: aviso de limpeza não está no DOM final'
 if rota == 'index.html':
-    assert 'Workspace criou, versionou, protegeu rascunho em conflito local, buscou entre projetos sem expor Lixeira, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture' in texto, f'{rota}: ciclo Workspace não foi concluído'
+    assert 'Workspace criou, versionou, protegeu rascunho e lixeira em conflito local, buscou entre projetos sem expor Lixeira, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture' in texto, f'{rota}: ciclo Workspace não foi concluído'
 print('✔ navegador controlado · padrão · ' + rota + ' · ' + texto)
 PY
 done
