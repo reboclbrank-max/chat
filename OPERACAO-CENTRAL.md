@@ -60,6 +60,15 @@ A próxima frente permitida é uma **preparação limitada de mudança de reposi
 
 Mesmo depois desse corte, autorização ampla do dono não substitui configuração operacional concreta para contas, destino, identidade, segredo, provedor ou publicação.
 
+## 4.1 Auditoria de paridade com agente (21/10/2026)
+
+A pergunta “o Chat já faz tudo que o agente faz?” foi testada contra `main` em `chat@198b0c9e02d5cedaa08bee7effc5e9646f054fec`. A resposta é **não**, de forma deliberada: a Central coordena capacidades configuradas e fechadas; ela não recebe a camada geral de arquivos, repositórios, shell, ferramentas ou credenciais de um ambiente de agente.
+
+- **O que foi exercitado de forma controlada:** o corredor integral fechou 83/83 com IMAP/SMTP/motores simulados, OCR/PDF locais e sem canal real; o browser isolado passou nas quatro rotas, desktop e móvel, com perfil/IndexedDB temporários e rede externa bloqueada. Uma fixture de UI enviou `operar:` pela página real e confirmou a interceptação local. Outra fixture chamou a ponte com API simulada: aliases retornaram o mapa, argumento/modo somente-local/acesso ausente bloquearam antes da API, e a única forma válida formou exclusivamente o POST literal para `chat/testes-rapidos.yml` em `main`, com repetição bloqueada.
+- **O que o Chat já pode fazer dentro do produto:** responder comandos locais, operar o Workspace local, atender os canais configurados sob suas guardas, orientar pesquisa/navegador público isolado e pedir a única barreira fixa quando houver acesso configurado. Isso não transforma resultado técnico em execução remota geral, entrega, uso, disponibilidade ou satisfação.
+- **O que continua fora:** abrir/alterar arquivos arbitrários, executar terminal ou código recebido, escolher URL/repositório/workflow/ref, criar branch/commit/push/merge, revisar/promover `main`, usar ferramentas externas gerais, acessar segredo/conta/identidade, criar conta, backup externo, gasto, permissão ou publicação irreversível. A página também não acessa o workspace nem as ferramentas internas de quem a auxilia.
+- **Limite da prova:** não houve dispatch real de `!testarchat`, e-mail/Telegram real, conversa, segredo, postagem, conta ou tráfego externo fabricado. A simulação verifica guardas e formato, não afirma que uma execução externa concluiria nem substitui revisão humana. A próxima etapa permanece a do item 4, sem salto de escopo.
+
 ## 5. Alternativas recusadas nesta etapa
 
 | Alternativa | Motivo da recusa |
