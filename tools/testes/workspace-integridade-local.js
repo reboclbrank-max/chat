@@ -51,7 +51,8 @@ function criarModuloComBanco(registros) {
   const inicio = fonte.indexOf(marcador);
   assert(inicio >= 0, 'ponto de montagem do módulo não encontrado');
   const fonteTestavel = fonte.slice(0, inicio) + `  window.__workspaceTeste = {
-    estado, moverArquivoParaLixeira, moverProjetoParaLixeira, apagarArquivo, apagarProjeto, restaurarDaLixeira, descartarDaLixeira, esvaziarLixeira,
+    estado, criarProjetoTransacional, renomearProjetoTransacional, criarArquivoTransacional,
+    moverArquivoParaLixeira, moverProjetoParaLixeira, apagarArquivo, apagarProjeto, restaurarDaLixeira, descartarDaLixeira, esvaziarLixeira,
     substituir: (dependencias) => {
       if (dependencias.lerTodos) lerTodos = dependencias.lerTodos;
       if (dependencias.lerUm) lerUm = dependencias.lerUm;
@@ -111,8 +112,9 @@ function criarModuloComBanco(registros) {
     }
   };
   let status = '';
+  let proximoIdControlado = 0;
   const contexto = {
-    window: { crypto: { randomUUID: () => 'id-controlado' } },
+    window: { crypto: { randomUUID: () => 'id-controlado-' + (++proximoIdControlado) } },
     TextEncoder, Map, Set, Promise, Date, Math, Number, String, Object, Array,
     confirm: () => true
   };
@@ -357,6 +359,87 @@ async function principal() {
     assert.equal(mapas.arquivos.has('b'), false);
     assert.equal(mapas.revisoes.has('ra'), false);
     assert.equal(mapas.revisoes.has('rb'), false);
+  });
+
+  await testa('criações de projeto decidem nome e projeto inicial dentro da transação atual', async () => {
+    const quando = '2026-10-21T12:00:00.000Z';
+    const criacoes = criarModuloComBanco({ projetos: [] });
+    const primeiro = await criacoes.modulo.criarProjetoTransacional('Projeto', quando, false);
+    const segundo = await criacoes.modulo.criarProjetoTransacional('Projeto', quando, false);
+    assert.equal(primeiro.criado, true);
+    assert.equal(segundo.criado, true);
+    assert.equal(primeiro.projeto.nome, 'Projeto');
+    assert.equal(segundo.projeto.nome, 'Projeto (2)');
+    assert.equal(criacoes.mapas.projetos.size, 2);
+
+    const aberturaVazia = criarModuloComBanco({ projetos: [] });
+    const inicial = await aberturaVazia.modulo.criarProjetoTransacional('Meu workspace', quando, true);
+    const inicialRepetido = await aberturaVazia.modulo.criarProjetoTransacional('Meu workspace', quando, true);
+    assert.equal(inicial.criado, true);
+    assert.equal(inicialRepetido.criado, false);
+    assert.equal(aberturaVazia.mapas.projetos.size, 1, 'a segunda abertura vazia reutiliza um projeto ativo em vez de duplicá-lo');
+  });
+
+  await testa('criação de arquivo não reativa projeto que outra guia já levou à lixeira', async () => {
+    const antes = { id: 'p', nome: 'Projeto antigo', criadoEm: '2026-10-21T10:00:00.000Z', atualizadoEm: '2026-10-21T10:00:00.000Z' };
+    const naLixeira = Object.assign({}, antes, { lixeiraEm: '2026-10-21T10:01:00.000Z', lixeiraRaiz: 'projeto', lixeiraProjetoId: 'p' });
+    const { modulo, mapas } = criarModuloComBanco({ projetos: [naLixeira] });
+    const resultado = await modulo.criarArquivoTransacional('p', 'novo.md', 'texto local', '2026-10-21T10:02:00.000Z');
+    assert.equal(resultado.conflito, true);
+    assert.equal(mapas.projetos.get('p').lixeiraEm, naLixeira.lixeiraEm);
+    assert.equal(mapas.projetos.get('p').nome, naLixeira.nome);
+    assert.equal(mapas.arquivos.size, 0, 'o filho não pode ser criado sob projeto recuperável');
+  });
+
+  await testa('criação preserva o projeto persistido que outra guia renomeou e calcula o nome corrente', async () => {
+    const antigo = { id: 'p', nome: 'Nome visto antes', criadoEm: '2026-10-21T10:00:00.000Z', atualizadoEm: '2026-10-21T10:00:00.000Z' };
+    const remoto = Object.assign({}, antigo, { nome: 'Nome definido na outra guia', atualizadoEm: '2026-10-21T10:01:00.000Z' });
+    const existente = { id: 'a', projetoId: 'p', nome: 'novo.md', conteudo: 'anterior', bytes: 8, versao: 1, criadoEm: antigo.criadoEm, atualizadoEm: antigo.atualizadoEm };
+    const { modulo, mapas } = criarModuloComBanco({ projetos: [remoto], arquivos: [existente] });
+    const resultado = await modulo.criarArquivoTransacional('p', 'novo.md', 'texto', '2026-10-21T10:02:00.000Z');
+    assert.equal(resultado.conflito, false);
+    assert.equal(resultado.arquivo.nome, 'novo (2).md');
+    assert.equal(mapas.projetos.get('p').nome, remoto.nome, 'a criação não regrava nome da fotografia antiga');
+    assert.equal(mapas.arquivos.size, 2);
+  });
+
+  await testa('criação consulta as cotas persistidas antes de escrever sob fotografia antiga', async () => {
+    const projeto = { id: 'p', nome: 'Projeto', criadoEm: '2026-10-21T10:00:00.000Z', atualizadoEm: '2026-10-21T10:00:00.000Z' };
+    const lotados = Array.from({ length: 100 }, (_, indice) => ({
+      id: 'a' + indice, projetoId: 'p', nome: 'nota-' + indice + '.md', conteudo: '', bytes: 0, versao: 1, criadoEm: projeto.criadoEm, atualizadoEm: projeto.atualizadoEm
+    }));
+    const porQuantidade = criarModuloComBanco({ projetos: [projeto], arquivos: lotados });
+    await assert.rejects(
+      () => porQuantidade.modulo.criarArquivoTransacional('p', 'nova.md', 'texto', '2026-10-21T10:02:00.000Z'),
+      (erro) => erro && erro.codigoWorkspace === 'limite-arquivos'
+    );
+    assert.equal(porQuantidade.mapas.arquivos.size, 100);
+
+    const cheio = criarModuloComBanco({
+      projetos: [projeto],
+      arquivos: [{ id: 'ocupado', projetoId: 'p', nome: 'ocupado.md', conteudo: '', bytes: 5 * 1024 * 1024, versao: 1, criadoEm: projeto.criadoEm, atualizadoEm: projeto.atualizadoEm }]
+    });
+    await assert.rejects(
+      () => cheio.modulo.criarArquivoTransacional('p', 'nova.md', 'texto', '2026-10-21T10:02:00.000Z'),
+      (erro) => erro && erro.codigoWorkspace === 'workspace-cheio'
+    );
+    assert.equal(cheio.mapas.arquivos.size, 1);
+  });
+
+  await testa('renomeação de tela antiga não recupera nem sobrescreve projeto alterado por outra guia', async () => {
+    const antes = { id: 'p', nome: 'Projeto antigo', criadoEm: '2026-10-21T10:00:00.000Z', atualizadoEm: '2026-10-21T10:00:00.000Z' };
+    const removido = Object.assign({}, antes, { lixeiraEm: '2026-10-21T10:01:00.000Z', lixeiraRaiz: 'projeto', lixeiraProjetoId: 'p' });
+    const { modulo, mapas } = criarModuloComBanco({ projetos: [removido] });
+    const lixeira = await modulo.renomearProjetoTransacional(antes, 'Tentativa antiga', '2026-10-21T10:02:00.000Z');
+    assert.equal(lixeira.conflito, true);
+    assert.equal(mapas.projetos.get('p').nome, removido.nome);
+    assert.equal(mapas.projetos.get('p').lixeiraEm, removido.lixeiraEm);
+
+    const remoto = Object.assign({}, antes, { nome: 'Nome definido na outra guia', atualizadoEm: '2026-10-21T10:03:00.000Z' });
+    const outro = criarModuloComBanco({ projetos: [remoto] });
+    const alterado = await outro.modulo.renomearProjetoTransacional(antes, 'Tentativa antiga', '2026-10-21T10:04:00.000Z');
+    assert.equal(alterado.conflito, true);
+    assert.equal(outro.mapas.projetos.get('p').nome, remoto.nome);
   });
 
   console.log(`${certos}/${certos + falhas} testes de integridade local passaram`);

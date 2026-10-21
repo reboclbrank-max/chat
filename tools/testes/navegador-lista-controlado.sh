@@ -141,6 +141,49 @@ teste_lista = """<script>
       transacao.onabort = () => { banco.close(); reject(transacao.error || new Error('projeto concorrente controlado cancelado')); };
     };
   });
+  // Fixture controlada de uma guia que acabou de levar um projeto vazio à
+  // Lixeira. Ela só toca o IndexedDB temporário, para que criar/renomear na
+  // tela antiga não possam reativar esse registro por acidente.
+  const moverProjetoWorkspaceControlado = (id) => new Promise((resolve, reject) => {
+    const abertura = indexedDB.open('rebocl-workspace-local-v1');
+    abertura.onerror = () => reject(abertura.error || new Error('não abriu IndexedDB para estrutura concorrente'));
+    abertura.onsuccess = () => {
+      const banco = abertura.result;
+      const transacao = banco.transaction('projetos', 'readwrite');
+      const loja = transacao.objectStore('projetos');
+      const leitura = loja.get(id);
+      let projeto = null;
+      leitura.onsuccess = () => {
+        if (!leitura.result) { try { transacao.abort(); } catch (_) {} return; }
+        const quando = new Date().toISOString();
+        projeto = Object.assign({}, leitura.result, { lixeiraEm: quando, lixeiraRaiz: 'projeto', lixeiraProjetoId: id });
+        loja.put(projeto);
+      };
+      leitura.onerror = () => { try { transacao.abort(); } catch (_) {} };
+      transacao.oncomplete = () => { banco.close(); projeto ? resolve(projeto) : reject(new Error('projeto estrutural controlado ausente')); };
+      transacao.onerror = () => { banco.close(); reject(transacao.error || new Error('falha ao mover projeto estrutural controlado')); };
+      transacao.onabort = () => { banco.close(); reject(transacao.error || new Error('movimento estrutural controlado cancelado')); };
+    };
+  });
+  const lerEstruturaProjetoWorkspaceControlado = (id) => new Promise((resolve, reject) => {
+    const abertura = indexedDB.open('rebocl-workspace-local-v1');
+    abertura.onerror = () => reject(abertura.error || new Error('não abriu leitura estrutural controlada'));
+    abertura.onsuccess = () => {
+      const banco = abertura.result;
+      const transacao = banco.transaction(['projetos', 'arquivos'], 'readonly');
+      const leituraProjeto = transacao.objectStore('projetos').get(id);
+      const leituraArquivos = transacao.objectStore('arquivos').index('projetoId').getAll(id);
+      let projeto = null;
+      let arquivos = [];
+      leituraProjeto.onsuccess = () => { projeto = leituraProjeto.result || null; };
+      leituraArquivos.onsuccess = () => { arquivos = leituraArquivos.result || []; };
+      leituraProjeto.onerror = () => reject(leituraProjeto.error || new Error('falha na leitura do projeto estrutural'));
+      leituraArquivos.onerror = () => reject(leituraArquivos.error || new Error('falha na leitura dos arquivos estruturais'));
+      transacao.oncomplete = () => { banco.close(); resolve({ projeto, arquivos }); };
+      transacao.onerror = () => { banco.close(); reject(transacao.error || new Error('falha na leitura estrutural controlada')); };
+      transacao.onabort = () => { banco.close(); reject(transacao.error || new Error('leitura estrutural controlada cancelada')); };
+    };
+  });
   const lerEstadoArquivoWorkspaceControlado = (id, projetoId) => new Promise((resolve, reject) => {
     const abertura = indexedDB.open('rebocl-workspace-local-v1');
     abertura.onerror = () => reject(abertura.error || new Error('não abriu leitura controlada'));
@@ -393,6 +436,38 @@ teste_lista = """<script>
     }
     await esperarWorkspace(() => porNomeArquivoExato(nomeArquivo) && editor.value === conteudoFinal, 'recarregar depois de bloquear projeto desatualizado');
 
+    // A criação e a renomeação também partiam da fotografia da tela. Cada uma
+    // recebe um projeto vazio que outra guia já moveu somente no IndexedDB
+    // efêmero; nenhuma pode devolver o projeto à lista ativa ou criar filho.
+    const nomeProjetoArquivoEstrutural = 'Projeto de arquivo estrutural controlado';
+    novoProjeto.value = nomeProjetoArquivoEstrutural;
+    document.getElementById('btn-workspace-criar-projeto').click();
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjetoArquivoEstrutural), 'criar projeto para criação estrutural concorrente');
+    const alvoArquivoEstrutural = porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjetoArquivoEstrutural);
+    await moverProjetoWorkspaceControlado(alvoArquivoEstrutural.dataset.projetoId);
+    document.getElementById('btn-workspace-novo-arquivo').click();
+    await esperarWorkspace(() => document.getElementById('workspace-status').textContent.includes('O projeto mudou em outra guia') && !porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjetoArquivoEstrutural), 'bloquear criação sob projeto movido por outra guia');
+    const estadoArquivoEstrutural = await lerEstruturaProjetoWorkspaceControlado(alvoArquivoEstrutural.dataset.projetoId);
+    if (!estadoArquivoEstrutural.projeto || !estadoArquivoEstrutural.projeto.lixeiraEm || estadoArquivoEstrutural.projeto.nome !== nomeProjetoArquivoEstrutural || estadoArquivoEstrutural.arquivos.length) {
+      throw new Error('criação estrutural reativou projeto recuperável ou gravou filho depois da mutação concorrente');
+    }
+
+    const nomeProjetoRenomeacaoEstrutural = 'Projeto de renomeação estrutural controlada';
+    novoProjeto.value = nomeProjetoRenomeacaoEstrutural;
+    document.getElementById('btn-workspace-criar-projeto').click();
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjetoRenomeacaoEstrutural), 'criar projeto para renomeação estrutural concorrente');
+    const alvoRenomeacaoEstrutural = porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjetoRenomeacaoEstrutural);
+    await moverProjetoWorkspaceControlado(alvoRenomeacaoEstrutural.dataset.projetoId);
+    document.getElementById('workspace-nome-projeto').value = 'Tentativa antiga de renomear';
+    document.getElementById('btn-workspace-renomear-projeto').click();
+    await esperarWorkspace(() => document.getElementById('workspace-status').textContent.includes('O projeto mudou em outra guia') && !porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjetoRenomeacaoEstrutural), 'bloquear renomeação de projeto movido por outra guia');
+    const estadoRenomeacaoEstrutural = await lerEstruturaProjetoWorkspaceControlado(alvoRenomeacaoEstrutural.dataset.projetoId);
+    if (!estadoRenomeacaoEstrutural.projeto || !estadoRenomeacaoEstrutural.projeto.lixeiraEm || estadoRenomeacaoEstrutural.projeto.nome !== nomeProjetoRenomeacaoEstrutural) {
+      throw new Error('renomeação estrutural reativou ou sobrescreveu projeto recuperável');
+    }
+    porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjeto).click();
+    await esperarWorkspace(() => document.getElementById('workspace-nome-projeto').value === nomeProjeto && porNomeArquivoExato(nomeArquivo), 'retornar ao projeto depois da proteção estrutural');
+
     const exportarProjetoPortatil = document.getElementById('btn-workspace-exportar-projeto');
     const importarProjetoPortatil = document.getElementById('btn-workspace-importar-projeto');
     const entradaProjetoPortatil = document.getElementById('workspace-projeto-portatil-importar');
@@ -523,7 +598,7 @@ teste_lista = """<script>
     if (!document.getElementById('workspace-status').textContent.toLowerCase().includes('nada foi enviado')) {
       throw new Error('ciclo local não declarou a ausência de envio');
     }
-    return ' · Workspace criou, versionou, protegeu rascunho e lixeira em conflito local, buscou entre projetos sem expor Lixeira, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture; bloqueou retorno completo diante de escrita concorrente e preservou o ponto';
+    return ' · Workspace criou, versionou, protegeu rascunho, criação/renomeação e lixeira em conflito local, buscou entre projetos sem expor Lixeira, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture; bloqueou retorno completo diante de escrita concorrente e preservou o ponto';
   };
   try {
     await esperar(() => document.querySelectorAll('#lista .conv').length >= 52, 5000, 'lista inicial');
@@ -825,7 +900,7 @@ if rota != 'limpar.html':
 else:
     assert 'Cache limpo.' in conteudo, f'{rota}: aviso de limpeza não está no DOM final'
 if rota == 'index.html':
-    assert 'Workspace criou, versionou, protegeu rascunho e lixeira em conflito local, buscou entre projetos sem expor Lixeira, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture' in texto, f'{rota}: ciclo Workspace não foi concluído'
+    assert 'Workspace criou, versionou, protegeu rascunho, criação/renomeação e lixeira em conflito local, buscou entre projetos sem expor Lixeira, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture' in texto, f'{rota}: ciclo Workspace não foi concluído'
 print('✔ navegador controlado · padrão · ' + rota + ' · ' + texto)
 PY
 done

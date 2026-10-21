@@ -230,6 +230,118 @@
       tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
     }));
   }
+  function projetoAtivoPersistido(projeto) {
+    return !!(projeto && projeto.id && projeto.nome && !estaNaLixeira(projeto));
+  }
+  // Criação de estrutura não confia na fotografia da tela. Cada decisão que
+  // depende de nome ou limite é tomada dentro do mesmo readwrite que escreve.
+  // Assim, duas guias não criam nomes iguais nem ultrapassam o teto por terem
+  // observado o mesmo estado antigo.
+  function criarProjetoTransacional(nomeBase, quando, manterExistente) {
+    return abrirBanco().then((banco) => new Promise((resolve, reject) => {
+      const tx = banco.transaction(LOJAS.projetos, 'readwrite');
+      const projetos = tx.objectStore(LOJAS.projetos);
+      let resultado = { criado: false, projeto: null, erro: '' };
+      const leitura = projetos.getAll();
+      leitura.onsuccess = () => {
+        const ativos = (Array.isArray(leitura.result) ? leitura.result : []).filter(projetoAtivoPersistido);
+        if (manterExistente && ativos.length) {
+          resultado = { criado: false, projeto: ordenarProjetos(ativos)[0], erro: '' };
+          return;
+        }
+        if (ativos.length >= LIMITES.projetos) {
+          resultado = { criado: false, projeto: null, erro: 'limite-projetos' };
+          return;
+        }
+        const existentes = new Set(ativos.map((projeto) => busca(projeto.nome)));
+        const projeto = { id: idNovo('projeto'), nome: nomeDisponivel(nomeBase, existentes), criadoEm: quando, atualizadoEm: quando };
+        projetos.put(projeto);
+        resultado = { criado: true, projeto, erro: '' };
+      };
+      leitura.onerror = () => reject(leitura.error || erro('sem-indexeddb'));
+      tx.oncomplete = () => resultado.erro ? reject(erro(resultado.erro)) : resolve(resultado);
+      tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
+      tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
+    }));
+  }
+  function renomearProjetoTransacional(anterior, nome, quando) {
+    return abrirBanco().then((banco) => new Promise((resolve, reject) => {
+      const tx = banco.transaction(LOJAS.projetos, 'readwrite');
+      const projetos = tx.objectStore(LOJAS.projetos);
+      let resultado = { conflito: true, ocupado: false, projeto: null };
+      const leitura = projetos.getAll();
+      leitura.onsuccess = () => {
+        const todos = Array.isArray(leitura.result) ? leitura.result : [];
+        const persistido = todos.find((projeto) => projeto.id === anterior.id) || null;
+        if (!projetoRegistroAindaIgual(persistido, anterior) || estaNaLixeira(persistido)) return;
+        const ocupado = todos.some((outro) => projetoAtivoPersistido(outro) && outro.id !== persistido.id && busca(outro.nome) === busca(nome));
+        if (ocupado) {
+          resultado = { conflito: false, ocupado: true, projeto: null };
+          return;
+        }
+        const atualizado = Object.assign({}, persistido, { nome, atualizadoEm: quando });
+        projetos.put(atualizado);
+        resultado = { conflito: false, ocupado: false, projeto: atualizado };
+      };
+      leitura.onerror = () => reject(leitura.error || erro('sem-indexeddb'));
+      tx.oncomplete = () => resolve(resultado);
+      tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
+      tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
+    }));
+  }
+  function criarArquivoTransacional(projetoId, nomeBase, conteudo, quando) {
+    return abrirBanco().then((banco) => new Promise((resolve, reject) => {
+      const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos, LOJAS.revisoes], 'readwrite');
+      const projetos = tx.objectStore(LOJAS.projetos);
+      const arquivos = tx.objectStore(LOJAS.arquivos);
+      const revisoes = tx.objectStore(LOJAS.revisoes);
+      const tamanho = bytes(conteudo);
+      let projetoPersistido;
+      let todosArquivos = null;
+      let todasRevisoes = null;
+      let resultado = { conflito: true, arquivo: null, projeto: null, erro: '' };
+      const concluirLeituras = () => {
+        if (projetoPersistido === undefined || todosArquivos === null || todasRevisoes === null) return;
+        if (!projetoAtivoPersistido(projetoPersistido)) return;
+        const ativos = todosArquivos.filter((arquivo) => arquivo && arquivo.id && arquivo.projetoId && typeof arquivo.conteudo === 'string' && !estaNaLixeira(arquivo));
+        if (ativos.length >= LIMITES.arquivos) {
+          resultado = { conflito: false, arquivo: null, projeto: null, erro: 'limite-arquivos' };
+          return;
+        }
+        if (tamanho > LIMITES.arquivoBytes) {
+          resultado = { conflito: false, arquivo: null, projeto: null, erro: 'arquivo-grande' };
+          return;
+        }
+        if (medirOcupacao(todosArquivos, todasRevisoes) + tamanho > LIMITES.totalBytes) {
+          resultado = { conflito: false, arquivo: null, projeto: null, erro: 'workspace-cheio' };
+          return;
+        }
+        const arquivo = {
+          id: idNovo('arquivo'), projetoId: projetoPersistido.id,
+          nome: nomeArquivoDisponivelNaLista(nomeBase, projetoPersistido.id, ativos),
+          conteudo, bytes: tamanho, versao: 1, criadoEm: quando, atualizadoEm: quando
+        };
+        // Atualiza somente uma cópia do projeto que acabamos de ler: nome e
+        // marcas que outra guia tenha preservado nunca vêm da tela antiga.
+        const projeto = Object.assign({}, projetoPersistido, { atualizadoEm: quando });
+        arquivos.put(arquivo);
+        projetos.put(projeto);
+        resultado = { conflito: false, arquivo, projeto, erro: '' };
+      };
+      const leituraProjeto = projetos.get(projetoId);
+      const leituraArquivos = arquivos.getAll();
+      const leituraRevisoes = revisoes.getAll();
+      leituraProjeto.onsuccess = () => { projetoPersistido = leituraProjeto.result || null; concluirLeituras(); };
+      leituraArquivos.onsuccess = () => { todosArquivos = Array.isArray(leituraArquivos.result) ? leituraArquivos.result : []; concluirLeituras(); };
+      leituraRevisoes.onsuccess = () => { todasRevisoes = Array.isArray(leituraRevisoes.result) ? leituraRevisoes.result : []; concluirLeituras(); };
+      leituraProjeto.onerror = () => reject(leituraProjeto.error || erro('sem-indexeddb'));
+      leituraArquivos.onerror = () => reject(leituraArquivos.error || erro('sem-indexeddb'));
+      leituraRevisoes.onerror = () => reject(leituraRevisoes.error || erro('sem-indexeddb'));
+      tx.oncomplete = () => resultado.erro ? reject(erro(resultado.erro)) : resolve(resultado);
+      tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
+      tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
+    }));
+  }
   function marcasLixeiraIguais(persistido, anterior) {
     return texto(persistido && persistido.lixeiraEm) === texto(anterior && anterior.lixeiraEm) &&
       texto(persistido && persistido.lixeiraRaiz) === texto(anterior && anterior.lixeiraRaiz) &&
@@ -370,6 +482,14 @@
     }
     await recarregarAposAlteracaoLixeira();
     definirStatus('erro', 'A lixeira mudou em outra guia antes desta operação. Nada foi removido; o Workspace local foi recarregado.');
+  }
+  async function informarEstruturaDesatualizada() {
+    if (estado.alterado || estado.conflitoArquivo) {
+      definirStatus('erro', 'O projeto mudou em outra guia. Seu texto continua no editor; salve ou resolva a edição antes de atualizar o Workspace.');
+      return;
+    }
+    await recarregarAposAlteracaoLixeira();
+    definirStatus('erro', 'O projeto mudou em outra guia antes desta operação. Nenhuma alteração estrutural foi gravada; o Workspace local foi recarregado.');
   }
   function moverArquivoParaLixeira(arquivo, quando) {
     return abrirBanco().then((banco) => new Promise((resolve, reject) => {
@@ -746,9 +866,12 @@
     estado.bytesOcupados = medirOcupacao(todosArquivos, revisoes);
     estado.itensLixeira = contarRaizesLixeira(todosProjetos, todosArquivos);
     if (!estado.projetos.length) {
-      const criado = { id: idNovo('projeto'), nome: 'Meu workspace', criadoEm: agora(), atualizadoEm: agora() };
-      await gravar(LOJAS.projetos, criado);
-      estado.projetos = [criado];
+      // Duas aberturas vazias não devem materializar dois projetos padrão: a
+      // segunda transação reutiliza o que a primeira acabou de criar e relê a
+      // fotografia completa antes de montar a tela.
+      const inicial = await criarProjetoTransacional('Meu workspace', agora(), true);
+      if (!inicial.criado) return iniciarDados();
+      estado.projetos = [inicial.projeto];
     }
     const preferencia = selecao && selecao.valor ? selecao.valor : null;
     estado.projetoAtivo = preferencia && estado.projetos.some((projeto) => projeto.id === preferencia.projetoId)
@@ -760,18 +883,13 @@
 
   async function criarProjeto() {
     try {
-      if (estado.projetos.length >= LIMITES.projetos) throw erro('limite-projetos');
       if (estado.alterado && !(await salvarArquivoAtual('troca'))) return;
-      const existentes = new Set(estado.projetos.map((projeto) => busca(projeto.nome)));
-      const nome = nomeDisponivel(elementos.novoProjeto.value || 'Novo projeto', existentes);
-      const projeto = { id: idNovo('projeto'), nome, criadoEm: agora(), atualizadoEm: agora() };
-      await gravar(LOJAS.projetos, projeto);
-      estado.projetos.push(projeto);
-      estado.projetoAtivo = projeto.id;
-      estado.arquivoAtivo = '';
+      const resultado = await criarProjetoTransacional(elementos.novoProjeto.value || 'Novo projeto', agora(), false);
+      const projeto = resultado.projeto;
+      // Releia depois do commit para que uma criação paralela também apareça;
+      // a seleção deliberada continua sendo o projeto que esta ação criou.
+      await recarregarAposAlteracaoLixeira({ projetoId: projeto.id, arquivoId: '' });
       elementos.novoProjeto.value = '';
-      await guardarSelecao();
-      renderTudo();
       definirStatus('ok', 'Projeto criado localmente. Nada foi enviado.');
       elementos.nomeProjeto.focus();
       elementos.nomeProjeto.select();
@@ -792,14 +910,19 @@
     if (!projeto) return;
     try {
       const nome = nomeSeguro(elementos.nomeProjeto.value, 50, projeto.nome);
-      if (busca(nome) !== busca(projeto.nome) && estado.projetos.some((outro) => outro.id !== projeto.id && busca(outro.nome) === busca(nome))) {
+      const resultado = await renomearProjetoTransacional(projeto, nome, agora());
+      if (resultado.conflito || resultado.ocupado) {
         elementos.nomeProjeto.value = projeto.nome;
-        definirStatus('erro', 'Já existe um projeto local com esse nome.');
+        if (resultado.ocupado && !estado.alterado && !estado.conflitoArquivo) {
+          await recarregarAposAlteracaoLixeira();
+          definirStatus('erro', 'Já existe um projeto local com esse nome. O Workspace foi recarregado.');
+        } else if (resultado.ocupado) {
+          definirStatus('erro', 'Já existe um projeto local com esse nome. Seu texto continua no editor.');
+        } else await informarEstruturaDesatualizada();
         return;
       }
-      projeto.nome = nome;
-      projeto.atualizadoEm = agora();
-      await gravar(LOJAS.projetos, projeto);
+      const indice = estado.projetos.findIndex((candidato) => candidato.id === resultado.projeto.id);
+      if (indice >= 0) estado.projetos[indice] = resultado.projeto;
       renderProjetos();
       definirStatus('ok', 'Nome do projeto atualizado somente neste navegador.');
     } catch (e) { mostrarErro(e); }
@@ -830,26 +953,16 @@
     try {
       const projeto = projetoAtivo();
       if (!projeto) return;
-      if (estado.arquivos.length >= LIMITES.arquivos) throw erro('limite-arquivos');
       if (estado.alterado && !(await salvarArquivoAtual('troca'))) return;
       const conteudo = texto(conteudoInicial);
-      const tamanho = bytes(conteudo);
-      if (tamanho > LIMITES.arquivoBytes) throw erro('arquivo-grande');
-      if (estado.bytesOcupados + tamanho > LIMITES.totalBytes) throw erro('workspace-cheio');
-      const arquivo = {
-        id: idNovo('arquivo'), projetoId: projeto.id,
-        nome: nomeArquivoDisponivel(nomeInicial || 'novo-arquivo.md', projeto.id),
-        conteudo, bytes: tamanho, versao: 1, criadoEm: agora(), atualizadoEm: agora()
-      };
-      await gravar(LOJAS.arquivos, arquivo);
-      projeto.atualizadoEm = agora();
-      await gravar(LOJAS.projetos, projeto);
-      estado.arquivos.push(arquivo);
-      estado.bytesOcupados += tamanho;
-      estado.arquivoAtivo = arquivo.id;
-      estado.alterado = false;
-      await guardarSelecao();
-      renderTudo();
+      const resultado = await criarArquivoTransacional(projeto.id, nomeInicial || 'novo-arquivo.md', conteudo, agora());
+      if (resultado.conflito) {
+        await informarEstruturaDesatualizada();
+        return;
+      }
+      // A transação pode ter visto arquivo/projeto criado em outra guia. Releia
+      // o conjunto persistido para não continuar exibindo uma fotografia parcial.
+      await recarregarAposAlteracaoLixeira({ projetoId: resultado.projeto.id, arquivoId: resultado.arquivo.id });
       definirStatus('ok', 'Arquivo criado localmente. Nada foi enviado.');
       elementos.nomeArquivo.focus();
       elementos.nomeArquivo.select();
