@@ -54,8 +54,36 @@ testa('Workspace limita dados locais e mantém exportação/importação validad
   assert.match(planejador, /medirOcupacao\(arquivosAtuais, revisoesAtuais\)/);
   const planejadorSemComentarios = planejador.replace(/\/\/.*$/gm, '');
   assert.doesNotMatch(planejadorSemComentarios, /estado\.bytesOcupados|lerTodos\(/);
-  assert.match(workspace, /estado\.bytesOcupados \+ total > LIMITES\.totalBytes/);
+  assert.doesNotMatch(entre(workspace, 'function validarBackup(dados, tamanho)', '\n  async function importarBackup'), /estado\.(projetos|arquivos|bytesOcupados)/);
   assert.match(workspace, /incluindo histórico e itens recuperáveis/);
+});
+
+testa('backup ativo decide o lote aditivo no readwrite persistido e reconcilia o rascunho local', () => {
+  const validar = entre(workspace, 'function validarBackup(dados, tamanho)', '\n  async function importarBackup');
+  assert.match(validar, /ids\.has\(texto\(projeto\.id\)\)/);
+  assert.doesNotMatch(validar, /estado\.(projetos|arquivos|bytesOcupados)/);
+  const lote = entre(workspace, 'function gravarLote(backup, quando)', '\n  function guardarMeta');
+  assert.match(lote, /transaction\(\[LOJAS\.projetos, LOJAS\.arquivos, LOJAS\.revisoes\], 'readwrite'\)/);
+  assert.match(lote, /const leituraProjetos = projetos\.getAll\(\)/);
+  assert.match(lote, /const leituraArquivos = arquivos\.getAll\(\)/);
+  assert.match(lote, /const leituraRevisoes = revisoes\.getAll\(\)/);
+  assert.match(lote, /projetoAtivoPersistido/);
+  assert.match(lote, /medirOcupacao\(todosArquivos, todasRevisoes\) \+ bytesNovos/);
+  const antesDasEscritas = lote.slice(0, lote.indexOf('projetosNovos.forEach'));
+  assert(antesDasEscritas.includes('resultado = { erro:'), 'limites precisam terminar antes da escrita');
+  assert.doesNotMatch(antesDasEscritas, /\.put\(/);
+  const importar = entre(workspace, 'async function importarArquivo(file)', '\n  async function copiarArquivo');
+  const posValidar = importar.indexOf('const valido = validarBackup(backup, file.size);');
+  const posBloquear = importar.indexOf('bloquearOperacaoArquivoCompleto(true);');
+  const posSalvar = importar.indexOf("await salvarArquivoAtual('automatico')");
+  const posConfirmar = importar.indexOf("confirm('Importar esse backup local do Workspace?");
+  const posLote = importar.indexOf('await importarBackup(valido);');
+  assert(posValidar >= 0 && posBloquear > posValidar && posSalvar > posBloquear && posConfirmar > posSalvar && posLote > posConfirmar, 'ordem valida, protege rascunho, confirma e só então grava');
+  const reconciliar = entre(workspace, 'async function importarBackup(backup)', '\n  async function importarArquivo');
+  assert.match(reconciliar, /await iniciarDados\(\)/);
+  assert.match(reconciliar, /estado\.conflitoArquivo = null/);
+  assert.match(reconciliar, /await guardarSelecao\(\)/);
+  assert.match(reconciliar, /renderTudo\(\)/);
 });
 
 testa('Arquivo completo do Workspace é separado, explícito e cobre recuperação de versões e lixeira', () => {
@@ -169,7 +197,7 @@ testa('as quatro rotas expõem o mesmo acesso e carregam uma só cópia do Works
 });
 
 testa('casca PWA, workflow, corredor e porta de continuidade observam o ativo', () => {
-  assert.match(sw, /rebocl-chat-v82/);
+  assert.match(sw, /rebocl-chat-v83/);
   assert.match(sw, /'\.\/chat-workspace\.js'/);
   assert.match(workflow, /'chat-workspace\.js'/);
   assert.match(workflow, /chat-workspace\.js tools\/testes\/\*\.js/);
@@ -179,7 +207,7 @@ testa('casca PWA, workflow, corredor e porta de continuidade observam o ativo', 
   assert.match(corredor, /'workspace-integridade-local\.js'/);
   assert.match(retrato, /Workspace interno local-first/);
   assert.match(retrato, /rebocl-workspace-local-v1/);
-  assert.match(retrato, /rebocl-chat-v82/);
+  assert.match(retrato, /rebocl-chat-v83/);
 });
 
 testa('porta de continuidade exige retrato quando o ativo local muda', () => {

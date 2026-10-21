@@ -57,7 +57,7 @@ function criarModuloComBanco(registros) {
   const inicio = fonte.indexOf(marcador);
   assert(inicio >= 0, 'ponto de montagem do módulo não encontrado');
   const fonteTestavel = fonte.slice(0, inicio) + `  window.__workspaceTeste = {
-    estado, criarProjetoTransacional, renomearProjetoTransacional, criarArquivoTransacional, gravarArquivoComRevisao, gravarCopiaConflito,
+    estado, criarProjetoTransacional, renomearProjetoTransacional, criarArquivoTransacional, gravarArquivoComRevisao, gravarCopiaConflito, gravarLote,
     moverArquivoParaLixeira, moverProjetoParaLixeira, apagarArquivo, apagarProjeto, restaurarDaLixeira, descartarDaLixeira, esvaziarLixeira,
     substituir: (dependencias) => {
       if (dependencias.lerTodos) lerTodos = dependencias.lerTodos;
@@ -298,6 +298,57 @@ async function principal() {
     assert.equal(resultado.erro, 'copia-conflito-projeto-inativo');
     assert.equal(mapas.arquivos.size, 0);
     assert.equal(mapas.projetos.get('p').lixeiraEm, projeto.lixeiraEm);
+  });
+
+  await testa('backup ativo decide o nome do projeto pela fotografia persistida antes do lote aditivo', async () => {
+    const quando = '2026-10-21T15:00:00.000Z';
+    const projetoAtual = { id: 'p-atual', nome: 'Projeto importado', criadoEm: quando, atualizadoEm: quando };
+    const backup = {
+      projetos: [{ id: 'origem', nome: 'Projeto importado' }],
+      arquivos: [{ projetoId: 'origem', nome: 'entrada.md', conteudo: 'conteúdo do backup', bytes: 19 }]
+    };
+    const { modulo, mapas } = criarModuloComBanco({ projetos: [projetoAtual] });
+    const resultado = await modulo.gravarLote(backup, '2026-10-21T15:01:00.000Z');
+    assert.equal(resultado.erro, '');
+    assert.equal(resultado.projetos.length, 1);
+    assert.equal(resultado.arquivos.length, 1);
+    assert.equal(resultado.projetos[0].nome, 'Projeto importado (2)');
+    assert.equal(mapas.projetos.get('p-atual').nome, projetoAtual.nome);
+    assert.equal(mapas.projetos.get(resultado.projetos[0].id).nome, 'Projeto importado (2)');
+    assert.equal(mapas.arquivos.get(resultado.arquivos[0].id).projetoId, resultado.projetos[0].id);
+    assert.equal(mapas.arquivos.get(resultado.arquivos[0].id).conteudo, 'conteúdo do backup');
+  });
+
+  await testa('backup ativo consulta os tetos persistidos e recusa o lote inteiro sem escrita parcial', async () => {
+    const quando = '2026-10-21T15:00:00.000Z';
+    const backup = {
+      projetos: [{ id: 'origem', nome: 'Projeto importado' }],
+      arquivos: [{ projetoId: 'origem', nome: 'entrada.md', conteudo: 'novo', bytes: 4 }]
+    };
+    const projetosLotados = Array.from({ length: 20 }, (_, indice) => ({ id: 'p' + indice, nome: 'Projeto ' + indice, criadoEm: quando, atualizadoEm: quando }));
+    const porProjetos = criarModuloComBanco({ projetos: projetosLotados });
+    const limiteProjetos = await porProjetos.modulo.gravarLote(backup, '2026-10-21T15:01:00.000Z');
+    assert.equal(limiteProjetos.erro, 'limite-projetos');
+    assert.equal(porProjetos.mapas.projetos.size, 20);
+    assert.equal(porProjetos.mapas.arquivos.size, 0);
+
+    const projeto = { id: 'p', nome: 'Projeto atual', criadoEm: quando, atualizadoEm: quando };
+    const arquivosLotados = Array.from({ length: 100 }, (_, indice) => ({ id: 'a' + indice, projetoId: 'p', nome: 'nota-' + indice + '.md', conteudo: '', bytes: 0, versao: 1, criadoEm: quando, atualizadoEm: quando }));
+    const porArquivos = criarModuloComBanco({ projetos: [projeto], arquivos: arquivosLotados });
+    const limiteArquivos = await porArquivos.modulo.gravarLote(backup, '2026-10-21T15:01:00.000Z');
+    assert.equal(limiteArquivos.erro, 'limite-arquivos');
+    assert.equal(porArquivos.mapas.projetos.size, 1);
+    assert.equal(porArquivos.mapas.arquivos.size, 100);
+
+    const porCapacidade = criarModuloComBanco({
+      projetos: [projeto],
+      revisoes: [{ id: 'r', arquivoId: 'antigo', conteudo: '', bytes: 5 * 1024 * 1024, quando, versao: 1 }]
+    });
+    const limiteEspaco = await porCapacidade.modulo.gravarLote(backup, '2026-10-21T15:01:00.000Z');
+    assert.equal(limiteEspaco.erro, 'workspace-cheio');
+    assert.equal(porCapacidade.mapas.projetos.size, 1);
+    assert.equal(porCapacidade.mapas.arquivos.size, 0);
+    assert.equal(porCapacidade.mapas.revisoes.size, 1);
   });
 
   await testa('metadados de lixeira não usam rede nem removem revisões durante o movimento recuperável', () => {

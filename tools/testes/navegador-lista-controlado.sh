@@ -155,14 +155,14 @@ teste_lista = """<script>
   });
   // Uma segunda escrita local controlada representa outra guia atualizada. Ela
   // usa apenas o IndexedDB efêmero da fixture, sem conversa, perfil ou rede real.
-  const adicionarProjetoWorkspaceControlado = (nome) => new Promise((resolve, reject) => {
+  const adicionarProjetoWorkspaceControlado = (nome, idControlado = 'projeto-concorrente-arquivo-completo') => new Promise((resolve, reject) => {
     const abertura = indexedDB.open('rebocl-workspace-local-v1');
     abertura.onerror = () => reject(abertura.error || new Error('não abriu IndexedDB para projeto concorrente'));
     abertura.onsuccess = () => {
       const banco = abertura.result;
       const transacao = banco.transaction('projetos', 'readwrite');
       const projeto = {
-        id: 'projeto-concorrente-arquivo-completo', nome,
+        id: idControlado, nome,
         criadoEm: new Date().toISOString(), atualizadoEm: new Date().toISOString()
       };
       transacao.objectStore('projetos').put(projeto);
@@ -547,6 +547,50 @@ teste_lista = """<script>
     porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjeto).click();
     await esperarWorkspace(() => document.getElementById('workspace-nome-projeto').value === nomeProjeto && porNomeArquivoExato(nomeArquivo), 'retornar ao projeto depois da proteção estrutural');
 
+    // Importação ativa: uma segunda guia controlada cria somente no IndexedDB
+    // efêmero um projeto cujo nome a tela ainda não conhece. O backup comum
+    // chega com o mesmo nome enquanto há rascunho no arquivo já aberto. A
+    // transação precisa salvar o rascunho, isolar o novo projeto pela fotografia
+    // persistida e recarregar a escolha recém-importada, sem rede ou perfil real.
+    const entradaBackupAtivo = document.getElementById('workspace-arquivo-importar');
+    const linhaAntesBackupAtivo = porNomeArquivoExato(nomeArquivo);
+    if (!entradaBackupAtivo || !linhaAntesBackupAtivo) throw new Error('controles ou arquivo para backup ativo controlado ausentes');
+    linhaAntesBackupAtivo.click();
+    await esperarWorkspace(() => editor.value === conteudoFinal && !editor.disabled, 'reabrir arquivo antes do backup ativo');
+    const rascunhoAntesBackupAtivo = conteudoFinal + ' com rascunho preservado pela importação ativa';
+    editor.value = rascunhoAntesBackupAtivo;
+    editor.dispatchEvent(new Event('input', { bubbles: true }));
+    await esperarWorkspace(() => document.getElementById('workspace-status').textContent.includes('Alterações pendentes'), 'registrar rascunho antes da importação ativa');
+    const nomeProjetoBackupConcorrente = 'Projeto concorrente do backup ativo';
+    const projetoConcorrenteBackup = await adicionarProjetoWorkspaceControlado(nomeProjetoBackupConcorrente, 'projeto-concorrente-backup-ativo');
+    const conteudoBackupAtivo = 'conteúdo sintético importado pelo backup ativo';
+    const backupAtivoControlado = {
+      formato: 'rebocl-workspace-local', versao: 1, exportadoEm: new Date().toISOString(),
+      projetos: [{ id: 'origem-backup-ativo', nome: nomeProjetoBackupConcorrente }],
+      arquivos: [{ projetoId: 'origem-backup-ativo', nome: 'importado-controlado.md', conteudo: conteudoBackupAtivo }]
+    };
+    const transferenciaBackupAtivo = new DataTransfer();
+    transferenciaBackupAtivo.items.add(new File([JSON.stringify(backupAtivoControlado)], 'workspace-ativo-concorrente.json', { type: 'application/json' }));
+    entradaBackupAtivo.files = transferenciaBackupAtivo.files;
+    entradaBackupAtivo.dispatchEvent(new Event('change', { bubbles: true }));
+    const nomeProjetoBackupIsolado = nomeProjetoBackupConcorrente + ' (2)';
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjetoBackupIsolado) && porNomeArquivoExato('importado-controlado.md') && editor.value === conteudoBackupAtivo && document.getElementById('workspace-status').textContent.includes('foram importados'), 'importar backup ativo com nome isolado e seleção reconciliada');
+    const estadoRascunhoBackupAtivo = await lerEstadoArquivoWorkspaceControlado(linhaAntesBackupAtivo.dataset.arquivoId, linhaAntesBackupAtivo.dataset.projetoId);
+    const estadoProjetoConcorrenteBackup = await lerEstruturaProjetoWorkspaceControlado(projetoConcorrenteBackup.id);
+    if (!estadoRascunhoBackupAtivo.arquivo || estadoRascunhoBackupAtivo.arquivo.conteudo !== rascunhoAntesBackupAtivo || !estadoProjetoConcorrenteBackup.projeto || estadoProjetoConcorrenteBackup.projeto.nome !== nomeProjetoBackupConcorrente || estadoProjetoConcorrenteBackup.arquivos.length) {
+      throw new Error('backup ativo não preservou rascunho, projeto concorrente ou nome isolado persistidos');
+    }
+    // Retorna a fixture principal ao conteúdo esperado pelos ciclos portáteis e
+    // completos posteriores; a leitura anterior já comprovou o rascunho salvo.
+    porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjeto).click();
+    await esperarWorkspace(() => document.getElementById('workspace-nome-projeto').value === nomeProjeto && porNomeArquivoExato(nomeArquivo), 'retornar após o backup ativo controlado');
+    porNomeArquivoExato(nomeArquivo).click();
+    await esperarWorkspace(() => editor.value === rascunhoAntesBackupAtivo && !editor.disabled, 'reabrir rascunho salvo após backup ativo');
+    editor.value = conteudoFinal;
+    editor.dispatchEvent(new Event('input', { bubbles: true }));
+    document.getElementById('btn-workspace-salvar').click();
+    await esperarWorkspace(() => document.getElementById('workspace-status').textContent.includes('Arquivo salvo localmente') && editor.value === conteudoFinal, 'restaurar conteúdo da fixture após backup ativo');
+
     const exportarProjetoPortatil = document.getElementById('btn-workspace-exportar-projeto');
     const importarProjetoPortatil = document.getElementById('btn-workspace-importar-projeto');
     const entradaProjetoPortatil = document.getElementById('workspace-projeto-portatil-importar');
@@ -677,7 +721,7 @@ teste_lista = """<script>
     if (!document.getElementById('workspace-status').textContent.toLowerCase().includes('nada foi enviado')) {
       throw new Error('ciclo local não declarou a ausência de envio');
     }
-    return ' · Workspace criou, versionou, protegeu rascunho, criação/renomeação e lixeira em conflito local, buscou entre projetos sem expor Lixeira, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture; bloqueou retorno completo diante de escrita concorrente e preservou o ponto e isolou a cópia de conflito contra irmão atual';
+    return ' · Workspace criou, versionou, protegeu rascunho, criação/renomeação e lixeira em conflito local, buscou entre projetos sem expor Lixeira, importou backup ativo com rascunho salvo e nome isolado contra projeto persistido, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture; bloqueou retorno completo diante de escrita concorrente e preservou o ponto e isolou a cópia de conflito contra irmão atual';
   };
   try {
     await esperar(() => document.querySelectorAll('#lista .conv').length >= 52, 5000, 'lista inicial');
@@ -979,7 +1023,7 @@ if rota != 'limpar.html':
 else:
     assert 'Cache limpo.' in conteudo, f'{rota}: aviso de limpeza não está no DOM final'
 if rota == 'index.html':
-    assert 'Workspace criou, versionou, protegeu rascunho, criação/renomeação e lixeira em conflito local, buscou entre projetos sem expor Lixeira, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture' in texto, f'{rota}: ciclo Workspace não foi concluído'
+    assert 'Workspace criou, versionou, protegeu rascunho, criação/renomeação e lixeira em conflito local, buscou entre projetos sem expor Lixeira, importou backup ativo com rascunho salvo e nome isolado contra projeto persistido, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture' in texto, f'{rota}: ciclo Workspace não foi concluído'
 print('✔ navegador controlado · padrão · ' + rota + ' · ' + texto)
 PY
 done

@@ -452,14 +452,75 @@
       tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
     }));
   }
-  function gravarLote(projetos, arquivos) {
+  function gravarLote(backup, quando) {
     return abrirBanco().then((banco) => new Promise((resolve, reject) => {
-      const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos], 'readwrite');
-      const lojaProjetos = tx.objectStore(LOJAS.projetos);
-      const lojaArquivos = tx.objectStore(LOJAS.arquivos);
-      projetos.forEach((projeto) => lojaProjetos.put(projeto));
-      arquivos.forEach((arquivo) => lojaArquivos.put(arquivo));
-      tx.oncomplete = () => resolve();
+      // O backup ativo é aditivo, mas nomes, limites e espaço ainda precisam
+      // ser decididos na mesma fotografia persistida que recebe o lote.
+      const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos, LOJAS.revisoes], 'readwrite');
+      const projetos = tx.objectStore(LOJAS.projetos);
+      const arquivos = tx.objectStore(LOJAS.arquivos);
+      const revisoes = tx.objectStore(LOJAS.revisoes);
+      let todosProjetos = null;
+      let todosArquivos = null;
+      let todasRevisoes = null;
+      let resultado = { erro: '', projetos: [], arquivos: [] };
+      const concluirLeituras = () => {
+        if (todosProjetos === null || todosArquivos === null || todasRevisoes === null) return;
+        const projetosAtivos = todosProjetos.filter(projetoAtivoPersistido);
+        const idsProjetosAtivos = new Set(projetosAtivos.map((projeto) => projeto.id));
+        const arquivosAtivos = todosArquivos.filter((arquivo) => arquivo && arquivo.id && idsProjetosAtivos.has(arquivo.projetoId) && typeof arquivo.conteudo === 'string' && !estaNaLixeira(arquivo));
+        if (projetosAtivos.length + backup.projetos.length > LIMITES.projetos) {
+          resultado = { erro: 'limite-projetos', projetos: [], arquivos: [] };
+          return;
+        }
+        if (arquivosAtivos.length + backup.arquivos.length > LIMITES.arquivos) {
+          resultado = { erro: 'limite-arquivos', projetos: [], arquivos: [] };
+          return;
+        }
+        const bytesNovos = backup.arquivos.reduce((soma, arquivo) => soma + bytesRegistro(arquivo), 0);
+        if (medirOcupacao(todosArquivos, todasRevisoes) + bytesNovos > LIMITES.totalBytes) {
+          resultado = { erro: 'workspace-cheio', projetos: [], arquivos: [] };
+          return;
+        }
+        const existentes = new Set(projetosAtivos.map((projeto) => busca(projeto.nome)));
+        const mapaProjetos = new Map();
+        const projetosNovos = backup.projetos.map((projeto) => {
+          const novo = { id: idNovo('projeto'), nome: nomeDisponivel(projeto.nome, existentes), criadoEm: quando, atualizadoEm: quando };
+          mapaProjetos.set(projeto.id, novo.id);
+          return novo;
+        });
+        const nomesPorProjeto = new Map();
+        const arquivosNovos = backup.arquivos.map((arquivo) => {
+          const projetoId = mapaProjetos.get(arquivo.projetoId);
+          const usados = nomesPorProjeto.get(projetoId) || new Set();
+          let nome = arquivo.nome;
+          let n = 2;
+          const ponto = nome.lastIndexOf('.');
+          const raiz = ponto > 0 ? nome.slice(0, ponto) : nome;
+          const extensao = ponto > 0 ? nome.slice(ponto) : '';
+          while (usados.has(busca(nome))) {
+            const sufixo = ' (' + n + ')';
+            nome = raiz.slice(0, Math.max(1, 80 - extensao.length - sufixo.length)) + sufixo + extensao;
+            n++;
+          }
+          usados.add(busca(nome));
+          nomesPorProjeto.set(projetoId, usados);
+          return { id: idNovo('arquivo'), projetoId, nome, conteudo: arquivo.conteudo, bytes: arquivo.bytes, versao: 1, criadoEm: quando, atualizadoEm: quando };
+        });
+        projetosNovos.forEach((projeto) => projetos.put(projeto));
+        arquivosNovos.forEach((arquivo) => arquivos.put(arquivo));
+        resultado = { erro: '', projetos: projetosNovos, arquivos: arquivosNovos };
+      };
+      const leituraProjetos = projetos.getAll();
+      const leituraArquivos = arquivos.getAll();
+      const leituraRevisoes = revisoes.getAll();
+      leituraProjetos.onsuccess = () => { todosProjetos = Array.isArray(leituraProjetos.result) ? leituraProjetos.result : []; concluirLeituras(); };
+      leituraArquivos.onsuccess = () => { todosArquivos = Array.isArray(leituraArquivos.result) ? leituraArquivos.result : []; concluirLeituras(); };
+      leituraRevisoes.onsuccess = () => { todasRevisoes = Array.isArray(leituraRevisoes.result) ? leituraRevisoes.result : []; concluirLeituras(); };
+      leituraProjetos.onerror = () => reject(leituraProjetos.error || erro('sem-indexeddb'));
+      leituraArquivos.onerror = () => reject(leituraArquivos.error || erro('sem-indexeddb'));
+      leituraRevisoes.onerror = () => reject(leituraRevisoes.error || erro('sem-indexeddb'));
+      tx.oncomplete = () => resolve(resultado);
       tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
       tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
     }));
@@ -2059,7 +2120,7 @@
     if (!Array.isArray(dados.projetos) || !Array.isArray(dados.arquivos) || dados.projetos.length > LIMITES.projetos || dados.arquivos.length > LIMITES.arquivos) throw erro('backup-invalido');
     const ids = new Set();
     const projetos = dados.projetos.map((projeto) => {
-      if (!projeto || typeof projeto !== 'object' || !texto(projeto.id)) throw erro('backup-invalido');
+      if (!projeto || typeof projeto !== 'object' || !texto(projeto.id) || ids.has(texto(projeto.id))) throw erro('backup-invalido');
       ids.add(texto(projeto.id));
       return { id: texto(projeto.id), nome: nomeSeguro(projeto.nome, 50, 'Projeto importado') };
     });
@@ -2070,46 +2131,24 @@
       return { projetoId: texto(arquivo.projetoId), nome: nomeArquivoSeguro(arquivo.nome), conteudo: arquivo.conteudo, bytes: tamanhoArquivo };
     });
     const total = arquivos.reduce((soma, arquivo) => soma + arquivo.bytes, 0);
-    if (total > LIMITES.totalBytes || estado.bytesOcupados + total > LIMITES.totalBytes) throw erro('workspace-cheio');
-    if (estado.projetos.length + projetos.length > LIMITES.projetos || estado.arquivos.length + arquivos.length > LIMITES.arquivos) throw erro('limite-arquivos');
+    if (total > LIMITES.totalBytes) throw erro('workspace-cheio');
     return { projetos, arquivos };
   }
-  async function importarBackup(dados, tamanho) {
-    const valido = validarBackup(dados, tamanho);
-    const existentes = new Set(estado.projetos.map((projeto) => busca(projeto.nome)));
-    const mapaProjetos = new Map();
-    const projetosNovos = valido.projetos.map((projeto) => {
-      const novo = { id: idNovo('projeto'), nome: nomeDisponivel(projeto.nome, existentes), criadoEm: agora(), atualizadoEm: agora() };
-      mapaProjetos.set(projeto.id, novo.id);
-      return novo;
-    });
-    const nomesPorProjeto = new Map();
-    const arquivosNovos = valido.arquivos.map((arquivo) => {
-      const projetoId = mapaProjetos.get(arquivo.projetoId);
-      const usados = nomesPorProjeto.get(projetoId) || new Set();
-      let nome = arquivo.nome;
-      let n = 2;
-      const ponto = nome.lastIndexOf('.');
-      const raiz = ponto > 0 ? nome.slice(0, ponto) : nome;
-      const extensao = ponto > 0 ? nome.slice(ponto) : '';
-      while (usados.has(busca(nome))) {
-        const sufixo = ' (' + n + ')';
-        nome = raiz.slice(0, Math.max(1, 80 - extensao.length - sufixo.length)) + sufixo + extensao;
-        n++;
-      }
-      usados.add(busca(nome));
-      nomesPorProjeto.set(projetoId, usados);
-      return { id: idNovo('arquivo'), projetoId, nome, conteudo: arquivo.conteudo, bytes: arquivo.bytes, versao: 1, criadoEm: agora(), atualizadoEm: agora() };
-    });
-    await gravarLote(projetosNovos, arquivosNovos);
-    estado.projetos.push(...projetosNovos);
-    estado.arquivos.push(...arquivosNovos);
-    estado.bytesOcupados += arquivosNovos.reduce((soma, arquivo) => soma + bytesRegistro(arquivo), 0);
-    estado.projetoAtivo = projetosNovos[0] ? projetosNovos[0].id : estado.projetoAtivo;
-    estado.arquivoAtivo = arquivosNovos.find((arquivo) => arquivo.projetoId === estado.projetoAtivo)?.id || '';
+  async function importarBackup(backup) {
+    const resultado = await gravarLote(backup, agora());
+    if (resultado.erro) throw erro(resultado.erro);
+    await iniciarDados();
+    const projetoSelecionado = resultado.projetos.find((projeto) => estado.projetos.some((atual) => atual.id === projeto.id)) || null;
+    if (projetoSelecionado) {
+      estado.projetoAtivo = projetoSelecionado.id;
+      const arquivoSelecionado = resultado.arquivos.find((arquivo) => arquivo.projetoId === projetoSelecionado.id && estado.arquivos.some((atual) => atual.id === arquivo.id)) || null;
+      estado.arquivoAtivo = arquivoSelecionado ? arquivoSelecionado.id : '';
+    }
+    estado.alterado = false;
+    estado.conflitoArquivo = null;
     await guardarSelecao();
     renderTudo();
-    definirStatus('ok', projetosNovos.length + ' projeto(s) e ' + arquivosNovos.length + ' arquivo(s) foram importados somente neste navegador.');
+    definirStatus('ok', resultado.projetos.length + ' projeto(s) e ' + resultado.arquivos.length + ' arquivo(s) foram importados somente neste navegador.');
   }
   async function importarArquivo(file) {
     try {
@@ -2122,8 +2161,18 @@
         try { backup = JSON.parse(conteudo); } catch (_) { backup = null; }
       }
       if (backup && backup.formato === FORMATO_EXPORTACAO) {
-        if (!confirm('Importar esse backup local do Workspace? Os arquivos serão adicionados ao navegador atual; nada será enviado.')) return;
-        await importarBackup(backup, file.size);
+        const valido = validarBackup(backup, file.size);
+        if (estado.operacaoArquivoCompleto) return;
+        bloquearOperacaoArquivoCompleto(true);
+        try {
+          if (estado.temporizadorSalvar) { clearTimeout(estado.temporizadorSalvar); estado.temporizadorSalvar = null; }
+          if (estado.alterado && !(await salvarArquivoAtual('automatico'))) return;
+          if (!confirm('Importar esse backup local do Workspace? Os arquivos serão adicionados ao navegador atual; nada será enviado.')) {
+            definirStatus('', 'Importação do backup local cancelada. Nada foi alterado.');
+            return;
+          }
+          await importarBackup(valido);
+        } finally { bloquearOperacaoArquivoCompleto(false); }
         return;
       }
       if (!EXTENSOES_TEXTO.test(texto(file.name))) throw erro('arquivo-invalido');

@@ -129,6 +129,12 @@ ok('exercita recuperação do Workspace e prova o layout em navegador real', () 
   assert.match(texto, /bloquear renomeação de projeto movido por outra guia/);
   assert.match(texto, /renomeação estrutural reativou ou sobrescreveu projeto recuperável/);
   assert.match(texto, /retornar ao projeto depois da proteção estrutural/);
+  assert.match(texto, /importação ativa: uma segunda guia controlada cria somente no IndexedDB/i);
+  assert.match(texto, /const entradaBackupAtivo/);
+  assert.match(texto, /rascunhoAntesBackupAtivo/);
+  assert.match(texto, /projeto-concorrente-backup-ativo/);
+  assert.match(texto, /importar backup ativo com nome isolado e seleção reconciliada/);
+  assert.match(texto, /backup ativo não preservou rascunho, projeto concorrente ou nome isolado persistidos/);
   assert.match(texto, /salvar rascunho conflitante com nome isolado atual/);
   assert.match(texto, /download controlado não preservou o rascunho em conflito/);
   assert.match(texto, /recarregar versão salva por escolha explícita/);
@@ -148,7 +154,7 @@ ok('exercita recuperação do Workspace e prova o layout em navegador real', () 
   assert.match(texto, /restaurar novamente depois do conflito completo/);
   assert.match(texto, /ponto temporário não foi consumido depois de desfazer a restauração sem conflito/);
   assert.match(texto, /restauração completa não informou a substituição local controlada/);
-  assert.match(texto, /Workspace criou, versionou, protegeu rascunho, criação\/renomeação e lixeira em conflito local, buscou entre projetos sem expor Lixeira, transferiu projeto portátil com nome isolado, recuperou e rejeitou\/cancelou\/arquivou\/restaurou\/desfez arquivo, versão e lixeira somente na fixture/);
+  assert.match(texto, /Workspace criou, versionou, protegeu rascunho, criação\/renomeação e lixeira em conflito local, buscou entre projetos sem expor Lixeira, importou backup ativo com rascunho salvo e nome isolado contra projeto persistido, transferiu projeto portátil com nome isolado, recuperou e rejeitou\/cancelou\/arquivou\/restaurou\/desfez arquivo, versão e lixeira somente na fixture/);
   assert.match(texto, /somente-layout=1/);
   assert.match(texto, /Workspace não preservou o layout de três painéis no viewport desktop/);
   assert.match(texto, /Workspace não empilhou os painéis no viewport estreito/);
