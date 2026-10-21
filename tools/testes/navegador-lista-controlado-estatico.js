@@ -105,6 +105,10 @@ ok('exercita recuperação do Workspace e prova o layout em navegador real', () 
   assert.match(texto, /abrir resultado no outro projeto sem perder edição pendente/);
   assert.match(texto, /gravação concorrente: altera somente o IndexedDB/);
   assert.match(texto, /atualizarArquivoWorkspaceControlado/);
+  assert.match(texto, /adicionarArquivoWorkspaceControlado/);
+  assert.match(texto, /bloquear renomeação contra irmão persistido/);
+  assert.match(texto, /renomeação desatualizada alterou o original, revisão, projeto ou irmão concorrente persistido/);
+  assert.match(texto, /manter rascunho após recusa de nome concorrente/);
   assert.match(texto, /conflito não preservou o rascunho ou ainda permitiu substituir o original/);
   assert.match(texto, /conflito substituiu o conteúdo ou a versão persistida pela escrita local pendente/);
   assert.match(texto, /conflito alterou revisão ou metadado de projeto depois da divergência/);

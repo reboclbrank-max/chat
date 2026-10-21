@@ -123,6 +123,36 @@ teste_lista = """<script>
       transacao.onabort = () => { banco.close(); reject(transacao.error || new Error('escrita concorrente controlada cancelada')); };
     };
   });
+  // Fixture controlada de um irmão criado por outra guia entre a edição e o
+  // salvamento. Só altera o IndexedDB efêmero; não há conteúdo, perfil ou rede real.
+  const adicionarArquivoWorkspaceControlado = (projetoId, nome, conteudo) => new Promise((resolve, reject) => {
+    const abertura = indexedDB.open('rebocl-workspace-local-v1');
+    abertura.onerror = () => reject(abertura.error || new Error('não abriu IndexedDB para nome concorrente'));
+    abertura.onsuccess = () => {
+      const banco = abertura.result;
+      const transacao = banco.transaction(['projetos', 'arquivos'], 'readwrite');
+      const projetos = transacao.objectStore('projetos');
+      const arquivos = transacao.objectStore('arquivos');
+      const leituraProjeto = projetos.get(projetoId);
+      let arquivo = null;
+      let projeto = null;
+      leituraProjeto.onsuccess = () => {
+        if (!leituraProjeto.result || leituraProjeto.result.lixeiraEm) { try { transacao.abort(); } catch (_) {} return; }
+        const quando = new Date().toISOString();
+        projeto = Object.assign({}, leituraProjeto.result, { atualizadoEm: quando });
+        arquivo = {
+          id: 'arquivo-concorrente-renomeacao', projetoId, nome, conteudo,
+          bytes: new TextEncoder().encode(conteudo).length, versao: 1, criadoEm: quando, atualizadoEm: quando
+        };
+        arquivos.put(arquivo);
+        projetos.put(projeto);
+      };
+      leituraProjeto.onerror = () => { try { transacao.abort(); } catch (_) {} };
+      transacao.oncomplete = () => { banco.close(); arquivo ? resolve({ arquivo, projeto }) : reject(new Error('projeto controlado ausente para nome concorrente')); };
+      transacao.onerror = () => { banco.close(); reject(transacao.error || new Error('falha ao criar irmão concorrente controlado')); };
+      transacao.onabort = () => { banco.close(); reject(transacao.error || new Error('criação de irmão concorrente controlada cancelada')); };
+    };
+  });
   // Uma segunda escrita local controlada representa outra guia atualizada. Ela
   // usa apenas o IndexedDB efêmero da fixture, sem conversa, perfil ou rede real.
   const adicionarProjetoWorkspaceControlado = (nome) => new Promise((resolve, reject) => {
@@ -366,6 +396,43 @@ teste_lista = """<script>
     await esperarWorkspace(() => document.getElementById('workspace-nome-projeto').value === nomeProjeto && porNomeArquivoExato(nomeArquivo), 'retornar ao projeto para transferências posteriores');
     porNomeArquivoExato(nomeArquivo).click();
     await esperarWorkspace(() => editor.value === conteudoFinal, 'abrir arquivo para conflito local controlado');
+
+    // A renomeação comum também precisa consultar os irmãos que existem agora,
+    // e não apenas a lista que esta tela carregou antes da outra guia criar um.
+    const nomeProjetoRenomeacaoArquivo = 'Projeto de renomeação de arquivo controlada';
+    const nomeBaseRenomeacaoArquivo = 'rascunho-renomeacao.md';
+    const nomeConcorrenteRenomeacao = 'destino-concorrente.md';
+    novoProjeto.value = nomeProjetoRenomeacaoArquivo;
+    document.getElementById('btn-workspace-criar-projeto').click();
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjetoRenomeacaoArquivo), 'criar projeto para renomeação de arquivo concorrente');
+    document.getElementById('btn-workspace-novo-arquivo').click();
+    await esperarWorkspace(() => !nome.disabled && !editor.disabled, 'criar arquivo para renomeação concorrente');
+    nome.value = nomeBaseRenomeacaoArquivo;
+    nome.dispatchEvent(new Event('input', { bubbles: true }));
+    editor.value = 'conteúdo sintético para renomeação concorrente';
+    editor.dispatchEvent(new Event('input', { bubbles: true }));
+    document.getElementById('btn-workspace-salvar').click();
+    await esperarWorkspace(() => document.getElementById('workspace-status').textContent.includes('Arquivo salvo localmente'), 'salvar arquivo para renomeação concorrente');
+    const arquivoRenomeacao = porNomeArquivoExato(nomeBaseRenomeacaoArquivo);
+    const estadoAntesRenomeacao = await lerEstadoArquivoWorkspaceControlado(arquivoRenomeacao.dataset.arquivoId, arquivoRenomeacao.dataset.projetoId);
+    const irmaoRenomeacao = await adicionarArquivoWorkspaceControlado(arquivoRenomeacao.dataset.projetoId, nomeConcorrenteRenomeacao, 'irmão sintético já persistido');
+    nome.value = nomeConcorrenteRenomeacao;
+    nome.dispatchEvent(new Event('input', { bubbles: true }));
+    document.getElementById('btn-workspace-salvar').click();
+    await esperarWorkspace(() => document.getElementById('workspace-status').textContent.includes('Já existe um arquivo local com esse nome'), 'bloquear renomeação contra irmão persistido');
+    const estadoDepoisRenomeacao = await lerEstadoArquivoWorkspaceControlado(arquivoRenomeacao.dataset.arquivoId, arquivoRenomeacao.dataset.projetoId);
+    const estadoIrmaoRenomeacao = await lerEstadoArquivoWorkspaceControlado(irmaoRenomeacao.arquivo.id, arquivoRenomeacao.dataset.projetoId);
+    if (estadoDepoisRenomeacao.arquivo.nome !== nomeBaseRenomeacaoArquivo || estadoDepoisRenomeacao.arquivo.conteudo !== estadoAntesRenomeacao.arquivo.conteudo || estadoDepoisRenomeacao.arquivo.versao !== estadoAntesRenomeacao.arquivo.versao || estadoDepoisRenomeacao.revisoes.length !== estadoAntesRenomeacao.revisoes.length || estadoDepoisRenomeacao.projeto.atualizadoEm !== irmaoRenomeacao.projeto.atualizadoEm || !estadoIrmaoRenomeacao.arquivo || estadoIrmaoRenomeacao.arquivo.nome !== nomeConcorrenteRenomeacao) {
+      throw new Error('renomeação desatualizada alterou o original, revisão, projeto ou irmão concorrente persistido');
+    }
+    nome.value = nomeBaseRenomeacaoArquivo;
+    nome.dispatchEvent(new Event('input', { bubbles: true }));
+    document.getElementById('btn-workspace-salvar').click();
+    await esperarWorkspace(() => document.getElementById('workspace-status').textContent.includes('Já estava salvo'), 'manter rascunho após recusa de nome concorrente');
+    porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjeto).click();
+    await esperarWorkspace(() => document.getElementById('workspace-nome-projeto').value === nomeProjeto && porNomeArquivoExato(nomeArquivo), 'retornar após renomeação concorrente');
+    porNomeArquivoExato(nomeArquivo).click();
+    await esperarWorkspace(() => editor.value === conteudoFinal, 'retomar arquivo principal depois da renomeação concorrente');
 
     const rascunhoParaCopia = conteudoFinal + ' com rascunho concorrente para cópia';
     editor.value = rascunhoParaCopia;

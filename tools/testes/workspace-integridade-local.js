@@ -22,26 +22,32 @@ function entre(texto, inicio, fim) {
   assert(a >= 0 && b > a, 'trecho ausente: ' + inicio);
   return texto.slice(a, b);
 }
-const planejadorFonte = entre(fonte, 'async function planejarArmazenamentoParaSalvar(anterior, atualizado)', '\n\n  function ordenarProjetos');
+const planejadorFonte = entre(fonte, 'function planejarArmazenamentoParaSalvar(anterior, atualizado, arquivos, revisoes)', '\n\n  function ordenarProjetos');
 
 function planejar({ ocupacao, anterior, atualizado, revisoes, total = 12, porArquivo = 2 }) {
+  const bytesRegistro = (registro) => {
+    const declarado = Number(registro && registro.bytes);
+    return Number.isFinite(declarado) && declarado >= 0 ? declarado : String((registro && registro.conteudo) || '').length;
+  };
+  // A lista imita a fotografia persistida que o readwrite entrega ao planejador:
+  // o preenchimento representa os demais registros do Workspace, não estado RAM.
+  const custoRevisoes = (revisoes || []).reduce((totalAtual, revisao) => totalAtual + bytesRegistro(revisao), 0);
+  const residual = Math.max(0, ocupacao - bytesRegistro(anterior) - custoRevisoes);
+  const arquivos = [anterior];
+  if (residual) arquivos.push({ id: 'ocupacao-controlada', conteudo: '', bytes: residual });
   const contexto = {
-    estado: { bytesOcupados: ocupacao },
     LIMITES: { totalBytes: total, revisoesPorArquivo: porArquivo },
-    lerTodos: async () => revisoes,
-    LOJAS: { revisoes: 'revisoes' },
-    bytesRegistro: (registro) => {
-      const declarado = Number(registro && registro.bytes);
-      return Number.isFinite(declarado) && declarado >= 0 ? declarado : String((registro && registro.conteudo) || '').length;
-    },
+    medirOcupacao: (listaArquivos, listaRevisoes) => (listaArquivos || []).reduce((totalAtual, arquivo) => totalAtual + bytesRegistro(arquivo), 0) +
+      (listaRevisoes || []).reduce((totalAtual, revisao) => totalAtual + bytesRegistro(revisao), 0),
+    bytesRegistro,
     bytes: (valor) => String(valor == null ? '' : valor).length,
     texto: (valor) => String(valor == null ? '' : valor),
     erro: (codigo) => { const e = new Error(codigo); e.codigoWorkspace = codigo; return e; },
-    Map, Math, Number, String
+    Map, Math, Number, String, Array
   };
   contexto.globalThis = contexto;
   vm.runInNewContext(planejadorFonte + '\nglobalThis.planejarTeste = planejarArmazenamentoParaSalvar;', contexto);
-  return contexto.planejarTeste(anterior, atualizado);
+  return contexto.planejarTeste(anterior, atualizado, arquivos, revisoes);
 }
 
 // Executa o módulo real em VM com IndexedDB/DOM substituídos apenas para conferir
@@ -51,7 +57,7 @@ function criarModuloComBanco(registros) {
   const inicio = fonte.indexOf(marcador);
   assert(inicio >= 0, 'ponto de montagem do módulo não encontrado');
   const fonteTestavel = fonte.slice(0, inicio) + `  window.__workspaceTeste = {
-    estado, criarProjetoTransacional, renomearProjetoTransacional, criarArquivoTransacional,
+    estado, criarProjetoTransacional, renomearProjetoTransacional, criarArquivoTransacional, gravarArquivoComRevisao,
     moverArquivoParaLixeira, moverProjetoParaLixeira, apagarArquivo, apagarProjeto, restaurarDaLixeira, descartarDaLixeira, esvaziarLixeira,
     substituir: (dependencias) => {
       if (dependencias.lerTodos) lerTodos = dependencias.lerTodos;
@@ -179,14 +185,69 @@ async function principal() {
     assert.deepEqual(resultado.removerRevisoes, []);
   });
 
-  await testa('recusa apenas quando o conteúdo atual por si só ultrapassa a capacidade', async () => {
-    await assert.rejects(() => planejar({
+  await testa('recusa apenas quando o conteúdo atual por si só ultrapassa a capacidade', () => {
+    assert.throws(() => planejar({
       ocupacao: 5,
       anterior: { id: 'a', conteudo: 'aa', bytes: 2 },
       atualizado: { id: 'a', conteudo: 'bbbbbb', bytes: 6 },
       revisoes: [],
       total: 5
     }), (erro) => erro && erro.codigoWorkspace === 'workspace-cheio');
+  });
+
+  await testa('salvamento decide o nome entre irmãos que já existem no readwrite atual', async () => {
+    const quando = '2026-10-21T13:00:00.000Z';
+    const anterior = { id: 'a', projetoId: 'p', nome: 'base.md', conteudo: 'antes', bytes: 5, versao: 1, criadoEm: quando, atualizadoEm: quando };
+    const irmaoAtual = { id: 'b', projetoId: 'p', nome: 'alvo.md', conteudo: 'outra guia', bytes: 10, versao: 1, criadoEm: quando, atualizadoEm: '2026-10-21T13:01:00.000Z' };
+    const projeto = { id: 'p', nome: 'Projeto', criadoEm: quando, atualizadoEm: irmaoAtual.atualizadoEm };
+    const { modulo, mapas } = criarModuloComBanco({ projetos: [projeto], arquivos: [anterior, irmaoAtual] });
+    const tentativa = Object.assign({}, anterior, { nome: 'alvo.md', conteudo: 'edição local', bytes: 12, versao: 2, atualizadoEm: '2026-10-21T13:02:00.000Z' });
+    const resultado = await modulo.gravarArquivoComRevisao(tentativa, anterior);
+    assert.equal(resultado.conflito, false);
+    assert.equal(resultado.nomeOcupado, true);
+    assert.equal(resultado.erro, '');
+    assert.equal(mapas.arquivos.get('a').nome, 'base.md');
+    assert.equal(mapas.arquivos.get('a').conteudo, 'antes');
+    assert.equal(mapas.arquivos.get('b').nome, 'alvo.md');
+    assert.equal(mapas.projetos.get('p').atualizadoEm, projeto.atualizadoEm);
+    assert.equal(mapas.revisoes.size, 0);
+  });
+
+  await testa('salvamento bem-sucedido devolve os irmãos ativos que chegaram antes do commit', async () => {
+    const quando = '2026-10-21T13:00:00.000Z';
+    const anterior = { id: 'a', projetoId: 'p', nome: 'base.md', conteudo: 'antes', bytes: 5, versao: 1, criadoEm: quando, atualizadoEm: quando };
+    const irmaoAtual = { id: 'b', projetoId: 'p', nome: 'chegou.md', conteudo: 'outra guia', bytes: 10, versao: 1, criadoEm: quando, atualizadoEm: '2026-10-21T13:01:00.000Z' };
+    const projeto = { id: 'p', nome: 'Projeto da outra guia', criadoEm: quando, atualizadoEm: irmaoAtual.atualizadoEm };
+    const { modulo, mapas } = criarModuloComBanco({ projetos: [projeto], arquivos: [anterior, irmaoAtual] });
+    const tentativa = Object.assign({}, anterior, { nome: 'salvo.md', conteudo: 'edição local', bytes: 12, versao: 2, atualizadoEm: '2026-10-21T13:02:00.000Z' });
+    const resultado = await modulo.gravarArquivoComRevisao(tentativa, anterior);
+    assert.equal(resultado.conflito, false);
+    assert.equal(resultado.nomeOcupado, false);
+    assert.equal(resultado.erro, '');
+    assert.equal(mapas.arquivos.get('a').nome, 'salvo.md');
+    assert.equal(mapas.arquivos.get('b').nome, 'chegou.md');
+    assert.equal(resultado.arquivosAtivos.length, 2);
+    assert.equal(resultado.arquivosAtivos.some((arquivo) => arquivo.id === 'b' && arquivo.nome === 'chegou.md'), true);
+    assert.equal(resultado.projeto.nome, projeto.nome);
+    assert.equal(mapas.revisoes.size, 1);
+  });
+
+  await testa('salvamento usa a ocupação persistida atual e não ultrapassa 5 MB após outra gravação', async () => {
+    const quando = '2026-10-21T13:00:00.000Z';
+    const anterior = { id: 'a', projetoId: 'p', nome: 'base.md', conteudo: 'a', bytes: 1, versao: 1, criadoEm: quando, atualizadoEm: quando };
+    const cheio = { id: 'b', projetoId: 'p', nome: 'ocupado.md', conteudo: '', bytes: 5 * 1024 * 1024, versao: 1, criadoEm: quando, atualizadoEm: '2026-10-21T13:01:00.000Z' };
+    const projeto = { id: 'p', nome: 'Projeto', criadoEm: quando, atualizadoEm: cheio.atualizadoEm };
+    const { modulo, mapas } = criarModuloComBanco({ projetos: [projeto], arquivos: [anterior, cheio] });
+    const tentativa = Object.assign({}, anterior, { conteudo: 'bb', bytes: 2, versao: 2, atualizadoEm: '2026-10-21T13:02:00.000Z' });
+    const resultado = await modulo.gravarArquivoComRevisao(tentativa, anterior);
+    assert.equal(resultado.conflito, false);
+    assert.equal(resultado.nomeOcupado, false);
+    assert.equal(resultado.erro, 'workspace-cheio');
+    assert.equal(mapas.arquivos.get('a').conteudo, 'a');
+    assert.equal(mapas.arquivos.get('a').versao, 1);
+    assert.equal(mapas.arquivos.get('b').bytes, 5 * 1024 * 1024);
+    assert.equal(mapas.projetos.get('p').atualizadoEm, projeto.atualizadoEm);
+    assert.equal(mapas.revisoes.size, 0);
   });
 
   await testa('metadados de lixeira não usam rede nem removem revisões durante o movimento recuperável', () => {

@@ -20,21 +20,28 @@ function entre(texto, inicio, fim) {
   return texto.slice(a, b);
 }
 
-testa('compara a base em transação local antes de gravar arquivo, revisão e projeto', () => {
-  const gravar = entre(workspace, 'function gravarArquivoComRevisao(arquivo, anterior, plano)', '\n  function gravarLote');
+testa('decide base, nome, cota e histórico na transação local antes de gravar arquivo, revisão e projeto', () => {
+  const gravar = entre(workspace, 'function gravarArquivoComRevisao(arquivo, anterior)', '\n  function gravarLote');
   assert.match(workspace, /function arquivoAindaIgual\(persistido, anterior\)/);
   assert.match(gravar, /\[LOJAS\.projetos, LOJAS\.arquivos, LOJAS\.revisoes\], 'readwrite'/);
   assert.match(gravar, /const leituraArquivo = arquivos\.get\(anterior\.id\)/);
-  assert.match(gravar, /if \(!arquivoAindaIgual\(persistido, anterior\)\)/);
-  assert.match(gravar, /resultado = \{ conflito: true, arquivo: null, projeto: null \}/);
-  assert(gravar.indexOf('if (!arquivoAindaIgual') < gravar.indexOf('arquivos.put(arquivo)'), 'a verificação precisa ocorrer antes da escrita');
+  assert.match(gravar, /const leituraArquivos = arquivos\.getAll\(\)/);
+  assert.match(gravar, /const leituraRevisoes = revisoes\.getAll\(\)/);
+  assert.match(gravar, /if \(!arquivoAindaIgual\(persistido, anterior\) \|\| !projetoAtivoPersistido\(projetoPersistido\)\)/);
+  assert.match(gravar, /const nomeOcupado = busca\(atualizado\.nome\)/);
+  assert.match(gravar, /planejarArmazenamentoParaSalvar\(persistido, atualizado, todosArquivos, todasRevisoes\)/);
+  assert(gravar.indexOf('if (!arquivoAindaIgual') < gravar.indexOf('arquivos.put(atualizado)'), 'a verificação precisa ocorrer antes da escrita');
+  assert(gravar.indexOf('planejarArmazenamentoParaSalvar') < gravar.indexOf('arquivos.put(atualizado)'), 'a cota precisa ser decidida antes da escrita');
   assert.match(gravar, /projetos\.put\(projetoAtualizado\)/);
 });
 
-testa('salvamento interrompe a substituição silenciosa e preserva o rascunho no editor', () => {
+testa('salvamento interrompe a substituição silenciosa e preserva rascunho também se o nome ou a cota atuais recusarem', () => {
   const salvar = entre(workspace, 'async function salvarArquivoAtual(origem)', '\n  async function apagarArquivo');
-  assert.match(salvar, /const resultado = await gravarArquivoComRevisao\(atualizado, anterior, plano\)/);
+  assert.match(salvar, /const resultado = await gravarArquivoComRevisao\(atualizado, anterior\)/);
+  assert.doesNotMatch(salvar, /planejarArmazenamentoParaSalvar/);
   assert.match(salvar, /if \(resultado\.conflito\) \{\n        registrarConflitoArquivo\(anterior\);\n        return false;/);
+  assert.match(salvar, /if \(resultado\.nomeOcupado\) \{\n        definirStatus\('erro', 'Já existe um arquivo local com esse nome neste projeto\.'\);\n        return false;/);
+  assert.match(salvar, /if \(resultado\.erro\) throw erro\(resultado\.erro\)/);
   assert.match(workspace, /function registrarConflitoArquivo\(anterior\)/);
   const registrar = entre(workspace, 'function registrarConflitoArquivo(anterior)', '\n  function nomeRascunhoConflito');
   assert.match(registrar, /estado\.conflitoArquivo = \{ arquivoId: anterior\.id, projetoId: anterior\.projetoId \}/);

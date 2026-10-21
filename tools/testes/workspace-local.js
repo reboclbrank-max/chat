@@ -50,7 +50,10 @@ testa('Workspace limita dados locais e mantém exportação/importação validad
   assert.match(workspace, /EXTENSOES_TEXTO/);
   assert.match(workspace, /URL\.createObjectURL\(new Blob/);
   assert.match(workspace, /function medirOcupacao\(arquivos, revisoes\)/);
-  assert.match(workspace, /async function planejarArmazenamentoParaSalvar\(anterior, atualizado\)/);
+  const planejador = entre(workspace, 'function planejarArmazenamentoParaSalvar(anterior, atualizado, arquivos, revisoes)', '\n\n  function ordenarProjetos');
+  assert.match(planejador, /medirOcupacao\(arquivosAtuais, revisoesAtuais\)/);
+  const planejadorSemComentarios = planejador.replace(/\/\/.*$/gm, '');
+  assert.doesNotMatch(planejadorSemComentarios, /estado\.bytesOcupados|lerTodos\(/);
   assert.match(workspace, /estado\.bytesOcupados \+ total > LIMITES\.totalBytes/);
   assert.match(workspace, /incluindo histórico e itens recuperáveis/);
 });
@@ -107,7 +110,10 @@ testa('Busca global do Workspace é explícita, local e abre o resultado no proj
 testa('Workspace detecta conflito entre edições locais e oferece resolução explícita', () => {
   assert.match(workspace, /conflitoArquivo: null/);
   assert.match(workspace, /function arquivoAindaIgual\(persistido, anterior\)/);
-  assert.match(workspace, /function gravarArquivoComRevisao\(arquivo, anterior, plano\)/);
+  const salvarTransacional = entre(workspace, 'function gravarArquivoComRevisao(arquivo, anterior)', '\n  function gravarLote');
+  assert.match(salvarTransacional, /const leituraArquivos = arquivos\.getAll\(\)/);
+  assert.match(salvarTransacional, /const leituraRevisoes = revisoes\.getAll\(\)/);
+  assert.match(salvarTransacional, /planejarArmazenamentoParaSalvar\(persistido, atualizado, todosArquivos, todasRevisoes\)/);
   assert.match(workspace, /function salvarConflitoComoCopia\(\)/);
   assert.match(workspace, /function recarregarArquivoConflito\(\)/);
   assert.match(workspace, /id="workspace-conflito-arquivo"/);
@@ -159,7 +165,7 @@ testa('as quatro rotas expõem o mesmo acesso e carregam uma só cópia do Works
 });
 
 testa('casca PWA, workflow, corredor e porta de continuidade observam o ativo', () => {
-  assert.match(sw, /rebocl-chat-v80/);
+  assert.match(sw, /rebocl-chat-v81/);
   assert.match(sw, /'\.\/chat-workspace\.js'/);
   assert.match(workflow, /'chat-workspace\.js'/);
   assert.match(workflow, /chat-workspace\.js tools\/testes\/\*\.js/);
@@ -169,7 +175,7 @@ testa('casca PWA, workflow, corredor e porta de continuidade observam o ativo', 
   assert.match(corredor, /'workspace-integridade-local\.js'/);
   assert.match(retrato, /Workspace interno local-first/);
   assert.match(retrato, /rebocl-workspace-local-v1/);
-  assert.match(retrato, /rebocl-chat-v80/);
+  assert.match(retrato, /rebocl-chat-v81/);
 });
 
 testa('porta de continuidade exige retrato quando o ativo local muda', () => {

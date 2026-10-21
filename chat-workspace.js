@@ -384,44 +384,68 @@
   function arquivoAindaIgual(persistido, anterior) {
     return !!persistido && !estaNaLixeira(persistido) && arquivoRegistroAindaIgual(persistido, anterior);
   }
-  function gravarArquivoComRevisao(arquivo, anterior, plano) {
+  function gravarArquivoComRevisao(arquivo, anterior) {
     return abrirBanco().then((banco) => new Promise((resolve, reject) => {
-      // A leitura e a escrita dividem a mesma transação readwrite: assim duas
-      // guias atuais não passam pela mesma versão e gravam uma sobre a outra.
+      // A leitura, o nome, a cota, o histórico e a escrita dividem a mesma
+      // transação readwrite. A fotografia de uma guia não pode decidir por uma
+      // criação/renomeação/salvamento que outra guia já tenha persistido.
       const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos, LOJAS.revisoes], 'readwrite');
       const projetos = tx.objectStore(LOJAS.projetos);
       const arquivos = tx.objectStore(LOJAS.arquivos);
       const revisoes = tx.objectStore(LOJAS.revisoes);
-      let resultado = { conflito: false, arquivo: null, projeto: null };
-      const leituraArquivo = arquivos.get(anterior.id);
-      leituraArquivo.onsuccess = () => {
-        const persistido = leituraArquivo.result || null;
-        if (!arquivoAindaIgual(persistido, anterior)) {
-          resultado = { conflito: true, arquivo: null, projeto: null };
+      let persistido;
+      let projetoPersistido;
+      let todosArquivos = null;
+      let todasRevisoes = null;
+      let resultado = { conflito: false, nomeOcupado: false, erro: '', arquivo: null, projeto: null, plano: null, arquivosAtivos: null };
+      const concluirLeituras = () => {
+        if (persistido === undefined || projetoPersistido === undefined || todosArquivos === null || todasRevisoes === null) return;
+        if (!arquivoAindaIgual(persistido, anterior) || !projetoAtivoPersistido(projetoPersistido)) {
+          resultado = { conflito: true, nomeOcupado: false, erro: '', arquivo: null, projeto: null, plano: null, arquivosAtivos: null };
           return;
         }
-        const leituraProjeto = projetos.get(anterior.projetoId);
-        leituraProjeto.onsuccess = () => {
-          const projetoPersistido = leituraProjeto.result || null;
-          if (!projetoPersistido || estaNaLixeira(projetoPersistido)) {
-            resultado = { conflito: true, arquivo: null, projeto: null };
-            return;
-          }
-          const projetoAtualizado = Object.assign({}, projetoPersistido, { atualizadoEm: arquivo.atualizadoEm });
-          arquivos.put(arquivo);
-          projetos.put(projetoAtualizado);
-          (plano.removerRevisoes || []).forEach((revisao) => revisoes.delete(revisao.id));
-          if (plano.guardarRevisao && anterior.conteudo !== arquivo.conteudo) {
-            revisoes.put({
-              id: idNovo('rev'), arquivoId: anterior.id, conteudo: anterior.conteudo,
-              bytes: bytes(anterior.conteudo), quando: anterior.atualizadoEm, versao: anterior.versao
-            });
-          }
-          resultado = { conflito: false, arquivo, projeto: projetoAtualizado };
-        };
-        leituraProjeto.onerror = () => reject(leituraProjeto.error || erro('sem-indexeddb'));
+        // Começar pela cópia que acabamos de ler também conserva campos locais
+        // futuros que a tela antiga ainda não conheça.
+        const atualizado = Object.assign({}, persistido, arquivo);
+        const nomeOcupado = busca(atualizado.nome) !== busca(persistido.nome) && todosArquivos.some((outro) =>
+          outro && outro.id !== persistido.id && outro.projetoId === persistido.projetoId && !estaNaLixeira(outro) && busca(outro.nome) === busca(atualizado.nome));
+        if (nomeOcupado) {
+          resultado = { conflito: false, nomeOcupado: true, erro: '', arquivo: null, projeto: null, plano: null, arquivosAtivos: null };
+          return;
+        }
+        let plano;
+        try {
+          plano = planejarArmazenamentoParaSalvar(persistido, atualizado, todosArquivos, todasRevisoes);
+        } catch (e) {
+          resultado = { conflito: false, nomeOcupado: false, erro: (e && e.codigoWorkspace) || 'sem-indexeddb', arquivo: null, projeto: null, plano: null, arquivosAtivos: null };
+          return;
+        }
+        const projetoAtualizado = Object.assign({}, projetoPersistido, { atualizadoEm: atualizado.atualizadoEm });
+        arquivos.put(atualizado);
+        projetos.put(projetoAtualizado);
+        plano.removerRevisoes.forEach((revisao) => revisoes.delete(revisao.id));
+        if (plano.guardarRevisao && persistido.conteudo !== atualizado.conteudo) {
+          revisoes.put({
+            id: idNovo('rev'), arquivoId: persistido.id, conteudo: persistido.conteudo,
+            bytes: bytes(persistido.conteudo), quando: persistido.atualizadoEm, versao: persistido.versao
+          });
+        }
+        const arquivosAtivos = todosArquivos.map((outro) => outro && outro.id === persistido.id ? atualizado : outro)
+          .filter((outro) => outro && outro.id && outro.projetoId && typeof outro.conteudo === 'string' && !estaNaLixeira(outro));
+        resultado = { conflito: false, nomeOcupado: false, erro: '', arquivo: atualizado, projeto: projetoAtualizado, plano, arquivosAtivos };
       };
+      const leituraArquivo = arquivos.get(anterior.id);
+      const leituraProjeto = projetos.get(anterior.projetoId);
+      const leituraArquivos = arquivos.getAll();
+      const leituraRevisoes = revisoes.getAll();
+      leituraArquivo.onsuccess = () => { persistido = leituraArquivo.result || null; concluirLeituras(); };
+      leituraProjeto.onsuccess = () => { projetoPersistido = leituraProjeto.result || null; concluirLeituras(); };
+      leituraArquivos.onsuccess = () => { todosArquivos = Array.isArray(leituraArquivos.result) ? leituraArquivos.result : []; concluirLeituras(); };
+      leituraRevisoes.onsuccess = () => { todasRevisoes = Array.isArray(leituraRevisoes.result) ? leituraRevisoes.result : []; concluirLeituras(); };
       leituraArquivo.onerror = () => reject(leituraArquivo.error || erro('sem-indexeddb'));
+      leituraProjeto.onerror = () => reject(leituraProjeto.error || erro('sem-indexeddb'));
+      leituraArquivos.onerror = () => reject(leituraArquivos.error || erro('sem-indexeddb'));
+      leituraRevisoes.onerror = () => reject(leituraRevisoes.error || erro('sem-indexeddb'));
       tx.oncomplete = () => resolve(resultado);
       tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
       tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
@@ -556,10 +580,14 @@
     estado.itensLixeira = contarRaizesLixeira(projetos, arquivos);
     return { projetos, arquivos, revisoes };
   }
-  async function planejarArmazenamentoParaSalvar(anterior, atualizado) {
-    const revisoes = await lerTodos(LOJAS.revisoes);
+  function planejarArmazenamentoParaSalvar(anterior, atualizado, arquivos, revisoes) {
+    // Não use estado.bytesOcupados nem uma leitura anterior: a lista que chegou
+    // do mesmo readwrite inclui arquivo, Lixeira e versões que outra guia possa
+    // ter gravado entre a edição e este salvamento.
+    const arquivosAtuais = Array.isArray(arquivos) ? arquivos : [];
+    const revisoesAtuais = Array.isArray(revisoes) ? revisoes : [];
     const remover = new Map();
-    let ocupacao = Math.max(0, Number(estado.bytesOcupados) || 0) - bytesRegistro(anterior) + bytesRegistro(atualizado);
+    let ocupacao = medirOcupacao(arquivosAtuais, revisoesAtuais) - bytesRegistro(anterior) + bytesRegistro(atualizado);
     const marcarRemocao = (revisao) => {
       if (!revisao || remover.has(revisao.id)) return;
       remover.set(revisao.id, revisao);
@@ -568,17 +596,17 @@
     const antigasPrimeiro = (lista) => lista.slice().sort((a, b) =>
       texto(a.quando).localeCompare(texto(b.quando)) || texto(a.id).localeCompare(texto(b.id)));
     const mudouConteudo = anterior.conteudo !== atualizado.conteudo;
-    const desteArquivo = antigasPrimeiro(revisoes.filter((revisao) => revisao.arquivoId === anterior.id));
+    const desteArquivo = antigasPrimeiro(revisoesAtuais.filter((revisao) => revisao.arquivoId === anterior.id));
     const excessoPorArquivo = Math.max(0, desteArquivo.length + (mudouConteudo ? 1 : 0) - LIMITES.revisoesPorArquivo);
     desteArquivo.slice(0, excessoPorArquivo).forEach(marcarRemocao);
-    antigasPrimeiro(revisoes).forEach((revisao) => {
+    antigasPrimeiro(revisoesAtuais).forEach((revisao) => {
       if (ocupacao > LIMITES.totalBytes) marcarRemocao(revisao);
     });
     if (ocupacao > LIMITES.totalBytes) throw erro('workspace-cheio');
     let guardarRevisao = mudouConteudo;
     if (guardarRevisao) {
       const custoRevisao = bytes(anterior.conteudo);
-      antigasPrimeiro(revisoes).forEach((revisao) => {
+      antigasPrimeiro(revisoesAtuais).forEach((revisao) => {
         if (ocupacao + custoRevisao > LIMITES.totalBytes) marcarRemocao(revisao);
       });
       if (ocupacao + custoRevisao <= LIMITES.totalBytes) ocupacao += custoRevisao;
@@ -1108,10 +1136,6 @@
       const conteudo = texto(elementos.editor.value);
       const tamanho = bytes(conteudo);
       if (tamanho > LIMITES.arquivoBytes) throw erro('arquivo-grande');
-      if (busca(nome) !== busca(anterior.nome) && arquivosDoProjeto(anterior.projetoId).some((outro) => outro.id !== anterior.id && busca(outro.nome) === busca(nome))) {
-        definirStatus('erro', 'Já existe um arquivo local com esse nome neste projeto.');
-        return false;
-      }
       const mudou = anterior.nome !== nome || anterior.conteudo !== conteudo;
       if (!mudou) {
         estado.alterado = false;
@@ -1121,20 +1145,26 @@
       estado.salvando = true;
       atualizarControlesEditor(true);
       const atualizado = Object.assign({}, anterior, { nome, conteudo, bytes: tamanho, versao: Number(anterior.versao || 1) + 1, atualizadoEm: agora() });
-      const plano = await planejarArmazenamentoParaSalvar(anterior, atualizado);
-      const resultado = await gravarArquivoComRevisao(atualizado, anterior, plano);
+      const resultado = await gravarArquivoComRevisao(atualizado, anterior);
       if (resultado.conflito) {
         registrarConflitoArquivo(anterior);
         return false;
       }
+      if (resultado.nomeOcupado) {
+        definirStatus('erro', 'Já existe um arquivo local com esse nome neste projeto.');
+        return false;
+      }
+      if (resultado.erro) throw erro(resultado.erro);
+      const salvo = resultado.arquivo || atualizado;
+      const plano = resultado.plano;
       estado.bytesOcupados = plano.ocupacaoFinal;
-      estado.arquivos = estado.arquivos.map((arquivo) => arquivo.id === atualizado.id ? atualizado : arquivo);
+      estado.arquivos = Array.isArray(resultado.arquivosAtivos) ? resultado.arquivosAtivos : estado.arquivos.map((arquivo) => arquivo.id === salvo.id ? salvo : arquivo);
       if (resultado.projeto) estado.projetos = estado.projetos.map((projeto) => projeto.id === resultado.projeto.id ? resultado.projeto : projeto);
       houveEdicaoDurante = estado.edicao !== edicaoNoInicio;
       if (!houveEdicaoDurante) {
         estado.alterado = false;
         renderTudo();
-        const historicoLimitado = plano.removerRevisoes.length || (anterior.conteudo !== atualizado.conteudo && !plano.guardarRevisao);
+        const historicoLimitado = plano.removerRevisoes.length || (anterior.conteudo !== salvo.conteudo && !plano.guardarRevisao);
         definirStatus('ok', historicoLimitado ? 'Arquivo salvo localmente; versões antigas foram reduzidas para respeitar o limite de espaço.' : (origem === 'automatico' ? 'Salvo localmente neste navegador.' : 'Arquivo salvo localmente. Nada foi enviado.'));
       } else {
         estado.alterado = true;
