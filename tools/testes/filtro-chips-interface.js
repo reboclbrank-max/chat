@@ -53,31 +53,37 @@ ok('filtra por texto sem acento, informa resultado e restaura todos os chips', (
   const e = ambiente([
     { textContent: '🧭 trabalho', hidden: false, dataset: { busca: '🧭 trabalho trabalho: prioridades:' } },
     { textContent: '⛏ caça', hidden: false, dataset: { busca: '⛏ caça !caça' } },
-    { textContent: '💱 dólar', hidden: false, dataset: { busca: '💱 dólar cambio: USD' } }
+    { textContent: '💱 dólar', hidden: false, dataset: { busca: '💱 dólar cambio: USD' } },
+    { textContent: '⚙️ operar', hidden: false, dataset: { busca: '⚙️ operar operar: central:' } }
   ]);
   assert.equal(typeof e.iniciar, 'function');
   assert.equal(e.iniciar(), true);
-  assert.deepEqual(e.chips.map((chip) => chip.hidden), [false, false, false]);
+  assert.deepEqual(e.chips.map((chip) => chip.hidden), [false, false, false, false]);
   assert.equal(e.resultado.textContent, '');
 
   e.entrada.value = 'caca';
   disparar(e.ouvintes, 'input');
-  assert.deepEqual(e.chips.map((chip) => chip.hidden), [true, false, true]);
+  assert.deepEqual(e.chips.map((chip) => chip.hidden), [true, false, true, true]);
   assert.equal(e.resultado.textContent, '1 atalho');
 
   e.entrada.value = 'cambio';
   disparar(e.ouvintes, 'input');
-  assert.deepEqual(e.chips.map((chip) => chip.hidden), [true, true, false]);
+  assert.deepEqual(e.chips.map((chip) => chip.hidden), [true, true, false, true]);
   assert.equal(e.resultado.textContent, '1 atalho');
 
   e.entrada.value = 'prioridades';
   disparar(e.ouvintes, 'input');
-  assert.deepEqual(e.chips.map((chip) => chip.hidden), [false, true, true]);
+  assert.deepEqual(e.chips.map((chip) => chip.hidden), [false, true, true, true]);
+  assert.equal(e.resultado.textContent, '1 atalho');
+
+  e.entrada.value = 'central';
+  disparar(e.ouvintes, 'input');
+  assert.deepEqual(e.chips.map((chip) => chip.hidden), [true, true, true, false]);
   assert.equal(e.resultado.textContent, '1 atalho');
 
   e.entrada.value = 'não existe';
   disparar(e.ouvintes, 'input');
-  assert.deepEqual(e.chips.map((chip) => chip.hidden), [true, true, true]);
+  assert.deepEqual(e.chips.map((chip) => chip.hidden), [true, true, true, true]);
   assert.equal(e.resultado.textContent, 'Nenhum atalho');
 
   let prevenido = false;
@@ -86,7 +92,7 @@ ok('filtra por texto sem acento, informa resultado e restaura todos os chips', (
   assert.equal(prevenido, true);
   assert.equal(propagacaoParada, true);
   assert.equal(e.entrada.value, '');
-  assert.deepEqual(e.chips.map((chip) => chip.hidden), [false, false, false]);
+  assert.deepEqual(e.chips.map((chip) => chip.hidden), [false, false, false, false]);
   assert.equal(e.resultado.textContent, '');
 });
 
@@ -154,7 +160,7 @@ ok('as quatro rotas declaram busca por nome ou comando e só a iniciam após mon
     assert.match(html, /aria-controls="chips" aria-describedby="resultado-filtro-chips"/);
     assert.match(html, /id="resultado-filtro-chips"[^>]*role="status"[^>]*aria-live="polite"/);
     const construcao = html.slice(html.indexOf('function montarChips() {'), html.indexOf('/* ---------- sino'));
-    assert.match(construcao, /const sintaxes = prefixo === 'trabalho:' \? \['trabalho:', 'prioridades:'\] : \[prefixo\];/);
+    assert.match(construcao, /const sintaxes = prefixo === 'trabalho:' \? \['trabalho:', 'prioridades:'\]\s*:\s*\(prefixo === 'operar:' \? \['operar:', 'central:'\] : \[prefixo\]\);/);
     assert.match(construcao, /const descricaoComando = sintaxes\.length === 1/);
     assert.match(construcao, /b\.dataset\.busca = rotulo \+ ' ' \+ sintaxes\.join\(' '\);/);
     assert.match(construcao, /b\.title = descricaoComando;/);
@@ -179,7 +185,7 @@ ok('PWA, workflow e continuidade observam o filtro local', () => {
   const sw = ler('sw.js');
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v83/);
+  assert.match(sw, /rebocl-chat-v84/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);
   assert.match(sw, /'\.\/chat-organizacao-local\.js'/);
   assert.match(workflow, /'chat-filtro-chips\.js'/);

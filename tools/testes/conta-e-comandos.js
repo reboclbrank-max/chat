@@ -126,6 +126,10 @@ function confere(nome, condicao) {
   global.fetch = async () => { throw new Error('rede não deveria ser chamada'); };
   await t('trabalho: não chama rede', 'trabalho:', /Plano operacional/i);
   confere('trabalho: roteiro local cabe no Telegram', CHAT.resumoTrabalhoDaCasa().split('\n').length <= 8);
+  await t('operar: abre a Central sem rede nem motor', 'operar:', /Central segura do Chat[\s\S]*não executa texto livre/i);
+  await t('operar: repos mantém promoção bloqueada', 'operar: repos', /não edita nem promove código/i);
+  await t('operar: texto livre não vira execução', 'operar: testes agora', /texto livre não é executado/i);
+  await t('ajuda: lista a Central segura', 'ajuda', /operar:.*Central segura/i);
   await t('geografia natural responde sem rede nem motor', 'Qual estado brasileiro faz fronteira com o MAIOR número de outros estados?', /Bahia.*8/);
   await t('capital natural responde sem rede nem motor', 'Qual a capital de Sergipe?', /Aracaju/);
   global.fetch = fetchOriginal;

@@ -13,6 +13,7 @@ A regra vale somente dentro das capacidades, canais e guardas já aprovados. Ela
 1. Leia [`CONTINUIDADE.md`](CONTINUIDADE.md) inteiro.
 2. Confira `main` remoto, o estado da cópia e as instruções/estado atuais em `reboclbrank-max/base`.
 3. Leia apenas os arquivos técnicos necessários à tarefa. A autorização permanente de marketing, pesquisa e melhoria contínua está em `AUTONOMIA.md`; preserve as guardas, limites de canal, testes e registros ali descritos. Não dispare manualmente rotinas já agendadas nem faça publicação fora dos canais/configurações aprovados sem necessidade operacional.
+4. Para evolução de capacidade, delegação ou repositório, leia [`OPERACAO-CENTRAL.md`](OPERACAO-CENTRAL.md) antes de propor código: a Central segura é gradual, não aceita executor genérico e ainda não autoriza promoção cega para `main`.
 
 ## Regra de salvamento obrigatório
 

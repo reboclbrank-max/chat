@@ -495,6 +495,14 @@ function resumoTrabalhoDaCasa() {
 
 async function ferramenta(corpo, retornoNavegacao) {
   const txt = String(corpo || '').trim();
+  // A Central usa o mesmo roteiro fechado da página: ela explica capacidades,
+  // mas não aceita tarefa livre, não abre transporte e não cria uma fila remota.
+  if (/^!?(?:operar|opera(?:ç(?:ões|ão)|c(?:oes|ao))|central)(?:\s*:)?(?:\s|$)/i.test(txt)) {
+    try {
+      const central = require('../chat-comandos-locais').respostaComandoOperacionalLocal(txt);
+      if (central) return central;
+    } catch (e) {}
+  }
   if (/^!?ajuda$/i.test(txt) || txt.toLowerCase() === 'ajuda' || txt.toLowerCase() === 'comandos') return AJUDA;
   if (/^!?(?:trabalho|prioridades)$/i.test(txt)) return resumoTrabalhoDaCasa();
   // 🗺️ Consulta determinística local: não envia a pergunta ao motor nem à rede.
@@ -626,6 +634,7 @@ const AJUDA = [
   '   • navegador: estado (vê manualmente o último resultado público)',
   '   • status:           (última checagem, frescor, causas e freios de recuperação)',
   '   • trabalho:         (ou prioridades:; rotinas da casa, próximo passo seguro e o que depende de você)',
+  '   • operar:           (Central segura: capacidades atuais, testes e limites; não executa texto livre)',
   '   • conta: (1250*0,15)+80   (conta rápida, sem esperar motor)',
   '   • feriado:           (próximos feriados nacionais; ou feriado: 2027)',
   '   • cep: 49300000      (endereço de um CEP)',

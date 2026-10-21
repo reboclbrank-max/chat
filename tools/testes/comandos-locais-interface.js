@@ -39,6 +39,34 @@ ok('roteiro local só reconhece os comandos exatos previstos', () => {
   }
   for (const entrada of ['trabalho agora', 'prioridades: hoje', 'status:', '', 'trabalhos:']) assert.equal(responder(entrada), '');
 });
+ok('Central segura aceita somente mapa e opções fechadas', () => {
+  const contexto = { window: {}, String, Object, RegExp };
+  vm.createContext(contexto);
+  vm.runInContext(fonte, contexto);
+  const responder = contexto.window.respostaComandoOperacionalLocal;
+  for (const entrada of ['operar:', 'central:', '!operacoes', '!central']) {
+    const saida = responder(entrada);
+    assert.match(saida, /Central segura do Chat/);
+    assert.match(saida, /não executa texto livre/i);
+    assert.match(saida, /não promete entrega, uso, satisfação ou SLA/i);
+  }
+  const esperadas = {
+    status: /Estado técnico/,
+    pesquisa: /Pesquisa:/,
+    navegador: /Navegador:/,
+    testes: /!testarchat/,
+    repos: /não edita nem promove código/,
+    marketing: /não publica fora da rotina/,
+    limites: /não há executor genérico/
+  };
+  for (const [opcao, re] of Object.entries(esperadas)) assert.match(responder('operar: ' + opcao), re, opcao);
+  assert.match(responder('operações: repos'), /Repositórios/);
+  assert.match(responder('operacoes: limites'), /executor genérico/);
+  assert.match(responder('operar: shell'), /Opção não reconhecida/);
+  assert.match(responder('operar: testes agora'), /texto livre não é executado/);
+  assert.match(responder('operação: testes'), /!testarchat/);
+  for (const entrada of ['opere: testes', 'centralizar: testes']) assert.equal(responder(entrada), '');
+});
 ok('roteiro local executável não contém transporte, segredo ou armazenamento', () => {
   const executavel = fonte.replace(/\/\/[^\n]*/g, '');
   assert.doesNotMatch(executavel, /\b(fetch|XMLHttpRequest|WebSocket|EventSource|sendBeacon|localStorage|sessionStorage|token|Authorization|https?:)\b/i);
@@ -135,19 +163,23 @@ ok('chip visual oferece o roteiro local sem agendar rascunho ou escrita', () => 
     const catalogo = trecho(html, 'const CHIPS = [', 'function montarChips()');
     const montagem = trecho(html, 'function montarChips() {', '/* ---------- sino');
     assert.match(catalogo, /\['🧭 trabalho', 'trabalho:'\]/);
-    const atalho = montagem.indexOf("prefixo === 'trabalho:'");
+    assert.match(catalogo, /\['⚙️ operar', 'operar:'\]/);
+    const atalhoTrabalho = montagem.indexOf("prefixo === 'trabalho:'");
+    const atalhoOperar = montagem.lastIndexOf("prefixo === 'operar:'");
     const agendar = montagem.indexOf('agendarSalvarRascunho();');
-    assert(atalho >= 0 && atalho < agendar, rota + ': atalho precisa anteceder rascunho');
+    assert(atalhoTrabalho >= 0 && atalhoTrabalho < agendar, rota + ': atalho trabalho precisa anteceder rascunho');
+    assert(atalhoOperar >= 0 && atalhoOperar < agendar, rota + ': atalho operar precisa anteceder rascunho');
+    assert.match(montagem, /\['operar:', 'central:'\]/);
     assert.match(montagem, /typeof window\.respostaComandoOperacionalLocal === 'function'/);
     assert.match(montagem, /enviar\(\); return;/);
   }
 });
 
-ok('casca PWA v83 inclui os ativos locais e a porta de continuidade o observa', () => {
+ok('casca PWA v84 inclui os ativos locais e a porta de continuidade o observa', () => {
   const sw = ler('sw.js');
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v83/);
+  assert.match(sw, /rebocl-chat-v84/);
   assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);
   assert.match(sw, /'\.\/chat-organizacao-local\.js'/);

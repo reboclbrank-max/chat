@@ -84,6 +84,14 @@ A casa já possui oficina, estudo, pesquisa, baterias e vigia. O ciclo correto �
 
 Uma proposta sem teste, uma mudança sensível ou código que só “parece funcionar” deve permanecer proposta. A autonomia aqui é capacidade de aprender e operar com evidência, não permissão para degradar o sistema sozinho.
 
+## Central segura em etapas (21/10/2026)
+
+O dono escolheu que o Chat assuma progressivamente a coordenação das tarefas hoje feitas com apoio de agente, mas pelo modelo **Central segura em etapas**. A primeira etapa está descrita em [`OPERACAO-CENTRAL.md`](OPERACAO-CENTRAL.md): ela expõe um mapa fechado de capacidades nos três canais e libera somente uma ponte manual, estreita e auditável para a barreira de testes já existente (`!testarchat` na página com acesso protegido).
+
+Essa ponte aceita apenas o comando exato e chama somente `testes-rapidos.yml` deste repositório em `main`; não recebe texto livre, caminho, URL, ref ou nome de workflow. Modo somente-local, acesso ausente, pedido em voo e repetição curta a bloqueiam. Pedir uma barreira não confirma êxito, publicação, disponibilidade ou promoção de código.
+
+Ainda não há executor de tarefas arbitrárias, shell, commit/merge automático, alteração cega de `main` ou fila persistente de pedidos. A próxima etapa só pode preparar mudanças de repositório por catálogo pequeno, allowlist, branch/artefato reversível, testes, registro e revisão explícita. Segredos, contas, Gmail, backup externo, identidade, permissões, dependências, infraestrutura, gasto e ações públicas irreversíveis continuam fora até haver configuração operacional concreta e um corte próprio. O roteiro detalhado, alternativas recusadas e rollback estão no contrato da Central.
+
 ## Custo, cadência e responsabilidade
 
 Não foram adicionados serviços pagos, cartões, cobrança, modelos pagos ou dependências que exijam assinatura. A bateria diária incorpora o placar, e o navegador é manual para não gastar minutos continuamente nem competir com os turnos de e-mail e marketing. Os agendamentos do `site` e do `agente` existentes são preservados porque já foram ajustados à cota gratuita estimada.
