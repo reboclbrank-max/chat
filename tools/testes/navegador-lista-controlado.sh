@@ -49,7 +49,7 @@ rotas=(index.html direto.html ligar.html limpar.html)
 # A cópia precisa incluir a casca local que as quatro páginas realmente carregam.
 # Sem isso, um erro em um módulo compartilhado poderia interromper a página antes
 # da fixture testar a lista e daria uma falsa prova de navegador.
-ativos_locais=(chat-estilos.css chat-pwa.js chat-comandos-locais.js chat-filtro-chips.js chat-workspace.js dna.json)
+ativos_locais=(chat-estilos.css chat-pwa.js chat-comandos-locais.js chat-filtro-chips.js chat-organizacao-local.js chat-workspace.js dna.json)
 for rota in "${rotas[@]}"; do
   cp "$rota" "$trabalho/$rota"
 done
@@ -76,13 +76,13 @@ try {
 </script>"""
 teste_lista = """<script>
 (async () => {
-  const esperar = async (predicado, limite = 5000) => {
+  const esperar = async (predicado, limite = 5000, etapa = 'etapa sem rótulo') => {
     const fim = Date.now() + limite;
     while (Date.now() < fim) {
       if (predicado()) return;
       await new Promise(resolve => setTimeout(resolve, 20));
     }
-    throw new Error('tempo esgotado na fixture');
+    throw new Error('tempo esgotado na fixture: ' + etapa);
   };
   const visivel = (elemento) => !!elemento && getComputedStyle(elemento).display !== 'none';
   const porTexto = (raiz, seletor, texto) => [...raiz.querySelectorAll(seletor)].find((item) => item.textContent.includes(texto));
@@ -96,6 +96,16 @@ teste_lista = """<script>
     if (predicado()) return;
     throw new Error('Workspace não concluiu a transação local controlada: ' + (rotulo || 'etapa sem nome'));
   };
+  const esperarOrganizacao = async (predicado, rotulo, tentativas = 20) => {
+    for (let tentativa = 0; tentativa < tentativas; tentativa++) {
+      if (predicado()) return;
+      // Favoritos também usam IndexedDB real; respeite o mesmo agendamento
+      // virtual sem transformar uma espera de persistência em falso negativo.
+      await new Promise(resolve => setTimeout(resolve, 60000));
+    }
+    if (predicado()) return;
+    throw new Error('Favoritos locais não concluíram a transação controlada: ' + (rotulo || 'etapa sem nome'));
+  };
   const testarWorkspace = async () => {
     if (!location.pathname.endsWith('/index.html')) return '';
     if (![...document.styleSheets].some((folha) => String(folha.href || '').endsWith('/chat-estilos.css'))) {
@@ -103,7 +113,7 @@ teste_lista = """<script>
     }
     const abrir = document.getElementById('btn-workspace');
     abrir.click();
-    await esperar(() => visivel(document.getElementById('tela-workspace')));
+    await esperar(() => visivel(document.getElementById('tela-workspace')), 5000, 'abrir Workspace');
     const parametros = new URL(location.href).searchParams;
     const viewport = parametros.get('viewport');
     if (viewport) {
@@ -168,7 +178,28 @@ teste_lista = """<script>
     return ' · Workspace criou, versionou e recuperou arquivo/projeto somente na fixture';
   };
   try {
-    await esperar(() => document.querySelectorAll('#lista .conv').length >= 52);
+    await esperar(() => document.querySelectorAll('#lista .conv').length >= 52, 5000, 'lista inicial');
+    const estrelaAtual = () => document.querySelector('#lista .conv-conversa[data-conversa-numero="1"] .conv-favorita');
+    const filtroFavoritas = document.getElementById('btn-filtrar-favoritas');
+    if (!estrelaAtual() || !filtroFavoritas) throw new Error('controles de favoritos locais ausentes');
+    // A abertura real do IndexedDB pode rerenderizar os cartões entre estas duas
+    // etapas; consulte o controle atual para não clicar em um nó já substituído.
+    await esperarOrganizacao(() => {
+      const estrela = estrelaAtual();
+      return !!estrela && !estrela.disabled && !filtroFavoritas.disabled;
+    }, 'favoritos locais prontos');
+    estrelaAtual().click();
+    await esperarOrganizacao(() => document.querySelector('#lista .conv-conversa[data-conversa-numero="1"] .conv-favorita').getAttribute('aria-pressed') === 'true', 'marcar favorito');
+    filtroFavoritas.click();
+    await esperar(() => filtroFavoritas.getAttribute('aria-pressed') === 'true', 5000, 'ativar filtro de favoritas');
+    const visiveisFavoritas = [...document.querySelectorAll('#lista .conv-conversa')].filter(visivel);
+    if (visiveisFavoritas.length !== 1 || !visiveisFavoritas[0].textContent.includes('Página um 1')) {
+      throw new Error('filtro local não isolou a conversa favorita');
+    }
+    if (!visivel(document.getElementById('card-mais'))) throw new Error('carregar mais sumiu no filtro de favoritas');
+    filtroFavoritas.click();
+    await esperar(() => filtroFavoritas.getAttribute('aria-pressed') === 'false', 5000, 'desativar filtro de favoritas');
+
     const busca = document.getElementById('busca');
     busca.value = 'agulha pesquisável';
     busca.dispatchEvent(new Event('input', { bubbles: true }));
@@ -180,12 +211,12 @@ teste_lista = """<script>
     if (visivel(nova)) throw new Error('nova conversa ficou visível na busca');
 
     primeiroMais.click();
-    await esperar(() => document.querySelectorAll('#lista .conv').length >= 101);
+    await esperar(() => document.querySelectorAll('#lista .conv').length >= 101, 5000, 'segunda página da lista');
     const segundoMais = document.getElementById('card-mais');
     if (!visivel(segundoMais)) throw new Error('segundo carregar mais ficou oculto na busca');
 
     segundoMais.click();
-    await esperar(() => document.querySelector('#lista').textContent.includes('Agulha pesquisável'));
+    await esperar(() => document.querySelector('#lista').textContent.includes('Agulha pesquisável'), 5000, 'terceira página pesquisável');
     const alvo = [...document.querySelectorAll('#lista .conv')]
       .find(elemento => elemento.textContent.includes('Agulha pesquisável'));
     if (!visivel(alvo)) throw new Error('resultado da página 3 não ficou visível');
@@ -209,7 +240,7 @@ teste_lista = """<script>
     optin.dispatchEvent(new Event('change', { bubbles: true }));
     entrada.value = 'rascunho local controlado';
     entrada.dispatchEvent(new Event('input', { bubbles: true }));
-    await esperar(() => rascunhoLocalAtual() && rascunhoLocalAtual().texto === 'rascunho local controlado');
+    await esperar(() => rascunhoLocalAtual() && rascunhoLocalAtual().texto === 'rascunho local controlado', 5000, 'rascunho local');
     entrada.value = '';
     atualizarAvisoRascunho();
     const avisoRascunho = document.getElementById('aviso-rascunho');
@@ -217,8 +248,15 @@ teste_lista = """<script>
     document.getElementById('btn-restaurar-rascunho').click();
     if (entrada.value !== 'rascunho local controlado') throw new Error('restauração local não devolveu o texto exato');
 
+    const apagarFavoritos = document.getElementById('btn-apagar-favoritos');
+    apagarFavoritos.click();
+    await esperarOrganizacao(() => document.getElementById('resumo-favoritos-locais').textContent.includes('0 favoritos guardados'), 'limpar favoritos');
+    if (document.querySelector('#lista .conv-conversa[data-conversa-numero="1"] .conv-favorita').getAttribute('aria-pressed') !== 'false') {
+      throw new Error('limpeza explícita não removeu favorito local');
+    }
+
     const resultadoWorkspace = await testarWorkspace();
-    document.body.dataset.browserE2e = 'PASS: busca ativa manteve carregar mais; nova conversa oculta; alvo da página 3 visível; PWA protegeu rascunho; rascunho local opt-in restaurou sem rede' + resultadoWorkspace;
+    document.body.dataset.browserE2e = 'PASS: favoritos locais marcaram, filtraram e apagaram sem rede; busca ativa manteve carregar mais; nova conversa oculta; alvo da página 3 visível; PWA protegeu rascunho; rascunho local opt-in restaurou sem rede' + resultadoWorkspace;
   } catch (erro) {
     document.body.dataset.browserE2e = 'FAIL: ' + String((erro && erro.message) || erro).slice(0, 180);
   }
@@ -284,6 +322,7 @@ http.createServer((requisicao, resposta) => {
     ['chat-pwa.js', 'application/javascript; charset=utf-8'],
     ['chat-comandos-locais.js', 'application/javascript; charset=utf-8'],
     ['chat-filtro-chips.js', 'application/javascript; charset=utf-8'],
+    ['chat-organizacao-local.js', 'application/javascript; charset=utf-8'],
     ['chat-workspace.js', 'application/javascript; charset=utf-8'],
     ['dna.json', 'application/json; charset=utf-8']
   ]);

@@ -36,7 +36,12 @@
 <main id="principal" aria-label="Lista de conversas">
   <div class="faixa" id="faixa" role="status" aria-live="polite" aria-atomic="true"></div>
   <div class="sino oculto" id="sino" title="Avisos automáticos (toque para abrir)" role="button" tabindex="0" aria-expanded="false" aria-label="Abrir avisos automáticos"></div>
-  <div class="busca-wrap"><label class="visualmente-oculto" for="busca">Buscar conversas pelo título</label><input id="busca" type="search" placeholder="🔎 buscar conversas pelo título…" autocomplete="off"></div>
+  <div class="busca-wrap busca-organizacao">
+    <label class="visualmente-oculto" for="busca">Buscar conversas pelo título</label>
+    <input id="busca" type="search" placeholder="🔎 buscar conversas pelo título…" autocomplete="off">
+    <button type="button" id="btn-filtrar-favoritas" aria-pressed="false" disabled title="Mostrar somente favoritas guardadas neste navegador">☆ favoritas</button>
+  </div>
+  <div id="status-organizacao-conversas" class="visualmente-oculto" role="status" aria-live="polite" aria-atomic="true"></div>
   <div class="lista" id="lista" aria-live="polite" aria-busy="false"></div>
 </main>
 
@@ -109,6 +114,13 @@
     <button type="button" id="btn-imp-json" style="margin-top:8px;background:var(--painel);border:1px solid var(--borda);color:var(--texto);font-weight:600">⬆ Importar inícios de conversa (JSON)</button>
     <input type="file" id="arq-importar" accept="application/json,.json" class="oculto" aria-label="Escolher arquivo JSON para importar inícios de conversa">
     <div id="status-exportar" role="status" aria-live="polite" aria-atomic="true"></div>
+  </div>
+  <div class="cartao">
+    <h2>⭐ Favoritos de conversa neste aparelho</h2>
+    <p id="resumo-favoritos-locais">Carregando favoritos locais…</p>
+    <p>Marque a estrela na lista para guardar a preferência apenas neste navegador. A organização registra só o número da conversa — nunca título, mensagens ou token — e não altera o GitHub nem é sincronizada. O filtro alcança apenas conversas já carregadas; use “Carregar mais” para ampliar a lista.</p>
+    <button type="button" id="btn-apagar-favoritos" disabled style="background:var(--painel);border:1px solid #7a2a2a;color:#e0a9a9;font-weight:600">Apagar favoritos locais</button>
+    <div id="status-favoritos-locais" role="status" aria-live="polite" aria-atomic="true"></div>
   </div>
   <div class="cartao">
     <h2>🧹 Cópias offline neste aparelho</h2>
@@ -198,6 +210,7 @@ let conversa = null, intervalo = null, ultimoId = 0, ultimoQuando = '', falando 
 const $ = (id) => document.getElementById(id);
 const elLista = $('lista'), elMsgs = $('msgs'), elFaixa = $('faixa');
 let paginaLista = 1, listaAtual = [], maisListaDisponivel = false, carregandoMaisLista = false, revisaoLista = 0, criandoNovaConversa = false;
+let filtroFavoritasAtivo = false, listaRenderizada = false, listaOffline = false;
 let filaCacheLista = Promise.resolve();
 
 // Erros de rede/API são dados externos. A interface só mostra categorias fechadas,
@@ -379,6 +392,7 @@ const TAMANHO_PAGINA_COMENTARIOS = 100;
 <script src="chat-pwa.js"></script>
 <script src="chat-comandos-locais.js"></script>
 <script src="chat-filtro-chips.js"></script>
+<script src="chat-organizacao-local.js"></script>
 <script src="chat-workspace.js"></script>
 <script>
 function paginaFinalComentarios(total) {
@@ -601,6 +615,7 @@ function focoSeguro(id) {
 function mostrarConfig(mostrar, focar = false) {
   if (window.ReboclWorkspace) window.ReboclWorkspace.ocultarParaNavegacao();
   atualizarPainelRascunhos();
+  atualizarControlesOrganizacaoConversas();
   $('tela-config').classList.toggle('oculto', !mostrar);
   $('principal').classList.toggle('oculto', mostrar);
   $('tela-conv').classList.add('oculto');
@@ -641,13 +656,141 @@ function voltarLista() {
 function pararPolling() { if (intervalo) { clearInterval(intervalo); intervalo = null; } }
 
 /* ---------- lista ---------- */
+/* ---------- organização local de conversas ---------- */
+function organizacaoConversasLocal() {
+  return window.ReboclOrganizacaoConversas || null;
+}
+function estadoOrganizacaoConversas() {
+  const organizacao = organizacaoConversasLocal();
+  return organizacao ? organizacao.estado() : 'falhou';
+}
+function conversaEhFavorita(numero) {
+  const organizacao = organizacaoConversasLocal();
+  return !!(organizacao && estadoOrganizacaoConversas() === 'pronto' && organizacao.temFavorito(numero));
+}
+function textoErroOrganizacaoConversas(erro) {
+  if (erro && erro.codigo === 'limite-favoritos') return 'Você já guardou o limite de 100 favoritos neste navegador. Remova uma estrela antes de acrescentar outra.';
+  if (erro && erro.codigo === 'favorito-invalido') return 'Esta conversa não pôde ser organizada localmente. Nada no GitHub foi alterado.';
+  return 'Não foi possível usar os favoritos locais neste navegador agora. Nada no GitHub foi alterado.';
+}
+function atualizarControlesOrganizacaoConversas() {
+  const organizacao = organizacaoConversasLocal();
+  const estado = estadoOrganizacaoConversas();
+  const pronta = !!organizacao && estado === 'pronto';
+  const botaoFiltro = $('btn-filtrar-favoritas');
+  const botaoLimpar = $('btn-apagar-favoritos');
+  const resumo = $('resumo-favoritos-locais');
+  if (!pronta) filtroFavoritasAtivo = false;
+  if (botaoFiltro) {
+    botaoFiltro.disabled = !pronta;
+    botaoFiltro.setAttribute('aria-pressed', filtroFavoritasAtivo ? 'true' : 'false');
+    botaoFiltro.textContent = filtroFavoritasAtivo ? '★ favoritas' : '☆ favoritas';
+  }
+  if (botaoLimpar) botaoLimpar.disabled = !pronta;
+  if (resumo) {
+    if (estado === 'falhou') resumo.textContent = 'Favoritos locais indisponíveis neste navegador. Nenhuma conversa no GitHub foi alterada.';
+    else if (!pronta) resumo.textContent = 'Carregando favoritos locais…';
+    else {
+      const quantidade = organizacao.detalhe().quantidade;
+      resumo.textContent = quantidade + ' favorito' + (quantidade === 1 ? '' : 's') + ' guardado' + (quantidade === 1 ? '' : 's') + ' somente neste navegador.';
+    }
+  }
+}
+function refletirOrganizacaoNaLista() {
+  atualizarControlesOrganizacaoConversas();
+  if (listaRenderizada) renderListaAtual(listaOffline);
+}
+function iniciarOrganizacaoConversas() {
+  document.addEventListener('rebocl-organizacao-conversas-pronta', refletirOrganizacaoNaLista);
+  document.addEventListener('rebocl-organizacao-conversas-mudou', refletirOrganizacaoNaLista);
+  document.addEventListener('rebocl-organizacao-conversas-falhou', () => {
+    atualizarControlesOrganizacaoConversas();
+    const status = $('status-organizacao-conversas');
+    if (status) status.textContent = 'Favoritos locais indisponíveis neste navegador. Nada no GitHub foi alterado.';
+    if (listaRenderizada) renderListaAtual(listaOffline);
+  });
+  const organizacao = organizacaoConversasLocal();
+  if (!organizacao) {
+    atualizarControlesOrganizacaoConversas();
+    return;
+  }
+  organizacao.pronto().then(refletirOrganizacaoNaLista).catch(() => {
+    atualizarControlesOrganizacaoConversas();
+    const status = $('status-organizacao-conversas');
+    if (status) status.textContent = 'Favoritos locais indisponíveis neste navegador. Nada no GitHub foi alterado.';
+  });
+  atualizarControlesOrganizacaoConversas();
+}
+async function alternarFavoritoDaConversa(numero, botao) {
+  const organizacao = organizacaoConversasLocal();
+  const status = $('status-organizacao-conversas');
+  if (!organizacao || estadoOrganizacaoConversas() !== 'pronto') {
+    if (status) status.textContent = 'Favoritos locais ainda não estão disponíveis neste navegador.';
+    return;
+  }
+  if (botao) botao.disabled = true;
+  try {
+    const adicionado = await organizacao.alternarFavorito(numero);
+    if (status) status.textContent = adicionado
+      ? 'Favorito guardado somente neste navegador. Nada no GitHub foi alterado.'
+      : 'Favorito removido somente deste navegador. Nada no GitHub foi alterado.';
+  } catch (erro) {
+    if (status) status.textContent = textoErroOrganizacaoConversas(erro);
+    atualizarControlesOrganizacaoConversas();
+  } finally {
+    if (botao && botao.isConnected) botao.disabled = false;
+  }
+}
+async function limparFavoritosLocais() {
+  const organizacao = organizacaoConversasLocal();
+  const botao = $('btn-apagar-favoritos');
+  const status = $('status-favoritos-locais');
+  if (!organizacao || estadoOrganizacaoConversas() !== 'pronto') {
+    if (status) status.textContent = 'Favoritos locais ainda não estão disponíveis neste navegador.';
+    return;
+  }
+  if (!confirm('Apagar todos os favoritos salvos neste navegador? Isso não altera conversas no GitHub, token, cópias offline nem o Workspace.')) return;
+  if (botao) botao.disabled = true;
+  if (status) status.textContent = 'Apagando favoritos locais…';
+  try {
+    await organizacao.limparFavoritos();
+    if (status) status.textContent = 'Favoritos locais apagados deste navegador. Nada no GitHub foi alterado.';
+  } catch (erro) {
+    if (status) status.textContent = textoErroOrganizacaoConversas(erro);
+  } finally {
+    atualizarControlesOrganizacaoConversas();
+  }
+}
 function criarCartaoConversa(i) {
-  const div = document.createElement('div');
-  div.className = 'conv';
+  const numero = Number(i.number);
+  const titulo = String(i.title || 'sem título');
+  const div = document.createElement('article');
+  div.className = 'conv conv-conversa';
+  div.dataset.conversaNumero = String(numero);
+  div.dataset.tituloBusca = titulo.toLowerCase();
   const rotina = (i.labels || []).some((l) => l.name === 'rotina');
-  div.innerHTML = `<div class="titulo">${rotina ? '📋 ' : ''}${escapar(i.title)}</div>
-    <div class="meta"><span>💬 ${i.comments}</span><span>🕒 ${quando(i.updated_at)}</span></div>`;
-  ativarComoBotao(div, () => abrir(i.number, i.title), 'Abrir conversa: ' + String(i.title || 'sem título'));
+  const abrirConversa = document.createElement('button');
+  abrirConversa.type = 'button';
+  abrirConversa.className = 'conv-abrir';
+  abrirConversa.setAttribute('aria-label', 'Abrir conversa: ' + titulo.slice(0, 160));
+  abrirConversa.innerHTML = `<span class="titulo">${rotina ? '📋 ' : ''}${escapar(titulo)}</span><span class="meta"><span>💬 ${i.comments}</span><span>🕒 ${quando(i.updated_at)}</span></span>`;
+  abrirConversa.onclick = () => abrir(numero, titulo);
+  const favorita = conversaEhFavorita(numero);
+  const botaoFavorito = document.createElement('button');
+  botaoFavorito.type = 'button';
+  botaoFavorito.className = 'conv-favorita';
+  botaoFavorito.textContent = favorita ? '★' : '☆';
+  botaoFavorito.disabled = estadoOrganizacaoConversas() !== 'pronto';
+  botaoFavorito.setAttribute('aria-pressed', favorita ? 'true' : 'false');
+  botaoFavorito.setAttribute('aria-label', (favorita ? 'Remover dos favoritos: ' : 'Adicionar aos favoritos: ') + titulo.slice(0, 160));
+  botaoFavorito.title = favorita ? 'Remover dos favoritos neste navegador' : 'Adicionar aos favoritos neste navegador';
+  botaoFavorito.onclick = (evento) => {
+    evento.preventDefault();
+    evento.stopPropagation();
+    alternarFavoritoDaConversa(numero, botaoFavorito);
+  };
+  div.appendChild(abrirConversa);
+  div.appendChild(botaoFavorito);
   return div;
 }
 function criarCartaoNova() {
@@ -690,15 +833,35 @@ function salvarListaAtualEmCache() {
 function aplicarFiltroLista() {
   const busca = $('busca');
   const termo = busca ? busca.value.trim().toLowerCase() : '';
+  const somenteFavoritas = filtroFavoritasAtivo && estadoOrganizacaoConversas() === 'pronto';
+  const avisoAnterior = $('aviso-filtro-favoritas');
+  if (avisoAnterior) avisoAnterior.remove();
+  let visiveis = 0;
   document.querySelectorAll('#lista .conv').forEach((div) => {
-    if (div.id === 'card-nova') { div.style.display = termo ? 'none' : ''; return; }
-    // Durante a busca, ele continua acessível para ampliar explicitamente o conjunto pesquisado.
+    if (div.id === 'card-nova') { div.style.display = termo || somenteFavoritas ? 'none' : ''; return; }
+    // Durante a busca ou o filtro, ele continua acessível para ampliar explicitamente o conjunto carregado.
     if (div.id === 'card-mais') { div.style.display = ''; return; }
-    const t = (div.textContent || '').toLowerCase();
-    div.style.display = (!termo || t.indexOf(termo) !== -1) ? '' : 'none';
+    const titulo = div.dataset.tituloBusca || (div.textContent || '').toLowerCase();
+    const numero = Number(div.dataset.conversaNumero);
+    const correspondeBusca = !termo || titulo.indexOf(termo) !== -1;
+    const correspondeFavorita = !somenteFavoritas || conversaEhFavorita(numero);
+    const mostrar = correspondeBusca && correspondeFavorita;
+    div.style.display = mostrar ? '' : 'none';
+    if (mostrar) visiveis++;
   });
+  if (somenteFavoritas && visiveis === 0) {
+    const aviso = document.createElement('div');
+    aviso.id = 'aviso-filtro-favoritas';
+    aviso.className = 'vazio';
+    aviso.textContent = '⭐ Nenhuma favorita entre as conversas carregadas. Marque uma estrela ou carregue mais para ampliar a lista.';
+    const antes = $('card-mais') || $('card-nova');
+    if (antes) elLista.insertBefore(aviso, antes);
+    else elLista.appendChild(aviso);
+  }
 }
 function renderListaAtual(offline = false) {
+  listaRenderizada = true;
+  listaOffline = !!offline;
   elLista.innerHTML = '';
   if (!listaAtual.length && !offline) {
     elLista.innerHTML = '<div class="vazio"><span class="emoji">💬</span>nenhuma conversa ainda.<br>crie a primeira no botão abaixo.</div>';
@@ -715,6 +878,7 @@ function renderListaAtual(offline = false) {
 }
 async function carregarLista() {
   const revisao = ++revisaoLista;
+  listaRenderizada = false;
   elLista.innerHTML = '<div class="vazio"><span class="emoji">⏳</span>carregando conversas…</div>';
   paginaLista = 1;
   listaAtual = [];
@@ -2319,6 +2483,17 @@ function iniciarPelaTarefa(chave) {
   novaConversa(INICIOS_GUIA[chave]);
 }
 $('btn-limpar-copias').onclick = limparCopiasOffline;
+$('btn-filtrar-favoritas').onclick = () => {
+  if (estadoOrganizacaoConversas() !== 'pronto') return;
+  filtroFavoritasAtivo = !filtroFavoritasAtivo;
+  atualizarControlesOrganizacaoConversas();
+  const status = $('status-organizacao-conversas');
+  if (status) status.textContent = filtroFavoritasAtivo
+    ? 'Mostrando favoritas entre as conversas já carregadas neste navegador.'
+    : 'Filtro de favoritas desativado.';
+  if (listaRenderizada) aplicarFiltroLista();
+};
+$('btn-apagar-favoritos').onclick = limparFavoritosLocais;
 $('optin-rascunhos').onchange = alternarOptinRascunhos;
 $('btn-apagar-rascunhos').onclick = apagarTodosRascunhos;
 $('btn-restaurar-rascunho').onclick = restaurarRascunhoAtual;
@@ -3155,6 +3330,7 @@ if (_lightbox) {
 montarChips();
 if (typeof window.iniciarFiltroChips === 'function') window.iniciarFiltroChips();
 montarBusca();
+iniciarOrganizacaoConversas();
 montarSeletorModelo();
 if (MODO_LOCAL.ligado) {
   $('btn-local').classList.add('local-ligado');

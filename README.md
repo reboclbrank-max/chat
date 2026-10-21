@@ -9,7 +9,7 @@ Página de conversa com a **IA gratuita da Rebocl Brank**.
 
 ## O que ela faz
 
-- Lista as conversas abertas (issues do repositório privado) e **busca pelo título**.
+- Lista as conversas abertas (issues do repositório privado), **busca pelo título** e permite marcar favoritas somente neste navegador. O filtro de favoritas alcança apenas conversas já carregadas; ele não busca tudo nem altera o GitHub.
 - Cria conversa nova e envia mensagens.
 - Mostra as respostas do assistente automaticamente quando o trabalhador privado está disponível e avisa por notificação. Se o navegador confirmar que o run correspondente falhou antes de iniciar, tenta uma recuperação local de contingência; isso requer o navegador aberto e não é SLA.
 - Mostra **qual motor respondeu** (tag ao lado de "Assistente") e avisa quando a internet cai.
@@ -41,6 +41,7 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Configuração:** o controle **Voltar ao Chat** preserva alvo mínimo de toque sem mudar a navegação nem o token local.
 - **Rascunhos locais:** a opção de salvar rascunhos neste aparelho preserva alvo nativo mínimo sem alterar a preferência, seus dados ou o token.
 - **Workspace:** usa IndexedDB separado de token, rascunhos e cópias de conversa; tem limites locais e não é cofre de senhas, sincronização, armazenamento de binários ou backup garantido. Apagar cópias offline de conversas não o apaga; limpar dados do site pode apagar arquivos locais.
+- **Favoritos de conversa:** guardam apenas o número da Issue em um IndexedDB separado, limitado a 100, só neste navegador. Não guardam título/mensagem/token, não sincronizam nem alteram o GitHub. Apagar cópias offline não os remove; há uma ação confirmada própria em ⚙️. Limpar dados do site pode removê-los.
 - **Console:** o campo de tema para “pensar bem” preserva um nome acessível depois de a dica visual ser preenchida, e o botão de atualizar anuncia sua ação explicitamente; enviar continua sendo uma escolha pelo botão explícito.
 - **Enxame:** o canal público só pode sugerir motores. Veja candidatos com `!candidatos` e aprove cada um conscientemente com `!plantar <base> | <modelo> | <nome>`; bases e modelos passam por validação antes de entrar na frota.
 - **Dados do dono:** pings automáticos não levam memória/persona e resumos internos não são publicados no canal do enxame.
@@ -274,6 +275,13 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Sem falso verde ambiental:** com `REBOCL_EXIGIR_MULTIMODAL=1`, a rodada controlada passou **74/74** depois de preparar as dependências reais de IMAP, PDF e OCR. Em um ambiente Debian/Ubuntu limpo, a preparação local equivalente é `npm install --no-save --ignore-scripts imapflow@2.4.3 nodemailer@10.1.1` e `sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils tesseract-ocr tesseract-ocr-por chromium-headless-shell`. Isso não configura produção nem envia conteúdo do Chat.
 - **Navegador real, fixture local:** `tools/testes/navegador-lista-controlado.sh` passa pelas quatro rotas com API sintética em `127.0.0.1`, perfil e IndexedDB efêmeros, resolução externa bloqueada e token inerte. Ele agora carrega a casca local real, abre o Workspace, cria/versiona e recupera projeto/arquivo sintéticos; também verifica a grade desktop e mobile e descarta as capturas locais ao terminar.
 - **Limites da prova:** é evidência de interface e armazenamento controlados, não conversa, conta, PAT, arquivo do dono, rede produtiva, entrega, uso humano, satisfação, disponibilidade ou SLA. O descarte definitivo continua coberto pelo teste de integridade local; não foi substituído por simulação visual.
+
+## v12.46 — favoritos locais de conversa (21/10/2026)
+
+- **Organização sem compartilhar dados:** a estrela de cada conversa marca/desmarca um favorito somente neste navegador. O banco separado guarda só o número da Issue, com teto de 100; não guarda título, mensagem ou token, não chama rede, não sincroniza e não modifica o GitHub.
+- **Filtro honesto e acessível:** **☆ favoritas** mostra apenas estrelas entre as conversas já carregadas e mantém **Carregar mais** disponível; ele não varre a conta toda. Abrir e favoritar são botões nativos separados, com rótulo de leitor de tela e alvo de toque amplo.
+- **Controle e limite claros:** em ⚙️ é possível apagar todos os favoritos locais após confirmação. Essa ação não mexe em conversas no GitHub, token, cópias offline ou Workspace; apagar cópias offline também não remove favoritos. A PWA v69 chega somente pela atualização que a pessoa escolher.
+- **Cobertura controlada:** o contrato local 10/10 verifica limite, armazenamento mínimo, reabertura controlada, falha sem fallback, paridade e limpeza; o navegador headless usa somente API/lista sintéticas para marcar, filtrar e apagar, e a rodada multimodal passou 75/75 testes rápidos. Não é prova de conversa, conta, uso humano, sincronização, entrega ou SLA.
 
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO

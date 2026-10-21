@@ -32,12 +32,13 @@ ok('as quatro rotas referenciam a mesma folha e não duplicam bloco style', () =
 ok('o cabeçalho da conversa quebra ações sem corte em tela compacta', () => {
   assert.match(css, /@media \(max-width:700px\)\{#cabecalho-conv\{flex-wrap:wrap;align-content:flex-start;row-gap:6px\}#cabecalho-conv \.titulo\{flex:1 1 calc\(100% - 48px\);min-width:0\}\}/);
 });
-ok('o cache PWA v68 inclui a folha compartilhada local', () => {
+ok('o cache PWA v69 inclui a folha compartilhada local', () => {
   const sw = ler('sw.js');
-  assert.match(sw, /rebocl-chat-v68/);
+  assert.match(sw, /rebocl-chat-v69/);
   assert.match(sw, /'\.\/chat-estilos\.css'/);
   assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);
+  assert.match(sw, /'\.\/chat-organizacao-local\.js'/);
   assert.match(sw, /'\.\/chat-workspace\.js'/);
   assert.match(sw, /url\.origin !== self\.location\.origin/);
   assert.match(sw, /url\.search/);

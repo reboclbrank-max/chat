@@ -71,7 +71,7 @@ function runtime(src, resposta) {
   return { ctx, chamadas };
 }
 function extraiLista(src) {
-  const inicio = src.indexOf('function criarCartaoConversa(i) {');
+  const inicio = src.indexOf('/* ---------- organização local de conversas ---------- */');
   const fim = src.indexOf('\nasync function novaConversa(', inicio);
   assert(inicio >= 0 && fim > inicio, 'lógica da lista visual não encontrada');
   return src.slice(inicio, fim);
@@ -90,6 +90,9 @@ class ElementoFalso {
     this.onkeydown = null;
     this.tabIndex = -1;
     this.atributos = {};
+    this.dataset = {};
+    this.disabled = false;
+    this.isConnected = true;
     this._html = '';
   }
   set innerHTML(valor) { this._html = String(valor || ''); this.children = []; }
@@ -99,6 +102,13 @@ class ElementoFalso {
     return this.children.length ? this.children.map((filho) => filho.textContent).join(' ') : textoDeHtml(this._html);
   }
   appendChild(filho) { this.children.push(filho); return filho; }
+  insertBefore(filho, antes) {
+    const indice = this.children.indexOf(antes);
+    if (indice < 0) return this.appendChild(filho);
+    this.children.splice(indice, 0, filho);
+    return filho;
+  }
+  remove() { this.isConnected = false; }
   setAttribute(nome, valor) { this.atributos[nome] = String(valor); }
 }
 function runtimeLista(src, responder, cacheInicial = [], salvarCache = null) {
@@ -124,11 +134,17 @@ function runtimeLista(src, responder, cacheInicial = [], salvarCache = null) {
   };
   const chamadas = [];
   const gravacoes = [];
+  const organizacaoLocal = {
+    estado: () => 'pronto', detalhe: () => ({ quantidade: 0, limite: 100 }),
+    temFavorito: () => false, alternarFavorito: async () => false, limparFavoritos: async () => ({ quantidade: 0 })
+  };
   const ctx = {
     REPO: 'dono/repo', Date, Number, Math, Array, Set, String,
+    window: { ReboclOrganizacaoConversas: organizacaoLocal },
     document, $: obter, elLista: lista, elFaixa: faixa,
     escapar: (valor) => String(valor || ''),
     quando: (valor) => String(valor || ''),
+    mensagemErroSeguro: () => 'erro controlado',
     abrir: () => {}, novaConversa: () => {},
     cacheSalvarLista: (itens) => {
       const fotografia = Array.from(itens, (i) => i.number);
@@ -141,6 +157,7 @@ function runtimeLista(src, responder, cacheInicial = [], salvarCache = null) {
   vm.createContext(ctx);
   vm.runInContext(`
     let paginaLista = 1, listaAtual = [], maisListaDisponivel = false, carregandoMaisLista = false, revisaoLista = 0;
+    let filtroFavoritasAtivo = false, listaRenderizada = false, listaOffline = false;
     let filaCacheLista = Promise.resolve();
     ${extraiHelpers(src)}
     ${extraiLista(src)}
