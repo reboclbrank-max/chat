@@ -369,6 +369,26 @@
     if (elementos.exportarProjetoPortatil) elementos.exportarProjetoPortatil.disabled = indisponivel;
     if (elementos.restaurarProjetoPortatil) elementos.restaurarProjetoPortatil.disabled = estado.operacaoArquivoCompleto;
   }
+  function buscaGlobalAtiva() {
+    return !!(elementos && elementos.buscaGlobal && elementos.buscaGlobal.getAttribute('aria-pressed') === 'true');
+  }
+  function atualizarAjudaBuscaGlobal() {
+    if (!elementos || !elementos.buscaArquivos || !elementos.ajudaBusca) return;
+    const global = buscaGlobalAtiva();
+    elementos.buscaArquivos.placeholder = global ? 'Buscar em todos os projetos…' : 'Buscar nome ou conteúdo…';
+    elementos.buscaArquivos.setAttribute('aria-label', global ? 'Buscar arquivos ativos em todos os projetos locais' : 'Buscar arquivos no projeto atual');
+    elementos.ajudaBusca.textContent = global
+      ? 'A busca procura somente arquivos ativos em todos os projetos deste navegador; versões e Lixeira ficam fora.'
+      : 'A busca fica no projeto atual. Ative Todos os projetos para localizar arquivos ativos em outro projeto.';
+  }
+  function alternarBuscaGlobal() {
+    if (!elementos || estado.operacaoArquivoCompleto) return;
+    const global = !buscaGlobalAtiva();
+    elementos.buscaGlobal.setAttribute('aria-pressed', global ? 'true' : 'false');
+    atualizarAjudaBuscaGlobal();
+    renderArquivos();
+    definirStatus('', global ? 'Busca em todos os projetos ativada somente neste navegador.' : 'Busca limitada ao projeto atual somente neste navegador.');
+  }
   function renderProjetos() {
     if (!elementos) return;
     limpar(elementos.listaProjetos);
@@ -395,25 +415,35 @@
     if (!elementos) return;
     limpar(elementos.listaArquivos);
     const termo = busca(elementos.buscaArquivos.value);
-    const arquivos = ordenarArquivos(arquivosDoProjeto(estado.projetoAtivo)).filter((arquivo) => {
+    // O escopo global só entra quando há termo: sem ele a lista continua sendo
+    // a do projeto atual, em vez de transformar a abertura em um catálogo amplo.
+    const global = !!termo && buscaGlobalAtiva();
+    const projetosPorId = new Map(estado.projetos.map((projeto) => [projeto.id, projeto]));
+    const candidatos = global ? estado.arquivos.filter((arquivo) => projetosPorId.has(arquivo.projetoId)) : arquivosDoProjeto(estado.projetoAtivo);
+    const arquivos = ordenarArquivos(candidatos).filter((arquivo) => {
       if (!termo) return true;
       return busca(arquivo.nome).includes(termo) || busca(arquivo.conteudo).includes(termo);
     });
-    elementos.contadorArquivos.textContent = arquivos.length + (termo ? ' resultado(s)' : ' arquivo(s)');
+    elementos.contadorArquivos.textContent = arquivos.length + (termo ? ' resultado(s)' + (global ? ' em todos os projetos' : ' neste projeto') : ' arquivo(s)');
     if (!arquivos.length) {
       const vazio = document.createElement('p');
       vazio.className = 'workspace-vazio';
-      vazio.textContent = termo ? 'Nenhum arquivo local corresponde à busca.' : 'Ainda não há arquivo neste projeto.';
+      vazio.textContent = termo
+        ? (global ? 'Nenhum arquivo ativo em seus projetos locais corresponde à busca.' : 'Nenhum arquivo local deste projeto corresponde à busca.')
+        : 'Ainda não há arquivo neste projeto.';
       elementos.listaArquivos.appendChild(vazio);
     }
     arquivos.forEach((arquivo) => {
-      const item = botao('', 'workspace-item workspace-arquivo', 'Abrir arquivo: ' + arquivo.nome);
+      const projeto = projetosPorId.get(arquivo.projetoId);
+      const rotulo = global && projeto ? 'Abrir arquivo: ' + arquivo.nome + ' do projeto: ' + projeto.nome : 'Abrir arquivo: ' + arquivo.nome;
+      const item = botao('', 'workspace-item workspace-arquivo', rotulo);
       item.dataset.arquivoId = arquivo.id;
+      item.dataset.projetoId = arquivo.projetoId;
       item.setAttribute('aria-pressed', arquivo.id === estado.arquivoAtivo ? 'true' : 'false');
       const nome = document.createElement('strong');
       nome.textContent = arquivo.nome;
       const meta = document.createElement('span');
-      meta.textContent = formatarBytes(arquivo.bytes) + ' · ' + formatarData(arquivo.atualizadoEm);
+      meta.textContent = (global && projeto ? 'Projeto: ' + projeto.nome + ' · ' : '') + formatarBytes(arquivo.bytes) + ' · ' + formatarData(arquivo.atualizadoEm);
       item.append(nome, meta);
       item.onclick = () => selecionarArquivo(arquivo.id);
       elementos.listaArquivos.appendChild(item);
@@ -666,10 +696,15 @@
     } catch (e) { mostrarErro(e); }
   }
   async function selecionarArquivo(id) {
-    if (!id || id === estado.arquivoAtivo) return;
+    const proximo = estado.arquivos.find((arquivo) => arquivo.id === id) || null;
+    const projeto = proximo && estado.projetos.find((candidato) => candidato.id === proximo.projetoId);
+    if (!proximo || !projeto || (id === estado.arquivoAtivo && proximo.projetoId === estado.projetoAtivo)) return;
     try {
+      // Um resultado global troca projeto e arquivo juntos somente depois de
+      // preservar a edição atual; se o salvamento falhar, a seleção não muda.
       if (estado.alterado && !(await salvarArquivoAtual('troca'))) return;
-      estado.arquivoAtivo = id;
+      estado.projetoAtivo = proximo.projetoId;
+      estado.arquivoAtivo = proximo.id;
       estado.alterado = false;
       await guardarSelecao();
       renderTudo();
@@ -1599,7 +1634,8 @@
         </aside>
         <aside class="workspace-painel workspace-arquivos" aria-label="Arquivos locais">
           <div class="workspace-painel-cabecalho"><h3>Arquivos</h3><span id="workspace-contador-arquivos"></span></div>
-          <label class="visualmente-oculto" for="workspace-busca-arquivos">Buscar arquivos locais</label><input id="workspace-busca-arquivos" type="search" placeholder="Buscar nome ou conteúdo…" autocomplete="off">
+          <div class="workspace-busca"><label class="visualmente-oculto" for="workspace-busca-arquivos">Buscar arquivos no projeto atual</label><input id="workspace-busca-arquivos" type="search" placeholder="Buscar nome ou conteúdo…" autocomplete="off" aria-describedby="workspace-ajuda-busca"><button type="button" id="btn-workspace-busca-global" aria-pressed="false" aria-controls="workspace-lista-arquivos">Todos os projetos</button></div>
+          <p id="workspace-ajuda-busca" class="workspace-meta-pequena">A busca fica no projeto atual. Ative Todos os projetos para localizar arquivos ativos em outro projeto.</p>
           <div class="workspace-acoes-arquivos"><button type="button" id="btn-workspace-novo-arquivo">＋ Novo</button><button type="button" id="btn-workspace-importar">⇪ Importar</button></div>
           <div id="workspace-lista-arquivos" class="workspace-lista" role="group" aria-label="Lista de arquivos"></div>
           <button type="button" id="btn-workspace-exportar" class="workspace-secundario">⇩ Exportar Workspace ativo</button>
@@ -1630,7 +1666,7 @@
       nomeProjeto: raiz.querySelector('#workspace-nome-projeto'), renomearProjeto: raiz.querySelector('#btn-workspace-renomear-projeto'), apagarProjeto: raiz.querySelector('#btn-workspace-apagar-projeto'),
       exportarProjetoPortatil: raiz.querySelector('#btn-workspace-exportar-projeto'), restaurarProjetoPortatil: raiz.querySelector('#btn-workspace-importar-projeto'), projetoPortatil: raiz.querySelector('#workspace-projeto-portatil-importar'),
       contadorLixeira: raiz.querySelector('#workspace-contador-lixeira'), listaLixeira: raiz.querySelector('#workspace-lista-lixeira'), esvaziarLixeira: raiz.querySelector('#btn-workspace-esvaziar-lixeira'),
-      buscaArquivos: raiz.querySelector('#workspace-busca-arquivos'), contadorArquivos: raiz.querySelector('#workspace-contador-arquivos'), listaArquivos: raiz.querySelector('#workspace-lista-arquivos'),
+      buscaArquivos: raiz.querySelector('#workspace-busca-arquivos'), buscaGlobal: raiz.querySelector('#btn-workspace-busca-global'), ajudaBusca: raiz.querySelector('#workspace-ajuda-busca'), contadorArquivos: raiz.querySelector('#workspace-contador-arquivos'), listaArquivos: raiz.querySelector('#workspace-lista-arquivos'),
       nomeArquivo: raiz.querySelector('#workspace-nome-arquivo'), editor: raiz.querySelector('#workspace-editor'), salvar: raiz.querySelector('#btn-workspace-salvar'), apagarArquivo: raiz.querySelector('#btn-workspace-apagar-arquivo'),
       copiar: raiz.querySelector('#btn-workspace-copiar'), levarAoChat: raiz.querySelector('#btn-workspace-levar-chat'), revisoes: raiz.querySelector('#workspace-revisoes'), listaRevisoes: raiz.querySelector('#workspace-lista-revisoes'),
       tituloEditor: raiz.querySelector('#workspace-titulo-editor'), metaEditor: raiz.querySelector('#workspace-meta-editor'),
@@ -1669,7 +1705,9 @@
       evento.target.value = '';
       if (arquivo) importarArquivoCompleto(arquivo);
     };
+    atualizarAjudaBuscaGlobal();
     elementos.buscaArquivos.addEventListener('input', renderArquivos);
+    elementos.buscaGlobal.onclick = alternarBuscaGlobal;
     elementos.nomeArquivo.addEventListener('input', marcarAlterado);
     elementos.editor.addEventListener('input', marcarAlterado);
     elementos.salvar.onclick = () => salvarArquivoAtual('manual');

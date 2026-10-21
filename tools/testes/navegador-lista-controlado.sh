@@ -92,7 +92,7 @@ teste_lista = """<script>
   };
   const visivel = (elemento) => !!elemento && getComputedStyle(elemento).display !== 'none';
   const porTexto = (raiz, seletor, texto) => [...raiz.querySelectorAll(seletor)].find((item) => item.textContent.includes(texto));
-  const esperarWorkspace = async (predicado, rotulo, tentativas = 20) => {
+  const esperarWorkspace = async (predicado, rotulo, tentativas = 30) => {
     for (let tentativa = 0; tentativa < tentativas; tentativa++) {
       if (predicado()) return;
       // O Chromium agenda IndexedDB no relógio virtual. Um salto espaçado dá
@@ -199,6 +199,57 @@ teste_lista = """<script>
     await esperarWorkspace(() => document.getElementById('workspace-status').textContent.includes('Arquivo salvo localmente'), 'salvar arquivo para lixeira do arquivo completo');
     document.getElementById('btn-workspace-apagar-arquivo').click();
     await esperarWorkspace(() => porTexto(document, '#workspace-lista-lixeira .workspace-lixeira-item', nomeArquivoLixeira), 'arquivo recuperável antes do arquivo completo');
+
+    const nomeProjetoBuscaGlobal = 'Projeto de busca global controlada';
+    const nomeArquivoBuscaGlobal = 'referencia-global.md';
+    const conteudoBuscaGlobal = 'agulha global sintética';
+    novoProjeto.value = nomeProjetoBuscaGlobal;
+    document.getElementById('btn-workspace-criar-projeto').click();
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjetoBuscaGlobal), 'criar projeto para busca global');
+    document.getElementById('btn-workspace-novo-arquivo').click();
+    await esperarWorkspace(() => !nome.disabled && !editor.disabled, 'criar arquivo para busca global');
+    nome.value = nomeArquivoBuscaGlobal;
+    nome.dispatchEvent(new Event('input', { bubbles: true }));
+    editor.value = conteudoBuscaGlobal;
+    editor.dispatchEvent(new Event('input', { bubbles: true }));
+    document.getElementById('btn-workspace-salvar').click();
+    await esperarWorkspace(() => document.getElementById('workspace-status').textContent.includes('Arquivo salvo localmente'), 'salvar arquivo para busca global');
+    const edicaoPendenteAntesDaTroca = conteudoBuscaGlobal + ' com edição pendente';
+    editor.value = edicaoPendenteAntesDaTroca;
+    editor.dispatchEvent(new Event('input', { bubbles: true }));
+    await esperarWorkspace(() => document.getElementById('workspace-status').textContent.includes('Alterações pendentes'), 'registrar edição pendente antes da troca global');
+
+    const buscaArquivos = document.getElementById('workspace-busca-arquivos');
+    const buscaGlobal = document.getElementById('btn-workspace-busca-global');
+    const ajudaBuscaGlobal = document.getElementById('workspace-ajuda-busca');
+    if (!buscaArquivos || !buscaGlobal || !ajudaBuscaGlobal || buscaGlobal.getAttribute('aria-pressed') !== 'false') throw new Error('controles acessíveis da busca global do Workspace ausentes');
+    buscaArquivos.value = conteudoFinal;
+    buscaArquivos.dispatchEvent(new Event('input', { bubbles: true }));
+    await esperarWorkspace(() => document.getElementById('workspace-contador-arquivos').textContent.includes('0 resultado'), 'busca padrão limitada ao projeto atual');
+    if (porTexto(document, '#workspace-lista-arquivos .workspace-arquivo', nomeArquivo)) throw new Error('busca local mostrou arquivo de outro projeto antes da escolha explícita');
+    buscaGlobal.click();
+    await esperarWorkspace(() => buscaGlobal.getAttribute('aria-pressed') === 'true' && ajudaBuscaGlobal.textContent.includes('Lixeira ficam fora'), 'ativar busca global explícita');
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-arquivos .workspace-arquivo', nomeArquivo), 'encontrar arquivo em outro projeto');
+    const resultadoBuscaOrigem = porTexto(document, '#workspace-lista-arquivos .workspace-arquivo', nomeArquivo);
+    if (!resultadoBuscaOrigem.textContent.includes(nomeProjeto)) throw new Error('busca global não identificou o projeto de origem local');
+    resultadoBuscaOrigem.click();
+    await esperarWorkspace(() => document.getElementById('workspace-nome-projeto').value === nomeProjeto && editor.value === conteudoFinal, 'abrir resultado global no projeto de origem');
+
+    buscaArquivos.value = 'conteúdo sintético recuperável';
+    buscaArquivos.dispatchEvent(new Event('input', { bubbles: true }));
+    await esperarWorkspace(() => document.getElementById('workspace-contador-arquivos').textContent.includes('0 resultado'), 'manter Lixeira fora da busca global');
+    if (porTexto(document, '#workspace-lista-arquivos .workspace-arquivo', nomeArquivoLixeira)) throw new Error('busca global expôs item recuperável da Lixeira');
+    buscaArquivos.value = conteudoBuscaGlobal;
+    buscaArquivos.dispatchEvent(new Event('input', { bubbles: true }));
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-arquivos .workspace-arquivo', nomeArquivoBuscaGlobal), 'localizar projeto global pela consulta');
+    porTexto(document, '#workspace-lista-arquivos .workspace-arquivo', nomeArquivoBuscaGlobal).click();
+    await esperarWorkspace(() => document.getElementById('workspace-nome-projeto').value === nomeProjetoBuscaGlobal && editor.value === edicaoPendenteAntesDaTroca, 'abrir resultado no outro projeto sem perder edição pendente');
+    buscaGlobal.click();
+    await esperarWorkspace(() => buscaGlobal.getAttribute('aria-pressed') === 'false', 'desativar busca global explicitamente');
+    buscaArquivos.value = '';
+    buscaArquivos.dispatchEvent(new Event('input', { bubbles: true }));
+    porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjeto).click();
+    await esperarWorkspace(() => document.getElementById('workspace-nome-projeto').value === nomeProjeto && porTexto(document, '#workspace-lista-arquivos .workspace-arquivo', nomeArquivo), 'retornar ao projeto para transferências posteriores');
 
     const exportarProjetoPortatil = document.getElementById('btn-workspace-exportar-projeto');
     const importarProjetoPortatil = document.getElementById('btn-workspace-importar-projeto');
@@ -320,7 +371,7 @@ teste_lista = """<script>
     if (!document.getElementById('workspace-status').textContent.toLowerCase().includes('nada foi enviado')) {
       throw new Error('ciclo local não declarou a ausência de envio');
     }
-    return ' · Workspace criou, versionou, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture';
+    return ' · Workspace criou, versionou, buscou entre projetos sem expor Lixeira, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture';
   };
   try {
     await esperar(() => document.querySelectorAll('#lista .conv').length >= 52, 5000, 'lista inicial');
@@ -622,7 +673,7 @@ if rota != 'limpar.html':
 else:
     assert 'Cache limpo.' in conteudo, f'{rota}: aviso de limpeza não está no DOM final'
 if rota == 'index.html':
-    assert 'Workspace criou, versionou, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture' in texto, f'{rota}: ciclo Workspace não foi concluído'
+    assert 'Workspace criou, versionou, buscou entre projetos sem expor Lixeira, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture' in texto, f'{rota}: ciclo Workspace não foi concluído'
 print('✔ navegador controlado · padrão · ' + rota + ' · ' + texto)
 PY
 done

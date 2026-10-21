@@ -87,6 +87,21 @@ testa('Projeto portátil é separado do arquivo completo e adiciona histórico l
   assert.doesNotMatch(importar, /substituirArquivoCompleto|\.clear\(/);
 });
 
+testa('Busca global do Workspace é explícita, local e abre o resultado no projeto correspondente', () => {
+  assert.match(workspace, /function buscaGlobalAtiva\(\)/);
+  assert.match(workspace, /function alternarBuscaGlobal\(\)/);
+  assert.match(workspace, /id=\"btn-workspace-busca-global\"[^>]*aria-pressed=\"false\"/);
+  assert.match(workspace, /id=\"workspace-ajuda-busca\"/);
+  const render = entre(workspace, 'function renderArquivos()', '\n  function atualizarControlesEditor');
+  assert.match(render, /const global = !!termo && buscaGlobalAtiva\(\)/);
+  assert.match(render, /const candidatos = global \? estado\.arquivos\.filter\(\(arquivo\) => projetosPorId\.has\(arquivo\.projetoId\)\) : arquivosDoProjeto\(estado\.projetoAtivo\)/);
+  assert.match(render, /Projeto: ' \+ projeto\.nome/);
+  const selecionar = entre(workspace, 'async function selecionarArquivo(id)', '\n  function agendarSalvarAutomatico');
+  assert.match(selecionar, /estado\.projetoAtivo = proximo\.projetoId/);
+  assert.match(selecionar, /estado\.arquivoAtivo = proximo\.id/);
+  assert.doesNotMatch(render + selecionar, /\b(fetch|api\s*\(|localStorage|sessionStorage)\b/);
+});
+
 testa('trecho só vai ao compositor por escolha explícita e não é enviado automaticamente', () => {
   const bloco = entre(workspace, 'async function levarSelecaoAoChat()', '\n\n  function telaVisivel()');
   const token = bloco.indexOf('pareceTokenDeAcesso(trecho)');
@@ -132,7 +147,7 @@ testa('as quatro rotas expõem o mesmo acesso e carregam uma só cópia do Works
 });
 
 testa('casca PWA, workflow, corredor e porta de continuidade observam o ativo', () => {
-  assert.match(sw, /rebocl-chat-v75/);
+  assert.match(sw, /rebocl-chat-v76/);
   assert.match(sw, /'\.\/chat-workspace\.js'/);
   assert.match(workflow, /'chat-workspace\.js'/);
   assert.match(workflow, /chat-workspace\.js tools\/testes\/\*\.js/);
@@ -142,7 +157,7 @@ testa('casca PWA, workflow, corredor e porta de continuidade observam o ativo', 
   assert.match(corredor, /'workspace-integridade-local\.js'/);
   assert.match(retrato, /Workspace interno local-first/);
   assert.match(retrato, /rebocl-workspace-local-v1/);
-  assert.match(retrato, /rebocl-chat-v75/);
+  assert.match(retrato, /rebocl-chat-v76/);
 });
 
 testa('porta de continuidade exige retrato quando o ativo local muda', () => {

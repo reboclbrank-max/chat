@@ -94,6 +94,16 @@ testa('etiquetas de motor mantêm contraste no tema claro sem alterar o escuro',
   assert.match(estilos, /body\.claro \.tag-local\{color:#245c32;border-color:#245c32\}/);
 });
 
+testa('busca global do Workspace declara escopo, estado e ajuda acessíveis', () => {
+  const workspace = fonte('chat-workspace.js');
+  assert.match(workspace, /<label class="visualmente-oculto" for="workspace-busca-arquivos">Buscar arquivos no projeto atual<\/label>/);
+  assert.match(workspace, /id="workspace-busca-arquivos"[^>]*aria-describedby="workspace-ajuda-busca"/);
+  assert.match(workspace, /id="btn-workspace-busca-global" aria-pressed="false" aria-controls="workspace-lista-arquivos"/);
+  assert.match(workspace, /id="workspace-ajuda-busca" class="workspace-meta-pequena"/);
+  assert.match(workspace, /setAttribute\('aria-label', global \? 'Buscar arquivos ativos em todos os projetos locais' : 'Buscar arquivos no projeto atual'\)/);
+  assert.match(estilos, /button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible/);
+});
+
 testa('console dá nome persistente ao tema pensado sem alterar sua ação', () => {
   const consoleHtml = fonte('console.html');
   assert.match(consoleHtml, /<input id="pensar-entrada" aria-label="Tema para pensar com dois motores e juiz" placeholder="🧠 pensar bem sobre… \(2 motores \+ juiz\)">/);
