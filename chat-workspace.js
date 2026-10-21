@@ -27,6 +27,15 @@
     arquivos: 500,
     revisoes: 4000
   });
+  // Projeto portátil é aditivo e preserva versões/lixeira do projeto escolhido,
+  // sem confundir-se com a recuperação destrutiva do Workspace inteiro.
+  const FORMATO_PROJETO_PORTATIL = 'rebocl-workspace-projeto';
+  const VERSAO_PROJETO_PORTATIL = 1;
+  const LIMITES_PROJETO_PORTATIL = Object.freeze({
+    bytes: 8 * 1024 * 1024,
+    arquivos: 500,
+    revisoes: 4000
+  });
 
   const estado = {
     banco: null,
@@ -137,6 +146,9 @@
       'arquivo-completo-invalido': 'O arquivo completo do Workspace está inválido. Nada foi substituído.',
       'arquivo-completo-grande': 'O arquivo completo passa do limite local de 12 MB e não foi aberto.',
       'arquivo-completo-excesso': 'O arquivo completo excede os limites locais de registros recuperáveis.',
+      'projeto-portatil-invalido': 'O arquivo portátil do projeto está inválido. Nada foi importado.',
+      'projeto-portatil-grande': 'O arquivo portátil do projeto passa do limite local de 8 MB e não foi aberto.',
+      'projeto-portatil-excesso': 'O arquivo portátil do projeto excede os limites locais de registros recuperáveis.',
       'sem-reversao-arquivo-completo': 'Não há uma restauração completa temporária para desfazer nesta página.',
       'projeto-ausente': 'O projeto local de origem não está disponível. O arquivo continua na lixeira.',
       'importacao-grande': 'O arquivo de importação passa do limite local permitido.',
@@ -351,6 +363,12 @@
     return b;
   }
 
+  function atualizarControlesProjetoPortatil() {
+    if (!elementos) return;
+    const indisponivel = !projetoAtivo() || estado.operacaoArquivoCompleto;
+    if (elementos.exportarProjetoPortatil) elementos.exportarProjetoPortatil.disabled = indisponivel;
+    if (elementos.restaurarProjetoPortatil) elementos.restaurarProjetoPortatil.disabled = estado.operacaoArquivoCompleto;
+  }
   function renderProjetos() {
     if (!elementos) return;
     limpar(elementos.listaProjetos);
@@ -371,6 +389,7 @@
     elementos.nomeProjeto.value = projeto ? projeto.nome : '';
     elementos.renomearProjeto.disabled = !projeto || estado.operacaoArquivoCompleto;
     elementos.apagarProjeto.disabled = !projeto || estado.operacaoArquivoCompleto;
+    atualizarControlesProjetoPortatil();
   }
   function renderArquivos() {
     if (!elementos) return;
@@ -1078,7 +1097,10 @@
         delete controle.dataset.workspaceArquivoCompletoAntes;
       }
     });
-    if (!ocupada) atualizarControleReversaoArquivoCompleto();
+    if (!ocupada) {
+      atualizarControleReversaoArquivoCompleto();
+      atualizarControlesProjetoPortatil();
+    }
   }
   function resumoArquivoCompleto(backup) {
     return backup.projetos.length + ' projeto(s), ' + backup.arquivos.length + ' arquivo(s) e ' + backup.revisoes.length + ' versão(ões)';
@@ -1153,6 +1175,190 @@
       await iniciarDados();
       renderTudo();
       definirStatus('ok', 'Última restauração completa desfeita neste navegador. O ponto temporário foi consumido e nada foi enviado pelo Chat.');
+    } catch (e) { mostrarErro(e); }
+    finally { bloquearOperacaoArquivoCompleto(false); }
+  }
+
+  function validarProjetoPortatil(dados, tamanho) {
+    try {
+      const chavesRaiz = ['formato', 'versao', 'exportadoEm', 'projeto', 'arquivos', 'revisoes'];
+      const chavesProjeto = ['id', 'nome', 'criadoEm', 'atualizadoEm'];
+      const chavesArquivo = ['id', 'projetoId', 'nome', 'conteudo', 'bytes', 'versao', 'criadoEm', 'atualizadoEm', 'lixeiraEm', 'lixeiraRaiz', 'lixeiraProjetoId'];
+      const chavesRevisao = ['id', 'arquivoId', 'conteudo', 'bytes', 'quando', 'versao'];
+      if (!Number.isSafeInteger(tamanho) || tamanho < 0) throw erro('projeto-portatil-invalido');
+      if (tamanho > LIMITES_PROJETO_PORTATIL.bytes) throw erro('projeto-portatil-grande');
+      if (!chavesExatas(dados, chavesRaiz) || dados.formato !== FORMATO_PROJETO_PORTATIL || dados.versao !== VERSAO_PROJETO_PORTATIL) throw erro('projeto-portatil-invalido');
+      const exportadoEm = dataEstrita(dados.exportadoEm);
+      if (!chavesExatas(dados.projeto, chavesProjeto) || !Array.isArray(dados.arquivos) || !Array.isArray(dados.revisoes)) throw erro('projeto-portatil-invalido');
+      if (dados.arquivos.length > LIMITES_PROJETO_PORTATIL.arquivos || dados.revisoes.length > LIMITES_PROJETO_PORTATIL.revisoes) throw erro('projeto-portatil-excesso');
+      const projeto = {
+        id: idEstrito(dados.projeto.id),
+        nome: textoEstrito(dados.projeto.nome, 50),
+        criadoEm: dataEstrita(dados.projeto.criadoEm),
+        atualizadoEm: dataEstrita(dados.projeto.atualizadoEm)
+      };
+      if (nomeSeguro(projeto.nome, 50, '') !== projeto.nome) throw erro('projeto-portatil-invalido');
+      const idsArquivos = new Set();
+      const nomesAtivos = new Set();
+      let arquivosAtivos = 0;
+      const arquivos = dados.arquivos.map((arquivo) => {
+        if (!chavesExatas(arquivo, chavesArquivo)) throw erro('projeto-portatil-invalido');
+        const id = idEstrito(arquivo.id);
+        const projetoId = idEstrito(arquivo.projetoId);
+        const nome = textoEstrito(arquivo.nome, 80);
+        const conteudo = arquivo.conteudo;
+        if (projetoId !== projeto.id || idsArquivos.has(id) || typeof conteudo !== 'string' || nomeArquivoSeguro(nome) !== nome) throw erro('projeto-portatil-invalido');
+        const tamanhoConteudo = bytes(conteudo);
+        if (!Number.isSafeInteger(arquivo.bytes) || arquivo.bytes !== tamanhoConteudo || tamanhoConteudo > LIMITES.arquivoBytes) throw erro('projeto-portatil-invalido');
+        const marca = normalizarMarcaLixeiraArquivoCompleto(arquivo, 'arquivo', id, projeto.id);
+        if (marca.lixeiraEm && marca.lixeiraRaiz !== 'arquivo') throw erro('projeto-portatil-invalido');
+        if (!marca.lixeiraEm) {
+          arquivosAtivos++;
+          const chaveNome = busca(nome);
+          if (nomesAtivos.has(chaveNome)) throw erro('projeto-portatil-invalido');
+          nomesAtivos.add(chaveNome);
+        }
+        idsArquivos.add(id);
+        return Object.assign({ id, projetoId, nome, conteudo, bytes: tamanhoConteudo, versao: inteiroEstrito(arquivo.versao), criadoEm: dataEstrita(arquivo.criadoEm), atualizadoEm: dataEstrita(arquivo.atualizadoEm) }, marca);
+      });
+      if (arquivosAtivos > LIMITES.arquivos) throw erro('projeto-portatil-excesso');
+      const porArquivo = new Map(arquivos.map((arquivo) => [arquivo.id, arquivo]));
+      const idsRevisoes = new Set();
+      const revisoesPorArquivo = new Map();
+      const versoesPorArquivo = new Map();
+      const revisoes = dados.revisoes.map((revisao) => {
+        if (!chavesExatas(revisao, chavesRevisao)) throw erro('projeto-portatil-invalido');
+        const id = idEstrito(revisao.id);
+        const arquivoId = idEstrito(revisao.arquivoId);
+        const arquivo = porArquivo.get(arquivoId);
+        const conteudo = revisao.conteudo;
+        if (!arquivo || idsRevisoes.has(id) || typeof conteudo !== 'string') throw erro('projeto-portatil-invalido');
+        const tamanhoConteudo = bytes(conteudo);
+        if (!Number.isSafeInteger(revisao.bytes) || revisao.bytes !== tamanhoConteudo || tamanhoConteudo > LIMITES.arquivoBytes) throw erro('projeto-portatil-invalido');
+        const versao = inteiroEstrito(revisao.versao);
+        const versoes = versoesPorArquivo.get(arquivoId) || new Set();
+        if (versao >= arquivo.versao || versoes.has(versao)) throw erro('projeto-portatil-invalido');
+        versoes.add(versao);
+        versoesPorArquivo.set(arquivoId, versoes);
+        const totalArquivo = (revisoesPorArquivo.get(arquivoId) || 0) + 1;
+        if (totalArquivo > LIMITES.revisoesPorArquivo) throw erro('projeto-portatil-excesso');
+        revisoesPorArquivo.set(arquivoId, totalArquivo);
+        idsRevisoes.add(id);
+        return { id, arquivoId, conteudo, bytes: tamanhoConteudo, quando: dataEstrita(revisao.quando), versao };
+      });
+      const total = arquivos.reduce((soma, arquivo) => soma + arquivo.bytes, 0) + revisoes.reduce((soma, revisao) => soma + revisao.bytes, 0);
+      if (total > LIMITES.totalBytes) throw erro('workspace-cheio');
+      return { formato: FORMATO_PROJETO_PORTATIL, versao: VERSAO_PROJETO_PORTATIL, exportadoEm, projeto, arquivos, revisoes };
+    } catch (causa) {
+      if (causa && ['projeto-portatil-invalido', 'projeto-portatil-grande', 'projeto-portatil-excesso', 'workspace-cheio'].includes(causa.codigoWorkspace)) throw causa;
+      throw erro('projeto-portatil-invalido');
+    }
+  }
+  async function montarProjetoPortatil() {
+    const projeto = projetoAtivo();
+    if (!projeto) throw erro('sem-arquivo');
+    const [todosArquivos, todasRevisoes] = await Promise.all([lerTodos(LOJAS.arquivos), lerTodos(LOJAS.revisoes)]);
+    const arquivosDoProjetoPortatil = todosArquivos.filter((arquivo) => arquivo && arquivo.projetoId === projeto.id);
+    const idsArquivos = new Set(arquivosDoProjetoPortatil.map((arquivo) => texto(arquivo.id)));
+    const dados = {
+      formato: FORMATO_PROJETO_PORTATIL,
+      versao: VERSAO_PROJETO_PORTATIL,
+      exportadoEm: agora(),
+      projeto: { id: texto(projeto.id), nome: texto(projeto.nome), criadoEm: texto(projeto.criadoEm), atualizadoEm: texto(projeto.atualizadoEm) },
+      arquivos: arquivosDoProjetoPortatil.sort((a, b) => texto(a.id).localeCompare(texto(b.id))).map((arquivo) => Object.assign({
+        id: texto(arquivo.id), projetoId: texto(arquivo.projetoId), nome: texto(arquivo.nome), conteudo: texto(arquivo.conteudo), bytes: bytes(arquivo.conteudo), versao: Number(arquivo.versao), criadoEm: texto(arquivo.criadoEm), atualizadoEm: texto(arquivo.atualizadoEm)
+      }, marcaLixeiraParaArquivoCompleto(arquivo))),
+      revisoes: todasRevisoes.filter((revisao) => revisao && idsArquivos.has(texto(revisao.arquivoId))).sort((a, b) => texto(a.id).localeCompare(texto(b.id))).map((revisao) => ({
+        id: texto(revisao.id), arquivoId: texto(revisao.arquivoId), conteudo: texto(revisao.conteudo), bytes: bytes(revisao.conteudo), quando: texto(revisao.quando), versao: Number(revisao.versao)
+      }))
+    };
+    const textoArquivo = JSON.stringify(dados);
+    const valido = validarProjetoPortatil(dados, bytes(textoArquivo));
+    const serializado = JSON.stringify(valido);
+    if (bytes(serializado) > LIMITES_PROJETO_PORTATIL.bytes) throw erro('projeto-portatil-grande');
+    return { dados: valido, texto: serializado };
+  }
+  function resumoProjetoPortatil(backup) {
+    const ativos = backup.arquivos.filter((arquivo) => !arquivo.lixeiraEm).length;
+    const lixeira = backup.arquivos.length - ativos;
+    return '“' + backup.projeto.nome + '” com ' + ativos + ' arquivo(s) ativo(s), ' + lixeira + ' na lixeira e ' + backup.revisoes.length + ' versão(ões)';
+  }
+  function validarCapacidadeProjetoPortatil(backup) {
+    const ativos = backup.arquivos.filter((arquivo) => !arquivo.lixeiraEm).length;
+    const bytesConteudo = backup.arquivos.reduce((soma, arquivo) => soma + arquivo.bytes, 0) + backup.revisoes.reduce((soma, revisao) => soma + revisao.bytes, 0);
+    if (estado.projetos.length + 1 > LIMITES.projetos) throw erro('limite-projetos');
+    if (estado.arquivos.length + ativos > LIMITES.arquivos) throw erro('limite-arquivos');
+    if (estado.bytesOcupados + bytesConteudo > LIMITES.totalBytes) throw erro('workspace-cheio');
+  }
+  function prepararImportacaoProjetoPortatil(backup) {
+    validarCapacidadeProjetoPortatil(backup);
+    const existentes = new Set(estado.projetos.map((projeto) => busca(projeto.nome)));
+    const quando = agora();
+    const projeto = { id: idNovo('projeto'), nome: nomeDisponivel(backup.projeto.nome, existentes), criadoEm: backup.projeto.criadoEm, atualizadoEm: quando };
+    const mapaArquivos = new Map();
+    const arquivos = backup.arquivos.map((arquivo) => {
+      const id = idNovo('arquivo');
+      mapaArquivos.set(arquivo.id, id);
+      const novo = { id, projetoId: projeto.id, nome: arquivo.nome, conteudo: arquivo.conteudo, bytes: arquivo.bytes, versao: arquivo.versao, criadoEm: arquivo.criadoEm, atualizadoEm: arquivo.atualizadoEm };
+      if (arquivo.lixeiraEm) Object.assign(novo, { lixeiraEm: arquivo.lixeiraEm, lixeiraRaiz: 'arquivo', lixeiraProjetoId: projeto.id });
+      return novo;
+    });
+    const revisoes = backup.revisoes.map((revisao) => ({ id: idNovo('rev'), arquivoId: mapaArquivos.get(revisao.arquivoId), conteudo: revisao.conteudo, bytes: revisao.bytes, quando: revisao.quando, versao: revisao.versao }));
+    return { projeto, arquivos, revisoes };
+  }
+  function gravarProjetoPortatil(plano) {
+    return abrirBanco().then((banco) => new Promise((resolve, reject) => {
+      const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos, LOJAS.revisoes], 'readwrite');
+      tx.objectStore(LOJAS.projetos).put(plano.projeto);
+      plano.arquivos.forEach((arquivo) => tx.objectStore(LOJAS.arquivos).put(arquivo));
+      plano.revisoes.forEach((revisao) => tx.objectStore(LOJAS.revisoes).put(revisao));
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
+      tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
+    }));
+  }
+  async function exportarProjetoPortatil() {
+    if (estado.operacaoArquivoCompleto) return;
+    bloquearOperacaoArquivoCompleto(true);
+    try {
+      if (estado.alterado && !(await salvarArquivoAtual('automatico'))) return;
+      definirStatus('', 'Preparando o projeto portátil somente neste navegador…');
+      const arquivo = await montarProjetoPortatil();
+      baixar(arquivo.texto, 'workspace-projeto-rebocl-' + new Date().toISOString().slice(0, 10) + '.json', 'application/json');
+      definirStatus('ok', 'Projeto portátil ' + resumoProjetoPortatil(arquivo.dados) + ' gerado neste aparelho. Ele não foi enviado pelo Chat.');
+    } catch (e) { mostrarErro(e); }
+    finally { bloquearOperacaoArquivoCompleto(false); }
+  }
+  async function importarProjetoPortatil(file) {
+    if (estado.operacaoArquivoCompleto) return;
+    bloquearOperacaoArquivoCompleto(true);
+    try {
+      if (estado.alterado && !(await salvarArquivoAtual('automatico'))) return;
+      const tamanho = Number(file && file.size);
+      if (!file || typeof file.text !== 'function' || !Number.isFinite(tamanho) || tamanho < 0) throw erro('projeto-portatil-invalido');
+      if (tamanho > LIMITES_PROJETO_PORTATIL.bytes) throw erro('projeto-portatil-grande');
+      definirStatus('', 'Lendo e conferindo o projeto portátil neste navegador…');
+      const conteudo = await file.text();
+      if (bytes(conteudo) > LIMITES_PROJETO_PORTATIL.bytes) throw erro('projeto-portatil-grande');
+      const backup = validarProjetoPortatil(JSON.parse(conteudo), bytes(conteudo));
+      validarCapacidadeProjetoPortatil(backup);
+      const resumo = resumoProjetoPortatil(backup);
+      if (!confirm('Adicionar o projeto portátil ' + resumo + '? Ele criará outro projeto local com arquivos, versões e lixeira; nada atual será substituído ou enviado.')) {
+        definirStatus('', 'Importação do projeto portátil cancelada. Nada foi alterado.');
+        return;
+      }
+      const plano = prepararImportacaoProjetoPortatil(backup);
+      definirStatus('', 'Adicionando o projeto portátil somente neste navegador…');
+      await gravarProjetoPortatil(plano);
+      estado.projetos.push(plano.projeto);
+      estado.arquivos.push(...plano.arquivos.filter((arquivo) => !estaNaLixeira(arquivo)));
+      estado.projetoAtivo = plano.projeto.id;
+      estado.arquivoAtivo = plano.arquivos.find((arquivo) => !estaNaLixeira(arquivo))?.id || '';
+      estado.alterado = false;
+      await atualizarOcupacao();
+      await guardarSelecao();
+      renderTudo();
+      definirStatus('ok', 'Projeto portátil adicionado: ' + resumoProjetoPortatil(backup) + '. Nada foi enviado pelo Chat.');
     } catch (e) { mostrarErro(e); }
     finally { bloquearOperacaoArquivoCompleto(false); }
   }
@@ -1378,6 +1584,12 @@
           <label class="workspace-rotulo" for="workspace-nome-projeto">Projeto atual</label>
           <div class="workspace-linha"><input id="workspace-nome-projeto" maxlength="50" autocomplete="off"><button type="button" id="btn-workspace-renomear-projeto">Renomear</button></div>
           <button type="button" id="btn-workspace-apagar-projeto" class="workspace-perigo">Mover projeto para lixeira</button>
+          <details class="workspace-arquivo-completo workspace-projeto-portatil">
+            <summary>Projeto portátil e histórico</summary>
+            <p>Baixe somente o projeto atual com arquivos, versões locais e itens dele na lixeira. Ao importar, outro projeto será adicionado aqui; nada atual será substituído ou enviado.</p>
+            <div class="workspace-arquivo-completo-acoes"><button type="button" id="btn-workspace-exportar-projeto" disabled>⇩ Baixar projeto portátil</button><button type="button" id="btn-workspace-importar-projeto" disabled>↥ Adicionar projeto portátil</button></div>
+          </details>
+          <input id="workspace-projeto-portatil-importar" type="file" accept="application/json,.json" class="oculto" aria-label="Escolher projeto portátil JSON para adicionar ao Workspace">
           <details class="workspace-lixeira">
             <summary>Lixeira local <span id="workspace-contador-lixeira"></span></summary>
             <p class="workspace-meta-pequena">Itens recuperáveis continuam ocupando espaço local até serem excluídos definitivamente.</p>
@@ -1416,6 +1628,7 @@
       raiz, botaoAbrir, resumo: raiz.querySelector('#workspace-resumo'), status: raiz.querySelector('#workspace-status'),
       novoProjeto: raiz.querySelector('#workspace-novo-projeto'), listaProjetos: raiz.querySelector('#workspace-lista-projetos'),
       nomeProjeto: raiz.querySelector('#workspace-nome-projeto'), renomearProjeto: raiz.querySelector('#btn-workspace-renomear-projeto'), apagarProjeto: raiz.querySelector('#btn-workspace-apagar-projeto'),
+      exportarProjetoPortatil: raiz.querySelector('#btn-workspace-exportar-projeto'), restaurarProjetoPortatil: raiz.querySelector('#btn-workspace-importar-projeto'), projetoPortatil: raiz.querySelector('#workspace-projeto-portatil-importar'),
       contadorLixeira: raiz.querySelector('#workspace-contador-lixeira'), listaLixeira: raiz.querySelector('#workspace-lista-lixeira'), esvaziarLixeira: raiz.querySelector('#btn-workspace-esvaziar-lixeira'),
       buscaArquivos: raiz.querySelector('#workspace-busca-arquivos'), contadorArquivos: raiz.querySelector('#workspace-contador-arquivos'), listaArquivos: raiz.querySelector('#workspace-lista-arquivos'),
       nomeArquivo: raiz.querySelector('#workspace-nome-arquivo'), editor: raiz.querySelector('#workspace-editor'), salvar: raiz.querySelector('#btn-workspace-salvar'), apagarArquivo: raiz.querySelector('#btn-workspace-apagar-arquivo'),
@@ -1431,6 +1644,13 @@
     elementos.novoProjeto.addEventListener('keydown', (evento) => { if (evento.key === 'Enter') { evento.preventDefault(); criarProjeto(); } });
     elementos.renomearProjeto.onclick = renomearProjeto;
     elementos.apagarProjeto.onclick = apagarProjeto;
+    elementos.exportarProjetoPortatil.onclick = exportarProjetoPortatil;
+    elementos.restaurarProjetoPortatil.onclick = () => elementos.projetoPortatil.click();
+    elementos.projetoPortatil.onchange = (evento) => {
+      const arquivo = evento.target.files && evento.target.files[0];
+      evento.target.value = '';
+      if (arquivo) importarProjetoPortatil(arquivo);
+    };
     elementos.esvaziarLixeira.onclick = esvaziarLixeira;
     raiz.querySelector('#btn-workspace-novo-arquivo').onclick = () => criarArquivo('novo-arquivo.md', '');
     raiz.querySelector('#btn-workspace-importar').onclick = () => elementos.importar.click();
@@ -1473,6 +1693,12 @@
       versao: VERSAO_ARQUIVO_COMPLETO,
       limites: Object.freeze(Object.assign({}, LIMITES_ARQUIVO_COMPLETO)),
       validar: validarArquivoCompleto
+    }),
+    projetoPortatil: Object.freeze({
+      formato: FORMATO_PROJETO_PORTATIL,
+      versao: VERSAO_PROJETO_PORTATIL,
+      limites: Object.freeze(Object.assign({}, LIMITES_PROJETO_PORTATIL)),
+      validar: validarProjetoPortatil
     })
   });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', montarInterface, { once: true });

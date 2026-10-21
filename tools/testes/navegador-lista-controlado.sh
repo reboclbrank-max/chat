@@ -200,15 +200,67 @@ teste_lista = """<script>
     document.getElementById('btn-workspace-apagar-arquivo').click();
     await esperarWorkspace(() => porTexto(document, '#workspace-lista-lixeira .workspace-lixeira-item', nomeArquivoLixeira), 'arquivo recuperável antes do arquivo completo');
 
+    const exportarProjetoPortatil = document.getElementById('btn-workspace-exportar-projeto');
+    const importarProjetoPortatil = document.getElementById('btn-workspace-importar-projeto');
+    const entradaProjetoPortatil = document.getElementById('workspace-projeto-portatil-importar');
+    if (!exportarProjetoPortatil || !importarProjetoPortatil || !entradaProjetoPortatil) throw new Error('controles do projeto portátil do Workspace ausentes');
+    await esperarWorkspace(() => !exportarProjetoPortatil.disabled && !importarProjetoPortatil.disabled && !entradaProjetoPortatil.disabled, 'controles do projeto portátil prontos');
+    const blobsAntesProjetoPortatil = window.__blobsBackupsLocais.length;
+    exportarProjetoPortatil.click();
+    await esperarWorkspace(() => window.__blobsBackupsLocais.length === blobsAntesProjetoPortatil + 1, 'exportar projeto portátil');
+    const projetoPortatilExportado = JSON.parse(await window.__blobsBackupsLocais[window.__blobsBackupsLocais.length - 1].text());
+    if (projetoPortatilExportado.formato !== 'rebocl-workspace-projeto' || projetoPortatilExportado.versao !== 1 || projetoPortatilExportado.projeto.nome !== nomeProjeto || !projetoPortatilExportado.arquivos.some(arquivo => arquivo.nome === nomeArquivo) || !projetoPortatilExportado.arquivos.some(arquivo => arquivo.nome === nomeArquivoLixeira && arquivo.lixeiraRaiz === 'arquivo') || !projetoPortatilExportado.revisoes.length) {
+      throw new Error('projeto portátil não preservou projeto, arquivo, versão e lixeira sintéticos');
+    }
+
+    const projetosAntesProjetoPortatil = document.querySelectorAll('#workspace-lista-projetos .workspace-projeto').length;
+    const projetoPortatilInvalido = JSON.parse(JSON.stringify(projetoPortatilExportado));
+    projetoPortatilInvalido.arquivos[0].projetoId = 'projeto-estranho';
+    const transferenciaProjetoInvalida = new DataTransfer();
+    transferenciaProjetoInvalida.items.add(new File([JSON.stringify(projetoPortatilInvalido)], 'projeto-portatil-invalido.json', { type: 'application/json' }));
+    entradaProjetoPortatil.files = transferenciaProjetoInvalida.files;
+    entradaProjetoPortatil.dispatchEvent(new Event('change', { bubbles: true }));
+    await esperarWorkspace(() => document.getElementById('workspace-status').textContent.includes('está inválido'), 'rejeitar projeto portátil inválido antes da escrita');
+    await esperarWorkspace(() => !exportarProjetoPortatil.disabled && !importarProjetoPortatil.disabled && !entradaProjetoPortatil.disabled, 'liberar controles após projeto portátil inválido');
+    if (document.querySelectorAll('#workspace-lista-projetos .workspace-projeto').length !== projetosAntesProjetoPortatil || !porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjeto)) {
+      throw new Error('projeto portátil inválido alterou a fixture local');
+    }
+
+    const confirmarProjetoAnterior = window.confirm;
+    window.confirm = () => false;
+    const transferenciaProjetoCancelada = new DataTransfer();
+    transferenciaProjetoCancelada.items.add(new File([JSON.stringify(projetoPortatilExportado)], 'projeto-portatil-cancelado.json', { type: 'application/json' }));
+    entradaProjetoPortatil.files = transferenciaProjetoCancelada.files;
+    entradaProjetoPortatil.dispatchEvent(new Event('change', { bubbles: true }));
+    await esperarWorkspace(() => document.getElementById('workspace-status').textContent.includes('cancelada'), 'cancelar adição do projeto portátil');
+    await esperarWorkspace(() => !exportarProjetoPortatil.disabled && !importarProjetoPortatil.disabled && !entradaProjetoPortatil.disabled, 'liberar controles após cancelamento portátil');
+    if (document.querySelectorAll('#workspace-lista-projetos .workspace-projeto').length !== projetosAntesProjetoPortatil) throw new Error('cancelamento do projeto portátil alterou a fixture local');
+    window.confirm = confirmarProjetoAnterior;
+
+    const transferenciaProjetoFinal = new DataTransfer();
+    transferenciaProjetoFinal.items.add(new File([JSON.stringify(projetoPortatilExportado)], 'projeto-portatil-fixture.json', { type: 'application/json' }));
+    entradaProjetoPortatil.files = transferenciaProjetoFinal.files;
+    entradaProjetoPortatil.dispatchEvent(new Event('change', { bubbles: true }));
+    await esperarWorkspace(() => document.querySelectorAll('#workspace-lista-projetos .workspace-projeto').length === projetosAntesProjetoPortatil + 1 && document.getElementById('workspace-status').textContent.includes('Projeto portátil adicionado'), 'adicionar projeto portátil');
+    const projetosPortateis = [...document.querySelectorAll('#workspace-lista-projetos .workspace-projeto')].filter(item => item.textContent.includes(nomeProjeto));
+    if (projetosPortateis.length < 2 || new Set(projetosPortateis.map(item => item.textContent)).size !== projetosPortateis.length) {
+      throw new Error('projeto portátil não preservou a origem e não resolveu o nome local');
+    }
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-arquivos .workspace-arquivo', nomeArquivo), 'arquivo ativo no projeto portátil adicionado');
+    await esperarWorkspace(() => [...document.querySelectorAll('#workspace-lista-lixeira .workspace-lixeira-item')].filter(item => item.textContent.includes(nomeArquivoLixeira)).length >= 2, 'lixeira no projeto portátil adicionado');
+    porTexto(document, '#workspace-lista-arquivos .workspace-arquivo', nomeArquivo).click();
+    await esperarWorkspace(() => editor.value === conteudoFinal && document.querySelectorAll('#workspace-lista-revisoes .workspace-revisao').length >= 1, 'versão no projeto portátil adicionado');
+
     const exportarCompleto = document.getElementById('btn-workspace-exportar-completo');
     const restaurarCompleto = document.getElementById('btn-workspace-restaurar-completo');
     const desfazerCompleto = document.getElementById('btn-workspace-desfazer-restauracao');
     const entradaCompleta = document.getElementById('workspace-arquivo-completo-importar');
     if (!exportarCompleto || !restaurarCompleto || !desfazerCompleto || !entradaCompleta) throw new Error('controles do arquivo completo do Workspace ausentes');
     if (!desfazerCompleto.disabled) throw new Error('desfazer completo começou ativo sem uma restauração controlada');
+    const blobsAntesArquivoCompleto = window.__blobsBackupsLocais.length;
     exportarCompleto.click();
-    await esperarWorkspace(() => window.__blobsBackupsLocais.length === 3, 'exportar arquivo completo do Workspace');
-    const arquivoCompletoExportado = JSON.parse(await window.__blobsBackupsLocais[2].text());
+    await esperarWorkspace(() => window.__blobsBackupsLocais.length === blobsAntesArquivoCompleto + 1, 'exportar arquivo completo do Workspace');
+    const arquivoCompletoExportado = JSON.parse(await window.__blobsBackupsLocais[window.__blobsBackupsLocais.length - 1].text());
     if (arquivoCompletoExportado.formato !== 'rebocl-workspace-arquivo-completo' || arquivoCompletoExportado.versao !== 1 || !arquivoCompletoExportado.arquivos.some(arquivo => arquivo.nome === nomeArquivo) || !arquivoCompletoExportado.arquivos.some(arquivo => arquivo.nome === nomeArquivoLixeira && arquivo.lixeiraRaiz === 'arquivo') || !arquivoCompletoExportado.revisoes.length) {
       throw new Error('arquivo completo não preservou arquivo, versão e lixeira sintéticos');
     }
@@ -268,7 +320,7 @@ teste_lista = """<script>
     if (!document.getElementById('workspace-status').textContent.toLowerCase().includes('nada foi enviado')) {
       throw new Error('ciclo local não declarou a ausência de envio');
     }
-    return ' · Workspace criou, versionou, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture';
+    return ' · Workspace criou, versionou, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture';
   };
   try {
     await esperar(() => document.querySelectorAll('#lista .conv').length >= 52, 5000, 'lista inicial');
@@ -570,7 +622,7 @@ if rota != 'limpar.html':
 else:
     assert 'Cache limpo.' in conteudo, f'{rota}: aviso de limpeza não está no DOM final'
 if rota == 'index.html':
-    assert 'Workspace criou, versionou, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture' in texto, f'{rota}: ciclo Workspace não foi concluído'
+    assert 'Workspace criou, versionou, transferiu projeto portátil com nome isolado, recuperou e rejeitou/cancelou/arquivou/restaurou/desfez arquivo, versão e lixeira somente na fixture' in texto, f'{rota}: ciclo Workspace não foi concluído'
 print('✔ navegador controlado · padrão · ' + rota + ' · ' + texto)
 PY
 done
