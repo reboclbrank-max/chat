@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Exercita, em Chromium headless real, a lista paginada da interface.
-# A cópia da página e a API existem apenas em /tmp: não usa PAT, conversa,
-# conta, rede externa ou perfil persistente.
+# Exercita, em Chromium headless real, a lista, PWA, rascunho e Workspace local.
+# A cópia da página, API, perfil, IndexedDB e capturas existem apenas em /tmp:
+# não usa PAT, conversa, conta, rede externa ou perfil persistente.
 set -euo pipefail
 
 raiz="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -46,8 +46,15 @@ limpar() {
 trap limpar EXIT
 
 rotas=(index.html direto.html ligar.html limpar.html)
+# A cópia precisa incluir a casca local que as quatro páginas realmente carregam.
+# Sem isso, um erro em um módulo compartilhado poderia interromper a página antes
+# da fixture testar a lista e daria uma falsa prova de navegador.
+ativos_locais=(chat-estilos.css chat-pwa.js chat-comandos-locais.js chat-filtro-chips.js chat-workspace.js dna.json)
 for rota in "${rotas[@]}"; do
   cp "$rota" "$trabalho/$rota"
+done
+for ativo in "${ativos_locais[@]}"; do
+  cp "$ativo" "$trabalho/$ativo"
 done
 python3 - "$trabalho" "${rotas[@]}" <<'PY'
 from pathlib import Path
@@ -59,6 +66,8 @@ preparo = """<script>
 /* Fixture controlada: valor inerte, sem PAT, conversa ou API real. */
 localStorage.setItem('assistente_rebocl_token', 'controle-local-sem-segredo');
 try {
+  // A fixture confirma os diálogos do ciclo local; não há dado real, download ou rede externa.
+  window.confirm = () => true;
   if ('serviceWorker' in navigator) {
     const esperaControlada = { postMessage: (dado) => { document.documentElement.dataset.pwaUpdateRequest = String((dado || {}).tipo || ''); } };
     navigator.serviceWorker.register = () => Promise.resolve({ waiting: esperaControlada, installing: null, addEventListener: () => {}, update: () => {} });
@@ -76,6 +85,88 @@ teste_lista = """<script>
     throw new Error('tempo esgotado na fixture');
   };
   const visivel = (elemento) => !!elemento && getComputedStyle(elemento).display !== 'none';
+  const porTexto = (raiz, seletor, texto) => [...raiz.querySelectorAll(seletor)].find((item) => item.textContent.includes(texto));
+  const esperarWorkspace = async (predicado, rotulo, tentativas = 20) => {
+    for (let tentativa = 0; tentativa < tentativas; tentativa++) {
+      if (predicado()) return;
+      // O Chromium agenda IndexedDB no relógio virtual. Um salto espaçado dá
+      // à transação real a vez de concluir, sem inundá-la com polling de 20 ms.
+      await new Promise(resolve => setTimeout(resolve, 60000));
+    }
+    if (predicado()) return;
+    throw new Error('Workspace não concluiu a transação local controlada: ' + (rotulo || 'etapa sem nome'));
+  };
+  const testarWorkspace = async () => {
+    if (!location.pathname.endsWith('/index.html')) return '';
+    if (![...document.styleSheets].some((folha) => String(folha.href || '').endsWith('/chat-estilos.css'))) {
+      throw new Error('casca CSS local do Workspace não carregou');
+    }
+    const abrir = document.getElementById('btn-workspace');
+    abrir.click();
+    await esperar(() => visivel(document.getElementById('tela-workspace')));
+    const parametros = new URL(location.href).searchParams;
+    const viewport = parametros.get('viewport');
+    if (viewport) {
+      const trilhos = getComputedStyle(document.querySelector('.workspace-corpo')).gridTemplateColumns.trim().split(/\\s+/).filter(Boolean);
+      if (viewport === 'desktop' && (matchMedia('(max-width: 900px)').matches || trilhos.length !== 3)) {
+        throw new Error('Workspace não preservou o layout de três painéis no viewport desktop');
+      }
+      if (viewport === 'mobile' && (!matchMedia('(max-width: 900px)').matches || trilhos.length !== 1)) {
+        throw new Error('Workspace não empilhou os painéis no viewport estreito');
+      }
+    }
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-projetos .workspace-projeto', 'Meu workspace'), 'projeto padrão');
+    if (parametros.get('somente-layout') === '1') return ' · Workspace abriu com a casca local e o layout ' + viewport + ' controlado';
+
+    const nomeProjeto = 'Projeto de fixture controlada';
+    const nomeArquivo = 'nota-fixture.md';
+    const conteudoInicial = 'conteúdo sintético da primeira versão';
+    const conteudoFinal = 'conteúdo sintético da segunda versão';
+    const novoProjeto = document.getElementById('workspace-novo-projeto');
+    novoProjeto.value = nomeProjeto;
+    document.getElementById('btn-workspace-criar-projeto').click();
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjeto), 'criar projeto');
+
+    document.getElementById('btn-workspace-novo-arquivo').click();
+    const nome = document.getElementById('workspace-nome-arquivo');
+    const editor = document.getElementById('workspace-editor');
+    await esperarWorkspace(() => !nome.disabled && !editor.disabled, 'criar arquivo');
+    nome.value = nomeArquivo;
+    nome.dispatchEvent(new Event('input', { bubbles: true }));
+    editor.value = conteudoInicial;
+    editor.dispatchEvent(new Event('input', { bubbles: true }));
+    document.getElementById('btn-workspace-salvar').click();
+    await esperarWorkspace(() => document.getElementById('workspace-status').textContent.includes('Arquivo salvo localmente'), 'primeiro salvamento');
+
+    editor.value = conteudoFinal;
+    editor.dispatchEvent(new Event('input', { bubbles: true }));
+    document.getElementById('btn-workspace-salvar').click();
+    await esperarWorkspace(() => document.querySelectorAll('#workspace-lista-revisoes .workspace-revisao').length >= 1, 'criar revisão');
+    await esperarWorkspace(() => document.getElementById('workspace-status').textContent.includes('Arquivo salvo localmente'), 'segundo salvamento');
+
+    document.getElementById('btn-workspace-apagar-arquivo').click();
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-lixeira .workspace-lixeira-item', nomeArquivo), 'arquivo na lixeira');
+    let linha = porTexto(document, '#workspace-lista-lixeira .workspace-lixeira-item', nomeArquivo);
+    const restaurarArquivo = porTexto(linha, 'button', 'Restaurar');
+    if (!restaurarArquivo) throw new Error('restauração de arquivo não apareceu na lixeira');
+    restaurarArquivo.click();
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-arquivos .workspace-arquivo', nomeArquivo), 'restaurar arquivo');
+    await esperarWorkspace(() => editor.value === conteudoFinal, 'conteúdo restaurado');
+
+    document.getElementById('btn-workspace-apagar-projeto').click();
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-lixeira .workspace-lixeira-item', nomeProjeto), 'projeto na lixeira');
+    linha = porTexto(document, '#workspace-lista-lixeira .workspace-lixeira-item', nomeProjeto);
+    const restaurarProjeto = porTexto(linha, 'button', 'Restaurar');
+    if (!restaurarProjeto) throw new Error('restauração de projeto não apareceu na lixeira');
+    restaurarProjeto.click();
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjeto), 'restaurar projeto');
+    await esperarWorkspace(() => porTexto(document, '#workspace-lista-arquivos .workspace-arquivo', nomeArquivo), 'arquivo após restaurar projeto');
+
+    if (!document.getElementById('workspace-status').textContent.toLowerCase().includes('nada foi enviado')) {
+      throw new Error('ciclo local não declarou a ausência de envio');
+    }
+    return ' · Workspace criou, versionou e recuperou arquivo/projeto somente na fixture';
+  };
   try {
     await esperar(() => document.querySelectorAll('#lista .conv').length >= 52);
     const busca = document.getElementById('busca');
@@ -126,7 +217,8 @@ teste_lista = """<script>
     document.getElementById('btn-restaurar-rascunho').click();
     if (entrada.value !== 'rascunho local controlado') throw new Error('restauração local não devolveu o texto exato');
 
-    document.body.dataset.browserE2e = 'PASS: busca ativa manteve carregar mais; nova conversa oculta; alvo da página 3 visível; PWA protegeu rascunho; rascunho local opt-in restaurou sem rede';
+    const resultadoWorkspace = await testarWorkspace();
+    document.body.dataset.browserE2e = 'PASS: busca ativa manteve carregar mais; nova conversa oculta; alvo da página 3 visível; PWA protegeu rascunho; rascunho local opt-in restaurou sem rede' + resultadoWorkspace;
   } catch (erro) {
     document.body.dataset.browserE2e = 'FAIL: ' + String((erro && erro.message) || erro).slice(0, 180);
   }
@@ -186,8 +278,18 @@ http.createServer((requisicao, resposta) => {
     return responderJson(resposta, pagina(Number(url.searchParams.get('page') || 1)));
   }
   const arquivo = url.pathname === '/' ? 'index.html' : url.pathname.slice(1);
-  if (new Set(['index.html', 'direto.html', 'ligar.html', 'limpar.html']).has(arquivo)) {
-    resposta.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+  const html = new Set(['index.html', 'direto.html', 'ligar.html', 'limpar.html']);
+  const estaticos = new Map([
+    ['chat-estilos.css', 'text/css; charset=utf-8'],
+    ['chat-pwa.js', 'application/javascript; charset=utf-8'],
+    ['chat-comandos-locais.js', 'application/javascript; charset=utf-8'],
+    ['chat-filtro-chips.js', 'application/javascript; charset=utf-8'],
+    ['chat-workspace.js', 'application/javascript; charset=utf-8'],
+    ['dna.json', 'application/json; charset=utf-8']
+  ]);
+  if (html.has(arquivo) || estaticos.has(arquivo)) {
+    const tipo = html.has(arquivo) ? 'text/html; charset=utf-8' : estaticos.get(arquivo);
+    resposta.writeHead(200, { 'content-type': tipo, 'cache-control': 'no-store' });
     return fs.createReadStream(path.join(raiz, arquivo)).pipe(resposta);
   }
   resposta.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
@@ -203,10 +305,14 @@ for _ in $(seq 1 30); do
 done
 grep -q 'fixture pronta' "$trabalho/servidor.log" || { cat "$trabalho/servidor.log" >&2; exit 1; }
 
+# Primeiro roda a regressão completa das quatro rotas no perfil padrão do navegador.
+# O ciclo de armazenamento do Workspace usa IndexedDB real; o orçamento é virtual,
+# e o timeout externo mantém a execução física curta e limitada.
 for rota in "${rotas[@]}"; do
   nome="${rota%.html}"
   dom="$trabalho/dom-$nome.html"
-  orcamento=12000
+  erro="$trabalho/navegador-$nome.err"
+  orcamento=25000000
   url="http://127.0.0.1:$porta/$rota"
   if [ "$rota" = 'limpar.html' ]; then
     # A rota intencionalmente redireciona após 3 s; observamos sua guarda antes disso.
@@ -217,8 +323,13 @@ for rota in "${rotas[@]}"; do
     --headless --no-sandbox --disable-gpu --no-first-run --disable-background-networking --disable-sync \
     --host-resolver-rules='MAP * 0.0.0.0, EXCLUDE 127.0.0.1' \
     --user-data-dir="$trabalho/perfil-$nome" --virtual-time-budget="$orcamento" --dump-dom \
-    "$url" > "$dom" 2>"$trabalho/navegador-$nome.err"
+    "$url" > "$dom" 2>"$erro"
 
+  if grep -Eq 'INFO:CONSOLE.*(Uncaught|Error)' "$erro"; then
+    echo "ERRO: exceção JavaScript na fixture $rota" >&2
+    grep 'INFO:CONSOLE' "$erro" >&2 || true
+    exit 1
+  fi
   python3 - "$dom" "$rota" <<'PY'
 from pathlib import Path
 import html
@@ -235,6 +346,58 @@ if rota != 'limpar.html':
     assert 'Agulha pesquisável' in conteudo, f'{rota}: cartão alvo não está no DOM final'
 else:
     assert 'Cache limpo.' in conteudo, f'{rota}: aviso de limpeza não está no DOM final'
-print('✔ navegador controlado · ' + rota + ' · ' + texto)
+if rota == 'index.html':
+    assert 'Workspace criou, versionou e recuperou arquivo/projeto somente na fixture' in texto, f'{rota}: ciclo Workspace não foi concluído'
+print('✔ navegador controlado · padrão · ' + rota + ' · ' + texto)
+PY
+done
+
+# Uma segunda passagem limitada abre a casca do Workspace em desktop e celular,
+# mede as colunas já aplicadas pelo navegador e captura somente a fixture sintética.
+for viewport in desktop mobile; do
+  janela='1280,900'
+  if [ "$viewport" = 'mobile' ]; then janela='390,844'; fi
+  dom="$trabalho/dom-layout-$viewport.html"
+  captura="$trabalho/captura-layout-$viewport.png"
+  erro="$trabalho/navegador-layout-$viewport.err"
+  url="http://127.0.0.1:$porta/index.html?viewport=$viewport&somente-layout=1"
+  timeout 60 "$navegador" \
+    --headless --no-sandbox --disable-gpu --no-first-run --disable-background-networking --disable-sync \
+    --host-resolver-rules='MAP * 0.0.0.0, EXCLUDE 127.0.0.1' \
+    --window-size="$janela" --force-device-scale-factor=1 --hide-scrollbars \
+    --user-data-dir="$trabalho/perfil-layout-$viewport" --virtual-time-budget=25000000 --dump-dom --screenshot="$captura" \
+    "$url" > "$dom" 2>"$erro"
+
+  if grep -Eq 'INFO:CONSOLE.*(Uncaught|Error)' "$erro"; then
+    echo "ERRO: exceção JavaScript na fixture de layout $viewport" >&2
+    grep 'INFO:CONSOLE' "$erro" >&2 || true
+    exit 1
+  fi
+  python3 - "$captura" "$viewport" <<'PY'
+from pathlib import Path
+import struct
+import sys
+
+png = Path(sys.argv[1]).read_bytes()
+assert png[:8] == b'\x89PNG\r\n\x1a\n', 'captura PNG ausente ou inválida'
+largura, altura = struct.unpack('>II', png[16:24])
+assert largura >= 300 and altura >= 300, f'captura pequena demais: {largura}x{altura}'
+if sys.argv[2] == 'mobile':
+    assert largura <= 500, f'viewport estreito não foi aplicado: {largura}px'
+PY
+  python3 - "$dom" "$viewport" <<'PY'
+from pathlib import Path
+import html
+import re
+import sys
+
+conteudo = Path(sys.argv[1]).read_text()
+viewport = sys.argv[2]
+resultado = re.search(r'data-browser-e2e="([^"]*)"', conteudo)
+assert resultado, f'layout {viewport}: resultado do navegador ausente'
+texto = html.unescape(resultado.group(1))
+assert texto.startswith('PASS:'), f'layout {viewport}: {texto}'
+assert ('Workspace abriu com a casca local e o layout ' + viewport + ' controlado') in texto, f'layout {viewport}: Workspace não foi validado'
+print('✔ navegador controlado · layout ' + viewport + ' · ' + texto)
 PY
 done

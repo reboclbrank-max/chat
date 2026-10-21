@@ -50,6 +50,27 @@ ok('fixture valida atualização PWA sem ativar worker ou perder rascunho', () =
   assert.match(texto, /REBOCL_ATIVAR_ATUALIZACAO/);
 });
 
+ok('copia e serve somente a casca local realmente carregada', () => {
+  assert.match(texto, /ativos_locais=\(chat-estilos\.css chat-pwa\.js chat-comandos-locais\.js chat-filtro-chips\.js chat-workspace\.js dna\.json\)/);
+  assert.match(texto, /const estaticos = new Map\(/);
+  assert.match(texto, /\['chat-workspace\.js', 'application\/javascript; charset=utf-8'\]/);
+  assert.match(texto, /\['chat-estilos\.css', 'text\/css; charset=utf-8'\]/);
+  assert.match(texto, /fixture sem recurso externo/);
+});
+
+ok('exercita recuperação do Workspace e prova o layout em navegador real', () => {
+  assert.match(texto, /const esperarWorkspace/);
+  assert.match(texto, /Projeto de fixture controlada/);
+  assert.match(texto, /Workspace criou, versionou e recuperou arquivo\/projeto somente na fixture/);
+  assert.match(texto, /somente-layout=1/);
+  assert.match(texto, /Workspace não preservou o layout de três painéis no viewport desktop/);
+  assert.match(texto, /Workspace não empilhou os painéis no viewport estreito/);
+  assert.match(texto, /--window-size="\$janela"/);
+  assert.match(texto, /--screenshot="\$captura"/);
+  assert.match(texto, /captura PNG ausente ou inválida/);
+  assert.match(texto, /INFO:CONSOLE\.\*\(Uncaught\|Error\)/);
+});
+
 ok('não contém padrão usual de segredo', () => {
   assert(!/github_pat_[A-Za-z0-9_]{20,}|gh[pousr]_[A-Za-z0-9]{20,}/.test(texto));
   assert(!/-----BEGIN [A-Z ]*PRIVATE KEY-----/.test(texto));
