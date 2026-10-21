@@ -49,6 +49,10 @@ testa('Workspace limita dados locais e mantém exportação/importação validad
   assert.match(workspace, /Number\(tamanho\) > LIMITES\.importacaoBytes/);
   assert.match(workspace, /EXTENSOES_TEXTO/);
   assert.match(workspace, /URL\.createObjectURL\(new Blob/);
+  assert.match(workspace, /function medirOcupacao\(arquivos, revisoes\)/);
+  assert.match(workspace, /async function planejarArmazenamentoParaSalvar\(anterior, atualizado\)/);
+  assert.match(workspace, /estado\.bytesOcupados \+ total > LIMITES\.totalBytes/);
+  assert.match(workspace, /incluindo histórico e itens recuperáveis/);
 });
 
 testa('trecho só vai ao compositor por escolha explícita e não é enviado automaticamente', () => {
@@ -96,16 +100,17 @@ testa('as quatro rotas expõem o mesmo acesso e carregam uma só cópia do Works
 });
 
 testa('casca PWA, workflow, corredor e porta de continuidade observam o ativo', () => {
-  assert.match(sw, /rebocl-chat-v67/);
+  assert.match(sw, /rebocl-chat-v68/);
   assert.match(sw, /'\.\/chat-workspace\.js'/);
   assert.match(workflow, /'chat-workspace\.js'/);
   assert.match(workflow, /chat-workspace\.js tools\/testes\/\*\.js/);
   assert.match(workflow, /chat-workspace\.js chat-comandos-locais\.js|chat-comandos-locais\.js chat-filtro-chips\.js chat-workspace\.js/);
   assert.match(continuidade, /chat-workspace\\\.js/);
   assert.match(corredor, /'workspace-local\.js'/);
+  assert.match(corredor, /'workspace-integridade-local\.js'/);
   assert.match(retrato, /Workspace interno local-first/);
   assert.match(retrato, /rebocl-workspace-local-v1/);
-  assert.match(retrato, /rebocl-chat-v67/);
+  assert.match(retrato, /rebocl-chat-v68/);
 });
 
 testa('porta de continuidade exige retrato quando o ativo local muda', () => {
@@ -122,7 +127,7 @@ testa('porta de continuidade exige retrato quando o ativo local muda', () => {
 });
 
 testa('autosave preserva edição pendente se a validação falhar ou houver nova digitação', () => {
-  const salvar = entre(workspace, 'async function salvarArquivoAtual(origem)', '\n  async function limitarRevisoes');
+  const salvar = entre(workspace, 'async function salvarArquivoAtual(origem)', '\n  async function apagarArquivo');
   assert.match(workspace, /edicao: 0/);
   assert.match(workspace, /function agendarSalvarAutomatico\(\)/);
   assert.match(workspace, /estado\.edicao\+\+/);
@@ -132,16 +137,38 @@ testa('autosave preserva edição pendente se a validação falhar ou houver nov
   assert.doesNotMatch(salvar, /estado\.salvando = true;\n      renderEditor\(\)/);
 });
 
-testa('Workspace oferece retorno seguro, histórico local e limpeza deliberada', () => {
+testa('Workspace oferece retorno seguro, histórico local e lixeira deliberada', () => {
   assert.match(workspace, /function ocultarParaNavegacao\(\)/);
   assert.match(workspace, /function fechar\(destino\)/);
   assert.match(workspace, /function renderRevisoes\(idArquivo\)/);
   assert.match(workspace, /function restaurarRevisao\(revisao\)/);
-  assert.match(workspace, /Apagar o projeto local/);
-  assert.match(workspace, /Apagar o arquivo local/);
+  assert.match(workspace, /async function renderLixeira\(\)/);
+  assert.match(workspace, /async function restaurarDaLixeira\(tipo, id\)/);
+  assert.match(workspace, /async function descartarDaLixeira\(tipo, id\)/);
+  assert.match(workspace, /async function esvaziarLixeira\(\)/);
+  assert.match(workspace, /function estaNaLixeira\(registro\) \{ return !!\(registro && registro\.lixeiraEm\); \}/);
+  const lixeira = entre(workspace, 'async function renderLixeira()', '\n\n  function renderTudo()');
+  assert.match(lixeira, /nome\.textContent = item\.nome/);
+  assert.doesNotMatch(lixeira, /innerHTML\s*\+=|`[^`]*\$\{/);
+  assert.match(workspace, /Mover projeto para lixeira/);
+  assert.match(workspace, /Mover para lixeira/);
+  assert.match(workspace, /Excluir definitivamente/);
   assert.match(workspace, /Nada foi enviado/);
   assert.match(workspace, /Workspace local: arquivos não são enviados automaticamente/);
 });
 
+
+testa('lixeira preserva hierarquia, versões e espaço até descarte explícito', () => {
+  const apagarProjeto = entre(workspace, 'async function apagarProjeto()', '\n  async function criarArquivo');
+  const apagarArquivo = entre(workspace, 'async function apagarArquivo()', '\n  async function restaurarProjetoDaLixeira');
+  const descarte = entre(workspace, 'async function descartarDaLixeira(tipo, id)', '\n  async function esvaziarLixeira');
+  assert.match(apagarProjeto, /lixeiraRaiz: 'projeto'/);
+  assert.match(apagarProjeto, /todosArquivos\.filter/);
+  assert.match(apagarArquivo, /lixeiraRaiz: 'arquivo'/);
+  assert.doesNotMatch(apagarArquivo, /objectStore\(LOJAS\.revisoes\)\.delete/);
+  assert.match(descarte, /confirm\('Excluir definitivamente/);
+  assert.match(workspace, /itens recuperáveis continuam ocupando espaço local/i);
+  assert.match(workspace, /O cálculo inclui arquivos, versões locais e itens recuperáveis da lixeira/);
+});
 console.log(`${certos}/${certos + falhas} testes do Workspace local passaram`);
 process.exitCode = falhas ? 1 : 0;

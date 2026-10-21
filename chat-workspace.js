@@ -25,6 +25,10 @@
     arquivos: [],
     projetoAtivo: '',
     arquivoAtivo: '',
+    bytesOcupados: 0,
+    itensLixeira: 0,
+    operacaoLixeira: false,
+    lixeiraRenderizacao: 0,
     alterado: false,
     edicao: 0,
     salvando: false,
@@ -41,6 +45,19 @@
   function agora() { return new Date().toISOString(); }
   function texto(valor) { return String(valor == null ? '' : valor); }
   function bytes(valor) { return new TextEncoder().encode(texto(valor)).length; }
+  function bytesRegistro(registro) {
+    if (!registro) return 0;
+    const declarado = Number(registro.bytes);
+    return Number.isFinite(declarado) && declarado >= 0 ? declarado : bytes(registro.conteudo);
+  }
+  function estaNaLixeira(registro) { return !!(registro && registro.lixeiraEm); }
+  function tirarDaLixeira(registro) {
+    const limpo = Object.assign({}, registro);
+    delete limpo.lixeiraEm;
+    delete limpo.lixeiraRaiz;
+    delete limpo.lixeiraProjetoId;
+    return limpo;
+  }
   function busca(valor) {
     return texto(valor).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   }
@@ -76,9 +93,10 @@
       'limite-projetos': 'O Workspace já chegou ao limite local de projetos.',
       'limite-arquivos': 'O Workspace já chegou ao limite local de arquivos.',
       'arquivo-grande': 'O arquivo passa do limite local de 512 KB.',
-      'workspace-cheio': 'O Workspace chegou ao limite local de 5 MB. Exporte ou apague arquivos antes de continuar.',
+      'workspace-cheio': 'O Workspace chegou ao limite local de 5 MB, incluindo histórico e itens recuperáveis. Exporte um backup ou exclua itens definitivamente para liberar espaço.',
       'arquivo-invalido': 'Esse arquivo não tem um formato de texto aceito pelo Workspace.',
       'backup-invalido': 'O backup do Workspace não tem um formato reconhecido.',
+      'projeto-ausente': 'O projeto local de origem não está disponível. O arquivo continua na lixeira.',
       'importacao-grande': 'O arquivo de importação passa do limite local permitido.',
       'sem-selecao': 'Selecione um trecho no editor antes de levá-lo ao Chat.',
       'trecho-grande': 'O trecho selecionado passa do limite local para revisão no Chat.',
@@ -154,23 +172,16 @@
       tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
     }));
   }
-  function apagar(loja, chave) {
-    return abrirBanco().then((banco) => new Promise((resolve, reject) => {
-      const tx = banco.transaction(loja, 'readwrite');
-      tx.objectStore(loja).delete(chave);
-      tx.oncomplete = () => resolve();
-      tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
-      tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
-    }));
-  }
-  function gravarArquivoComRevisao(arquivo, anterior) {
+  function gravarArquivoComRevisao(arquivo, anterior, plano) {
     return abrirBanco().then((banco) => new Promise((resolve, reject) => {
       const tx = banco.transaction([LOJAS.arquivos, LOJAS.revisoes], 'readwrite');
+      const revisoes = tx.objectStore(LOJAS.revisoes);
       tx.objectStore(LOJAS.arquivos).put(arquivo);
-      if (anterior && anterior.conteudo !== arquivo.conteudo) {
-        tx.objectStore(LOJAS.revisoes).put({
+      (plano.removerRevisoes || []).forEach((revisao) => revisoes.delete(revisao.id));
+      if (plano.guardarRevisao && anterior && anterior.conteudo !== arquivo.conteudo) {
+        revisoes.put({
           id: idNovo('rev'), arquivoId: anterior.id, conteudo: anterior.conteudo,
-          quando: anterior.atualizadoEm, versao: anterior.versao
+          bytes: bytes(anterior.conteudo), quando: anterior.atualizadoEm, versao: anterior.versao
         });
       }
       tx.oncomplete = () => resolve(arquivo);
@@ -195,9 +206,51 @@
   function projetoAtivo() { return estado.projetos.find((p) => p.id === estado.projetoAtivo) || null; }
   function arquivoAtivo() { return estado.arquivos.find((a) => a.id === estado.arquivoAtivo) || null; }
   function arquivosDoProjeto(id) { return estado.arquivos.filter((a) => a.projetoId === id); }
-  function bytesTotais(excetoId) {
-    return estado.arquivos.reduce((total, arquivo) => total + (arquivo.id === excetoId ? 0 : Number(arquivo.bytes) || bytes(arquivo.conteudo)), 0);
+  function medirOcupacao(arquivos, revisoes) {
+    return (arquivos || []).reduce((total, arquivo) => total + bytesRegistro(arquivo), 0) +
+      (revisoes || []).reduce((total, revisao) => total + bytesRegistro(revisao), 0);
   }
+  function contarRaizesLixeira(projetos, arquivos) {
+    return (projetos || []).filter((projeto) => estaNaLixeira(projeto) && projeto.lixeiraRaiz === 'projeto').length +
+      (arquivos || []).filter((arquivo) => estaNaLixeira(arquivo) && arquivo.lixeiraRaiz === 'arquivo').length;
+  }
+  async function atualizarOcupacao() {
+    const [projetos, arquivos, revisoes] = await Promise.all([lerTodos(LOJAS.projetos), lerTodos(LOJAS.arquivos), lerTodos(LOJAS.revisoes)]);
+    estado.bytesOcupados = medirOcupacao(arquivos, revisoes);
+    estado.itensLixeira = contarRaizesLixeira(projetos, arquivos);
+    return { projetos, arquivos, revisoes };
+  }
+  async function planejarArmazenamentoParaSalvar(anterior, atualizado) {
+    const revisoes = await lerTodos(LOJAS.revisoes);
+    const remover = new Map();
+    let ocupacao = Math.max(0, Number(estado.bytesOcupados) || 0) - bytesRegistro(anterior) + bytesRegistro(atualizado);
+    const marcarRemocao = (revisao) => {
+      if (!revisao || remover.has(revisao.id)) return;
+      remover.set(revisao.id, revisao);
+      ocupacao = Math.max(0, ocupacao - bytesRegistro(revisao));
+    };
+    const antigasPrimeiro = (lista) => lista.slice().sort((a, b) =>
+      texto(a.quando).localeCompare(texto(b.quando)) || texto(a.id).localeCompare(texto(b.id)));
+    const mudouConteudo = anterior.conteudo !== atualizado.conteudo;
+    const desteArquivo = antigasPrimeiro(revisoes.filter((revisao) => revisao.arquivoId === anterior.id));
+    const excessoPorArquivo = Math.max(0, desteArquivo.length + (mudouConteudo ? 1 : 0) - LIMITES.revisoesPorArquivo);
+    desteArquivo.slice(0, excessoPorArquivo).forEach(marcarRemocao);
+    antigasPrimeiro(revisoes).forEach((revisao) => {
+      if (ocupacao > LIMITES.totalBytes) marcarRemocao(revisao);
+    });
+    if (ocupacao > LIMITES.totalBytes) throw erro('workspace-cheio');
+    let guardarRevisao = mudouConteudo;
+    if (guardarRevisao) {
+      const custoRevisao = bytes(anterior.conteudo);
+      antigasPrimeiro(revisoes).forEach((revisao) => {
+        if (ocupacao + custoRevisao > LIMITES.totalBytes) marcarRemocao(revisao);
+      });
+      if (ocupacao + custoRevisao <= LIMITES.totalBytes) ocupacao += custoRevisao;
+      else guardarRevisao = false;
+    }
+    return { removerRevisoes: [...remover.values()], guardarRevisao, ocupacaoFinal: ocupacao };
+  }
+
   function ordenarProjetos(lista) {
     return lista.slice().sort((a, b) => texto(b.atualizadoEm).localeCompare(texto(a.atualizadoEm)) || texto(a.nome).localeCompare(texto(b.nome), 'pt-BR'));
   }
@@ -244,8 +297,7 @@
   function mostrarErro(e) { definirStatus('erro', mensagemErro(e)); }
   function atualizarResumo() {
     if (!elementos) return;
-    const total = bytesTotais();
-    elementos.resumo.textContent = estado.arquivos.length + '/' + LIMITES.arquivos + ' arquivo(s) · ' + formatarBytes(total) + '/' + formatarBytes(LIMITES.totalBytes) + ' locais';
+    elementos.resumo.textContent = estado.arquivos.length + '/' + LIMITES.arquivos + ' ativo(s) · ' + formatarBytes(estado.bytesOcupados) + '/' + formatarBytes(LIMITES.totalBytes) + ' usados';
   }
   function limpar(elemento) { while (elemento && elemento.firstChild) elemento.removeChild(elemento.firstChild); }
   function botao(textoBotao, classe, rotulo) {
@@ -357,21 +409,72 @@
       if (idArquivo === estado.arquivoAtivo) definirStatus('erro', 'Não consegui ler o histórico local deste arquivo. O conteúdo atual não foi enviado.');
     }
   }
+  async function renderLixeira() {
+    if (!elementos || !elementos.listaLixeira) return;
+    const versaoRender = ++estado.lixeiraRenderizacao;
+    try {
+      const [projetos, arquivos] = await Promise.all([lerTodos(LOJAS.projetos), lerTodos(LOJAS.arquivos)]);
+      if (!elementos || versaoRender !== estado.lixeiraRenderizacao) return;
+      const raizes = [
+        ...projetos.filter((projeto) => estaNaLixeira(projeto) && projeto.lixeiraRaiz === 'projeto').map((projeto) => ({ tipo: 'projeto', item: projeto })),
+        ...arquivos.filter((arquivo) => estaNaLixeira(arquivo) && arquivo.lixeiraRaiz === 'arquivo').map((arquivo) => ({ tipo: 'arquivo', item: arquivo }))
+      ].sort((a, b) => texto(b.item.lixeiraEm).localeCompare(texto(a.item.lixeiraEm)) || texto(a.item.nome).localeCompare(texto(b.item.nome), 'pt-BR'));
+      estado.itensLixeira = raizes.length;
+      elementos.contadorLixeira.textContent = raizes.length ? '(' + raizes.length + ')' : '(vazia)';
+      elementos.esvaziarLixeira.disabled = !raizes.length || estado.operacaoLixeira;
+      limpar(elementos.listaLixeira);
+      if (!raizes.length) {
+        const vazio = document.createElement('p');
+        vazio.className = 'workspace-vazio';
+        vazio.textContent = 'Nenhum arquivo ou projeto aguarda recuperação local.';
+        elementos.listaLixeira.appendChild(vazio);
+        return;
+      }
+      raizes.forEach(({ tipo, item }) => {
+        const linha = document.createElement('div');
+        linha.className = 'workspace-lixeira-item';
+        const textoItem = document.createElement('div');
+        const nome = document.createElement('strong');
+        nome.textContent = item.nome;
+        const meta = document.createElement('span');
+        meta.textContent = (tipo === 'projeto' ? 'Projeto' : 'Arquivo') + ' · movido em ' + formatarData(item.lixeiraEm);
+        textoItem.append(nome, meta);
+        const acoes = document.createElement('div');
+        acoes.className = 'workspace-lixeira-acoes';
+        const restaurar = botao('Restaurar', '', 'Restaurar ' + (tipo === 'projeto' ? 'projeto' : 'arquivo') + ' local ' + item.nome);
+        restaurar.disabled = estado.operacaoLixeira;
+        restaurar.onclick = () => restaurarDaLixeira(tipo, item.id);
+        const descartar = botao('Excluir de vez', 'workspace-perigo', 'Excluir definitivamente ' + (tipo === 'projeto' ? 'projeto' : 'arquivo') + ' local ' + item.nome);
+        descartar.disabled = estado.operacaoLixeira;
+        descartar.onclick = () => descartarDaLixeira(tipo, item.id);
+        acoes.append(restaurar, descartar);
+        linha.append(textoItem, acoes);
+        elementos.listaLixeira.appendChild(linha);
+      });
+    } catch (_) {
+      if (versaoRender === estado.lixeiraRenderizacao) definirStatus('erro', 'Não consegui ler a lixeira local. Nenhum dado foi enviado.');
+    }
+  }
+
   function renderTudo() {
     renderProjetos();
     renderArquivos();
     renderEditor();
     atualizarResumo();
+    renderLixeira();
   }
 
   async function iniciarDados() {
-    const [projetos, arquivos, selecao] = await Promise.all([
+    const [todosProjetos, todosArquivos, revisoes, selecao] = await Promise.all([
       lerTodos(LOJAS.projetos),
       lerTodos(LOJAS.arquivos),
+      lerTodos(LOJAS.revisoes),
       lerUm(LOJAS.meta, 'selecao')
     ]);
-    estado.projetos = projetos.filter((projeto) => projeto && projeto.id && projeto.nome);
-    estado.arquivos = arquivos.filter((arquivo) => arquivo && arquivo.id && arquivo.projetoId && typeof arquivo.conteudo === 'string');
+    estado.projetos = todosProjetos.filter((projeto) => projeto && projeto.id && projeto.nome && !estaNaLixeira(projeto));
+    estado.arquivos = todosArquivos.filter((arquivo) => arquivo && arquivo.id && arquivo.projetoId && typeof arquivo.conteudo === 'string' && !estaNaLixeira(arquivo));
+    estado.bytesOcupados = medirOcupacao(todosArquivos, revisoes);
+    estado.itensLixeira = contarRaizesLixeira(todosProjetos, todosArquivos);
     if (!estado.projetos.length) {
       const criado = { id: idNovo('projeto'), nome: 'Meu workspace', criadoEm: agora(), atualizadoEm: agora() };
       await gravar(LOJAS.projetos, criado);
@@ -431,20 +534,25 @@
       definirStatus('ok', 'Nome do projeto atualizado somente neste navegador.');
     } catch (e) { mostrarErro(e); }
   }
+  function registrarOperacaoLixeira(ocupada) {
+    estado.operacaoLixeira = ocupada;
+    renderLixeira();
+  }
   async function apagarProjeto() {
     const projeto = projetoAtivo();
     if (!projeto) return;
-    if (!confirm('Apagar o projeto local “' + projeto.nome + '” e todos os arquivos dele? Esta ação não envia nada e não pode ser desfeita pelo Chat.')) return;
     try {
-      if (estado.alterado) estado.alterado = false;
-      const arquivos = arquivosDoProjeto(projeto.id);
-      const revisoes = [];
-      for (const arquivo of arquivos) revisoes.push(...await lerTodos(LOJAS.revisoes, 'arquivoId', arquivo.id));
+      if (estado.alterado && !(await salvarArquivoAtual('troca'))) return;
+      if (!confirm('Mover o projeto local “' + projeto.nome + '” e seus arquivos para a lixeira? Nada será enviado. Você poderá restaurá-lo ou excluí-lo de vez depois.')) return;
+      const quando = agora();
+      const todosArquivos = await lerTodos(LOJAS.arquivos);
+      const arquivos = todosArquivos.filter((arquivo) => arquivo.projetoId === projeto.id);
+      const projetoLixeira = Object.assign({}, projeto, { lixeiraEm: quando, lixeiraRaiz: 'projeto', lixeiraProjetoId: projeto.id });
+      const arquivosLixeira = arquivos.map((arquivo) => Object.assign({}, arquivo, { lixeiraEm: quando, lixeiraRaiz: '', lixeiraProjetoId: projeto.id }));
       await abrirBanco().then((banco) => new Promise((resolve, reject) => {
-        const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos, LOJAS.revisoes], 'readwrite');
-        tx.objectStore(LOJAS.projetos).delete(projeto.id);
-        arquivos.forEach((arquivo) => tx.objectStore(LOJAS.arquivos).delete(arquivo.id));
-        revisoes.forEach((revisao) => tx.objectStore(LOJAS.revisoes).delete(revisao.id));
+        const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos], 'readwrite');
+        tx.objectStore(LOJAS.projetos).put(projetoLixeira);
+        arquivosLixeira.forEach((arquivo) => tx.objectStore(LOJAS.arquivos).put(arquivo));
         tx.oncomplete = resolve;
         tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
         tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
@@ -458,9 +566,11 @@
       }
       estado.projetoAtivo = ordenarProjetos(estado.projetos)[0].id;
       estado.arquivoAtivo = '';
+      estado.alterado = false;
+      await atualizarOcupacao();
       await guardarSelecao();
       renderTudo();
-      definirStatus('ok', 'Projeto e arquivos locais apagados. Nada foi enviado.');
+      definirStatus('ok', 'Projeto movido para a lixeira local. Nada foi enviado.');
     } catch (e) { mostrarErro(e); }
   }
   async function criarArquivo(nomeInicial, conteudoInicial) {
@@ -472,7 +582,7 @@
       const conteudo = texto(conteudoInicial);
       const tamanho = bytes(conteudo);
       if (tamanho > LIMITES.arquivoBytes) throw erro('arquivo-grande');
-      if (bytesTotais() + tamanho > LIMITES.totalBytes) throw erro('workspace-cheio');
+      if (estado.bytesOcupados + tamanho > LIMITES.totalBytes) throw erro('workspace-cheio');
       const arquivo = {
         id: idNovo('arquivo'), projetoId: projeto.id,
         nome: nomeArquivoDisponivel(nomeInicial || 'novo-arquivo.md', projeto.id),
@@ -482,6 +592,7 @@
       projeto.atualizadoEm = agora();
       await gravar(LOJAS.projetos, projeto);
       estado.arquivos.push(arquivo);
+      estado.bytesOcupados += tamanho;
       estado.arquivoAtivo = arquivo.id;
       estado.alterado = false;
       await guardarSelecao();
@@ -527,7 +638,6 @@
       const conteudo = texto(elementos.editor.value);
       const tamanho = bytes(conteudo);
       if (tamanho > LIMITES.arquivoBytes) throw erro('arquivo-grande');
-      if (bytesTotais(anterior.id) + tamanho > LIMITES.totalBytes) throw erro('workspace-cheio');
       if (busca(nome) !== busca(anterior.nome) && arquivosDoProjeto(anterior.projetoId).some((outro) => outro.id !== anterior.id && busca(outro.nome) === busca(nome))) {
         definirStatus('erro', 'Já existe um arquivo local com esse nome neste projeto.');
         return false;
@@ -541,16 +651,18 @@
       estado.salvando = true;
       atualizarControlesEditor(true);
       const atualizado = Object.assign({}, anterior, { nome, conteudo, bytes: tamanho, versao: Number(anterior.versao || 1) + 1, atualizadoEm: agora() });
-      await gravarArquivoComRevisao(atualizado, anterior);
+      const plano = await planejarArmazenamentoParaSalvar(anterior, atualizado);
+      await gravarArquivoComRevisao(atualizado, anterior, plano);
+      estado.bytesOcupados = plano.ocupacaoFinal;
       estado.arquivos = estado.arquivos.map((arquivo) => arquivo.id === atualizado.id ? atualizado : arquivo);
       const projeto = projetoAtivo();
       if (projeto) { projeto.atualizadoEm = atualizado.atualizadoEm; await gravar(LOJAS.projetos, projeto); }
-      await limitarRevisoes(atualizado.id);
       houveEdicaoDurante = estado.edicao !== edicaoNoInicio;
       if (!houveEdicaoDurante) {
         estado.alterado = false;
         renderTudo();
-        definirStatus('ok', origem === 'automatico' ? 'Salvo localmente neste navegador.' : 'Arquivo salvo localmente. Nada foi enviado.');
+        const historicoLimitado = plano.removerRevisoes.length || (anterior.conteudo !== atualizado.conteudo && !plano.guardarRevisao);
+        definirStatus('ok', historicoLimitado ? 'Arquivo salvo localmente; versões antigas foram reduzidas para respeitar o limite de espaço.' : (origem === 'automatico' ? 'Salvo localmente neste navegador.' : 'Arquivo salvo localmente. Nada foi enviado.'));
       } else {
         estado.alterado = true;
         renderProjetos();
@@ -574,32 +686,148 @@
       atualizarResumo();
     }
   }
-  async function limitarRevisoes(idArquivo) {
-    const revisoes = (await lerTodos(LOJAS.revisoes, 'arquivoId', idArquivo)).sort((a, b) => texto(b.quando).localeCompare(texto(a.quando)));
-    const extras = revisoes.slice(LIMITES.revisoesPorArquivo);
-    await Promise.all(extras.map((revisao) => apagar(LOJAS.revisoes, revisao.id)));
-  }
   async function apagarArquivo() {
     const arquivo = arquivoAtivo();
     if (!arquivo) return;
-    if (!confirm('Apagar o arquivo local “' + arquivo.nome + '”? As versões locais dele também serão removidas.')) return;
     try {
-      const revisoes = await lerTodos(LOJAS.revisoes, 'arquivoId', arquivo.id);
+      if (estado.alterado && !(await salvarArquivoAtual('troca'))) return;
+      if (!confirm('Mover o arquivo local “' + arquivo.nome + '” para a lixeira? As versões locais serão preservadas para recuperação. Nada será enviado.')) return;
+      const lixeira = Object.assign({}, arquivo, { lixeiraEm: agora(), lixeiraRaiz: 'arquivo', lixeiraProjetoId: arquivo.projetoId });
+      await gravar(LOJAS.arquivos, lixeira);
+      estado.arquivos = estado.arquivos.filter((item) => item.id !== arquivo.id);
+      estado.arquivoAtivo = '';
+      estado.alterado = false;
+      estado.itensLixeira++;
+      await guardarSelecao();
+      renderTudo();
+      definirStatus('ok', 'Arquivo movido para a lixeira local. Nada foi enviado.');
+    } catch (e) { mostrarErro(e); }
+  }
+  async function restaurarProjetoDaLixeira(id) {
+    const [todosProjetos, todosArquivos] = await Promise.all([lerTodos(LOJAS.projetos), lerTodos(LOJAS.arquivos)]);
+    const projeto = todosProjetos.find((item) => item.id === id && estaNaLixeira(item) && item.lixeiraRaiz === 'projeto');
+    if (!projeto) return;
+    const arquivos = todosArquivos.filter((arquivo) => arquivo.projetoId === projeto.id && estaNaLixeira(arquivo) && arquivo.lixeiraProjetoId === projeto.id);
+    if (estado.projetos.length >= LIMITES.projetos) throw erro('limite-projetos');
+    if (estado.arquivos.length + arquivos.length > LIMITES.arquivos) throw erro('limite-arquivos');
+    const nomes = new Set(estado.projetos.map((item) => busca(item.nome)));
+    const restaurado = tirarDaLixeira(projeto);
+    restaurado.nome = nomeDisponivel(restaurado.nome, nomes);
+    restaurado.atualizadoEm = agora();
+    const arquivosRestaurados = arquivos.map(tirarDaLixeira);
+    await abrirBanco().then((banco) => new Promise((resolve, reject) => {
+      const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos], 'readwrite');
+      tx.objectStore(LOJAS.projetos).put(restaurado);
+      arquivosRestaurados.forEach((arquivo) => tx.objectStore(LOJAS.arquivos).put(arquivo));
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
+      tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
+    }));
+    estado.projetos.push(restaurado);
+    estado.arquivos.push(...arquivosRestaurados);
+    estado.projetoAtivo = restaurado.id;
+    estado.arquivoAtivo = '';
+    estado.itensLixeira = Math.max(0, estado.itensLixeira - 1);
+    await guardarSelecao();
+    renderTudo();
+    definirStatus('ok', 'Projeto restaurado localmente' + (restaurado.nome !== projeto.nome ? ' com um nome disponível' : '') + '. Nada foi enviado.');
+  }
+  async function restaurarArquivoDaLixeira(id) {
+    const arquivo = await lerUm(LOJAS.arquivos, id);
+    if (!arquivo || !estaNaLixeira(arquivo) || arquivo.lixeiraRaiz !== 'arquivo') return;
+    const projeto = estado.projetos.find((item) => item.id === arquivo.projetoId);
+    if (!projeto) throw erro('projeto-ausente');
+    if (estado.arquivos.length >= LIMITES.arquivos) throw erro('limite-arquivos');
+    const restaurado = tirarDaLixeira(arquivo);
+    restaurado.nome = nomeArquivoDisponivel(restaurado.nome, restaurado.projetoId);
+    restaurado.atualizadoEm = agora();
+    await gravar(LOJAS.arquivos, restaurado);
+    estado.arquivos.push(restaurado);
+    estado.projetoAtivo = restaurado.projetoId;
+    estado.arquivoAtivo = restaurado.id;
+    estado.itensLixeira = Math.max(0, estado.itensLixeira - 1);
+    await guardarSelecao();
+    renderTudo();
+    definirStatus('ok', 'Arquivo restaurado localmente' + (restaurado.nome !== arquivo.nome ? ' com um nome disponível' : '') + '. Nada foi enviado.');
+  }
+  async function restaurarDaLixeira(tipo, id) {
+    if (estado.operacaoLixeira) return;
+    registrarOperacaoLixeira(true);
+    try {
+      if (tipo === 'projeto') await restaurarProjetoDaLixeira(id);
+      else await restaurarArquivoDaLixeira(id);
+    } catch (e) { mostrarErro(e); }
+    finally { registrarOperacaoLixeira(false); }
+  }
+  async function apagarDefinitivamenteProjeto(id) {
+    const [todosProjetos, todosArquivos] = await Promise.all([lerTodos(LOJAS.projetos), lerTodos(LOJAS.arquivos)]);
+    const projeto = todosProjetos.find((item) => item.id === id && estaNaLixeira(item) && item.lixeiraRaiz === 'projeto');
+    if (!projeto) return;
+    const arquivos = todosArquivos.filter((arquivo) => arquivo.projetoId === id);
+    const revisoes = [];
+    for (const arquivo of arquivos) revisoes.push(...await lerTodos(LOJAS.revisoes, 'arquivoId', arquivo.id));
+    await abrirBanco().then((banco) => new Promise((resolve, reject) => {
+      const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos, LOJAS.revisoes], 'readwrite');
+      tx.objectStore(LOJAS.projetos).delete(projeto.id);
+      arquivos.forEach((arquivo) => tx.objectStore(LOJAS.arquivos).delete(arquivo.id));
+      revisoes.forEach((revisao) => tx.objectStore(LOJAS.revisoes).delete(revisao.id));
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
+      tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
+    }));
+  }
+  async function apagarDefinitivamenteArquivo(id) {
+    const arquivo = await lerUm(LOJAS.arquivos, id);
+    if (!arquivo || !estaNaLixeira(arquivo) || arquivo.lixeiraRaiz !== 'arquivo') return;
+    const revisoes = await lerTodos(LOJAS.revisoes, 'arquivoId', arquivo.id);
+    await abrirBanco().then((banco) => new Promise((resolve, reject) => {
+      const tx = banco.transaction([LOJAS.arquivos, LOJAS.revisoes], 'readwrite');
+      tx.objectStore(LOJAS.arquivos).delete(arquivo.id);
+      revisoes.forEach((revisao) => tx.objectStore(LOJAS.revisoes).delete(revisao.id));
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
+      tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
+    }));
+  }
+  async function descartarDaLixeira(tipo, id) {
+    if (estado.operacaoLixeira) return;
+    const item = tipo === 'projeto' ? await lerUm(LOJAS.projetos, id) : await lerUm(LOJAS.arquivos, id);
+    if (!item || !estaNaLixeira(item) || item.lixeiraRaiz !== tipo) return;
+    if (!confirm('Excluir definitivamente ' + (tipo === 'projeto' ? 'o projeto' : 'o arquivo') + ' local “' + item.nome + '” e todas as versões dele? Isso não poderá ser desfeito neste navegador e nada será enviado.')) return;
+    registrarOperacaoLixeira(true);
+    try {
+      if (tipo === 'projeto') await apagarDefinitivamenteProjeto(id);
+      else await apagarDefinitivamenteArquivo(id);
+      await atualizarOcupacao();
+      renderTudo();
+      definirStatus('ok', 'Item removido definitivamente apenas deste navegador. Nada foi enviado.');
+    } catch (e) { mostrarErro(e); }
+    finally { registrarOperacaoLixeira(false); }
+  }
+  async function esvaziarLixeira() {
+    if (estado.operacaoLixeira || !estado.itensLixeira) return;
+    if (!confirm('Esvaziar a lixeira local? Todos os projetos, arquivos e versões que estão nela serão excluídos definitivamente deste navegador. Isso não poderá ser desfeito e nada será enviado.')) return;
+    registrarOperacaoLixeira(true);
+    try {
+      const [projetos, arquivos, revisoes] = await Promise.all([lerTodos(LOJAS.projetos), lerTodos(LOJAS.arquivos), lerTodos(LOJAS.revisoes)]);
+      const projetosLixeira = projetos.filter(estaNaLixeira);
+      const idsProjetosLixeira = new Set(projetosLixeira.map((projeto) => projeto.id));
+      const arquivosLixeira = arquivos.filter((arquivo) => estaNaLixeira(arquivo) || idsProjetosLixeira.has(arquivo.projetoId));
+      const idsArquivos = new Set(arquivosLixeira.map((arquivo) => arquivo.id));
       await abrirBanco().then((banco) => new Promise((resolve, reject) => {
-        const tx = banco.transaction([LOJAS.arquivos, LOJAS.revisoes], 'readwrite');
-        tx.objectStore(LOJAS.arquivos).delete(arquivo.id);
-        revisoes.forEach((revisao) => tx.objectStore(LOJAS.revisoes).delete(revisao.id));
+        const tx = banco.transaction([LOJAS.projetos, LOJAS.arquivos, LOJAS.revisoes], 'readwrite');
+        projetosLixeira.forEach((projeto) => tx.objectStore(LOJAS.projetos).delete(projeto.id));
+        arquivosLixeira.forEach((arquivo) => tx.objectStore(LOJAS.arquivos).delete(arquivo.id));
+        revisoes.filter((revisao) => idsArquivos.has(revisao.arquivoId)).forEach((revisao) => tx.objectStore(LOJAS.revisoes).delete(revisao.id));
         tx.oncomplete = resolve;
         tx.onerror = () => reject(tx.error || erro('sem-indexeddb'));
         tx.onabort = () => reject(tx.error || erro('sem-indexeddb'));
       }));
-      estado.arquivos = estado.arquivos.filter((item) => item.id !== arquivo.id);
-      estado.arquivoAtivo = '';
-      estado.alterado = false;
-      await guardarSelecao();
+      await atualizarOcupacao();
       renderTudo();
-      definirStatus('ok', 'Arquivo local apagado. Nada foi enviado.');
+      definirStatus('ok', 'Lixeira local esvaziada definitivamente. Nada foi enviado.');
     } catch (e) { mostrarErro(e); }
+    finally { registrarOperacaoLixeira(false); }
   }
   async function restaurarRevisao(revisao) {
     if (!revisao || revisao.arquivoId !== estado.arquivoAtivo) return;
@@ -648,7 +876,7 @@
       return { projetoId: texto(arquivo.projetoId), nome: nomeArquivoSeguro(arquivo.nome), conteudo: arquivo.conteudo, bytes: tamanhoArquivo };
     });
     const total = arquivos.reduce((soma, arquivo) => soma + arquivo.bytes, 0);
-    if (total > LIMITES.totalBytes || bytesTotais() + total > LIMITES.totalBytes) throw erro('workspace-cheio');
+    if (total > LIMITES.totalBytes || estado.bytesOcupados + total > LIMITES.totalBytes) throw erro('workspace-cheio');
     if (estado.projetos.length + projetos.length > LIMITES.projetos || estado.arquivos.length + arquivos.length > LIMITES.arquivos) throw erro('limite-arquivos');
     return { projetos, arquivos };
   }
@@ -682,6 +910,7 @@
     await gravarLote(projetosNovos, arquivosNovos);
     estado.projetos.push(...projetosNovos);
     estado.arquivos.push(...arquivosNovos);
+    estado.bytesOcupados += arquivosNovos.reduce((soma, arquivo) => soma + bytesRegistro(arquivo), 0);
     estado.projetoAtivo = projetosNovos[0] ? projetosNovos[0].id : estado.projetoAtivo;
     estado.arquivoAtivo = arquivosNovos.find((arquivo) => arquivo.projetoId === estado.projetoAtivo)?.id || '';
     await guardarSelecao();
@@ -836,7 +1065,13 @@
           <div id="workspace-lista-projetos" class="workspace-lista" role="group" aria-label="Lista de projetos"></div>
           <label class="workspace-rotulo" for="workspace-nome-projeto">Projeto atual</label>
           <div class="workspace-linha"><input id="workspace-nome-projeto" maxlength="50" autocomplete="off"><button type="button" id="btn-workspace-renomear-projeto">Renomear</button></div>
-          <button type="button" id="btn-workspace-apagar-projeto" class="workspace-perigo">Apagar projeto local</button>
+          <button type="button" id="btn-workspace-apagar-projeto" class="workspace-perigo">Mover projeto para lixeira</button>
+          <details class="workspace-lixeira">
+            <summary>Lixeira local <span id="workspace-contador-lixeira"></span></summary>
+            <p class="workspace-meta-pequena">Itens recuperáveis continuam ocupando espaço local até serem excluídos definitivamente.</p>
+            <div id="workspace-lista-lixeira" class="workspace-lista-lixeira" role="group" aria-label="Itens na lixeira local"></div>
+            <button type="button" id="btn-workspace-esvaziar-lixeira" class="workspace-perigo">Esvaziar lixeira definitivamente</button>
+          </details>
         </aside>
         <aside class="workspace-painel workspace-arquivos" aria-label="Arquivos locais">
           <div class="workspace-painel-cabecalho"><h3>Arquivos</h3><span id="workspace-contador-arquivos"></span></div>
@@ -852,9 +1087,9 @@
           <input id="workspace-nome-arquivo" maxlength="80" autocomplete="off" disabled>
           <label class="visualmente-oculto" for="workspace-editor">Conteúdo do arquivo</label>
           <textarea id="workspace-editor" spellcheck="true" placeholder="O conteúdo deste arquivo fica só neste navegador até uma ação explícita sua." disabled></textarea>
-          <div class="workspace-editor-acoes"><button type="button" id="btn-workspace-copiar">Copiar arquivo</button><button type="button" id="btn-workspace-levar-chat">Levar seleção ao Chat</button><button type="button" id="btn-workspace-apagar-arquivo" class="workspace-perigo">Apagar arquivo</button></div>
+          <div class="workspace-editor-acoes"><button type="button" id="btn-workspace-copiar">Copiar arquivo</button><button type="button" id="btn-workspace-levar-chat">Levar seleção ao Chat</button><button type="button" id="btn-workspace-apagar-arquivo" class="workspace-perigo">Mover para lixeira</button></div>
           <details id="workspace-revisoes" class="workspace-revisoes"><summary>Versões locais anteriores</summary><div id="workspace-lista-revisoes"></div></details>
-          <p class="workspace-aviso">Limites locais: até 20 projetos, 100 arquivos, 512 KB por arquivo e 5 MB no total. Exporte backups para levar seus arquivos a outro navegador. Este espaço não é um cofre de senhas.</p>
+          <p class="workspace-aviso">Limites locais: até 20 projetos ativos, 100 arquivos ativos, 512 KB por arquivo e 5 MB de conteúdo no total. O cálculo inclui arquivos, versões locais e itens recuperáveis da lixeira. Exporte backups para levar os arquivos ativos a outro navegador. Este espaço não é um cofre de senhas.</p>
         </section>
       </div>`;
     document.body.appendChild(raiz);
@@ -862,6 +1097,7 @@
       raiz, botaoAbrir, resumo: raiz.querySelector('#workspace-resumo'), status: raiz.querySelector('#workspace-status'),
       novoProjeto: raiz.querySelector('#workspace-novo-projeto'), listaProjetos: raiz.querySelector('#workspace-lista-projetos'),
       nomeProjeto: raiz.querySelector('#workspace-nome-projeto'), renomearProjeto: raiz.querySelector('#btn-workspace-renomear-projeto'), apagarProjeto: raiz.querySelector('#btn-workspace-apagar-projeto'),
+      contadorLixeira: raiz.querySelector('#workspace-contador-lixeira'), listaLixeira: raiz.querySelector('#workspace-lista-lixeira'), esvaziarLixeira: raiz.querySelector('#btn-workspace-esvaziar-lixeira'),
       buscaArquivos: raiz.querySelector('#workspace-busca-arquivos'), contadorArquivos: raiz.querySelector('#workspace-contador-arquivos'), listaArquivos: raiz.querySelector('#workspace-lista-arquivos'),
       nomeArquivo: raiz.querySelector('#workspace-nome-arquivo'), editor: raiz.querySelector('#workspace-editor'), salvar: raiz.querySelector('#btn-workspace-salvar'), apagarArquivo: raiz.querySelector('#btn-workspace-apagar-arquivo'),
       copiar: raiz.querySelector('#btn-workspace-copiar'), levarAoChat: raiz.querySelector('#btn-workspace-levar-chat'), revisoes: raiz.querySelector('#workspace-revisoes'), listaRevisoes: raiz.querySelector('#workspace-lista-revisoes'),
@@ -874,6 +1110,7 @@
     elementos.novoProjeto.addEventListener('keydown', (evento) => { if (evento.key === 'Enter') { evento.preventDefault(); criarProjeto(); } });
     elementos.renomearProjeto.onclick = renomearProjeto;
     elementos.apagarProjeto.onclick = apagarProjeto;
+    elementos.esvaziarLixeira.onclick = esvaziarLixeira;
     raiz.querySelector('#btn-workspace-novo-arquivo').onclick = () => criarArquivo('novo-arquivo.md', '');
     raiz.querySelector('#btn-workspace-importar').onclick = () => elementos.importar.click();
     elementos.importar.onchange = (evento) => {

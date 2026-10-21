@@ -14,7 +14,7 @@ Página de conversa com a **IA gratuita da Rebocl Brank**.
 - Mostra as respostas do assistente automaticamente quando o trabalhador privado está disponível e avisa por notificação. Se o navegador confirmar que o run correspondente falhou antes de iniciar, tenta uma recuperação local de contingência; isso requer o navegador aberto e não é SLA.
 - Mostra **qual motor respondeu** (tag ao lado de "Assistente") e avisa quando a internet cai.
 - **Exporta e importa conversas**: tudo em JSON, tudo em texto (.md), ou só uma conversa — para guardar fora do navegador ou levar para outro aparelho.
-- **🗂️ Workspace local:** crie projetos e arquivos de texto dentro do Chat, pesquise, salve, recupere versões locais e faça backup/importação JSON. Eles ficam neste navegador; nada é enviado automaticamente. Para revisar um trecho na conversa, selecione-o e use **Levar seleção ao Chat** — isso só preenche o compositor, nunca envia.
+- **🗂️ Workspace local:** crie projetos e arquivos de texto dentro do Chat, pesquise, salve, recupere versões e itens da Lixeira local, e faça backup/importação JSON dos arquivos ativos. Eles ficam neste navegador; nada é enviado automaticamente. Para revisar um trecho na conversa, selecione-o e use **Levar seleção ao Chat** — isso só preenche o compositor, nunca envia.
 - Por conversa: **renomear**, **fechar**, **reenviar** a última mensagem e **copiar** qualquer mensagem.
 - Dica: escreva `anotar: <texto>` para guardar algo na memória permanente.
 - Escreva `trabalho:` ou `prioridades:` no e-mail, Telegram ou nesta interface para o roteiro local e sanitizado das rotinas da casa, próximo passo seguro e o que — se houver — depende do dono. Nesta interface, o chip `🧭 trabalho` é o atalho local correspondente; ele não cria conversa nem chama a rede. A fotografia técnica dinâmica `status:` continua nos canais de e-mail/Telegram.
@@ -262,6 +262,12 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Trabalho dentro do Chat:** o botão 🗂️ abre projetos e arquivos de texto persistidos somente neste navegador, com busca, criação/renomeação/remoção explícita, autosave, até 12 versões locais e backup/importação JSON. Os limites são 20 projetos, 100 arquivos, 512 KB por arquivo e 5 MB no total.
 - **Fronteira explícita:** o Workspace usa IndexedDB separado e não chama API, GitHub, Issue, motor ou rede. A única ponte exige seleção manual e **Levar seleção ao Chat**; ela limita o trecho, tenta bloquear token reconhecível e apenas coloca o texto no compositor para revisão — não clica em enviar.
 - **Limite honesto:** os arquivos dependem do navegador/perfil e podem desaparecer se os dados do site forem limpos; não é sincronização, cofre, criptografia de disco, colaboração, armazenamento de binários nem backup garantido. A atualização PWA v67 continua sendo escolhida pela pessoa, sem ativação silenciosa.
+
+## v12.44 — Lixeira local e espaço verificável no Workspace (20/10/2026)
+
+- **Recuperação antes da perda:** mover um arquivo ou projeto agora o coloca na **Lixeira local** deste navegador. É possível restaurar explicitamente; a exclusão definitiva e o esvaziamento continuam ações confirmadas e irreversíveis apenas no aparelho.
+- **Espaço contado de verdade:** os 5 MB incluem conteúdo ativo, versões anteriores e itens recuperáveis. A lixeira não finge liberar capacidade; somente o descarte definitivo libera espaço. Para preservar a edição atual, o histórico reduz primeiro as versões locais mais antigas quando necessário — nunca apaga arquivo ativo ou recuperável automaticamente.
+- **Mesmas fronteiras:** a lixeira e a conta de espaço continuam no IndexedDB local, sem rede, token, API, GitHub ou envio automático. O backup JSON continua sendo dos projetos e arquivos ativos; lixeira e histórico permanecem locais neste corte. A atualização PWA v68 segue escolhida pela pessoa, sem ativação silenciosa.
 
 ## 🚀 ATUALIZAÇÃO 13/10 — A CASA NA SUA FORMA MÁXIMA
 - **~165 comandos** em 15+ famílias — o comando `!ferramentas` lista TUDO

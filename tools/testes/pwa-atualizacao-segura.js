@@ -87,7 +87,7 @@ testa('cliente compartilhado é precacheado e observado pela barreira de continu
   const sw = fonte('sw.js');
   const workflow = fonte('.github/workflows/testes-rapidos.yml');
   const continuidade = fonte('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v67/);
+  assert.match(sw, /rebocl-chat-v68/);
   assert.match(sw, /'\.\/chat-pwa\.js'/);
   assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);
@@ -109,11 +109,11 @@ testa('cliente compartilhado é precacheado e observado pela barreira de continu
   } finally { fs.rmSync(pasta, { recursive: true, force: true }); }
 });
 
-testa('service worker v67 instala sem se ativar sozinho', () => {
+testa('service worker v68 instala sem se ativar sozinho', () => {
   const sw = fonte('sw.js');
   const instalacao = trecho(sw, "self.addEventListener('install'", "self.addEventListener('message'");
   const mensagem = trecho(sw, "self.addEventListener('message'", "self.addEventListener('activate'");
-  assert.match(sw, /rebocl-chat-v67/);
+  assert.match(sw, /rebocl-chat-v68/);
   assert.match(sw, /'\.\/chat-pwa\.js'/);
   assert.match(sw, /'\.\/chat-workspace\.js'/);
   assert.doesNotMatch(instalacao, /skipWaiting/);
