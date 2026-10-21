@@ -79,7 +79,13 @@ ok('exercita coleções locais controladas sem usar conversa ou rede real', () =
   assert.match(texto, /controles de coleções locais ausentes/);
   assert.match(texto, /filtro local não isolou a conversa da coleção/);
   assert.match(texto, /carregar mais sumiu no filtro de coleção/);
+  assert.match(texto, /controles de backup das coleções ausentes/);
+  assert.match(texto, /__blobsBackupColecoes/);
+  assert.match(texto, /backup das coleções não preservou somente a associação local controlada/);
+  assert.match(texto, /Coleção restaurada de fixture/);
+  assert.match(texto, /restauração não substituiu as coleções locais anteriores/);
   assert.match(texto, /limpeza explícita não removeu coleção local/);
+  assert.match(texto, /backup local das coleções exportou e restaurou substituindo a fixture sem rede/);
   assert.match(texto, /coleções locais criaram, associaram, filtraram e apagaram sem rede/);
 });
 

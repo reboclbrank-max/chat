@@ -130,6 +130,15 @@
     <h2>⌁ Coleções de conversa neste aparelho</h2>
     <p id="resumo-colecoes-locais">Carregando coleções locais…</p>
     <p>Crie coleções para organizar conversas já carregadas. Cada coleção guarda só o nome que você escolheu e os números das conversas associadas neste navegador — nunca título, mensagens ou token. Nada é alterado no GitHub, enviado ou sincronizado.</p>
+    <div class="colecoes-backup">
+      <h3>Backup manual das coleções locais</h3>
+      <p>Baixe um arquivo JSON para guardar ou mover suas coleções. Ele contém somente os nomes das coleções e os números das conversas associadas — nunca títulos, mensagens ou token. Restaurar é uma escolha sua e substitui todas as coleções deste navegador após confirmação; não altera GitHub, favoritos, cópias offline nem o Workspace.</p>
+      <div class="colecoes-backup-acoes">
+        <button type="button" id="btn-exportar-colecoes" disabled>⬇ Baixar backup das coleções</button>
+        <button type="button" id="btn-importar-colecoes" disabled>⬆ Restaurar backup das coleções</button>
+      </div>
+      <input type="file" id="arq-importar-colecoes" accept="application/json,.json" class="oculto" disabled aria-label="Escolher arquivo JSON de backup das coleções locais">
+    </div>
     <label class="visualmente-oculto" for="nome-nova-colecao">Nome da nova coleção local</label>
     <div class="colecoes-nova">
       <input id="nome-nova-colecao" type="text" maxlength="48" autocomplete="off" placeholder="ex.: trabalho, ideias, acompanhar">
@@ -227,7 +236,7 @@ let conversa = null, intervalo = null, ultimoId = 0, ultimoQuando = '', falando 
 const $ = (id) => document.getElementById(id);
 const elLista = $('lista'), elMsgs = $('msgs'), elFaixa = $('faixa');
 let paginaLista = 1, listaAtual = [], maisListaDisponivel = false, carregandoMaisLista = false, revisaoLista = 0, criandoNovaConversa = false;
-let filtroFavoritasAtivo = false, colecaoSelecionadaId = null, filtroColecaoAtivo = false, listaRenderizada = false, listaOffline = false;
+let filtroFavoritasAtivo = false, colecaoSelecionadaId = null, filtroColecaoAtivo = false, backupColecoesEmAndamento = false, listaRenderizada = false, listaOffline = false;
 let filaCacheLista = Promise.resolve();
 
 // Erros de rede/API são dados externos. A interface só mostra categorias fechadas,
@@ -811,6 +820,9 @@ function textoErroColecoesConversas(erro) {
   if (erro && erro.codigo === 'limite-itens-total') return 'As coleções já guardam o limite de 400 associações neste navegador. Remova uma antes de acrescentar outra.';
   if (erro && erro.codigo === 'colecao-duplicada') return 'Já existe uma coleção local com esse nome.';
   if (erro && erro.codigo === 'nome-colecao-invalido') return 'Dê à coleção um nome visível de até 48 caracteres.';
+  if (erro && erro.codigo === 'backup-incompativel') return 'Este arquivo não é um backup compatível das coleções locais deste Chat.';
+  if (erro && erro.codigo === 'backup-invalido') return 'O backup das coleções está inválido ou ultrapassa os limites locais. Nada foi alterado.';
+  if (erro && erro.codigo === 'backup-grande') return 'O arquivo de backup passa do limite local de 128 KB e não foi aberto.';
   if (erro && (erro.codigo === 'colecao-invalida' || erro.codigo === 'colecao-nao-encontrada' || erro.codigo === 'conversa-invalida')) return 'Esta coleção local não está mais disponível. Escolha outra coleção antes de organizar a conversa.';
   return 'Não foi possível usar as coleções locais neste navegador agora. Nada no GitHub foi alterado.';
 }
@@ -833,7 +845,7 @@ function preencherSeletorColecoes(colecoes, pronta) {
     opcao.textContent = colecao.nome + ' (' + colecao.quantidade + ')';
     seletor.appendChild(opcao);
   });
-  seletor.disabled = !pronta || colecoes.length === 0;
+  seletor.disabled = !pronta || colecoes.length === 0 || backupColecoesEmAndamento;
   seletor.value = colecaoSelecionadaId ? String(colecaoSelecionadaId) : '';
 }
 function montarLinhaColecaoLocal(colecao, pronta) {
@@ -875,7 +887,7 @@ function montarLinhaColecaoLocal(colecao, pronta) {
   linha.appendChild(acoes);
   return linha;
 }
-function renderizarGestaoColecoes(colecoes, pronta) {
+function renderizarGestaoColecoes(colecoes, pronta, bloqueada) {
   const lista = $('lista-colecoes-locais');
   if (!lista) return;
   lista.innerHTML = '';
@@ -893,7 +905,7 @@ function renderizarGestaoColecoes(colecoes, pronta) {
     lista.appendChild(vazio);
     return;
   }
-  colecoes.forEach((colecao) => lista.appendChild(montarLinhaColecaoLocal(colecao, pronta)));
+  colecoes.forEach((colecao) => lista.appendChild(montarLinhaColecaoLocal(colecao, pronta && !bloqueada)));
 }
 function atualizarControlesColecoes() {
   const colecoesApi = colecoesConversasLocal();
@@ -905,14 +917,22 @@ function atualizarControlesColecoes() {
   const botaoFiltro = $('btn-filtrar-colecao');
   const criar = $('btn-criar-colecao');
   const apagarTodas = $('btn-apagar-colecoes');
+  const exportarBackup = $('btn-exportar-colecoes');
+  const importarBackup = $('btn-importar-colecoes');
+  const arquivoBackup = $('arq-importar-colecoes');
+  const campoNovo = $('nome-nova-colecao');
   const resumo = $('resumo-colecoes-locais');
   if (botaoFiltro) {
-    botaoFiltro.disabled = !pronta || !id;
+    botaoFiltro.disabled = !pronta || !id || backupColecoesEmAndamento;
     botaoFiltro.setAttribute('aria-pressed', filtroColecaoAtivo ? 'true' : 'false');
     botaoFiltro.textContent = filtroColecaoAtivo ? '⌁ nesta coleção' : '⌁ coleção';
   }
-  if (criar) criar.disabled = !pronta;
-  if (apagarTodas) apagarTodas.disabled = !pronta || colecoes.length === 0;
+  if (criar) criar.disabled = !pronta || backupColecoesEmAndamento;
+  if (campoNovo) campoNovo.disabled = !pronta || backupColecoesEmAndamento;
+  if (apagarTodas) apagarTodas.disabled = !pronta || colecoes.length === 0 || backupColecoesEmAndamento;
+  if (exportarBackup) exportarBackup.disabled = !pronta || colecoes.length === 0 || backupColecoesEmAndamento;
+  if (importarBackup) importarBackup.disabled = !pronta || backupColecoesEmAndamento;
+  if (arquivoBackup) arquivoBackup.disabled = !pronta || backupColecoesEmAndamento;
   if (resumo) {
     if (estado === 'falhou') resumo.textContent = 'Coleções locais indisponíveis neste navegador. Nenhuma conversa no GitHub foi alterada.';
     else if (!pronta) resumo.textContent = 'Carregando coleções locais…';
@@ -922,7 +942,7 @@ function atualizarControlesColecoes() {
       resumo.textContent = detalhe.colecoes + (detalhe.colecoes === 1 ? ' coleção' : ' coleções') + ' e ' + detalhe.itens + (detalhe.itens === 1 ? ' associação' : ' associações') + ' guardadas somente neste navegador.';
     }
   }
-  renderizarGestaoColecoes(colecoes, pronta);
+  renderizarGestaoColecoes(colecoes, pronta, backupColecoesEmAndamento);
 }
 function refletirColecoesNaLista() {
   atualizarControlesColecoes();
@@ -1027,6 +1047,83 @@ async function limparColecoesLocais() {
     atualizarControlesColecoes();
   }
 }
+function erroBackupColecoes(codigo) {
+  const falha = new Error(codigo);
+  falha.codigo = codigo;
+  return falha;
+}
+function lerTextoBackupColecoes(arquivo) {
+  return new Promise((resolver, rejeitar) => {
+    if (typeof FileReader !== 'function') { rejeitar(erroBackupColecoes('backup-invalido')); return; }
+    const leitor = new FileReader();
+    leitor.onerror = () => rejeitar(erroBackupColecoes('backup-invalido'));
+    leitor.onload = () => resolver(typeof leitor.result === 'string' ? leitor.result : '');
+    try { leitor.readAsText(arquivo, 'UTF-8'); }
+    catch (erro) { rejeitar(erroBackupColecoes('backup-invalido')); }
+  });
+}
+function resumoBackupColecoes(backup) {
+  const quantidadeColecoes = backup.colecoes.length;
+  const quantidadeItens = backup.colecoes.reduce((total, colecao) => total + colecao.numeros.length, 0);
+  return quantidadeColecoes + (quantidadeColecoes === 1 ? ' coleção' : ' coleções') + ' e ' + quantidadeItens + (quantidadeItens === 1 ? ' associação' : ' associações');
+}
+async function exportarBackupColecoesLocais() {
+  const colecoes = colecoesConversasLocal();
+  const status = $('status-colecoes-locais');
+  if (!colecoes || estadoColecoesConversas() !== 'pronto') {
+    if (status) status.textContent = 'Coleções locais ainda não estão disponíveis neste navegador.';
+    return;
+  }
+  backupColecoesEmAndamento = true;
+  atualizarControlesColecoes();
+  if (status) status.textContent = 'Preparando backup local das coleções…';
+  try {
+    const backup = await colecoes.exportarBackup();
+    baixar(JSON.stringify(backup, null, 2), 'colecoes-locais-rebocl.json', 'application/json');
+    if (status) status.textContent = 'Backup de ' + resumoBackupColecoes(backup) + ' preparado para download. O arquivo contém somente nomes de coleções e números de conversas.';
+  } catch (erro) {
+    if (status) status.textContent = textoErroColecoesConversas(erro);
+  } finally {
+    backupColecoesEmAndamento = false;
+    atualizarControlesColecoes();
+  }
+}
+async function importarBackupColecoesLocais(arquivo) {
+  const colecoes = colecoesConversasLocal();
+  const status = $('status-colecoes-locais');
+  if (!colecoes || estadoColecoesConversas() !== 'pronto') {
+    if (status) status.textContent = 'Coleções locais ainda não estão disponíveis neste navegador.';
+    return;
+  }
+  backupColecoesEmAndamento = true;
+  atualizarControlesColecoes();
+  try {
+    const limites = colecoes.limitesBackup();
+    const tamanho = Number(arquivo && arquivo.size);
+    if (!arquivo || !Number.isFinite(tamanho) || tamanho < 0) throw erroBackupColecoes('backup-invalido');
+    if (tamanho > limites.bytes) throw erroBackupColecoes('backup-grande');
+    if (status) status.textContent = 'Lendo e conferindo o backup das coleções neste navegador…';
+    const texto = await lerTextoBackupColecoes(arquivo);
+    const backup = colecoes.validarBackup(JSON.parse(texto));
+    const resumo = resumoBackupColecoes(backup);
+    if (!confirm('Restaurar ' + resumo + '? Isso substituirá todas as coleções locais atuais deste navegador. Favoritos, cópias offline, token, Workspace e conversas no GitHub não serão alterados.')) {
+      if (status) status.textContent = 'Restauração cancelada. Nada foi alterado.';
+      return;
+    }
+    if (status) status.textContent = 'Restaurando backup das coleções neste navegador…';
+    await colecoes.substituirBackup(backup);
+    colecaoSelecionadaId = null;
+    filtroColecaoAtivo = false;
+    if (status) status.textContent = 'Backup restaurado: ' + resumo + '. Nada no GitHub foi alterado.';
+  } catch (erro) {
+    if (status) status.textContent = textoErroColecoesConversas(erro);
+  } finally {
+    backupColecoesEmAndamento = false;
+    atualizarControlesColecoes();
+    if (listaRenderizada) renderListaAtual(listaOffline);
+  }
+}
+
 async function alternarConversaDaColecao(numero, botao) {
   const colecoes = colecoesConversasLocal();
   const id = idColecaoSelecionada();
@@ -2797,6 +2894,12 @@ $('nome-nova-colecao').addEventListener('keydown', (evento) => {
   if (evento.key === 'Enter') { evento.preventDefault(); criarColecaoLocal(); }
 });
 $('btn-apagar-colecoes').onclick = limparColecoesLocais;
+$('btn-exportar-colecoes').onclick = exportarBackupColecoesLocais;
+$('btn-importar-colecoes').onclick = () => $('arq-importar-colecoes').click();
+$('arq-importar-colecoes').onchange = (evento) => {
+  if (evento.target.files && evento.target.files[0]) importarBackupColecoesLocais(evento.target.files[0]);
+  evento.target.value = '';
+};
 $('optin-rascunhos').onchange = alternarOptinRascunhos;
 $('btn-apagar-rascunhos').onclick = apagarTodosRascunhos;
 $('btn-restaurar-rascunho').onclick = restaurarRascunhoAtual;

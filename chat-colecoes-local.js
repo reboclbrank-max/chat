@@ -14,6 +14,9 @@
   const LIMITE_NOME = 48;
   const LIMITE_ITENS_COLECAO = 100;
   const LIMITE_ITENS_TOTAL = 400;
+  const FORMATO_BACKUP = 'rebocl-colecoes-conversas';
+  const VERSAO_BACKUP = 1;
+  const LIMITE_BACKUP_BYTES = 128 * 1024;
   let banco = null;
   let colecoes = new Map();
   let itens = new Map();
@@ -53,6 +56,79 @@
 
   function chaveItem(colecao, numero) {
     return String(colecao) + ':' + String(numero);
+  }
+
+  function objetoComChaves(valor, chaves) {
+    if (!valor || typeof valor !== 'object' || Array.isArray(valor)) return false;
+    const recebidas = Object.keys(valor).sort();
+    const esperadas = chaves.slice().sort();
+    return recebidas.length === esperadas.length && recebidas.every((chave, indice) => chave === esperadas[indice]);
+  }
+
+  function normalizarBackup(dados) {
+    try {
+      if (!objetoComChaves(dados, ['formato', 'versao', 'colecoes'])) throw erro('backup-invalido');
+      if (dados.formato !== FORMATO_BACKUP || dados.versao !== VERSAO_BACKUP) throw erro('backup-incompativel');
+      if (!Array.isArray(dados.colecoes) || dados.colecoes.length > LIMITE_COLECOES) throw erro('backup-invalido');
+      const nomes = new Set();
+      const normalizadas = [];
+      let total = 0;
+      for (const bruta of dados.colecoes) {
+        if (!objetoComChaves(bruta, ['nome', 'numeros'])) throw erro('backup-invalido');
+        const nome = normalizarNome(bruta.nome);
+        const chave = chaveNome(nome);
+        if (nomes.has(chave) || !Array.isArray(bruta.numeros) || bruta.numeros.length > LIMITE_ITENS_COLECAO) throw erro('backup-invalido');
+        nomes.add(chave);
+        const vistos = new Set();
+        const numeros = [];
+        for (const valor of bruta.numeros) {
+          if (typeof valor !== 'number') throw erro('backup-invalido');
+          const numero = numeroValido(valor);
+          if (vistos.has(numero)) throw erro('backup-invalido');
+          vistos.add(numero);
+          numeros.push(numero);
+        }
+        total += numeros.length;
+        if (total > LIMITE_ITENS_TOTAL) throw erro('backup-invalido');
+        normalizadas.push(Object.freeze({ nome, numeros: Object.freeze(numeros.sort((a, b) => a - b)) }));
+      }
+      normalizadas.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+      return Object.freeze({
+        formato: FORMATO_BACKUP,
+        versao: VERSAO_BACKUP,
+        colecoes: Object.freeze(normalizadas)
+      });
+    } catch (causa) {
+      if (causa && (causa.codigo === 'backup-invalido' || causa.codigo === 'backup-incompativel')) throw causa;
+      throw erro('backup-invalido');
+    }
+  }
+
+  function planoDoBackup(backup) {
+    const proximasColecoes = [];
+    const proximosItens = [];
+    let id = 1;
+    for (const colecao of backup.colecoes) {
+      proximasColecoes.push({ id, nome: colecao.nome });
+      for (const numero of colecao.numeros) proximosItens.push({ chave: chaveItem(id, numero), colecao: id, numero });
+      id++;
+    }
+    return { colecoes: proximasColecoes, itens: proximosItens };
+  }
+
+  function backupAtual() {
+    const colecoesExportadas = listarColecoes().map((colecao) => {
+      const numeros = Array.from(itens.values())
+        .filter((item) => item.colecao === colecao.id)
+        .map((item) => item.numero)
+        .sort((a, b) => a - b);
+      return Object.freeze({ nome: colecao.nome, numeros: Object.freeze(numeros) });
+    });
+    return Object.freeze({
+      formato: FORMATO_BACKUP,
+      versao: VERSAO_BACKUP,
+      colecoes: Object.freeze(colecoesExportadas)
+    });
   }
 
   function quantidadeDaColecao(id) {
@@ -170,6 +246,11 @@
         } else if (acao === 'limpar') {
           colecoesLoja.clear();
           itensLoja.clear();
+        } else if (acao === 'substituir') {
+          colecoesLoja.clear();
+          itensLoja.clear();
+          for (const colecao of dados.colecoes) colecoesLoja.put(colecao);
+          for (const item of dados.itens) itensLoja.put(item);
         } else if (acao === 'apagar-colecao') {
           colecoesLoja.delete(dados.id);
           const pedido = itensLoja.getAll();
@@ -324,6 +405,36 @@
     });
   }
 
+  function exportarBackup() {
+    return enfileirar(async () => {
+      await iniciar();
+      return backupAtual();
+    });
+  }
+
+  function validarBackup(dados) {
+    return normalizarBackup(dados);
+  }
+
+  function substituirBackup(dados) {
+    let backup;
+    try { backup = normalizarBackup(dados); }
+    catch (e) { return Promise.reject(e && e.codigo ? e : erro('backup-invalido')); }
+    return enfileirar(async () => {
+      await iniciar();
+      const plano = planoDoBackup(backup);
+      await gravar('substituir', plano);
+      colecoes = new Map(plano.colecoes.map((colecao) => [colecao.id, Object.assign({}, colecao)]));
+      itens = new Map(plano.itens.map((item) => [item.chave, Object.assign({}, item)]));
+      avisar('mudou');
+      return detalhe();
+    });
+  }
+
+  function limitesBackup() {
+    return Object.freeze({ formato: FORMATO_BACKUP, versao: VERSAO_BACKUP, bytes: LIMITE_BACKUP_BYTES });
+  }
+
   window.ReboclColecoesConversas = Object.freeze({
     iniciar,
     pronto: iniciar,
@@ -336,7 +447,11 @@
     renomearColecao,
     apagarColecao,
     alternarConversa,
-    limparColecoes
+    limparColecoes,
+    exportarBackup,
+    validarBackup,
+    substituirBackup,
+    limitesBackup
   });
 
   iniciar().catch(() => {});

@@ -68,6 +68,12 @@ localStorage.setItem('assistente_rebocl_token', 'controle-local-sem-segredo');
 try {
   // A fixture confirma os diálogos do ciclo local; não há dado real, download ou rede externa.
   window.confirm = () => true;
+  window.__blobsBackupColecoes = [];
+  const criarUrlControlada = URL.createObjectURL.bind(URL);
+  URL.createObjectURL = (blob) => {
+    window.__blobsBackupColecoes.push(blob);
+    return criarUrlControlada(blob);
+  };
   if ('serviceWorker' in navigator) {
     const esperaControlada = { postMessage: (dado) => { document.documentElement.dataset.pwaUpdateRequest = String((dado || {}).tipo || ''); } };
     navigator.serviceWorker.register = () => Promise.resolve({ waiting: esperaControlada, installing: null, addEventListener: () => {}, update: () => {} });
@@ -241,6 +247,34 @@ teste_lista = """<script>
     filtroColecao.click();
     await esperar(() => filtroColecao.getAttribute('aria-pressed') === 'false', 5000, 'desativar filtro de coleção');
 
+    const exportarColecoes = document.getElementById('btn-exportar-colecoes');
+    const importarColecoes = document.getElementById('btn-importar-colecoes');
+    const arquivoColecoes = document.getElementById('arq-importar-colecoes');
+    if (!exportarColecoes || !importarColecoes || !arquivoColecoes) throw new Error('controles de backup das coleções ausentes');
+    await esperarColecoes(() => !exportarColecoes.disabled && !importarColecoes.disabled, 'backup das coleções pronto');
+    exportarColecoes.click();
+    await esperarColecoes(() => window.__blobsBackupColecoes.length === 1, 'exportar backup das coleções');
+    const exportado = JSON.parse(await window.__blobsBackupColecoes[0].text());
+    if (exportado.formato !== 'rebocl-colecoes-conversas' || exportado.versao !== 1 || exportado.colecoes.length !== 1 || exportado.colecoes[0].nome !== 'Coleção de fixture' || String(exportado.colecoes[0].numeros) !== '1') {
+      throw new Error('backup das coleções não preservou somente a associação local controlada');
+    }
+    const restauracao = {
+      formato: 'rebocl-colecoes-conversas', versao: 1,
+      colecoes: [{ nome: 'Coleção restaurada de fixture', numeros: [2, 7] }]
+    };
+    const arquivoRestauracao = new File([JSON.stringify(restauracao)], 'colecoes-fixture.json', { type: 'application/json' });
+    const transferencia = new DataTransfer();
+    transferencia.items.add(arquivoRestauracao);
+    arquivoColecoes.files = transferencia.files;
+    arquivoColecoes.dispatchEvent(new Event('change', { bubbles: true }));
+    await esperarColecoes(() => [...seletorColecao.options].some(opcao => opcao.textContent.includes('Coleção restaurada de fixture')), 'restaurar backup das coleções');
+    if ([...seletorColecao.options].some(opcao => opcao.textContent.includes('Coleção de fixture'))) {
+      throw new Error('restauração não substituiu as coleções locais anteriores');
+    }
+    if (!document.getElementById('resumo-colecoes-locais').textContent.includes('1 coleção e 2 associações')) {
+      throw new Error('restauração não atualizou o resumo local das coleções');
+    }
+
     const busca = document.getElementById('busca');
     busca.value = 'agulha pesquisável';
     busca.dispatchEvent(new Event('input', { bubbles: true }));
@@ -303,7 +337,7 @@ teste_lista = """<script>
     }
 
     const resultadoWorkspace = await testarWorkspace();
-    document.body.dataset.browserE2e = 'PASS: favoritos locais marcaram, filtraram e apagaram sem rede; coleções locais criaram, associaram, filtraram e apagaram sem rede; busca ativa manteve carregar mais; nova conversa oculta; alvo da página 3 visível; PWA protegeu rascunho; rascunho local opt-in restaurou sem rede' + resultadoWorkspace;
+    document.body.dataset.browserE2e = 'PASS: favoritos locais marcaram, filtraram e apagaram sem rede; coleções locais criaram, associaram, filtraram e apagaram sem rede; backup local das coleções exportou e restaurou substituindo a fixture sem rede; busca ativa manteve carregar mais; nova conversa oculta; alvo da página 3 visível; PWA protegeu rascunho; rascunho local opt-in restaurou sem rede' + resultadoWorkspace;
   } catch (erro) {
     document.body.dataset.browserE2e = 'FAIL: ' + String((erro && erro.message) || erro).slice(0, 180);
   }

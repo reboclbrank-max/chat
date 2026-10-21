@@ -138,6 +138,9 @@ testa('módulo usa banco separado, limites explícitos e não introduz rede ou s
   assert.match(fonte, /const LIMITE_NOME = 48/);
   assert.match(fonte, /const LIMITE_ITENS_COLECAO = 100/);
   assert.match(fonte, /const LIMITE_ITENS_TOTAL = 400/);
+  assert.match(fonte, /const FORMATO_BACKUP = 'rebocl-colecoes-conversas'/);
+  assert.match(fonte, /const VERSAO_BACKUP = 1/);
+  assert.match(fonte, /const LIMITE_BACKUP_BYTES = 128 \* 1024/);
   assert.match(fonte, /indexedDB\.open\(BANCO, VERSAO_BANCO\)/);
   assert.doesNotMatch(fonte, /\b(fetch|XMLHttpRequest|WebSocket|EventSource|sendBeacon)\s*\(?/);
   assert.doesNotMatch(fonte, /\b(localStorage|sessionStorage|Authorization|github_pat_|gh[pousr]_)\b/i);
@@ -210,6 +213,59 @@ testaAsync('limpeza explícita remove apenas o banco das coleções locais', asy
   assert.equal(r.stores.get('itens').size, 0);
 });
 
+testaAsync('exporta um backup mínimo, valida esquema estrito e restaura substituindo apenas as coleções locais', async () => {
+  const banco = criarIndexedDbFalso();
+  const r = runtimeColecoes(true, banco);
+  await r.api.pronto();
+  await r.api.criarColecao('  Zeta  ');
+  await r.api.alternarConversa(1, 9);
+  await r.api.alternarConversa(1, 3);
+  await r.api.criarColecao('Alpha');
+  await r.api.alternarConversa(2, 72);
+  const backup = await r.api.exportarBackup();
+  assert.deepEqual(backup, {
+    formato: 'rebocl-colecoes-conversas',
+    versao: 1,
+    colecoes: [
+      { nome: 'Alpha', numeros: [72] },
+      { nome: 'Zeta', numeros: [3, 9] }
+    ]
+  });
+  const serializado = JSON.stringify(backup);
+  assert(!/titulo|mensagem|conteudo|token|github|http/i.test(serializado), 'backup não carrega conteúdo, token ou transporte');
+  assert.deepEqual(r.api.limitesBackup(), { formato: 'rebocl-colecoes-conversas', versao: 1, bytes: 131072 });
+  assert.throws(() => r.api.validarBackup({ formato: 'rebocl-colecoes-conversas', versao: 1, colecoes: [], extra: true }), (erro) => erro && erro.codigo === 'backup-invalido');
+  assert.throws(() => r.api.validarBackup({ formato: 'rebocl-colecoes-conversas', versao: '1', colecoes: [] }), (erro) => erro && erro.codigo === 'backup-incompativel');
+  assert.throws(() => r.api.validarBackup({ formato: 'rebocl-colecoes-conversas', versao: 1, colecoes: [{ nome: 'Duplicada', numeros: [3, 3] }] }), (erro) => erro && erro.codigo === 'backup-invalido');
+  assert.throws(() => r.api.validarBackup({ formato: 'rebocl-colecoes-conversas', versao: 1, colecoes: [{ nome: 'Tipo', numeros: ['4'] }] }), (erro) => erro && erro.codigo === 'backup-invalido');
+  await assert.rejects(() => r.api.substituirBackup({ formato: 'rebocl-colecoes-conversas', versao: 1, colecoes: [{ nome: '', numeros: [] }] }), (erro) => erro && erro.codigo === 'backup-invalido');
+  assert.equal(r.api.temConversa(1, 9), true, 'backup inválido não altera o estado anterior');
+  const normalizado = r.api.validarBackup({
+    formato: 'rebocl-colecoes-conversas',
+    versao: 1,
+    colecoes: [{ nome: '  Restaurada  ', numeros: [40, 4] }, { nome: 'Outra', numeros: [] }]
+  });
+  await r.api.substituirBackup(normalizado);
+  assert.deepEqual(r.api.listarColecoes(), [
+    { id: 1, nome: 'Outra', quantidade: 0 },
+    { id: 2, nome: 'Restaurada', quantidade: 2 }
+  ]);
+  assert.equal(r.api.temConversa(1, 9), false);
+  assert.equal(r.api.temConversa(2, 4), true);
+  assert.equal(r.api.temConversa(2, 40), true);
+  assert.deepEqual([...r.stores.get('colecoes').values()], [{ id: 1, nome: 'Outra' }, { id: 2, nome: 'Restaurada' }]);
+  assert.deepEqual([...r.stores.get('itens').values()], [
+    { chave: '2:4', colecao: 2, numero: 4 },
+    { chave: '2:40', colecao: 2, numero: 40 }
+  ]);
+  const relida = runtimeColecoes(true, banco);
+  await relida.api.pronto();
+  assert.deepEqual(await relida.api.exportarBackup(), {
+    formato: 'rebocl-colecoes-conversas', versao: 1,
+    colecoes: [{ nome: 'Outra', numeros: [] }, { nome: 'Restaurada', numeros: [4, 40] }]
+  });
+});
+
 testaAsync('sem IndexedDB falha fechada, sem fallback para rede ou storage legado', async () => {
   const r = runtimeColecoes(false);
   await assert.rejects(() => r.api.pronto(), (erro) => erro && erro.codigo === 'armazenamento-indisponivel');
@@ -233,6 +289,18 @@ testa('quatro rotas carregam ativo local e preservam coleções, controles e par
     assert.match(html, /id="btn-filtrar-colecao" aria-pressed="false" disabled/);
     assert.match(html, /id="btn-criar-colecao" disabled/);
     assert.match(html, /id="btn-apagar-colecoes" disabled/);
+    assert.match(html, /id="btn-exportar-colecoes" disabled/);
+    assert.match(html, /id="btn-importar-colecoes" disabled/);
+    assert.match(html, /id="arq-importar-colecoes" accept="application\/json,\.json" class="oculto" disabled/);
+    assert.match(html, /Backup manual das coleções locais/);
+    assert.match(html, /Restaurar é uma escolha sua e substitui todas as coleções deste navegador após confirmação/);
+    assert.match(html, /function exportarBackupColecoesLocais\(\)/);
+    assert.match(html, /function importarBackupColecoesLocais\(arquivo\)/);
+    assert.match(html, /colecoes\.validarBackup\(JSON\.parse\(texto\)\)/);
+    assert.match(html, /if \(tamanho > limites\.bytes\) throw erroBackupColecoes\('backup-grande'\);/);
+    assert.match(html, /backupColecoesEmAndamento = true;/);
+    assert.match(html, /colecoes\.substituirBackup\(backup\)/);
+    assert.match(html, /Isso substituirá todas as coleções locais atuais deste navegador/);
     assert.match(html, /nome que você escolheu e os números das conversas associadas neste navegador/i);
     assert.match(html, /function criarColecaoLocal\(\)/);
     assert.match(html, /function limparColecoesLocais\(\)/);
@@ -263,7 +331,7 @@ testa('casca, workflow, corredor e continuidade observam o novo ativo', () => {
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const corredor = ler('tools/testes/roda-testes.js');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v70/);
+  assert.match(sw, /rebocl-chat-v71/);
   assert.match(sw, /'\.\/chat-colecoes-local\.js'/);
   assert.match(workflow, /'chat-colecoes-local\.js'/);
   assert.match(corredor, /'colecoes-conversas-local\.js'/);
@@ -275,6 +343,8 @@ testa('estilos mantêm três controles nativos, gestão legível e layout respon
   assert.match(css, /#seletor-colecao\{flex:0 1 190px;min-width:110px;min-height:40px/);
   assert.match(css, /\.conv-favorita,\.conv-colecao\{flex:0 0 44px;min-width:44px;min-height:44px/);
   assert.match(css, /\.colecoes-nova\{display:flex;gap:8px;align-items:stretch\}/);
+  assert.match(css, /\.colecoes-backup\{margin-top:12px;padding:10px;border:1px solid var\(--borda\)/);
+  assert.match(css, /\.colecoes-backup-acoes\{display:flex;gap:8px;align-items:stretch;margin-top:9px\}/);
   assert.match(css, /\.colecao-local-acoes\{display:flex;gap:6px;align-items:stretch\}/);
   assert.match(css, /@media \(max-width:600px\)\{\.busca-organizacao\{flex-wrap:wrap\}/);
 });
