@@ -160,7 +160,7 @@ function runtimeLista(src, responder, cacheInicial = [], salvarCache = null) {
   vm.createContext(ctx);
   vm.runInContext(`
     let paginaLista = 1, listaAtual = [], maisListaDisponivel = false, carregandoMaisLista = false, revisaoLista = 0;
-    let filtroFavoritasAtivo = false, colecaoSelecionadaId = null, filtroColecaoAtivo = false, listaRenderizada = false, listaOffline = false;
+    let filtroFavoritasAtivo = false, backupFavoritosEmAndamento = false, colecaoSelecionadaId = null, filtroColecaoAtivo = false, listaRenderizada = false, listaOffline = false;
     let filaCacheLista = Promise.resolve();
     ${extraiHelpers(src)}
     ${extraiLista(src)}

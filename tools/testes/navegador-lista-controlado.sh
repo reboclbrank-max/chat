@@ -68,10 +68,10 @@ localStorage.setItem('assistente_rebocl_token', 'controle-local-sem-segredo');
 try {
   // A fixture confirma os diálogos do ciclo local; não há dado real, download ou rede externa.
   window.confirm = () => true;
-  window.__blobsBackupColecoes = [];
+  window.__blobsBackupsLocais = [];
   const criarUrlControlada = URL.createObjectURL.bind(URL);
   URL.createObjectURL = (blob) => {
-    window.__blobsBackupColecoes.push(blob);
+    window.__blobsBackupsLocais.push(blob);
     return criarUrlControlada(blob);
   };
   if ('serviceWorker' in navigator) {
@@ -216,6 +216,31 @@ teste_lista = """<script>
     filtroFavoritas.click();
     await esperar(() => filtroFavoritas.getAttribute('aria-pressed') === 'false', 5000, 'desativar filtro de favoritas');
 
+    const exportarFavoritos = document.getElementById('btn-exportar-favoritos');
+    const importarFavoritos = document.getElementById('btn-importar-favoritos');
+    const arquivoFavoritos = document.getElementById('arq-importar-favoritos');
+    const favoritaDoNumero = (numero) => document.querySelector('#lista .conv-conversa[data-conversa-numero="' + numero + '"] .conv-favorita');
+    if (!exportarFavoritos || !importarFavoritos || !arquivoFavoritos || !favoritaDoNumero(1) || !favoritaDoNumero(2)) {
+      throw new Error('controles de backup dos favoritos ausentes');
+    }
+    await esperarOrganizacao(() => !exportarFavoritos.disabled && !importarFavoritos.disabled, 'backup dos favoritos pronto');
+    exportarFavoritos.click();
+    await esperarOrganizacao(() => window.__blobsBackupsLocais.length === 1, 'exportar backup dos favoritos');
+    const favoritosExportados = JSON.parse(await window.__blobsBackupsLocais[0].text());
+    if (favoritosExportados.formato !== 'rebocl-favoritos-conversas' || favoritosExportados.versao !== 1 || String(favoritosExportados.favoritos) !== '1') {
+      throw new Error('backup dos favoritos não preservou somente o número local controlado');
+    }
+    const restauracaoFavoritos = { formato: 'rebocl-favoritos-conversas', versao: 1, favoritos: [2] };
+    const arquivoRestauracaoFavoritos = new File([JSON.stringify(restauracaoFavoritos)], 'favoritos-fixture.json', { type: 'application/json' });
+    const transferenciaFavoritos = new DataTransfer();
+    transferenciaFavoritos.items.add(arquivoRestauracaoFavoritos);
+    arquivoFavoritos.files = transferenciaFavoritos.files;
+    arquivoFavoritos.dispatchEvent(new Event('change', { bubbles: true }));
+    await esperarOrganizacao(() => favoritaDoNumero(1).getAttribute('aria-pressed') === 'false' && favoritaDoNumero(2).getAttribute('aria-pressed') === 'true', 'restaurar backup dos favoritos');
+    if (!document.getElementById('resumo-favoritos-locais').textContent.includes('1 favorito guardado')) {
+      throw new Error('restauração não atualizou o resumo local dos favoritos');
+    }
+
     const campoColecao = document.getElementById('nome-nova-colecao');
     const criarColecao = document.getElementById('btn-criar-colecao');
     const seletorColecao = document.getElementById('seletor-colecao');
@@ -253,8 +278,8 @@ teste_lista = """<script>
     if (!exportarColecoes || !importarColecoes || !arquivoColecoes) throw new Error('controles de backup das coleções ausentes');
     await esperarColecoes(() => !exportarColecoes.disabled && !importarColecoes.disabled, 'backup das coleções pronto');
     exportarColecoes.click();
-    await esperarColecoes(() => window.__blobsBackupColecoes.length === 1, 'exportar backup das coleções');
-    const exportado = JSON.parse(await window.__blobsBackupColecoes[0].text());
+    await esperarColecoes(() => window.__blobsBackupsLocais.length === 2, 'exportar backup das coleções');
+    const exportado = JSON.parse(await window.__blobsBackupsLocais[1].text());
     if (exportado.formato !== 'rebocl-colecoes-conversas' || exportado.versao !== 1 || exportado.colecoes.length !== 1 || exportado.colecoes[0].nome !== 'Coleção de fixture' || String(exportado.colecoes[0].numeros) !== '1') {
       throw new Error('backup das coleções não preservou somente a associação local controlada');
     }
@@ -326,7 +351,7 @@ teste_lista = """<script>
     const apagarFavoritos = document.getElementById('btn-apagar-favoritos');
     apagarFavoritos.click();
     await esperarOrganizacao(() => document.getElementById('resumo-favoritos-locais').textContent.includes('0 favoritos guardados'), 'limpar favoritos');
-    if (document.querySelector('#lista .conv-conversa[data-conversa-numero="1"] .conv-favorita').getAttribute('aria-pressed') !== 'false') {
+    if (document.querySelector('#lista .conv-conversa[data-conversa-numero="1"] .conv-favorita').getAttribute('aria-pressed') !== 'false' || document.querySelector('#lista .conv-conversa[data-conversa-numero="2"] .conv-favorita').getAttribute('aria-pressed') !== 'false') {
       throw new Error('limpeza explícita não removeu favorito local');
     }
     const apagarColecoes = document.getElementById('btn-apagar-colecoes');
@@ -337,7 +362,7 @@ teste_lista = """<script>
     }
 
     const resultadoWorkspace = await testarWorkspace();
-    document.body.dataset.browserE2e = 'PASS: favoritos locais marcaram, filtraram e apagaram sem rede; coleções locais criaram, associaram, filtraram e apagaram sem rede; backup local das coleções exportou e restaurou substituindo a fixture sem rede; busca ativa manteve carregar mais; nova conversa oculta; alvo da página 3 visível; PWA protegeu rascunho; rascunho local opt-in restaurou sem rede' + resultadoWorkspace;
+    document.body.dataset.browserE2e = 'PASS: favoritos locais marcaram, filtraram e apagaram sem rede; backup local dos favoritos exportou e restaurou substituindo a fixture sem rede; coleções locais criaram, associaram, filtraram e apagaram sem rede; backup local das coleções exportou e restaurou substituindo a fixture sem rede; busca ativa manteve carregar mais; nova conversa oculta; alvo da página 3 visível; PWA protegeu rascunho; rascunho local opt-in restaurou sem rede' + resultadoWorkspace;
   } catch (erro) {
     document.body.dataset.browserE2e = 'FAIL: ' + String((erro && erro.message) || erro).slice(0, 180);
   }

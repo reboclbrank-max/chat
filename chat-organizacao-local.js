@@ -10,6 +10,9 @@
   const VERSAO_BANCO = 1;
   const LOJA = 'favoritos';
   const LIMITE_FAVORITOS = 100;
+  const FORMATO_BACKUP = 'rebocl-favoritos-conversas';
+  const VERSAO_BACKUP = 1;
+  const LIMITE_BACKUP_BYTES = 32 * 1024;
   let banco = null;
   let favoritos = new Set();
   let inicio = null;
@@ -26,6 +29,47 @@
     const numero = Number(valor);
     if (!Number.isSafeInteger(numero) || numero < 1) throw erro('favorito-invalido');
     return numero;
+  }
+
+  function objetoComChaves(valor, chaves) {
+    if (!valor || typeof valor !== 'object' || Array.isArray(valor)) return false;
+    const recebidas = Object.keys(valor).sort();
+    const esperadas = chaves.slice().sort();
+    return recebidas.length === esperadas.length && recebidas.every((chave, indice) => chave === esperadas[indice]);
+  }
+
+  function normalizarBackup(dados) {
+    try {
+      if (!objetoComChaves(dados, ['formato', 'versao', 'favoritos'])) throw erro('backup-favoritos-invalido');
+      if (dados.formato !== FORMATO_BACKUP || dados.versao !== VERSAO_BACKUP) throw erro('backup-favoritos-incompativel');
+      if (!Array.isArray(dados.favoritos) || dados.favoritos.length > LIMITE_FAVORITOS) throw erro('backup-favoritos-invalido');
+      const vistos = new Set();
+      const normalizados = [];
+      for (const valor of dados.favoritos) {
+        if (typeof valor !== 'number') throw erro('backup-favoritos-invalido');
+        const numero = numeroValido(valor);
+        if (vistos.has(numero)) throw erro('backup-favoritos-invalido');
+        vistos.add(numero);
+        normalizados.push(numero);
+      }
+      normalizados.sort((a, b) => a - b);
+      return Object.freeze({
+        formato: FORMATO_BACKUP,
+        versao: VERSAO_BACKUP,
+        favoritos: Object.freeze(normalizados)
+      });
+    } catch (causa) {
+      if (causa && (causa.codigo === 'backup-favoritos-invalido' || causa.codigo === 'backup-favoritos-incompativel')) throw causa;
+      throw erro('backup-favoritos-invalido');
+    }
+  }
+
+  function backupAtual() {
+    return Object.freeze({
+      formato: FORMATO_BACKUP,
+      versao: VERSAO_BACKUP,
+      favoritos: Object.freeze(Array.from(favoritos).sort((a, b) => a - b))
+    });
   }
 
   function detalhe() {
@@ -97,7 +141,10 @@
         if (acao === 'adicionar') loja.put({ numero });
         else if (acao === 'remover') loja.delete(numero);
         else if (acao === 'limpar') loja.clear();
-        else throw erro('favorito-invalido');
+        else if (acao === 'substituir') {
+          loja.clear();
+          for (const favorito of numero) loja.put({ numero: favorito });
+        } else throw erro('favorito-invalido');
       } catch (e) { rejeitar(e && e.codigo ? e : erro('armazenamento-indisponivel')); return; }
       transacao.oncomplete = () => resolver();
       transacao.onerror = () => rejeitar(erro('armazenamento-indisponivel'));
@@ -164,6 +211,34 @@
     });
   }
 
+  function exportarBackup() {
+    return enfileirar(async () => {
+      await iniciar();
+      return backupAtual();
+    });
+  }
+
+  function validarBackup(dados) {
+    return normalizarBackup(dados);
+  }
+
+  function substituirBackup(dados) {
+    let backup;
+    try { backup = normalizarBackup(dados); }
+    catch (e) { return Promise.reject(e && e.codigo ? e : erro('backup-favoritos-invalido')); }
+    return enfileirar(async () => {
+      await iniciar();
+      await gravar('substituir', backup.favoritos);
+      favoritos = new Set(backup.favoritos);
+      avisar('mudou');
+      return detalhe();
+    });
+  }
+
+  function limitesBackup() {
+    return Object.freeze({ formato: FORMATO_BACKUP, versao: VERSAO_BACKUP, bytes: LIMITE_BACKUP_BYTES });
+  }
+
   window.ReboclOrganizacaoConversas = Object.freeze({
     iniciar,
     pronto: iniciar,
@@ -171,7 +246,11 @@
     detalhe,
     temFavorito,
     alternarFavorito,
-    limparFavoritos
+    limparFavoritos,
+    exportarBackup,
+    validarBackup,
+    substituirBackup,
+    limitesBackup
   });
 
   iniciar().catch(() => {});

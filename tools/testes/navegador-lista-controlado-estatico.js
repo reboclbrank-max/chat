@@ -68,7 +68,12 @@ ok('exercita favoritos locais controlados sem usar conversa ou rede real', () =>
   assert.match(texto, /controles de favoritos locais ausentes/);
   assert.match(texto, /filtro local não isolou a conversa favorita/);
   assert.match(texto, /carregar mais sumiu no filtro de favoritas/);
+  assert.match(texto, /controles de backup dos favoritos ausentes/);
+  assert.match(texto, /__blobsBackupsLocais/);
+  assert.match(texto, /backup dos favoritos não preservou somente o número local controlado/);
+  assert.match(texto, /restauração não atualizou o resumo local dos favoritos/);
   assert.match(texto, /limpeza explícita não removeu favorito local/);
+  assert.match(texto, /backup local dos favoritos exportou e restaurou substituindo a fixture sem rede/);
   assert.match(texto, /favoritos locais marcaram, filtraram e apagaram sem rede/);
 });
 
@@ -80,7 +85,7 @@ ok('exercita coleções locais controladas sem usar conversa ou rede real', () =
   assert.match(texto, /filtro local não isolou a conversa da coleção/);
   assert.match(texto, /carregar mais sumiu no filtro de coleção/);
   assert.match(texto, /controles de backup das coleções ausentes/);
-  assert.match(texto, /__blobsBackupColecoes/);
+  assert.match(texto, /__blobsBackupsLocais/);
   assert.match(texto, /backup das coleções não preservou somente a associação local controlada/);
   assert.match(texto, /Coleção restaurada de fixture/);
   assert.match(texto, /restauração não substituiu as coleções locais anteriores/);

@@ -123,6 +123,15 @@
     <h2>⭐ Favoritos de conversa neste aparelho</h2>
     <p id="resumo-favoritos-locais">Carregando favoritos locais…</p>
     <p>Marque a estrela na lista para guardar a preferência apenas neste navegador. A organização registra só o número da conversa — nunca título, mensagens ou token — e não altera o GitHub nem é sincronizada. O filtro alcança apenas conversas já carregadas; use “Carregar mais” para ampliar a lista.</p>
+    <div class="backup-local">
+      <h3>Backup manual dos favoritos locais</h3>
+      <p>Baixe um arquivo JSON para guardar ou mover somente os números das conversas favoritadas. Restaurar é uma escolha sua e substitui todos os favoritos deste navegador após confirmação; não altera GitHub, coleções, cópias offline, token nem o Workspace. O backup das coleções é separado.</p>
+      <div class="backup-local-acoes">
+        <button type="button" id="btn-exportar-favoritos" disabled>⬇ Baixar backup dos favoritos</button>
+        <button type="button" id="btn-importar-favoritos" disabled>⬆ Restaurar backup dos favoritos</button>
+      </div>
+      <input type="file" id="arq-importar-favoritos" accept="application/json,.json" class="oculto" disabled aria-label="Escolher arquivo JSON de backup dos favoritos locais">
+    </div>
     <button type="button" id="btn-apagar-favoritos" disabled style="background:var(--painel);border:1px solid #7a2a2a;color:#e0a9a9;font-weight:600">Apagar favoritos locais</button>
     <div id="status-favoritos-locais" role="status" aria-live="polite" aria-atomic="true"></div>
   </div>
@@ -130,10 +139,10 @@
     <h2>⌁ Coleções de conversa neste aparelho</h2>
     <p id="resumo-colecoes-locais">Carregando coleções locais…</p>
     <p>Crie coleções para organizar conversas já carregadas. Cada coleção guarda só o nome que você escolheu e os números das conversas associadas neste navegador — nunca título, mensagens ou token. Nada é alterado no GitHub, enviado ou sincronizado.</p>
-    <div class="colecoes-backup">
+    <div class="backup-local">
       <h3>Backup manual das coleções locais</h3>
       <p>Baixe um arquivo JSON para guardar ou mover suas coleções. Ele contém somente os nomes das coleções e os números das conversas associadas — nunca títulos, mensagens ou token. Restaurar é uma escolha sua e substitui todas as coleções deste navegador após confirmação; não altera GitHub, favoritos, cópias offline nem o Workspace.</p>
-      <div class="colecoes-backup-acoes">
+      <div class="backup-local-acoes">
         <button type="button" id="btn-exportar-colecoes" disabled>⬇ Baixar backup das coleções</button>
         <button type="button" id="btn-importar-colecoes" disabled>⬆ Restaurar backup das coleções</button>
       </div>
@@ -236,7 +245,7 @@ let conversa = null, intervalo = null, ultimoId = 0, ultimoQuando = '', falando 
 const $ = (id) => document.getElementById(id);
 const elLista = $('lista'), elMsgs = $('msgs'), elFaixa = $('faixa');
 let paginaLista = 1, listaAtual = [], maisListaDisponivel = false, carregandoMaisLista = false, revisaoLista = 0, criandoNovaConversa = false;
-let filtroFavoritasAtivo = false, colecaoSelecionadaId = null, filtroColecaoAtivo = false, backupColecoesEmAndamento = false, listaRenderizada = false, listaOffline = false;
+let filtroFavoritasAtivo = false, backupFavoritosEmAndamento = false, colecaoSelecionadaId = null, filtroColecaoAtivo = false, backupColecoesEmAndamento = false, listaRenderizada = false, listaOffline = false;
 let filaCacheLista = Promise.resolve();
 
 // Erros de rede/API são dados externos. A interface só mostra categorias fechadas,
@@ -698,6 +707,9 @@ function conversaEhFavorita(numero) {
 function textoErroOrganizacaoConversas(erro) {
   if (erro && erro.codigo === 'limite-favoritos') return 'Você já guardou o limite de 100 favoritos neste navegador. Remova uma estrela antes de acrescentar outra.';
   if (erro && erro.codigo === 'favorito-invalido') return 'Esta conversa não pôde ser organizada localmente. Nada no GitHub foi alterado.';
+  if (erro && erro.codigo === 'backup-favoritos-incompativel') return 'Este arquivo não é um backup compatível dos favoritos locais deste Chat.';
+  if (erro && erro.codigo === 'backup-favoritos-invalido') return 'O backup dos favoritos está inválido ou ultrapassa os limites locais. Nada foi alterado.';
+  if (erro && erro.codigo === 'backup-favoritos-grande') return 'O arquivo de backup passa do limite local de 32 KB e não foi aberto.';
   return 'Não foi possível usar os favoritos locais neste navegador agora. Nada no GitHub foi alterado.';
 }
 function atualizarControlesOrganizacaoConversas() {
@@ -706,19 +718,25 @@ function atualizarControlesOrganizacaoConversas() {
   const pronta = !!organizacao && estado === 'pronto';
   const botaoFiltro = $('btn-filtrar-favoritas');
   const botaoLimpar = $('btn-apagar-favoritos');
+  const exportarBackup = $('btn-exportar-favoritos');
+  const importarBackup = $('btn-importar-favoritos');
+  const arquivoBackup = $('arq-importar-favoritos');
   const resumo = $('resumo-favoritos-locais');
+  const quantidade = pronta ? organizacao.detalhe().quantidade : 0;
   if (!pronta) filtroFavoritasAtivo = false;
   if (botaoFiltro) {
-    botaoFiltro.disabled = !pronta;
+    botaoFiltro.disabled = !pronta || backupFavoritosEmAndamento;
     botaoFiltro.setAttribute('aria-pressed', filtroFavoritasAtivo ? 'true' : 'false');
     botaoFiltro.textContent = filtroFavoritasAtivo ? '★ favoritas' : '☆ favoritas';
   }
-  if (botaoLimpar) botaoLimpar.disabled = !pronta;
+  if (botaoLimpar) botaoLimpar.disabled = !pronta || backupFavoritosEmAndamento;
+  if (exportarBackup) exportarBackup.disabled = !pronta || quantidade === 0 || backupFavoritosEmAndamento;
+  if (importarBackup) importarBackup.disabled = !pronta || backupFavoritosEmAndamento;
+  if (arquivoBackup) arquivoBackup.disabled = !pronta || backupFavoritosEmAndamento;
   if (resumo) {
     if (estado === 'falhou') resumo.textContent = 'Favoritos locais indisponíveis neste navegador. Nenhuma conversa no GitHub foi alterada.';
     else if (!pronta) resumo.textContent = 'Carregando favoritos locais…';
     else {
-      const quantidade = organizacao.detalhe().quantidade;
       resumo.textContent = quantidade + ' favorito' + (quantidade === 1 ? '' : 's') + ' guardado' + (quantidade === 1 ? '' : 's') + ' somente neste navegador.';
     }
   }
@@ -751,7 +769,7 @@ function iniciarOrganizacaoConversas() {
 async function alternarFavoritoDaConversa(numero, botao) {
   const organizacao = organizacaoConversasLocal();
   const status = $('status-organizacao-conversas');
-  if (!organizacao || estadoOrganizacaoConversas() !== 'pronto') {
+  if (!organizacao || estadoOrganizacaoConversas() !== 'pronto' || backupFavoritosEmAndamento) {
     if (status) status.textContent = 'Favoritos locais ainda não estão disponíveis neste navegador.';
     return;
   }
@@ -772,7 +790,7 @@ async function limparFavoritosLocais() {
   const organizacao = organizacaoConversasLocal();
   const botao = $('btn-apagar-favoritos');
   const status = $('status-favoritos-locais');
-  if (!organizacao || estadoOrganizacaoConversas() !== 'pronto') {
+  if (!organizacao || estadoOrganizacaoConversas() !== 'pronto' || backupFavoritosEmAndamento) {
     if (status) status.textContent = 'Favoritos locais ainda não estão disponíveis neste navegador.';
     return;
   }
@@ -786,6 +804,81 @@ async function limparFavoritosLocais() {
     if (status) status.textContent = textoErroOrganizacaoConversas(erro);
   } finally {
     atualizarControlesOrganizacaoConversas();
+  }
+}
+
+function erroBackupFavoritos(codigo) {
+  const falha = new Error(codigo);
+  falha.codigo = codigo;
+  return falha;
+}
+function lerTextoBackupFavoritos(arquivo) {
+  return new Promise((resolver, rejeitar) => {
+    if (typeof FileReader !== 'function') { rejeitar(erroBackupFavoritos('backup-favoritos-invalido')); return; }
+    const leitor = new FileReader();
+    leitor.onerror = () => rejeitar(erroBackupFavoritos('backup-favoritos-invalido'));
+    leitor.onload = () => resolver(typeof leitor.result === 'string' ? leitor.result : '');
+    try { leitor.readAsText(arquivo, 'UTF-8'); }
+    catch (erro) { rejeitar(erroBackupFavoritos('backup-favoritos-invalido')); }
+  });
+}
+function resumoBackupFavoritos(backup) {
+  const quantidade = backup.favoritos.length;
+  return quantidade + ' favorito' + (quantidade === 1 ? '' : 's');
+}
+async function exportarBackupFavoritosLocais() {
+  const organizacao = organizacaoConversasLocal();
+  const status = $('status-favoritos-locais');
+  if (!organizacao || estadoOrganizacaoConversas() !== 'pronto' || backupFavoritosEmAndamento) {
+    if (status) status.textContent = 'Favoritos locais ainda não estão disponíveis neste navegador.';
+    return;
+  }
+  backupFavoritosEmAndamento = true;
+  atualizarControlesOrganizacaoConversas();
+  if (status) status.textContent = 'Preparando backup local dos favoritos…';
+  try {
+    const backup = await organizacao.exportarBackup();
+    baixar(JSON.stringify(backup, null, 2), 'favoritos-locais-rebocl.json', 'application/json');
+    if (status) status.textContent = 'Backup de ' + resumoBackupFavoritos(backup) + ' preparado para download. O arquivo contém somente números de conversas favoritadas.';
+  } catch (erro) {
+    if (status) status.textContent = textoErroOrganizacaoConversas(erro);
+  } finally {
+    backupFavoritosEmAndamento = false;
+    atualizarControlesOrganizacaoConversas();
+  }
+}
+async function importarBackupFavoritosLocais(arquivo) {
+  const organizacao = organizacaoConversasLocal();
+  const status = $('status-favoritos-locais');
+  if (!organizacao || estadoOrganizacaoConversas() !== 'pronto' || backupFavoritosEmAndamento) {
+    if (status) status.textContent = 'Favoritos locais ainda não estão disponíveis neste navegador.';
+    return;
+  }
+  backupFavoritosEmAndamento = true;
+  atualizarControlesOrganizacaoConversas();
+  try {
+    const limites = organizacao.limitesBackup();
+    const tamanho = Number(arquivo && arquivo.size);
+    if (!arquivo || !Number.isFinite(tamanho) || tamanho < 0) throw erroBackupFavoritos('backup-favoritos-invalido');
+    if (tamanho > limites.bytes) throw erroBackupFavoritos('backup-favoritos-grande');
+    if (status) status.textContent = 'Lendo e conferindo o backup dos favoritos neste navegador…';
+    const texto = await lerTextoBackupFavoritos(arquivo);
+    const backup = organizacao.validarBackup(JSON.parse(texto));
+    const resumo = resumoBackupFavoritos(backup);
+    if (!confirm('Restaurar ' + resumo + '? Isso substituirá todos os favoritos locais atuais deste navegador. Coleções, cópias offline, token, Workspace e conversas no GitHub não serão alterados.')) {
+      if (status) status.textContent = 'Restauração cancelada. Nada foi alterado.';
+      return;
+    }
+    if (status) status.textContent = 'Restaurando backup dos favoritos neste navegador…';
+    await organizacao.substituirBackup(backup);
+    filtroFavoritasAtivo = false;
+    if (status) status.textContent = 'Backup restaurado: ' + resumo + '. Nada no GitHub foi alterado.';
+  } catch (erro) {
+    if (status) status.textContent = textoErroOrganizacaoConversas(erro);
+  } finally {
+    backupFavoritosEmAndamento = false;
+    atualizarControlesOrganizacaoConversas();
+    if (listaRenderizada) renderListaAtual(listaOffline);
   }
 }
 
@@ -1166,7 +1259,7 @@ function criarCartaoConversa(i) {
   botaoFavorito.type = 'button';
   botaoFavorito.className = 'conv-favorita';
   botaoFavorito.textContent = favorita ? '★' : '☆';
-  botaoFavorito.disabled = estadoOrganizacaoConversas() !== 'pronto';
+  botaoFavorito.disabled = estadoOrganizacaoConversas() !== 'pronto' || backupFavoritosEmAndamento;
   botaoFavorito.setAttribute('aria-pressed', favorita ? 'true' : 'false');
   botaoFavorito.setAttribute('aria-label', (favorita ? 'Remover dos favoritos: ' : 'Adicionar aos favoritos: ') + titulo.slice(0, 160));
   botaoFavorito.title = favorita ? 'Remover dos favoritos neste navegador' : 'Adicionar aos favoritos neste navegador';
@@ -1240,7 +1333,7 @@ function salvarListaAtualEmCache() {
 function aplicarFiltroLista() {
   const busca = $('busca');
   const termo = busca ? busca.value.trim().toLowerCase() : '';
-  const somenteFavoritas = filtroFavoritasAtivo && estadoOrganizacaoConversas() === 'pronto';
+  const somenteFavoritas = filtroFavoritasAtivo && estadoOrganizacaoConversas() === 'pronto' && !backupFavoritosEmAndamento;
   const colecaoFiltro = idColecaoSelecionada();
   const somenteColecao = filtroColecaoAtivo && !!colecaoFiltro && estadoColecoesConversas() === 'pronto';
   const avisoAnterior = $('aviso-filtro-favoritas');
@@ -2857,7 +2950,7 @@ function iniciarPelaTarefa(chave) {
 }
 $('btn-limpar-copias').onclick = limparCopiasOffline;
 $('btn-filtrar-favoritas').onclick = () => {
-  if (estadoOrganizacaoConversas() !== 'pronto') return;
+  if (estadoOrganizacaoConversas() !== 'pronto' || backupFavoritosEmAndamento) return;
   filtroFavoritasAtivo = !filtroFavoritasAtivo;
   atualizarControlesOrganizacaoConversas();
   const status = $('status-organizacao-conversas');
@@ -2867,6 +2960,12 @@ $('btn-filtrar-favoritas').onclick = () => {
   if (listaRenderizada) aplicarFiltroLista();
 };
 $('btn-apagar-favoritos').onclick = limparFavoritosLocais;
+$('btn-exportar-favoritos').onclick = exportarBackupFavoritosLocais;
+$('btn-importar-favoritos').onclick = () => $('arq-importar-favoritos').click();
+$('arq-importar-favoritos').onchange = (evento) => {
+  if (evento.target.files && evento.target.files[0]) importarBackupFavoritosLocais(evento.target.files[0]);
+  evento.target.value = '';
+};
 $('seletor-colecao').onchange = (evento) => {
   const id = Number(evento.target.value);
   const colecoes = colecoesConversasLocal();

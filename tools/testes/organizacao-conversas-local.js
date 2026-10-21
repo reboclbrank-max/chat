@@ -32,7 +32,7 @@ function entre(texto, inicio, fim) {
 function criarIndexedDbFalso() {
   const registros = new Map();
   let lojaCriada = false;
-  const agendar = (fn) => setImmediate(fn);
+  const copiar = (item) => Object.assign({}, item);
   const db = {
     objectStoreNames: { contains: (nome) => lojaCriada && nome === 'favoritos' },
     createObjectStore(nome) { assert.equal(nome, 'favoritos'); lojaCriada = true; return {}; },
@@ -40,17 +40,33 @@ function criarIndexedDbFalso() {
       assert.equal(nome, 'favoritos');
       assert(['readonly', 'readwrite'].includes(modo));
       const tx = { oncomplete: null, onerror: null, onabort: null };
-      const concluir = () => agendar(() => { if (typeof tx.oncomplete === 'function') tx.oncomplete(); });
+      let pendentes = 0;
+      let fimAgendado = false;
+      function tentarConcluir() {
+        if (pendentes || fimAgendado) return;
+        fimAgendado = true;
+        setImmediate(() => { if (!pendentes && typeof tx.oncomplete === 'function') tx.oncomplete(); });
+      }
+      function agendar(fn) {
+        pendentes++;
+        setImmediate(() => {
+          try { fn(); }
+          catch (erro) { if (typeof tx.onerror === 'function') tx.onerror(erro); }
+          pendentes--;
+          tentarConcluir();
+        });
+      }
       tx.objectStore = () => ({
         getAll() {
           const pedido = { onsuccess: null, onerror: null, result: null };
-          agendar(() => { pedido.result = [...registros.values()].map((item) => Object.assign({}, item)); if (typeof pedido.onsuccess === 'function') pedido.onsuccess(); });
+          agendar(() => { pedido.result = [...registros.values()].map(copiar); if (typeof pedido.onsuccess === 'function') pedido.onsuccess(); });
           return pedido;
         },
-        put(item) { registros.set(item.numero, Object.assign({}, item)); concluir(); },
-        delete(numero) { registros.delete(numero); concluir(); },
-        clear() { registros.clear(); concluir(); }
+        put(item) { agendar(() => registros.set(item.numero, copiar(item))); },
+        delete(numero) { agendar(() => registros.delete(numero)); },
+        clear() { agendar(() => registros.clear()); }
       });
+      setImmediate(tentarConcluir);
       return tx;
     }
   };
@@ -61,7 +77,7 @@ function criarIndexedDbFalso() {
         assert.equal(nome, 'rebocl-organizacao-conversas-v1');
         assert.equal(versao, 1);
         const pedido = { onupgradeneeded: null, onsuccess: null, onerror: null, onblocked: null, result: db };
-        agendar(() => {
+        setImmediate(() => {
           if (typeof pedido.onupgradeneeded === 'function') pedido.onupgradeneeded();
           if (typeof pedido.onsuccess === 'function') pedido.onsuccess();
         });
@@ -70,7 +86,6 @@ function criarIndexedDbFalso() {
     }
   };
 }
-
 function runtimeOrganizacao(comBanco = true, bancoReutilizavel = null) {
   const eventos = [];
   const ouvintes = {};
@@ -98,6 +113,9 @@ testa('módulo usa banco separado, limite explícito e não introduz rede ou sto
   assert.match(fonte, /const BANCO = 'rebocl-organizacao-conversas-v1'/);
   assert.match(fonte, /const LOJA = 'favoritos'/);
   assert.match(fonte, /const LIMITE_FAVORITOS = 100/);
+  assert.match(fonte, /const FORMATO_BACKUP = 'rebocl-favoritos-conversas'/);
+  assert.match(fonte, /const VERSAO_BACKUP = 1/);
+  assert.match(fonte, /const LIMITE_BACKUP_BYTES = 32 \* 1024/);
   assert.match(fonte, /indexedDB\.open\(BANCO, VERSAO_BANCO\)/);
   assert.match(fonte, /loja\.put\(\{ numero \}\)/);
   assert.doesNotMatch(fonte, /\b(fetch|XMLHttpRequest|WebSocket|EventSource|sendBeacon)\s*\(?/);
@@ -155,6 +173,35 @@ testaAsync('limite e entrada inválida falham fechados antes de guardar dados ex
   assert.deepEqual([...r.registros.values()][0], { numero: 1 });
 });
 
+testaAsync('exporta backup mínimo, valida esquema estrito e restaura substituindo só favoritos locais', async () => {
+  const banco = criarIndexedDbFalso();
+  const r = runtimeOrganizacao(true, banco);
+  await r.api.pronto();
+  await r.api.alternarFavorito(19);
+  await r.api.alternarFavorito(4);
+  const backup = await r.api.exportarBackup();
+  assert.deepEqual(backup, { formato: 'rebocl-favoritos-conversas', versao: 1, favoritos: [4, 19] });
+  const serializado = JSON.stringify(backup);
+  assert(!/titulo|mensagem|conteudo|token|github|http/i.test(serializado), 'backup não carrega conteúdo, token ou transporte');
+  assert.deepEqual(r.api.limitesBackup(), { formato: 'rebocl-favoritos-conversas', versao: 1, bytes: 32768 });
+  assert.throws(() => r.api.validarBackup({ formato: 'rebocl-favoritos-conversas', versao: 1, favoritos: [], extra: true }), (erro) => erro && erro.codigo === 'backup-favoritos-invalido');
+  assert.throws(() => r.api.validarBackup({ formato: 'rebocl-favoritos-conversas', versao: '1', favoritos: [] }), (erro) => erro && erro.codigo === 'backup-favoritos-incompativel');
+  assert.throws(() => r.api.validarBackup({ formato: 'rebocl-favoritos-conversas', versao: 1, favoritos: [4, 4] }), (erro) => erro && erro.codigo === 'backup-favoritos-invalido');
+  assert.throws(() => r.api.validarBackup({ formato: 'rebocl-favoritos-conversas', versao: 1, favoritos: Array.from({ length: 101 }, (_, indice) => indice + 1) }), (erro) => erro && erro.codigo === 'backup-favoritos-invalido');
+  assert.throws(() => r.api.validarBackup({ formato: 'rebocl-favoritos-conversas', versao: 1, favoritos: ['4'] }), (erro) => erro && erro.codigo === 'backup-favoritos-invalido');
+  await assert.rejects(() => r.api.substituirBackup({ formato: 'rebocl-favoritos-conversas', versao: 1, favoritos: [0] }), (erro) => erro && erro.codigo === 'backup-favoritos-invalido');
+  assert.equal(r.api.temFavorito(19), true, 'backup inválido não altera favoritos existentes');
+  const normalizado = r.api.validarBackup({ formato: 'rebocl-favoritos-conversas', versao: 1, favoritos: [88, 6] });
+  await r.api.substituirBackup(normalizado);
+  assert.equal(r.api.temFavorito(4), false);
+  assert.equal(r.api.temFavorito(6), true);
+  assert.equal(r.api.temFavorito(88), true);
+  assert.deepEqual([...banco.registros.values()], [{ numero: 6 }, { numero: 88 }]);
+  const relida = runtimeOrganizacao(true, banco);
+  await relida.api.pronto();
+  assert.deepEqual(await relida.api.exportarBackup(), { formato: 'rebocl-favoritos-conversas', versao: 1, favoritos: [6, 88] });
+});
+
 testaAsync('sem IndexedDB não há fallback para rede ou armazenamento legado', async () => {
   const r = runtimeOrganizacao(false);
   await assert.rejects(() => r.api.pronto(), (erro) => erro && erro.codigo === 'armazenamento-indisponivel');
@@ -177,6 +224,17 @@ testa('quatro rotas carregam um ativo local e mantêm a organização visual id�
     assert(filtro >= 0 && organizacao > filtro && colecoes > organizacao && workspace > colecoes && inline > workspace, rota + ': ativo local precisa preceder o código da rota');
     assert.match(html, /id="btn-filtrar-favoritas"[^>]*aria-pressed="false"[^>]*disabled/);
     assert.match(html, /id="btn-apagar-favoritos" disabled/);
+    assert.match(html, /id="btn-exportar-favoritos" disabled/);
+    assert.match(html, /id="btn-importar-favoritos" disabled/);
+    assert.match(html, /id="arq-importar-favoritos" accept="application\/json,\.json" class="oculto" disabled/);
+    assert.match(html, /Backup manual dos favoritos locais/);
+    assert.match(html, /function exportarBackupFavoritosLocais\(\)/);
+    assert.match(html, /function importarBackupFavoritosLocais\(arquivo\)/);
+    assert.match(html, /organizacao\.validarBackup\(JSON\.parse\(texto\)\)/);
+    assert.match(html, /if \(tamanho > limites\.bytes\) throw erroBackupFavoritos\('backup-favoritos-grande'\);/);
+    assert.match(html, /backupFavoritosEmAndamento = true;/);
+    assert.match(html, /organizacao\.substituirBackup\(backup\)/);
+    assert.match(html, /Isso substituirá todos os favoritos locais atuais deste navegador/);
     assert.match(html, /só o número da conversa — nunca título, mensagens ou token/i);
     assert.match(html, /function limparFavoritosLocais\(\)/);
     assert.match(html, /Apagar todos os favoritos salvos neste navegador\?/);
@@ -209,7 +267,7 @@ testa('casca, workflow, corredor e continuidade observam o novo ativo', () => {
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const corredor = ler('tools/testes/roda-testes.js');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v71/);
+  assert.match(sw, /rebocl-chat-v72/);
   assert.match(sw, /'\.\/chat-organizacao-local\.js'/);
   assert.match(sw, /'\.\/chat-colecoes-local\.js'/);
   assert.match(workflow, /'chat-organizacao-local\.js'/);
@@ -222,6 +280,8 @@ testa('estilos mantêm botões nativos, alvo de toque e filtro responsivo', () =
   assert.match(css, /\.conv-conversa\{display:flex;align-items:stretch;padding:0;cursor:default;overflow:hidden\}/);
   assert.match(css, /\.conv-favorita,\.conv-colecao\{flex:0 0 44px;min-width:44px;min-height:44px/);
   assert.match(css, /#btn-filtrar-favoritas,#btn-filtrar-colecao\{flex:0 0 auto;min-height:40px/);
+  assert.match(css, /\.backup-local\{margin-top:12px;padding:10px;border:1px solid var\(--borda\)/);
+  assert.match(css, /\.backup-local-acoes\{display:flex;gap:8px;align-items:stretch;margin-top:9px\}/);
   assert.match(css, /@media \(max-width:600px\)\{\.busca-organizacao\{flex-wrap:wrap\}/);
 });
 

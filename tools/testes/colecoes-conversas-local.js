@@ -331,7 +331,7 @@ testa('casca, workflow, corredor e continuidade observam o novo ativo', () => {
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const corredor = ler('tools/testes/roda-testes.js');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v71/);
+  assert.match(sw, /rebocl-chat-v72/);
   assert.match(sw, /'\.\/chat-colecoes-local\.js'/);
   assert.match(workflow, /'chat-colecoes-local\.js'/);
   assert.match(corredor, /'colecoes-conversas-local\.js'/);
@@ -343,8 +343,8 @@ testa('estilos mantêm três controles nativos, gestão legível e layout respon
   assert.match(css, /#seletor-colecao\{flex:0 1 190px;min-width:110px;min-height:40px/);
   assert.match(css, /\.conv-favorita,\.conv-colecao\{flex:0 0 44px;min-width:44px;min-height:44px/);
   assert.match(css, /\.colecoes-nova\{display:flex;gap:8px;align-items:stretch\}/);
-  assert.match(css, /\.colecoes-backup\{margin-top:12px;padding:10px;border:1px solid var\(--borda\)/);
-  assert.match(css, /\.colecoes-backup-acoes\{display:flex;gap:8px;align-items:stretch;margin-top:9px\}/);
+  assert.match(css, /\.backup-local\{margin-top:12px;padding:10px;border:1px solid var\(--borda\)/);
+  assert.match(css, /\.backup-local-acoes\{display:flex;gap:8px;align-items:stretch;margin-top:9px\}/);
   assert.match(css, /\.colecao-local-acoes\{display:flex;gap:6px;align-items:stretch\}/);
   assert.match(css, /@media \(max-width:600px\)\{\.busca-organizacao\{flex-wrap:wrap\}/);
 });
