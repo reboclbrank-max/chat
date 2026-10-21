@@ -130,18 +130,25 @@
   /* Organização local: o cartão contém dois controles nativos, sem botão dentro de botão. */
   .busca-organizacao{display:flex;align-items:stretch;gap:8px}
   .busca-organizacao input{flex:1;min-width:0}
-  #btn-filtrar-favoritas{flex:0 0 auto;min-height:40px;border:1px solid var(--borda);border-radius:12px;background:var(--painel);color:var(--texto2);font:inherit;font-size:12.5px;font-weight:650;padding:8px 10px;cursor:pointer;white-space:nowrap}
-  #btn-filtrar-favoritas[aria-pressed="true"]{border-color:var(--ouro-fraco);background:#15130a;color:var(--ouro)}
-  #btn-filtrar-favoritas:disabled{opacity:.55;cursor:not-allowed}
+  #btn-filtrar-favoritas,#btn-filtrar-colecao{flex:0 0 auto;min-height:40px;border:1px solid var(--borda);border-radius:12px;background:var(--painel);color:var(--texto2);font:inherit;font-size:12.5px;font-weight:650;padding:8px 10px;cursor:pointer;white-space:nowrap}
+  #btn-filtrar-favoritas[aria-pressed="true"],#btn-filtrar-colecao[aria-pressed="true"]{border-color:var(--ouro-fraco);background:#15130a;color:var(--ouro)}
+  #btn-filtrar-favoritas:disabled,#btn-filtrar-colecao:disabled{opacity:.55;cursor:not-allowed}
+  #seletor-colecao{flex:0 1 190px;min-width:110px;min-height:40px;border:1px solid var(--borda);border-radius:12px;background:var(--painel);color:var(--texto);font:inherit;font-size:12.5px;padding:7px 9px;cursor:pointer}
+  #seletor-colecao:disabled{opacity:.55;cursor:not-allowed}
   .conv-conversa{display:flex;align-items:stretch;padding:0;cursor:default;overflow:hidden}
   .conv-conversa:active{background:var(--painel)}
   .conv-abrir{min-width:0;flex:1;border:0;background:none;color:var(--texto);font:inherit;text-align:left;padding:12px 4px 12px 14px;cursor:pointer}
   .conv-abrir .titulo{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .conv-abrir .meta{display:flex;overflow:hidden;white-space:nowrap}
-  .conv-favorita{flex:0 0 44px;min-width:44px;min-height:44px;border:0;border-left:1px solid var(--borda);background:transparent;color:var(--texto2);font-size:22px;line-height:1;cursor:pointer}
+  .conv-favorita,.conv-colecao{flex:0 0 44px;min-width:44px;min-height:44px;border:0;border-left:1px solid var(--borda);background:transparent;color:var(--texto2);font-size:22px;line-height:1;cursor:pointer}
   .conv-favorita[aria-pressed="true"]{color:var(--ouro);background:#15130a}
-  .conv-favorita:disabled{opacity:.5;cursor:not-allowed}
-  @media (max-width:420px){.busca-organizacao{flex-wrap:wrap}.busca-organizacao input{flex-basis:100%}#btn-filtrar-favoritas{margin-left:auto}}
+  .conv-colecao{font-size:20px;color:#a9e0b8}
+  .conv-colecao[aria-pressed="true"]{color:#e0a9a9;background:#2a1414}
+  .conv-favorita:disabled,.conv-colecao:disabled{opacity:.5;cursor:not-allowed}
+  .colecoes-nova{display:flex;gap:8px;align-items:stretch}.colecoes-nova input{flex:1;min-width:0;margin:0}.colecoes-nova button{width:auto;min-width:140px}
+  .lista-colecoes-locais{display:flex;flex-direction:column;gap:8px;margin-top:10px}.colecoes-vazio{margin:0;color:var(--texto2);font-size:12px}.colecao-local{border:1px solid var(--borda);border-radius:10px;padding:9px;display:flex;flex-direction:column;gap:8px}.colecao-local-cabecalho{display:flex;align-items:baseline;gap:8px;justify-content:space-between}.colecao-local-cabecalho strong{font-size:13px;overflow-wrap:anywhere}.colecao-local-cabecalho span{font-size:11px;color:var(--texto2);text-align:right}.colecao-local-acoes{display:flex;gap:6px;align-items:stretch}.colecao-local-acoes input{margin:0;min-width:0;flex:1}.colecao-local-acoes button{width:auto;padding:8px 10px;font-size:12px}.colecao-local-perigo{border:1px solid #7a2a2a !important;background:var(--painel) !important;color:#e0a9a9 !important}
+  @media (max-width:600px){.busca-organizacao{flex-wrap:wrap}.busca-organizacao input{flex-basis:100%}#seletor-colecao{flex:1 1 150px}.colecoes-nova{flex-wrap:wrap}.colecoes-nova input{flex-basis:100%}.colecoes-nova button{width:100%}.colecao-local-cabecalho{align-items:flex-start;flex-direction:column;gap:2px}.colecao-local-cabecalho span{text-align:left}.colecao-local-acoes{flex-wrap:wrap}.colecao-local-acoes input{flex-basis:100%}.colecao-local-acoes button{flex:1}}
+  @media (max-width:420px){#btn-filtrar-favoritas{margin-left:auto}}
   .tag-motor{font-size:10.5px;color:#8a8270;border:1px solid var(--borda);border-radius:6px;padding:0 5px;margin-left:6px;white-space:nowrap}
   /* Etiquetas preservam distinção sem perder leitura quando a bolha fica clara. */
   body.claro .tag-motor{color:var(--texto2);border-color:var(--texto2)}

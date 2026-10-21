@@ -165,9 +165,11 @@ ok('as quatro rotas declaram busca por nome ou comando e só a iniciam após mon
     const pwa = html.indexOf('<script src="chat-pwa.js"></script>');
     const local = html.indexOf('<script src="chat-comandos-locais.js"></script>');
     const filtro = html.indexOf('<script src="chat-filtro-chips.js"></script>');
+    const organizacao = html.indexOf('<script src="chat-organizacao-local.js"></script>');
+    const colecoes = html.indexOf('<script src="chat-colecoes-local.js"></script>');
     const workspace = html.indexOf('<script src="chat-workspace.js"></script>');
     const inline = html.indexOf('<script>', workspace);
-    assert(pwa >= 0 && local > pwa && filtro > local && workspace > filtro && inline > workspace, rota + ': ativos locais precisam carregar antes do código da rota');
+    assert(pwa >= 0 && local > pwa && filtro > local && organizacao > filtro && colecoes > organizacao && workspace > colecoes && inline > workspace, rota + ': ativos locais precisam carregar antes do código da rota');
     assert.equal((html.match(/chat-filtro-chips\.js/g) || []).length, 1, rota + ': ativo único');
     assert.equal((html.match(/chat-workspace\.js/g) || []).length, 1, rota + ': Workspace único');
   }
@@ -177,11 +179,11 @@ ok('PWA, workflow e continuidade observam o filtro local', () => {
   const sw = ler('sw.js');
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v69/);
+  assert.match(sw, /rebocl-chat-v70/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);
   assert.match(sw, /'\.\/chat-organizacao-local\.js'/);
   assert.match(workflow, /'chat-filtro-chips\.js'/);
-  assert.match(workflow, /chat-filtro-chips\.js chat-organizacao-local\.js chat-workspace\.js tools\/testes\/\*\.js/);
+  assert.match(workflow, /chat-filtro-chips\.js chat-organizacao-local\.js chat-colecoes-local\.js chat-workspace\.js tools\/testes\/\*\.js/);
   assert(continuidade.includes('chat-filtro-chips\\.js'));
   const pasta = fs.mkdtempSync(path.join(os.tmpdir(), 'continuidade-filtro-chips-'));
   try {

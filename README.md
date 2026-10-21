@@ -9,7 +9,7 @@ Página de conversa com a **IA gratuita da Rebocl Brank**.
 
 ## O que ela faz
 
-- Lista as conversas abertas (issues do repositório privado), **busca pelo título** e permite marcar favoritas somente neste navegador. O filtro de favoritas alcança apenas conversas já carregadas; ele não busca tudo nem altera o GitHub.
+- Lista as conversas abertas (issues do repositório privado), **busca pelo título**, permite marcar favoritas e criar coleções somente neste navegador. Os filtros de favoritas/coleções alcançam apenas conversas já carregadas; eles não buscam tudo nem alteram o GitHub.
 - Cria conversa nova e envia mensagens.
 - Mostra as respostas do assistente automaticamente quando o trabalhador privado está disponível e avisa por notificação. Se o navegador confirmar que o run correspondente falhou antes de iniciar, tenta uma recuperação local de contingência; isso requer o navegador aberto e não é SLA.
 - Mostra **qual motor respondeu** (tag ao lado de "Assistente") e avisa quando a internet cai.
@@ -42,6 +42,7 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Rascunhos locais:** a opção de salvar rascunhos neste aparelho preserva alvo nativo mínimo sem alterar a preferência, seus dados ou o token.
 - **Workspace:** usa IndexedDB separado de token, rascunhos e cópias de conversa; tem limites locais e não é cofre de senhas, sincronização, armazenamento de binários ou backup garantido. Apagar cópias offline de conversas não o apaga; limpar dados do site pode apagar arquivos locais.
 - **Favoritos de conversa:** guardam apenas o número da Issue em um IndexedDB separado, limitado a 100, só neste navegador. Não guardam título/mensagem/token, não sincronizam nem alteram o GitHub. Apagar cópias offline não os remove; há uma ação confirmada própria em ⚙️. Limpar dados do site pode removê-los.
+- **Coleções de conversa:** guardam somente nomes escolhidos pela pessoa e associações entre coleção e número de Issue em outro IndexedDB (até 20 coleções, 100 conversas por coleção e 400 associações). Não copiam título/mensagem/token, não sincronizam, não alteram o GitHub e têm remoção confirmada própria; apagar cópias offline, favoritos ou Workspace não as remove.
 - **Console:** o campo de tema para “pensar bem” preserva um nome acessível depois de a dica visual ser preenchida, e o botão de atualizar anuncia sua ação explicitamente; enviar continua sendo uma escolha pelo botão explícito.
 - **Enxame:** o canal público só pode sugerir motores. Veja candidatos com `!candidatos` e aprove cada um conscientemente com `!plantar <base> | <modelo> | <nome>`; bases e modelos passam por validação antes de entrar na frota.
 - **Dados do dono:** pings automáticos não levam memória/persona e resumos internos não são publicados no canal do enxame.
@@ -275,6 +276,13 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Sem falso verde ambiental:** com `REBOCL_EXIGIR_MULTIMODAL=1`, a rodada controlada passou **74/74** depois de preparar as dependências reais de IMAP, PDF e OCR. Em um ambiente Debian/Ubuntu limpo, a preparação local equivalente é `npm install --no-save --ignore-scripts imapflow@2.4.3 nodemailer@10.1.1` e `sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils tesseract-ocr tesseract-ocr-por chromium-headless-shell`. Isso não configura produção nem envia conteúdo do Chat.
 - **Navegador real, fixture local:** `tools/testes/navegador-lista-controlado.sh` passa pelas quatro rotas com API sintética em `127.0.0.1`, perfil e IndexedDB efêmeros, resolução externa bloqueada e token inerte. Ele agora carrega a casca local real, abre o Workspace, cria/versiona e recupera projeto/arquivo sintéticos; também verifica a grade desktop e mobile e descarta as capturas locais ao terminar.
 - **Limites da prova:** é evidência de interface e armazenamento controlados, não conversa, conta, PAT, arquivo do dono, rede produtiva, entrega, uso humano, satisfação, disponibilidade ou SLA. O descarte definitivo continua coberto pelo teste de integridade local; não foi substituído por simulação visual.
+
+## v12.47 — coleções locais de conversa (21/10/2026)
+
+- **Organização sem compartilhar conversas:** em ⚙️, crie, renomeie ou remova coleções locais; na lista, escolha uma coleção e use **＋/−** para associar conversas. O módulo separado `chat-colecoes-local.js` guarda somente o nome que você digitou e números de Issues, nunca título, mensagem, conteúdo ou token; não faz rede, sincronização ou alteração no GitHub.
+- **Limites e filtro honestos:** há no máximo 20 coleções, 48 caracteres por nome, 100 associações por coleção e 400 no total. **⌁ coleção** filtra somente cartões já carregados, pode ser combinado com favoritas e mantém **Carregar mais** para ampliar voluntariamente o conjunto; não pagina a conta automaticamente.
+- **Controle e reversão claros:** apagar uma coleção ou todas pede confirmação e não altera GitHub, token, cópias offline, favoritos ou Workspace. A PWA v70 chega somente pela atualização que a pessoa escolher; versão anterior ignora o banco separado, que não é apagado automaticamente por revert. Coleções são preferências locais, não backup, nuvem, cofre, colaboração, uso humano ou garantia de persistência.
+- **Cobertura controlada:** contrato das coleções **10/10** e corredor multimodal obrigatório **76/76** passaram. Chromium headless, com API/lista/IndexedDB/perfil sintéticos e resolução externa bloqueada, criou, associou, filtrou e apagou coleção nas quatro rotas; também preservou os layouts Workspace desktop/mobile. Isso não prova conta, conversa real, persistência física, entrega, uso humano, satisfação, disponibilidade ou SLA.
 
 ## v12.46 — favoritos locais de conversa (21/10/2026)
 

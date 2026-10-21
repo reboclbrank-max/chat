@@ -40,8 +40,12 @@
     <label class="visualmente-oculto" for="busca">Buscar conversas pelo título</label>
     <input id="busca" type="search" placeholder="🔎 buscar conversas pelo título…" autocomplete="off">
     <button type="button" id="btn-filtrar-favoritas" aria-pressed="false" disabled title="Mostrar somente favoritas guardadas neste navegador">☆ favoritas</button>
+    <label class="visualmente-oculto" for="seletor-colecao">Escolher coleção local para organizar conversas</label>
+    <select id="seletor-colecao" disabled aria-describedby="status-colecoes-conversas"><option value="">⌁ coleção local</option></select>
+    <button type="button" id="btn-filtrar-colecao" aria-pressed="false" disabled title="Mostrar somente a coleção local escolhida">⌁ coleção</button>
   </div>
   <div id="status-organizacao-conversas" class="visualmente-oculto" role="status" aria-live="polite" aria-atomic="true"></div>
+  <div id="status-colecoes-conversas" class="visualmente-oculto" role="status" aria-live="polite" aria-atomic="true"></div>
   <div class="lista" id="lista" aria-live="polite" aria-busy="false"></div>
 </main>
 
@@ -121,6 +125,19 @@
     <p>Marque a estrela na lista para guardar a preferência apenas neste navegador. A organização registra só o número da conversa — nunca título, mensagens ou token — e não altera o GitHub nem é sincronizada. O filtro alcança apenas conversas já carregadas; use “Carregar mais” para ampliar a lista.</p>
     <button type="button" id="btn-apagar-favoritos" disabled style="background:var(--painel);border:1px solid #7a2a2a;color:#e0a9a9;font-weight:600">Apagar favoritos locais</button>
     <div id="status-favoritos-locais" role="status" aria-live="polite" aria-atomic="true"></div>
+  </div>
+  <div class="cartao">
+    <h2>⌁ Coleções de conversa neste aparelho</h2>
+    <p id="resumo-colecoes-locais">Carregando coleções locais…</p>
+    <p>Crie coleções para organizar conversas já carregadas. Cada coleção guarda só o nome que você escolheu e os números das conversas associadas neste navegador — nunca título, mensagens ou token. Nada é alterado no GitHub, enviado ou sincronizado.</p>
+    <label class="visualmente-oculto" for="nome-nova-colecao">Nome da nova coleção local</label>
+    <div class="colecoes-nova">
+      <input id="nome-nova-colecao" type="text" maxlength="48" autocomplete="off" placeholder="ex.: trabalho, ideias, acompanhar">
+      <button type="button" id="btn-criar-colecao" disabled>Criar coleção local</button>
+    </div>
+    <div id="lista-colecoes-locais" class="lista-colecoes-locais" role="list" aria-label="Coleções locais"></div>
+    <button type="button" id="btn-apagar-colecoes" disabled style="margin-top:10px;background:var(--painel);border:1px solid #7a2a2a;color:#e0a9a9;font-weight:600">Apagar todas as coleções locais</button>
+    <div id="status-colecoes-locais" role="status" aria-live="polite" aria-atomic="true"></div>
   </div>
   <div class="cartao">
     <h2>🧹 Cópias offline neste aparelho</h2>
@@ -210,7 +227,7 @@ let conversa = null, intervalo = null, ultimoId = 0, ultimoQuando = '', falando 
 const $ = (id) => document.getElementById(id);
 const elLista = $('lista'), elMsgs = $('msgs'), elFaixa = $('faixa');
 let paginaLista = 1, listaAtual = [], maisListaDisponivel = false, carregandoMaisLista = false, revisaoLista = 0, criandoNovaConversa = false;
-let filtroFavoritasAtivo = false, listaRenderizada = false, listaOffline = false;
+let filtroFavoritasAtivo = false, colecaoSelecionadaId = null, filtroColecaoAtivo = false, listaRenderizada = false, listaOffline = false;
 let filaCacheLista = Promise.resolve();
 
 // Erros de rede/API são dados externos. A interface só mostra categorias fechadas,
@@ -393,6 +410,7 @@ const TAMANHO_PAGINA_COMENTARIOS = 100;
 <script src="chat-comandos-locais.js"></script>
 <script src="chat-filtro-chips.js"></script>
 <script src="chat-organizacao-local.js"></script>
+<script src="chat-colecoes-local.js"></script>
 <script src="chat-workspace.js"></script>
 <script>
 function paginaFinalComentarios(total) {
@@ -761,6 +779,277 @@ async function limparFavoritosLocais() {
     atualizarControlesOrganizacaoConversas();
   }
 }
+
+/* ---------- coleções locais de conversas ---------- */
+function colecoesConversasLocal() {
+  return window.ReboclColecoesConversas || null;
+}
+function estadoColecoesConversas() {
+  const colecoes = colecoesConversasLocal();
+  return colecoes ? colecoes.estado() : 'falhou';
+}
+function idColecaoSelecionada() {
+  const id = Number(colecaoSelecionadaId);
+  const colecoes = colecoesConversasLocal();
+  return !!(colecoes && estadoColecoesConversas() === 'pronto' && colecoes.colecaoExiste(id)) ? id : null;
+}
+function nomeColecaoSelecionada() {
+  const id = idColecaoSelecionada();
+  const colecoes = colecoesConversasLocal();
+  if (!id || !colecoes) return '';
+  const encontrada = colecoes.listarColecoes().find((colecao) => colecao.id === id);
+  return encontrada ? encontrada.nome : '';
+}
+function conversaEstaNaColecao(numero) {
+  const id = idColecaoSelecionada();
+  const colecoes = colecoesConversasLocal();
+  return !!(id && colecoes && colecoes.temConversa(id, numero));
+}
+function textoErroColecoesConversas(erro) {
+  if (erro && erro.codigo === 'limite-colecoes') return 'Você já criou o limite de 20 coleções neste navegador. Apague uma coleção antes de criar outra.';
+  if (erro && erro.codigo === 'limite-itens-colecao') return 'Esta coleção já guarda o limite de 100 conversas neste navegador. Remova uma antes de acrescentar outra.';
+  if (erro && erro.codigo === 'limite-itens-total') return 'As coleções já guardam o limite de 400 associações neste navegador. Remova uma antes de acrescentar outra.';
+  if (erro && erro.codigo === 'colecao-duplicada') return 'Já existe uma coleção local com esse nome.';
+  if (erro && erro.codigo === 'nome-colecao-invalido') return 'Dê à coleção um nome visível de até 48 caracteres.';
+  if (erro && (erro.codigo === 'colecao-invalida' || erro.codigo === 'colecao-nao-encontrada' || erro.codigo === 'conversa-invalida')) return 'Esta coleção local não está mais disponível. Escolha outra coleção antes de organizar a conversa.';
+  return 'Não foi possível usar as coleções locais neste navegador agora. Nada no GitHub foi alterado.';
+}
+function preencherSeletorColecoes(colecoes, pronta) {
+  const seletor = $('seletor-colecao');
+  if (!seletor) return;
+  const selecionada = Number(colecaoSelecionadaId);
+  if (!pronta || !colecoes.some((colecao) => colecao.id === selecionada)) {
+    colecaoSelecionadaId = null;
+    filtroColecaoAtivo = false;
+  }
+  while (seletor.firstChild) seletor.removeChild(seletor.firstChild);
+  const vazia = document.createElement('option');
+  vazia.value = '';
+  vazia.textContent = pronta ? '⌁ escolher coleção local' : '⌁ coleção indisponível';
+  seletor.appendChild(vazia);
+  colecoes.forEach((colecao) => {
+    const opcao = document.createElement('option');
+    opcao.value = String(colecao.id);
+    opcao.textContent = colecao.nome + ' (' + colecao.quantidade + ')';
+    seletor.appendChild(opcao);
+  });
+  seletor.disabled = !pronta || colecoes.length === 0;
+  seletor.value = colecaoSelecionadaId ? String(colecaoSelecionadaId) : '';
+}
+function montarLinhaColecaoLocal(colecao, pronta) {
+  const linha = document.createElement('div');
+  linha.className = 'colecao-local';
+  linha.setAttribute('role', 'listitem');
+  const cabecalho = document.createElement('div');
+  cabecalho.className = 'colecao-local-cabecalho';
+  const nome = document.createElement('strong');
+  nome.textContent = colecao.nome;
+  const meta = document.createElement('span');
+  meta.textContent = colecao.quantidade + ' conversa' + (colecao.quantidade === 1 ? '' : 's') + ' associada' + (colecao.quantidade === 1 ? '' : 's') + ' neste navegador';
+  cabecalho.appendChild(nome);
+  cabecalho.appendChild(meta);
+  const acoes = document.createElement('div');
+  acoes.className = 'colecao-local-acoes';
+  const campo = document.createElement('input');
+  campo.type = 'text';
+  campo.maxLength = 48;
+  campo.autocomplete = 'off';
+  campo.value = colecao.nome;
+  campo.setAttribute('aria-label', 'Novo nome para a coleção ' + colecao.nome.slice(0, 120));
+  campo.disabled = !pronta;
+  const renomear = document.createElement('button');
+  renomear.type = 'button';
+  renomear.textContent = 'Renomear';
+  renomear.disabled = !pronta;
+  renomear.onclick = () => renomearColecaoLocal(colecao.id, campo, renomear);
+  const apagar = document.createElement('button');
+  apagar.type = 'button';
+  apagar.className = 'colecao-local-perigo';
+  apagar.textContent = 'Apagar';
+  apagar.disabled = !pronta;
+  apagar.onclick = () => apagarColecaoLocal(colecao.id, colecao.nome, colecao.quantidade, apagar);
+  acoes.appendChild(campo);
+  acoes.appendChild(renomear);
+  acoes.appendChild(apagar);
+  linha.appendChild(cabecalho);
+  linha.appendChild(acoes);
+  return linha;
+}
+function renderizarGestaoColecoes(colecoes, pronta) {
+  const lista = $('lista-colecoes-locais');
+  if (!lista) return;
+  lista.innerHTML = '';
+  if (!pronta) {
+    const aviso = document.createElement('p');
+    aviso.className = 'colecoes-vazio';
+    aviso.textContent = 'Coleções locais indisponíveis neste navegador. Nenhuma conversa no GitHub foi alterada.';
+    lista.appendChild(aviso);
+    return;
+  }
+  if (!colecoes.length) {
+    const vazio = document.createElement('p');
+    vazio.className = 'colecoes-vazio';
+    vazio.textContent = 'Nenhuma coleção ainda. Crie uma acima e depois escolha-a na lista de conversas para associar cartões.';
+    lista.appendChild(vazio);
+    return;
+  }
+  colecoes.forEach((colecao) => lista.appendChild(montarLinhaColecaoLocal(colecao, pronta)));
+}
+function atualizarControlesColecoes() {
+  const colecoesApi = colecoesConversasLocal();
+  const estado = estadoColecoesConversas();
+  const pronta = !!colecoesApi && estado === 'pronto';
+  const colecoes = pronta ? colecoesApi.listarColecoes() : [];
+  preencherSeletorColecoes(colecoes, pronta);
+  const id = idColecaoSelecionada();
+  const botaoFiltro = $('btn-filtrar-colecao');
+  const criar = $('btn-criar-colecao');
+  const apagarTodas = $('btn-apagar-colecoes');
+  const resumo = $('resumo-colecoes-locais');
+  if (botaoFiltro) {
+    botaoFiltro.disabled = !pronta || !id;
+    botaoFiltro.setAttribute('aria-pressed', filtroColecaoAtivo ? 'true' : 'false');
+    botaoFiltro.textContent = filtroColecaoAtivo ? '⌁ nesta coleção' : '⌁ coleção';
+  }
+  if (criar) criar.disabled = !pronta;
+  if (apagarTodas) apagarTodas.disabled = !pronta || colecoes.length === 0;
+  if (resumo) {
+    if (estado === 'falhou') resumo.textContent = 'Coleções locais indisponíveis neste navegador. Nenhuma conversa no GitHub foi alterada.';
+    else if (!pronta) resumo.textContent = 'Carregando coleções locais…';
+    else if (!colecoes.length) resumo.textContent = 'Nenhuma coleção local criada neste navegador.';
+    else {
+      const detalhe = colecoesApi.detalhe();
+      resumo.textContent = detalhe.colecoes + (detalhe.colecoes === 1 ? ' coleção' : ' coleções') + ' e ' + detalhe.itens + (detalhe.itens === 1 ? ' associação' : ' associações') + ' guardadas somente neste navegador.';
+    }
+  }
+  renderizarGestaoColecoes(colecoes, pronta);
+}
+function refletirColecoesNaLista() {
+  atualizarControlesColecoes();
+  if (listaRenderizada) renderListaAtual(listaOffline);
+}
+function iniciarColecoesConversas() {
+  document.addEventListener('rebocl-colecoes-conversas-pronta', refletirColecoesNaLista);
+  document.addEventListener('rebocl-colecoes-conversas-mudou', refletirColecoesNaLista);
+  document.addEventListener('rebocl-colecoes-conversas-falhou', () => {
+    atualizarControlesColecoes();
+    const status = $('status-colecoes-conversas');
+    if (status) status.textContent = 'Coleções locais indisponíveis neste navegador. Nada no GitHub foi alterado.';
+    if (listaRenderizada) renderListaAtual(listaOffline);
+  });
+  const colecoes = colecoesConversasLocal();
+  if (!colecoes) { atualizarControlesColecoes(); return; }
+  colecoes.pronto().then(refletirColecoesNaLista).catch(() => {
+    atualizarControlesColecoes();
+    const status = $('status-colecoes-conversas');
+    if (status) status.textContent = 'Coleções locais indisponíveis neste navegador. Nada no GitHub foi alterado.';
+  });
+  atualizarControlesColecoes();
+}
+async function criarColecaoLocal() {
+  const colecoes = colecoesConversasLocal();
+  const campo = $('nome-nova-colecao');
+  const botao = $('btn-criar-colecao');
+  const status = $('status-colecoes-locais');
+  if (!colecoes || estadoColecoesConversas() !== 'pronto') {
+    if (status) status.textContent = 'Coleções locais ainda não estão disponíveis neste navegador.';
+    return;
+  }
+  if (botao) botao.disabled = true;
+  try {
+    const criada = await colecoes.criarColecao(campo ? campo.value : '');
+    colecaoSelecionadaId = criada.id;
+    filtroColecaoAtivo = false;
+    if (campo) campo.value = '';
+    if (status) status.textContent = 'Coleção local criada somente neste navegador. Nada no GitHub foi alterado.';
+  } catch (erro) {
+    if (status) status.textContent = textoErroColecoesConversas(erro);
+  } finally {
+    atualizarControlesColecoes();
+    if (listaRenderizada) renderListaAtual(listaOffline);
+  }
+}
+async function renomearColecaoLocal(id, campo, botao) {
+  const colecoes = colecoesConversasLocal();
+  const status = $('status-colecoes-locais');
+  if (!colecoes || estadoColecoesConversas() !== 'pronto') {
+    if (status) status.textContent = 'Coleções locais ainda não estão disponíveis neste navegador.';
+    return;
+  }
+  if (botao) botao.disabled = true;
+  try {
+    await colecoes.renomearColecao(id, campo ? campo.value : '');
+    if (status) status.textContent = 'Nome da coleção local atualizado somente neste navegador. Nada no GitHub foi alterado.';
+  } catch (erro) {
+    if (status) status.textContent = textoErroColecoesConversas(erro);
+  } finally {
+    atualizarControlesColecoes();
+  }
+}
+async function apagarColecaoLocal(id, nome, quantidade, botao) {
+  const colecoes = colecoesConversasLocal();
+  const status = $('status-colecoes-locais');
+  if (!colecoes || estadoColecoesConversas() !== 'pronto') {
+    if (status) status.textContent = 'Coleções locais ainda não estão disponíveis neste navegador.';
+    return;
+  }
+  if (!confirm('Apagar a coleção local “' + nome + '” e ' + quantidade + ' associação(ões)? Isso não altera conversas no GitHub, token, cópias offline, favoritos nem o Workspace.')) return;
+  if (botao) botao.disabled = true;
+  try {
+    await colecoes.apagarColecao(id);
+    if (Number(colecaoSelecionadaId) === id) { colecaoSelecionadaId = null; filtroColecaoAtivo = false; }
+    if (status) status.textContent = 'Coleção local apagada deste navegador. Nada no GitHub foi alterado.';
+  } catch (erro) {
+    if (status) status.textContent = textoErroColecoesConversas(erro);
+  } finally {
+    atualizarControlesColecoes();
+  }
+}
+async function limparColecoesLocais() {
+  const colecoes = colecoesConversasLocal();
+  const botao = $('btn-apagar-colecoes');
+  const status = $('status-colecoes-locais');
+  if (!colecoes || estadoColecoesConversas() !== 'pronto') {
+    if (status) status.textContent = 'Coleções locais ainda não estão disponíveis neste navegador.';
+    return;
+  }
+  if (!confirm('Apagar todas as coleções e associações salvas neste navegador? Isso não altera conversas no GitHub, token, cópias offline, favoritos nem o Workspace.')) return;
+  if (botao) botao.disabled = true;
+  if (status) status.textContent = 'Apagando coleções locais…';
+  try {
+    await colecoes.limparColecoes();
+    colecaoSelecionadaId = null;
+    filtroColecaoAtivo = false;
+    if (status) status.textContent = 'Coleções locais apagadas deste navegador. Nada no GitHub foi alterado.';
+  } catch (erro) {
+    if (status) status.textContent = textoErroColecoesConversas(erro);
+  } finally {
+    atualizarControlesColecoes();
+  }
+}
+async function alternarConversaDaColecao(numero, botao) {
+  const colecoes = colecoesConversasLocal();
+  const id = idColecaoSelecionada();
+  const status = $('status-colecoes-conversas');
+  const nome = nomeColecaoSelecionada();
+  if (!colecoes || !id || estadoColecoesConversas() !== 'pronto') {
+    if (status) status.textContent = 'Escolha uma coleção local antes de organizar esta conversa.';
+    return;
+  }
+  if (botao) botao.disabled = true;
+  try {
+    const adicionada = await colecoes.alternarConversa(id, numero);
+    if (status) status.textContent = adicionada
+      ? 'Conversa associada à coleção local “' + nome + '”. Nada no GitHub foi alterado.'
+      : 'Conversa removida da coleção local “' + nome + '”. Nada no GitHub foi alterado.';
+  } catch (erro) {
+    if (status) status.textContent = textoErroColecoesConversas(erro);
+    atualizarControlesColecoes();
+  } finally {
+    if (botao && botao.isConnected) botao.disabled = false;
+  }
+}
+
 function criarCartaoConversa(i) {
   const numero = Number(i.number);
   const titulo = String(i.title || 'sem título');
@@ -789,8 +1078,29 @@ function criarCartaoConversa(i) {
     evento.stopPropagation();
     alternarFavoritoDaConversa(numero, botaoFavorito);
   };
+  const colecaoId = idColecaoSelecionada();
+  const nomeColecao = nomeColecaoSelecionada();
+  const pertence = !!(colecaoId && conversaEstaNaColecao(numero));
+  const botaoColecao = document.createElement('button');
+  botaoColecao.type = 'button';
+  botaoColecao.className = 'conv-colecao';
+  botaoColecao.textContent = pertence ? '−' : '＋';
+  botaoColecao.disabled = !colecaoId || estadoColecoesConversas() !== 'pronto';
+  botaoColecao.setAttribute('aria-pressed', pertence ? 'true' : 'false');
+  botaoColecao.setAttribute('aria-label', colecaoId
+    ? (pertence ? 'Remover da coleção ' : 'Adicionar à coleção ') + nomeColecao.slice(0, 80) + ': ' + titulo.slice(0, 160)
+    : 'Escolha uma coleção local antes de organizar esta conversa');
+  botaoColecao.title = colecaoId
+    ? (pertence ? 'Remover da coleção local ' : 'Adicionar à coleção local ') + nomeColecao
+    : 'Escolha uma coleção local para adicionar conversas';
+  botaoColecao.onclick = (evento) => {
+    evento.preventDefault();
+    evento.stopPropagation();
+    alternarConversaDaColecao(numero, botaoColecao);
+  };
   div.appendChild(abrirConversa);
   div.appendChild(botaoFavorito);
+  div.appendChild(botaoColecao);
   return div;
 }
 function criarCartaoNova() {
@@ -834,6 +1144,8 @@ function aplicarFiltroLista() {
   const busca = $('busca');
   const termo = busca ? busca.value.trim().toLowerCase() : '';
   const somenteFavoritas = filtroFavoritasAtivo && estadoOrganizacaoConversas() === 'pronto';
+  const colecaoFiltro = idColecaoSelecionada();
+  const somenteColecao = filtroColecaoAtivo && !!colecaoFiltro && estadoColecoesConversas() === 'pronto';
   const avisoAnterior = $('aviso-filtro-favoritas');
   if (avisoAnterior) avisoAnterior.remove();
   let visiveis = 0;
@@ -845,15 +1157,18 @@ function aplicarFiltroLista() {
     const numero = Number(div.dataset.conversaNumero);
     const correspondeBusca = !termo || titulo.indexOf(termo) !== -1;
     const correspondeFavorita = !somenteFavoritas || conversaEhFavorita(numero);
-    const mostrar = correspondeBusca && correspondeFavorita;
+    const correspondeColecao = !somenteColecao || conversaEstaNaColecao(numero);
+    const mostrar = correspondeBusca && correspondeFavorita && correspondeColecao;
     div.style.display = mostrar ? '' : 'none';
     if (mostrar) visiveis++;
   });
-  if (somenteFavoritas && visiveis === 0) {
+  if ((somenteFavoritas || somenteColecao) && visiveis === 0) {
     const aviso = document.createElement('div');
     aviso.id = 'aviso-filtro-favoritas';
     aviso.className = 'vazio';
-    aviso.textContent = '⭐ Nenhuma favorita entre as conversas carregadas. Marque uma estrela ou carregue mais para ampliar a lista.';
+    if (somenteFavoritas && !somenteColecao) aviso.textContent = '⭐ Nenhuma favorita entre as conversas carregadas. Marque uma estrela ou carregue mais para ampliar a lista.';
+    else if (somenteColecao && !somenteFavoritas) aviso.textContent = '⌁ Nenhuma conversa desta coleção entre as conversas carregadas. Adicione cartões ou carregue mais para ampliar a lista.';
+    else aviso.textContent = '⭐⌁ Nenhuma conversa favorita desta coleção entre as conversas carregadas. Ajuste os filtros ou carregue mais para ampliar a lista.';
     const antes = $('card-mais') || $('card-nova');
     if (antes) elLista.insertBefore(aviso, antes);
     else elLista.appendChild(aviso);
@@ -2488,6 +2803,33 @@ $('btn-filtrar-favoritas').onclick = () => {
   if (listaRenderizada) aplicarFiltroLista();
 };
 $('btn-apagar-favoritos').onclick = limparFavoritosLocais;
+$('seletor-colecao').onchange = (evento) => {
+  const id = Number(evento.target.value);
+  const colecoes = colecoesConversasLocal();
+  colecaoSelecionadaId = colecoes && colecoes.colecaoExiste(id) ? id : null;
+  filtroColecaoAtivo = false;
+  atualizarControlesColecoes();
+  const status = $('status-colecoes-conversas');
+  if (status) status.textContent = colecaoSelecionadaId
+    ? 'Coleção local “' + nomeColecaoSelecionada() + '” escolhida. Use ＋ nos cartões para associar conversas ou ative o filtro.'
+    : 'Nenhuma coleção local escolhida.';
+  if (listaRenderizada) renderListaAtual(listaOffline);
+};
+$('btn-filtrar-colecao').onclick = () => {
+  if (!idColecaoSelecionada() || estadoColecoesConversas() !== 'pronto') return;
+  filtroColecaoAtivo = !filtroColecaoAtivo;
+  atualizarControlesColecoes();
+  const status = $('status-colecoes-conversas');
+  if (status) status.textContent = filtroColecaoAtivo
+    ? 'Mostrando a coleção local “' + nomeColecaoSelecionada() + '” entre as conversas já carregadas neste navegador.'
+    : 'Filtro de coleção local desativado.';
+  if (listaRenderizada) aplicarFiltroLista();
+};
+$('btn-criar-colecao').onclick = criarColecaoLocal;
+$('nome-nova-colecao').addEventListener('keydown', (evento) => {
+  if (evento.key === 'Enter') { evento.preventDefault(); criarColecaoLocal(); }
+});
+$('btn-apagar-colecoes').onclick = limparColecoesLocais;
 $('optin-rascunhos').onchange = alternarOptinRascunhos;
 $('btn-apagar-rascunhos').onclick = apagarTodosRascunhos;
 $('btn-restaurar-rascunho').onclick = restaurarRascunhoAtual;
@@ -3325,6 +3667,7 @@ montarChips();
 if (typeof window.iniciarFiltroChips === 'function') window.iniciarFiltroChips();
 montarBusca();
 iniciarOrganizacaoConversas();
+iniciarColecoesConversas();
 montarSeletorModelo();
 if (MODO_LOCAL.ligado) {
   $('btn-local').classList.add('local-ligado');

@@ -138,9 +138,12 @@ function runtimeLista(src, responder, cacheInicial = [], salvarCache = null) {
     estado: () => 'pronto', detalhe: () => ({ quantidade: 0, limite: 100 }),
     temFavorito: () => false, alternarFavorito: async () => false, limparFavoritos: async () => ({ quantidade: 0 })
   };
+  // A VM de paginação não inicializa IndexedDB: simula somente a ausência segura
+  // das coleções, para que o cartão mantenha a paginação exercitável sem rede.
+  const colecoesLocal = { estado: () => 'falhou', colecaoExiste: () => false, temConversa: () => false, listarColecoes: () => [] };
   const ctx = {
     REPO: 'dono/repo', Date, Number, Math, Array, Set, String,
-    window: { ReboclOrganizacaoConversas: organizacaoLocal },
+    window: { ReboclOrganizacaoConversas: organizacaoLocal, ReboclColecoesConversas: colecoesLocal },
     document, $: obter, elLista: lista, elFaixa: faixa,
     escapar: (valor) => String(valor || ''),
     quando: (valor) => String(valor || ''),
@@ -157,7 +160,7 @@ function runtimeLista(src, responder, cacheInicial = [], salvarCache = null) {
   vm.createContext(ctx);
   vm.runInContext(`
     let paginaLista = 1, listaAtual = [], maisListaDisponivel = false, carregandoMaisLista = false, revisaoLista = 0;
-    let filtroFavoritasAtivo = false, listaRenderizada = false, listaOffline = false;
+    let filtroFavoritasAtivo = false, colecaoSelecionadaId = null, filtroColecaoAtivo = false, listaRenderizada = false, listaOffline = false;
     let filaCacheLista = Promise.resolve();
     ${extraiHelpers(src)}
     ${extraiLista(src)}

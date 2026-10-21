@@ -49,7 +49,7 @@ rotas=(index.html direto.html ligar.html limpar.html)
 # A cópia precisa incluir a casca local que as quatro páginas realmente carregam.
 # Sem isso, um erro em um módulo compartilhado poderia interromper a página antes
 # da fixture testar a lista e daria uma falsa prova de navegador.
-ativos_locais=(chat-estilos.css chat-pwa.js chat-comandos-locais.js chat-filtro-chips.js chat-organizacao-local.js chat-workspace.js dna.json)
+ativos_locais=(chat-estilos.css chat-pwa.js chat-comandos-locais.js chat-filtro-chips.js chat-organizacao-local.js chat-colecoes-local.js chat-workspace.js dna.json)
 for rota in "${rotas[@]}"; do
   cp "$rota" "$trabalho/$rota"
 done
@@ -105,6 +105,16 @@ teste_lista = """<script>
     }
     if (predicado()) return;
     throw new Error('Favoritos locais não concluíram a transação controlada: ' + (rotulo || 'etapa sem nome'));
+  };
+  const esperarColecoes = async (predicado, rotulo, tentativas = 20) => {
+    for (let tentativa = 0; tentativa < tentativas; tentativa++) {
+      if (predicado()) return;
+      // Coleções são outro banco IndexedDB local; use a mesma espera espaçada
+      // do relógio virtual sem tocar em rede, perfil real ou conversa do dono.
+      await new Promise(resolve => setTimeout(resolve, 60000));
+    }
+    if (predicado()) return;
+    throw new Error('Coleções locais não concluíram a transação controlada: ' + (rotulo || 'etapa sem nome'));
   };
   const testarWorkspace = async () => {
     if (!location.pathname.endsWith('/index.html')) return '';
@@ -200,6 +210,37 @@ teste_lista = """<script>
     filtroFavoritas.click();
     await esperar(() => filtroFavoritas.getAttribute('aria-pressed') === 'false', 5000, 'desativar filtro de favoritas');
 
+    const campoColecao = document.getElementById('nome-nova-colecao');
+    const criarColecao = document.getElementById('btn-criar-colecao');
+    const seletorColecao = document.getElementById('seletor-colecao');
+    const filtroColecao = document.getElementById('btn-filtrar-colecao');
+    const botaoColecaoAtual = () => document.querySelector('#lista .conv-conversa[data-conversa-numero="1"] .conv-colecao');
+    if (!campoColecao || !criarColecao || !seletorColecao || !filtroColecao || !botaoColecaoAtual()) {
+      throw new Error('controles de coleções locais ausentes');
+    }
+    await esperarColecoes(() => !criarColecao.disabled, 'coleções locais prontas');
+    campoColecao.value = 'Coleção de fixture';
+    criarColecao.click();
+    await esperarColecoes(() => [...seletorColecao.options].some(opcao => opcao.textContent.includes('Coleção de fixture')), 'criar coleção');
+    const opcaoColecao = [...seletorColecao.options].find(opcao => opcao.textContent.includes('Coleção de fixture'));
+    seletorColecao.value = opcaoColecao.value;
+    seletorColecao.dispatchEvent(new Event('change', { bubbles: true }));
+    await esperarColecoes(() => {
+      const botao = botaoColecaoAtual();
+      return !!botao && !botao.disabled;
+    }, 'escolher coleção');
+    botaoColecaoAtual().click();
+    await esperarColecoes(() => document.querySelector('#lista .conv-conversa[data-conversa-numero="1"] .conv-colecao').getAttribute('aria-pressed') === 'true', 'associar conversa');
+    filtroColecao.click();
+    await esperar(() => filtroColecao.getAttribute('aria-pressed') === 'true', 5000, 'ativar filtro de coleção');
+    const visiveisColecao = [...document.querySelectorAll('#lista .conv-conversa')].filter(visivel);
+    if (visiveisColecao.length !== 1 || !visiveisColecao[0].textContent.includes('Página um 1')) {
+      throw new Error('filtro local não isolou a conversa da coleção');
+    }
+    if (!visivel(document.getElementById('card-mais'))) throw new Error('carregar mais sumiu no filtro de coleção');
+    filtroColecao.click();
+    await esperar(() => filtroColecao.getAttribute('aria-pressed') === 'false', 5000, 'desativar filtro de coleção');
+
     const busca = document.getElementById('busca');
     busca.value = 'agulha pesquisável';
     busca.dispatchEvent(new Event('input', { bubbles: true }));
@@ -254,9 +295,15 @@ teste_lista = """<script>
     if (document.querySelector('#lista .conv-conversa[data-conversa-numero="1"] .conv-favorita').getAttribute('aria-pressed') !== 'false') {
       throw new Error('limpeza explícita não removeu favorito local');
     }
+    const apagarColecoes = document.getElementById('btn-apagar-colecoes');
+    apagarColecoes.click();
+    await esperarColecoes(() => document.getElementById('resumo-colecoes-locais').textContent.includes('Nenhuma coleção local criada'), 'limpar coleções');
+    if (seletorColecao.value || [...seletorColecao.options].some(opcao => opcao.textContent.includes('Coleção de fixture'))) {
+      throw new Error('limpeza explícita não removeu coleção local');
+    }
 
     const resultadoWorkspace = await testarWorkspace();
-    document.body.dataset.browserE2e = 'PASS: favoritos locais marcaram, filtraram e apagaram sem rede; busca ativa manteve carregar mais; nova conversa oculta; alvo da página 3 visível; PWA protegeu rascunho; rascunho local opt-in restaurou sem rede' + resultadoWorkspace;
+    document.body.dataset.browserE2e = 'PASS: favoritos locais marcaram, filtraram e apagaram sem rede; coleções locais criaram, associaram, filtraram e apagaram sem rede; busca ativa manteve carregar mais; nova conversa oculta; alvo da página 3 visível; PWA protegeu rascunho; rascunho local opt-in restaurou sem rede' + resultadoWorkspace;
   } catch (erro) {
     document.body.dataset.browserE2e = 'FAIL: ' + String((erro && erro.message) || erro).slice(0, 180);
   }
@@ -323,6 +370,7 @@ http.createServer((requisicao, resposta) => {
     ['chat-comandos-locais.js', 'application/javascript; charset=utf-8'],
     ['chat-filtro-chips.js', 'application/javascript; charset=utf-8'],
     ['chat-organizacao-local.js', 'application/javascript; charset=utf-8'],
+    ['chat-colecoes-local.js', 'application/javascript; charset=utf-8'],
     ['chat-workspace.js', 'application/javascript; charset=utf-8'],
     ['dna.json', 'application/json; charset=utf-8']
   ]);

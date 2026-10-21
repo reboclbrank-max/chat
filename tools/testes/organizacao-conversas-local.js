@@ -171,9 +171,10 @@ testa('quatro rotas carregam um ativo local e mantêm a organização visual id�
     assert.match(html, /<script src="chat-organizacao-local\.js"><\/script>/);
     const filtro = html.indexOf('<script src="chat-filtro-chips.js"></script>');
     const organizacao = html.indexOf('<script src="chat-organizacao-local.js"></script>');
+    const colecoes = html.indexOf('<script src="chat-colecoes-local.js"></script>');
     const workspace = html.indexOf('<script src="chat-workspace.js"></script>');
     const inline = html.indexOf('<script>', workspace);
-    assert(filtro >= 0 && organizacao > filtro && workspace > organizacao && inline > workspace, rota + ': ativo local precisa preceder o código da rota');
+    assert(filtro >= 0 && organizacao > filtro && colecoes > organizacao && workspace > colecoes && inline > workspace, rota + ': ativo local precisa preceder o código da rota');
     assert.match(html, /id="btn-filtrar-favoritas"[^>]*aria-pressed="false"[^>]*disabled/);
     assert.match(html, /id="btn-apagar-favoritos" disabled/);
     assert.match(html, /só o número da conversa — nunca título, mensagens ou token/i);
@@ -208,8 +209,9 @@ testa('casca, workflow, corredor e continuidade observam o novo ativo', () => {
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const corredor = ler('tools/testes/roda-testes.js');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v69/);
+  assert.match(sw, /rebocl-chat-v70/);
   assert.match(sw, /'\.\/chat-organizacao-local\.js'/);
+  assert.match(sw, /'\.\/chat-colecoes-local\.js'/);
   assert.match(workflow, /'chat-organizacao-local\.js'/);
   assert.match(corredor, /'organizacao-conversas-local\.js'/);
   assert(continuidade.includes('chat-organizacao-local\\.js'), 'porta não observa ativo novo');
@@ -218,9 +220,9 @@ testa('casca, workflow, corredor e continuidade observam o novo ativo', () => {
 testa('estilos mantêm botões nativos, alvo de toque e filtro responsivo', () => {
   const css = ler('chat-estilos.css');
   assert.match(css, /\.conv-conversa\{display:flex;align-items:stretch;padding:0;cursor:default;overflow:hidden\}/);
-  assert.match(css, /\.conv-favorita\{flex:0 0 44px;min-width:44px;min-height:44px/);
-  assert.match(css, /#btn-filtrar-favoritas\{flex:0 0 auto;min-height:40px/);
-  assert.match(css, /@media \(max-width:420px\)\{\.busca-organizacao\{flex-wrap:wrap\}/);
+  assert.match(css, /\.conv-favorita,\.conv-colecao\{flex:0 0 44px;min-width:44px;min-height:44px/);
+  assert.match(css, /#btn-filtrar-favoritas,#btn-filtrar-colecao\{flex:0 0 auto;min-height:40px/);
+  assert.match(css, /@media \(max-width:600px\)\{\.busca-organizacao\{flex-wrap:wrap\}/);
 });
 
 (async function principal() {

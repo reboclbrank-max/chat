@@ -51,9 +51,10 @@ ok('fixture valida atualização PWA sem ativar worker ou perder rascunho', () =
 });
 
 ok('copia e serve somente a casca local realmente carregada', () => {
-  assert.match(texto, /ativos_locais=\(chat-estilos\.css chat-pwa\.js chat-comandos-locais\.js chat-filtro-chips\.js chat-organizacao-local\.js chat-workspace\.js dna\.json\)/);
+  assert.match(texto, /ativos_locais=\(chat-estilos\.css chat-pwa\.js chat-comandos-locais\.js chat-filtro-chips\.js chat-organizacao-local\.js chat-colecoes-local\.js chat-workspace\.js dna\.json\)/);
   assert.match(texto, /const estaticos = new Map\(/);
   assert.match(texto, /\['chat-organizacao-local\.js', 'application\/javascript; charset=utf-8'\]/);
+  assert.match(texto, /\['chat-colecoes-local\.js', 'application\/javascript; charset=utf-8'\]/);
   assert.match(texto, /\['chat-workspace\.js', 'application\/javascript; charset=utf-8'\]/);
   assert.match(texto, /\['chat-estilos\.css', 'text\/css; charset=utf-8'\]/);
   assert.match(texto, /fixture sem recurso externo/);
@@ -69,6 +70,17 @@ ok('exercita favoritos locais controlados sem usar conversa ou rede real', () =>
   assert.match(texto, /carregar mais sumiu no filtro de favoritas/);
   assert.match(texto, /limpeza explícita não removeu favorito local/);
   assert.match(texto, /favoritos locais marcaram, filtraram e apagaram sem rede/);
+});
+
+ok('exercita coleções locais controladas sem usar conversa ou rede real', () => {
+  assert.match(texto, /const esperarColecoes/);
+  assert.match(texto, /Coleções locais não concluíram a transação controlada/);
+  assert.match(texto, /Coleção de fixture/);
+  assert.match(texto, /controles de coleções locais ausentes/);
+  assert.match(texto, /filtro local não isolou a conversa da coleção/);
+  assert.match(texto, /carregar mais sumiu no filtro de coleção/);
+  assert.match(texto, /limpeza explícita não removeu coleção local/);
+  assert.match(texto, /coleções locais criaram, associaram, filtraram e apagaram sem rede/);
 });
 
 ok('exercita recuperação do Workspace e prova o layout em navegador real', () => {
