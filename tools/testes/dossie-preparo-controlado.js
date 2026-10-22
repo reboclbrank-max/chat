@@ -2,6 +2,7 @@
 'use strict';
 const assert = require('assert');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const raiz = path.resolve(__dirname, '..', '..');
 const dossie = require(path.join(raiz, 'tools', 'dossie-preparo-controlado.js'));
@@ -20,6 +21,10 @@ function ambiente(extra) {
     GITHUB_REF: 'refs/heads/main'
   }, extra || {});
 }
+function raizTemporaria() {
+  return fs.mkdtempSync(path.join(os.tmpdir(), 'dossie-controlado-'));
+}
+function alvo(pasta) { return path.join(pasta, dossie.CAMINHO_DOSSIE); }
 
 ok('aceita exclusivamente o contexto GitHub fechado de main', () => {
   assert.deepEqual(dossie.contextoSeguro(ambiente()), {
@@ -49,22 +54,80 @@ ok('o texto é sanitizado, estático e declara revisão e rollback', () => {
   assert.doesNotMatch(texto, /https?:\/\/|Authorization:|GITHUB_TOKEN|secrets\.|process\.env|exec\(|spawn\(/i);
 });
 
-ok('a ferramenta escreve somente o caminho literal sem ler argumento ou acionar Git', () => {
-  const chamadas = [];
-  const io = {
-    mkdirSync: (...args) => chamadas.push(['mkdir', ...args]),
-    writeFileSync: (...args) => chamadas.push(['write', ...args])
-  };
-  const resultado = dossie.gerarDossie(ambiente(), io);
-  assert.equal(resultado.caminho, path.join('propostas', 'central', 'dossie-preparo-controlado.md'));
-  assert.equal(chamadas.length, 2);
-  assert.deepEqual(chamadas[0], ['mkdir', path.join('propostas', 'central'), { recursive: true }]);
-  assert.equal(chamadas[1][0], 'write');
-  assert.equal(chamadas[1][1], dossie.CAMINHO_DOSSIE);
-  assert.equal(chamadas[1][3].encoding, 'utf8');
+ok('gera somente o dossiê literal em diretórios reais e ausentes', () => {
+  const pasta = raizTemporaria();
+  try {
+    const resultado = dossie.gerarDossie(ambiente(), fs, pasta);
+    assert.equal(resultado.caminho, path.join('propostas', 'central', 'dossie-preparo-controlado.md'));
+    assert.equal(fs.readFileSync(alvo(pasta), 'utf8'), resultado.texto);
+    assert.deepEqual(fs.readdirSync(path.join(pasta, 'propostas', 'central')), ['dossie-preparo-controlado.md']);
+  } finally {
+    fs.rmSync(pasta, { recursive: true, force: true });
+  }
+});
+
+ok('dossiê preexistente bloqueia sem sobrescrever o artefato', () => {
+  const pasta = raizTemporaria();
+  try {
+    fs.mkdirSync(path.dirname(alvo(pasta)), { recursive: true });
+    fs.writeFileSync(alvo(pasta), 'sentinela-controlada\n', 'utf8');
+    assert.throws(() => dossie.gerarDossie(ambiente(), fs, pasta), /dossiê já existe/);
+    assert.equal(fs.readFileSync(alvo(pasta), 'utf8'), 'sentinela-controlada\n');
+  } finally {
+    fs.rmSync(pasta, { recursive: true, force: true });
+  }
+});
+
+ok('cada diretório literal bloqueia link simbólico antes de escrever fora da raiz', () => {
+  for (const componente of ['propostas', 'central']) {
+    const pasta = raizTemporaria();
+    const fora = fs.mkdtempSync(path.join(os.tmpdir(), 'dossie-controlado-fora-'));
+    try {
+      if (componente === 'propostas') {
+        fs.symlinkSync(fora, path.join(pasta, 'propostas'));
+      } else {
+        fs.mkdirSync(path.join(pasta, 'propostas'));
+        fs.symlinkSync(fora, path.join(pasta, 'propostas', 'central'));
+      }
+      assert.throws(() => dossie.gerarDossie(ambiente(), fs, pasta), /caminho do dossiê/);
+      const externo = componente === 'propostas'
+        ? path.join(fora, 'central', 'dossie-preparo-controlado.md')
+        : path.join(fora, 'dossie-preparo-controlado.md');
+      assert.equal(fs.existsSync(externo), false);
+    } finally {
+      fs.rmSync(pasta, { recursive: true, force: true });
+      fs.rmSync(fora, { recursive: true, force: true });
+    }
+  }
+});
+
+ok('arquivo-alvo simbólico bloqueia sem tocar o destino externo', () => {
+  const pasta = raizTemporaria();
+  const fora = fs.mkdtempSync(path.join(os.tmpdir(), 'dossie-controlado-fora-'));
+  try {
+    const externo = path.join(fora, 'dossie-preparo-controlado.md');
+    fs.mkdirSync(path.dirname(alvo(pasta)), { recursive: true });
+    fs.writeFileSync(externo, 'sentinela-externa\n', 'utf8');
+    fs.symlinkSync(externo, alvo(pasta));
+    assert.throws(() => dossie.gerarDossie(ambiente(), fs, pasta), /dossiê já existe/);
+    assert.equal(fs.readFileSync(externo, 'utf8'), 'sentinela-externa\n');
+  } finally {
+    fs.rmSync(pasta, { recursive: true, force: true });
+    fs.rmSync(fora, { recursive: true, force: true });
+  }
+});
+
+ok('a ferramenta não recebe argumento/caminho livre, reserva o alvo e não aciona Git', () => {
   const fonte = ler('tools/dossie-preparo-controlado.js');
   const executavel = fonte.replace(/\/\/[^\n]*/g, '');
   assert.doesNotMatch(executavel, /process\.argv|child_process|exec\s*\(|spawn\s*\(|fetch\s*\(|https?:\/\/|git\s+/i);
+  assert.match(fonte, /io\.lstatSync\(alvo\)/);
+  assert.match(fonte, /prepararDestinoDossie\(io, raiz\)/);
+  assert.match(fonte, /flag: 'wx'/);
+  const iDestino = fonte.indexOf('const destino = prepararDestinoDossie(io, raiz)');
+  const iTexto = fonte.indexOf('const texto = textoDossie(contexto)');
+  const iEscrita = fonte.indexOf('io.writeFileSync(destino, texto');
+  assert(iDestino >= 0 && iDestino < iTexto && iTexto < iEscrita, 'destino é validado e reservado antes da escrita');
 });
 
 ok('o workflow percorre preflight antes da única escrita e falha fechado fora de main', () => {

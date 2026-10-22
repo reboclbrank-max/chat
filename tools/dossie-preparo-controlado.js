@@ -19,6 +19,50 @@ function contextoSeguro(ambiente = process.env) {
   return Object.freeze({ sha, runId, ref });
 }
 
+function lstatOuAusente(io, alvo, nome) {
+  try {
+    return io.lstatSync(alvo);
+  } catch (erro) {
+    if (erro && erro.code === 'ENOENT') return null;
+    throw new Error('base incompatível para dossiê: ' + nome);
+  }
+}
+
+function validarDiretorioLiteral(io, raiz, relativo, nome) {
+  let atual = path.resolve(raiz);
+  for (const parte of relativo.split(/[\\/]+/)) {
+    if (!parte || parte === '.' || parte === '..') {
+      throw new Error('base incompatível para dossiê: ' + nome);
+    }
+    atual = path.join(atual, parte);
+    let estado = lstatOuAusente(io, atual, nome);
+    if (!estado) {
+      try {
+        io.mkdirSync(atual);
+      } catch (_) {
+        throw new Error('base incompatível para dossiê: ' + nome);
+      }
+      estado = lstatOuAusente(io, atual, nome);
+    }
+    if (!estado || !estado.isDirectory() || estado.isSymbolicLink()) {
+      throw new Error('base incompatível para dossiê: ' + nome);
+    }
+  }
+}
+
+function prepararDestinoDossie(io, raiz) {
+  const base = path.resolve(raiz);
+  const destino = path.resolve(base, CAMINHO_DOSSIE);
+  if (!destino.startsWith(base + path.sep)) {
+    throw new Error('base incompatível para dossiê: caminho do dossiê');
+  }
+  validarDiretorioLiteral(io, base, path.dirname(CAMINHO_DOSSIE), 'caminho do dossiê');
+  if (lstatOuAusente(io, destino, 'caminho do dossiê')) {
+    throw new Error('base incompatível para dossiê: dossiê já existe');
+  }
+  return destino;
+}
+
 function textoDossie(contexto) {
   const seguro = contextoSeguro({
     GITHUB_SHA: contexto && contexto.sha,
@@ -62,11 +106,13 @@ function textoDossie(contexto) {
   ].join('\n');
 }
 
-function gerarDossie(ambiente = process.env, io = fs) {
+function gerarDossie(ambiente = process.env, io = fs, raiz = process.cwd()) {
   const contexto = contextoSeguro(ambiente);
+  const destino = prepararDestinoDossie(io, raiz);
   const texto = textoDossie(contexto);
-  io.mkdirSync(path.dirname(CAMINHO_DOSSIE), { recursive: true });
-  io.writeFileSync(CAMINHO_DOSSIE, texto, { encoding: 'utf8', mode: 0o644 });
+  // A reserva exclusiva impede sobrescrever o único artefato mesmo se ele
+  // aparecer entre a validação literal e a escrita.
+  io.writeFileSync(destino, texto, { encoding: 'utf8', mode: 0o644, flag: 'wx' });
   return Object.freeze({ caminho: CAMINHO_DOSSIE, contexto, texto });
 }
 
@@ -74,10 +120,12 @@ if (require.main === module) {
   try {
     const resultado = gerarDossie();
     console.log(`dossie_controlado: criado ${resultado.caminho}`);
-  } catch (erro) {
-    console.error('dossie_controlado: bloqueado por contexto inválido');
+  } catch (_) {
+    console.error('dossie_controlado: bloqueado por contexto ou destino inválido');
     process.exitCode = 1;
   }
 }
 
-module.exports = Object.freeze({ CAMINHO_DOSSIE, REF_PERMITIDA, contextoSeguro, textoDossie, gerarDossie });
+module.exports = Object.freeze({
+  CAMINHO_DOSSIE, REF_PERMITIDA, contextoSeguro, prepararDestinoDossie, textoDossie, gerarDossie
+});
