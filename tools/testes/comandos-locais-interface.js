@@ -46,8 +46,10 @@ ok('Central segura aceita somente mapa e opções fechadas', () => {
   vm.runInContext(fonte, contexto);
   const responder = contexto.window.respostaComandoOperacionalLocal;
   const contratoNode = require(path.join(raiz, 'chat-comandos-locais.js'));
+  const centralNfd = 'operac\u0327a\u0303o: automac\u0327a\u0303o';
   assert.equal(contratoNode.temPrefixoCentral('operar:marketing'), true);
   assert.equal(contratoNode.temPrefixoCentral('operação: automação'), true);
+  assert.equal(contratoNode.temPrefixoCentral(centralNfd), true);
   assert.equal(contratoNode.temPrefixoCentral('operarmarketing'), false);
   for (const entrada of ['operar:', 'central:', '!operacoes', '!central']) {
     const saida = responder(entrada);
@@ -78,6 +80,7 @@ ok('Central segura aceita somente mapa e opções fechadas', () => {
   assert.match(responder('operar:marketing'), /Marketing:/);
   assert.match(responder('central capacidade'), /Capacidade:[\s\S]*rastreabilidade pendente/i);
   assert.match(responder('operação: automação'), /Automação:[\s\S]*não cria cron/i);
+  assert.match(responder(centralNfd), /Automação:[\s\S]*não cria cron/i);
   assert.match(responder('operar automações'), /Opção não reconhecida/);
   assert.match(responder('operar: shell'), /Opção não reconhecida/);
   assert.match(responder('operar: testes agora'), /texto livre não é executado/);
@@ -193,11 +196,11 @@ ok('chip visual oferece o roteiro local sem agendar rascunho ou escrita', () => 
   }
 });
 
-ok('casca PWA v93 inclui os ativos locais e a porta de continuidade o observa', () => {
+ok('casca PWA v94 inclui os ativos locais e a porta de continuidade o observa', () => {
   const sw = ler('sw.js');
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v93/);
+  assert.match(sw, /rebocl-chat-v94/);
   assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);
   assert.match(sw, /'\.\/chat-organizacao-local\.js'/);

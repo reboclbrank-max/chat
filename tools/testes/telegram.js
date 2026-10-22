@@ -40,6 +40,8 @@ function confere(nome, cond) { total++; if (cond) ok++; console.log((cond ? '✔
   confere('trabalho pelo Telegram usa a ferramenta compartilhada', r === 'respondido' && /Trabalho da casa/.test(enviados.pop().text));
   r = await tg.trataAtualizacao(msg(555, { text: 'operar:marketing' }));
   confere('Central compacta pelo Telegram delega ao mesmo mapa fechado', r === 'respondido' && /Marketing:/.test(enviados.pop().text));
+  r = await tg.trataAtualizacao(msg(555, { text: 'operac\u0327a\u0303o: automac\u0327a\u0303o' }));
+  confere('Central recompõe acento NFD pelo Telegram sem ampliar o mapa', r === 'respondido' && /Automação:/.test(enviados.pop().text));
   r = await tg.trataAtualizacao(msg(777, { text: '/parear 123456' }));
   confere('outra pessoa não consegue parear depois do dono', r === 'pareamento recusado (já tem dono)');
   enviados.length = 0;

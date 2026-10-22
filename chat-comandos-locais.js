@@ -58,14 +58,21 @@
   const SO_CENTRAL = /^!?(?:operar|opera(?:ç(?:ões|ão)|c(?:oes|ao))|central):?$/i;
   const OPCAO_CENTRAL_FECHADA = /^!?(?:operar|opera(?:ç(?:ões|ão)|c(?:oes|ao))|central)(?:\s*:\s*|\s+)([a-zÀ-ÿ]+)\s*$/i;
 
+  // NFC só recompõe a mesma grafia Unicode (por exemplo, acento digitado em duas
+  // code units); não remove acento, não aproxima palavras nem cria aliases novos.
+  function textoCentralCanonico(entrada) {
+    const texto = String(entrada || '').trim();
+    return typeof texto.normalize === 'function' ? texto.normalize('NFC') : texto;
+  }
+
   // Exportado também para os canais: evita que uma segunda regex deixe uma grafia
   // local passar ao fluxo normal. Reconhecer o prefixo não executa nada.
   function temPrefixoCentral(entrada) {
-    return PREFIXO_CENTRAL.test(String(entrada || '').trim());
+    return PREFIXO_CENTRAL.test(textoCentralCanonico(entrada));
   }
 
   function respostaComandoOperacionalLocal(entrada) {
-    const texto = String(entrada || '').trim();
+    const texto = textoCentralCanonico(entrada);
     if (/^!?(?:trabalho|prioridades):?$/i.test(texto)) return ROTEIRO_TRABALHO;
     if (SO_CENTRAL.test(texto)) return ROTEIRO_CENTRAL;
     if (!temPrefixoCentral(texto)) return '';

@@ -138,6 +138,7 @@ function confere(nome, condicao) {
   await t('operar: marketing conserva anti-spam sem publicação extra', 'operar: marketing', /fatos, cadência e anti-spam[\s\S]*não publica fora da rotina nem fabrica tráfego/i);
   await t('Central compacta não cai no motor ou na rede por e-mail', 'operar:marketing', /Marketing:[\s\S]*não lê log, conta, alcance ou métrica externa/i);
   await t('Central acentuada conserva a opção fechada por e-mail', 'operação: automação', /Automação:[\s\S]*não cria cron, fila persistente, dispatch, retry nem executor genérico/i);
+  await t('Central recompõe acento NFD sem abrir outro fluxo por e-mail', 'operac\u0327a\u0303o: automac\u0327a\u0303o', /Automação:[\s\S]*não cria cron, fila persistente, dispatch, retry nem executor genérico/i);
   await t('operar: repos mantém promoção bloqueada', 'operar: repos', /não edita nem promove código/i);
   await t('operar: texto livre não vira execução', 'operar: testes agora', /texto livre não é executado/i);
   await t('ajuda: lista a Central segura', 'ajuda', /operar:.*Central segura/i);
