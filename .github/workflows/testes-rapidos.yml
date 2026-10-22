@@ -2,6 +2,11 @@ name: Testes rápidos do chat (barreira antes de entrar no ar)
 # 🚦 roda a cada mudança de código do chat; o escutador (v4.3) só troca o turno se este teste passar.
 # Sem Gmail e sem IA de verdade: IMAP, SMTP e motores falsos (tools/testes/simula-caixa.js).
 on:
+  # A mesma barreira precisa existir no diff de uma PR antes da proteção de
+  # main poder exigir seu check. Não abre/mescla PR: apenas valida a revisão
+  # humana já criada fora do workflow.
+  pull_request:
+    branches: [main]
   push:
     branches: [main]
     paths:

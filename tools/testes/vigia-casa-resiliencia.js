@@ -72,7 +72,8 @@ ok('estado válido porém corrompido é reconstruído sem imprimir detalhe bruto
 ok('falha fatal reprova e ainda permite salvar fotografia já escrita', () => {
   assert.match(fonte, /ERRO no vigia: execução interrompida antes de concluir a fotografia/);
   assert.match(fonte, /process\.exitCode = 1/);
-  assert.match(workflow, /- name: Salva o estado do vigia\n\s+if: always\(\)/);
+  assert.match(workflow, /- name: Publica o estado do vigia no ramo revisável\n\s+if: always\(\)/);
+  assert.match(workflow, /estado-operacional-controlado\.js publicar vigia/);
 });
 
 console.log(`${certos}/${certos + falhas} testes de resiliência do vigia passaram`);

@@ -24,6 +24,8 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: '22'
+      - name: Restaura a fotografia sanitizada do ramo revisável
+        run: node tools/estado-operacional-controlado.js preparar vigia
       - run: npm install --no-save nodemailer@10.1.1 imapflow@2.4.3
       - run: node tools/vigia-casa.js
         env:
@@ -32,17 +34,15 @@ jobs:
           VIGIA_PARA: ${{ secrets.CHAT_DONO }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VIGIA_TESTE: ${{ inputs.teste }}
-      - name: Salva o estado do vigia
+      - name: Publica o estado do vigia no ramo revisável
         if: always()
         run: |
+          set -euo pipefail
           git config user.name "vigia-casa"
           git config user.email "vigia@rebocl.local"
-          git add vigia-estado.json || true
-          git diff --cached --quiet || git commit -m "vigia: estado $(date -u +%F-%H%M)"
-          ok=0
-          for i in 1 2 3; do
-            git pull --rebase --autostash -q origin main || true
-            if git push; then ok=1; break; fi
-            sleep 5
-          done
-          [ "$ok" = "1" ] || echo "push sem mudanças ou falhou"
+          git add -- vigia-estado.json
+          if git diff --cached --quiet; then
+            echo "vigia sem fotografia nova"
+          else
+            node tools/estado-operacional-controlado.js publicar vigia
+          fi

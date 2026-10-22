@@ -2,7 +2,7 @@
 
 > **Documento operacional obrigatório para qualquer pessoa ou agente que for mexer neste repositório.**
 >
-> **Retrato consolidado em 2026-10-21.** Ele descreve o estado de `main` após o pacote de segurança, a expansão local, a correção da aferição do teste real de e-mail, a recuperação rápida da interface diante da indisponibilidade observada do trabalhador privado, os rascunhos locais opt-in, a organização local de favoritos e coleções, os backups manuais estritos, a recuperação completa reversível protegida contra fotografia desatualizada, a criação e renomeação estrutural transacionais entre guias, o salvamento e a renomeação comum de arquivo decididos pela fotografia corrente, a importação ativa aditiva decidida pela fotografia persistida, a transferência aditiva de projeto com histórico, a busca explícita entre projetos, a proteção de conflito de arquivo e a Lixeira transacional do Workspace. Antes de agir, confira a `main` remota: ela sempre vence este retrato se algo tiver mudado depois.
+> **Retrato consolidado em 2026-10-22.** Ele descreve o estado de `main` após o pacote de segurança, a expansão local, a correção da aferição do teste real de e-mail, a recuperação rápida da interface diante da indisponibilidade observada do trabalhador privado, os rascunhos locais opt-in, a organização local de favoritos e coleções, os backups manuais estritos, a recuperação completa reversível protegida contra fotografia desatualizada, a criação e renomeação estrutural transacionais entre guias, o salvamento e a renomeação comum de arquivo decididos pela fotografia corrente, a importação ativa aditiva decidida pela fotografia persistida, a transferência aditiva de projeto com histórico, a busca explícita entre projetos, a proteção de conflito de arquivo e a Lixeira transacional do Workspace. As saídas operacionais sanitizadas passam a usar o ramo revisável `estado/operacional`, nunca promoção automática em `main`. Antes de agir, confira a `main` remota e o ramo de estado: eles sempre vencem este retrato se algo tiver mudado depois.
 
 ## 0. Regra permanente de continuidade
 
@@ -55,6 +55,25 @@ Material reutilizável e público/sanitizado pertence a este repositório; decis
 ---
 
 ## 2. Estado funcional atual
+
+### 2.0 Estado operacional revisável e proteção futura de `main` (22/10/2026)
+
+As automações autorizadas continuam produzindo somente informação pública e sanitizada, mas não fazem mais `push`, `pull --rebase` ou reset contra `main`. A fonte de produto e a promoção humana permanecem em `main`; a fotografia operacional fica em `estado/operacional`, um ramo público, reversível e comparável que **não** abre PR, não faz merge e não é canal de deploy. A pessoa revisa qualquer diff desse ramo e decide separadamente se uma alteração de fonte merece uma PR/revisão humana.
+
+| Workflow | Saída literal no ramo `estado/operacional` | Leitura preservada |
+|---|---|---|
+| `email.yml` | `email-log.md` sanitizado, somente por concatenação append-only | O turno recupera o último log antes de atender; em concorrência, conserva o log já publicado e acrescenta apenas o sufixo da sessão. |
+| `evolucao.yml` | `saude-cerebro.md`, `qualidade-historico.json`, `capacidade-estado.json`, `CAPACIDADE.md` | Recupera o histórico e atualiza `vigia-estado.json` imediatamente antes do indicador, sempre no ramo de estado. |
+| `vigia.yml` | `vigia-estado.json` sanitizado | Recupera a fotografia antes da sonda; o comando `status:` do e-mail lê a mesma referência pública. |
+| `ferramentas.yml` | somente `provas/ferramentas-AAAA-MM-DD-HHMM.md` | Não recebe caminho, entrada ou arquivo arbitrário para publicação. |
+| `coleta-email.yml` | somente `provas/teste-email-final-AAAA-MM-DD-HHMM.md` | Mantém a coleta manual existente, sem escrever em `main`. |
+| `teste-email.yml` | somente relatórios Markdown e MP3 com nome seguro em `provas/` gerados pelos sete scripts já fechados | Este sexto escritor, encontrado na auditoria, migrou junto; ser manual não permite contornar a proteção de `main`. |
+
+`tools/estado-operacional-controlado.js` é o único publicador desses seis fluxos. Ele aceita apenas os seis perfis literais acima, exige `GITHUB_RUN_ID` numérico, confere caminhos staged, recusa exclusão, symlink, hard link, modo não regular e caminho fora da allowlist, busca a ponta de `estado/operacional`, cria commit somente nela e faz push não forçado. O log de e-mail é validado como append-only mesmo sem concorrência; se outro turno tiver mudado o mesmo artefato, ele preserva a ponta e acrescenta apenas o sufixo verificável. Toda outra concorrência é erro explícito, preservando a ponta remota e evitando perda silenciosa. Não há PAT humano, bypass, PR automático, custo, serviço ou infraestrutura nova.
+
+Antes de qualquer execução desses workflows, `estado/operacional` deve existir como fotografia inicial de `main`; a ferramenta falha fechada se o ramo não existir e nunca usa `main` como alternativa. O contrato local cria um repositório temporário e prova: ausência do ramo sem fallback para `main`, leitura isolada da fotografia, publicação apenas no ramo de estado, rejeição de caminho estranho, parada sem sobrescrita em conflito, composição append-only do e-mail e atualização do vigia limitada à evolução preparada. A barreira `testes-rapidos.yml` também roda em uma PR destinada a `main`, sem criar/mesclar PR nem receber entrada, para que seu check possa ser exigido antes da revisão humana; o push continua com filtro de caminhos. A auditoria de workflows exige SHA completo e origem `actions/` para toda Action, além de impedir os seis workflows de conter `git push`, `git pull`, reset/fetch de `main` ou referência a `main`.
+
+**Rollback delimitado:** desabilitar a chamada do publicador por commit revisado e restaurar, por revisão humana, a última fotografia necessária a partir de `estado/operacional`; não apagar nem forçar esse ramo automaticamente. A remoção do ramo só pode ocorrer depois de conferir que nenhum estado/artefato operacional autorizado será perdido. A proteção real de `main` é passo posterior: só será aplicada após a validação remota desta migração e uma leitura explícita da configuração, sem bypass amplo, PAT humano, administrador permanente ou efeito incerto.
 
 ### 2.1 Página web e conversa pelo navegador
 

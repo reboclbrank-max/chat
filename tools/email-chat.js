@@ -610,7 +610,9 @@ async function ferramenta(corpo, retornoNavegacao) {
     if (cmd === 'trabalho' || cmd === 'prioridades') return resumoTrabalhoDaCasa();
     if (cmd === 'status') {
       try {
-        const r = await fetch('https://raw.githubusercontent.com/reboclbrank-max/chat/main/vigia-estado.json', { signal: AbortSignal.timeout(20000), cache: 'no-store' });
+        // A fotografia sanitizada é operacional e revisável no ramo isolado;
+        // main permanece somente fonte promovida por revisão humana.
+        const r = await fetch('https://raw.githubusercontent.com/reboclbrank-max/chat/estado/operacional/vigia-estado.json', { signal: AbortSignal.timeout(20000), cache: 'no-store' });
         if (!r.ok) return '🩺 Não consegui ler o estado técnico agora. Tente novamente em alguns minutos.';
         return resumoEstadoVigiaPublico(await r.json());
       } catch (e) {

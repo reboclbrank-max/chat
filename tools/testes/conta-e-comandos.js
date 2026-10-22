@@ -142,7 +142,7 @@ function confere(nome, condicao) {
   estadoCausalDaRota.recuperacoes.exame.ultima_tentativa_em = new Date(agoraDaRota - 4 * 60 * 60 * 1000).toISOString();
   let leiturasStatus = 0;
   global.fetch = async (url) => {
-    if (url !== 'https://raw.githubusercontent.com/reboclbrank-max/chat/main/vigia-estado.json') throw new Error('URL inesperada');
+    if (url !== 'https://raw.githubusercontent.com/reboclbrank-max/chat/estado/operacional/vigia-estado.json') throw new Error('URL inesperada');
     leiturasStatus++;
     return { ok: true, json: async () => estadoCausalDaRota };
   };

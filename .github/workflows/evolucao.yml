@@ -10,6 +10,11 @@ on:
         type: string
 permissions:
   contents: write
+# Uma única bateria preserva a sequência de qualidade/indicador; a publicação
+# ainda valida conflito por arquivo antes de tocar no ramo de estado.
+concurrency:
+  group: evolucao-chat
+  cancel-in-progress: false
 jobs:
   exame:
     runs-on: ubuntu-24.04
@@ -18,27 +23,25 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: '22'
+      - name: Restaura a fotografia sanitizada do ramo revisável
+        run: node tools/estado-operacional-controlado.js preparar evolucao
       - run: node tools/evolucao-chat.js
         env:
           EVOLUCAO_AMOSTRA: ${{ inputs.amostra }}
       - name: Calcula o indicador com o vigia recém-sincronizado
         run: |
-          # O checkout pode ter começado antes do vigia publicar uma sonda. Leia a fonte
-          # remota imediatamente antes do indicador para não promover um verde ultrapassado.
-          git fetch -q origin main
-          git show origin/main:vigia-estado.json > vigia-estado.json
+          # O checkout pode ter começado antes de o vigia publicar a sonda. A
+          # leitura é refeita na referência de estado, nunca em main.
+          node tools/estado-operacional-controlado.js atualizar-vigia evolucao
           node tools/indice-capacidade.js
-          git checkout -- vigia-estado.json
-      - name: Salva o histórico
+      - name: Publica somente o histórico no ramo revisável
         run: |
+          set -euo pipefail
           git config user.name "evolucao-casa"
           git config user.email "evolucao@rebocl.local"
-          git add saude-cerebro.md qualidade-historico.json capacidade-estado.json CAPACIDADE.md
-          git diff --cached --quiet || git commit -m "exame diario $(date -u +%F)"
-          ok=0
-          for i in 1 2 3; do
-            git pull --rebase --autostash -q origin main || true
-            if git push; then ok=1; break; fi
-            sleep 5
-          done
-          [ "$ok" = "1" ] || { echo "push falhou apos 3 tentativas"; exit 1; }
+          git add -- saude-cerebro.md qualidade-historico.json capacidade-estado.json CAPACIDADE.md
+          if git diff --cached --quiet; then
+            echo "indicador sem alteração publicável"
+          else
+            node tools/estado-operacional-controlado.js publicar evolucao
+          fi

@@ -40,12 +40,15 @@ jobs:
           GMAIL_CHAT_ADDR: ${{ secrets.GMAIL_CHAT_ADDR }}
           GMAIL_CHAT_PASS: ${{ secrets.GMAIL_CHAT_PASS }}
           ESPERA_MIN: ${{ github.event.inputs.espera }}
-      - name: Publica o relatório
+      - name: Publica o relatório somente no ramo revisável
         if: always()
         run: |
+          set -euo pipefail
           git config user.name "teste-email"
           git config user.email "teste@rebocl.local"
-          git pull --rebase --autostash || true
-          git add provas/ || true
-          git diff --cached --quiet || git commit -m "teste do e-mail: relatório $(date -u +%F-%H%M)"
-          git push || true
+          git add -- provas/
+          if git diff --cached --quiet; then
+            echo "teste sem relatório novo"
+          else
+            node tools/estado-operacional-controlado.js publicar teste-email
+          fi

@@ -23,6 +23,9 @@ jobs:
     timeout-minutes: 80
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
       - name: Instala o mesmo que o turno usa (OCR + olho)
         run: |
           python3 -m pip install --quiet --disable-pip-version-check --break-system-packages "numpy<2.5" Pillow opencv-python-headless==4.10.0.84
@@ -76,10 +79,14 @@ jobs:
           EXTRA=""; if [ "$CRU" = "sim" ]; then EXTRA="--cru"; fi
           python3 tools/exame-visao.py "$MODELOS" $EXTRA >> "$ARQ"
           tail -n 90 "$ARQ"
-      - name: Publica o exame
+      - name: Publica o exame somente no ramo revisável
         run: |
+          set -euo pipefail
           git config user.name "exame-ferramentas"
           git config user.email "exame@rebocl.local"
-          git add provas/ferramentas-*.md
-          git commit -m "exame das ferramentas $(date -u +%F-%H%M)" || exit 0
-          for i in 1 2 3; do git pull --rebase --autostash -q && git push -q && break; sleep 5; done
+          git add -- provas/ferramentas-*.md
+          if git diff --cached --quiet; then
+            echo "exame sem prova nova"
+          else
+            node tools/estado-operacional-controlado.js publicar ferramentas
+          fi

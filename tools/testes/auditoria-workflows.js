@@ -78,6 +78,14 @@ ok('workflows não repetem chaves no mesmo step', () => {
   }
 });
 
+ok('todas as actions usadas são de propriedade do GitHub', () => {
+  for (const nome of arquivos) {
+    for (const uso of ler(nome).matchAll(/^\s*-?\s*uses:\s*([^\s#]+)/gm)) {
+      assert.match(uso[1], /^actions\/[A-Za-z0-9_/-]+@[a-f0-9]{40}$/i, nome + ' não usa action GitHub-owned: ' + uso[1]);
+    }
+  }
+});
+
 ok('não há gatilho pull_request_target e o orçamento de escrita é explícito', () => {
   const escreveConteudo = new Set(['coleta-email.yml', 'dossie-preparo-controlado.yml', 'email.yml', 'evolucao.yml', 'ferramentas.yml', 'navegador-publico.yml', 'reforco-dossie-controlado.yml', 'teste-email.yml', 'vigia.yml']);
   const escreveAcoes = new Set(['email.yml', 'vigia.yml']);
@@ -89,6 +97,47 @@ ok('não há gatilho pull_request_target e o orçamento de escrita é explícito
     assert.equal(conteudo, escreveConteudo.has(nome), nome + ' divergiu do orçamento de contents: write');
     assert.equal(acoes, escreveAcoes.has(nome), nome + ' divergiu do orçamento de actions: write');
   }
+});
+
+ok('saídas operacionais não escrevem em main e usam publicador literal revisável', () => {
+  const perfis = {
+    'email.yml': 'email',
+    'evolucao.yml': 'evolucao',
+    'ferramentas.yml': 'ferramentas',
+    'vigia.yml': 'vigia',
+    'coleta-email.yml': 'coleta',
+    'teste-email.yml': 'teste-email'
+  };
+  for (const [nome, perfil] of Object.entries(perfis)) {
+    const texto = ler(nome);
+    assert.match(texto, new RegExp('estado-operacional-controlado\\.js publicar ' + perfil.replace('-', '\\-')),
+      nome + ' não chama o publicador de escopo fechado');
+    assert.doesNotMatch(texto, /\bgit\s+(?:push|pull|reset|fetch)\b|HEAD:main|refs\/heads\/main/i,
+      nome + ' ainda tem caminho de escrita/sincronização de main');
+  }
+  assert.match(ler('email.yml'), /estado-operacional-controlado\.js preparar email/);
+  assert.match(ler('vigia.yml'), /estado-operacional-controlado\.js preparar vigia/);
+  const evolucao = ler('evolucao.yml');
+  assert.match(evolucao, /estado-operacional-controlado\.js preparar evolucao/);
+  assert.match(evolucao, /estado-operacional-controlado\.js atualizar-vigia evolucao/);
+});
+
+ok('publicador de estado aceita somente perfis, ramo e arquivos fechados', () => {
+  const ferramenta = fs.readFileSync(path.join(raiz, 'tools', 'estado-operacional-controlado.js'), 'utf8');
+  assert.match(ferramenta, /const RAMO = 'estado\/operacional';/);
+  for (const perfil of ['email', 'evolucao', 'vigia', 'ferramentas', 'coleta', "'teste-email'"]) assert(ferramenta.includes(perfil), 'perfil ausente: ' + perfil);
+  assert.match(ferramenta, /refs\/heads\/estado\/operacional/);
+  assert.match(ferramenta, /GITHUB_RUN_ID numérico é obrigatório/);
+  assert.match(ferramenta, /nlink !== 1/);
+  assert.match(ferramenta, /sufixoAppendOnlyDoLog/);
+  assert.match(ferramenta, /não sobrescrevi/);
+  assert.doesNotMatch(ferramenta, /--force|refs\/heads\/main|HEAD:main/);
+});
+
+ok('status do e-mail lê somente a fotografia sanitizada do ramo de estado', () => {
+  const chat = fs.readFileSync(path.join(raiz, 'tools', 'email-chat.js'), 'utf8');
+  assert.match(chat, /chat\/estado\/operacional\/vigia-estado\.json/);
+  assert.doesNotMatch(chat, /chat\/main\/vigia-estado\.json/);
 });
 
 ok('dossiê controlado tem escrita mínima, origem fixa e nenhum dado secreto', () => {
@@ -125,6 +174,12 @@ ok('reforço controlado cria somente um ramo revisável de três caminhos', () =
   assert.doesNotMatch(reforco, /secrets\.|inputs:|--force|git merge|gh pr\b|git push[^\n]*(?:HEAD:main|refs\/heads\/main)/i);
 });
 
+ok('barreira rápida roda também na PR humana para viabilizar proteção de main', () => {
+  const rapido = ler('testes-rapidos.yml');
+  assert.match(rapido, /^  pull_request:\n    branches: \[main\]\s*$/m);
+  assert.doesNotMatch(rapido, /pull_request_target/);
+});
+
 ok('barreira rápida prepara e exige OCR português e renderizador de PDF', () => {
   const rapido = ler('testes-rapidos.yml');
   assert.match(rapido, /command -v pdftotext >\/dev\/null/);
@@ -153,15 +208,15 @@ ok('turno de e-mail usa por padrão o mesmo modelo do exame; reserva leve não c
   assert.equal(entrada[1], modelos[0], 'o exame padrão diverge do modelo normal usado pelo turno');
 });
 
-ok('indicador diário usa a sonda remota mais recente, não o checkout de início', () => {
+ok('indicador diário usa a sonda remota mais recente do ramo de estado', () => {
   const evolucao = ler('evolucao.yml');
-  const iFetch = evolucao.indexOf('git fetch -q origin main');
-  const iSonda = evolucao.indexOf('git show origin/main:vigia-estado.json > vigia-estado.json');
+  const iPrepara = evolucao.indexOf('estado-operacional-controlado.js preparar evolucao');
+  const iExame = evolucao.indexOf('node tools/evolucao-chat.js');
+  const iAtualiza = evolucao.indexOf('estado-operacional-controlado.js atualizar-vigia evolucao');
   const iIndice = evolucao.indexOf('node tools/indice-capacidade.js');
-  const iRestaura = evolucao.indexOf('git checkout -- vigia-estado.json');
-  assert(iFetch >= 0 && iFetch < iSonda, 'exame precisa buscar main antes da sonda');
-  assert(iSonda >= 0 && iSonda < iIndice, 'indicador não pode usar sonda do checkout antigo');
-  assert(iIndice >= 0 && iIndice < iRestaura, 'fonte temporária do vigia deve ser restaurada depois do indicador');
+  assert(iPrepara >= 0 && iPrepara < iExame, 'exame precisa iniciar com a fotografia de estado');
+  assert(iAtualiza >= 0 && iAtualiza < iIndice, 'indicador não pode usar sonda do checkout antigo');
+  assert.doesNotMatch(evolucao, /origin\/main|HEAD:main|refs\/heads\/main/);
 });
 
 ok('navegador público recebe só URL e referência opaca, antes de ter token', () => {

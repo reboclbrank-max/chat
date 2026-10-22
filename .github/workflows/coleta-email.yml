@@ -27,12 +27,15 @@ jobs:
           GMAIL_CHAT_ADDR: ${{ secrets.GMAIL_CHAT_ADDR }}
           GMAIL_CHAT_PASS: ${{ secrets.GMAIL_CHAT_PASS }}
           ESPERA_MIN: ${{ github.event.inputs.espera }}
-      - name: Publica a coleta
+      - name: Publica a coleta somente no ramo revisável
         if: always()
         run: |
+          set -euo pipefail
           git config user.name "coleta-email"
           git config user.email "coleta@rebocl.local"
-          git pull --rebase --autostash || true
-          git add provas/ || true
-          git diff --cached --quiet || git commit -m "coleta do teste de email $(date -u +%F-%H%M)"
-          git push || true
+          git add -- provas/
+          if git diff --cached --quiet; then
+            echo "coleta sem prova nova"
+          else
+            node tools/estado-operacional-controlado.js publicar coleta
+          fi

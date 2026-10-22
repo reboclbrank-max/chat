@@ -31,6 +31,8 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: '22'
+      - name: Restaura o log sanitizado do ramo revisável
+        run: node tools/estado-operacional-controlado.js preparar email
       - run: npm install --no-save imapflow@2.4.3 nodemailer@10.1.1
       - run: |
           # 🧰 v12.7: ferramentas Python (voz, OCR, olho) e a visão local ficam prontas em 2º plano — o escutador
@@ -56,32 +58,19 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_PAREAR: ${{ secrets.TELEGRAM_PAREAR }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Salva o log
+      - name: Publica somente o log no ramo revisável
         run: |
-          set +e
+          set -euo pipefail
           git config user.name "email-casa"
           git config user.email "email@rebocl.local"
-          if [ -f email-log.md ]; then
-            n=$(git show HEAD:email-log.md 2>/dev/null | wc -l)
-            tail -n +$((n + 1)) email-log.md > /tmp/sessao-log.md
-            if [ -s /tmp/sessao-log.md ]; then
-              # 15/10: o push era recusado ("fetch first") porque o main anda durante as ~6 h do turno, e o log sumia.
-              # Agora: sincroniza com o main de AGORA, anexa só as linhas desta sessão e tenta de novo se precisar.
-              salvo=0
-              for i in 1 2 3 4 5; do
-                git fetch -q origin main && git reset -q --hard origin/main
-                git ls-files --error-unmatch email-log.md >/dev/null 2>&1 || rm -f email-log.md   # ainda não versionado: começa do zero
-                cat /tmp/sessao-log.md >> email-log.md
-                git add email-log.md
-                if git commit -q -m "email respondido $(date -u +%F-%H%M)" && git push -q origin HEAD:main; then
-                  echo "📒 log salvo ($(wc -l < /tmp/sessao-log.md) linha(s) desta sessão)"; salvo=1; break
-                fi
-                echo "push recusado (tentativa $i) — sincronizo e tento de novo"; sleep $((i * 4))
-              done
-              [ "$salvo" = 1 ] || echo "⚠️ não consegui salvar o log desta sessão"
-            else
-              echo "nada novo no log desta sessão"
-            fi
+          git add -- email-log.md
+          if git diff --cached --quiet; then
+            echo "nada novo no log desta sessão"
+          else
+            # O publicador fechado aceita apenas este log sanitizado. Se outra
+            # sessão avançou o ramo, concatena somente o sufixo append-only;
+            # se a fotografia deixar de ser segura, falha sem tocar em main.
+            node tools/estado-operacional-controlado.js publicar email
           fi
       - name: Visão local pronta?
         id: visao-pronta
