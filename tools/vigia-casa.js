@@ -166,11 +166,11 @@ async function acao(rotulo, arquivo) {
           if (rr.status === 202) n++;
         } catch (e) {}
       }
-      return sondaSaudavel('turno ACORDADO agora · 🛡 duplicados cancelados: ' + n + '/' + (vivos.length - 1),
-        naFila.length ? 'turno-ativo-com-sucessor' : 'turno-ativo');
+      return sondaSaudavel('turno ACORDADO agora · 🛡 duplicados cancelados: ' + n + '/' + (vivos.length - 1), 'turno-ativo');
     }
-    if (vivos.length) return sondaSaudavel('turno ACORDADO agora' + (naFila.length ? ' · 🔗 próximo já na fila' : ''),
-      naFila.length ? 'turno-ativo-com-sucessor' : 'turno-ativo');
+    // O leitor não cria sucessor pré-enfileirado. Enquanto existe executor, a saúde é somente
+    // "turno-ativo"; se sobrar fila sem executor, a próxima sonda a classifica como recente ou estagnada.
+    if (vivos.length) return sondaSaudavel('turno ACORDADO agora', 'turno-ativo');
     // fila com NADA rodando: aí sim pode ser travamento (na corrente, esperar atrás de um turno vivo é normal)
     if (naFila.length) {
       const maisVelho = Math.max.apply(null, naFila.map(r => Date.now() - new Date(r.created_at).getTime()));

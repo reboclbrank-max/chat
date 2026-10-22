@@ -278,6 +278,13 @@ A auditoria operacional de 17/10 está em [`AUDITORIA-COMPLETA-2026-10-17.md`](A
 - **Navegador real, fixture local:** `tools/testes/navegador-lista-controlado.sh` passa pelas quatro rotas com API sintética em `127.0.0.1`, perfil e IndexedDB efêmeros, resolução externa bloqueada e token inerte. Ele agora carrega a casca local real, abre o Workspace, cria/versiona e recupera projeto/arquivo sintéticos; também verifica a grade desktop e mobile e descarta as capturas locais ao terminar.
 - **Limites da prova:** é evidência de interface e armazenamento controlados, não conversa, conta, PAT, arquivo do dono, rede produtiva, entrega, uso humano, satisfação, disponibilidade ou SLA. O descarte definitivo continua coberto pelo teste de integridade local; não foi substituído por simulação visual.
 
+## v12.61 — e-mail sem sucessor pendente permanente (22/10/2026)
+
+- **Um leitor por vez, sem fila intencional:** o turno longo de e-mail não pede mais outro `email.yml` enquanto ainda está vivo. Ao encerrar naturalmente — inclusive depois de detectar código novo aprovado — ele termina de forma explícita; a reserva curta é a única corretora que pode pedir um novo leitor.
+- **Reserva conservadora:** `reserva-turno.js` consulta somente metadados da própria fila e pede o turno longo apenas quando confirma que não há outro run não concluído. Ausência/má-formação da fotografia, falha da API, ID próprio ausente ou estado desconhecido interrompem a reserva sem dispatch cego. Isso reduz a fila permanente, mas não promete cron pontual, runner, atendimento, entrega, disponibilidade ou SLA.
+- **Fila deixa de ser normalizada:** o vigia continua exibindo uma fila sem executor como recente ou estagnada, sem cancelamento, retry ou novo pedido automático. Estados públicos antigos com “turno ativo; sucessor na fila” continuam legíveis, mas a rotina nova não produz esse rótulo.
+- **Fronteira preservada:** a alteração não lê caixa, não envia mensagem, não cria conta, token, serviço, cobrança ou infraestrutura; ela só troca a coordenação entre componentes já existentes e testados.
+
 ## v12.60 — backup ativo salva rascunho e decide pelo banco atual (21/10/2026)
 
 - **Importar não perde a edição que ainda estava no editor:** antes da confirmação do backup ativo comum, o Workspace salva o rascunho pendente somente neste navegador. JSON inválido, cancelamento, conflito ou limite mantêm a tela/texto para decisão da pessoa; não há recarga que apague rascunho.

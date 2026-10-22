@@ -1,13 +1,13 @@
-// 🔁 TURNO 24H — fica acordado 5h45 varrendo a caixa a cada 50s; o cron do workflow o reconvoca 4x/dia
-// e, para não depender do cron do GitHub (que neste repositório não disparou nenhuma vez),
-// cada turno deixa o PRÓXIMO TURNO na fila — o grupo 'email-casa' garante que só um roda por vez.
+// 🔁 TURNO 24H — fica acordado 5h45 varrendo a caixa a cada 50s; o cron do workflow o reconvoca 4x/dia.
+// A reserva curta confirma pela API que não existe outro trabalho vivo antes de pedir o próximo leitor.
+// O leitor longo nunca pré-enfileira um sucessor: isso evita uma fila permanente e mantém a manutenção observável.
+// v5.0 (22/10/2026): 🧭 HANDOVER PELA RESERVA — ao terminar ou adotar código novo, o turno encerra com calma;
+// somente a reserva agendada e confirmada pode iniciar outra execução, sem retry/dispatch cego do leitor.
 // v4.4 (16/10/2026): 📲 CHAT NO TELEGRAM — liga o tools/telegram-chat.js junto com o e-mail (mesmo turno).
 // v4.9 (20/10/2026): 🛡 o pulso do e-mail não repete o vigia se uma sonda recente já cobriu a casa;
 // sem consulta confiável, mantém a tentativa de continuidade já existente.
-// v4.8 (19/10/2026): 🧪 o handover passa por coordenador injetável, com contrato que prova
-// que sucessor pendente não produz dispatch; a rotina externa e a corrente permanecem as mesmas.
-// v4.7 (19/10/2026): 🧵 um sucessor manual já pendente é preservado nos pulsos de 40 min;
-// só troca de código aprovada o substitui, reduzindo cancelamentos sem quebrar a corrente.
+// v4.8/v4.7 (19/10/2026): o handover pré-enfileirado reduzia churn, mas foi substituído pela reserva
+// confirmada em v5.0 para que um sucessor pendente não seja parte permanente da corrente.
 // v4.6 (19/10/2026): 🧯 três falhas totais consecutivas de ciclo encerram o turno com erro visível;
 // uma oscilação isolada ainda segue viva e um ciclo saudável zera o contador. Não há re-dispatch cego.
 // v4.5 (16/10/2026): 🛡️ TURNO À PROVA DE QUEDA — rejeição ou exceção inesperada (e-mail, Telegram ou biblioteca)
@@ -25,7 +25,6 @@ process.on('unhandledRejection', e => console.error('🛡️ rejeição contida 
 process.on('uncaughtException', e => console.error('🛡️ exceção contida — o turno segue:', String((e && e.message) || e).slice(0, 200)));
 const { processOnce } = require('./email-chat.js');
 const { LIMITE_FALHAS_CONSECUTIVAS, proximaFalhasConsecutivas, deveEncerrarTurno } = require('./turno-liveness.js');
-const { coordenaProximoTurno } = require('./fila-turno.js');
 const { coordenaPulsoVigia } = require('./pulso-vigia.js');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const REPO = 'reboclbrank-max/chat';
@@ -59,28 +58,9 @@ async function pedeVigia() {
     registrar: mensagem => console.log(mensagem)
   });
 }
-async function consultaDaFilaDoTurno() {
-  const r = await api('/actions/workflows/email.yml/runs?per_page=15');
-  if (!r || !r.ok) return null;
-  try {
-    const j = await r.json();
-    return Array.isArray(j.workflow_runs) ? j.workflow_runs : null;
-  } catch (e) { return null; }
-}
-async function proximoTurno(opcoes = {}) {
-  // A corrente antes despachava a cada pulso de 40 min e substituía a própria execução pendente.
-  // Conservamos um workflow_dispatch pendente; uma reserva schedule não vale como turno longo.
-  return coordenaProximoTurno({
-    consultaRuns: consultaDaFilaDoTurno,
-    pedirSucessor: decisao => despacha('email.yml', decisao === 'substituir' ? '🔄 próximo turno atualizado para o código novo' : '🔗 próximo turno na fila'),
-    registrar: mensagem => console.log(mensagem),
-    substituir: Boolean(opcoes.substituir)
-  });
-}
-
 // 🔄 v4: o que conta como CÓDIGO do turno (robô de teste, relatórios e README não derrubam o turno)
 const SHA_INICIO = process.env.GITHUB_SHA || '';
-const CODIGO = /^tools\/(email-chat\.js|email-poll\.js|fila-turno\.js|pulso-vigia\.js|reserva-turno\.js|falhas-mensagem\.js|turno-liveness\.js|geografia-brasil\.js|olho\.py|ocr-local\.py|transcreve\.py|visao-local\.py|prepara-foto\.py|telegram-chat\.js)$|^\.github\/workflows\/email\.yml$/;
+const CODIGO = /^tools\/(email-chat\.js|email-poll\.js|pulso-vigia\.js|reserva-turno\.js|falhas-mensagem\.js|turno-liveness\.js|geografia-brasil\.js|olho\.py|ocr-local\.py|transcreve\.py|visao-local\.py|prepara-foto\.py|telegram-chat\.js)$|^\.github\/workflows\/email\.yml$/;
 async function codigoMudou() {   // → { arquivos: [código mudado desde que o turno começou], commits: Set(sha dos commits novos) }
   if (!SHA_INICIO) return { arquivos: [], commits: new Set() };
   const r = await api('/compare/' + SHA_INICIO + '...main');
@@ -169,7 +149,7 @@ const FIM = Date.now() + (5 * 60 + 45) * 60 * 1000;   // 5h45; varredura a cada 
     const pausa = (n >= 5 || chegouDuranteCiclo) ? 2000 : 50000;
     chegouDuranteCiclo = false;
     await dorme(pausa);
-    if (Date.now() >= proximoAviso) { await pedeVigia(); await proximoTurno(); proximoAviso = Date.now() + 40 * 60 * 1000; }
+    if (Date.now() >= proximoAviso) { await pedeVigia(); proximoAviso = Date.now() + 40 * 60 * 1000; }
     if (Date.now() >= proximaChecagem) {
       proximaChecagem = Date.now() + 10 * 60 * 1000;
       const mud = await codigoMudou();
@@ -178,8 +158,7 @@ const FIM = Date.now() + (5 * 60 + 45) * 60 * 1000;   // 5h45; varredura a cada 
         if (t === 'nenhum' && !esperaTestesDesde) esperaTestesDesde = Date.now();
         const semResultado = t === 'nenhum' && Date.now() - esperaTestesDesde > 30 * 60 * 1000;
         if (t === 'passou' || semResultado) {
-          console.log('🔄 código novo no main (' + mud.arquivos.join(', ') + ') — ' + (t === 'passou' ? 'testes rápidos APROVADOS' : 'sem resultado dos testes em 30 min') + ' — deixo o próximo turno na fila e encerro este com calma');
-          await proximoTurno({ substituir: true });
+          console.log('🔄 código novo no main (' + mud.arquivos.join(', ') + ') — ' + (t === 'passou' ? 'testes rápidos APROVADOS' : 'sem resultado dos testes em 30 min') + ' — encerro este turno com calma; a reserva confirmará a próxima partida sem pré-fila');
           motivo = 'código novo';
           break;
         }

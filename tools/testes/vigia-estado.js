@@ -21,6 +21,8 @@ const verde = { Página: { ok: true, falhas: 0 } };
 
 ok('evidências públicas são fechadas e não aceitam texto arbitrário', () => {
   assert(EVIDENCIAS_VIGIA.includes('postagem-agendada-recente'));
+  assert.equal(evidenciaVigiaConhecida('turno-ativo'), 'turno-ativo');
+  // Estado público já publicado continua legível, embora o vigia novo não emita esse rótulo.
   assert.equal(evidenciaVigiaConhecida('turno-ativo-com-sucessor'), 'turno-ativo-com-sucessor');
   assert.equal(evidenciaVigiaConhecida('DADO-ARBITRARIO-NAO-REFLETIR'), '');
 });

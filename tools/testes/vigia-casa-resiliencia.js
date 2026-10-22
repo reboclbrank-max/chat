@@ -53,6 +53,11 @@ ok('recuperação automática tem freio persistido e não faz rajada do mesmo tu
   assert.match(fonte, /Math\.min\(2, \(prev\.falhas \|\| 0\) \+ 1\)/);
   assert(!/cura\.push\(await acao/.test(fonte), 'não deve despachar sem passar pelo freio');
 });
+ok('vigia novo não normaliza uma fila como sucessor planejado', () => {
+  assert.doesNotMatch(fonte, /turno-ativo-com-sucessor/, 'o vigia ainda declara sucessor pré-enfileirado como estado normal');
+  assert.match(fonte, /falhaVigia\('fila-estagnada'/, 'fila sem executor perdeu o alerta explícito');
+});
+
 ok('diagnóstico sanitizado só recupera ausência/atraso comprovados', () => {
   assert.match(fonte, /const CAUSAS_VIGIA = Object\.freeze/);
   assert.match(fonte, /const CAUSAS_RECUPERAVEIS = Object\.freeze\(\['sem-execucao', 'turno-ausente', 'bateria-atrasada', 'caixa-atrasada'\]\)/);

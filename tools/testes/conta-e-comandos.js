@@ -96,12 +96,12 @@ function confere(nome, condicao) {
     verificado_em: '2026-10-19T12:00:00.000Z',
     itens: {
       'Casa postando (site)': { ok: true, causa: 'saudavel', evidencia: 'postagem-agendada-recente' },
-      'Chat por e-mail (24h)': { ok: true, causa: 'saudavel', evidencia: 'turno-ativo-com-sucessor' },
+      'Chat por e-mail (24h)': { ok: true, causa: 'saudavel', evidencia: 'turno-ativo' },
       'Caixa de e-mail': { ok: true, causa: 'saudavel', evidencia: 'DADO-ARBITRARIO-NAO-REFLETIR' }
     }
   }, agoraStatus);
   confere('status causal: mostra somente evidência fechada de postagem', resumoComEvidencia.includes('Postagem do site — saudável · rotina agendada recente'));
-  confere('status causal: explica turno ativo e sucessor sem conteúdo de fila', resumoComEvidencia.includes('Turno de e-mail — saudável · turno ativo; sucessor na fila'));
+  confere('status causal: explica turno ativo sem normalizar fila', resumoComEvidencia.includes('Turno de e-mail — saudável · turno ativo'));
   confere('status causal: evidência arbitrária não é refletida', !resumoComEvidencia.includes('DADO-ARBITRARIO-NAO-REFLETIR'));
   confere('status causal: limite separa execução de aceite externo', resumoComEvidencia.includes('rotina observada não confirma entrega/aceite externo'));
   const resumoInconsistente = CHAT.resumoEstadoVigiaPublico({
