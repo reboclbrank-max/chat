@@ -29,7 +29,7 @@ ok('todas as actions externas estão fixadas por SHA completo', () => {
 });
 
 ok('não há gatilho pull_request_target e o orçamento de escrita é explícito', () => {
-  const escreveConteudo = new Set(['coleta-email.yml', 'dossie-preparo-controlado.yml', 'email.yml', 'evolucao.yml', 'ferramentas.yml', 'navegador-publico.yml', 'teste-email.yml', 'vigia.yml']);
+  const escreveConteudo = new Set(['coleta-email.yml', 'dossie-preparo-controlado.yml', 'email.yml', 'evolucao.yml', 'ferramentas.yml', 'navegador-publico.yml', 'reforco-dossie-controlado.yml', 'teste-email.yml', 'vigia.yml']);
   const escreveAcoes = new Set(['email.yml', 'vigia.yml']);
   for (const nome of arquivos) {
     const texto = ler(nome);
@@ -54,6 +54,25 @@ ok('dossiê controlado tem escrita mínima, origem fixa e nenhum dado secreto', 
   assert.match(dossie, /git add -- propostas\/central\/dossie-preparo-controlado\.md/);
   assert.match(dossie, /git push origin "HEAD:refs\/heads\/\$ramo"/);
   assert.doesNotMatch(dossie, /secrets\.|inputs:|--force|git merge|gh pr\b|git push[^\n]*(?:HEAD:main|refs\/heads\/main)/i);
+});
+
+ok('reforço controlado cria somente um ramo revisável de três caminhos', () => {
+  const reforco = ler('reforco-dossie-controlado.yml');
+  assert.match(reforco, /^permissions:\n  contents: write\s*$/m);
+  assert.doesNotMatch(reforco, /^\s*(?:actions|pull-requests):\s*write\s*$/m);
+  assert.match(reforco, /^on:\n  workflow_dispatch:\s*$/m);
+  assert.match(reforco, /\[ "\$GITHUB_REF" = 'refs\/heads\/main' \] \|\|/);
+  assert.match(reforco, /git remote get-url origin/);
+  assert.match(reforco, /github\.com\/reboclbrank-max\/chat/);
+  assert.match(reforco, /node tools\/preparo-controlado\.js/);
+  assert.match(reforco, /node tools\/testes\/reforco-dossie-controlado\.js/);
+  assert.match(reforco, /node tools\/reforco-dossie-controlado\.js/);
+  assert.match(reforco, /node tools\/testes\/dossie-preparo-controlado\.js/);
+  assert.match(reforco, /git add -- \.github\/workflows\/dossie-preparo-controlado\.yml tools\/testes\/dossie-preparo-controlado\.js propostas\/central\/reforco-dossie-controlado\.md/);
+  assert.match(reforco, /git diff --cached --check/);
+  assert.match(reforco, /alterados="\$\(git diff --cached --name-only\)"/);
+  assert.match(reforco, /ramo="central\/reforco-dossie-\$\{GITHUB_RUN_ID\}"/);
+  assert.doesNotMatch(reforco, /secrets\.|inputs:|--force|git merge|gh pr\b|git push[^\n]*(?:HEAD:main|refs\/heads\/main)/i);
 });
 
 ok('barreira rápida prepara e exige OCR português e renderizador de PDF', () => {

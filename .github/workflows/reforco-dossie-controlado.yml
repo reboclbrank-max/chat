@@ -1,0 +1,68 @@
+name: Reforço controlado do dossiê da Central
+
+on:
+  workflow_dispatch:
+
+# Escrita limitada a um ramo novo com o patch literal e seu relatório de revisão.
+# Não há PR, merge, tag, release, promoção ou modificação de main.
+permissions:
+  contents: write
+
+concurrency:
+  group: reforco-dossie-controlado-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  reforco:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+      - name: Valida origem, preflight e patch literal
+        env:
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          [ "$GITHUB_REF" = 'refs/heads/main' ] || { echo 'ref bloqueada'; exit 1; }
+          [ "$(git rev-parse HEAD)" = "$GITHUB_SHA" ] || { echo 'checkout divergente'; exit 1; }
+          origem="$(git remote get-url origin)"
+          case "$origem" in https://github.com/reboclbrank-max/chat|https://github.com/reboclbrank-max/chat.git) ;; *) echo 'remote bloqueado'; exit 1 ;; esac
+          node tools/preparo-controlado.js | tee -a "$GITHUB_STEP_SUMMARY"
+          node tools/testes/reforco-dossie-controlado.js | tee -a "$GITHUB_STEP_SUMMARY"
+          node tools/reforco-dossie-controlado.js
+          node tools/testes/dossie-preparo-controlado.js | tee -a "$GITHUB_STEP_SUMMARY"
+          node tools/preparo-controlado.js | tee -a "$GITHUB_STEP_SUMMARY"
+          git diff --check
+          test -f propostas/central/reforco-dossie-controlado.md
+      - name: Publica somente o ramo do patch revisável
+        env:
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          case "$GITHUB_RUN_ID" in ''|*[!0-9]*) echo 'execução inválida'; exit 1 ;; esac
+          [ "${#GITHUB_RUN_ID}" -le 20 ] || { echo 'execução inválida'; exit 1; }
+          ramo="central/reforco-dossie-${GITHUB_RUN_ID}"
+          git switch -c "$ramo"
+          git config user.name "central-reforco-controlado"
+          git config user.email "central-reforco@rebocl.local"
+          git add -- .github/workflows/dossie-preparo-controlado.yml tools/testes/dossie-preparo-controlado.js propostas/central/reforco-dossie-controlado.md
+          git diff --cached --check
+          alterados="$(git diff --cached --name-only)"
+          esperados="$(printf '%s\n' .github/workflows/dossie-preparo-controlado.yml propostas/central/reforco-dossie-controlado.md tools/testes/dossie-preparo-controlado.js)"
+          [ "$alterados" = "$esperados" ] || { echo 'escopo staged inesperado'; exit 1; }
+          if git diff --cached --quiet; then echo 'patch ausente'; exit 1; fi
+          git commit -m "fix(central): reforça escopo do dossiê"
+          git push origin "HEAD:refs/heads/$ramo"
+          {
+            echo '## Reforço controlado do dossiê'
+            echo
+            echo "- Ramo novo: \`$ramo\`."
+            echo '- Conteúdo: patch literal em workflow/teste e relatório sanitizado.'
+            echo '- Próximo passo: revisão humana; não há PR, merge ou promoção automática.'
+            echo '- Rollback: apagar manualmente esse ramo quando a revisão terminar.'
+          } >> "$GITHUB_STEP_SUMMARY"
