@@ -20,7 +20,7 @@ Essas integrações continuam dependentes de configuração existente e decisão
 
 ## Guarda verificável
 
-`tools/testes/portabilidade-estatica.js` confere que os ativos de marcação das entradas públicas permanecem relativos/same-origin, que o service worker não importa script externo e que a documentação não promete uma migração inexistente.
+`tools/testes/portabilidade-estatica.js` confere que os ativos de marcação das entradas públicas permanecem relativos/same-origin, que cada caminho local existe e que toda casca declarada entra no precache estático. Ele também confere `start_url`, `scope` e ícones do manifesto, e que o service worker não importa script externo nem aceita origem diferente. Assim, uma referência local quebrada ou um ativo novo esquecido fora do cache falha antes da revisão; isso ainda não testa instalação em aparelho ou serviços configurados.
 
 ## Caminho futuro permitido
 
