@@ -11,6 +11,48 @@ let certos = 0;
 let falhas = 0;
 function ok(nome, fn) { try { fn(); certos++; console.log('✔ ' + nome); } catch (e) { falhas++; console.error('✘ ' + nome + ' — ' + e.message); } }
 
+function chavesRepetidasNosSteps(texto) {
+  const repetidas = [];
+  let indentacaoSteps = null;
+  let indentacaoStep = null;
+  let chaves = new Set();
+  const finalizarStep = () => { chaves = new Set(); };
+
+  for (const [indice, linha] of texto.split(/\r?\n/).entries()) {
+    const semInicio = linha.replace(/^\s*/, '');
+    const indentacao = linha.length - semInicio.length;
+    const visivel = semInicio.trim();
+    if (/^\s*steps:\s*$/.test(linha)) {
+      finalizarStep();
+      indentacaoSteps = indentacao;
+      indentacaoStep = null;
+      continue;
+    }
+    if (indentacaoSteps === null) continue;
+    if (visivel && !visivel.startsWith('#') && indentacao <= indentacaoSteps) {
+      finalizarStep();
+      indentacaoSteps = null;
+      indentacaoStep = null;
+      continue;
+    }
+
+    let candidato = null;
+    if (indentacao === indentacaoSteps + 2 && /^-\s+/.test(semInicio)) {
+      finalizarStep();
+      indentacaoStep = indentacao;
+      candidato = semInicio.slice(2);
+    } else if (indentacaoStep !== null && indentacao === indentacaoStep + 2) {
+      candidato = semInicio;
+    }
+    if (candidato === null) continue;
+    const chave = /^([A-Za-z0-9_-]+):/.exec(candidato);
+    if (!chave) continue;
+    if (chaves.has(chave[1])) repetidas.push(chave[1] + '@' + (indice + 1));
+    else chaves.add(chave[1]);
+  }
+  return repetidas;
+}
+
 ok('todos os workflows declaram permissões e runner Ubuntu 24.04', () => {
   assert(arquivos.length >= 10, 'inventário inesperadamente curto');
   for (const nome of arquivos) {
@@ -25,6 +67,14 @@ ok('todas as actions externas estão fixadas por SHA completo', () => {
     const usos = [...ler(nome).matchAll(/^\s*-?\s*uses:\s*([^\s#]+)/gm)];
     assert(usos.length || nome === 'ferramentas.yml', nome + ' sem action esperada');
     for (const uso of usos) assert.match(uso[1], /@[a-f0-9]{40}$/i, nome + ' usa referência não imutável: ' + uso[1]);
+  }
+});
+
+ok('workflows não repetem chaves no mesmo step', () => {
+  const exemplo = 'jobs:\n  teste:\n    steps:\n      - name: amostra\n        run: primeiro\n        run: segundo\n';
+  assert.deepEqual(chavesRepetidasNosSteps(exemplo), ['run@6'], 'fixture não prova o detector');
+  for (const nome of arquivos) {
+    assert.deepEqual(chavesRepetidasNosSteps(ler(nome)), [], nome + ' repete chave dentro de step');
   }
 });
 
