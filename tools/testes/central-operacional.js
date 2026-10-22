@@ -170,6 +170,7 @@ testa('as quatro pontes rejeitam argumento e despacham somente destinos literais
 testa('!statuscentral só lê um destino literal, sanitiza estado e falha fechada', async () => {
   const estados = [
     [{ status: 'queued' }, /fila/],
+    [{ status: 'pending' }, /fila/],
     [{ status: 'in_progress' }, /em execução/],
     [{ status: 'completed', conclusion: 'success' }, /êxito/],
     [{ status: 'completed', conclusion: 'failure' }, /falha/],

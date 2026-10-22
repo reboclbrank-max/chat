@@ -2423,7 +2423,7 @@ async function maosDaCasa(msg) {
         const execucoes = resposta && Array.isArray(resposta.workflow_runs) ? resposta.workflow_runs : [];
         const ultima = execucoes[0] || null;
         let estado = 'indisponível';
-        if (ultima && ultima.status === 'queued') estado = 'fila';
+        if (ultima && (ultima.status === 'queued' || ultima.status === 'pending')) estado = 'fila';
         else if (ultima && ultima.status === 'in_progress') estado = 'em execução';
         else if (ultima && ultima.status === 'completed' && ultima.conclusion === 'success') estado = 'êxito';
         else if (ultima && ultima.status === 'completed') estado = 'falha';
