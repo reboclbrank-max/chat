@@ -1,5 +1,5 @@
-/* Service worker v88 — casca estática versionada, nunca URL com consulta ou API. */
-const CACHE = 'rebocl-chat-v88';
+/* Service worker v89 — casca estática versionada, nunca URL com consulta ou API. */
+const CACHE = 'rebocl-chat-v89';
 const CASCA = [
   './', './index.html', './direto.html', './ligar.html', './limpar.html', './console.html', './chat-estilos.css', './chat-pwa.js', './chat-comandos-locais.js', './chat-filtro-chips.js', './chat-organizacao-local.js', './chat-colecoes-local.js', './chat-workspace.js', './manifest.json',
   './icone-192.png', './icone-512.png'
@@ -40,6 +40,13 @@ self.addEventListener('fetch', (evento) => {
         }
         return resposta;
       })
-      .catch(() => caches.match(requisicao).then((resposta) => resposta || caches.match('./index.html')))
+      .catch(() => caches.match(requisicao).then((resposta) => {
+        if (resposta) return resposta;
+        // Só uma navegação pode cair na página inicial. Entregar HTML a CSS, JS ou imagem
+        // esconderia ativo ausente e quebraria o tipo do recurso durante uma queda de rede.
+        return requisicao.mode === 'navigate'
+          ? caches.match('./index.html').then((pagina) => pagina || Response.error())
+          : Response.error();
+      }))
   );
 });

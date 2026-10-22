@@ -86,6 +86,12 @@ ok('service worker não importa nem precacheia endereço externo', () => {
   assert.doesNotMatch(sw, /https?:\/\/|importScripts\s*\(/, 'service worker depende de origem externa');
   assert.match(sw, /url\.origin !== self\.location\.origin/, 'service worker não limita cache à própria origem');
 });
+ok('fallback offline só entrega HTML à navegação, não a ativo estático ausente', () => {
+  const { sw } = cascaDoWorker();
+  assert.match(sw, /requisicao\.mode === 'navigate'/);
+  assert.match(sw, /Response\.error\(\)/);
+  assert.match(sw, /caches\.match\('\.\/index\.html'\)/);
+});
 ok('documentação separa casca portátil de integrações configuradas', () => {
   const doc = ler('PORTABILIDADE-ESTATICA.md');
   assert.match(doc, /casca pública/i);
