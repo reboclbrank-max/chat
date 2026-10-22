@@ -34,19 +34,21 @@ function blocoCritico(html) {
 }
 function contextoBase(respostas) {
   let chamadas = 0;
+  const iniciais = [];
   const ctx = {
     API: 'https://api.exemplo.test', token: 'token-inerte',
     Promise, Object, Number, String, Array, JSON,
     setTimeout: (fn) => { fn(); return 0; },
-    fetch: async () => {
+    fetch: async (_url, init) => {
       chamadas++;
+      iniciais.push(init);
       const proxima = respostas.shift();
       if (proxima instanceof Error) throw proxima;
       return proxima;
     }
   };
   vm.createContext(ctx);
-  return { ctx, chamadas: () => chamadas };
+  return { ctx, chamadas: () => chamadas, iniciais: () => iniciais };
 }
 function runtimeApi(html, respostas) {
   const r = contextoBase(respostas);
@@ -98,6 +100,13 @@ async function principal() {
       assert.equal(valor.ok, true);
       assert.equal(r.chamadas(), 2);
     });
+    await testaAsync(rota + ' pode encerrar uma leitura fechada na primeira falha', async () => {
+      const r = runtimeApi(html, [new Error('rede temporária')]);
+      await assert.rejects(() => r.ctx.apiTeste('/leitura-fechada', { method: 'GET', semRepetir: true }));
+      assert.equal(r.chamadas(), 1);
+      assert.equal(r.iniciais()[0].semRepetir, undefined, 'flag interna não alcança fetch');
+      assert.equal(r.iniciais()[0].method, 'GET');
+    });
     await testaAsync(rota + ' não repete POST de resultado ambíguo', async () => {
       const r = runtimeApi(html, [new Error('servidor pode ter criado')]);
       await assert.rejects(() => r.ctx.apiTeste('/escrita', { method: 'POST', body: '{}' }));
@@ -134,7 +143,7 @@ async function principal() {
 
   const sw = fonte('sw.js');
   testa('service worker inclui as quatro rotas e versão nova de cache', () => {
-    assert.match(sw, /rebocl-chat-v87/);
+    assert.match(sw, /rebocl-chat-v88/);
     assert.match(sw, /'\.\/chat-pwa\.js'/);
     assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
     assert.match(sw, /'\.\/chat-filtro-chips\.js'/);

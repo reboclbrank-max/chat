@@ -55,17 +55,20 @@ for (const rota of rotas) {
   const html = ler(rota);
   const central = entre(html, 'let operacaoCentralEmCurso = false;', "  if (m.startsWith('!statuscasa'))");
   blocosCentral.push(central);
-  testa(rota + ' limita a Central a comandos fechados e às quatro receitas aprovadas', () => {
+  testa(rota + ' limita a Central a quatro receitas e uma leitura fechada', () => {
     assert.match(central, /m === '!operacoes' \|\| m === '!operar' \|\| m === '!central'/);
     assert.match(central, /respostaComandoOperacionalLocal\('operar:'\)/);
     for (const comando of ['testarchat', 'prepararchat', 'dossiechat', 'reforcardossie']) {
       assert.match(central, new RegExp('\\^!' + comando + '\\(\\?:\\\\s\\|\\$\\)\\/\\.test\\(m\\)'));
       assert.match(central, new RegExp("if \\(m !== '!" + comando + "'\\) return '⚠️ uso: !" + comando));
     }
+    assert.match(central, /\^!statuscentral\(\?:\\s\|\$\)\/\.test\(m\)/);
+    assert.match(central, /if \(m !== '!statuscentral'\) return '⚠️ uso: !statuscentral/);
     assert.match(central, /modoSomenteLocalAtivo\(\)/);
     assert.match(central, /if \(!token\) return/);
     assert.match(central, /operacaoCentralEmCurso/);
     assert.match(central, /testeChatEmCurso/);
+    assert.match(central, /statusCentralEmCurso/);
     assert.match(central, /preparoChatEmCurso/);
     assert.match(central, /dossieChatEmCurso/);
     assert.match(central, /reforcoDossieEmCurso/);
@@ -75,12 +78,13 @@ for (const rota of rotas) {
     assert.match(central, /api\('\/repos\/reboclbrank-max\/chat\/actions\/workflows\/preparo-controlado\.yml\/dispatches'/);
     assert.match(central, /api\('\/repos\/reboclbrank-max\/chat\/actions\/workflows\/dossie-preparo-controlado\.yml\/dispatches'/);
     assert.match(central, /api\('\/repos\/reboclbrank-max\/chat\/actions\/workflows\/reforco-dossie-controlado\.yml\/dispatches'/);
+    assert.match(central, /api\('\/repos\/reboclbrank-max\/chat\/actions\/workflows\/testes-rapidos\.yml\/runs\?branch=main&per_page=1', \{ method: 'GET', semRepetir: true \}\)/);
     assert.match(central, /method: 'POST'/);
     assert.equal((central.match(/JSON\.stringify\(\{ ref: 'main' \}\)/g) || []).length, 4);
     assert.match(central, /pedido não confirma êxito/);
     assert.match(central, /não há PR, merge ou promoção/);
     assert.doesNotMatch(central, /eval\s*\(|new Function|child_process|\/bin\/|workflow\s*:\s*msg|ref\s*:\s*msg|\$\{[^}]*msg/i);
-    assert.equal((central.match(/api\s*\(/g) || []).length, 4, 'as quatro pontes fazem somente chamadas de API fixas');
+    assert.equal((central.match(/api\s*\(/g) || []).length, 5, 'as quatro receitas e a leitura usam somente destinos fixos');
   });
   testa(rota + ' inclui as receitas na allowlist local sem capturar vizinhos', () => {
     const fonte = entre(html, 'function ehComandoPrivadoLocal(texto) {', '\nasync function enviar()');
@@ -90,9 +94,10 @@ for (const rota of rotas) {
       '!testarchat', '!testarchat qualquer', '!testarchat\tqualquer',
       '!prepararchat', '!prepararchat qualquer', '!prepararchat\tqualquer',
       '!dossiechat', '!dossiechat revisão', '!dossiechat\trevisão',
-      '!reforcardossie', '!reforcardossie revisão', '!reforcardossie\trevisão'
+      '!reforcardossie', '!reforcardossie revisão', '!reforcardossie\trevisão',
+      '!statuscentral', '!statuscentral qualquer', '!statuscentral\tqualquer'
     ]) assert.equal(ehPrivado(entrada), true, entrada);
-    for (const entrada of ['!operacao', '!testarchats', '!prepararchats', '!dossiechats', '!reforcardossies', '!dossie', '!reforco', '!operador', '!centralizar']) assert.equal(ehPrivado(entrada), false, entrada);
+    for (const entrada of ['!operacao', '!testarchats', '!statuscentrals', '!prepararchats', '!dossiechats', '!reforcardossies', '!dossie', '!reforco', '!operador', '!centralizar']) assert.equal(ehPrivado(entrada), false, entrada);
     helpersPrivados.push(fonte);
   });
 }
@@ -162,6 +167,51 @@ testa('as quatro pontes rejeitam argumento e despacham somente destinos literais
   }
 });
 
+testa('!statuscentral só lê um destino literal, sanitiza estado e falha fechada', async () => {
+  const estados = [
+    [{ status: 'queued' }, /fila/],
+    [{ status: 'in_progress' }, /em execução/],
+    [{ status: 'completed', conclusion: 'success' }, /êxito/],
+    [{ status: 'completed', conclusion: 'failure' }, /falha/],
+    [null, /indisponível/]
+  ];
+  for (const rota of rotas) {
+    const html = ler(rota);
+    const fonte = entre(html, 'let operacaoCentralEmCurso = false;', "  if (m.startsWith('!statuscasa'))");
+    for (const [run, esperado] of estados) {
+      const leitura = criarPonteCentralControlada(fonte, { api: () => Promise.resolve({ workflow_runs: run ? [run] : [] }) });
+      assert.equal(await leitura.chamar('!statuscentral'), '🔎 consultando somente o estado mais recente da barreira aprovada…', rota + ': inicia somente leitura');
+      await liberarMicrotarefas();
+      assert.equal(leitura.chamadas.length, 1, rota + ': uma leitura literal');
+      assert.equal(leitura.chamadas[0].url, '/repos/reboclbrank-max/chat/actions/workflows/testes-rapidos.yml/runs?branch=main&per_page=1');
+      assert.deepEqual(leitura.chamadas[0].init, { method: 'GET', semRepetir: true }, rota + ': GET único sem corpo');
+      assert.equal(leitura.bolhas.length, 1, rota + ': estado sanitizado');
+      assert.match(leitura.bolhas[0][1], esperado, rota + ': categoria fechada');
+      assert.doesNotMatch(leitura.bolhas[0][1], /logs|jobs|ator|token|https?:/i, rota + ': sem detalhe bruto');
+    }
+    const argumento = criarPonteCentralControlada(fonte);
+    assert.match(await argumento.chamar('!statuscentral\tarbitrario'), /uso: !statuscentral/, rota + ': argumento recusado');
+    assert.equal(argumento.chamadas.length, 0, rota + ': argumento não alcança API');
+    const local = criarPonteCentralControlada(fonte, { somenteLocal: true });
+    assert.match(await local.chamar('!statuscentral'), /Modo somente-local ativo/, rota + ': modo local');
+    assert.equal(local.chamadas.length, 0, rota + ': modo local não consulta');
+    const semAcesso = criarPonteCentralControlada(fonte, { token: '' });
+    assert.match(await semAcesso.chamar('!statuscentral'), /Configure o acesso protegido/, rota + ': acesso ausente');
+    assert.equal(semAcesso.chamadas.length, 0, rota + ': acesso ausente não consulta');
+    const cadencia = criarPonteCentralControlada(fonte, { api: () => Promise.resolve({ workflow_runs: [] }) });
+    await cadencia.chamar('!statuscentral');
+    await liberarMicrotarefas();
+    assert.match(await cadencia.chamar('!statuscentral'), /menos de cinco minutos/, rota + ': cadência local');
+    assert.equal(cadencia.chamadas.length, 1, rota + ': cadência não duplica leitura');
+    const indisponivel = criarPonteCentralControlada(fonte, { api: () => Promise.reject(new Error('detalhe-privado')) });
+    await indisponivel.chamar('!statuscentral');
+    await liberarMicrotarefas();
+    assert.equal(indisponivel.chamadas.length, 1, rota + ': falha não faz escrita');
+    assert.match(indisponivel.bolhas[0][1], /Status indisponível agora/, rota + ': falha sanitizada');
+    assert.doesNotMatch(indisponivel.bolhas[0][1], /detalhe-privado/, rota + ': erro bruto não vaza');
+  }
+});
+
 testa('a ponte da Central tem paridade byte-a-byte nas quatro rotas', () => {
   assert.equal(new Set(blocosCentral.map((fonte) => crypto.createHash('sha256').update(fonte).digest('hex'))).size, 1);
 });
@@ -188,16 +238,19 @@ testa('contrato e política deixam a receita, revisão e rollback explícitos', 
   assert.match(contrato, /branch ou artefato reversível/);
   assert.match(contrato, /!dossiechat/);
   assert.match(contrato, /!reforcardossie/);
+  assert.match(contrato, /!statuscentral/);
   assert.match(contrato, /execução real[^\n]*!testarchat|!testarchat[^\n]*execução real/);
   assert.match(contrato, /Não houve dispatch real de `!prepararchat`, `!dossiechat` ou `!reforcardossie`/);
   assert.match(contrato, /Rollback/);
   assert.match(autonomia, /OPERACAO-CENTRAL\.md/);
   assert.match(autonomia, /!dossiechat/);
   assert.match(autonomia, /!reforcardossie/);
+  assert.match(autonomia, /!statuscentral/);
   assert.match(continuidade, /Central segura em etapas/);
   assert.match(continuidade, /!testarchat/);
   assert.match(continuidade, /!dossiechat/);
   assert.match(continuidade, /!reforcardossie/);
+  assert.match(continuidade, /!statuscentral/);
   assert.match(workflow, /'OPERACAO-CENTRAL\.md'/);
   assert.match(workflow, /tools\/dossie-preparo-controlado\.js/);
   assert.match(workflow, /tools\/reforco-dossie-controlado\.js/);
@@ -205,7 +258,7 @@ testa('contrato e política deixam a receita, revisão e rollback explícitos', 
 
 testa('a casca atualizada entrega o mapa local sob escolha explícita', () => {
   const sw = ler('sw.js');
-  assert.match(sw, /rebocl-chat-v87/);
+  assert.match(sw, /rebocl-chat-v88/);
   assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
 });
 

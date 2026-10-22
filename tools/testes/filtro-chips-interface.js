@@ -185,7 +185,7 @@ ok('PWA, workflow e continuidade observam o filtro local', () => {
   const sw = ler('sw.js');
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v87/);
+  assert.match(sw, /rebocl-chat-v88/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);
   assert.match(sw, /'\.\/chat-organizacao-local\.js'/);
   assert.match(workflow, /'chat-filtro-chips\.js'/);

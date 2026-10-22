@@ -55,6 +55,7 @@ ok('Central segura aceita somente mapa e opções fechadas', () => {
     pesquisa: /Pesquisa:/,
     navegador: /Navegador:/,
     testes: /!testarchat/,
+    statuscentral: /!statuscentral/,
     preparo: /!prepararchat/,
     dossie: /!dossiechat/,
     reforco: /!reforcardossie/,
@@ -178,11 +179,11 @@ ok('chip visual oferece o roteiro local sem agendar rascunho ou escrita', () => 
   }
 });
 
-ok('casca PWA v87 inclui os ativos locais e a porta de continuidade o observa', () => {
+ok('casca PWA v88 inclui os ativos locais e a porta de continuidade o observa', () => {
   const sw = ler('sw.js');
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v87/);
+  assert.match(sw, /rebocl-chat-v88/);
   assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);
   assert.match(sw, /'\.\/chat-organizacao-local\.js'/);

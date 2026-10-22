@@ -137,7 +137,7 @@ testa('Central, continuidade e casca documentam o preparo sem promover código',
   assert.match(contrato, /não cria branch/i);
   assert.match(continuidade, /!prepararchat/);
   assert.match(workflowRapido, /tools\/preparo-controlado\.js/);
-  assert.match(sw, /rebocl-chat-v87/);
+  assert.match(sw, /rebocl-chat-v88/);
 });
 
 console.log(`${certos}/${certos + falhas} testes do preparo controlado passaram`);

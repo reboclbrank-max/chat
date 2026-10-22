@@ -1,6 +1,6 @@
 # Central segura do Chat
 
-**Estado:** etapas 1, 2A, 2B e 3A ativas em 22/10/2026.
+**Estado:** etapas 1, 2A, 2B e 3A ativas e consulta de barreira somente-leitura ativa em 22/10/2026.
 **Escolha do dono:** Central segura em etapas (`gradual_seguro`).
 **Objetivo:** transferir para o Chat, progressivamente, a coordenação de tarefas hoje assistidas externamente, sem transformar a página em executor genérico nem ampliar segredo, custo, publicação ou promoção automática.
 
@@ -22,15 +22,16 @@ A Central torna descobrível e coerente o que o Chat já pode fazer, em vez de a
 | `operar: dossie` | Página, e-mail e Telegram | Explica a receita 2B e seus limites; e-mail/Telegram não a disparam. |
 | `operar: reforco` | Página, e-mail e Telegram | Explica a única receita 3A de patch literal; e-mail/Telegram não a disparam. |
 | `!testarchat` | Página com acesso protegido já configurado | Pede exclusivamente `testes-rapidos.yml` do `chat`, em `main`. Não recebe argumento nem escolhe workflow/ref. |
+| `!statuscentral` | Página com acesso protegido já configurado | Consulta por `GET` exclusivamente o run mais recente de `testes-rapidos.yml` do `chat`, em `main`, e mostra só `fila`, `em execução`, `êxito`, `falha` ou `indisponível`. Não recebe argumento, não lê logs/saídas nem faz dispatch, retry, escrita, promoção ou persistência. |
 | `!prepararchat` | Página com acesso protegido já configurado | Pede exclusivamente `preparo-controlado.yml` em `main`. Executa cinco guardas fixas e deixa resumo sanitizado; não cria branch, código, commit, push, merge ou promoção. |
 | `!dossiechat` | Página com acesso protegido já configurado | Pede exclusivamente `dossie-preparo-controlado.yml` em `main`. Só depois das cinco guardas pode criar **um ramo novo** contendo apenas `propostas/central/dossie-preparo-controlado.md`; não altera código, `main`, PR, merge ou promoção. |
 | `!reforcardossie` | Página com acesso protegido já configurado | Pede exclusivamente `reforco-dossie-controlado.yml` em `main`. Só depois das guardas fixas pode criar **um ramo novo** com exatamente o patch literal de workflow/teste do dossiê e um relatório sanitizado; não recebe tarefa, caminho, patch, comando ou texto livre. |
 
 O chip **⚙️ operar** apenas abre `operar:` e é interceptado localmente antes de rascunho, Issue, motor ou API. Texto livre depois de `operar:` não é plano, código, instrução nem fila; recebe somente a sintaxe fechada.
 
-## 2. Guardas das quatro ações manuais
+## 2. Guardas das quatro ações manuais e da consulta
 
-As quatro pontes são alcançadas apenas pela allowlist local. Todas exigem:
+As quatro pontes de ação e a consulta `!statuscentral` são alcançadas apenas pela allowlist local. Todas exigem:
 
 1. comando exato, sem argumento;
 2. modo somente-local desligado por escolha explícita;
@@ -38,9 +39,14 @@ As quatro pontes são alcançadas apenas pela allowlist local. Todas exigem:
 4. ausência de outro pedido da Central em curso nesta aba;
 5. destino, workflow e ref literais no código (`reboclbrank-max/chat`, workflow fixo e `main`).
 
-`!testarchat` e `!prepararchat` têm intervalo local mínimo de cinco minutos. `!dossiechat` e `!reforcardossie` têm freio local em memória de 24 horas; ele reduz clique repetido nesta aba, mas não é persistência nem alegação de bloqueio remoto. Cada workflow serializa a própria família. A cadência não autoriza contornar revisão, nem se transforma em cron, fila persistente ou retry cego.
+`!testarchat`, `!prepararchat` e `!statuscentral` têm intervalo local mínimo de cinco minutos. `!dossiechat` e `!reforcardossie` têm freio local em memória de 24 horas; ele reduz clique repetido nesta aba, mas não é persistência nem alegação de bloqueio remoto. Cada workflow serializa a própria família. A cadência não autoriza contornar revisão, nem se transforma em cron, fila persistente ou retry cego.
 
-Nenhuma ponte aceita URL, repositório, caminho, nome de workflow, shell, texto de tarefa, patch, comando ou ref fornecidos pela pessoa. Uma resposta de fila confirma somente o pedido: não afirma que a barreira/preparo concluiu, que o ramo foi criado, que o patch é correto ou que algum serviço externo está disponível.
+Nenhuma ponte nem a consulta aceita URL, repositório, caminho, nome de workflow, shell, texto de tarefa, patch, comando ou ref fornecidos pela pessoa. `!statuscentral` lê somente um endpoint literal e não mostra ator, log, saída, URL, conteúdo de workflow ou dado de conversa; erro e ausência viram apenas `indisponível`. Uma resposta de fila confirma somente o pedido: não afirma que a barreira/preparo concluiu, que o ramo foi criado, que o patch é correto ou que algum serviço externo está disponível.
+
+### Rollback específico da consulta
+
+- Remover `!statuscentral`, sua allowlist, testes, texto do roteiro e esta documentação, renovando a casca PWA por atualização escolhida.
+- Não há dado remoto/local persistido, migração, conta, segredo, custo ou infraestrutura a recuperar; a consulta nunca cria execução nem escreve estado.
 
 ## 3. Fronteiras preservadas
 
@@ -49,6 +55,7 @@ Esta etapa não cria nem libera:
 - executor arbitrário, terminal remoto, avaliação de código recebido pela conversa ou dispatcher genérico;
 - commit, merge ou promoção cega para `main`; a única escrita remota possível é o push não forçado de um ramo novo, por receita literal e depois das guardas;
 - leitura, cópia, envio ou exibição de segredo, credencial, mensagem, anexo, endereço ou dado privado;
+- consulta de logs, jobs, saídas brutas, ator ou conteúdo de workflow pela nova observação; ela só devolve categoria fechada;
 - Gmail novo, conta de rede, identidade pública, login, formulário, CAPTCHA ou área privada;
 - backup externo, sincronização, conta/nuvem, gasto, cartão, serviço pago, permissão nova ou infraestrutura nova;
 - postagem adicional, tráfego fabricado, bots, spam, métricas inventadas ou automação incompatível com termos.
@@ -112,9 +119,9 @@ Mesmo depois de um corte futuro, autorização ampla do dono não substitui conf
 A pergunta “o Chat já faz tudo que o agente faz?” continua com resposta **não**, de forma deliberada: a Central coordena capacidades configuradas e fechadas; não recebe a camada geral de arquivos, repositórios, shell, ferramentas ou credenciais de um ambiente de agente.
 
 - **Exercitado de forma controlada:** as simulações offline verificam a quarta ponte literal, o catálogo de uma entrada, a recusa de argumento, o patch em raiz temporária, a lista staged e o workflow. Isso não é dispatch real nem prova de ramo remoto.
-- **O que o Chat pode fazer agora dentro do produto:** responder comandos locais, operar o Workspace local, atender canais configurados sob suas guardas, orientar pesquisa/navegador público isolado, pedir a barreira fixa, pedir a pré-verificação fixa, pedir o dossiê reversível e pedir o reforço 3A quando houver acesso configurado.
+- **O que o Chat pode fazer agora dentro do produto:** responder comandos locais, operar o Workspace local, atender canais configurados sob suas guardas, orientar pesquisa/navegador público isolado, consultar somente o estado fechado da barreira fixa, pedir a barreira fixa, pedir a pré-verificação fixa, pedir o dossiê reversível e pedir o reforço 3A quando houver acesso configurado.
 - **O que continua fora:** abrir/alterar arquivos arbitrários, executar terminal ou código recebido, escolher URL/repositório/workflow/ref, criar patch livre, revisar/promover `main`, usar ferramentas externas gerais, acessar segredo/conta/identidade, criar conta, backup externo, gasto, permissão ou publicação irreversível.
-- **Limite da prova:** em 22/10 houve uma única execução real, delimitada, de `!testarchat`; a barreira fixa `testes-rapidos.yml@main` concluiu com êxito no SHA `eb7b328`. Não houve dispatch real de `!prepararchat`, `!dossiechat` ou `!reforcardossie`, nem e-mail/Telegram real, conversa, segredo, postagem, conta ou tráfego externo fabricado nesta implementação. Esse resultado confirma somente a barreira fixa: não afirma que as outras receitas concluiriam, que ramo remoto existiria, nem qualidade, entrega, uso, disponibilidade ou satisfação.
+- **Limite da prova:** em 22/10 houve uma única execução real, delimitada, de `!testarchat`; a barreira fixa `testes-rapidos.yml@main` concluiu com êxito no SHA `eb7b328`. Não houve dispatch real de `!prepararchat`, `!dossiechat` ou `!reforcardossie`, nem consulta real por `!statuscentral`, e-mail/Telegram real, conversa, segredo, postagem, conta ou tráfego externo fabricado nesta implementação. Esse resultado confirma somente a barreira fixa: não afirma que as outras receitas concluiriam, que ramo remoto existiria, nem qualidade, entrega, uso, disponibilidade ou satisfação.
 
 ## 9. Alternativas recusadas
 

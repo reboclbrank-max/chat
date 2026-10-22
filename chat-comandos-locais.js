@@ -17,13 +17,14 @@
     '⚙️ Central segura do Chat:',
     '• Já concentra conversa, Workspace local, lembretes, pesquisa pública, navegador isolado, estado e rotinas configuradas.',
     '• Testes: !testarchat pede somente a barreira aprovada do Chat; não altera código, segredos nem a branch principal.',
+    '• Status da barreira: !statuscentral apenas lê o estado fechado mais recente de !testarchat; não pede execução, retry, código, branch ou promoção.',
     '• Preparo: !prepararchat pede somente uma auditoria interna fixa; ela decide se há base técnica para revisão, sem criar branch ou código.',
     '• Dossiê: !dossiechat pede uma receita de escrita estreita. Depois das cinco guardas, ela pode criar um ramo isolado contendo apenas um dossiê estático para revisão humana; não cria código, PR, merge ou promoção.',
     '• Reforço de código: !reforcardossie pede a única receita 3A. Depois das guardas fixas, ela pode abrir um ramo com o patch literal que endurece o escopo staged do dossiê, seu teste e um relatório; não aceita tarefa, caminho, patch, comando ou texto livre.',
     '• Marketing permanece nas rotinas autorizadas do Site, com fatos e anti-spam; este roteiro não publica extra nem cria conta.',
     '• Próxima etapa: somente outra receita fechada, desenhada e revisada, poderia preparar outra mudança reversível; ainda não há promoção cega para a branch principal.',
     '• Dependem de configuração concreta: e-mail novo, contas, backup externo, identidade pública, credenciais, gasto e permissões.',
-    '• Use: operar: status | pesquisa | navegador | testes | preparo | dossie | reforco | repos | marketing | limites.',
+    '• Use: operar: status | pesquisa | navegador | testes | statuscentral | preparo | dossie | reforco | repos | marketing | limites.',
     'ℹ️ Mapa local e fechado: não executa texto livre, não cria fila persistente e não promete entrega, uso, satisfação ou SLA.'
   ].join(NL));
 
@@ -32,6 +33,7 @@
     pesquisa: '🔎 Pesquisa: use pesquisa: <tema> por e-mail ou Telegram; fontes públicas continuam separadas de dados privados.',
     navegador: '🌐 Navegador: use navegar: <URL pública> por e-mail ou Telegram. A abertura continua isolada, sem login ou área privada.',
     testes: '🧪 Testes: nesta interface, !testarchat pede somente a barreira Testes rápidos do chat já aprovada. Exige o acesso já configurado neste navegador e não promove mudança.',
+    statuscentral: '🔎 Status da barreira: nesta interface, !statuscentral consulta somente o run mais recente de `testes-rapidos.yml@main` e mostra fila, em execução, êxito, falha ou indisponível. Não recebe argumento, não lê log, não pede execução/retry e não altera código, branch ou promoção.',
     preparo: '🧩 Preparo: nesta interface, !prepararchat pede somente a auditoria interna fixa. Ela roda guardas fechadas e devolve um resumo sanitizado; não aceita tarefa livre, não cria branch, código ou promoção.',
     dossie: '🧾 Dossiê: nesta interface, !dossiechat pede exclusivamente a receita fixa que primeiro executa cinco guardas e, só se passarem, pode criar um ramo novo com um único dossiê estático. Não aceita tarefa livre, não altera código, não abre PR e não promove main; revisão humana e apagar o ramo continuam obrigatórios.',
     reforco: '🛡️ Reforço: nesta interface, !reforcardossie pede somente `reforco_dossie_escopo_v1`. A receita tem catálogo de uma entrada, repositório/ref e três caminhos literais; ela valida a base e pode criar `central/reforco-dossie-<execução>` com um patch de workflow/teste e relatório sanitizado. Não recebe conversa, segredo, tarefa, caminho, patch ou comando livre; não cria PR, merge, tag, release ou promoção. Revisão humana e apagar o ramo continuam obrigatórios.',
