@@ -14,7 +14,9 @@ Esta é uma avaliação piloto com o próprio dono como participante inicial, au
 - recuperação após dúvida, ambiguidade ou correção;
 - intenção de reutilizar o canal.
 
-**Estado atual:** protocolo pronto; ainda não há resposta humana registrada. Não declarar satisfação humana antes do relato voluntário da pessoa participante.
+**Estado atual:** existe uma única observação humana voluntária N=1, limitada literalmente a **“Foi bom o uso”**. Não foram fornecidos contexto, tarefa, escala, nota, comparação, intenção de reutilizar ou avaliação das jornadas H1–H5. Essa frase não preenche H1–H5 e não autoriza atribuir satisfação ampla, desempenho, disponibilidade ou consentimento adicional.
+
+Não solicitar nota, tarefa, contexto ou escala a partir desse registro. Uma nova rodada só pode existir se o próprio dono iniciar outra participação e declarar consentimento específico para ela.
 
 ## 2. Consentimento, privacidade e desistência
 
@@ -24,49 +26,17 @@ Esta é uma avaliação piloto com o próprio dono como participante inicial, au
 - A recusa ou uma nota baixa não tem consequência sobre acesso, canal ou funcionalidades.
 - O relato pertence à pessoa participante. O assistente pode organizar e resumir, mas não pode completar, melhorar ou atribuir uma opinião que não foi dada.
 
-## 3. Sessão piloto: cinco jornadas curtas
+## 3. Registro humano atualmente permitido
 
-Faça as tarefas pelo canal que você realmente usaria, em uma sessão normal. Prefira necessidade real sem conteúdo sensível; não é necessário copiar as respostas ao repositório.
+O registro público/sanitizado atual contém somente a frase voluntária acima. Ele deve permanecer separado de testes técnicos e não pode ser convertido em número, média, contexto de uso, tarefa, satisfação geral ou consentimento para novas perguntas.
 
-| Jornada | Ação da pessoa participante | O que observar |
-|---|---|---|
-| H1 — utilidade | Peça ajuda para uma tarefa real simples, sem informação privada (por exemplo, organizar uma ideia ou explicar algo). | A resposta ajudou a concluir ou avançar na tarefa? |
-| H2 — clareza | Peça uma explicação ou reescrita para uma situação concreta. | A linguagem ficou compreensível, direta e adequada? |
-| H3 — recuperação | Faça uma pergunta ambígua ou corrija uma resposta anterior. | O Chat reconheceu a correção e se recuperou sem exigir esforço excessivo? |
-| H4 — confiança | Pergunte sobre um limite ou sobre como o canal trata um tipo de dado, sem enviar o dado. | A resposta foi transparente, prudente e não inventou garantia? |
-| H5 — recurso opcional | Use, se desejar, um recurso relevante com conteúdo público/não identificável (por exemplo, pesquisa, lembrete ou imagem pública). Se não houver caso seguro, marque como não avaliado. | O recurso foi fácil de iniciar e o limite foi explicado quando necessário? |
+## 4. Futuro protocolo opcional, ainda inativo
 
-Não há resposta certa para a pessoa. Uma jornada sem utilidade, confusa, lenta ou desconfortável é resultado válido e deve ser registrada como tal.
+As jornadas H1–H5 e qualquer escala de percepção permanecem apenas como desenho futuro. Elas não são convite, cobrança ou coleta automática. Antes de usar esse desenho, é necessária uma nova manifestação explícita da pessoa participante dizendo quais dados aceita registrar e onde. Sem isso, não há formulário, coleta, publicação, recrutamento ou inferência.
 
-## 4. Registro de percepção
+## 5. Como interpretar o registro N=1 atual
 
-Depois da sessão, a pessoa participante responde no canal de acompanhamento com estas informações, sem copiar conteúdo privado:
-
-```text
-Consentimento para publicar apenas um resumo sanitizado: SIM / NÃO
-H1: satisfação 1–5 | clareza 1–5 | esforço 1–5 | reutilizaria: sim/não/talvez | comentário sanitizado opcional
-H2: satisfação 1–5 | clareza 1–5 | esforço 1–5 | reutilizaria: sim/não/talvez | comentário sanitizado opcional
-H3: satisfação 1–5 | clareza 1–5 | esforço 1–5 | reutilizaria: sim/não/talvez | comentário sanitizado opcional
-H4: satisfação 1–5 | clareza 1–5 | esforço 1–5 | reutilizaria: sim/não/talvez | comentário sanitizado opcional
-H5: satisfação 1–5 | clareza 1–5 | esforço 1–5 | reutilizaria: sim/não/talvez | comentário sanitizado opcional, ou NÃO AVALIADO
-O que mais ajudou: comentário sanitizado opcional
-O que mais atrapalhou: comentário sanitizado opcional
-```
-
-Escala de percepção: **1** muito ruim/insatisfatório; **2** abaixo do esperado; **3** adequado com ressalvas; **4** bom; **5** muito bom. “Esforço” significa facilidade de resolver a necessidade: 1 = exigiu muito esforço; 5 = exigiu pouco esforço.
-
-Não se calcula um placar global que esconda divergências. O relatório mostra cada jornada, itens não avaliados, comentários sanitizados e a frase literal de consentimento ou recusa.
-
-## 5. Como interpretar um único relato
-
-Um relato do dono é evidência humana direta, porém **N=1**:
-
-- mostra a percepção dessa pessoa, nesse contexto e nessa versão do canal;
-- não representa todo público, faixa etária, necessidade, dispositivo ou acesso à internet;
-- não prova adoção contínua, satisfação futura, ausência de erro, disponibilidade, SLA ou qualidade universal;
-- deve ficar separado dos testes R3/QP, do placar operacional e de qualquer decisão automática.
-
-O assistente pode fazer uma revisão heurística de clareza, privacidade e recuperação como análise técnica; isso não substitui a experiência relatada pela pessoa.
+A nota literal é uma observação humana real e voluntária, limitada àquela formulação. Ela não representa público, dispositivo, tarefa, faixa etária, adoção contínua, satisfação futura, ausência de erro, entrega, disponibilidade ou SLA. O assistente pode registrar o limite, mas não completar campos ausentes.
 
 ## 6. Registro e melhoria responsável
 

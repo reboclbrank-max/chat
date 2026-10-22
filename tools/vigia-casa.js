@@ -38,7 +38,7 @@ async function buscaJSON(url) {
 // podem justificar uma recuperação automática.
 const CAUSAS_VIGIA = Object.freeze([
   'saudavel', 'api-indisponivel', 'sem-execucao', 'execucao-falhou',
-  'fila-estagnada', 'turno-ausente', 'bateria-atrasada', 'caixa-atrasada',
+  'fila-estagnada', 'turnos-duplicados', 'turno-ausente', 'bateria-atrasada', 'caixa-atrasada',
   'postagem-atrasada', 'sonda-indisponivel'
 ]);
 const CAUSAS_RECUPERAVEIS = Object.freeze(['sem-execucao', 'turno-ausente', 'bateria-atrasada', 'caixa-atrasada']);
@@ -152,21 +152,9 @@ async function acao(rotulo, arquivo) {
     const vivos = meus.filter(r => r.status === 'in_progress');
     const naFila = meus.filter(r => r.status === 'queued' || r.status === 'pending');
     if (vivos.length > 1) {
-      // 🛡 turnos duplicados (achado da auditoria de 14/10): mantém o mais antigo e cancela os extras
-      // (14/10, manhã: só RODANDO conta como duplicado — o turno seguinte na fila é a corrente, não defeito)
-      const manter = vivos[vivos.length - 1];
-      let n = 0;
-      for (const r of vivos) {
-        if (r.id === manter.id || !TOKEN) continue;
-        try {
-          const rr = await fetch('https://api.github.com/repos/' + REPO + '/actions/runs/' + r.id + '/cancel', {
-            method: 'POST', headers: { 'Authorization': 'Bearer ' + TOKEN, 'User-Agent': 'vigia-casa/1', 'Accept': 'application/vnd.github+json' },
-            signal: AbortSignal.timeout(30000)
-          });
-          if (rr.status === 202) n++;
-        } catch (e) {}
-      }
-      return sondaSaudavel('turno ACORDADO agora · 🛡 duplicados cancelados: ' + n + '/' + (vivos.length - 1), 'turno-ativo');
+      // Duas leituras reais em paralelo são incidente, não autorização para cancelar uma delas.
+      // O estado sanitizado pede revisão humana; não abre log, não escolhe vencedor e não cria retry.
+      throw falhaVigia('turnos-duplicados', 'mais de um turno em execução; aguardo revisão humana');
     }
     // O leitor não cria sucessor pré-enfileirado. Enquanto existe executor, a saúde é somente
     // "turno-ativo"; se sobrar fila sem executor, a próxima sonda a classifica como recente ou estagnada.

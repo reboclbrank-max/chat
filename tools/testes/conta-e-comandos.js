@@ -72,6 +72,12 @@ function confere(nome, condicao) {
     itens: { 'Bateria do cérebro': { ok: false, causa: 'bateria-atrasada' } }
   }, agoraStatus);
   confere('status causal: bateria atrasada preserva recuperação elegível', resumoBateriaAtrasada.includes('bateria atrasada — recuperação interna elegível'));
+  const resumoDuplicado = CHAT.resumoEstadoVigiaPublico({
+    verificado_em: '2026-10-19T12:00:00.000Z',
+    itens: { 'Chat por e-mail (24h)': { ok: false, causa: 'turnos-duplicados' } }
+  }, agoraStatus);
+  confere('status causal: duplicidade pede revisão e não promete recuperação',
+    resumoDuplicado.includes('mais de um turno ativo — revisão humana necessária') && !resumoDuplicado.includes('recuperação interna elegível'));
   const resumoHostil = CHAT.resumoEstadoVigiaPublico({
     verificado_em: 'DADO-ARBITRARIO-NAO-REFLETIR',
     itens: {

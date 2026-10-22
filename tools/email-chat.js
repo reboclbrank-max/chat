@@ -384,6 +384,7 @@ const CAUSAS_STATUS_CASA = Object.freeze({
   'postagem-atrasada': { texto: 'cadência do postador atrasada — sem recuperação automática', recuperavel: false },
   'api-indisponivel': { texto: 'sonda da API indisponível — sem ação cega', recuperavel: false },
   'fila-estagnada': { texto: 'fila sem executor — sem adicionar trabalho', recuperavel: false },
+  'turnos-duplicados': { texto: 'mais de um turno ativo — revisão humana necessária', recuperavel: false },
   'execucao-falhou': { texto: 'última execução falhou — sem reexecutar às cegas', recuperavel: false },
   'sonda-indisponivel': { texto: 'sonda limitada — sem ação automática', recuperavel: false }
 });
