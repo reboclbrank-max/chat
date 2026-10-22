@@ -17,7 +17,7 @@ A Central torna descobrível e coerente o que o Chat já pode fazer, em vez de a
 | `operar: pesquisa` | Página, e-mail e Telegram | Explica o fluxo de pesquisa pública já existente, separado de conteúdo privado. |
 | `operar: navegador` | Página, e-mail e Telegram | Explica o fluxo `navegar:` isolado: página pública, sem login, formulário ou área privada. |
 | `operar: automacao` | Página, e-mail e Telegram | Mapeia somente os fluxos aprovados de canais, reserva, vigia, evolução e estado sanitizado; não cria cron, fila, dispatch, retry ou executor genérico. |
-| `operar: capacidade` | Página, e-mail e Telegram | Explica que `CAPACIDADE.md` é indicador interno gerado pelo fluxo existente, com sinais verificáveis; não calcula placar, muda peso ou promete produto/SLA. |
+| `operar: capacidade` | Página, e-mail e Telegram | Explica que `CAPACIDADE.md` é indicador interno gerado pelo fluxo existente, com sinais verificáveis; o relatório declara rastreabilidade pendente quando faltar evidência; não calcula placar, muda peso ou promete produto/SLA. |
 | `operar: marketing` | Página, e-mail e Telegram | Declara que o marketing autorizado continua no `site`, sob fatos, cadência e anti-spam; não publica conteúdo adicional. |
 | `operar: testes` | Página, e-mail e Telegram | Explica a barreira fixa já aprovada. |
 | `operar: preparo` | Página, e-mail e Telegram | Explica a auditoria interna fixa; nos canais não despacha ação. |

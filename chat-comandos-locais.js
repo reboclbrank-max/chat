@@ -32,7 +32,7 @@
 
   const DETALHES_CENTRAL = Object.freeze({
     automacao: '⚙️ Automação: os fluxos já aprovados atendem canais, reserva, vigia, evolução e estado sanitizado. A Central só os mapeia: não cria cron, fila persistente, dispatch, retry nem executor genérico.',
-    capacidade: '📈 Capacidade: `CAPACIDADE.md` é indicador interno produzido pelo fluxo de evolução com sinais verificáveis. Não é QI, resultado de produto, alcance, satisfação ou SLA; a Central não recalcula placar nem altera pesos.',
+    capacidade: '📈 Capacidade: `CAPACIDADE.md` é indicador interno produzido pelo fluxo de evolução com sinais verificáveis. Se marcar rastreabilidade pendente, o histórico ainda não certifica a qualidade; nem 100/100 interno muda esse limite. Não é QI, resultado de produto, alcance, satisfação ou SLA; a Central não recalcula placar nem altera pesos.',
     status: '🩺 Estado técnico: use status: por e-mail ou Telegram. A Central não inventa telemetria nesta tela.',
     pesquisa: '🔎 Pesquisa: use pesquisa: <tema> por e-mail ou Telegram; fontes públicas continuam separadas de dados privados.',
     navegador: '🌐 Navegador: use navegar: <URL pública> por e-mail ou Telegram. A abertura continua isolada, sem login ou área privada.',

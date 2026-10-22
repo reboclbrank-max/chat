@@ -229,6 +229,8 @@ testa('e-mail e Telegram usam o mesmo roteiro fechado sem criar transporte novo'
   const locais = ler('chat-comandos-locais.js');
   for (const opcao of ['automacao', 'capacidade', 'marketing']) assert.match(locais, new RegExp(opcao + ':'));
   assert.match(locais, /não cria cron, fila persistente, dispatch, retry nem executor genérico/);
+  assert.match(locais, /rastreabilidade pendente, o histórico ainda não certifica a qualidade/);
+  assert.match(locais, /nem 100\/100 interno muda esse limite/);
   assert.match(locais, /Não é QI, resultado de produto, alcance, satisfação ou SLA/);
   assert.match(locais, /não publica fora da rotina nem fabrica tráfego/);
   const ponte = entre(email, 'async function ferramenta(corpo, retornoNavegacao) {', "  if (/^!?ajuda$/i.test(txt)");
@@ -271,7 +273,7 @@ testa('contrato e política deixam a receita, revisão e rollback explícitos', 
 
 testa('a casca atualizada entrega o mapa local sob escolha explícita', () => {
   const sw = ler('sw.js');
-  assert.match(sw, /rebocl-chat-v90/);
+  assert.match(sw, /rebocl-chat-v91/);
   assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
 });
 

@@ -29,9 +29,10 @@ ok('estado ausente continua explícito e finito', () => {
   const p = avaliar({ agora, arquivos: {}, saude: '', vigia: {}, qualidade: {} });
   assert(Number.isFinite(p.total_em_100)); assert(p.proximas_melhorias.length > 0);
 });
-ok('painel registra limitações honestas', () => {
-  const p = avaliar({ agora, arquivos: completos, saude: '- agora — 10/10 (mudos: 0)', vigia: estadoVigia });
+ok('painel registra limitações honestas e não deixa seção vazia', () => {
+  const p = avaliar({ agora, arquivos: completos, saude: '- agora — 10/10 (mudos: 0)', vigia: estadoVigia, qualidade: {} });
   assert.match(markdown(p), /Limites honestos/); assert.match(markdown(p), /não (é )?teste de QI/i);
+  assert.match(markdown(p), /Próximas melhorias guiadas por sinal[\s\S]*rastreabilidade da qualidade/i);
 });
 ok('amostras repetidas não certificam qualidade rastreável', () => {
   const h = { baterias: [
@@ -52,6 +53,22 @@ ok('três amostras recentes, distintas e amplas certificam qualidade', () => {
   assert.equal(q.valida, true); assert.equal(q.cobertura, 30); assert.equal(q.media, 1);
   const p = avaliar({ agora, arquivos: completos, saude: '- agora — 8/10 (mudos: 0)', vigia: estadoVigia, qualidade: h });
   assert.equal(p.total_em_100, 100); assert.equal(p.sinais.qualidade_rastreavel, true);
+  assert.match(markdown(p), /Medição de qualidade rastreável: 30 respostas auditadas em 30 questões distintas/);
+  assert.doesNotMatch(markdown(p), /ainda não certificada/);
+  assert.match(markdown(p), /Próximas melhorias guiadas por sinal[\s\S]*Nenhum déficit técnico identificado/);
+});
+ok('100 interno sem histórico suficiente explicita a rastreabilidade pendente', () => {
+  const h = { baterias: [
+    registro('a', 1, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+    registro('b', 2, [11, 12, 13, 14, 15, 16, 17, 18, 19]),
+    registro('c', 3, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+  ] };
+  const p = avaliar({ agora, arquivos: completos, saude: '- agora — 10/10 (mudos: 0)', vigia: estadoVigia, qualidade: h });
+  assert.equal(p.total_em_100, 100); assert.equal(p.sinais.qualidade_rastreavel, false);
+  assert.match(p.proximas_melhorias[0], /rastreabilidade da qualidade/);
+  assert.match(p.proximas_melhorias[0], /O 100\/100 interno não certifica essa rastreabilidade/);
+  assert.match(markdown(p), /Rastreabilidade da qualidade: ainda não certificada/);
+  assert.match(markdown(p), /A nota interna não vira certificação rastreável nem resultado do produto/);
 });
 ok('erro recente rastreável reduz a nota em vez de esconder a regressão', () => {
   const h = { baterias: [

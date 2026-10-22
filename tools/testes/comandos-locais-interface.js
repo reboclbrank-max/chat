@@ -54,7 +54,7 @@ ok('Central segura aceita somente mapa e opções fechadas', () => {
   }
   const esperadas = {
     automacao: /não cria cron, fila persistente, dispatch, retry nem executor genérico/i,
-    capacidade: /Indicador interno[\s\S]*não recalcula placar nem altera pesos/i,
+    capacidade: /Indicador interno[\s\S]*rastreabilidade pendente[\s\S]*nem 100\/100 interno muda esse limite[\s\S]*não recalcula placar nem altera pesos/i,
     status: /Estado técnico/,
     pesquisa: /Pesquisa:/,
     navegador: /Navegador:/,
@@ -183,11 +183,11 @@ ok('chip visual oferece o roteiro local sem agendar rascunho ou escrita', () => 
   }
 });
 
-ok('casca PWA v90 inclui os ativos locais e a porta de continuidade o observa', () => {
+ok('casca PWA v91 inclui os ativos locais e a porta de continuidade o observa', () => {
   const sw = ler('sw.js');
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v90/);
+  assert.match(sw, /rebocl-chat-v91/);
   assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);
   assert.match(sw, /'\.\/chat-organizacao-local\.js'/);
