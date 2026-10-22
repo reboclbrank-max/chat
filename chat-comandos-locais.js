@@ -58,18 +58,24 @@
   const SO_CENTRAL = /^!?(?:operar|opera(?:ç(?:ões|ão)|c(?:oes|ao))|central):?$/i;
   const OPCAO_CENTRAL_FECHADA = /^!?(?:operar|opera(?:ç(?:ões|ão)|c(?:oes|ao))|central)(?:\s*:\s*|\s+)([a-zÀ-ÿ]+)\s*$/i;
 
+  // Exportado também para os canais: evita que uma segunda regex deixe uma grafia
+  // local passar ao fluxo normal. Reconhecer o prefixo não executa nada.
+  function temPrefixoCentral(entrada) {
+    return PREFIXO_CENTRAL.test(String(entrada || '').trim());
+  }
+
   function respostaComandoOperacionalLocal(entrada) {
     const texto = String(entrada || '').trim();
     if (/^!?(?:trabalho|prioridades):?$/i.test(texto)) return ROTEIRO_TRABALHO;
     if (SO_CENTRAL.test(texto)) return ROTEIRO_CENTRAL;
-    if (!PREFIXO_CENTRAL.test(texto)) return '';
+    if (!temPrefixoCentral(texto)) return '';
     const m = texto.match(OPCAO_CENTRAL_FECHADA);
     if (!m) return ROTEIRO_CENTRAL + NL + 'Use uma opção fechada depois dos dois-pontos ou por espaço; texto livre não é executado.';
     const opcao = ALIASES_OPCAO_CENTRAL[m[1].toLowerCase()];
     return DETALHES_CENTRAL[opcao] || ROTEIRO_CENTRAL + NL + 'Opção não reconhecida. Use uma das opções fechadas listadas acima.';
   }
 
-  const contrato = Object.freeze({ respostaComandoOperacionalLocal, ROTEIRO_TRABALHO, ROTEIRO_CENTRAL });
+  const contrato = Object.freeze({ respostaComandoOperacionalLocal, temPrefixoCentral, ROTEIRO_TRABALHO, ROTEIRO_CENTRAL });
   if (typeof module === 'object' && module.exports) module.exports = contrato;
   if (raiz) raiz.respostaComandoOperacionalLocal = respostaComandoOperacionalLocal;
 }(typeof window === 'object' ? window : null));

@@ -1,12 +1,13 @@
 // 🧪 chat no Telegram (sem Telegram de verdade): pareamento, dono, desconhecido, grupo, formatação e divisão
 const path = require('path');
 const { criaTelegram, paraTelegramHtml, pedacos } = require(path.join(path.dirname(path.resolve(process.argv[2])), 'telegram-chat.js'));
+const roteiroLocal = require(path.join(__dirname, '..', '..', 'chat-comandos-locais.js'));
 const enviados = [];
 let dono = null;
 const chatFalso = {
   semMarcacao: s => String(s).replace(/\*\*/g, ''), limpaVazamento: s => s, CAPS: ' ',
   comandosDaCasa: async t => /^lembrete:/i.test(t) ? 'Combinado! Vou te lembrar.' : null,
-  ferramenta: async t => /^trabalho:/i.test(t) ? '🧭 Trabalho da casa: roteiro local seguro.' : null, pedidoDeArquivo: () => null,
+  ferramenta: async t => roteiroLocal.respostaComandoOperacionalLocal(t), pedidoDeArquivo: () => null,
   cerebro: async (p, img) => ({ texto: img ? 'Na foto vejo um **quadrado azul**.' : 'A resposta é **4**.', via: 'motor-falso' }), cerebroLocal: async () => null,
   preparaFoto: async i => i, visaoLocal: async () => null, ouve: async () => 'quanto é dois mais dois', docTexto: async () => 'texto do documento'
 };
@@ -37,6 +38,8 @@ function confere(nome, cond) { total++; if (cond) ok++; console.log((cond ? '✔
   confere('lembrete pelo Telegram vai para os comandos da casa', r === 'respondido' && /Vou te lembrar/.test(enviados.pop().text));
   r = await tg.trataAtualizacao(msg(555, { text: 'trabalho:' }));
   confere('trabalho pelo Telegram usa a ferramenta compartilhada', r === 'respondido' && /Trabalho da casa/.test(enviados.pop().text));
+  r = await tg.trataAtualizacao(msg(555, { text: 'operar:marketing' }));
+  confere('Central compacta pelo Telegram delega ao mesmo mapa fechado', r === 'respondido' && /Marketing:/.test(enviados.pop().text));
   r = await tg.trataAtualizacao(msg(777, { text: '/parear 123456' }));
   confere('outra pessoa não consegue parear depois do dono', r === 'pareamento recusado (já tem dono)');
   enviados.length = 0;

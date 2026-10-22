@@ -136,6 +136,8 @@ function confere(nome, condicao) {
   await t('operar: automacao mapeia sem criar executor', 'operar: automacao', /canais, reserva, vigia, evolução e estado sanitizado[\s\S]*não cria cron, fila persistente, dispatch, retry nem executor genérico/i);
   await t('operar: capacidade explica indicador e rastreabilidade sem prometer produto', 'operar: capacidade', /Indicador interno[\s\S]*rastreabilidade pendente[\s\S]*nem 100\/100 interno muda esse limite[\s\S]*não é QI, resultado de produto, alcance, satisfação ou SLA/i);
   await t('operar: marketing conserva anti-spam sem publicação extra', 'operar: marketing', /fatos, cadência e anti-spam[\s\S]*não publica fora da rotina nem fabrica tráfego/i);
+  await t('Central compacta não cai no motor ou na rede por e-mail', 'operar:marketing', /Marketing:[\s\S]*não lê log, conta, alcance ou métrica externa/i);
+  await t('Central acentuada conserva a opção fechada por e-mail', 'operação: automação', /Automação:[\s\S]*não cria cron, fila persistente, dispatch, retry nem executor genérico/i);
   await t('operar: repos mantém promoção bloqueada', 'operar: repos', /não edita nem promove código/i);
   await t('operar: texto livre não vira execução', 'operar: testes agora', /texto livre não é executado/i);
   await t('ajuda: lista a Central segura', 'ajuda', /operar:.*Central segura/i);
