@@ -92,7 +92,7 @@ A 3A resolve uma lacuna concreta e estreita: o workflow 2B já adicionava seu ú
 7. A revisão humana compara o ramo com `main`, confere os três caminhos e decide qualquer merge fora desta receita. Sucesso técnico não autoriza promoção.
 8. O rollback é apagar manualmente o ramo `central/reforco-dossie-<execução>` e, se a capacidade for retirada, remover a quarta ponte, o workflow, ferramenta, teste, allowlist/documentação e renovar a casca PWA. Não há migração, dado produtivo, conta, dependência, permissão nova, infraestrutura ou custo para desfazer.
 
-`contents: write` continua a permissão mínima para publicar o ramo isolado e aparece explicitamente na auditoria. A ferramenta de patch não acessa credencial; a separação entre segredo/conversa e o checkout público é total. Não houve dispatch real, ramo remoto, canal real, segredo, conta, publicação nem tráfego fabricado na validação deste corte.
+`contents: write` continua a permissão mínima para publicar o ramo isolado e aparece explicitamente na auditoria. A ferramenta de patch não acessa credencial; a separação entre segredo/conversa e o checkout público é total. Em 22/10, a receita separada e fixa `!testarchat` teve uma execução real bem-sucedida da barreira em `testes-rapidos.yml@main` no SHA `eb7b328`; ela não exercitou esta receita 3A. Continua sem dispatch real de `!reforcardossie`, ramo remoto, canal real, segredo, conta, publicação ou tráfego fabricado para este patch.
 
 ## 7. Próximo estágio continua bloqueado
 
@@ -114,7 +114,7 @@ A pergunta “o Chat já faz tudo que o agente faz?” continua com resposta **n
 - **Exercitado de forma controlada:** as simulações offline verificam a quarta ponte literal, o catálogo de uma entrada, a recusa de argumento, o patch em raiz temporária, a lista staged e o workflow. Isso não é dispatch real nem prova de ramo remoto.
 - **O que o Chat pode fazer agora dentro do produto:** responder comandos locais, operar o Workspace local, atender canais configurados sob suas guardas, orientar pesquisa/navegador público isolado, pedir a barreira fixa, pedir a pré-verificação fixa, pedir o dossiê reversível e pedir o reforço 3A quando houver acesso configurado.
 - **O que continua fora:** abrir/alterar arquivos arbitrários, executar terminal ou código recebido, escolher URL/repositório/workflow/ref, criar patch livre, revisar/promover `main`, usar ferramentas externas gerais, acessar segredo/conta/identidade, criar conta, backup externo, gasto, permissão ou publicação irreversível.
-- **Limite da prova:** não houve dispatch real de `!testarchat`, `!prepararchat`, `!dossiechat` ou `!reforcardossie`, e-mail/Telegram real, conversa, segredo, postagem, conta ou tráfego externo fabricado nesta implementação. Simulação verifica guardas e formato; não afirma que execução externa concluiria, que ramo remoto existiria ou que há qualidade, entrega, uso, disponibilidade ou satisfação.
+- **Limite da prova:** em 22/10 houve uma única execução real, delimitada, de `!testarchat`; a barreira fixa `testes-rapidos.yml@main` concluiu com êxito no SHA `eb7b328`. Não houve dispatch real de `!prepararchat`, `!dossiechat` ou `!reforcardossie`, nem e-mail/Telegram real, conversa, segredo, postagem, conta ou tráfego externo fabricado nesta implementação. Esse resultado confirma somente a barreira fixa: não afirma que as outras receitas concluiriam, que ramo remoto existiria, nem qualidade, entrega, uso, disponibilidade ou satisfação.
 
 ## 9. Alternativas recusadas
 

@@ -188,6 +188,8 @@ testa('contrato e política deixam a receita, revisão e rollback explícitos', 
   assert.match(contrato, /branch ou artefato reversível/);
   assert.match(contrato, /!dossiechat/);
   assert.match(contrato, /!reforcardossie/);
+  assert.match(contrato, /execução real[^\n]*!testarchat|!testarchat[^\n]*execução real/);
+  assert.match(contrato, /Não houve dispatch real de `!prepararchat`, `!dossiechat` ou `!reforcardossie`/);
   assert.match(contrato, /Rollback/);
   assert.match(autonomia, /OPERACAO-CENTRAL\.md/);
   assert.match(autonomia, /!dossiechat/);
