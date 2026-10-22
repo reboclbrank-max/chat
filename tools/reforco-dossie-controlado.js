@@ -64,6 +64,51 @@ function umaOcorrencia(texto, ancora, nome) {
   return primeira;
 }
 
+function lstatOuAusente(io, alvo, nome) {
+  try {
+    return io.lstatSync(alvo);
+  } catch (erro) {
+    if (erro && erro.code === 'ENOENT') return null;
+    throw new Error('base incompatível para reforço: ' + nome);
+  }
+}
+
+function validarDiretorioLiteral(io, raiz, relativo, criar, nome) {
+  let atual = path.resolve(raiz);
+  for (const parte of relativo.split(/[\\/]+/)) {
+    if (!parte || parte === '.' || parte === '..') {
+      throw new Error('base incompatível para reforço: ' + nome);
+    }
+    atual = path.join(atual, parte);
+    let estado = lstatOuAusente(io, atual, nome);
+    if (!estado && criar) {
+      try {
+        io.mkdirSync(atual);
+      } catch (_) {
+        throw new Error('base incompatível para reforço: ' + nome);
+      }
+      estado = lstatOuAusente(io, atual, nome);
+    }
+    if (!estado || !estado.isDirectory() || estado.isSymbolicLink()) {
+      throw new Error('base incompatível para reforço: ' + nome);
+    }
+  }
+}
+
+function validarArquivoLiteral(io, arquivo, nome) {
+  const estado = lstatOuAusente(io, arquivo, nome);
+  if (!estado || !estado.isFile() || estado.isSymbolicLink()) {
+    throw new Error('base incompatível para reforço: ' + nome);
+  }
+}
+
+function prepararDestinoRelatorio(io, raiz, relativo, arquivoRelatorio) {
+  validarDiretorioLiteral(io, raiz, relativo, true, 'caminho do relatório');
+  if (lstatOuAusente(io, arquivoRelatorio, 'caminho do relatório')) {
+    throw new Error('base incompatível para reforço: relatório já existe');
+  }
+}
+
 function textoRelatorio(contexto) {
   const seguro = contextoSeguro({
     GITHUB_SHA: contexto && contexto.sha,
@@ -106,6 +151,10 @@ function prepararReforco(ambiente = process.env, raiz = process.cwd(), io = fs) 
   const arquivoWorkflow = dentroDaRaiz(raiz, relWorkflow);
   const arquivoTeste = dentroDaRaiz(raiz, relTeste);
   const arquivoRelatorio = dentroDaRaiz(raiz, relRelatorio);
+  validarDiretorioLiteral(io, raiz, path.dirname(relWorkflow), false, 'caminho do workflow');
+  validarArquivoLiteral(io, arquivoWorkflow, relWorkflow);
+  validarDiretorioLiteral(io, raiz, path.dirname(relTeste), false, 'caminho do teste');
+  validarArquivoLiteral(io, arquivoTeste, relTeste);
   const workflow = io.readFileSync(arquivoWorkflow, 'utf8');
   const teste = io.readFileSync(arquivoTeste, 'utf8');
   umaOcorrencia(workflow, ANCORA_WORKFLOW, relWorkflow);
@@ -116,10 +165,12 @@ function prepararReforco(ambiente = process.env, raiz = process.cwd(), io = fs) 
   if (!novoWorkflow.includes(TROCA_WORKFLOW) || !novoTeste.includes(TROCA_TESTE)) {
     throw new Error('patch literal não pôde ser confirmado');
   }
-  io.mkdirSync(path.dirname(arquivoRelatorio), { recursive: true });
+  prepararDestinoRelatorio(io, raiz, path.dirname(relRelatorio), arquivoRelatorio);
+  // Reserva primeiro o único caminho novo: O_EXCL/`wx` impede sobrescrever
+  // um relatório que apareça depois da verificação, antes dos dois edits literais.
+  io.writeFileSync(arquivoRelatorio, relatorio, { encoding: 'utf8', mode: 0o644, flag: 'wx' });
   io.writeFileSync(arquivoWorkflow, novoWorkflow, { encoding: 'utf8' });
   io.writeFileSync(arquivoTeste, novoTeste, { encoding: 'utf8' });
-  io.writeFileSync(arquivoRelatorio, relatorio, { encoding: 'utf8', mode: 0o644 });
   return Object.freeze({ contexto, caminhos: RECEITA.caminhos, relatorio });
 }
 
