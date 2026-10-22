@@ -42,21 +42,31 @@
     dossie: '🧾 Dossiê: nesta interface, !dossiechat pede exclusivamente a receita fixa que primeiro executa cinco guardas e, só se passarem, pode criar um ramo novo com um único dossiê estático. Não aceita tarefa livre, não altera código, não abre PR e não promove main; revisão humana e apagar o ramo continuam obrigatórios.',
     reforco: '🛡️ Reforço: nesta interface, !reforcardossie pede somente `reforco_dossie_escopo_v1`. A receita tem catálogo de uma entrada, repositório/ref e três caminhos literais; ela valida a base e pode criar `central/reforco-dossie-<execução>` com um patch de workflow/teste e relatório sanitizado. Não recebe conversa, segredo, tarefa, caminho, patch ou comando livre; não cria PR, merge, tag, release ou promoção. Revisão humana e apagar o ramo continuam obrigatórios.',
     repos: '🧩 Repositórios: esta Central não edita nem promove código livre. !dossiechat pode criar somente um artefato estático no ramo reversível `central/dossie-preparo-<execução>`. A única receita de código 3A é !reforcardossie e só pode preparar os três caminhos literais em `central/reforco-dossie-<execução>`; qualquer outra mudança de código continua exigindo receita e revisão próprias.',
-    marketing: '📣 Marketing: a rotina autorizada vive no Site e preserva fatos, cadência e anti-spam. O foco do Chat é capacidade e estado sanitizado; a Central não cria conta, não publica fora da rotina nem fabrica tráfego.',
+    marketing: '📣 Marketing: a rotina autorizada vive no Site e preserva fatos, cadência e anti-spam. A Central só explica a fronteira: não cria conta, não publica fora da rotina nem fabrica tráfego; não lê log, conta, alcance ou métrica externa, e aceite técnico/candidata não prova publicação, entrega, clique ou conversão.',
     limites: '🔒 Limites: não há executor genérico, terminal remoto, segredo, conta nova, backup externo, gasto, permissão ou identidade pública sem configuração e guarda próprias.'
   });
 
-  const PREFIXO_CENTRAL = /^!?(?:operar|opera(?:ç(?:ões|ão)|c(?:oes|ao))|central)(?:\s*:)?(?:\s|$)/i;
+  // Aceita apenas grafias fechadas. Espaço, dois-pontos e acento são ergonomia;
+  // qualquer texto além da opção continua no mapa, nunca vira instrução executável.
+  const ALIASES_OPCAO_CENTRAL = Object.freeze({
+    automacao: 'automacao', 'automação': 'automacao', capacidade: 'capacidade',
+    marketing: 'marketing', status: 'status', pesquisa: 'pesquisa',
+    navegador: 'navegador', testes: 'testes', statuscentral: 'statuscentral', preparo: 'preparo',
+    dossie: 'dossie', reforco: 'reforco', repos: 'repos', limites: 'limites'
+  });
+  const PREFIXO_CENTRAL = /^!?(?:operar|opera(?:ç(?:ões|ão)|c(?:oes|ao))|central)(?=\s|:|$)/i;
   const SO_CENTRAL = /^!?(?:operar|opera(?:ç(?:ões|ão)|c(?:oes|ao))|central):?$/i;
+  const OPCAO_CENTRAL_FECHADA = /^!?(?:operar|opera(?:ç(?:ões|ão)|c(?:oes|ao))|central)(?:\s*:\s*|\s+)([a-zÀ-ÿ]+)\s*$/i;
 
   function respostaComandoOperacionalLocal(entrada) {
     const texto = String(entrada || '').trim();
     if (/^!?(?:trabalho|prioridades):?$/i.test(texto)) return ROTEIRO_TRABALHO;
     if (SO_CENTRAL.test(texto)) return ROTEIRO_CENTRAL;
     if (!PREFIXO_CENTRAL.test(texto)) return '';
-    const m = texto.match(/^!?(?:operar|opera(?:ç(?:ões|ão)|c(?:oes|ao))|central)\s*:\s*([a-z]+)\s*$/i);
-    if (!m) return ROTEIRO_CENTRAL + NL + 'Use uma opção fechada depois dos dois-pontos; texto livre não é executado.';
-    return DETALHES_CENTRAL[m[1].toLowerCase()] || ROTEIRO_CENTRAL + NL + 'Opção não reconhecida. Use uma das opções fechadas listadas acima.';
+    const m = texto.match(OPCAO_CENTRAL_FECHADA);
+    if (!m) return ROTEIRO_CENTRAL + NL + 'Use uma opção fechada depois dos dois-pontos ou por espaço; texto livre não é executado.';
+    const opcao = ALIASES_OPCAO_CENTRAL[m[1].toLowerCase()];
+    return DETALHES_CENTRAL[opcao] || ROTEIRO_CENTRAL + NL + 'Opção não reconhecida. Use uma das opções fechadas listadas acima.';
   }
 
   const contrato = Object.freeze({ respostaComandoOperacionalLocal, ROTEIRO_TRABALHO, ROTEIRO_CENTRAL });
