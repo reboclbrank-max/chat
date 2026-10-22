@@ -65,10 +65,14 @@ ok('aceita somente contexto GitHub fechado de main', () => {
 ok('aplica somente o patch literal, a regressão correspondente e o relatório sanitizado', () => {
   const pasta = prepararRaizTemporaria();
   try {
+    const arquivoWorkflow = path.join(pasta, reforco.RECEITA.caminhos[0]);
+    const arquivoTeste = path.join(pasta, reforco.RECEITA.caminhos[1]);
+    const modoWorkflow = fs.statSync(arquivoWorkflow).mode & 0o777;
+    const modoTeste = fs.statSync(arquivoTeste).mode & 0o777;
     const resultado = reforco.prepararReforco(ambiente(), pasta);
     assert.deepEqual(resultado.caminhos, reforco.RECEITA.caminhos);
-    const workflow = fs.readFileSync(path.join(pasta, reforco.RECEITA.caminhos[0]), 'utf8');
-    const teste = fs.readFileSync(path.join(pasta, reforco.RECEITA.caminhos[1]), 'utf8');
+    const workflow = fs.readFileSync(arquivoWorkflow, 'utf8');
+    const teste = fs.readFileSync(arquivoTeste, 'utf8');
     const relatorio = fs.readFileSync(path.join(pasta, reforco.RECEITA.caminhos[2]), 'utf8');
     assert.match(workflow, /alterados="\$\(git diff --cached --name-only\)"/);
     assert.match(workflow, /\[ "\$alterados" = 'propostas\/central\/dossie-preparo-controlado\.md' \] \|\|/);
@@ -79,6 +83,10 @@ ok('aplica somente o patch literal, a regressão correspondente e o relatório s
     assert.match(relatorio, /`2345678901`/);
     assert.match(relatorio, /três caminhos permitidos/);
     assert.doesNotMatch(relatorio, /https?:\/\/|Authorization:|GITHUB_TOKEN|secrets\.|process\.env|exec\(|spawn\(/i);
+    assert.equal(fs.statSync(arquivoWorkflow).mode & 0o777, modoWorkflow);
+    assert.equal(fs.statSync(arquivoTeste).mode & 0o777, modoTeste);
+    assert.equal(fs.existsSync(path.join(pasta, reforco.RECEITA.caminhos[0]) + '.reforco-temporario'), false);
+    assert.equal(fs.existsSync(path.join(pasta, reforco.RECEITA.caminhos[1]) + '.reforco-temporario'), false);
   } finally {
     fs.rmSync(pasta, { recursive: true, force: true });
   }
@@ -184,6 +192,78 @@ ok('arquivo-alvo com vínculo físico bloqueia antes de ler ou editar fora da ra
   }
 });
 
+ok('vínculo físico introduzido depois da validação não altera arquivo externo', () => {
+  const pasta = prepararRaizTemporaria();
+  const fora = fs.mkdtempSync(path.join(os.tmpdir(), 'reforco-dossie-fora-'));
+  try {
+    const workflow = path.join(pasta, reforco.RECEITA.caminhos[0]);
+    const teste = path.join(pasta, reforco.RECEITA.caminhos[1]);
+    const relatorio = path.join(pasta, reforco.RECEITA.caminhos[2]);
+    const externo = path.join(fora, 'workflow-externo.yml');
+    const workflowAntes = fs.readFileSync(workflow, 'utf8');
+    const testeAntes = fs.readFileSync(teste, 'utf8');
+    fs.writeFileSync(externo, workflowAntes, 'utf8');
+    let trocado = false;
+    const io = Object.assign({}, fs, {
+      writeFileSync(arquivo, conteudo, opcoes) {
+        fs.writeFileSync(arquivo, conteudo, opcoes);
+        if (!trocado && arquivo === relatorio) {
+          fs.unlinkSync(workflow);
+          fs.linkSync(externo, workflow);
+          trocado = true;
+        }
+      }
+    });
+    reforco.prepararReforco(ambiente(), pasta, io);
+    assert.equal(trocado, true);
+    assert.equal(fs.readFileSync(externo, 'utf8'), workflowAntes);
+    assert.match(fs.readFileSync(workflow, 'utf8'), /alterados="\$\(git diff --cached --name-only\)"/);
+    assert.match(fs.readFileSync(teste, 'utf8'), /alterados="\\\$\\\(git diff --cached --name-only\\\)"/);
+    assert.equal(fs.lstatSync(workflow).nlink, 1);
+    assert.equal(fs.existsSync(workflow + '.reforco-temporario'), false);
+    assert.equal(fs.existsSync(teste + '.reforco-temporario'), false);
+  } finally {
+    fs.rmSync(pasta, { recursive: true, force: true });
+    fs.rmSync(fora, { recursive: true, force: true });
+  }
+});
+
+ok('arquivo substituído depois da leitura bloqueia antes do relatório', () => {
+  const pasta = prepararRaizTemporaria();
+  const fora = fs.mkdtempSync(path.join(os.tmpdir(), 'reforco-dossie-fora-'));
+  try {
+    const workflow = path.join(pasta, reforco.RECEITA.caminhos[0]);
+    const teste = path.join(pasta, reforco.RECEITA.caminhos[1]);
+    const relatorio = path.join(pasta, reforco.RECEITA.caminhos[2]);
+    const substituto = path.join(fora, 'workflow-substituto.yml');
+    const workflowAntes = fs.readFileSync(workflow, 'utf8');
+    const testeAntes = fs.readFileSync(teste, 'utf8');
+    const inoAntes = fs.lstatSync(workflow).ino;
+    fs.writeFileSync(substituto, workflowAntes, 'utf8');
+    let trocado = false;
+    const io = Object.assign({}, fs, {
+      readFileSync(arquivo, codificacao) {
+        const conteudo = fs.readFileSync(arquivo, codificacao);
+        if (!trocado && arquivo === teste) {
+          fs.unlinkSync(workflow);
+          fs.copyFileSync(substituto, workflow);
+          trocado = true;
+        }
+        return conteudo;
+      }
+    });
+    assert.throws(() => reforco.prepararReforco(ambiente(), pasta, io), /dossie-preparo-controlado\.yml/);
+    assert.equal(trocado, true);
+    assert.notEqual(fs.lstatSync(workflow).ino, inoAntes);
+    assert.equal(fs.readFileSync(workflow, 'utf8'), workflowAntes);
+    assert.equal(fs.readFileSync(teste, 'utf8'), testeAntes);
+    assert.equal(fs.existsSync(relatorio), false);
+  } finally {
+    fs.rmSync(pasta, { recursive: true, force: true });
+    fs.rmSync(fora, { recursive: true, force: true });
+  }
+});
+
 ok('diretório de entrada simbólico bloqueia antes de ler fora da raiz', () => {
   const pasta = prepararRaizTemporaria();
   const fora = fs.mkdtempSync(path.join(os.tmpdir(), 'reforco-dossie-fora-'));
@@ -217,17 +297,26 @@ ok('ferramenta não recebe argumento/caminho livre nem executa transporte, shell
   assert.match(fonte, /validarArquivoLiteral\(io, arquivoWorkflow, relWorkflow\)/);
   assert.match(fonte, /validarDiretorioLiteral\(io, raiz, path\.dirname\(relTeste\), false, 'caminho do teste'\)/);
   assert.match(fonte, /validarArquivoLiteral\(io, arquivoTeste, relTeste\)/);
+  assert.match(fonte, /validarArquivoLiteralInalterado\(io, arquivoWorkflow, relWorkflow, estadoWorkflow\)/);
+  assert.match(fonte, /validarArquivoLiteralInalterado\(io, arquivoTeste, relTeste, estadoTeste\)/);
+  assert.match(fonte, /io\.renameSync\(temporario, arquivo\)/);
+  assert.match(fonte, /arquivo \+ '\.reforco-temporario'/);
+  assert.doesNotMatch(fonte, /io\.writeFileSync\(arquivoWorkflow,/);
+  assert.doesNotMatch(fonte, /io\.writeFileSync\(arquivoTeste,/);
   assert.match(fonte, /prepararDestinoRelatorio\(io, raiz, path\.dirname\(relRelatorio\), arquivoRelatorio\)/);
   assert.match(fonte, /flag: 'wx'/);
   const iWorkflowLiteral = fonte.indexOf("validarArquivoLiteral(io, arquivoWorkflow, relWorkflow)");
   const iTesteLiteral = fonte.indexOf("validarArquivoLiteral(io, arquivoTeste, relTeste)");
   const iLeitura = fonte.indexOf("io.readFileSync(arquivoWorkflow, 'utf8')");
+  const iRevalidarWorkflow = fonte.indexOf("validarArquivoLiteralInalterado(io, arquivoWorkflow, relWorkflow, estadoWorkflow)");
+  const iRevalidarTeste = fonte.indexOf("validarArquivoLiteralInalterado(io, arquivoTeste, relTeste, estadoTeste)");
   const iDestino = fonte.indexOf('prepararDestinoRelatorio(io, raiz, path.dirname(relRelatorio), arquivoRelatorio)');
   const iRelatorio = fonte.indexOf('io.writeFileSync(arquivoRelatorio');
-  const iWorkflow = fonte.indexOf('io.writeFileSync(arquivoWorkflow');
-  const iTeste = fonte.indexOf('io.writeFileSync(arquivoTeste');
+  const iWorkflow = fonte.indexOf('substituirArquivoLiteralAtomico(io, arquivoWorkflow');
+  const iTeste = fonte.indexOf('substituirArquivoLiteralAtomico(io, arquivoTeste');
   assert(iWorkflowLiteral >= 0 && iTesteLiteral >= 0 && iWorkflowLiteral < iLeitura && iTesteLiteral < iLeitura, 'alvos literais são validados antes de leitura');
-  assert(iDestino >= 0 && iDestino < iRelatorio && iRelatorio < iWorkflow && iWorkflow < iTeste, 'reserva exclusiva vem antes dos dois edits literais');
+  assert(iRevalidarWorkflow >= 0 && iRevalidarTeste >= 0 && iLeitura < iRevalidarWorkflow && iRevalidarWorkflow < iRevalidarTeste, 'alvos literais são revalidados antes da reserva');
+  assert(iDestino >= 0 && iDestino < iRelatorio && iRelatorio < iWorkflow && iWorkflow < iTeste, 'reserva exclusiva vem antes das substituições atômicas');
 });
 
 ok('workflow executa preflight, contrato, patch e validação antes do ramo de três caminhos', () => {
