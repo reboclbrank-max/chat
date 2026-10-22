@@ -158,6 +158,32 @@ ok('arquivo-alvo simbólico bloqueia antes de ler ou editar fora da raiz', () =>
   }
 });
 
+ok('arquivo-alvo com vínculo físico bloqueia antes de ler ou editar fora da raiz', () => {
+  for (const relativo of reforco.RECEITA.caminhos.slice(0, 2)) {
+    const pasta = prepararRaizTemporaria();
+    const fora = fs.mkdtempSync(path.join(os.tmpdir(), 'reforco-dossie-fora-'));
+    try {
+      const alvo = path.join(pasta, relativo);
+      const outroRelativo = reforco.RECEITA.caminhos.find(caminho => caminho !== relativo && caminho !== reforco.RECEITA.caminhos[2]);
+      const outro = path.join(pasta, outroRelativo);
+      const externo = path.join(fora, path.basename(relativo));
+      const antes = fs.readFileSync(alvo, 'utf8');
+      const outroAntes = fs.readFileSync(outro, 'utf8');
+      fs.writeFileSync(externo, antes, 'utf8');
+      fs.unlinkSync(alvo);
+      fs.linkSync(externo, alvo);
+      assert.equal(fs.lstatSync(alvo).nlink, 2);
+      assert.throws(() => reforco.prepararReforco(ambiente(), pasta), /base incompatível para reforço/);
+      assert.equal(fs.readFileSync(externo, 'utf8'), antes);
+      assert.equal(fs.readFileSync(outro, 'utf8'), outroAntes);
+      assert.equal(fs.existsSync(path.join(pasta, reforco.RECEITA.caminhos[2])), false);
+    } finally {
+      fs.rmSync(pasta, { recursive: true, force: true });
+      fs.rmSync(fora, { recursive: true, force: true });
+    }
+  }
+});
+
 ok('diretório de entrada simbólico bloqueia antes de ler fora da raiz', () => {
   const pasta = prepararRaizTemporaria();
   const fora = fs.mkdtempSync(path.join(os.tmpdir(), 'reforco-dossie-fora-'));
@@ -186,6 +212,7 @@ ok('ferramenta não recebe argumento/caminho livre nem executa transporte, shell
   assert.match(fonte, /umaOcorrencia\(workflow, ANCORA_WORKFLOW/);
   assert.match(fonte, /umaOcorrencia\(teste, ANCORA_TESTE/);
   assert.match(fonte, /io\.lstatSync\(alvo\)/);
+  assert.match(fonte, /estado\.nlink !== 1/);
   assert.match(fonte, /validarDiretorioLiteral\(io, raiz, path\.dirname\(relWorkflow\), false, 'caminho do workflow'\)/);
   assert.match(fonte, /validarArquivoLiteral\(io, arquivoWorkflow, relWorkflow\)/);
   assert.match(fonte, /validarDiretorioLiteral\(io, raiz, path\.dirname\(relTeste\), false, 'caminho do teste'\)/);

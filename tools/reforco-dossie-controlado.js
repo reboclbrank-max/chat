@@ -97,7 +97,7 @@ function validarDiretorioLiteral(io, raiz, relativo, criar, nome) {
 
 function validarArquivoLiteral(io, arquivo, nome) {
   const estado = lstatOuAusente(io, arquivo, nome);
-  if (!estado || !estado.isFile() || estado.isSymbolicLink()) {
+  if (!estado || !estado.isFile() || estado.isSymbolicLink() || estado.nlink !== 1) {
     throw new Error('base incompatível para reforço: ' + nome);
   }
 }
