@@ -13,7 +13,7 @@ A regra vale somente dentro das capacidades, canais e guardas já aprovados. Ela
 1. Leia [`CONTINUIDADE.md`](CONTINUIDADE.md) inteiro.
 2. Confira `main` remoto, o estado da cópia e as instruções/estado atuais em `reboclbrank-max/base`.
 3. Leia apenas os arquivos técnicos necessários à tarefa. A autorização permanente de marketing, pesquisa e melhoria contínua está em `AUTONOMIA.md`; preserve as guardas, limites de canal, testes e registros ali descritos. Não dispare manualmente rotinas já agendadas nem faça publicação fora dos canais/configurações aprovados sem necessidade operacional.
-4. Para evolução de capacidade, delegação ou repositório, leia [`OPERACAO-CENTRAL.md`](OPERACAO-CENTRAL.md) antes de propor código: a Central segura é gradual. O preflight `!prepararchat` continua somente-leitura; `!dossiechat` é a única escrita 2B e só pode criar um ramo reversível com dossiê estático depois das cinco guardas. Nenhuma das duas substitui receita própria, revisão humana ou rollback; executor genérico, código livre e promoção cega para `main` seguem proibidos.
+4. Para evolução de capacidade, delegação ou repositório, leia [`OPERACAO-CENTRAL.md`](OPERACAO-CENTRAL.md) antes de propor código: a Central segura é gradual. O preflight `!prepararchat` continua somente-leitura; `!dossiechat` é a escrita 2B que só pode criar um ramo reversível com dossiê estático depois das cinco guardas; e `!reforcardossie` é a única receita 3A de código, limitada a um patch literal de workflow/teste/relatório em ramo isolado depois de preflight e contrato próprio. Nenhuma delas substitui receita própria, revisão humana ou rollback; executor genérico, código livre e promoção cega para `main` seguem proibidos.
 
 ## Regra de salvamento obrigatório
 
