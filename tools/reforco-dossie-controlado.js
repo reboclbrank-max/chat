@@ -103,9 +103,9 @@ function validarArquivoLiteral(io, arquivo, nome) {
   return estado;
 }
 
-function validarArquivoLiteralInalterado(io, arquivo, nome, anterior) {
+function validarArquivoLiteralInalterado(io, arquivo, nome, anterior, conteudoAnterior) {
   const atual = validarArquivoLiteral(io, arquivo, nome);
-  if (!anterior || atual.dev !== anterior.dev || atual.ino !== anterior.ino) {
+  if (!anterior || atual.dev !== anterior.dev || atual.ino !== anterior.ino || io.readFileSync(arquivo, 'utf8') !== conteudoAnterior) {
     throw new Error('base incompatível para reforço: ' + nome);
   }
   return atual;
@@ -190,8 +190,8 @@ function prepararReforco(ambiente = process.env, raiz = process.cwd(), io = fs) 
   if (!novoWorkflow.includes(TROCA_WORKFLOW) || !novoTeste.includes(TROCA_TESTE)) {
     throw new Error('patch literal não pôde ser confirmado');
   }
-  validarArquivoLiteralInalterado(io, arquivoWorkflow, relWorkflow, estadoWorkflow);
-  validarArquivoLiteralInalterado(io, arquivoTeste, relTeste, estadoTeste);
+  validarArquivoLiteralInalterado(io, arquivoWorkflow, relWorkflow, estadoWorkflow, workflow);
+  validarArquivoLiteralInalterado(io, arquivoTeste, relTeste, estadoTeste, teste);
   prepararDestinoRelatorio(io, raiz, path.dirname(relRelatorio), arquivoRelatorio);
   // Reserva primeiro o único caminho novo: O_EXCL/`wx` impede sobrescrever
   // um relatório que apareça depois da verificação, antes dos dois edits literais.

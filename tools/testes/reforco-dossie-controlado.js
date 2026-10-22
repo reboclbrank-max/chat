@@ -228,7 +228,7 @@ ok('vínculo físico introduzido depois da validação não altera arquivo exter
   }
 });
 
-ok('arquivo substituído depois da leitura bloqueia antes do relatório', () => {
+ok('arquivo com conteúdo divergente depois da leitura bloqueia antes do relatório', () => {
   const pasta = prepararRaizTemporaria();
   const fora = fs.mkdtempSync(path.join(os.tmpdir(), 'reforco-dossie-fora-'));
   try {
@@ -238,10 +238,28 @@ ok('arquivo substituído depois da leitura bloqueia antes do relatório', () => 
     const substituto = path.join(fora, 'workflow-substituto.yml');
     const workflowAntes = fs.readFileSync(workflow, 'utf8');
     const testeAntes = fs.readFileSync(teste, 'utf8');
-    const inoAntes = fs.lstatSync(workflow).ino;
-    fs.writeFileSync(substituto, workflowAntes, 'utf8');
+    const identidadeInicial = fs.lstatSync(workflow);
+    const conteudoSubstituto = workflowAntes + '\n# troca-controlada\n';
+    fs.writeFileSync(substituto, conteudoSubstituto, 'utf8');
     let trocado = false;
     const io = Object.assign({}, fs, {
+      lstatSync(arquivo) {
+        const estado = fs.lstatSync(arquivo);
+        if (trocado && arquivo === workflow) {
+          // Alguns sistemas podem reutilizar o mesmo inode logo após unlink.
+          // A simulação fixa essa identidade para provar que a comparação do
+          // conteúdo lido ainda interrompe a alteração.
+          return {
+            isFile: () => estado.isFile(),
+            isSymbolicLink: () => estado.isSymbolicLink(),
+            nlink: estado.nlink,
+            mode: estado.mode,
+            dev: identidadeInicial.dev,
+            ino: identidadeInicial.ino
+          };
+        }
+        return estado;
+      },
       readFileSync(arquivo, codificacao) {
         const conteudo = fs.readFileSync(arquivo, codificacao);
         if (!trocado && arquivo === teste) {
@@ -254,8 +272,7 @@ ok('arquivo substituído depois da leitura bloqueia antes do relatório', () => 
     });
     assert.throws(() => reforco.prepararReforco(ambiente(), pasta, io), /dossie-preparo-controlado\.yml/);
     assert.equal(trocado, true);
-    assert.notEqual(fs.lstatSync(workflow).ino, inoAntes);
-    assert.equal(fs.readFileSync(workflow, 'utf8'), workflowAntes);
+    assert.equal(fs.readFileSync(workflow, 'utf8'), conteudoSubstituto);
     assert.equal(fs.readFileSync(teste, 'utf8'), testeAntes);
     assert.equal(fs.existsSync(relatorio), false);
   } finally {
@@ -297,8 +314,9 @@ ok('ferramenta não recebe argumento/caminho livre nem executa transporte, shell
   assert.match(fonte, /validarArquivoLiteral\(io, arquivoWorkflow, relWorkflow\)/);
   assert.match(fonte, /validarDiretorioLiteral\(io, raiz, path\.dirname\(relTeste\), false, 'caminho do teste'\)/);
   assert.match(fonte, /validarArquivoLiteral\(io, arquivoTeste, relTeste\)/);
-  assert.match(fonte, /validarArquivoLiteralInalterado\(io, arquivoWorkflow, relWorkflow, estadoWorkflow\)/);
-  assert.match(fonte, /validarArquivoLiteralInalterado\(io, arquivoTeste, relTeste, estadoTeste\)/);
+  assert.match(fonte, /validarArquivoLiteralInalterado\(io, arquivoWorkflow, relWorkflow, estadoWorkflow, workflow\)/);
+  assert.match(fonte, /validarArquivoLiteralInalterado\(io, arquivoTeste, relTeste, estadoTeste, teste\)/);
+  assert.match(fonte, /io\.readFileSync\(arquivo, 'utf8'\) !== conteudoAnterior/);
   assert.match(fonte, /io\.renameSync\(temporario, arquivo\)/);
   assert.match(fonte, /arquivo \+ '\.reforco-temporario'/);
   assert.doesNotMatch(fonte, /io\.writeFileSync\(arquivoWorkflow,/);
@@ -308,8 +326,8 @@ ok('ferramenta não recebe argumento/caminho livre nem executa transporte, shell
   const iWorkflowLiteral = fonte.indexOf("validarArquivoLiteral(io, arquivoWorkflow, relWorkflow)");
   const iTesteLiteral = fonte.indexOf("validarArquivoLiteral(io, arquivoTeste, relTeste)");
   const iLeitura = fonte.indexOf("io.readFileSync(arquivoWorkflow, 'utf8')");
-  const iRevalidarWorkflow = fonte.indexOf("validarArquivoLiteralInalterado(io, arquivoWorkflow, relWorkflow, estadoWorkflow)");
-  const iRevalidarTeste = fonte.indexOf("validarArquivoLiteralInalterado(io, arquivoTeste, relTeste, estadoTeste)");
+  const iRevalidarWorkflow = fonte.indexOf("validarArquivoLiteralInalterado(io, arquivoWorkflow, relWorkflow, estadoWorkflow, workflow)");
+  const iRevalidarTeste = fonte.indexOf("validarArquivoLiteralInalterado(io, arquivoTeste, relTeste, estadoTeste, teste)");
   const iDestino = fonte.indexOf('prepararDestinoRelatorio(io, raiz, path.dirname(relRelatorio), arquivoRelatorio)');
   const iRelatorio = fonte.indexOf('io.writeFileSync(arquivoRelatorio');
   const iWorkflow = fonte.indexOf('substituirArquivoLiteralAtomico(io, arquivoWorkflow');
