@@ -486,6 +486,7 @@ function resumoTrabalhoDaCasa() {
   return [
     '🧭 Trabalho da casa:',
     '• O Chat atende, vigia e mede pelos fluxos já configurados.',
+    '• Foco atual: automação segura, capacidade verificável e marketing autorizado, sem criar publicação extra.',
     '• O Site tem rotinas de marketing configuradas com cadência e anti-spam; observações são naturais.',
     '• Próximo passo automático: as rotinas existentes seguem seus gatilhos; registrar somente sinais verificáveis.',
     '• Para você: nada obrigatório. Use o Chat normalmente quando quiser.',

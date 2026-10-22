@@ -16,6 +16,8 @@ A Central torna descobrível e coerente o que o Chat já pode fazer, em vez de a
 | `operar: status` | Página, e-mail e Telegram | Encaminha honestamente ao `status:` existente nos canais privados; não inventa estado dinâmico na página. |
 | `operar: pesquisa` | Página, e-mail e Telegram | Explica o fluxo de pesquisa pública já existente, separado de conteúdo privado. |
 | `operar: navegador` | Página, e-mail e Telegram | Explica o fluxo `navegar:` isolado: página pública, sem login, formulário ou área privada. |
+| `operar: automacao` | Página, e-mail e Telegram | Mapeia somente os fluxos aprovados de canais, reserva, vigia, evolução e estado sanitizado; não cria cron, fila, dispatch, retry ou executor genérico. |
+| `operar: capacidade` | Página, e-mail e Telegram | Explica que `CAPACIDADE.md` é indicador interno gerado pelo fluxo existente, com sinais verificáveis; não calcula placar, muda peso ou promete produto/SLA. |
 | `operar: marketing` | Página, e-mail e Telegram | Declara que o marketing autorizado continua no `site`, sob fatos, cadência e anti-spam; não publica conteúdo adicional. |
 | `operar: testes` | Página, e-mail e Telegram | Explica a barreira fixa já aprovada. |
 | `operar: preparo` | Página, e-mail e Telegram | Explica a auditoria interna fixa; nos canais não despacha ação. |
@@ -27,7 +29,7 @@ A Central torna descobrível e coerente o que o Chat já pode fazer, em vez de a
 | `!dossiechat` | Página com acesso protegido já configurado | Pede exclusivamente `dossie-preparo-controlado.yml` em `main`. Só depois das cinco guardas pode criar **um ramo novo** contendo apenas `propostas/central/dossie-preparo-controlado.md`; não altera código, `main`, PR, merge ou promoção. |
 | `!reforcardossie` | Página com acesso protegido já configurado | Pede exclusivamente `reforco-dossie-controlado.yml` em `main`. Só depois das guardas fixas pode criar **um ramo novo** com exatamente o patch literal de workflow/teste do dossiê e um relatório sanitizado; não recebe tarefa, caminho, patch, comando ou texto livre. |
 
-O chip **⚙️ operar** apenas abre `operar:` e é interceptado localmente antes de rascunho, Issue, motor ou API. Texto livre depois de `operar:` não é plano, código, instrução nem fila; recebe somente a sintaxe fechada.
+O chip **⚙️ operar** apenas abre `operar:` e é interceptado localmente antes de rascunho, Issue, motor ou API. `operar: automacao`, `operar: capacidade` e `operar: marketing` são mapa de foco, não fotografia dinâmica nem gatilho de trabalho. Texto livre depois de `operar:` não é plano, código, instrução nem fila; recebe somente a sintaxe fechada.
 
 ## 2. Guardas das quatro ações manuais e da consulta
 

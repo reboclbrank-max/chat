@@ -33,6 +33,7 @@ ok('roteiro local só reconhece os comandos exatos previstos', () => {
   for (const entrada of ['trabalho:', 'prioridades:', 'trabalho', '!prioridades']) {
     const saida = responder(entrada);
     assert.match(saida, /Trabalho da casa/);
+    assert.match(saida, /Foco atual: automação segura, capacidade verificável e marketing autorizado/i);
     assert.match(saida, /nada obrigatório/i);
     assert.match(saida, /status: por e-mail ou Telegram/i);
     assert.match(saida, /não promete entrega, alcance, uso, satisfação ou SLA/i);
@@ -47,10 +48,13 @@ ok('Central segura aceita somente mapa e opções fechadas', () => {
   for (const entrada of ['operar:', 'central:', '!operacoes', '!central']) {
     const saida = responder(entrada);
     assert.match(saida, /Central segura do Chat/);
+    assert.match(saida, /operar: automacao \| capacidade \| marketing/i);
     assert.match(saida, /não executa texto livre/i);
     assert.match(saida, /não promete entrega, uso, satisfação ou SLA/i);
   }
   const esperadas = {
+    automacao: /não cria cron, fila persistente, dispatch, retry nem executor genérico/i,
+    capacidade: /Indicador interno[\s\S]*não recalcula placar nem altera pesos/i,
     status: /Estado técnico/,
     pesquisa: /Pesquisa:/,
     navegador: /Navegador:/,
@@ -179,11 +183,11 @@ ok('chip visual oferece o roteiro local sem agendar rascunho ou escrita', () => 
   }
 });
 
-ok('casca PWA v89 inclui os ativos locais e a porta de continuidade o observa', () => {
+ok('casca PWA v90 inclui os ativos locais e a porta de continuidade o observa', () => {
   const sw = ler('sw.js');
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v89/);
+  assert.match(sw, /rebocl-chat-v90/);
   assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);
   assert.match(sw, /'\.\/chat-organizacao-local\.js'/);

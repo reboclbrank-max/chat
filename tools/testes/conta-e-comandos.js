@@ -28,7 +28,7 @@ function confere(nome, condicao) {
   await t('ajuda: lista feriado: e cep:', 'comandos', /feriado:|cep:/);
   await t('ajuda: lista navegar:', 'ajuda', /navegar:/);
   await t('ajuda: lista trabalho:', 'ajuda', /trabalho:/);
-  await t('trabalho: explica rotina sem depender de motor', 'trabalho:', /Trabalho da casa[\s\S]*nada obrigatório[\s\S]*status:/i);
+  await t('trabalho: explica foco sem depender de motor', 'trabalho:', /Trabalho da casa[\s\S]*automação segura, capacidade verificável e marketing autorizado[\s\S]*nada obrigatório[\s\S]*status:/i);
   await t('prioridades: também abre o roteiro', 'prioridades:', /Próximo passo automático/i);
   await t('ajuda: lista divisas, capital e região:', 'ajuda', /divisas:.*capital:.*região:/s);
   await t('divisas: Bahia responde localmente', 'divisas: Bahia', /Bahia.*8 unidade/);
@@ -133,6 +133,9 @@ function confere(nome, condicao) {
   await t('trabalho: não chama rede', 'trabalho:', /Plano operacional/i);
   confere('trabalho: roteiro local cabe no Telegram', CHAT.resumoTrabalhoDaCasa().split('\n').length <= 8);
   await t('operar: abre a Central sem rede nem motor', 'operar:', /Central segura do Chat[\s\S]*não executa texto livre/i);
+  await t('operar: automacao mapeia sem criar executor', 'operar: automacao', /canais, reserva, vigia, evolução e estado sanitizado[\s\S]*não cria cron, fila persistente, dispatch, retry nem executor genérico/i);
+  await t('operar: capacidade explica indicador sem prometer produto', 'operar: capacidade', /Indicador interno[\s\S]*não é QI, resultado de produto, alcance, satisfação ou SLA/i);
+  await t('operar: marketing conserva anti-spam sem publicação extra', 'operar: marketing', /fatos, cadência e anti-spam[\s\S]*não publica fora da rotina nem fabrica tráfego/i);
   await t('operar: repos mantém promoção bloqueada', 'operar: repos', /não edita nem promove código/i);
   await t('operar: texto livre não vira execução', 'operar: testes agora', /texto livre não é executado/i);
   await t('ajuda: lista a Central segura', 'ajuda', /operar:.*Central segura/i);

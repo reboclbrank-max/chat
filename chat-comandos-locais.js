@@ -6,6 +6,7 @@
   const ROTEIRO_TRABALHO = Object.freeze([
     '🧭 Trabalho da casa:',
     '• O Chat atende, vigia e mede pelos fluxos já configurados.',
+    '• Foco atual: automação segura, capacidade verificável e marketing autorizado, sem criar publicação extra.',
     '• O Site tem rotinas de marketing configuradas com cadência e anti-spam; observações são naturais.',
     '• Próximo passo automático: as rotinas existentes seguem seus gatilhos; registrar somente sinais verificáveis.',
     '• Para você: nada obrigatório. Use o Chat normalmente quando quiser.',
@@ -16,6 +17,7 @@
   const ROTEIRO_CENTRAL = Object.freeze([
     '⚙️ Central segura do Chat:',
     '• Já concentra conversa, Workspace local, lembretes, pesquisa pública, navegador isolado, estado e rotinas configuradas.',
+    '• Automação e capacidade: o mapa fechado explica os fluxos já aprovados e seus sinais; não cria cron, fila ou executor genérico.',
     '• Testes: !testarchat pede somente a barreira aprovada do Chat; não altera código, segredos nem a branch principal.',
     '• Status da barreira: !statuscentral apenas lê o estado fechado mais recente de !testarchat; não pede execução, retry, código, branch ou promoção.',
     '• Preparo: !prepararchat pede somente uma auditoria interna fixa; ela decide se há base técnica para revisão, sem criar branch ou código.',
@@ -24,11 +26,13 @@
     '• Marketing permanece nas rotinas autorizadas do Site, com fatos e anti-spam; este roteiro não publica extra nem cria conta.',
     '• Próxima etapa: somente outra receita fechada, desenhada e revisada, poderia preparar outra mudança reversível; ainda não há promoção cega para a branch principal.',
     '• Dependem de configuração concreta: e-mail novo, contas, backup externo, identidade pública, credenciais, gasto e permissões.',
-    '• Use: operar: status | pesquisa | navegador | testes | statuscentral | preparo | dossie | reforco | repos | marketing | limites.',
+    '• Use: operar: automacao | capacidade | marketing | status | pesquisa | navegador | testes | statuscentral | preparo | dossie | reforco | repos | limites.',
     'ℹ️ Mapa local e fechado: não executa texto livre, não cria fila persistente e não promete entrega, uso, satisfação ou SLA.'
   ].join(NL));
 
   const DETALHES_CENTRAL = Object.freeze({
+    automacao: '⚙️ Automação: os fluxos já aprovados atendem canais, reserva, vigia, evolução e estado sanitizado. A Central só os mapeia: não cria cron, fila persistente, dispatch, retry nem executor genérico.',
+    capacidade: '📈 Capacidade: `CAPACIDADE.md` é indicador interno produzido pelo fluxo de evolução com sinais verificáveis. Não é QI, resultado de produto, alcance, satisfação ou SLA; a Central não recalcula placar nem altera pesos.',
     status: '🩺 Estado técnico: use status: por e-mail ou Telegram. A Central não inventa telemetria nesta tela.',
     pesquisa: '🔎 Pesquisa: use pesquisa: <tema> por e-mail ou Telegram; fontes públicas continuam separadas de dados privados.',
     navegador: '🌐 Navegador: use navegar: <URL pública> por e-mail ou Telegram. A abertura continua isolada, sem login ou área privada.',
@@ -38,7 +42,7 @@
     dossie: '🧾 Dossiê: nesta interface, !dossiechat pede exclusivamente a receita fixa que primeiro executa cinco guardas e, só se passarem, pode criar um ramo novo com um único dossiê estático. Não aceita tarefa livre, não altera código, não abre PR e não promove main; revisão humana e apagar o ramo continuam obrigatórios.',
     reforco: '🛡️ Reforço: nesta interface, !reforcardossie pede somente `reforco_dossie_escopo_v1`. A receita tem catálogo de uma entrada, repositório/ref e três caminhos literais; ela valida a base e pode criar `central/reforco-dossie-<execução>` com um patch de workflow/teste e relatório sanitizado. Não recebe conversa, segredo, tarefa, caminho, patch ou comando livre; não cria PR, merge, tag, release ou promoção. Revisão humana e apagar o ramo continuam obrigatórios.',
     repos: '🧩 Repositórios: esta Central não edita nem promove código livre. !dossiechat pode criar somente um artefato estático no ramo reversível `central/dossie-preparo-<execução>`. A única receita de código 3A é !reforcardossie e só pode preparar os três caminhos literais em `central/reforco-dossie-<execução>`; qualquer outra mudança de código continua exigindo receita e revisão próprias.',
-    marketing: '📣 Marketing: a rotina autorizada vive no Site e preserva fatos, cadência e anti-spam. A Central não cria conta, não publica fora da rotina nem fabrica tráfego.',
+    marketing: '📣 Marketing: a rotina autorizada vive no Site e preserva fatos, cadência e anti-spam. O foco do Chat é capacidade e estado sanitizado; a Central não cria conta, não publica fora da rotina nem fabrica tráfego.',
     limites: '🔒 Limites: não há executor genérico, terminal remoto, segredo, conta nova, backup externo, gasto, permissão ou identidade pública sem configuração e guarda próprias.'
   });
 
