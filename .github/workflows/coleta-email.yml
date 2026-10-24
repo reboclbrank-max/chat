@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: '22'
-      - run: npm install --no-save imapflow@2.4.3 nodemailer@10.1.1
+      - run: npm ci --omit=dev --no-audit --no-fund
       - name: Coleta e sonda
         run: node tools/coleta-respostas.js
         env:

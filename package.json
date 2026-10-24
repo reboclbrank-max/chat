@@ -1,0 +1,17 @@
+{
+  "name": "rebocl-chat",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ferramentas do Chat da Rebocl Brank — IMAP/SMTP do turno e da barreira",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node tools/testes/roda-testes.js"
+  },
+  "dependencies": {
+    "imapflow": "2.4.3",
+    "nodemailer": "10.2.1"
+  }
+}
