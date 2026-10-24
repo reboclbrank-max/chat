@@ -1391,3 +1391,28 @@ Se o ambiente local não tiver bibliotecas temporárias de Node/Python, não con
 | 2026-10-24 | P3K põe o navegador controlado na barreira de todo push. O harness `tools/testes/navegador-lista-controlado.sh` provava as quatro rotas, o Workspace, o PWA, os favoritos e as coleções em Chromium de verdade, mas só rodava à mão — a barreira do CI executava apenas o contrato estático dele. Agora `testes-rapidos.yml` roda o harness depois do corredor, com a mesma regra honesta de antes: sem navegador o script sai com código 2 e o passo registra `::warning::` de SKIP, nunca falha falsa e nunca verde fingido; código diferente de 0 e de 2 falha o job. Nenhum `continue-on-error` foi usado. A corrida anterior mostrou que o runner tem Chrome e que ele abre headless depois das flags de contêiner (o `navegador-csp.js` passou 18/18 lá em 24/10), então este passo deve executar de fato; se o pré-requisito sumir de uma imagem futura, o log diz SKIP em vez de esconder. O contrato `navegador-lista-controlado-estatico.js` ganhou uma verificação nova (11/11) para o passo não ser removido, para o código 2 continuar sendo SKIP e para `continue-on-error` não entrar. Nada de segredo, conta, custo, canal ou dispatch; nenhum ativo servido mudou, então `sw.js` permanece `rebocl-chat-v97`. LIMITE REGISTRADO: é prova local em Chromium do runner, sem Firefox/Safari/celular real; acrescenta alguns segundos ao job e não mede entrega, disponibilidade, satisfação ou SLA. |
 
 **Próxima atualização:** não é uma tarefa agendada. Ela acontece junto da próxima mudança autorizada no Chat.
+
+## 2026-10-24 — o Chat passou a ver o estado medido da casa e a poder agir
+
+Mudança feita no trabalhador privado (`agente`), não nesta página. O assistente deixou de
+responder sobre resultado "de memória" e passou a receber, no próprio prompt, a fotografia
+medida da casa (`agente/casa.py` → `MEMORIA/estado-casa.md`): seguidores, engajamento por
+tipo de post, metas com prazo, último ciclo publicado e os NOMES das credenciais que
+existem (nunca os valores).
+
+Ferramentas novas no cérebro: `[[CASA:]]`, `[[METAS:]]`, `[[DIAGNOSTICAR:]]` e
+`[[PUBLICAR:]]`. Comandos diretos, que respondem sem passar por modelo: `casa`, `estado`,
+`metas`, `resultados`.
+
+Freios preservados: `NAO_OBSERVAVEL` nunca vira zero; publicação exige pedido explícito do
+dono na mensagem ("publica", "posta", "roda o ciclo") — o motor não decide publicar; ação
+fora da lista fechada é recusada; nenhum valor de credencial entra em resposta.
+
+**Limite externo atual:** o repositório `agente` é privado e a cota gratuita de 2.000
+minutos de Actions de outubro/2026 está esgotada. O trabalhador não inicia — o job falha
+antes do primeiro passo, com a anotação de pagamento/limite de gasto. Isso não é defeito
+do Chat: é cota. Reseta em 01/11/2026. Enquanto isso, a página abre e os comandos locais
+funcionam, mas a resposta do assistente depende do trabalhador.
+
+Barreira: `agente/teste-casa.py` (30 verificações, offline) entrou no `testes.yml` e
+protege número inventado, vazamento de credencial e publicação sem pedido.
