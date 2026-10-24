@@ -17,6 +17,7 @@
     tempo: 'tempo esgotado',
     limite: 'provedor recusou (limite/credencial)',
     servidor: 'provedor respondeu com erro',
+    politica: 'bloqueado pela política da página',
     vazio: 'provedor respondeu vazio',
     formato: 'resposta em formato inesperado',
     outro: 'falha não classificada'

@@ -170,5 +170,81 @@ ok('o diagnóstico é limitado ao aparelho e citado na casca offline', () => {
   assert(/rebocl-chat-v\d+/.test(sw), 'casca sem versão');
 });
 
+
+ok('motivo fechado aceita "politica" e o resumo explica o bloqueio', () => {
+  const { storage, api } = novoModulo();
+  assert(api.MOTIVOS.politica, 'motivo politica ausente do contrato');
+  assert.equal(api.registrarFalhaMotor({ nome: 'Kimi-K3' }, 'politica', 0), 'politica');
+  const lista = JSON.parse(storage.getItem(api.CHAVE));
+  assert.equal(lista[0].motivo, 'politica');
+  const resumo = api.resumoDiagnostico();
+  assert(/bloqueado pela política da página/.test(resumo), 'resumo não explica o bloqueio: ' + resumo);
+  // motivo desconhecido continua caindo na classificação normal, nunca é gravado cru
+  assert.equal(api.registrarFalhaMotor({ nome: 'X' }, 'inventado', 500), 'servidor');
+});
+
+// Recorta do index.html o bloco real que decide se um motor está fora da política da página.
+function blocoDaPolitica(html) {
+  const inicio = html.indexOf('function hostsDaPoliticaDaPagina');
+  const fim = html.indexOf('function listaSegura');
+  assert(inicio > 0 && fim > inicio, 'bloco da política não encontrado no index.html');
+  return html.slice(inicio, fim);
+}
+
+function politicaNoNavegador(html, opcoes = {}) {
+  const contexto = {
+    URL,
+    location: { hostname: opcoes.hostname || 'reboclbrank-max.github.io', href: 'https://reboclbrank-max.github.io/chat/' },
+    document: {
+      querySelector(seletor) {
+        if (!/Content-Security-Policy/i.test(seletor)) return null;
+        if (opcoes.semMeta) return null;
+        return { getAttribute: () => opcoes.politica == null
+          ? "default-src 'self'; connect-src 'self' https://api.exemplo.test https://outro.test"
+          : opcoes.politica };
+      }
+    }
+  };
+  contexto.window = contexto;
+  vm.createContext(contexto);
+  vm.runInContext(blocoDaPolitica(html), contexto, { filename: 'politica-da-pagina.js' });
+  return contexto;
+}
+
+ok('motor fora da lista da política é detectado antes de tentar a rede', () => {
+  const ctx = politicaNoNavegador(ler('index.html'));
+  assert.equal(ctx.motorBloqueadoPelaPolitica({ nome: 'plantado', base: 'https://mau.test/v1' }), true);
+  assert.equal(ctx.motorBloqueadoPelaPolitica({ nome: 'autorizado', base: 'https://api.exemplo.test/v1' }), false);
+  assert.equal(ctx.motorBloqueadoPelaPolitica({ nome: 'mesmo host', base: 'https://reboclbrank-max.github.io/v1' }), false);
+  assert.equal(ctx.motorBloqueadoPelaPolitica({ nome: 'relativo', base: '/v1' }), false);
+  // Sem base, o laço chamaria a própria página ('self', autorizada): quem classifica é o fetch.
+  assert.equal(ctx.motorBloqueadoPelaPolitica({ nome: 'sem base' }), false);
+  assert.equal(ctx.motorBloqueadoPelaPolitica(null), false);
+});
+
+ok('sem política explícita nada é bloqueado pelo cliente', () => {
+  const ctx = politicaNoNavegador(ler('index.html'), { semMeta: true });
+  assert.equal(ctx.motorBloqueadoPelaPolitica({ nome: 'qualquer', base: 'https://outro.test/v1' }), false);
+});
+
+ok('as quatro rotas pulam o motor bloqueado antes do fetch', () => {
+  for (const rota of ['index.html', 'direto.html', 'ligar.html', 'limpar.html']) {
+    const html = ler(rota);
+    assert((html.match(/function motorBloqueadoPelaPolitica\(motor\)/g) || []).length === 1, rota + ': guarda ausente ou duplicada');
+    const guarda = html.indexOf("if (motorBloqueadoPelaPolitica(m)) { diagnosticoFalha(m, 'politica', 0); continue; }");
+    assert(guarda > 0, rota + ': guarda da política não está no laço');
+    // A guarda precisa estar dentro do laço de motores, antes do fetch daquele motor.
+    const laco = html.indexOf('for (const m of ouroFiltrado())');
+    assert(laco > 0 && laco < guarda, rota + ': guarda fora do laço de motores');
+    const trechoLaco = html.slice(laco, html.indexOf('function ', guarda));
+    const fetchNoLaco = trechoLaco.indexOf("fetch(m.base + '/chat/completions'");
+    assert(fetchNoLaco > trechoLaco.indexOf('motorBloqueadoPelaPolitica(m)'), rota + ': guarda precisa vir antes da chamada de rede');
+    assert(fetchNoLaco > 0, rota + ': laço sem chamada de motor — contrato quebrou');
+    // a guarda não pode custar rede: só lê a meta e compara host
+    const trecho = html.slice(html.indexOf('function hostsDaPoliticaDaPagina'), html.indexOf('function listaSegura'));
+    assert(!/fetch\(|XMLHttpRequest|sendBeacon/.test(trecho), rota + ': a checagem de política não pode abrir rede');
+  }
+});
+
 console.log('\n' + (falhas ? '✘ ' : '✔ ') + certos + '/' + (certos + falhas) + ' testes do diagnóstico de motores passaram');
 process.exitCode = falhas ? 1 : 0;
