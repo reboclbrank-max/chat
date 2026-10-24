@@ -134,11 +134,16 @@ ok('política não abre exceção por domínio inteiro sem necessidade', () => {
   }
 });
 
-ok('a CSP documenta frame-ancestors sem prometer o que meta não entrega', () => {
+ok('frame-ancestors fica fora da meta e o motivo está documentado', () => {
+  // O navegador ignora `frame-ancestors` entregue por <meta> e ainda registra um erro de
+  // segurança no console em toda carga. Por isso a diretiva saiu da meta: quem protege
+  // contra enquadramento é cabeçalho HTTP, que o Pages não envia para a casca estática.
   const continuidade = ler('CONTINUIDADE.md');
-  assert(/frame-ancestors/.test(politica(ler('index.html'))), 'diretiva ausente');
-  assert(/frame-ancestors/.test(continuidade), 'a continuidade precisa registrar que frame-ancestors em meta é ignorado pelo navegador');
-  assert(/não substitui cabeçalho/.test(continuidade) || /não vale como cabeçalho/.test(continuidade), 'a continuidade precisa registrar o limite da meta');
+  for (const rota of comCsp) {
+    assert(!/frame-ancestors/.test(politica(ler(rota))), rota + ': frame-ancestors voltou para a meta e gera erro no console');
+  }
+  assert(/frame-ancestors/.test(continuidade), 'a continuidade precisa registrar o motivo da ausência');
+  assert(/ignorad/i.test(continuidade), 'a continuidade precisa dizer que o navegador ignora a diretiva em meta');
 });
 
 console.log('\n' + (falhas ? '✘ ' : '✔ ') + certos + '/' + (certos + falhas) + ' testes de CSP passaram');
