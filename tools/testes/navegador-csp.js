@@ -13,7 +13,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 // Chromium, servidor efêmero e cliente CDP vêm do módulo compartilhado com a medição de cobertura.
-const { chromium, webSocketDisponivel, servir, conectar, esperar, porta: portaLivre } = require('./cdp');
+const { chromium, webSocketDisponivel, servir, conectar, esperar, abrirNavegador, matarEClarear, porta: portaLivre } = require('./cdp');
 
 const raiz = path.resolve(__dirname, '../..');
 const ROTAS = ['index.html', 'direto.html', 'ligar.html', 'limpar.html'];
@@ -53,33 +53,12 @@ async function principal() {
   const portaCdp = porta + 400;
   const servidor = await servir(porta);
   const perfil = fs.mkdtempSync(path.join(os.tmpdir(), 'csp-perfil-'));
-  const navegador = spawn(bin, [
-    '--headless=new',
-    '--remote-debugging-port=' + portaCdp,
-    '--user-data-dir=' + perfil,
-    '--no-sandbox',
-    '--disable-gpu',
-    '--no-first-run',
-    '--disable-extensions',
-    'about:blank'
-  ], { stdio: 'ignore' });
-  const encerrar = () => {
-    try { navegador.kill('SIGKILL'); } catch (e) {}
-    try { servidor.close(); } catch (e) {}
-    // O navegador pode continuar gravando o perfil por alguns instantes; a limpeza é best-effort.
-    try { fs.rmSync(perfil, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); } catch (e) {}
-  };
+  let navegador = null;
+  const encerrar = () => matarEClarear(navegador, perfil, servidor);
   try {
-    let alvo = null;
-    for (let i = 0; i < 60 && !alvo; i++) {
-      await esperar(200);
-      try {
-        const lista = await fetch('http://127.0.0.1:' + portaCdp + '/json/list').then((r) => r.json());
-        alvo = lista.find((t) => t.type === 'page' && t.webSocketDebuggerUrl);
-      } catch (e) {}
-    }
-    if (!alvo) throw new Error('navegador não abriu porta de depuração');
-    const cdp = conectar(alvo.webSocketDebuggerUrl);
+    const aberto = await abrirNavegador({ bin, portaCdp, perfil });
+    navegador = aberto.navegador;
+    const cdp = conectar(aberto.alvo.webSocketDebuggerUrl);
     await cdp.pronto;
     await cdp.enviar('Runtime.enable');
     await cdp.enviar('Log.enable');

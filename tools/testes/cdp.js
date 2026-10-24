@@ -111,43 +111,74 @@ function esperar(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+// Flags comuns. `--disable-dev-shm-usage` existe porque em contêiner (é o caso do runner da CI)
+// o /dev/shm pequeno trava o Chrome antes de ele abrir a porta de depuração.
+const FLAGS_BASE = [
+  '--headless=new',
+  '--no-sandbox',
+  '--disable-setuid-sandbox',
+  '--disable-dev-shm-usage',
+  '--disable-gpu',
+  '--no-first-run',
+  '--disable-extensions',
+  '--disable-background-networking',
+  '--no-default-browser-check'
+];
+
 // Sobe o navegador headless com perfil descartável e devolve o alvo já conectado.
-async function abrirNavegador({ bin, portaCdp, perfil }) {
-  const navegador = spawn(bin, [
-    '--headless=new',
-    '--remote-debugging-port=' + portaCdp,
-    '--user-data-dir=' + perfil,
-    '--no-sandbox',
-    '--disable-gpu',
-    '--no-first-run',
-    '--disable-extensions',
-    '--disable-background-networking',
-    'about:blank'
-  ], { stdio: 'ignore' });
-  let alvo = null;
-  for (let i = 0; i < 80 && !alvo; i++) {
-    await esperar(200);
-    try {
-      const lista = await fetch('http://127.0.0.1:' + portaCdp + '/json/list').then((r) => r.json());
-      alvo = lista.find((t) => t.type === 'page' && t.webSocketDebuggerUrl);
-    } catch (e) {}
-  }
-  if (!alvo) {
+// O stderr vai para arquivo: quando o navegador não abre, a mensagem diz por quê em vez de
+// só informar que a porta não apareceu (foi assim que a CI de 24/10 falhou às escuras).
+async function abrirNavegador({ bin, portaCdp, perfil, tentativas = 2 }) {
+  const erroLog = path.join(os.tmpdir(), 'navegador-stderr-' + process.pid + '.log');
+  let ultimoErro = '';
+  for (let tentativa = 1; tentativa <= tentativas; tentativa++) {
+    const fd = fs.openSync(erroLog, 'w');
+    const navegador = spawn(bin, FLAGS_BASE.concat([
+      '--remote-debugging-port=' + portaCdp,
+      '--user-data-dir=' + perfil + '-nav',
+      'about:blank'
+    ]), { stdio: ['ignore', fd, fd] });
+    fs.closeSync(fd);
+    let alvo = null;
+    for (let i = 0; i < 100 && !alvo; i++) {
+      await esperar(200);
+      try {
+        const lista = await fetch('http://127.0.0.1:' + portaCdp + '/json/list').then((r) => r.json());
+        alvo = lista.find((t) => t.type === 'page' && t.webSocketDebuggerUrl);
+      } catch (e) {}
+      if (navegador.exitCode !== null && navegador.exitCode !== 0) break;
+    }
+    if (alvo) return { navegador, alvo, erroLog };
     try { navegador.kill('SIGKILL'); } catch (e) {}
-    throw new Error('navegador não abriu porta de depuração');
+    ultimoErro = lerFinal(erroLog);
   }
-  return { navegador, alvo };
+  throw new Error('navegador não abriu porta de depuração' + (ultimoErro ? ' — ' + ultimoErro : ''));
+}
+
+function lerFinal(arquivo, limite = 3) {
+  try {
+    const linhas = fs.readFileSync(arquivo, 'utf8').split('\n').map((l) => l.trim()).filter(Boolean);
+    return linhas.slice(-limite).join(' | ').slice(0, 400);
+  } catch (e) {
+    return '';
+  }
 }
 
 function perfilTemporario(prefixo) {
   return fs.mkdtempSync(path.join(os.tmpdir(), prefixo));
 }
 
+function apagarCaminho(caminho) {
+  try { fs.rmSync(caminho, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); } catch (e) {}
+}
+
 function matarEClarear(navegador, perfil, servidor) {
   try { navegador.kill('SIGKILL'); } catch (e) {}
   if (servidor) { try { servidor.close(); } catch (e) {} }
   // O navegador pode continuar gravando o perfil por alguns instantes; a limpeza é best-effort.
-  try { fs.rmSync(perfil, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); } catch (e) {}
+  apagarCaminho(perfil);
+  apagarCaminho(perfil + '-nav');
+  try { fs.unlinkSync(path.join(os.tmpdir(), 'navegador-stderr-' + process.pid + '.log')); } catch (e) {}
 }
 
 function porta(n) {
@@ -155,6 +186,8 @@ function porta(n) {
 }
 
 module.exports = {
+  FLAGS_BASE,
+  lerFinal,
   RAIZ,
   TIPOS,
   chromium,
@@ -165,5 +198,6 @@ module.exports = {
   abrirNavegador,
   perfilTemporario,
   matarEClarear,
-  porta
+  porta,
+  apagarCaminho
 };

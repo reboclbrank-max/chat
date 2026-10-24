@@ -20,7 +20,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { spawn } = require('child_process');
-const { chromium, webSocketDisponivel, servir, conectar, esperar, porta: portaLivre } = require('./testes/cdp');
+const { chromium, webSocketDisponivel, servir, conectar, esperar, abrirNavegador, matarEClarear, porta: portaLivre } = require('./testes/cdp');
 
 const RAIZ = path.resolve(__dirname, '..');
 const ROTAS = ['index.html', 'direto.html', 'ligar.html', 'limpar.html'];
@@ -140,33 +140,12 @@ async function principal(argv) {
   const portaCdp = porta + 400;
   const servidor = await servir(porta, RAIZ);
   const perfil = fs.mkdtempSync(path.join(os.tmpdir(), 'cob-perfil-'));
-  const navegador = spawn(bin, [
-    '--headless=new',
-    '--remote-debugging-port=' + portaCdp,
-    '--user-data-dir=' + perfil,
-    '--no-sandbox',
-    '--disable-gpu',
-    '--no-first-run',
-    '--disable-extensions',
-    '--disable-background-networking',
-    'about:blank'
-  ], { stdio: 'ignore' });
-  const limpar = () => {
-    try { navegador.kill('SIGKILL'); } catch (e) {}
-    try { servidor.close(); } catch (e) {}
-    try { fs.rmSync(perfil, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); } catch (e) {}
-  };
+  let navegador = null;
+  const limpar = () => matarEClarear(navegador, perfil, servidor);
   try {
-    let alvo = null;
-    for (let i = 0; i < 80 && !alvo; i++) {
-      await esperar(200);
-      try {
-        const lista = await fetch('http://127.0.0.1:' + portaCdp + '/json/list').then((r) => r.json());
-        alvo = lista.find((t) => t.type === 'page' && t.webSocketDebuggerUrl);
-      } catch (e) {}
-    }
-    if (!alvo) throw new Error('navegador não abriu porta de depuração');
-    const cdp = conectar(alvo.webSocketDebuggerUrl);
+    const aberto = await abrirNavegador({ bin, portaCdp, perfil });
+    navegador = aberto.navegador;
+    const cdp = conectar(aberto.alvo.webSocketDebuggerUrl);
     await cdp.pronto;
     await cdp.enviar('Runtime.enable');
     await cdp.enviar('Page.enable');
