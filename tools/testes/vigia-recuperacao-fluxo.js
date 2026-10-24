@@ -115,6 +115,17 @@ async function executa(estadoInicial, configuracao = {}) {
   assert.equal(execucaoFalha.escritos[0].itens['Chat por e-mail (24h)'].causa, 'execucao-falhou');
   assert.equal(Object.prototype.hasOwnProperty.call(execucaoFalha.escritos[0], 'recuperacoes'), false);
 
+  const duplicados = await executa(inicial, {
+    emailRuns: [
+      { status: 'in_progress', created_at: new Date().toISOString() },
+      { status: 'in_progress', created_at: new Date().toISOString() }
+    ]
+  });
+  assert.equal(duplicados.dispatches.length, 0, 'turnos duplicados não são cancelados, reiniciados ou substituídos');
+  assert.equal(duplicados.escritos[0].itens['Chat por e-mail (24h)'].causa, 'turnos-duplicados');
+  assert.equal(Object.prototype.hasOwnProperty.call(duplicados.escritos[0], 'recuperacoes'), false,
+    'duplicidade não entra na família automática de recuperação');
+
   const apiIndisponivel = await executa(inicial, { falhaApiEmail: true });
   assert.equal(apiIndisponivel.dispatches.length, 0, 'API indisponível não autoriza dispatch às cegas');
   assert.equal(apiIndisponivel.escritos[0].itens['Chat por e-mail (24h)'].causa, 'api-indisponivel');

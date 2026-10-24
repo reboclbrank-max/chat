@@ -28,7 +28,7 @@ function confere(nome, condicao) {
   await t('ajuda: lista feriado: e cep:', 'comandos', /feriado:|cep:/);
   await t('ajuda: lista navegar:', 'ajuda', /navegar:/);
   await t('ajuda: lista trabalho:', 'ajuda', /trabalho:/);
-  await t('trabalho: explica rotina sem depender de motor', 'trabalho:', /Trabalho da casa[\s\S]*nada obrigatório[\s\S]*status:/i);
+  await t('trabalho: explica foco sem depender de motor', 'trabalho:', /Trabalho da casa[\s\S]*automação segura, capacidade verificável e marketing autorizado[\s\S]*nada obrigatório[\s\S]*status:/i);
   await t('prioridades: também abre o roteiro', 'prioridades:', /Próximo passo automático/i);
   await t('ajuda: lista divisas, capital e região:', 'ajuda', /divisas:.*capital:.*região:/s);
   await t('divisas: Bahia responde localmente', 'divisas: Bahia', /Bahia.*8 unidade/);
@@ -72,6 +72,12 @@ function confere(nome, condicao) {
     itens: { 'Bateria do cérebro': { ok: false, causa: 'bateria-atrasada' } }
   }, agoraStatus);
   confere('status causal: bateria atrasada preserva recuperação elegível', resumoBateriaAtrasada.includes('bateria atrasada — recuperação interna elegível'));
+  const resumoDuplicado = CHAT.resumoEstadoVigiaPublico({
+    verificado_em: '2026-10-19T12:00:00.000Z',
+    itens: { 'Chat por e-mail (24h)': { ok: false, causa: 'turnos-duplicados' } }
+  }, agoraStatus);
+  confere('status causal: duplicidade pede revisão e não promete recuperação',
+    resumoDuplicado.includes('mais de um turno ativo — revisão humana necessária') && !resumoDuplicado.includes('recuperação interna elegível'));
   const resumoHostil = CHAT.resumoEstadoVigiaPublico({
     verificado_em: 'DADO-ARBITRARIO-NAO-REFLETIR',
     itens: {
@@ -127,6 +133,12 @@ function confere(nome, condicao) {
   await t('trabalho: não chama rede', 'trabalho:', /Plano operacional/i);
   confere('trabalho: roteiro local cabe no Telegram', CHAT.resumoTrabalhoDaCasa().split('\n').length <= 8);
   await t('operar: abre a Central sem rede nem motor', 'operar:', /Central segura do Chat[\s\S]*não executa texto livre/i);
+  await t('operar: automacao mapeia sem criar executor', 'operar: automacao', /canais, reserva, vigia, evolução e estado sanitizado[\s\S]*não cria cron, fila persistente, dispatch, retry nem executor genérico/i);
+  await t('operar: capacidade explica indicador e rastreabilidade sem prometer produto', 'operar: capacidade', /Indicador interno[\s\S]*rastreabilidade pendente[\s\S]*nem 100\/100 interno muda esse limite[\s\S]*não é QI, resultado de produto, alcance, satisfação ou SLA/i);
+  await t('operar: marketing conserva anti-spam sem publicação extra', 'operar: marketing', /fatos, cadência e anti-spam[\s\S]*não publica fora da rotina nem fabrica tráfego/i);
+  await t('Central compacta não cai no motor ou na rede por e-mail', 'operar:marketing', /Marketing:[\s\S]*não lê log, conta, alcance ou métrica externa/i);
+  await t('Central acentuada conserva a opção fechada por e-mail', 'operação: automação', /Automação:[\s\S]*não cria cron, fila persistente, dispatch, retry nem executor genérico/i);
+  await t('Central recompõe acento NFD sem abrir outro fluxo por e-mail', 'operac\u0327a\u0303o: automac\u0327a\u0303o', /Automação:[\s\S]*não cria cron, fila persistente, dispatch, retry nem executor genérico/i);
   await t('operar: repos mantém promoção bloqueada', 'operar: repos', /não edita nem promove código/i);
   await t('operar: texto livre não vira execução', 'operar: testes agora', /texto livre não é executado/i);
   await t('ajuda: lista a Central segura', 'ajuda', /operar:.*Central segura/i);

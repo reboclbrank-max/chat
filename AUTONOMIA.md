@@ -53,7 +53,7 @@ Mudanças que toquem esses pontos continuam exigindo revisão humana explícita,
 | Autonomia verificável | bateria, vigia e testes automatizados |
 | Pesquisa e criatividade aplicada | pesquisa com fonte, web isolada e experimentação |
 
-Ele é um painel operacional, não um teste de QI, consciência ou valor humano. Pontos baixos devem virar melhorias pequenas e mensuráveis; pontos altos não removem guardas nem provam disponibilidade real. A partir de 2026-10-17, a dimensão de qualidade pode usar o histórico sanitizado `qualidade-historico.json`: uma execução repetida da mesma amostra substitui a anterior e só há certificação rastreável após três amostras recentes distintas, 30 respostas e 20 questões diferentes. Assim, o placar não pode subir apenas por repetir a mesma bateria até sair um resultado favorável.
+Ele é um painel operacional, não um teste de QI, consciência ou valor humano. Pontos baixos devem virar melhorias pequenas e mensuráveis; pontos altos não removem guardas nem provam disponibilidade real. A partir de 2026-10-17, a dimensão de qualidade pode usar o histórico sanitizado `qualidade-historico.json`: uma execução repetida da mesma amostra substitui a anterior e só há certificação rastreável após três amostras recentes distintas, 30 respostas e 20 questões diferentes. Assim, o placar não pode subir apenas por repetir a mesma bateria até sair um resultado favorável. Quando esse mínimo ainda não existe, o relatório precisa declarar a rastreabilidade pendente e transformá-la em próxima melhoria; um `100/100` interno não é certificação rastreável nem resultado do produto.
 
 ## Navegador público isolado
 

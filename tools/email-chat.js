@@ -384,6 +384,7 @@ const CAUSAS_STATUS_CASA = Object.freeze({
   'postagem-atrasada': { texto: 'cadência do postador atrasada — sem recuperação automática', recuperavel: false },
   'api-indisponivel': { texto: 'sonda da API indisponível — sem ação cega', recuperavel: false },
   'fila-estagnada': { texto: 'fila sem executor — sem adicionar trabalho', recuperavel: false },
+  'turnos-duplicados': { texto: 'mais de um turno ativo — revisão humana necessária', recuperavel: false },
   'execucao-falhou': { texto: 'última execução falhou — sem reexecutar às cegas', recuperavel: false },
   'sonda-indisponivel': { texto: 'sonda limitada — sem ação automática', recuperavel: false }
 });
@@ -485,6 +486,7 @@ function resumoTrabalhoDaCasa() {
   return [
     '🧭 Trabalho da casa:',
     '• O Chat atende, vigia e mede pelos fluxos já configurados.',
+    '• Foco atual: automação segura, capacidade verificável e marketing autorizado, sem criar publicação extra.',
     '• O Site tem rotinas de marketing configuradas com cadência e anti-spam; observações são naturais.',
     '• Próximo passo automático: as rotinas existentes seguem seus gatilhos; registrar somente sinais verificáveis.',
     '• Para você: nada obrigatório. Use o Chat normalmente quando quiser.',
@@ -495,14 +497,15 @@ function resumoTrabalhoDaCasa() {
 
 async function ferramenta(corpo, retornoNavegacao) {
   const txt = String(corpo || '').trim();
-  // A Central usa o mesmo roteiro fechado da página: ela explica capacidades,
-  // mas não aceita tarefa livre, não abre transporte e não cria uma fila remota.
-  if (/^!?(?:operar|opera(?:ç(?:ões|ão)|c(?:oes|ao))|central)(?:\s*:)?(?:\s|$)/i.test(txt)) {
-    try {
-      const central = require('../chat-comandos-locais').respostaComandoOperacionalLocal(txt);
+  // A Central usa exatamente o mesmo prefixo fechado da página. O helper é puro:
+  // não abre transporte, não cria fila e evita que uma regex paralela descarte `operar:marketing`.
+  try {
+    const comandosLocais = require('../chat-comandos-locais');
+    if (comandosLocais.temPrefixoCentral(txt)) {
+      const central = comandosLocais.respostaComandoOperacionalLocal(txt);
       if (central) return central;
-    } catch (e) {}
-  }
+    }
+  } catch (e) {}
   if (/^!?ajuda$/i.test(txt) || txt.toLowerCase() === 'ajuda' || txt.toLowerCase() === 'comandos') return AJUDA;
   if (/^!?(?:trabalho|prioridades)$/i.test(txt)) return resumoTrabalhoDaCasa();
   // 🗺️ Consulta determinística local: não envia a pergunta ao motor nem à rede.

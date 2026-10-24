@@ -33,6 +33,7 @@ ok('roteiro local só reconhece os comandos exatos previstos', () => {
   for (const entrada of ['trabalho:', 'prioridades:', 'trabalho', '!prioridades']) {
     const saida = responder(entrada);
     assert.match(saida, /Trabalho da casa/);
+    assert.match(saida, /Foco atual: automação segura, capacidade verificável e marketing autorizado/i);
     assert.match(saida, /nada obrigatório/i);
     assert.match(saida, /status: por e-mail ou Telegram/i);
     assert.match(saida, /não promete entrega, alcance, uso, satisfação ou SLA/i);
@@ -44,13 +45,22 @@ ok('Central segura aceita somente mapa e opções fechadas', () => {
   vm.createContext(contexto);
   vm.runInContext(fonte, contexto);
   const responder = contexto.window.respostaComandoOperacionalLocal;
+  const contratoNode = require(path.join(raiz, 'chat-comandos-locais.js'));
+  const centralNfd = 'operac\u0327a\u0303o: automac\u0327a\u0303o';
+  assert.equal(contratoNode.temPrefixoCentral('operar:marketing'), true);
+  assert.equal(contratoNode.temPrefixoCentral('operação: automação'), true);
+  assert.equal(contratoNode.temPrefixoCentral(centralNfd), true);
+  assert.equal(contratoNode.temPrefixoCentral('operarmarketing'), false);
   for (const entrada of ['operar:', 'central:', '!operacoes', '!central']) {
     const saida = responder(entrada);
     assert.match(saida, /Central segura do Chat/);
+    assert.match(saida, /operar: automacao \| capacidade \| marketing/i);
     assert.match(saida, /não executa texto livre/i);
     assert.match(saida, /não promete entrega, uso, satisfação ou SLA/i);
   }
   const esperadas = {
+    automacao: /não cria cron, fila persistente, dispatch, retry nem executor genérico/i,
+    capacidade: /Indicador interno[\s\S]*rastreabilidade pendente[\s\S]*nem 100\/100 interno muda esse limite[\s\S]*não recalcula placar nem altera pesos/i,
     status: /Estado técnico/,
     pesquisa: /Pesquisa:/,
     navegador: /Navegador:/,
@@ -60,15 +70,22 @@ ok('Central segura aceita somente mapa e opções fechadas', () => {
     dossie: /!dossiechat/,
     reforco: /!reforcardossie/,
     repos: /não edita nem promove código/,
-    marketing: /não publica fora da rotina/,
+    marketing: /não publica fora da rotina[\s\S]*aceite técnico\/candidata não prova publicação, entrega, clique ou conversão/i,
     limites: /não há executor genérico/
   };
   for (const [opcao, re] of Object.entries(esperadas)) assert.match(responder('operar: ' + opcao), re, opcao);
   assert.match(responder('operações: repos'), /Repositórios/);
   assert.match(responder('operacoes: limites'), /executor genérico/);
+  assert.match(responder('operar marketing'), /Marketing:[\s\S]*não lê log, conta, alcance ou métrica externa/i);
+  assert.match(responder('operar:marketing'), /Marketing:/);
+  assert.match(responder('central capacidade'), /Capacidade:[\s\S]*rastreabilidade pendente/i);
+  assert.match(responder('operação: automação'), /Automação:[\s\S]*não cria cron/i);
+  assert.match(responder(centralNfd), /Automação:[\s\S]*não cria cron/i);
+  assert.match(responder('operar automações'), /Opção não reconhecida/);
   assert.match(responder('operar: shell'), /Opção não reconhecida/);
   assert.match(responder('operar: testes agora'), /texto livre não é executado/);
   assert.match(responder('operação: testes'), /!testarchat/);
+  assert.equal(responder('operarmarketing'), '');
   for (const entrada of ['opere: testes', 'centralizar: testes']) assert.equal(responder(entrada), '');
 });
 ok('roteiro local executável não contém transporte, segredo ou armazenamento', () => {
@@ -179,11 +196,11 @@ ok('chip visual oferece o roteiro local sem agendar rascunho ou escrita', () => 
   }
 });
 
-ok('casca PWA v88 inclui os ativos locais e a porta de continuidade o observa', () => {
+ok('casca PWA v94 inclui os ativos locais e a porta de continuidade o observa', () => {
   const sw = ler('sw.js');
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v88/);
+  assert.match(sw, /rebocl-chat-v94/);
   assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);
   assert.match(sw, /'\.\/chat-organizacao-local\.js'/);

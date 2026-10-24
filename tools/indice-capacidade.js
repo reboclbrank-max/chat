@@ -165,6 +165,13 @@ function avaliar(entrada = {}) {
   const total = dimensoes.reduce((s, d) => s + d.pontos, 0);
   const proximas = dimensoes.filter(d => d.pontos < d.maximo).sort((a, b) => (a.pontos / a.maximo) - (b.pontos / b.maximo)).slice(0, 3)
     .map(d => `${d.nome}: ${d.comoMelhorar}`);
+  // A nota legada pode cobrir a dimensão de qualidade enquanto o histórico rico
+  // ainda não alcançou a certificação rastreável. Não deixar um 100 interno
+  // esconder essa diferença: ela vira uma próxima melhoria explícita, sem mudar
+  // pesos, executar bateria extra ou fingir resultado do produto.
+  if (!rastreavel.valida) proximas.unshift(
+    `rastreabilidade da qualidade: completar 3 amostras recentes distintas, 30 respostas e 20 questões; fotografia atual: ${rastreavel.amostras} amostra(s), ${rastreavel.respostas} resposta(s), ${rastreavel.cobertura} questão(ões). O 100/100 interno não certifica essa rastreabilidade.`
+  );
   return {
     esquema: 'placar-capacidade-v2',
     gerado_em: referencia,
@@ -205,8 +212,14 @@ function markdown(placar) {
     '| Dimensão | Pontos | Evidência |', '|---|---:|---|'
   ];
   for (const d of placar.dimensoes) linhas.push(`| ${d.nome} | ${d.pontos}/${d.maximo} | ${d.evidencia} |`);
-  if (placar.sinais && placar.sinais.qualidade_rastreavel) linhas.push('', `Medição de qualidade: ${placar.sinais.respostas_auditadas} respostas auditadas em ${placar.sinais.cobertura_questoes} questões distintas.`);
-  linhas.push('', '## Próximas melhorias guiadas por sinal', ...placar.proximas_melhorias.map(x => '- ' + x), '', '## Limites honestos', ...placar.limites.map(x => '- ' + x), '');
+  if (placar.sinais && placar.sinais.qualidade_rastreavel) {
+    linhas.push('', `Medição de qualidade rastreável: ${placar.sinais.respostas_auditadas} respostas auditadas em ${placar.sinais.cobertura_questoes} questões distintas.`);
+  } else if (placar.sinais) {
+    linhas.push('', `Rastreabilidade da qualidade: ainda não certificada (${placar.sinais.baterias || 0} amostra(s), ${placar.sinais.respostas_auditadas || 0} resposta(s), ${placar.sinais.cobertura_questoes || 0} questão(ões)). A nota interna não vira certificação rastreável nem resultado do produto.`);
+  }
+  const proximas = Array.isArray(placar.proximas_melhorias) ? placar.proximas_melhorias : [];
+  const semPendencia = 'Nenhum déficit técnico identificado no escopo do indicador; manter coleta, guardas e os limites honestos. Isso não prova resultado do produto.';
+  linhas.push('', '## Próximas melhorias guiadas por sinal', ...(proximas.length ? proximas.map(x => '- ' + x) : ['- ' + semPendencia]), '', '## Limites honestos', ...placar.limites.map(x => '- ' + x), '');
   return linhas.join('\n');
 }
 

@@ -222,10 +222,22 @@ testa('a allowlist da Central tem paridade byte-a-byte nas quatro rotas', () => 
 
 testa('e-mail e Telegram usam o mesmo roteiro fechado sem criar transporte novo', () => {
   const email = ler('tools/email-chat.js');
-  assert.match(email, /require\('\.\.\/chat-comandos-locais'\)\.respostaComandoOperacionalLocal\(txt\)/);
+  const telegram = ler('tools/telegram-chat.js');
+  assert.match(email, /const comandosLocais = require\('\.\.\/chat-comandos-locais'\)/);
+  assert.match(email, /comandosLocais\.temPrefixoCentral\(txt\)/);
+  assert.match(email, /comandosLocais\.respostaComandoOperacionalLocal\(txt\)/);
   assert.match(email, /Central segura: capacidades atuais, testes e limites; não executa texto livre/);
+  assert.match(telegram, /await chat\.ferramenta\(texto, \{ canal: 'telegram', para: String\(chatId\), msgId: String\(m\.message_id\) \}\)/);
+  const locais = ler('chat-comandos-locais.js');
+  for (const opcao of ['automacao', 'capacidade', 'marketing']) assert.match(locais, new RegExp(opcao + ':'));
+  assert.match(locais, /não cria cron, fila persistente, dispatch, retry nem executor genérico/);
+  assert.match(locais, /rastreabilidade pendente, o histórico ainda não certifica a qualidade/);
+  assert.match(locais, /nem 100\/100 interno muda esse limite/);
+  assert.match(locais, /Não é QI, resultado de produto, alcance, satisfação ou SLA/);
+  assert.match(locais, /não publica fora da rotina nem fabrica tráfego/);
   const ponte = entre(email, 'async function ferramenta(corpo, retornoNavegacao) {', "  if (/^!?ajuda$/i.test(txt)");
-  assert.match(ponte, /operar/);
+  assert.match(ponte, /temPrefixoCentral/);
+  assert.doesNotMatch(ponte, /\^!\?\(\?:operar/);
   assert.doesNotMatch(ponte, /fetch\s*\(|workflow_dispatch|api\.github|child_process/);
 });
 
@@ -240,6 +252,11 @@ testa('contrato e política deixam a receita, revisão e rollback explícitos', 
   assert.match(contrato, /!dossiechat/);
   assert.match(contrato, /!reforcardossie/);
   assert.match(contrato, /!statuscentral/);
+  assert.match(contrato, /`operar: automacao`/);
+  assert.match(contrato, /`operar: capacidade`/);
+  assert.match(contrato, /`operar: marketing`/);
+  assert.match(contrato, /não cria cron, fila, dispatch, retry ou executor genérico/);
+  assert.match(contrato, /não calcula placar, muda peso ou promete produto\/SLA/);
   assert.match(contrato, /execução real[^\n]*!testarchat|!testarchat[^\n]*execução real/);
   assert.match(contrato, /Não houve dispatch real de `!prepararchat`, `!dossiechat` ou `!reforcardossie`/);
   assert.match(contrato, /Rollback/);
@@ -259,7 +276,7 @@ testa('contrato e política deixam a receita, revisão e rollback explícitos', 
 
 testa('a casca atualizada entrega o mapa local sob escolha explícita', () => {
   const sw = ler('sw.js');
-  assert.match(sw, /rebocl-chat-v88/);
+  assert.match(sw, /rebocl-chat-v94/);
   assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
 });
 

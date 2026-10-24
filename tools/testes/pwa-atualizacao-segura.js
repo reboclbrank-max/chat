@@ -87,7 +87,7 @@ testa('cliente compartilhado é precacheado e observado pela barreira de continu
   const sw = fonte('sw.js');
   const workflow = fonte('.github/workflows/testes-rapidos.yml');
   const continuidade = fonte('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v88/);
+  assert.match(sw, /rebocl-chat-v94/);
   assert.match(sw, /'\.\/chat-pwa\.js'/);
   assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);
@@ -111,11 +111,11 @@ testa('cliente compartilhado é precacheado e observado pela barreira de continu
   } finally { fs.rmSync(pasta, { recursive: true, force: true }); }
 });
 
-testa('service worker v88 instala sem se ativar sozinho', () => {
+testa('service worker v94 instala sem se ativar sozinho', () => {
   const sw = fonte('sw.js');
   const instalacao = trecho(sw, "self.addEventListener('install'", "self.addEventListener('message'");
   const mensagem = trecho(sw, "self.addEventListener('message'", "self.addEventListener('activate'");
-  assert.match(sw, /rebocl-chat-v88/);
+  assert.match(sw, /rebocl-chat-v94/);
   assert.match(sw, /'\.\/chat-pwa\.js'/);
   assert.match(sw, /'\.\/chat-colecoes-local\.js'/);
   assert.match(sw, /'\.\/chat-workspace\.js'/);
@@ -125,7 +125,50 @@ testa('service worker v88 instala sem se ativar sozinho', () => {
   assert.match(sw, /requisicao\.method !== 'GET'/);
   assert.match(sw, /url\.search/);
   assert.match(sw, /cache: 'no-store'/);
+  assert.match(sw, /requisicao\.mode === 'navigate'/);
+  assert.match(sw, /Response\.error\(\)/);
 });
+
+function runtimeWorker(opcoes = {}) {
+  const ouvintes = {};
+  const acessos = { fetches: 0, matches: [] };
+  const respostas = new Map(Object.entries(opcoes.cache || {}));
+  const chave = (valor) => typeof valor === 'string' ? valor : valor && valor.url;
+  const contexto = {
+    Promise, Set, URL,
+    self: {
+      location: { href: 'https://chat.exemplo.test/chat/sw.js', origin: 'https://chat.exemplo.test' },
+      addEventListener: (tipo, fn) => { ouvintes[tipo] = fn; },
+      skipWaiting() {},
+      clients: { claim() {} }
+    },
+    fetch: (requisicao, opcoesFetch) => {
+      acessos.fetches++;
+      return opcoes.fetch ? opcoes.fetch(requisicao, opcoesFetch) : Promise.reject(new Error('rede inerte'));
+    },
+    caches: {
+      open: () => Promise.resolve({ addAll() {}, put() {} }),
+      keys: () => Promise.resolve([]),
+      delete: () => Promise.resolve(true),
+      match: (valor) => {
+        const id = chave(valor);
+        acessos.matches.push(id);
+        return Promise.resolve(respostas.get(id));
+      }
+    },
+    Response: { error: () => ({ erro: 'rede' }) }
+  };
+  vm.createContext(contexto);
+  vm.runInContext(fonte('sw.js'), contexto);
+  return {
+    acessos,
+    dispararFetch(requisicao) {
+      let promessa;
+      ouvintes.fetch({ request: requisicao, respondWith: (valor) => { promessa = Promise.resolve(valor); } });
+      return promessa;
+    }
+  };
+}
 
 function runtimeApi(html, fetchFalso) {
   const contexto = {
@@ -194,6 +237,27 @@ function runtimePwa(opcoes = {}) {
   }));
 }
 async function principal() {
+  await testaAsync('worker usa a página inicial somente para navegação offline', async () => {
+    const pagina = { tipo: 'html-inicial' };
+    const worker = runtimeWorker({ cache: { './index.html': pagina } });
+    const resposta = await worker.dispararFetch({
+      method: 'GET', mode: 'navigate', url: 'https://chat.exemplo.test/chat/direto.html'
+    });
+    assert.strictEqual(resposta, pagina);
+    assert.deepEqual(worker.acessos.matches, ['https://chat.exemplo.test/chat/direto.html', './index.html']);
+  });
+  await testaAsync('worker conserva ativo cacheado e nunca devolve HTML para ativo ausente', async () => {
+    const ativo = { tipo: 'css-cacheado' };
+    const urlAtivo = 'https://chat.exemplo.test/chat/chat-estilos.css';
+    const comCache = runtimeWorker({ cache: { [urlAtivo]: ativo } });
+    assert.strictEqual(await comCache.dispararFetch({ method: 'GET', mode: 'no-cors', url: urlAtivo }), ativo);
+    assert.deepEqual(comCache.acessos.matches, [urlAtivo]);
+
+    const semCache = runtimeWorker({ cache: { './index.html': { tipo: 'html-inicial' } } });
+    const resposta = await semCache.dispararFetch({ method: 'GET', mode: 'no-cors', url: urlAtivo });
+    assert.deepEqual(resposta, { erro: 'rede' });
+    assert.deepEqual(semCache.acessos.matches, [urlAtivo], 'ativo ausente não consulta nem recebe index.html');
+  });
   await testaAsync('cliente externo só recarrega depois da escolha e da confirmação do worker', async () => {
     const r = await runtimePwa();
     assert.deepEqual(r.chamadaRegistro, { url: 'sw.js', opcoes: { updateViaCache: 'none' } });

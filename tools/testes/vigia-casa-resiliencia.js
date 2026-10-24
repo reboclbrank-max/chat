@@ -53,9 +53,11 @@ ok('recuperação automática tem freio persistido e não faz rajada do mesmo tu
   assert.match(fonte, /Math\.min\(2, \(prev\.falhas \|\| 0\) \+ 1\)/);
   assert(!/cura\.push\(await acao/.test(fonte), 'não deve despachar sem passar pelo freio');
 });
-ok('vigia novo não normaliza uma fila como sucessor planejado', () => {
+ok('vigia novo não normaliza fila nem cancela turno duplicado automaticamente', () => {
   assert.doesNotMatch(fonte, /turno-ativo-com-sucessor/, 'o vigia ainda declara sucessor pré-enfileirado como estado normal');
   assert.match(fonte, /falhaVigia\('fila-estagnada'/, 'fila sem executor perdeu o alerta explícito');
+  assert.match(fonte, /falhaVigia\('turnos-duplicados'/, 'duplicidade não recebeu causa sanitizada');
+  assert.doesNotMatch(fonte, /actions\/runs\/.*\/cancel|method:\s*'POST'[^\n]*\/cancel/, 'vigia não pode cancelar execução automaticamente');
 });
 
 ok('diagnóstico sanitizado só recupera ausência/atraso comprovados', () => {

@@ -6,6 +6,7 @@
   const ROTEIRO_TRABALHO = Object.freeze([
     '🧭 Trabalho da casa:',
     '• O Chat atende, vigia e mede pelos fluxos já configurados.',
+    '• Foco atual: automação segura, capacidade verificável e marketing autorizado, sem criar publicação extra.',
     '• O Site tem rotinas de marketing configuradas com cadência e anti-spam; observações são naturais.',
     '• Próximo passo automático: as rotinas existentes seguem seus gatilhos; registrar somente sinais verificáveis.',
     '• Para você: nada obrigatório. Use o Chat normalmente quando quiser.',
@@ -16,6 +17,7 @@
   const ROTEIRO_CENTRAL = Object.freeze([
     '⚙️ Central segura do Chat:',
     '• Já concentra conversa, Workspace local, lembretes, pesquisa pública, navegador isolado, estado e rotinas configuradas.',
+    '• Automação e capacidade: o mapa fechado explica os fluxos já aprovados e seus sinais; não cria cron, fila ou executor genérico.',
     '• Testes: !testarchat pede somente a barreira aprovada do Chat; não altera código, segredos nem a branch principal.',
     '• Status da barreira: !statuscentral apenas lê o estado fechado mais recente de !testarchat; não pede execução, retry, código, branch ou promoção.',
     '• Preparo: !prepararchat pede somente uma auditoria interna fixa; ela decide se há base técnica para revisão, sem criar branch ou código.',
@@ -24,11 +26,13 @@
     '• Marketing permanece nas rotinas autorizadas do Site, com fatos e anti-spam; este roteiro não publica extra nem cria conta.',
     '• Próxima etapa: somente outra receita fechada, desenhada e revisada, poderia preparar outra mudança reversível; ainda não há promoção cega para a branch principal.',
     '• Dependem de configuração concreta: e-mail novo, contas, backup externo, identidade pública, credenciais, gasto e permissões.',
-    '• Use: operar: status | pesquisa | navegador | testes | statuscentral | preparo | dossie | reforco | repos | marketing | limites.',
+    '• Use: operar: automacao | capacidade | marketing | status | pesquisa | navegador | testes | statuscentral | preparo | dossie | reforco | repos | limites.',
     'ℹ️ Mapa local e fechado: não executa texto livre, não cria fila persistente e não promete entrega, uso, satisfação ou SLA.'
   ].join(NL));
 
   const DETALHES_CENTRAL = Object.freeze({
+    automacao: '⚙️ Automação: os fluxos já aprovados atendem canais, reserva, vigia, evolução e estado sanitizado. A Central só os mapeia: não cria cron, fila persistente, dispatch, retry nem executor genérico.',
+    capacidade: '📈 Capacidade: `CAPACIDADE.md` é indicador interno produzido pelo fluxo de evolução com sinais verificáveis. Se marcar rastreabilidade pendente, o histórico ainda não certifica a qualidade; nem 100/100 interno muda esse limite. Não é QI, resultado de produto, alcance, satisfação ou SLA; a Central não recalcula placar nem altera pesos.',
     status: '🩺 Estado técnico: use status: por e-mail ou Telegram. A Central não inventa telemetria nesta tela.',
     pesquisa: '🔎 Pesquisa: use pesquisa: <tema> por e-mail ou Telegram; fontes públicas continuam separadas de dados privados.',
     navegador: '🌐 Navegador: use navegar: <URL pública> por e-mail ou Telegram. A abertura continua isolada, sem login ou área privada.',
@@ -38,24 +42,47 @@
     dossie: '🧾 Dossiê: nesta interface, !dossiechat pede exclusivamente a receita fixa que primeiro executa cinco guardas e, só se passarem, pode criar um ramo novo com um único dossiê estático. Não aceita tarefa livre, não altera código, não abre PR e não promove main; revisão humana e apagar o ramo continuam obrigatórios.',
     reforco: '🛡️ Reforço: nesta interface, !reforcardossie pede somente `reforco_dossie_escopo_v1`. A receita tem catálogo de uma entrada, repositório/ref e três caminhos literais; ela valida a base e pode criar `central/reforco-dossie-<execução>` com um patch de workflow/teste e relatório sanitizado. Não recebe conversa, segredo, tarefa, caminho, patch ou comando livre; não cria PR, merge, tag, release ou promoção. Revisão humana e apagar o ramo continuam obrigatórios.',
     repos: '🧩 Repositórios: esta Central não edita nem promove código livre. !dossiechat pode criar somente um artefato estático no ramo reversível `central/dossie-preparo-<execução>`. A única receita de código 3A é !reforcardossie e só pode preparar os três caminhos literais em `central/reforco-dossie-<execução>`; qualquer outra mudança de código continua exigindo receita e revisão próprias.',
-    marketing: '📣 Marketing: a rotina autorizada vive no Site e preserva fatos, cadência e anti-spam. A Central não cria conta, não publica fora da rotina nem fabrica tráfego.',
+    marketing: '📣 Marketing: a rotina autorizada vive no Site e preserva fatos, cadência e anti-spam. A Central só explica a fronteira: não cria conta, não publica fora da rotina nem fabrica tráfego; não lê log, conta, alcance ou métrica externa, e aceite técnico/candidata não prova publicação, entrega, clique ou conversão.',
     limites: '🔒 Limites: não há executor genérico, terminal remoto, segredo, conta nova, backup externo, gasto, permissão ou identidade pública sem configuração e guarda próprias.'
   });
 
-  const PREFIXO_CENTRAL = /^!?(?:operar|opera(?:ç(?:ões|ão)|c(?:oes|ao))|central)(?:\s*:)?(?:\s|$)/i;
+  // Aceita apenas grafias fechadas. Espaço, dois-pontos e acento são ergonomia;
+  // qualquer texto além da opção continua no mapa, nunca vira instrução executável.
+  const ALIASES_OPCAO_CENTRAL = Object.freeze({
+    automacao: 'automacao', 'automação': 'automacao', capacidade: 'capacidade',
+    marketing: 'marketing', status: 'status', pesquisa: 'pesquisa',
+    navegador: 'navegador', testes: 'testes', statuscentral: 'statuscentral', preparo: 'preparo',
+    dossie: 'dossie', reforco: 'reforco', repos: 'repos', limites: 'limites'
+  });
+  const PREFIXO_CENTRAL = /^!?(?:operar|opera(?:ç(?:ões|ão)|c(?:oes|ao))|central)(?=\s|:|$)/i;
   const SO_CENTRAL = /^!?(?:operar|opera(?:ç(?:ões|ão)|c(?:oes|ao))|central):?$/i;
+  const OPCAO_CENTRAL_FECHADA = /^!?(?:operar|opera(?:ç(?:ões|ão)|c(?:oes|ao))|central)(?:\s*:\s*|\s+)([a-zÀ-ÿ]+)\s*$/i;
 
-  function respostaComandoOperacionalLocal(entrada) {
+  // NFC só recompõe a mesma grafia Unicode (por exemplo, acento digitado em duas
+  // code units); não remove acento, não aproxima palavras nem cria aliases novos.
+  function textoCentralCanonico(entrada) {
     const texto = String(entrada || '').trim();
-    if (/^!?(?:trabalho|prioridades):?$/i.test(texto)) return ROTEIRO_TRABALHO;
-    if (SO_CENTRAL.test(texto)) return ROTEIRO_CENTRAL;
-    if (!PREFIXO_CENTRAL.test(texto)) return '';
-    const m = texto.match(/^!?(?:operar|opera(?:ç(?:ões|ão)|c(?:oes|ao))|central)\s*:\s*([a-z]+)\s*$/i);
-    if (!m) return ROTEIRO_CENTRAL + NL + 'Use uma opção fechada depois dos dois-pontos; texto livre não é executado.';
-    return DETALHES_CENTRAL[m[1].toLowerCase()] || ROTEIRO_CENTRAL + NL + 'Opção não reconhecida. Use uma das opções fechadas listadas acima.';
+    return typeof texto.normalize === 'function' ? texto.normalize('NFC') : texto;
   }
 
-  const contrato = Object.freeze({ respostaComandoOperacionalLocal, ROTEIRO_TRABALHO, ROTEIRO_CENTRAL });
+  // Exportado também para os canais: evita que uma segunda regex deixe uma grafia
+  // local passar ao fluxo normal. Reconhecer o prefixo não executa nada.
+  function temPrefixoCentral(entrada) {
+    return PREFIXO_CENTRAL.test(textoCentralCanonico(entrada));
+  }
+
+  function respostaComandoOperacionalLocal(entrada) {
+    const texto = textoCentralCanonico(entrada);
+    if (/^!?(?:trabalho|prioridades):?$/i.test(texto)) return ROTEIRO_TRABALHO;
+    if (SO_CENTRAL.test(texto)) return ROTEIRO_CENTRAL;
+    if (!temPrefixoCentral(texto)) return '';
+    const m = texto.match(OPCAO_CENTRAL_FECHADA);
+    if (!m) return ROTEIRO_CENTRAL + NL + 'Use uma opção fechada depois dos dois-pontos ou por espaço; texto livre não é executado.';
+    const opcao = ALIASES_OPCAO_CENTRAL[m[1].toLowerCase()];
+    return DETALHES_CENTRAL[opcao] || ROTEIRO_CENTRAL + NL + 'Opção não reconhecida. Use uma das opções fechadas listadas acima.';
+  }
+
+  const contrato = Object.freeze({ respostaComandoOperacionalLocal, temPrefixoCentral, ROTEIRO_TRABALHO, ROTEIRO_CENTRAL });
   if (typeof module === 'object' && module.exports) module.exports = contrato;
   if (raiz) raiz.respostaComandoOperacionalLocal = respostaComandoOperacionalLocal;
 }(typeof window === 'object' ? window : null));
