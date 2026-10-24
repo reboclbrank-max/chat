@@ -83,11 +83,26 @@ for (const rota of rotas) {
   });
 }
 
+testa('a versão da casca é única, coerente com o cache e registrada na continuidade', () => {
+  // Antes, a versão `rebocl-chat-vNN` estava fixa em dez arquivos de teste: cada
+  // incremento de casca exigia editar todos e o número podia divergir em silêncio.
+  // Agora existe uma única regra, aqui: sw.js declara uma versão, o cache usa a mesma
+  // e a continuidade registra a mesma. Bump sem registro volta a falhar.
+  const sw = fonte('sw.js');
+  const continuidade = fonte('CONTINUIDADE.md');
+  const versaoCasca = /CACHE\s*=\s*'rebocl-chat-v(\d+)'/.exec(sw);
+  assert(versaoCasca, 'sw.js não declara a versão do cache no formato esperado');
+  const numero = Number(versaoCasca[1]);
+  assert(Number.isInteger(numero) && numero >= 94, 'versão da casca regrediu: v' + versaoCasca[1]);
+  assert(new RegExp('Service worker v' + numero + '\\b').test(sw), 'comentário do worker não bate com o CACHE');
+  assert(new RegExp('rebocl-chat-v' + numero + '\\b').test(continuidade), 'continuidade não registra a casca v' + numero);
+});
+
 testa('cliente compartilhado é precacheado e observado pela barreira de continuidade', () => {
   const sw = fonte('sw.js');
   const workflow = fonte('.github/workflows/testes-rapidos.yml');
   const continuidade = fonte('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v94/);
+  assert.match(sw, /rebocl-chat-v\d+/);
   assert.match(sw, /'\.\/chat-pwa\.js'/);
   assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
   assert.match(sw, /'\.\/chat-filtro-chips\.js'/);
@@ -111,11 +126,11 @@ testa('cliente compartilhado é precacheado e observado pela barreira de continu
   } finally { fs.rmSync(pasta, { recursive: true, force: true }); }
 });
 
-testa('service worker v94 instala sem se ativar sozinho', () => {
+testa('service worker atual instala sem se ativar sozinho', () => {
   const sw = fonte('sw.js');
   const instalacao = trecho(sw, "self.addEventListener('install'", "self.addEventListener('message'");
   const mensagem = trecho(sw, "self.addEventListener('message'", "self.addEventListener('activate'");
-  assert.match(sw, /rebocl-chat-v94/);
+  assert.match(sw, /rebocl-chat-v\d+/);
   assert.match(sw, /'\.\/chat-pwa\.js'/);
   assert.match(sw, /'\.\/chat-colecoes-local\.js'/);
   assert.match(sw, /'\.\/chat-workspace\.js'/);

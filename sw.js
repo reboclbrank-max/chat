@@ -1,7 +1,7 @@
-/* Service worker v94 — casca estática versionada, nunca URL com consulta ou API. */
-const CACHE = 'rebocl-chat-v94';
+/* Service worker v95 — casca estática versionada, nunca URL com consulta ou API. */
+const CACHE = 'rebocl-chat-v95';
 const CASCA = [
-  './', './index.html', './direto.html', './ligar.html', './limpar.html', './console.html', './chat-estilos.css', './chat-pwa.js', './chat-comandos-locais.js', './chat-filtro-chips.js', './chat-organizacao-local.js', './chat-colecoes-local.js', './chat-workspace.js', './manifest.json',
+  './', './index.html', './direto.html', './ligar.html', './limpar.html', './console.html', './chat-estilos.css', './chat-pwa.js', './chat-comandos-locais.js', './chat-filtro-chips.js', './chat-organizacao-local.js', './chat-colecoes-local.js', './chat-workspace.js', './chat-diagnostico.js', './manifest.json',
   './icone-192.png', './icone-512.png'
 ];
 const ARQUIVOS_CACHEAVEIS = new Set(CASCA.map((caminho) => new URL(caminho, self.location.href).pathname));

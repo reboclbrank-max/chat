@@ -276,7 +276,7 @@ testa('contrato e política deixam a receita, revisão e rollback explícitos', 
 
 testa('a casca atualizada entrega o mapa local sob escolha explícita', () => {
   const sw = ler('sw.js');
-  assert.match(sw, /rebocl-chat-v94/);
+  assert.match(sw, /rebocl-chat-v\d+/);
   assert.match(sw, /'\.\/chat-comandos-locais\.js'/);
 });
 
