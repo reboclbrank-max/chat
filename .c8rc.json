@@ -1,0 +1,13 @@
+{
+  "include": [
+    "tools/**/*.js",
+    "chat-*.js",
+    "sw.js"
+  ],
+  "exclude": [
+    "tools/testes/**",
+    "**/node_modules/**"
+  ],
+  "reporter": ["text-summary"],
+  "all": false
+}

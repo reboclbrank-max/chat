@@ -9,14 +9,39 @@ const { comandoExecutavelDisponivel } = require('./pre-requisitos');
 const T = path.resolve(__dirname, '..');
 const CHAT = path.join(T, 'email-chat.js');
 let total = 0, falhas = 0, ignorados = 0;
+// 📊 Placar honesto (2026-10-24): nem todo teste aqui executa comportamento. Uma suíte que só
+// lê o arquivo e compara texto com regex é verificação ESTÁTICA — útil, mas não prova fluxo.
+// O placar separa os dois para ninguém confundir cobertura de contrato com cobertura de execução.
+const placar = {
+  estatica: { total: 0, falhas: 0 },
+  misto: { total: 0, falhas: 0 },
+  comportamento: { total: 0, falhas: 0 }
+};
+function classificaSuite(arquivo) {
+  let fonte = '';
+  try { fonte = fs.readFileSync(path.join(__dirname, arquivo), 'utf8'); } catch (e) { return 'misto'; }
+  const executaModulo = /require\(\s*['"]\.\.\/(?!testes)/.test(fonte) ||
+    /vm\.runInContext/.test(fonte) ||
+    /spawnSync\(\s*['"]node['"]\s*,\s*\[\s*[^\]]*CHAT/.test(fonte) ||
+    /spawnSync\(\s*['"]python3['"]/.test(fonte);
+  const leArquivo = /readFileSync|existsSync/.test(fonte);
+  if (executaModulo && leArquivo) return 'misto';
+  if (executaModulo) return 'comportamento';
+  return leArquivo ? 'estatica' : 'misto';
+}
 function registra(nome, ok, detalhe, ignorado = false) {
   if (ignorado) { ignorados++; console.log('○ ' + nome + ' → ' + detalhe); return; }
   total++; if (!ok) falhas++; console.log((ok ? '✔ ' : '✘ ') + nome + (ok ? '' : ' → ' + detalhe));
 }
-for (const u of ['mime-bateria.js', 'formato-e-trava.js', 'autenticidade-planilha.js', 'lembretes.js', 'telegram.js', 'conta-e-comandos.js', 'comandos-locais-interface.js', 'central-operacional.js', 'preparo-controlado.js', 'dossie-preparo-controlado.js', 'reforco-dossie-controlado.js', 'filtro-chips-interface.js', 'organizacao-conversas-local.js', 'colecoes-conversas-local.js', 'workspace-local.js', 'workspace-integridade-local.js', 'workspace-arquivo-completo.js', 'workspace-arquivo-completo-concorrencia-local.js', 'workspace-projeto-portatil.js', 'workspace-busca-global.js', 'workspace-conflito-local.js', 'workspace-lixeira-concorrencia-local.js', 'seguranca-interface.js', 'markdown-imagem-privacidade.js', 'interface-seguranca-fluxo.js', 'acessibilidade-interface.js', 'estilos-compartilhados.js', 'pwa-atualizacao-segura.js', 'limites-conteudo-interface.js', 'rascunhos-locais-interface.js', 'token-antes-rascunho-privacidade.js', 'contador-compositor-limpeza.js', 'leitura-e-inicio-interface.js', 'rede-e-modo-somente-local.js', 'inicializacao-rede-explicita.js', 'sugestoes-locais-privacidade.js', 'varredura-privacidade.js', 'contexto-explicito-privacidade.js', 'memoria-profunda-privacidade.js', 'caderno-contexto-explicito.js', 'comandos-privados-locais.js', 'transformacoes-locais-privacidade.js', 'calculadoras-locais-privacidade.js', 'sorteios-locais-privacidade.js', 'rotinas-locais-privacidade.js', 'sessoes-locais-privacidade.js', 'paineis-locais-privacidade.js', 'referencias-estaticas-privacidade.js', 'estados-entrega-e-falhas.js', 'fallback-trabalhador.js', 'paginacao-conversas.js', 'navegador-lista-controlado-estatico.js', 'diagnostico-motores.js', 'csp-paginas.js', 'turno-cache-ferramentas.js', 'navegador-publico.js', 'navegador-retorno.js', 'navegador-retorno-fluxo.js', 'navegador-comando-email.js', 'teste-navegador-pareado.js', 'geografia-brasil.js', 'vigia-estado.js', 'estado-operacional-controlado.js', 'auditoria-workflows.js', 'teste-email-resultado.js', 'teste-email-remetentes.js', 'pulso-vigia.js', 'reserva-turno.js', 'email-poll-adocao.js', 'turno-liveness.js', 'falhas-operacionais.js', 'teste-foto-resiliencia.js', 'pre-requisitos-multimodais.js', 'ocr-local.js', 'visao-resposta-cega.js', 'vigia-casa-resiliencia.js', 'vigia-recuperacao-fluxo.js', 'evolucao-chat.js', 'avaliacao-profunda.js', 'indice-capacidade.js', 'inventario-estado-operacional.js', 'portabilidade-estatica.js', 'operacao-incidentes.js', 'continuidade.js']) {
+for (const u of ['mime-bateria.js', 'formato-e-trava.js', 'autenticidade-planilha.js', 'lembretes.js', 'telegram.js', 'conta-e-comandos.js', 'comandos-locais-interface.js', 'central-operacional.js', 'preparo-controlado.js', 'dossie-preparo-controlado.js', 'reforco-dossie-controlado.js', 'filtro-chips-interface.js', 'organizacao-conversas-local.js', 'colecoes-conversas-local.js', 'workspace-local.js', 'workspace-integridade-local.js', 'workspace-arquivo-completo.js', 'workspace-arquivo-completo-concorrencia-local.js', 'workspace-projeto-portatil.js', 'workspace-busca-global.js', 'workspace-conflito-local.js', 'workspace-lixeira-concorrencia-local.js', 'seguranca-interface.js', 'markdown-imagem-privacidade.js', 'interface-seguranca-fluxo.js', 'acessibilidade-interface.js', 'estilos-compartilhados.js', 'pwa-atualizacao-segura.js', 'limites-conteudo-interface.js', 'rascunhos-locais-interface.js', 'token-antes-rascunho-privacidade.js', 'contador-compositor-limpeza.js', 'leitura-e-inicio-interface.js', 'rede-e-modo-somente-local.js', 'inicializacao-rede-explicita.js', 'sugestoes-locais-privacidade.js', 'varredura-privacidade.js', 'contexto-explicito-privacidade.js', 'memoria-profunda-privacidade.js', 'caderno-contexto-explicito.js', 'comandos-privados-locais.js', 'transformacoes-locais-privacidade.js', 'calculadoras-locais-privacidade.js', 'sorteios-locais-privacidade.js', 'rotinas-locais-privacidade.js', 'sessoes-locais-privacidade.js', 'paineis-locais-privacidade.js', 'referencias-estaticas-privacidade.js', 'estados-entrega-e-falhas.js', 'fallback-trabalhador.js', 'paginacao-conversas.js', 'navegador-lista-controlado-estatico.js', 'diagnostico-motores.js', 'csp-paginas.js', 'turno-cache-ferramentas.js', 'placar-testes.js', 'navegador-publico.js', 'navegador-retorno.js', 'navegador-retorno-fluxo.js', 'navegador-comando-email.js', 'teste-navegador-pareado.js', 'geografia-brasil.js', 'vigia-estado.js', 'estado-operacional-controlado.js', 'auditoria-workflows.js', 'teste-email-resultado.js', 'teste-email-remetentes.js', 'pulso-vigia.js', 'reserva-turno.js', 'email-poll-adocao.js', 'turno-liveness.js', 'falhas-operacionais.js', 'teste-foto-resiliencia.js', 'pre-requisitos-multimodais.js', 'ocr-local.js', 'visao-resposta-cega.js', 'vigia-casa-resiliencia.js', 'vigia-recuperacao-fluxo.js', 'evolucao-chat.js', 'avaliacao-profunda.js', 'indice-capacidade.js', 'inventario-estado-operacional.js', 'portabilidade-estatica.js', 'operacao-incidentes.js', 'continuidade.js']) {
   const r = spawnSync('node', [path.join(__dirname, u), CHAT], { encoding: 'utf8', timeout: 120000 });
   const ultima = String(r.stdout || '').trim().split('\n').pop();
   const ignorado = r.status === 0 && /^SKIP:/.test(ultima);
+  if (!ignorado) {
+    const classe = classificaSuite(u);
+    placar[classe].total++;
+    if (r.status !== 0) placar[classe].falhas++;
+  }
   registra('unidade · ' + u + ' (' + ultima + ')', r.status === 0 && !ignorado,
     ignorado ? ultima : (r.stdout + r.stderr).split('\n').filter(l => /✘|Error|erro/.test(l)).slice(0, 4).join(' | '), ignorado);
 }
@@ -33,6 +58,8 @@ function cenario(nome, env, exigir, proibir, requisitos = []) {
   const saida = String(r.stdout || '') + String(r.stderr || '');
   const faltou = (exigir || []).filter(re => !re.test(saida)).map(String);
   const sobrou = (proibir || []).filter(re => re.test(saida)).map(String);
+  placar.comportamento.total++;
+  if (!(r.status === 0 && !faltou.length && !sobrou.length)) placar.comportamento.falhas++;
   registra('cenário · ' + nome, r.status === 0 && !faltou.length && !sobrou.length, 'código ' + r.status + (faltou.length ? ' · faltou ' + faltou.join(', ') : '') + (sobrou.length ? ' · não devia ter ' + sobrou.join(', ') : ''));
 }
 const D = { CHAT_DONO: 'dono@exemplo.com' };
@@ -44,5 +71,15 @@ cenario('memória pela conversa do Gmail', Object.assign({ SIMULA_CONVERSA: '1' 
 cenario('rede de segurança devolve o perdido; robô não é respondido', Object.assign({ SIMULA_PERDIDO: '1', SIMULA_AUTOMATICO: '1', CHAT_AUDITORIA_SEG: '0' }, D), [/devolvidos à fila \(uid 600\)/, /não respondo robô/]);
 cenario('sem visão: o PDF é respondido e a foto declarada não vista', Object.assign({ SIMULA_PDF: path.join(T, 'anexo-prova.pdf'), SIMULA_FOTO: path.join(T, 'teste-visao3.png'), SIMULA_FOTO_ASSUNTO: '[TESTE-REBOCL] R3-16 foto + PDF sem visão [SEM-VISAO]' }, D), [/foto não vista, mas o texto/, /12 pés de couve/], [], ['pdftotext']);
 cenario('motores de texto fora: cérebro local tenta e a fila não trava', Object.assign({ SIMULA_TEXTO_FORA: '1' }, D), [/cérebro local não respondeu/, /respondeu 4 →/]);
+function linhaPlacar(rotulo, chave) {
+  const p = placar[chave];
+  const passou = p.total - p.falhas;
+  return '   ' + rotulo.padEnd(15) + String(passou).padStart(3) + '/' + String(p.total).padEnd(3) + (p.falhas ? ' ✘' : ' ✔');
+}
+console.log('\n📊 Placar por tipo de prova:');
+console.log(linhaPlacar('comportamento', 'comportamento'));
+console.log(linhaPlacar('misto', 'misto'));
+console.log(linhaPlacar('estática', 'estatica'));
+console.log('   (estática = lê fonte e compara texto; comportamento = executa módulo, rota ou cenário)');
 console.log('\n' + (total - falhas) + '/' + total + ' testes rápidos executados passaram' + (ignorados ? ' · ' + ignorados + ' ignorado(s) por pré-requisito local ausente' : ''));
 process.exitCode = falhas ? 1 : 0;
