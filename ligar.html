@@ -2877,7 +2877,7 @@ async function pensarStream(historico, aoVivo) {
             const racio = d2.reasoning_content || '';
             if (pedaco) { total += pedaco; aoVivo(total, m.nome); }
             else if (racio) { pensou += racio; if (!total) aoVivo('💭 *' + pensou.slice(-350).replace(/\n/g, ' ') + '…*', m.nome + ' · pensando'); }
-          } catch (e) {}
+          } catch (e) { /* linha SSE que não é JSON (heartbeat do provedor): ignorar de propósito */ }
         }
       }
       if (total.trim() && textoUtil(total)) { diagnosticoSucesso(m); return { texto: total.trim(), motor: m.nome + ' · streaming' }; }
@@ -2890,6 +2890,10 @@ async function pensarStream(historico, aoVivo) {
         const j2 = await r2.json();
         const t2 = ((j2.choices && j2.choices[0] && j2.choices[0].message && j2.choices[0].message.content) || '').trim();
         if (t2 && textoUtil(t2)) return { texto: t2, motor: m.nome };
+        // O provedor respondeu 200 mas sem texto: sem registrar, isso parecia motor morto.
+        diagnosticoFalha(m, 'vazio', 0);
+      } else {
+        diagnosticoFalha(m, null, r2.status);
       }
     } catch (e) { diagnosticoFalha(m, e, 0); }
   }
@@ -2897,13 +2901,13 @@ async function pensarStream(historico, aoVivo) {
   for (const mod of ['openai-fast', 'openai-large']) {
     try {
       const rp = await fetch('https://text.pollinations.ai/openai/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: mod, messages: [{ role: 'user', content: ultima }], max_tokens: 550 }) });
-      if (rp.ok) { const jp = await rp.json(); const tp = ((((jp.choices || [])[0] || {}).message || {}).content) || ''; if (tp.trim() && textoUtil(tp)) return { texto: tp.trim(), motor: 'pollinations · ' + mod + ' (cérebro de reserva)' }; }
+      if (rp.ok) { const jp = await rp.json(); const tp = ((((jp.choices || [])[0] || {}).message || {}).content) || ''; if (tp.trim() && textoUtil(tp)) return { texto: tp.trim(), motor: 'pollinations · ' + mod + ' (cérebro de reserva)' }; diagnosticoFalha({ nome: 'pollinations · ' + mod }, 'vazio', 0); } else { diagnosticoFalha({ nome: 'pollinations · ' + mod }, null, rp.status); }
     } catch (e) { diagnosticoFalha({ nome: 'pollinations · ' + mod }, e, 0); }
   }
   for (const x2 of [{ base: 'https://nvidia.g4f.dev/v1', modelo: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning', nome: 'omni da frota' }, { base: 'https://nvidia.g4f.dev/v1', modelo: 'z-ai/glm-5.3-flash', nome: 'glm flash' }]) {
     try {
       const r3 = await fetch(x2.base + '/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer unused' }, body: JSON.stringify({ model: x2.modelo, messages: historico, max_tokens: 700 }) });
-      if (r3.ok) { const j3 = await r3.json(); const t3 = ((((j3.choices || [])[0] || {}).message || {}).content) || ''; if (t3.trim() && textoUtil(t3)) return { texto: t3.trim(), motor: x2.nome + ' (reserva da reserva)' }; }
+      if (r3.ok) { const j3 = await r3.json(); const t3 = ((((j3.choices || [])[0] || {}).message || {}).content) || ''; if (t3.trim() && textoUtil(t3)) return { texto: t3.trim(), motor: x2.nome + ' (reserva da reserva)' }; diagnosticoFalha(x2, 'vazio', 0); } else { diagnosticoFalha(x2, null, r3.status); }
     } catch (e) { diagnosticoFalha(x2, e, 0); }
   }
   return null;

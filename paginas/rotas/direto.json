@@ -36,16 +36,16 @@
     },
     {
       "faixa": [
-        2513,
-        2516
+        2517,
+        2520
       ],
       "esperado": "async function reabrirUltima() {\n  try { if (token && localStorage.getItem('rebocl_conv')) { await abrir(parseInt(localStorage.getItem('rebocl_conv'), 10), localStorage.getItem('rebocl_conv_titulo') || ''); } } catch (e) {}\n}",
       "novo": ""
     },
     {
       "faixa": [
-        3784,
-        3787
+        3788,
+        3791
       ],
       "esperado": "\nsetTimeout(function () { try { if (token && localStorage.getItem('rebocl_conv') && !conversa) { reabrirUltima(); return; } } catch (e) {}\n  try { if (!token) { abrirConversa(); $('titulo-conv').textContent = '⚡ Direto'; bolha('bot', '📍 **modo direto** — escreva qualquer coisa aí embaixo e eu respondo AQUI mesmo, sem caderno, sem chave, sem nada. Pra falar com a casa inteira (status, acordar, exame), um dia instalamos sua chave — mas pra conversar, agora já vale.', new Date().toISOString(), '⚡'); rolarFim(); } } catch (e) {} }, 1200);",
       "novo": ""
