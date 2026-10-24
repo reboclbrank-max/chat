@@ -1,0 +1,23 @@
+{
+  "rota": "limpar",
+  "base": "index",
+  "regras": [
+    {
+      "faixa": [
+        1407,
+        1414
+      ],
+      "esperado": "      pensando(true);\n      pensarStream([{ role: 'user', content: texto }], function () {}).then(function (r) {\n        pensando(false);\n        const t = (r && r.texto) || '';\n        bolha('bot', t || 'travei agora — manda de novo que eu respondo.', new Date().toISOString(), '⚡ direto'); rolarFim();\n        try { const h = JSON.parse(localStorage.getItem('rebocl_direto_h') || '[]'); h.push({ q: 'u', t: texto }); if (t) h.push({ q: 'b', t: t }); localStorage.setItem('rebocl_direto_h', JSON.stringify(h.slice(-60))); } catch (e) {}\n      }).catch(function () { pensando(false); bolha('bot', 'a fiação piscou — manda de novo.', new Date().toISOString(), '⚡'); rolarFim(); });",
+      "novo": "      bolha('bot', '🖐 Falta UMA coisa: as **mãos** (token do dono neste navegador) — é ele que abre teu caderno de conversa. Abre este link **neste navegador**: ' + location.origin + location.pathname.replace(/[^/]*$/, '') + 'limpar.html — aparece MÃOS LIGADAS, e aí me escreve de novo.', new Date().toISOString(), '🖐'); rolarFim();"
+    },
+    {
+      "faixa": [
+        3755,
+        3757
+      ],
+      "esperado": "setTimeout(function () { try { if (token && localStorage.getItem('rebocl_conv') && !conversa) { reabrirUltima(); return; } } catch (e) {}\n  try { if (!token) { abrirConversa(); $('titulo-conv').textContent = '⚡ Direto'; bolha('bot', '📍 **modo direto** — escreva qualquer coisa aí embaixo e eu respondo AQUI mesmo, sem caderno, sem chave, sem nada. Pra falar com a casa inteira (status, acordar, exame), um dia instalamos sua chave — mas pra conversar, agora já vale.', new Date().toISOString(), '⚡'); rolarFim(); } } catch (e) {} }, 1200);",
+      "novo": "setTimeout(function () { try { if (token && localStorage.getItem('rebocl_conv') && !conversa) { reabrirUltima(); } } catch (e) {} }, 1200);"
+    }
+  ],
+  "cauda": "</script>\n<script>\n(function(){\ntry{\n var p=new URLSearchParams(location.search); var tinhaToken=p.has('t');\n if(tinhaToken){p.delete('t');history.replaceState({},'',location.pathname+'?limpo=1');}\n if(navigator.serviceWorker&&navigator.serviceWorker.getRegistrations){navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister();});}).catch(function(e){});}\n if(window.caches&&caches.keys){caches.keys().then(function(ks){ks.forEach(function(k){caches.delete(k);});}).catch(function(e){});}\n var texto='<div role=\"alert\" aria-live=\"assertive\" aria-atomic=\"true\" style=\"position:fixed;inset:0;z-index:99999;background:#0d0d12;color:#e8e4d8;display:flex;align-items:center;justify-content:center;font-family:sans-serif;text-align:center;padding:24px\"><div><div style=\"font-size:52px\">🧹🔐</div><div style=\"font-size:22px;margin:14px 0;color:#b6f0c3\"><b>Cache limpo.</b></div><div style=\"color:#aaa8a0;font-size:15px\">Tokens nunca são aceitos por link. Para usar o acesso, abra ⚙️ Configurar acesso e cole-o no campo protegido deste navegador.</div></div></div>';\n var marca=function(){document.body.insertAdjacentHTML('beforeend',texto);};\n if(document.body)marca();else window.addEventListener('DOMContentLoaded',marca);\n setTimeout(function(){location.replace('/chat/?limpo=1');},3000);\n}catch(e){setTimeout(function(){location.replace('/chat/');},3000);}\n})();\n</script></body>\n</html>\n"
+}
