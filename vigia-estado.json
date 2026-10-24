@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-10-24T02:01:34.412Z",
+ "verificado_em": "2026-10-24T02:05:43.785Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -17,7 +17,7 @@
    "ok": true,
    "falhas": 0,
    "causa": "saudavel",
-   "evidencia": "postagem-em-andamento"
+   "evidencia": "postagem-agendada-recente"
   },
   "Chat por e-mail (24h)": {
    "ok": true,
@@ -35,13 +35,13 @@
    "ok": true,
    "falhas": 0,
    "causa": "saudavel",
-   "evidencia": "pagina-respondendo"
+   "evidencia": "checagem-limitada"
   },
   "itch Prancheta": {
    "ok": true,
    "falhas": 0,
    "causa": "saudavel",
-   "evidencia": "checagem-limitada"
+   "evidencia": "pagina-respondendo"
   },
   "Caixa de e-mail": {
    "ok": true,
