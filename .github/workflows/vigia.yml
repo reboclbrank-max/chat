@@ -26,7 +26,7 @@ jobs:
           node-version: '22'
       - name: Restaura a fotografia sanitizada do ramo revisável
         run: node tools/estado-operacional-controlado.js preparar vigia
-      - run: npm install --no-save nodemailer@10.1.1 imapflow@2.4.3
+      - run: npm ci --omit=dev --no-audit --no-fund
       - run: node tools/vigia-casa.js
         env:
           GMAIL_CHAT_ADDR: ${{ secrets.GMAIL_CHAT_ADDR }}

@@ -65,7 +65,7 @@ jobs:
           node-version: '22'
       - name: Bibliotecas (as mesmas versões do turno)
         run: |
-          npm install --no-save imapflow@2.4.3 nodemailer@10.1.1
+          npm ci --omit=dev --no-audit --no-fund
           python3 -m pip install --quiet --disable-pip-version-check --break-system-packages "numpy<2.5" Pillow pillow-heif==1.8.1 openpyxl==3.1.5 pypdf || python3 -m pip install --quiet --disable-pip-version-check Pillow pillow-heif==1.8.1 openpyxl==3.1.5 pypdf
           # A suíte exercita OCR e PDF digitalizado; não depende da imagem Ubuntu
           # já trazer o renderizador Poppler nem o idioma português do Tesseract.
@@ -80,6 +80,8 @@ jobs:
             sudo apt-get update -qq
             sudo apt-get install -y -qq $faltam
           fi
+      - name: Auditoria de dependências (falha só em alta/crítica)
+        run: npm audit --omit=dev --audit-level=high
       - name: Sintaxe
         run: |
           for f in tools/email-chat.js tools/email-poll.js tools/pulso-vigia.js tools/reserva-turno.js tools/falhas-mensagem.js tools/turno-liveness.js tools/telegram-chat.js tools/teste-email.js tools/teste-qualidade-profunda.js tools/avaliacao-profunda-casos.js tools/preparo-controlado.js tools/dossie-preparo-controlado.js tools/reforco-dossie-controlado.js tools/inventario-estado-operacional.js chat-comandos-locais.js chat-filtro-chips.js chat-organizacao-local.js chat-colecoes-local.js chat-workspace.js tools/testes/*.js; do node --check "$f"; done

@@ -1,0 +1,6 @@
+# Dependências instaladas localmente ou pelo CI — nunca versionadas.
+node_modules/
+
+# Artefatos de diagnóstico do npm.
+npm-debug.log*
+.npm/

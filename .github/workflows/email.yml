@@ -33,7 +33,7 @@ jobs:
           node-version: '22'
       - name: Restaura o log sanitizado do ramo revisável
         run: node tools/estado-operacional-controlado.js preparar email
-      - run: npm install --no-save imapflow@2.4.3 nodemailer@10.1.1
+      - run: npm ci --omit=dev --no-audit --no-fund
       - run: |
           # 🧰 v12.7: ferramentas Python (voz, OCR, olho) e a visão local ficam prontas em 2º plano — o escutador
           # já atende e-mail de texto; e-mail com anexo espera o marcador /tmp/ferramentas-prontas
