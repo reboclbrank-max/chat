@@ -34,11 +34,35 @@ jobs:
       - name: Restaura o log sanitizado do ramo revisável
         run: node tools/estado-operacional-controlado.js preparar email
       - run: npm ci --omit=dev --no-audit --no-fund
-      - run: |
-          # 🧰 v12.7: ferramentas Python (voz, OCR, olho) e a visão local ficam prontas em 2º plano — o escutador
-          # já atende e-mail de texto; e-mail com anexo espera o marcador /tmp/ferramentas-prontas
+      - name: Restaura as ferramentas Python do turno (venv em cache)
+        id: cache-ferramentas
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: /home/runner/.venv-casa
+          key: venv-casa-py3.12-v1
+      - name: Prepara as ferramentas Python em segundo plano
+        run: |
+          # 🧰 v12.8: ferramentas Python (voz, OCR, olho) e a visão local ficam prontas em 2º plano — o escutador
+          # já atende e-mail de texto; e-mail com anexo espera o marcador /tmp/ferramentas-prontas.
+          # Com o venv em cache, a instalação é pulada; sem cache ou com import quebrado, instala de novo.
+          # O turno nunca deixa de atender por causa do cache: qualquer falha cai no caminho antigo.
+          export PATH="/home/runner/.venv-casa/bin:$PATH"
+          echo "INICIO_PREPARO=$(date +%s)" >> "$GITHUB_ENV"
           (
-            python3 -m pip install --quiet --disable-pip-version-check --break-system-packages "numpy<2.5" Pillow pillow-heif==1.8.1 openpyxl==3.1.5 fpdf2==2.8.9 edge-tts gTTS vosk soundfile pywhispercpp pypdf python-docx opencv-python-headless==4.10.0.84 || python3 -m pip install --quiet --disable-pip-version-check "numpy<2.5" Pillow pillow-heif==1.8.1 openpyxl==3.1.5 fpdf2==2.8.9 edge-tts gTTS vosk soundfile pywhispercpp pypdf python-docx opencv-python-headless==4.10.0.84 || true
+            PACOTES=("numpy<2.5" Pillow pillow-heif==1.8.1 openpyxl==3.1.5 fpdf2==2.8.9 edge-tts gTTS vosk soundfile pywhispercpp pypdf python-docx opencv-python-headless==4.10.0.84)
+            if [ -x /home/runner/.venv-casa/bin/python3 ] && /home/runner/.venv-casa/bin/python3 -c "import numpy, PIL, openpyxl, pypdf, docx, cv2" >/dev/null 2>&1; then
+              echo "ferramentas: venv do turno reaproveitada do cache"
+            else
+              echo "ferramentas: instalando no venv do turno"
+              rm -rf /home/runner/.venv-casa
+              if python3 -m venv /home/runner/.venv-casa >/dev/null 2>&1; then
+                /home/runner/.venv-casa/bin/pip install --quiet --disable-pip-version-check --upgrade pip >/dev/null 2>&1 || true
+                /home/runner/.venv-casa/bin/pip install --quiet --disable-pip-version-check "${PACOTES[@]}" || echo "ferramentas: instalacao do venv falhou"
+              else
+                echo "ferramentas: venv indisponivel - usando o python do sistema"
+                python3 -m pip install --quiet --disable-pip-version-check --break-system-packages "${PACOTES[@]}" || python3 -m pip install --quiet --disable-pip-version-check "${PACOTES[@]}" || true
+              fi
+            fi
             faltam=""
             command -v ffmpeg >/dev/null || faltam="$faltam ffmpeg"
             command -v espeak-ng >/dev/null || faltam="$faltam espeak-ng"
@@ -72,6 +96,21 @@ jobs:
             # se a fotografia deixar de ser segura, falha sem tocar em main.
             node tools/estado-operacional-controlado.js publicar email
           fi
+      - name: Duração do preparo (sem conteúdo)
+        if: always()
+        run: |
+          if [ -n "${INICIO_PREPARO:-}" ]; then
+            echo "preparo do turno levou $(( $(date +%s) - INICIO_PREPARO ))s"
+          else
+            echo "preparo do turno sem marcador de início"
+          fi
+          grep -E '^ferramentas:' /tmp/preparo.log | tail -n 3 || true
+      - name: Guarda as ferramentas Python do turno (venv)
+        if: always() && steps.cache-ferramentas.outputs.cache-hit != 'true'
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: /home/runner/.venv-casa
+          key: venv-casa-py3.12-v1
       - name: Visão local pronta?
         id: visao-pronta
         if: always()
