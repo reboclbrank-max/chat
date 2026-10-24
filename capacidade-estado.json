@@ -1,6 +1,6 @@
 {
   "esquema": "placar-capacidade-v2",
-  "gerado_em": "2026-10-23T15:41:08.905Z",
+  "gerado_em": "2026-10-24T14:22:04.486Z",
   "aviso": "Indicador interno de cobertura; não é resultado observável do produto, não é teste de QI, consciência nem garantia de disponibilidade.",
   "total_em_100": 100,
   "canal_real": {
@@ -43,7 +43,7 @@
       "nome": "qualidade de respostas",
       "maximo": 20,
       "pontos": 20,
-      "evidencia": "5 bateria(s) recente(s), média 100%, 0 rota(s) muda(s)",
+      "evidencia": "5 amostras rastreáveis, 20 questões distintas, média 100%, 0 rota(s) muda(s)",
       "comoMelhorar": "manter amostras distintas, corrigir regressões e registrar falhas de rota"
     },
     {
@@ -88,8 +88,8 @@
     "vigia_recente": true,
     "baterias": 5,
     "media_bateria": 100,
-    "qualidade_rastreavel": false,
-    "cobertura_questoes": 19,
+    "qualidade_rastreavel": true,
+    "cobertura_questoes": 20,
     "respostas_auditadas": 50
   },
   "proximas_melhorias": [],
