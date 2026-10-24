@@ -1,0 +1,25 @@
+# Dependabot do Chat — somente bibliotecas npm, sem auto-merge e sem salto de major.
+# Cada PR automático continua sujeito à barreira `testes` e à revisão humana do dono;
+# nenhum merge é automático e nenhum segredo, conta ou permissão é criado por isto.
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      time: "06:00"
+      timezone: "America/Fortaleza"
+    open-pull-requests-limit: 2
+    commit-message:
+      prefix: "deps"
+    groups:
+      bibliotecas-do-turno:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"

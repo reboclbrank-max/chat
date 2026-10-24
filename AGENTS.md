@@ -23,6 +23,12 @@ A barreira `tools/testes/continuidade.js` verifica a estrutura do documento e, e
 
 Mudanças relevantes de decisão/estado também exigem registro sincronizado na `base` (`ia-propria/ESTADO-DO-CHAT.md`, registro de decisões e, se aplicável, pendências), seguido de commit + push confirmado.
 
+## Dependências do turno
+
+- As bibliotecas do turno e da barreira estão fixadas em `package.json` + `package-lock.json` e são instaladas com `npm ci --omit=dev`. Não volte a usar `npm install --no-save` em workflow: isso deixa as transitivas livres dentro do job que tem `GMAIL_CHAT_PASS`.
+- Para atualizar, prefira o PR mensal do Dependabot (major é ignorado de propósito) ou `npm install <pacote>@<versao> --package-lock-only` e commit do lock junto. Depois rode a barreira; `npm audit --omit=dev --audit-level=high` faz parte dela.
+- `node_modules/` nunca é versionado. Rollback de uma atualização é reverter o commit que mexeu em `package.json`/`package-lock.json`.
+
 ## Segurança e escopo
 
 - Nunca exponha, versione, registre em URL/log/Issue ou repita valores de PAT, segredo, token de bot, e-mail privado, código de pareamento ou conteúdo privado.
