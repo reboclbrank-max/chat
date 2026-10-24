@@ -9,7 +9,8 @@
   },
   "scripts": {
     "test": "node tools/testes/roda-testes.js",
-    "cobertura": "c8 node tools/testes/roda-testes.js"
+    "cobertura": "c8 node tools/testes/roda-testes.js",
+    "cobertura-paginas": "node --experimental-websocket tools/cobertura-navegador.js"
   },
   "dependencies": {
     "imapflow": "2.4.3",
