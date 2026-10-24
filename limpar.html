@@ -435,6 +435,7 @@ const TAMANHO_PAGINA_COMENTARIOS = 100;
 <script src="chat-organizacao-local.js"></script>
 <script src="chat-colecoes-local.js"></script>
 <script src="chat-workspace.js"></script>
+<script src="chat-diagnostico.js"></script>
 <script>
 function paginaFinalComentarios(total) {
   const n = Math.max(0, Number(total) || 0);
@@ -2080,6 +2081,26 @@ function normalizarMotor(m) {
   return { id, nome: nomeMotorSeguro(m.nome, modelo), base, modelo };
 }
 function motorConfiavel(m) { return !!normalizarMotor(m); }
+// Diagnóstico local de motores: registra por que um motor não respondeu, sem conteúdo.
+// Se o módulo não carregar, o Chat continua igual — a conveniência nunca vira requisito.
+function diagnosticoFalha(motor, erro, status) {
+  try {
+    if (typeof DiagnosticoMotores !== 'undefined') {
+      DiagnosticoMotores.registrarFalhaMotor((motor && motor.nome) || 'motor', erro, status);
+    }
+  } catch (e) {}
+}
+function diagnosticoSucesso(motor) {
+  try {
+    if (typeof DiagnosticoMotores !== 'undefined') DiagnosticoMotores.registrarSucessoMotor((motor && motor.nome) || 'motor');
+  } catch (e) {}
+}
+function diagnosticoResumo() {
+  try {
+    if (typeof DiagnosticoMotores !== 'undefined') return DiagnosticoMotores.resumoDiagnostico();
+  } catch (e) {}
+  return '';
+}
 function listaSegura(chave, limite) {
   try {
     const lista = JSON.parse(localStorage.getItem(chave) || '[]');
@@ -2834,7 +2855,7 @@ async function pensarStream(historico, aoVivo) {
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ((m.chaveLS && localStorage.getItem(m.chaveLS)) ? localStorage.getItem(m.chaveLS) : 'unused') },
         body: JSON.stringify({ model: m.modelo, messages: [system].concat(historico), max_tokens: 800, stream: true })
       });
-      if (!r.ok || !r.body) continue;
+      if (!r.ok || !r.body) { diagnosticoFalha(m, null, r.status); continue; }
       const leitor = r.body.getReader();
       const dec = new TextDecoder();
       let bruto = '', total = '', pensou = '';
@@ -2859,7 +2880,7 @@ async function pensarStream(historico, aoVivo) {
           } catch (e) {}
         }
       }
-      if (total.trim() && textoUtil(total)) return { texto: total.trim(), motor: m.nome + ' · streaming' };
+      if (total.trim() && textoUtil(total)) { diagnosticoSucesso(m); return { texto: total.trim(), motor: m.nome + ' · streaming' }; }
       const r2 = await fetch(m.base + '/chat/completions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ((m.chaveLS && localStorage.getItem(m.chaveLS)) ? localStorage.getItem(m.chaveLS) : 'unused') },
@@ -2870,20 +2891,20 @@ async function pensarStream(historico, aoVivo) {
         const t2 = ((j2.choices && j2.choices[0] && j2.choices[0].message && j2.choices[0].message.content) || '').trim();
         if (t2 && textoUtil(t2)) return { texto: t2, motor: m.nome };
       }
-    } catch (e) {}
+    } catch (e) { diagnosticoFalha(m, e, 0); }
   }
   const ultima = ((historico && historico.length && historico[historico.length - 1] && historico[historico.length - 1].content) || '').slice(0, 500);
   for (const mod of ['openai-fast', 'openai-large']) {
     try {
       const rp = await fetch('https://text.pollinations.ai/openai/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: mod, messages: [{ role: 'user', content: ultima }], max_tokens: 550 }) });
       if (rp.ok) { const jp = await rp.json(); const tp = ((((jp.choices || [])[0] || {}).message || {}).content) || ''; if (tp.trim() && textoUtil(tp)) return { texto: tp.trim(), motor: 'pollinations · ' + mod + ' (cérebro de reserva)' }; }
-    } catch (e) {}
+    } catch (e) { diagnosticoFalha({ nome: 'pollinations · ' + mod }, e, 0); }
   }
   for (const x2 of [{ base: 'https://nvidia.g4f.dev/v1', modelo: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning', nome: 'omni da frota' }, { base: 'https://nvidia.g4f.dev/v1', modelo: 'z-ai/glm-5.3-flash', nome: 'glm flash' }]) {
     try {
       const r3 = await fetch(x2.base + '/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer unused' }, body: JSON.stringify({ model: x2.modelo, messages: historico, max_tokens: 700 }) });
       if (r3.ok) { const j3 = await r3.json(); const t3 = ((((j3.choices || [])[0] || {}).message || {}).content) || ''; if (t3.trim() && textoUtil(t3)) return { texto: t3.trim(), motor: x2.nome + ' (reserva da reserva)' }; }
-    } catch (e) {}
+    } catch (e) { diagnosticoFalha(x2, e, 0); }
   }
   return null;
 }
@@ -2931,7 +2952,8 @@ async function emergenciaResponder(numero) {
     rolarFim();
     const r = await pensarStream(hist, (texto) => { renderLive(div, texto); if (pertoDoFim()) rolarFim(); });
     if (!r) {
-      renderLive(div, '_A casa está congelada (billing) e os motores keyless não abriram agora. Tente de novo em instantes — ou ligue o 🧠 local._');
+      const resumoMotores = diagnosticoResumo();
+      renderLive(div, '_A casa está congelada (billing) e os motores keyless não abriram agora. Tente de novo em instantes — ou ligue o 🧠 local._' + (resumoMotores ? String.fromCharCode(10, 10) + '🩺 ' + resumoMotores : ''));
       encerrarEstadoEntrega('contingencia-sem-resposta', '⚡ contingência');
       rolarFim();
       return;

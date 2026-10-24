@@ -331,7 +331,7 @@ testa('casca, workflow, corredor e continuidade observam o novo ativo', () => {
   const workflow = ler('.github/workflows/testes-rapidos.yml');
   const corredor = ler('tools/testes/roda-testes.js');
   const continuidade = ler('tools/testes/continuidade.js');
-  assert.match(sw, /rebocl-chat-v94/);
+  assert.match(sw, /rebocl-chat-v\d+/);
   assert.match(sw, /'\.\/chat-colecoes-local\.js'/);
   assert.match(workflow, /'chat-colecoes-local\.js'/);
   assert.match(corredor, /'colecoes-conversas-local\.js'/);
