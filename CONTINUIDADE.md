@@ -1416,3 +1416,17 @@ funcionam, mas a resposta do assistente depende do trabalhador.
 
 Barreira: `agente/teste-casa.py` (30 verificações, offline) entrou no `testes.yml` e
 protege número inventado, vazamento de credencial e publicação sem pedido.
+
+## 2026-10-24 (2) — resposta instantânea: a página acorda o motor
+
+O trabalhador passou a rodar no repositório **público** `motor` (minutos ilimitados), com
+memória e conversas no `agente` privado. O relógio dele procura mensagem a cada 10 minutos —
+o que podia deixar o dono esperando.
+
+Agora `enviar()` chama `acordarMotor()`, que faz um `repository_dispatch`-style para
+`motor/actions/workflows/chat.yml/dispatches` logo depois de criar o comentário. Efeito:
+resposta em segundos, não em minutos.
+
+Regras da função: não envia dado nenhum (só pede para o workflow rodar), não roda em modo
+local, e **falha em silêncio** — o cron de 10 minutos continua sendo a rede de segurança.
+O token usado é o mesmo do dono já presente neste navegador, que é quem cria o comentário.
