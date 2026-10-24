@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-10-24T00:30:31.075Z",
+ "verificado_em": "2026-10-24T01:08:12.434Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -35,7 +35,7 @@
    "ok": true,
    "falhas": 0,
    "causa": "saudavel",
-   "evidencia": "pagina-respondendo"
+   "evidencia": "checagem-limitada"
   },
   "itch Prancheta": {
    "ok": true,
