@@ -4,3 +4,7 @@ node_modules/
 # Artefatos de diagnóstico do npm.
 npm-debug.log*
 .npm/
+
+# Relatórios de cobertura gerados localmente.
+coverage/
+.nyc_output/

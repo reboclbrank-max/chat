@@ -8,10 +8,14 @@
     "node": ">=22"
   },
   "scripts": {
-    "test": "node tools/testes/roda-testes.js"
+    "test": "node tools/testes/roda-testes.js",
+    "cobertura": "c8 node tools/testes/roda-testes.js"
   },
   "dependencies": {
     "imapflow": "2.4.3",
     "nodemailer": "10.2.1"
+  },
+  "devDependencies": {
+    "c8": "10.1.3"
   }
 }
