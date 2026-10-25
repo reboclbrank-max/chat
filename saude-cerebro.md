@@ -3,6 +3,7 @@
 Banco v1/v2 público · 10 questões por amostra · 3 rodadas × 3 rotas (frota→reserva→omni) · 🔇=infraestrutura muda, não erro de cérebro.
 Cada amostra tem identificador e IDs no `qualidade-historico.json`; reexecução da mesma amostra substitui o registro, não infla a evidência.
 
+- 2026-10-25 14:54 UTC — 10/10 (mudos: 0) · NÍVEL 2 · amostra: diaria-2026-10-25 · banco: v2 ✨ PERFEITO
 - 2026-10-24 14:22 UTC — 10/10 (mudos: 0) · NÍVEL 2 · amostra: diaria-2026-10-24 · banco: v2 ✨ PERFEITO
 - 2026-10-23 15:41 UTC — 10/10 (mudos: 0) · NÍVEL 2 · amostra: diaria-2026-10-23 · banco: v2 ✨ PERFEITO
 - 2026-10-22 15:49 UTC — 10/10 (mudos: 0) · NÍVEL 2 · amostra: diaria-2026-10-22 · banco: v2 ✨ PERFEITO

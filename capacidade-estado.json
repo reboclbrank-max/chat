@@ -1,6 +1,6 @@
 {
   "esquema": "placar-capacidade-v2",
-  "gerado_em": "2026-10-24T14:22:04.486Z",
+  "gerado_em": "2026-10-25T14:54:46.479Z",
   "aviso": "Indicador interno de cobertura; não é resultado observável do produto, não é teste de QI, consciência nem garantia de disponibilidade.",
   "total_em_100": 100,
   "canal_real": {
@@ -43,7 +43,7 @@
       "nome": "qualidade de respostas",
       "maximo": 20,
       "pontos": 20,
-      "evidencia": "5 amostras rastreáveis, 20 questões distintas, média 100%, 0 rota(s) muda(s)",
+      "evidencia": "5 bateria(s) recente(s), média 100%, 0 rota(s) muda(s)",
       "comoMelhorar": "manter amostras distintas, corrigir regressões e registrar falhas de rota"
     },
     {
@@ -88,11 +88,13 @@
     "vigia_recente": true,
     "baterias": 5,
     "media_bateria": 100,
-    "qualidade_rastreavel": true,
-    "cobertura_questoes": 20,
+    "qualidade_rastreavel": false,
+    "cobertura_questoes": 17,
     "respostas_auditadas": 50
   },
-  "proximas_melhorias": [],
+  "proximas_melhorias": [
+    "rastreabilidade da qualidade: completar 3 amostras recentes distintas, 30 respostas e 20 questões; fotografia atual: 5 amostra(s), 50 resposta(s), 17 questão(ões). O 100/100 interno não certifica essa rastreabilidade."
+  ],
   "limites": [
     "Serviços gratuitos podem atrasar, interromper agendas ou limitar recursos.",
     "O placar usa evidências locais e não substitui monitoramento de usuário real.",
