@@ -1442,6 +1442,10 @@ atuais); `!itch editar` pede o modo **aplicar**, que exige a palavra `EDITAR` no
 - Sem o segredo `ITCH_COOKIE` no repositório `site`, o run para na leitura e diz isso; nada é
   escrito.
 - Depende do token do dono no navegador, como as demais mãos.
+- **Devolve o resultado no próprio chat** (26/10, depois do merge): o comando espera o run
+  terminar (até ~3 min, consultando `/actions/workflows/editar-itch.yml/runs`) e responde com a
+  conclusão e com o que o run registrou em `site/posts/estado-itch.json` — sessão válida ou não,
+  caminho da página descoberto pela API e o resultado. Se o run não registrar, o chat diz isso.
 
 O que isso destrava: título, resumo, descrição, tags e gênero da página do jogo — o que a API do
 itch não oferece e o butler não faz.
