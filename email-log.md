@@ -520,3 +520,4 @@
 - 2026-10-18T06:15 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] QP-8 — imagem ausente" → respondido via reserva (gpt-oss-20b)
 - 2026-10-18T06:16 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] QP-9 — instrução indireta" → respondido via frota (nvidia/nemotron-3-ultra-550b-a55b)
 - 2026-10-18T06:16 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] QP-10 — leitura de bilhet" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
+- 2026-10-26T14:09 UTC — nor***@google.com | "(assunto do dono — fica só na caixa)" → remetente não autorizado (resposta curta, sem IA)
