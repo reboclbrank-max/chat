@@ -1430,3 +1430,18 @@ resposta em segundos, não em minutos.
 Regras da função: não envia dado nenhum (só pede para o workflow rodar), não roda em modo
 local, e **falha em silêncio** — o cron de 10 minutos continua sendo a rede de segurança.
 O token usado é o mesmo do dono já presente neste navegador, que é quem cria o comentário.
+
+## 26/10 — comando `!itch` (página do itch.io)
+
+Mão nova, no mesmo padrão literal de `!acordarcasa`: `!itch` dispara
+`reboclbrank-max/site/.github/workflows/editar-itch.yml` em modo **ler** (só leitura dos campos
+atuais); `!itch editar` pede o modo **aplicar**, que exige a palavra `EDITAR` no workflow.
+
+- Não aceita tarefa, texto, caminho nem campo livre: o corpo do dispatch é literal.
+- Não escolhe ref, não abre PR, não mexe em `main` deste repositório.
+- Sem o segredo `ITCH_COOKIE` no repositório `site`, o run para na leitura e diz isso; nada é
+  escrito.
+- Depende do token do dono no navegador, como as demais mãos.
+
+O que isso destrava: título, resumo, descrição, tags e gênero da página do jogo — o que a API do
+itch não oferece e o butler não faz.
