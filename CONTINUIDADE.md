@@ -1442,6 +1442,11 @@ atuais); `!itch editar` pede o modo **aplicar**, que exige a palavra `EDITAR` no
 - Sem o segredo `ITCH_COOKIE` no repositório `site`, o run para na leitura e diz isso; nada é
   escrito.
 - Depende do token do dono no navegador, como as demais mãos.
+- **Abre as páginas do itch** (26/10): `!itch entrar` abre `itch.io/login` e `!itch pagina`
+  abre a edição do CEIFALUME. O clique que preenche é o favorito do navegador — o chat só leva
+  você até a página, porque quem tem a sessão viva é o navegador, não o servidor. Foi preciso
+  autorizar `https://itch.io` no `connect-src` (o contrato de CSP exige que todo host citado
+  esteja autorizado); 10/10 mantidos.
 - **Devolve o resultado no próprio chat** (26/10, depois do merge): o comando espera o run
   terminar (até ~3 min, consultando `/actions/workflows/editar-itch.yml/runs`) e responde com a
   conclusão e com o que o run registrou em `site/posts/estado-itch.json` — sessão válida ou não,
