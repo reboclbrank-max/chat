@@ -36,8 +36,8 @@ confere('!fila mostra pendentes, feitas e falhas', () => {
   assert(base.includes("'falhou'") && base.includes("'pendente'"), 'não distingue estado da tarefa');
 });
 
-confere('!memoria consulta a memória e não inventa', () => {
-  assert(/m\.startsWith\('!memoria'\)/.test(base), 'comando ausente');
+confere('!medido consulta a memória e não inventa', () => {
+  assert(/m\.startsWith\('!medido'\)/.test(base), 'comando ausente');
   assert(base.includes("posts/memoria.json"), 'não lê a memória');
   assert(base.includes('n\u00e3o invento o que n\u00e3o est\u00e1 medido'), 'sem aviso de ausência');
 });
@@ -62,7 +62,7 @@ confere('!itch não promete mais favorito/bookmarklet', () => {
 confere('as quatro rotas carregam os três comandos', () => {
   for (const rota of ['index.html', 'direto.html', 'ligar.html', 'limpar.html']) {
     const texto = ler(rota);
-    for (const cmd of ['!marketing', '!fila', '!memoria']) {
+    for (const cmd of ['!marketing', '!fila', '!medido']) {
       assert(texto.includes("startsWith('" + cmd + "')"), rota + ' sem ' + cmd);
     }
   }
