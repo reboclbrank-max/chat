@@ -236,6 +236,20 @@ teste_lista = """<script>
       transacao.onerror = () => { banco.close(); reject(transacao.error || new Error('falha na transação controlada')); };
     };
   });
+  // Uma espera pode falhar por motivo de agendamento, não de código: em 27/10/2026 o mesmo
+  // commit passou na PR e falhou em main no passo "criar arquivo para renomeação concorrente"
+  // — o clique em "novo arquivo" caiu enquanto a lista de projetos re-renderizava. Em vez de
+  // aumentar o tempo de espera (que não resolve clique perdido), a ação é repetida a cada
+  // cinco tentativas, como faria uma pessoa.
+  const comRepeticaoDaAcao = async (acao, predicado, rotulo, tentativas = 30) => {
+    for (let tentativa = 0; tentativa < tentativas; tentativa++) {
+      if (tentativa % 5 === 0) acao();
+      await new Promise(resolve => setTimeout(resolve, 60000));
+      if (predicado()) return;
+    }
+    if (predicado()) return;
+    throw new Error('Workspace não concluiu a transação local controlada: ' + (rotulo || 'etapa sem nome'));
+  };
   const esperarWorkspace = async (predicado, rotulo, tentativas = 30) => {
     for (let tentativa = 0; tentativa < tentativas; tentativa++) {
       if (predicado()) return;
@@ -405,8 +419,10 @@ teste_lista = """<script>
     novoProjeto.value = nomeProjetoRenomeacaoArquivo;
     document.getElementById('btn-workspace-criar-projeto').click();
     await esperarWorkspace(() => porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjetoRenomeacaoArquivo), 'criar projeto para renomeação de arquivo concorrente');
-    document.getElementById('btn-workspace-novo-arquivo').click();
-    await esperarWorkspace(() => !nome.disabled && !editor.disabled, 'criar arquivo para renomeação concorrente');
+    await comRepeticaoDaAcao(
+      () => document.getElementById('btn-workspace-novo-arquivo').click(),
+      () => !nome.disabled && !editor.disabled,
+      'criar arquivo para renomeação concorrente');
     nome.value = nomeBaseRenomeacaoArquivo;
     nome.dispatchEvent(new Event('input', { bubbles: true }));
     editor.value = 'conteúdo sintético para renomeação concorrente';
