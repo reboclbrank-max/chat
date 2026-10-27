@@ -236,7 +236,34 @@ teste_lista = """<script>
       transacao.onerror = () => { banco.close(); reject(transacao.error || new Error('falha na transação controlada')); };
     };
   });
-  const esperarWorkspace = async (predicado, rotulo, tentativas = 30) => {
+  // Diagnóstico do estado real da tela quando um passo não chega onde devia.
+  // Antes (27/10/2026) a mensagem era só "não concluiu" e três runs ficaram vermelhos sem causa.
+  const diagnosticoWorkspace = () => {
+    try {
+      const texto = (id) => {
+        const el = document.getElementById(id);
+        return el ? String(el.textContent || '').trim().slice(0, 140) : '(elemento ausente)';
+      };
+      const nomes = (seletor) => [...document.querySelectorAll(seletor)]
+        .map((el) => String(el.textContent || '').trim().slice(0, 32));
+      const salvar = document.getElementById('btn-workspace-salvar');
+      return JSON.stringify({
+        status: texto('workspace-status'),
+        projeto: (document.getElementById('workspace-nome-projeto') || {}).value || null,
+        arquivo: (document.getElementById('workspace-nome-arquivo') || {}).value || null,
+        projetos: nomes('#workspace-lista-projetos .workspace-projeto').slice(0, 8),
+        arquivos: nomes('#workspace-lista-arquivos .workspace-arquivo').slice(0, 8),
+        salvarDesativado: salvar ? !!salvar.disabled : null,
+        editorDesativado: (document.getElementById('workspace-editor') || {}).disabled === true,
+        nomeDesativado: (document.getElementById('workspace-nome-arquivo') || {}).disabled === true,
+        conflitoVisivel: !!document.getElementById('workspace-conflito-arquivo')
+          && getComputedStyle(document.getElementById('workspace-conflito-arquivo')).display !== 'none'
+      });
+    } catch (erroDiagnostico) {
+      return 'diagnóstico indisponível: ' + (erroDiagnostico && erroDiagnostico.message);
+    }
+  };
+  const esperarWorkspace = async (predicado, rotulo, tentativas = 90) => {
     for (let tentativa = 0; tentativa < tentativas; tentativa++) {
       if (predicado()) return;
       // O Chromium agenda IndexedDB no relógio virtual. Um salto espaçado dá
@@ -244,9 +271,10 @@ teste_lista = """<script>
       await new Promise(resolve => setTimeout(resolve, 60000));
     }
     if (predicado()) return;
-    throw new Error('Workspace não concluiu a transação local controlada: ' + (rotulo || 'etapa sem nome'));
+    throw new Error('Workspace não concluiu a transação local controlada: ' + (rotulo || 'etapa sem nome')
+      + ' | estado: ' + diagnosticoWorkspace());
   };
-  const esperarOrganizacao = async (predicado, rotulo, tentativas = 20) => {
+  const esperarOrganizacao = async (predicado, rotulo, tentativas = 60) => {
     for (let tentativa = 0; tentativa < tentativas; tentativa++) {
       if (predicado()) return;
       // Favoritos também usam IndexedDB real; respeite o mesmo agendamento
@@ -256,7 +284,7 @@ teste_lista = """<script>
     if (predicado()) return;
     throw new Error('Favoritos locais não concluíram a transação controlada: ' + (rotulo || 'etapa sem nome'));
   };
-  const esperarColecoes = async (predicado, rotulo, tentativas = 20) => {
+  const esperarColecoes = async (predicado, rotulo, tentativas = 90) => {
     for (let tentativa = 0; tentativa < tentativas; tentativa++) {
       if (predicado()) return;
       // Coleções são outro banco IndexedDB local; use a mesma espera espaçada
@@ -264,7 +292,8 @@ teste_lista = """<script>
       await new Promise(resolve => setTimeout(resolve, 60000));
     }
     if (predicado()) return;
-    throw new Error('Coleções locais não concluíram a transação controlada: ' + (rotulo || 'etapa sem nome'));
+    throw new Error('Coleções locais não concluíram a transação controlada: ' + (rotulo || 'etapa sem nome')
+      + ' | estado: ' + diagnosticoWorkspace());
   };
   const testarWorkspace = async () => {
     if (!location.pathname.endsWith('/index.html')) return '';
@@ -894,7 +923,7 @@ teste_lista = """<script>
     const resultadoWorkspace = await testarWorkspace();
     document.body.dataset.browserE2e = 'PASS: favoritos locais marcaram, filtraram e apagaram sem rede; backup local dos favoritos exportou e restaurou substituindo a fixture sem rede; coleções locais criaram, associaram, filtraram e apagaram sem rede; backup local das coleções exportou e restaurou substituindo a fixture sem rede; busca ativa manteve carregar mais; nova conversa oculta; alvo da página 3 visível; PWA protegeu rascunho; rascunho local opt-in restaurou sem rede' + resultadoWorkspace;
   } catch (erro) {
-    document.body.dataset.browserE2e = 'FAIL: ' + String((erro && erro.message) || erro).slice(0, 180);
+    document.body.dataset.browserE2e = 'FAIL: ' + String((erro && erro.message) || erro).slice(0, 1200);
   }
 })();
 </script>"""
@@ -906,7 +935,7 @@ try {
   if (!texto.includes('Tokens nunca são aceitos por link.')) throw new Error('guarda de token por link não apareceu');
   document.body.dataset.browserE2e = 'PASS: rota limpar removeu t da URL e mostrou a guarda de token';
 } catch (erro) {
-  document.body.dataset.browserE2e = 'FAIL: ' + String((erro && erro.message) || erro).slice(0, 180);
+  document.body.dataset.browserE2e = 'FAIL: ' + String((erro && erro.message) || erro).slice(0, 1200);
 }
 </script>"""
 
