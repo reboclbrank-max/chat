@@ -23,6 +23,7 @@ function confere(nome, fn) {
   try { fn(); } catch (e) { falhas.push(nome + ' → ' + String(e.message || e).slice(0, 160)); }
 }
 const linhaDe = (cmd) => base.split('\n').find((l) => l.startsWith("  if (m.startsWith('" + cmd + "'))")) || '';
+const linhaDaRota = (rota, cmd) => ler(rota).split('\n').find((l) => l.startsWith("  if (m.startsWith('" + cmd + "'))")) || '';
 
 confere('!painel existe e agrega motor, plano, fila, memória e execuções', () => {
   const l = linhaDe('!farol');
@@ -47,6 +48,21 @@ confere('!erros mostra execução e o passo que quebrou', () => {
   assert(l.includes("conclusion === 'failure'"), 'não filtra falhas');
   assert(l.includes('/jobs'), 'não abre os passos do run');
   assert(l.includes('steps'), 'não identifica o passo que quebrou');
+});
+
+confere('!youtube mostra o que o YouTube confirmou, não o que a casa achou', () => {
+  const l = linhaDe('!youtube');
+  assert(l, 'comando ausente');
+  assert(l.includes('posts/youtube-publicados.json'), 'não lê o registro do que foi publicado');
+  // O link sai do próprio registro (url devolvida no upload). Não escrevo host literal aqui:
+  // host citado na página precisa entrar no connect-src e o Chat não busca nada no YouTube.
+  assert(l.includes('.url'), 'não mostra o link do vídeo registrado');
+  assert(!/https:\/\/[a-z.]*youtu/.test(l), 'host do YouTube escrito na página (CSP)');
+  assert(l.includes('PUBLICAR'), 'não repete a regra do cadeado');
+  assert(!/api\.github\.com\/repos\/[^']*\/actions\/workflows\/gravar-gameplay\.yml\/dispatches/.test(l),
+    'o comando dispara publicação — a regra da casa proíbe');
+  const rotas = ['index.html', 'direto.html', 'ligar.html', 'limpar.html'];
+  rotas.forEach((r) => assert(linhaDaRota(r, '!youtube'), r + ' sem o comando'));
 });
 
 confere('!cofre lista nomes e datas, nunca valores', () => {
@@ -78,17 +94,17 @@ confere('os comandos novos usam só hosts permitidos pela CSP', () => {
   assert(m[0].includes('raw.githubusercontent.com'), 'raw.githubusercontent fora do connect-src');
 });
 
-confere('as quatro rotas carregam os cinco comandos', () => {
+confere('as quatro rotas carregam os seis comandos', () => {
   for (const rota of ['index.html', 'direto.html', 'ligar.html', 'limpar.html']) {
     const texto = ler(rota);
-    for (const cmd of ['!farol', '!video', '!erros', '!cofre', '!postar']) {
+    for (const cmd of ['!farol', '!video', '!youtube', '!erros', '!cofre', '!postar']) {
       assert(texto.includes("startsWith('" + cmd + "')"), rota + ' sem ' + cmd);
     }
   }
 });
 
 confere('nenhum comando novo engole erro em silêncio', () => {
-  for (const cmd of ['!farol', '!video', '!erros', '!cofre', '!postar']) {
+  for (const cmd of ['!farol', '!video', '!youtube', '!erros', '!cofre', '!postar']) {
     const l = linhaDe(cmd);
     const vazios = (l.match(/catch \(e\) \{\s*\}/g) || []).length;
     assert(vazios === 0, cmd + ' tem catch vazio');
