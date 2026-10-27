@@ -236,21 +236,34 @@ teste_lista = """<script>
       transacao.onerror = () => { banco.close(); reject(transacao.error || new Error('falha na transação controlada')); };
     };
   });
-  // Uma espera pode falhar por motivo de agendamento, não de código: em 27/10/2026 o mesmo
-  // commit passou na PR e falhou em main no passo "criar arquivo para renomeação concorrente"
-  // — o clique em "novo arquivo" caiu enquanto a lista de projetos re-renderizava. Em vez de
-  // aumentar o tempo de espera (que não resolve clique perdido), a ação é repetida a cada
-  // cinco tentativas, como faria uma pessoa.
-  const comRepeticaoDaAcao = async (acao, predicado, rotulo, tentativas = 30) => {
-    for (let tentativa = 0; tentativa < tentativas; tentativa++) {
-      if (tentativa % 5 === 0) acao();
-      await new Promise(resolve => setTimeout(resolve, 60000));
-      if (predicado()) return;
+  // Diagnóstico do estado real da tela quando um passo não chega onde devia.
+  // Antes (27/10/2026) a mensagem era só "não concluiu" e três runs ficaram vermelhos sem causa.
+  const diagnosticoWorkspace = () => {
+    try {
+      const texto = (id) => {
+        const el = document.getElementById(id);
+        return el ? String(el.textContent || '').trim().slice(0, 140) : '(elemento ausente)';
+      };
+      const nomes = (seletor) => [...document.querySelectorAll(seletor)]
+        .map((el) => String(el.textContent || '').trim().slice(0, 32));
+      const salvar = document.getElementById('btn-workspace-salvar');
+      return JSON.stringify({
+        status: texto('workspace-status'),
+        projeto: (document.getElementById('workspace-nome-projeto') || {}).value || null,
+        arquivo: (document.getElementById('workspace-nome-arquivo') || {}).value || null,
+        projetos: nomes('#workspace-lista-projetos .workspace-projeto').slice(0, 8),
+        arquivos: nomes('#workspace-lista-arquivos .workspace-arquivo').slice(0, 8),
+        salvarDesativado: salvar ? !!salvar.disabled : null,
+        editorDesativado: (document.getElementById('workspace-editor') || {}).disabled === true,
+        nomeDesativado: (document.getElementById('workspace-nome-arquivo') || {}).disabled === true,
+        conflitoVisivel: !!document.getElementById('workspace-conflito-arquivo')
+          && getComputedStyle(document.getElementById('workspace-conflito-arquivo')).display !== 'none'
+      });
+    } catch (erroDiagnostico) {
+      return 'diagnóstico indisponível: ' + (erroDiagnostico && erroDiagnostico.message);
     }
-    if (predicado()) return;
-    throw new Error('Workspace não concluiu a transação local controlada: ' + (rotulo || 'etapa sem nome'));
   };
-  const esperarWorkspace = async (predicado, rotulo, tentativas = 30) => {
+  const esperarWorkspace = async (predicado, rotulo, tentativas = 90) => {
     for (let tentativa = 0; tentativa < tentativas; tentativa++) {
       if (predicado()) return;
       // O Chromium agenda IndexedDB no relógio virtual. Um salto espaçado dá
@@ -258,9 +271,10 @@ teste_lista = """<script>
       await new Promise(resolve => setTimeout(resolve, 60000));
     }
     if (predicado()) return;
-    throw new Error('Workspace não concluiu a transação local controlada: ' + (rotulo || 'etapa sem nome'));
+    throw new Error('Workspace não concluiu a transação local controlada: ' + (rotulo || 'etapa sem nome')
+      + ' | estado: ' + diagnosticoWorkspace());
   };
-  const esperarOrganizacao = async (predicado, rotulo, tentativas = 20) => {
+  const esperarOrganizacao = async (predicado, rotulo, tentativas = 60) => {
     for (let tentativa = 0; tentativa < tentativas; tentativa++) {
       if (predicado()) return;
       // Favoritos também usam IndexedDB real; respeite o mesmo agendamento
@@ -419,10 +433,8 @@ teste_lista = """<script>
     novoProjeto.value = nomeProjetoRenomeacaoArquivo;
     document.getElementById('btn-workspace-criar-projeto').click();
     await esperarWorkspace(() => porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjetoRenomeacaoArquivo), 'criar projeto para renomeação de arquivo concorrente');
-    await comRepeticaoDaAcao(
-      () => document.getElementById('btn-workspace-novo-arquivo').click(),
-      () => !nome.disabled && !editor.disabled,
-      'criar arquivo para renomeação concorrente');
+    document.getElementById('btn-workspace-novo-arquivo').click();
+    await esperarWorkspace(() => !nome.disabled && !editor.disabled, 'criar arquivo para renomeação concorrente');
     nome.value = nomeBaseRenomeacaoArquivo;
     nome.dispatchEvent(new Event('input', { bubbles: true }));
     editor.value = 'conteúdo sintético para renomeação concorrente';
@@ -910,7 +922,7 @@ teste_lista = """<script>
     const resultadoWorkspace = await testarWorkspace();
     document.body.dataset.browserE2e = 'PASS: favoritos locais marcaram, filtraram e apagaram sem rede; backup local dos favoritos exportou e restaurou substituindo a fixture sem rede; coleções locais criaram, associaram, filtraram e apagaram sem rede; backup local das coleções exportou e restaurou substituindo a fixture sem rede; busca ativa manteve carregar mais; nova conversa oculta; alvo da página 3 visível; PWA protegeu rascunho; rascunho local opt-in restaurou sem rede' + resultadoWorkspace;
   } catch (erro) {
-    document.body.dataset.browserE2e = 'FAIL: ' + String((erro && erro.message) || erro).slice(0, 180);
+    document.body.dataset.browserE2e = 'FAIL: ' + String((erro && erro.message) || erro).slice(0, 1200);
   }
 })();
 </script>"""
@@ -922,7 +934,7 @@ try {
   if (!texto.includes('Tokens nunca são aceitos por link.')) throw new Error('guarda de token por link não apareceu');
   document.body.dataset.browserE2e = 'PASS: rota limpar removeu t da URL e mostrou a guarda de token';
 } catch (erro) {
-  document.body.dataset.browserE2e = 'FAIL: ' + String((erro && erro.message) || erro).slice(0, 180);
+  document.body.dataset.browserE2e = 'FAIL: ' + String((erro && erro.message) || erro).slice(0, 1200);
 }
 </script>"""
 
