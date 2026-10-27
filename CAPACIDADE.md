@@ -1,6 +1,6 @@
 # Placar de capacidade do Chat
 
-Atualizado: `2026-10-26T17:11:46.087Z`
+Atualizado: `2026-10-27T16:17:42.275Z`
 
 **Indicador interno: 100/100.** Indicador interno de cobertura; não é resultado observável do produto, não é teste de QI, consciência nem garantia de disponibilidade.
 **Estado do canal real (tráfego controlado):** última rodada controlada: 38/38 PASS; falha ampla anterior preservada: 37/38 PASS, 1 falha(s) (provas/teste-email-r3-2026-10-18-0211.md); ainda não mede satisfação humana; reteste focado de foto mais recente: PASS (amostra única, não substitui a rodada completa).
@@ -14,10 +14,10 @@ Atualizado: `2026-10-26T17:11:46.087Z`
 | autonomia verificável | 15/15 | bateria=sim, vigia=sim, testes=sim |
 | pesquisa e criatividade aplicada | 15/15 | fontes públicas=sim, web isolada=sim, experimentação=sim |
 
-Rastreabilidade da qualidade: ainda não certificada (5 amostra(s), 50 resposta(s), 18 questão(ões)). A nota interna não vira certificação rastreável nem resultado do produto.
+Rastreabilidade da qualidade: ainda não certificada (5 amostra(s), 50 resposta(s), 19 questão(ões)). A nota interna não vira certificação rastreável nem resultado do produto.
 
 ## Próximas melhorias guiadas por sinal
-- rastreabilidade da qualidade: completar 3 amostras recentes distintas, 30 respostas e 20 questões; fotografia atual: 5 amostra(s), 50 resposta(s), 18 questão(ões). O 100/100 interno não certifica essa rastreabilidade.
+- rastreabilidade da qualidade: completar 3 amostras recentes distintas, 30 respostas e 20 questões; fotografia atual: 5 amostra(s), 50 resposta(s), 19 questão(ões). O 100/100 interno não certifica essa rastreabilidade.
 
 ## Limites honestos
 - Serviços gratuitos podem atrasar, interromper agendas ou limitar recursos.
