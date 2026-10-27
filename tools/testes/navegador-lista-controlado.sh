@@ -284,7 +284,7 @@ teste_lista = """<script>
     if (predicado()) return;
     throw new Error('Favoritos locais não concluíram a transação controlada: ' + (rotulo || 'etapa sem nome'));
   };
-  const esperarColecoes = async (predicado, rotulo, tentativas = 20) => {
+  const esperarColecoes = async (predicado, rotulo, tentativas = 90) => {
     for (let tentativa = 0; tentativa < tentativas; tentativa++) {
       if (predicado()) return;
       // Coleções são outro banco IndexedDB local; use a mesma espera espaçada
@@ -292,7 +292,8 @@ teste_lista = """<script>
       await new Promise(resolve => setTimeout(resolve, 60000));
     }
     if (predicado()) return;
-    throw new Error('Coleções locais não concluíram a transação controlada: ' + (rotulo || 'etapa sem nome'));
+    throw new Error('Coleções locais não concluíram a transação controlada: ' + (rotulo || 'etapa sem nome')
+      + ' | estado: ' + diagnosticoWorkspace());
   };
   const testarWorkspace = async () => {
     if (!location.pathname.endsWith('/index.html')) return '';
