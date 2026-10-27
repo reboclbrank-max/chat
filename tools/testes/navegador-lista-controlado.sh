@@ -82,10 +82,15 @@ try {
 </script>"""
 teste_lista = """<script>
 (async () => {
+  // Espera curta de interface. Também cede tempo REAL: várias destas esperas dependem de uma
+  // escrita no IndexedDB terminar (a tela só muda depois), e sob tempo virtual o relógio salta
+  // antes de o banco responder.
   const esperar = async (predicado, limite = 5000, etapa = 'etapa sem rótulo') => {
     const fim = Date.now() + limite;
+    let voltas = 0;
     while (Date.now() < fim) {
       if (predicado()) return;
+      if (voltas++ % 4 === 0 && typeof cederTempoReal === 'function') await cederTempoReal(15);
       await new Promise(resolve => setTimeout(resolve, 20));
     }
     throw new Error('tempo esgotado na fixture: ' + etapa);
@@ -263,9 +268,21 @@ teste_lista = """<script>
       return 'diagnóstico indisponível: ' + (erroDiagnostico && erroDiagnostico.message);
     }
   };
+  // Cede tempo REAL ao IndexedDB antes de cada tentativa (ver o endpoint /__espera no servidor
+  // da fixture). Sem isto o relógio virtual corre 90 minutos em milissegundos reais e o
+  // Workspace fica preso em "Preparando Workspace local neste navegador…" — foi o vermelho do
+  // run 40535054734, com o estado real registrado no diagnóstico.
+  const cederTempoReal = async (ms) => {
+    try {
+      await fetch('/__espera?ms=' + (ms || 30), { cache: 'no-store' });
+    } catch (erro) {
+      // servidor da fixture pode não ter a rota (execução antiga): seguir sem ela
+    }
+  };
   const esperarWorkspace = async (predicado, rotulo, tentativas = 90) => {
     for (let tentativa = 0; tentativa < tentativas; tentativa++) {
       if (predicado()) return;
+      await cederTempoReal(30);
       // O Chromium agenda IndexedDB no relógio virtual. Um salto espaçado dá
       // à transação real a vez de concluir, sem inundá-la com polling de 20 ms.
       await new Promise(resolve => setTimeout(resolve, 60000));
@@ -277,6 +294,7 @@ teste_lista = """<script>
   const esperarOrganizacao = async (predicado, rotulo, tentativas = 60) => {
     for (let tentativa = 0; tentativa < tentativas; tentativa++) {
       if (predicado()) return;
+      await cederTempoReal(30);
       // Favoritos também usam IndexedDB real; respeite o mesmo agendamento
       // virtual sem transformar uma espera de persistência em falso negativo.
       await new Promise(resolve => setTimeout(resolve, 60000));
@@ -287,6 +305,7 @@ teste_lista = """<script>
   const esperarColecoes = async (predicado, rotulo, tentativas = 90) => {
     for (let tentativa = 0; tentativa < tentativas; tentativa++) {
       if (predicado()) return;
+      await cederTempoReal(30);
       // Coleções são outro banco IndexedDB local; use a mesma espera espaçada
       // do relógio virtual sem tocar em rede, perfil real ou conversa do dono.
       await new Promise(resolve => setTimeout(resolve, 60000));
@@ -975,6 +994,13 @@ const responderJson = (resposta, dado) => {
 };
 http.createServer((requisicao, resposta) => {
   const url = new URL(requisicao.url, `http://127.0.0.1:${porta}`);
+  // Espera em tempo REAL: sob --virtual-time-budget o relógio da página salta e o IndexedDB
+  // (que é I/O de verdade) nunca termina. Enquanto há requisição de rede pendente o Chrome
+  // PAUSA o tempo virtual, então esta rota é a forma de dar tempo real ao armazenamento.
+  if (url.pathname === '/__espera') {
+    const ms = Math.min(500, Math.max(0, Number(url.searchParams.get('ms') || 20)));
+    return setTimeout(() => responderJson(resposta, { ok: true }), ms);
+  }
   if (url.pathname === '/user') return responderJson(resposta, { login: 'fixture-controlada' });
   if (url.pathname === '/repos/reboclbrank-max/agente') return responderJson(resposta, { full_name: 'fixture/controlada' });
   if (url.pathname === '/repos/reboclbrank-max/agente/issues') {
