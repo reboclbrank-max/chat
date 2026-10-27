@@ -65,6 +65,20 @@ confere('!youtube mostra o que o YouTube confirmou, não o que a casa achou', ()
   rotas.forEach((r) => assert(linhaDaRota(r, '!youtube'), r + ' sem o comando'));
 });
 
+confere('!views mostra número medido da API, com data, e não estima', () => {
+  const l = linhaDe('!views');
+  assert(l, 'comando ausente');
+  assert(l.includes('posts/youtube-metricas.json'), 'não lê o arquivo medido');
+  assert(l.includes('medido_em'), 'não mostra quando foi medido');
+  assert(l.includes('views'), 'não mostra visualizações');
+  assert(l.includes('Não invento') || l.includes('não invento') || l.includes('invento número'),
+    'não declara que não estima');
+  assert(!/simulad|estimad|projetad/i.test(l), 'o comando fala de número estimado');
+  ['index.html', 'direto.html', 'ligar.html', 'limpar.html'].forEach((r) => {
+    assert(linhaDaRota(r, '!views'), r + ' sem o comando');
+  });
+});
+
 confere('!cofre lista nomes e datas, nunca valores', () => {
   const l = linhaDe('!cofre');
   assert(l, 'comando ausente');
@@ -94,17 +108,17 @@ confere('os comandos novos usam só hosts permitidos pela CSP', () => {
   assert(m[0].includes('raw.githubusercontent.com'), 'raw.githubusercontent fora do connect-src');
 });
 
-confere('as quatro rotas carregam os seis comandos', () => {
+confere('as quatro rotas carregam os sete comandos', () => {
   for (const rota of ['index.html', 'direto.html', 'ligar.html', 'limpar.html']) {
     const texto = ler(rota);
-    for (const cmd of ['!farol', '!video', '!youtube', '!erros', '!cofre', '!postar']) {
+    for (const cmd of ['!farol', '!video', '!youtube', '!views', '!erros', '!cofre', '!postar']) {
       assert(texto.includes("startsWith('" + cmd + "')"), rota + ' sem ' + cmd);
     }
   }
 });
 
 confere('nenhum comando novo engole erro em silêncio', () => {
-  for (const cmd of ['!farol', '!video', '!youtube', '!erros', '!cofre', '!postar']) {
+  for (const cmd of ['!farol', '!video', '!youtube', '!views', '!erros', '!cofre', '!postar']) {
     const l = linhaDe(cmd);
     const vazios = (l.match(/catch \(e\) \{\s*\}/g) || []).length;
     assert(vazios === 0, cmd + ' tem catch vazio');
