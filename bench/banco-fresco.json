@@ -1,0 +1,717 @@
+{
+ "fonte": "banco fresco da rodada 93 — escrito depois dos ajustes, nunca usado para tunar",
+ "itens": [
+  {
+   "id": 1,
+   "tipo": "mat",
+   "q": "Quanto é 47 + 23 × 9?",
+   "g": [
+    "254"
+   ]
+  },
+  {
+   "id": 2,
+   "tipo": "mat",
+   "q": "Quanto é (47 + 23) × 2?",
+   "g": [
+    "140"
+   ]
+  },
+  {
+   "id": 3,
+   "tipo": "mat",
+   "q": "Quanto é 74²?",
+   "g": [
+    "5476"
+   ]
+  },
+  {
+   "id": 4,
+   "tipo": "mat",
+   "q": "Quanto é a raiz quadrada de 289?",
+   "g": [
+    "17"
+   ]
+  },
+  {
+   "id": 5,
+   "tipo": "mat",
+   "q": "Quanto é 12% de 250?",
+   "g": [
+    "30"
+   ]
+  },
+  {
+   "id": 6,
+   "tipo": "mat",
+   "q": "Quanto é o dobro de 137?",
+   "g": [
+    "274"
+   ]
+  },
+  {
+   "id": 7,
+   "tipo": "mat",
+   "q": "Quanto é a metade de 86?",
+   "g": [
+    "43"
+   ]
+  },
+  {
+   "id": 8,
+   "tipo": "mat",
+   "q": "Quanto é o triplo de 41?",
+   "g": [
+    "123"
+   ]
+  },
+  {
+   "id": 9,
+   "tipo": "mat",
+   "q": "Quanto é 9³?",
+   "g": [
+    "729"
+   ]
+  },
+  {
+   "id": 10,
+   "tipo": "mat",
+   "q": "Quanto é 151 − 68?",
+   "g": [
+    "83"
+   ]
+  },
+  {
+   "id": 11,
+   "tipo": "mat",
+   "q": "Quanto é 13 × 17?",
+   "g": [
+    "221"
+   ]
+  },
+  {
+   "id": 12,
+   "tipo": "mat",
+   "q": "Quanto é 144 ÷ 12?",
+   "g": [
+    "12"
+   ]
+  },
+  {
+   "id": 13,
+   "tipo": "mat",
+   "q": "Um retângulo tem 12 cm de largura e 7 cm de altura. Qual é a área?",
+   "g": [
+    "84"
+   ]
+  },
+  {
+   "id": 14,
+   "tipo": "mat",
+   "q": "Quantos lados tem um hexágono?",
+   "g": [
+    "6",
+    "seis"
+   ]
+  },
+  {
+   "id": 15,
+   "tipo": "seq",
+   "q": "Próximo: 5, 12, 19, 26,?",
+   "g": [
+    "33"
+   ]
+  },
+  {
+   "id": 16,
+   "tipo": "seq",
+   "q": "Próximo: 8, 16, 24, 32,?",
+   "g": [
+    "40"
+   ]
+  },
+  {
+   "id": 17,
+   "tipo": "seq",
+   "q": "Próximo: 6, 18, 54, 162,?",
+   "g": [
+    "486"
+   ]
+  },
+  {
+   "id": 18,
+   "tipo": "seq",
+   "q": "Próximo: 7, 14, 28, 56,?",
+   "g": [
+    "112"
+   ]
+  },
+  {
+   "id": 19,
+   "tipo": "seq",
+   "q": "Próximo: 9, 18, 36, 72,?",
+   "g": [
+    "144"
+   ]
+  },
+  {
+   "id": 20,
+   "tipo": "seq",
+   "q": "Próximo: 100, 50, 25,?",
+   "g": [
+    "12.5"
+   ]
+  },
+  {
+   "id": 21,
+   "tipo": "seq",
+   "q": "Próximo: 44, 38, 32, 26,?",
+   "g": [
+    "20"
+   ]
+  },
+  {
+   "id": 22,
+   "tipo": "seq",
+   "q": "Próximo: 2, 10, 50, 250,?",
+   "g": [
+    "1250"
+   ]
+  },
+  {
+   "id": 23,
+   "tipo": "seq",
+   "q": "Próximo: 11, 33, 99, 297,?",
+   "g": [
+    "891"
+   ]
+  },
+  {
+   "id": 24,
+   "tipo": "seq",
+   "q": "Próximo: 81, 27, 9,?",
+   "g": [
+    "3"
+   ]
+  },
+  {
+   "id": 25,
+   "tipo": "seq",
+   "q": "Próximo: 90, 45, 22.5,?",
+   "g": [
+    "11.25"
+   ]
+  },
+  {
+   "id": 26,
+   "tipo": "seq",
+   "q": "Próximo: 3, 9, 27, 81,?",
+   "g": [
+    "243"
+   ]
+  },
+  {
+   "id": 27,
+   "tipo": "logica",
+   "q": "Um relógio marca 3h. Que horas marcará daqui a 21 horas (0-23)?",
+   "g": [
+    "0",
+    "zero",
+    "0h"
+   ]
+  },
+  {
+   "id": 28,
+   "tipo": "logica",
+   "q": "Numa fila de 15 pessoas, Ana é a 4ª. Quantas pessoas estão atrás dela?",
+   "g": [
+    "11"
+   ]
+  },
+  {
+   "id": 29,
+   "tipo": "logica",
+   "q": "Numa fila, João é o 9º. Quantas pessoas estão à frente dele?",
+   "g": [
+    "8",
+    "oito"
+   ]
+  },
+  {
+   "id": 30,
+   "tipo": "logica",
+   "q": "Se você ultrapassa o 2º colocado, em que posição fica?",
+   "g": [
+    "2",
+    "segundo",
+    "2º"
+   ]
+  },
+  {
+   "id": 31,
+   "tipo": "logica",
+   "q": "Uma torneira pinga 3 litros por minuto. Quantos litros em 14 minutos?",
+   "g": [
+    "42"
+   ]
+  },
+  {
+   "id": 32,
+   "tipo": "logica",
+   "q": "Se 5 cadernos custam R$30, quanto custam 8?",
+   "g": [
+    "48"
+   ]
+  },
+  {
+   "id": 33,
+   "tipo": "logica",
+   "q": "Quantos meses do ano têm 31 dias?",
+   "g": [
+    "7",
+    "sete"
+   ]
+  },
+  {
+   "id": 34,
+   "tipo": "logica",
+   "q": "Quantos dias tem fevereiro em um ano comum?",
+   "g": [
+    "28",
+    "vinte e oito"
+   ]
+  },
+  {
+   "id": 35,
+   "tipo": "logica",
+   "q": "Maria tem 3 maçãs a mais que Ana. Ana tem 12. Quantas Maria tem?",
+   "g": [
+    "15"
+   ]
+  },
+  {
+   "id": 36,
+   "tipo": "logica",
+   "q": "Um número é maior que 30 e menor que 33. Que número é?",
+   "g": [
+    "31",
+    "32"
+   ]
+  },
+  {
+   "id": 37,
+   "tipo": "logica",
+   "q": "Quantas patas têm 4 cachorros?",
+   "g": [
+    "16"
+   ]
+  },
+  {
+   "id": 38,
+   "tipo": "logica",
+   "q": "Quantos dias tem dois anos comuns?",
+   "g": [
+    "730"
+   ]
+  },
+  {
+   "id": 39,
+   "tipo": "lingua",
+   "q": "Qual é o coletivo de peixes?",
+   "g": [
+    "cardume",
+    "cardume de peixes"
+   ],
+   "alts": [
+    "banco"
+   ]
+  },
+  {
+   "id": 40,
+   "tipo": "lingua",
+   "q": "Qual é o coletivo de abelhas?",
+   "g": [
+    "enxame",
+    "colmeia"
+   ],
+   "alts": [
+    "enxame de abelhas"
+   ]
+  },
+  {
+   "id": 41,
+   "tipo": "lingua",
+   "q": "Qual o feminino de 'gato'?",
+   "g": [
+    "gata"
+   ]
+  },
+  {
+   "id": 42,
+   "tipo": "lingua",
+   "q": "Qual o plural de 'cidadão'?",
+   "g": [
+    "cidadãos"
+   ]
+  },
+  {
+   "id": 43,
+   "tipo": "lingua",
+   "q": "Qual o plural de 'caracol'?",
+   "g": [
+    "caracóis"
+   ]
+  },
+  {
+   "id": 44,
+   "tipo": "lingua",
+   "q": "Qual o superlativo de 'salgado'?",
+   "g": [
+    "salgadíssimo"
+   ]
+  },
+  {
+   "id": 45,
+   "tipo": "lingua",
+   "q": "Qual o aumentativo de 'livro'?",
+   "g": [
+    "livrão",
+    "livrona"
+   ]
+  },
+  {
+   "id": 46,
+   "tipo": "lingua",
+   "q": "Qual o diminutivo de 'pão'?",
+   "g": [
+    "pãozinho"
+   ]
+  },
+  {
+   "id": 47,
+   "tipo": "lingua",
+   "q": "Qual o antônimo de 'claro'?",
+   "g": [
+    "escuro"
+   ]
+  },
+  {
+   "id": 48,
+   "tipo": "lingua",
+   "q": "Qual o antônimo de 'triste'?",
+   "g": [
+    "alegre",
+    "feliz"
+   ]
+  },
+  {
+   "id": 49,
+   "tipo": "lingua",
+   "q": "Qual o sinônimo de 'rápido'?",
+   "g": [
+    "veloz",
+    "ligeiro"
+   ],
+   "alts": [
+    "rápida"
+   ]
+  },
+  {
+   "id": 50,
+   "tipo": "lingua",
+   "q": "Quantas sílabas tem a palavra 'janela'?",
+   "g": [
+    "3",
+    "três"
+   ]
+  },
+  {
+   "id": 51,
+   "tipo": "lingua",
+   "q": "Qual a classe da palavra 'porém'?",
+   "g": [
+    "conjunção",
+    "conjuncao"
+   ]
+  },
+  {
+   "id": 52,
+   "tipo": "lingua",
+   "q": "Qual a figura de linguagem em 'morri de saudade'?",
+   "g": [
+    "hipérbole",
+    "hiperbole"
+   ]
+  },
+  {
+   "id": 53,
+   "tipo": "eng",
+   "q": "Past tense of 'go'?",
+   "g": [
+    "went"
+   ]
+  },
+  {
+   "id": 54,
+   "tipo": "eng",
+   "q": "Past tense of 'take'?",
+   "g": [
+    "took"
+   ]
+  },
+  {
+   "id": 55,
+   "tipo": "eng",
+   "q": "Past tense of 'swim'?",
+   "g": [
+    "swam"
+   ]
+  },
+  {
+   "id": 56,
+   "tipo": "eng",
+   "q": "Plural of 'mouse'?",
+   "g": [
+    "mice"
+   ]
+  },
+  {
+   "id": 57,
+   "tipo": "eng",
+   "q": "Plural of 'child'?",
+   "g": [
+    "children"
+   ]
+  },
+  {
+   "id": 58,
+   "tipo": "eng",
+   "q": "Plural of 'analysis'?",
+   "g": [
+    "analyses"
+   ]
+  },
+  {
+   "id": 59,
+   "tipo": "eng",
+   "q": "Comparative of 'far'?",
+   "g": [
+    "farther",
+    "further"
+   ]
+  },
+  {
+   "id": 60,
+   "tipo": "eng",
+   "q": "Superlative of 'bad'?",
+   "g": [
+    "worst"
+   ]
+  },
+  {
+   "id": 61,
+   "tipo": "eng",
+   "q": "Superlative of 'happy'?",
+   "g": [
+    "happiest"
+   ]
+  },
+  {
+   "id": 62,
+   "tipo": "eng",
+   "q": "Comparative of 'old'?",
+   "g": [
+    "older",
+    "elder"
+   ]
+  },
+  {
+   "id": 63,
+   "tipo": "eng",
+   "q": "Superlative of 'difficult'?",
+   "g": [
+    "most difficult"
+   ]
+  },
+  {
+   "id": 64,
+   "tipo": "eng",
+   "q": "Past tense of 'teach'?",
+   "g": [
+    "taught"
+   ]
+  },
+  {
+   "id": 65,
+   "tipo": "brasil",
+   "q": "Qual a capital de Alagoas?",
+   "g": [
+    "Maceió"
+   ]
+  },
+  {
+   "id": 66,
+   "tipo": "brasil",
+   "q": "Qual a capital do Ceará?",
+   "g": [
+    "Fortaleza"
+   ]
+  },
+  {
+   "id": 67,
+   "tipo": "brasil",
+   "q": "Qual a capital de Santa Catarina?",
+   "g": [
+    "Florianópolis"
+   ]
+  },
+  {
+   "id": 68,
+   "tipo": "brasil",
+   "q": "Qual a capital do Rio Grande do Sul?",
+   "g": [
+    "Porto Alegre"
+   ]
+  },
+  {
+   "id": 69,
+   "tipo": "brasil",
+   "q": "Quantas unidades federativas o Brasil tem?",
+   "g": [
+    "27",
+    "vinte e sete",
+    "26 estados e o distrito federal"
+   ]
+  },
+  {
+   "id": 70,
+   "tipo": "brasil",
+   "q": "Qual é a moeda do Brasil?",
+   "g": [
+    "real",
+    "r$"
+   ]
+  },
+  {
+   "id": 71,
+   "tipo": "brasil",
+   "q": "Quantos estados o Brasil tem?",
+   "g": [
+    "26",
+    "vinte e seis"
+   ]
+  },
+  {
+   "id": 72,
+   "tipo": "brasil",
+   "q": "Qual é a sigla de São Paulo?",
+   "g": [
+    "sp"
+   ]
+  },
+  {
+   "id": 73,
+   "tipo": "brasil",
+   "q": "Qual é a sigla da Bahia?",
+   "g": [
+    "ba"
+   ]
+  },
+  {
+   "id": 74,
+   "tipo": "brasil",
+   "q": "Qual é a língua oficial do Brasil?",
+   "g": [
+    "português",
+    "português brasileiro",
+    "portugues"
+   ]
+  },
+  {
+   "id": 75,
+   "tipo": "mundo",
+   "q": "Qual é a capital da Noruega?",
+   "g": [
+    "oslo",
+    "cristiânia"
+   ]
+  },
+  {
+   "id": 76,
+   "tipo": "mundo",
+   "q": "Qual é a capital do Canadá?",
+   "g": [
+    "ottawa"
+   ]
+  },
+  {
+   "id": 77,
+   "tipo": "mundo",
+   "q": "Qual é a capital do Egito?",
+   "g": [
+    "cairo"
+   ]
+  },
+  {
+   "id": 78,
+   "tipo": "mundo",
+   "q": "Qual é o símbolo químico do sódio?",
+   "g": [
+    "na"
+   ]
+  },
+  {
+   "id": 79,
+   "tipo": "mundo",
+   "q": "Qual é o símbolo químico do ferro?",
+   "g": [
+    "fe"
+   ]
+  },
+  {
+   "id": 80,
+   "tipo": "mundo",
+   "q": "Qual é o elemento de símbolo Ca?",
+   "g": [
+    "cálcio"
+   ]
+  },
+  {
+   "id": 81,
+   "tipo": "mundo",
+   "q": "Qual é o maior planeta do sistema solar?",
+   "g": [
+    "júpiter",
+    "jupiter"
+   ]
+  },
+  {
+   "id": 82,
+   "tipo": "mundo",
+   "q": "Quantos planetas tem o sistema solar?",
+   "g": [
+    "8",
+    "oito"
+   ]
+  },
+  {
+   "id": 83,
+   "tipo": "mundo",
+   "q": "Qual é a moeda do Japão?",
+   "g": [
+    "iene",
+    "ien",
+    "yen"
+   ]
+  },
+  {
+   "id": 84,
+   "tipo": "mundo",
+   "q": "Qual é o rio mais extenso do mundo?",
+   "g": [
+    "nilo",
+    "amazonas"
+   ]
+  }
+ ]
+}

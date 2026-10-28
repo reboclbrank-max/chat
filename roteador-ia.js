@@ -26,7 +26,509 @@
     { id: 'coherecode',nome: 'Cohere-North-Mini (Kilo)',      base: 'https://api.kilo.ai/api/gateway',                          modelo: 'cohere/north-mini-code:free',                       classe: 'leve' }
   ];
 
-  var SYS = 'Responda em uma linha, apenas o resultado pedido. Sem explicação, sem repetir a pergunta.';
+  /* Modelos da OVH devolvem só 'reasoning' às vezes. Devolver o monólogo inteiro é defeito:
+     a pessoa pergunta e recebe "Thinking Process: 1. Analyze...". Aqui a conclusão é extraída. */
+  var CABECALHO_RACIOCINIO = /^(thinking\s*process|reasoning|analysis|analisando|cadeia de pensamento|chain of thought|step\s*1|1\.\s*analy|refinement|constraint says|draft|verify|given\b)/i;
+  var PREAMBULO = /^(thinking|reasoning|analysis|analisando|analiso|let me|let's|hmm|okay|ok\b|wait|first,|firstly|next,|the user|user asks|the question|i need|i should|i'll|we need|looking at|actually|so,|now,|vou |preciso |deixa eu|refinement|constraint|draft|verify|double-check|checking|note:|final check|given\b|the constraint|given that)/i;
+
+  var CURTAS_OK = { sim: 1, nao: 1, 'não': 1, yes: 1, no: 1, oui: 1, ok: 1, 'é': 1 };
+
+  /* devolve texto utilizável ou '' (resposta com preâmbulo de raciocínio não serve) */
+  function sanear(t) {
+    var s = String(t || '').trim();
+    if (!util(s)) return '';
+    if (/^[\d.,\s%°+\-/]+$/.test(s)) return s;
+    if (CABECALHO_RACIOCINIO.test(s)) {
+      var marcado = /(?:resposta|answer|resultado|result|conclus[aã]o)\s*(?:[:\-]|(?:é|e|is)\b)\s*(.+)$/i.exec(s);
+      return (marcado && util(marcado[1])) ? marcado[1].trim() : '';
+    }
+    // frase minúscula com ponto final e sem número é resto de raciocínio ("the price."), não resposta
+    if (/^[a-zà-ÿ]/.test(s) && !/\d/.test(s) && s.split(/\s+/).length >= 2 && /[.!]$/.test(s)) return '';
+    // palavra de 3 letras capitalizada é resposta cortada ("Hip" de hipérbole); sigla/elemento de 1-2 letras passa
+    if (/^[A-ZÀ-Ý][a-zà-ÿ]{2}$/.test(s) && !CURTAS_OK[s.toLowerCase()]) return '';
+    if (!PREAMBULO.test(s)) return s;
+    var c = extrairConclusao(s);
+    if (c && util(c) && !PREAMBULO.test(c) && c !== s) return c;
+    // última frase do texto, se ela própria não for preâmbulo ("Let me think. Biggest")
+    var frases = s.split(/(?<=[.!?])\s+/).map(function (f) { return f.trim(); }).filter(Boolean);
+    for (var i = frases.length - 1; i >= 1; i--) {
+      if (!PREAMBULO.test(frases[i]) && util(frases[i])) return frases[i];
+    }
+    return '';
+  }
+
+  function extrairConclusao(raciocinio) {
+    var linhas = String(raciocinio).split(/\n+/).map(function (l) { return l.trim(); }).filter(Boolean);
+    for (var i = linhas.length - 1; i >= 0; i--) {
+      var l = linhas[i].replace(/^[-*•\d.)\s]+/, '').trim();
+      if (!l || /^(thinking|analysis|analisar|step|passo)\b/i.test(l)) continue;
+      if (l.length < 2 || l.length > 160) continue;
+      var final = /(?:resposta|answer|resultado|result|conclus[aã]o|portanto|therefore|logo)\s*(?:[:\-]|(?:é|e|is)\b)\s*(.+)$/i.exec(l);
+      if (final) return final[1].trim();
+      if (/^[\w\sÀ-ÿ,'"()\-]+$/.test(l) && !/^(ok|sim|nao|não)$/i.test(l)) return l;
+    }
+    return '';
+  }
+
+  /* ================= BASE LOCAL DE PORTUGUÊS (R$ 0, sem modelo) =================
+     Formas irregulares e coletivos são fatos de língua, não opinião: ficam em tabela.
+     Regras (plural, diminutivo, aumentativo, sílabas) completam o que é regular. */
+  var COLETIVOS = {
+    lobo: 'alcateia', lobos: 'alcateia', 'lobo-guará': 'alcateia', cão: 'matilha', cães: 'matilha', cachorro: 'matilha', cachorros: 'matilha',
+    peixe: 'cardume', peixes: 'cardume', ave: 'revoada', aves: 'revoada', pássaro: 'revoada', pássaros: 'revoada', passaro: 'revoada', passaros: 'revoada',
+    abelha: 'enxame', abelhas: 'enxame', formiga: 'formigueiro', formigas: 'formigueiro', boi: 'boiada', bois: 'boiada', vaca: 'rebanho', vacas: 'rebanho',
+    cavalo: 'manada', cavalos: 'manada', ovelha: 'rebanho', ovelhas: 'rebanho', cabra: 'rebanho', cabras: 'rebanho', elefante: 'manada', elefantes: 'manada',
+    estrela: 'constelação', estrelas: 'constelação', livro: 'biblioteca', livros: 'biblioteca', quadro: 'pinacoteca', quadros: 'pinacoteca',
+    ilha: 'arquipélago', ilhas: 'arquipélago', montanha: 'cordilheira', montanhas: 'cordilheira', montanha_: 'serra',
+    uva: 'cacho', uvas: 'cacho', flor: 'ramalhete', flores: 'ramalhete', músico: 'orquestra', músicos: 'orquestra',
+    ator: 'elenco', atores: 'elenco', jogador: 'time', jogadores: 'time', aluno: 'turma', alunos: 'turma',
+    soldado: 'tropa', soldados: 'tropa', índio: 'tribo', 'indio': 'tribo', 'índios': 'tribo', ladrão: 'quadrilha', ladrões: 'quadrilha',
+    árvore: 'floresta', árvores: 'floresta', porco: 'vara', porcos: 'vara', camelo: 'cáfila', camelos: 'cáfila',
+    macaco: 'bando', macacos: 'bando', hiena: 'clã', hienas: 'clã', mosquito: 'nuvem', mosquitos: 'nuvem',
+    navio: 'frota', navios: 'frota', avião: 'esquadrilha', aviões: 'esquadrilha', caneta: 'lote', papel: 'resma',
+    chave: 'molho', chaves: 'molho', cebola: 'réstia', cebolas: 'réstia', banana: 'penca', bananas: 'penca', dente: 'arcada', dentes: 'arcada'
+  };
+  var IRREGULARES = {
+    feminino: {
+      ator: 'atriz', 'ator de voz': 'atriz', padre: 'madre', cavalo: 'égua', carneiro: 'ovelha', boi: 'vaca', galo: 'galinha',
+      homem: 'mulher', pai: 'mãe', irmão: 'irmã', genro: 'nora', padrasto: 'madrasta', compadre: 'comadre', padrinho: 'madrinha',
+      embaixador: 'embaixatriz', zangão: 'abelha', cão: 'cadela', cachorro: 'cadela', rei: 'rainha', duque: 'duquesa',
+      príncipe: 'princesa', imperador: 'imperatriz', mestre: 'mestra', poeta: 'poetisa', 'ator principal': 'protagonista',
+      avô: 'avó', 'tio': 'tia', 'sobrinho': 'sobrinha', 'neto': 'neta', 'sogro': 'sogra', 'cunhado': 'cunhada'
+    },
+    masculino: {
+      abelha: 'zangão', égua: 'cavalo', ovelha: 'carneiro', vaca: 'boi', galinha: 'galo', mulher: 'homem',
+      mãe: 'pai', irmã: 'irmão', nora: 'genro', madrasta: 'padrasto', comadre: 'compadre', madrinha: 'padrinho',
+      rainha: 'rei', duquesa: 'duque', princesa: 'príncipe', imperatriz: 'imperador', poetisa: 'poeta', cadela: 'cão',
+      avó: 'avô', tia: 'tio', sobrinha: 'sobrinho', neta: 'neto', sogra: 'sogro', cunhada: 'cunhado'
+    },
+    superlativo: { bom: 'ótimo', mau: 'péssimo', grande: 'máximo', pequeno: 'mínimo', bem: 'otimamente', mal: 'pessimamente' },
+    plural: {
+      pão: 'pães', cidadão: 'cidadãos', alemão: 'alemães', animal: 'animais', papel: 'papéis', lápis: 'lápis',
+      país: 'países', hotel: 'hotéis', farol: 'faróis', anzol: 'anzóis', móvel: 'móveis', difícil: 'difíceis',
+      som: 'sons', jovem: 'jovens', homem: 'homens', capitão: 'capitães', cão: 'cães', vulcão: 'vulcões',
+      questão: 'questões', coração: 'corações', mulher: 'mulheres', feliz: 'felizes', réptil: 'répteis',
+      funil: 'funis', 'guarda-chuva': 'guarda-chuvas', 'guarda-roupa': 'guarda-roupas', 'couve-flor': 'couves-flores',
+      tabelião: 'tabeliães', escrivão: 'escrivães', refrão: 'refrães', mão: 'mãos', irmão: 'irmãos', órgão: 'órgãos',
+      caráter: 'caracteres', júniOR: 'juniores', cônsul: 'cônsules', gás: 'gases', mês: 'meses', vez: 'vezes'
+    },
+    aumentativo: { casa: 'casarão', boca: 'bocarra', homem: 'homenzarrão', mulher: 'mulherona', livro: 'livrão', garoto: 'garotão', pedra: 'pedrona', mão: 'manzorra', amigo: 'amigão', carro: 'carrão' },
+    diminutivo: { casa: 'casinha', livro: 'livrinho', pão: 'pãozinho', animal: 'animalzinho', flor: 'florzinha', papel: 'papelzinho', mão: 'mãozinha', garoto: 'garotinho', café: 'cafezinho', carro: 'carrinho' }
+  };
+  var ANTONIMOS = {
+    alto: 'baixo', baixo: 'alto', claro: 'escuro', escuro: 'claro', doce: 'amargo', amargo: 'doce', grosso: 'fino', fino: 'grosso',
+    rápido: 'lento', lento: 'rápido', grande: 'pequeno', pequeno: 'grande', quente: 'frio', frio: 'quente', forte: 'fraco', fraco: 'forte',
+    novo: 'velho', velho: 'novo', cheio: 'vazio', vazio: 'cheio', certo: 'errado', errado: 'certo', fácil: 'difícil', difícil: 'fácil',
+    longe: 'perto', perto: 'longe', cedo: 'tarde', tarde: 'cedo', amor: 'ódio', ódio: 'amor', começar: 'terminar', terminar: 'começar',
+    subir: 'descer', descer: 'subir', entrar: 'sair', sair: 'entrar', abrir: 'fechar', fechar: 'abrir', comprar: 'vender', vender: 'comprar',
+    ganhar: 'perder', perder: 'ganhar', rir: 'chorar', chorar: 'rir', lembrar: 'esquecer', esquecer: 'lembrar', antes: 'depois', depois: 'antes',
+    dentro: 'fora', fora: 'dentro', belo: 'feio', feio: 'belo', bonito: 'feio', feia: 'bonita'
+  };
+  var SINONIMOS = {
+    belo: 'bonito', bonito: 'belo', rápido: 'veloz', veloz: 'rápido', casa: 'moradia', moradia: 'casa', feliz: 'contente',
+    contente: 'feliz', triste: 'melancólico', grande: 'enorme', enorme: 'grande', pequeno: 'minúsculo', inteligente: 'sábio',
+    forte: 'robusto', medo: 'temor', professor: 'educador', médico: 'doutor', amigo: 'companheiro', carro: 'automóvel',
+    dinheiro: 'capital', começar: 'iniciar', terminar: 'finalizar', bonita: 'bela'
+  };
+  var CLASSE_FIXA = {
+    cachorro: 'substantivo', casa: 'substantivo', menino: 'substantivo', corajoso: 'adjetivo', feliz: 'adjetivo',
+    correr: 'verbo', rapidamente: 'advérbio', livro: 'substantivo', rápido: 'adjetivo', lentamente: 'advérbio'
+  };
+
+  function semAcentoMin(s) { return semAcento(s); }
+
+  function pluralRegular(p) {
+    var a = semAcentoMin(p);
+    if (/(s|x|z)$/.test(a) && !/(es)$/.test(a)) return p + 'es';
+    // -l troca de vogal no plural: animal→animais, papel→papéis, caracol→caracóis, azul→azuis, funil→funis
+    if (/l$/.test(a)) {
+      var corpo = p.slice(0, -2), m = /([aeiouáéíóúâêôãõ])l$/i.exec(p);  // cai a vogal + o l
+      if (m) {
+        // acento onde a norma pede: papel→papéis, caracol→caracóis
+        var troca = { a: 'ai', e: 'éi', o: 'ói', u: 'ui', i: 'i', 'á': 'ai', 'é': 'éi', 'ó': 'ói', 'ú': 'ui',
+                      'â': 'ai', 'ê': 'éi', 'ô': 'ói', 'ã': 'ai', 'õ': 'ói' }[m[1].toLowerCase()] || 'i';
+        return corpo + troca + 's';
+      }
+      return corpo + 'is';
+    }
+    if (/m$/.test(a)) return p.slice(0, -1) + 'ns';      // homem→homens, item→itens
+    if (/r$/.test(a) || /z$/.test(a)) return p + 'es';   // (z já tratado acima)
+    if (/[aeiou]$/.test(a)) return p + 's';
+    return p + 's';
+  }
+
+  function contarSilabas(palavra) {
+    var p = semAcentoMin(palavra).replace(/[^a-z]/g, '');
+    p = p.replace(/ch/g, 'x').replace(/lh/g, 'x').replace(/nh/g, 'x')
+         .replace(/qu(?=[ei])/g, 'q').replace(/gu(?=[ei])/g, 'g');
+    var grupos = p.match(/[aeiouy]+/g) || [];
+    var n = grupos.length;
+    // ditongos crescentes/decrescentes contam como uma sílaba
+    var ditongos = (p.match(/(ai|ei|oi|ui|au|eu|iu|ou|ão|ãe|õe|oe|ae)/g) || []).length;
+    return Math.max(1, n - ditongos);
+  }
+
+
+  /* ====== TABELA PERIÓDICA (símbolo ↔ nome) e FATOS ESTÁVEIS ======
+     Fonte: fatos verificáveis de livro-texto. Não é opinião de modelo: quando o item está
+     aqui, a resposta é a mesma toda vez. O que não estiver aqui continua indo para o consenso. */
+  var ELEMENTOS = ('H hidrogênio|He hélio|Li lítio|Be berílio|B boro|C carbono|N nitrogênio|O oxigênio|F flúor|Ne neônio|'
+    + 'Na sódio|Mg magnésio|Al alumínio|Si silício|P fósforo|S enxofre|Cl cloro|Ar argônio|K potássio|Ca cálcio|Sc escândio|'
+    + 'Ti titânio|V vanádio|Cr cromo|Mn manganês|Fe ferro|Co cobalto|Ni níquel|Cu cobre|Zn zinco|Ga gálio|Ge germânio|As arsênio|'
+    + 'Se selênio|Br bromo|Kr criptônio|Rb rubídio|Sr estrôncio|Y ítrio|Zr zircônio|Nb nióbio|Mo molibdênio|Tc tecnécio|Ru rutênio|'
+    + 'Rh ródio|Pd paládio|Ag prata|Cd cádmio|In índio|Sn estanho|Sb antimônio|Te telúrio|I iodo|Xe xenônio|Cs césio|Ba bário|'
+    + 'La lantânio|Ce cério|Pr praseodímio|Nd neodímio|Pm promécio|Sm samário|Eu európio|Gd gadolínio|Tb térbio|Dy disprósio|'
+    + 'Ho hólmio|Er érbio|Tm túlio|Yb itérbio|Lu lutécio|Hf háfnio|Ta tantálio|W tungstênio|Re rênio|Os ósmio|Ir irídio|Pt platina|'
+    + 'Au ouro|Hg mercúrio|Tl tálio|Pb chumbo|Bi bismuto|Po polônio|At astato|Rn radônio|Fr frâncio|Ra rádio|Ac actínio|Th tório|'
+    + 'Pa protactínio|U urânio|Np neptúnio|Pu plutônio|Am amerício|Cm cúrio|Bk berquélio|Cf califórnio|Es einstênio|Fm férmio|'
+    + 'Md mendelévio|No nobélio|Lr laurêncio|Rf ruterfórdio|Db dúbnio|Sg seabórgio|Bh bóhrio|Hs hássio|Mt meitnério|Ds darmstádtio|'
+    + 'Rg roentgênio|Cn copernício|Nh nihônio|Fl fleróvio|Mc moscóvio|Lv livermório|Ts tenesso|Og oganessônio').split('|');
+  var SIMBOLO_DE = {}, ELEMENTO_DE = {};
+  ELEMENTOS.forEach(function (par) {
+    var p = par.split(' ');
+    var simbolo = p[0], nome = p.slice(1).join(' ');
+    SIMBOLO_DE[semAcento(nome)] = simbolo;
+    ELEMENTO_DE[simbolo.toLowerCase()] = nome;
+  });
+
+  /* figuras de linguagem: frases canônicas de gramática, não opinião de modelo */
+  var FIGURAS_FRASE = [
+    { q: /rio de l[áa]grimas|chorei (um )?rio|mar de l[áa]grimas/i, r: 'Hipérbole' },
+    { q: /morrer de (rir|amor|fome|sede|saudade|medo|inveja|raiva|vergonha|t[ée]dio)|morri de (saudade|amor|fome|sede|medo|rir|t[ée]dio)|chorei at[ée] (secar|morrer)/i, r: 'Hipérbole' },
+    { q: /j[áa] (falei|disse) (isso )?(um )?milh[ãa]o de vezes|rep[ée]ti mil vezes/i, r: 'Hipérbole' },
+    { q: /pesa(va)? (uma|1) tonelada|estou mort[oa] de (cansad|cansa)/i, r: 'Hipérbole' },
+    { q: /\b(vento|mar|sol|lua|flor|pedra|tempo|morte|cidade|casa|fogo|noite|dia|ar|chuva)\s+(sussurr|beij|abra[cçc]|chor|sorri|grit|dan[cç]|falou|fala|disse|cant|cham|olha|pede|implora|acord|despert|dorm|sonha|respira|suspira|lamber|morde)/i, r: 'Personificação (prosopopeia)' },
+    { q: /\b(a|o|as|os|meu|minha)\s+(morte|saudade|dor|amor|tempo|vida)\s+(chegou|veio|bateu|chamou|levou)/i, r: 'Personificação (prosopopeia)' },
+    { q: /\bcomo\s+(um|uma|o|a|se)\b|tal qual|que nem\b|parece (um|uma|que)\b|feito (um|uma)\b/i, r: 'Comparação (símile)' },
+    { q: /\b\w+\s+[ée]\s+(um|uma)\s+\w+/i, r: 'Metáfora' },
+    { q: /chove(ndo)? (muito|c[ée]u|forte)|calor de (derreter|rachar)/i, r: 'Hipérbole' },
+    { q: /\b(ontem|hoje|agora)\s+vi\s+(o|a)\s+\w+/i, r: 'Pleonasmo' }
+  ];
+
+  /* capitais: países mais perguntados + as 27 unidades do Brasil.
+     Wikidata continua como segunda opção para a cauda longa; esta tabela não tem rede nem limite. */
+  var CAPITAIS = {
+    'acre': 'Rio Branco',
+    'afeganistão': 'Cabul',
+    'alagoas': 'Maceió',
+    'albânia': 'Tirana',
+    'alemanha': 'Berlim',
+    'amapá': 'Macapá',
+    'amazonas': 'Manaus',
+    'andorra': 'Andorra-a-Velha',
+    'angola': 'Luanda',
+    'argentina': 'Buenos Aires',
+    'argélia': 'Argel',
+    'armênia': 'Erevan',
+    'arábia saudita': 'Riad',
+    'austrália': 'Camberra',
+    'azerbaijão': 'Baku',
+    'bahamas': 'Nassau',
+    'bahia': 'Salvador',
+    'bangladesh': 'Dacca',
+    'barbados': 'Bridgetown',
+    'barein': 'Manama',
+    'belize': 'Belmopan',
+    'benim': 'Porto-Novo',
+    'bolívia': 'Sucre',
+    'botswana': 'Gaborone',
+    'brasil': 'Brasília',
+    'brunei': 'Bandar Seri Begawan',
+    'bulgária': 'Sófia',
+    'burquina fasso': 'Uagadugu',
+    'burundi': 'Gitega',
+    'butão': 'Timbu',
+    'bélgica': 'Bruxelas',
+    'bósnia e herzegovina': 'Sarajevo',
+    'cabo verde': 'Praia',
+    'camarões': 'Yaoundé',
+    'camboja': 'Phnom Penh',
+    'canadá': 'Ottawa',
+    'catar': 'Doha',
+    'cazaquistão': 'Astana',
+    'ceará': 'Fortaleza',
+    'chade': 'N’Djamena',
+    'chile': 'Santiago',
+    'china': 'Pequim',
+    'chipre': 'Nicósia',
+    'colômbia': 'Bogotá',
+    'comores': 'Moroni',
+    'congo': 'Brazzaville',
+    'coreia do norte': 'Pyongyang',
+    'coreia do sul': 'Seul',
+    'costa do marfim': 'Yamoussoukro',
+    'costa rica': 'San José',
+    'croácia': 'Zagreb',
+    'cuba': 'Havana',
+    'dinamarca': 'Copenhague',
+    'distrito federal': 'Brasília',
+    'djibuti': 'Djibuti',
+    'egito': 'Cairo',
+    'el salvador': 'San Salvador',
+    'micronésia': 'Palikir',     'kiribati': 'Tarawa do Sul',     'tuvalu': 'Funafuti',     'samoa': 'Apia',     'tonga': 'Nuku’alofa',     'vanuatu': 'Port Vila',     'ilhas salomão': 'Honiara',     'palau': 'Ngerulmud',     'ilhas marshall': 'Majuro',     'nauru': 'Yaren',     'granada': 'Saint George’s',     'são cristóvão e névis': 'Basseterre',     'santa lúcia': 'Castries',     'são vicente e granadinas': 'Kingstown',     'antígua e barbuda': 'Saint John’s',     'dominica': 'Roseau',     'guiana': 'Georgetown',     'suriname': 'Paramaribo',     'guiana francesa': 'Caiena',     'butão ': 'Timbu',     'república centro-africana': 'Bangui',     'são tomé e príncipe': 'São Tomé',     'maurícia': 'Port Louis',
+    'emirados árabes unidos': 'Abu Dhabi',
+    'equador': 'Quito',
+    'eritreia': 'Asmara',
+    'eslováquia': 'Bratislava',
+    'eslováquia ': 'Bratislava',
+    'eslovênia': 'Liubliana',
+    'espanha': 'Madri',
+    'espírito santo': 'Vitória',
+    'essuatíni': 'Mbabane',
+    'estados unidos': 'Washington, D.C.',
+    'estônia': 'Tallinn',
+    'etiópia': 'Addis Abeba',
+    'eua': 'Washington, D.C.',
+    'fiji': 'Suva',
+    'filipinas': 'Manila',
+    'finlândia': 'Helsinque',
+    'frança': 'Paris',
+    'gabão': 'Libreville',
+    'gana': 'Acra',
+    'geórgia': 'Tbilisi',
+    'goiás': 'Goiânia',
+    'groenlândia': 'Nuuk',
+    'grécia': 'Atenas',
+    'guatemala': 'Cidade da Guatemala',
+    'guiné': 'Conacri',
+    'guiné equatorial': 'Malabo',
+    'guiné-bissau': 'Bissau',
+    'gâmbia': 'Banjul',
+    'haiti': 'Porto Príncipe',
+    'holanda': 'Amsterdã',
+    'honduras': 'Tegucigalpa',
+    'hungria': 'Budapeste',
+    'indonésia': 'Jacarta',
+    'inglaterra': 'Londres',
+    'iraque': 'Bagdá',
+    'irlanda': 'Dublin',
+    'irã': 'Teerã',
+    'islândia': 'Reiquiavique',
+    'israel': 'Jerusalém',
+    'itália': 'Roma',
+    'iêmen': 'Sana',
+    'jamaica': 'Kingston',
+    'japão': 'Tóquio',
+    'jordânia': 'Amã',
+    'kuwait': 'Cidade do Kuwait',
+    'laos': 'Vientiane',
+    'lesoto': 'Maseru',
+    'letônia': 'Riga',
+    'libéria': 'Monróvia',
+    'liechtenstein': 'Vaduz',
+    'lituânia': 'Vilnius',
+    'luxemburgo': 'Luxemburgo',
+    'líbano': 'Beirute',
+    'líbia': 'Trípoli',
+    'macedônia do norte': 'Skopje',
+    'madagascar': 'Antananarivo',
+    'malauí': 'Lilongwe',
+    'maldivas': 'Malé',
+    'mali': 'Bamako',
+    'malta': 'Valeta',
+    'malásia': 'Kuala Lumpur',
+    'maranhão': 'São Luís',
+    'marrocos': 'Rabat',
+    'mato grosso': 'Cuiabá',
+    'mato grosso do sul': 'Campo Grande',
+    'mauritânia': 'Nouakchott',
+    'maurício': 'Port Louis',
+    'mianmar': 'Naypyidaw',
+    'minas gerais': 'Belo Horizonte',
+    'mongólia': 'Ulã Bator',
+    'montenegro': 'Podgorica',
+    'moçambique': 'Maputo',
+    'méxico': 'Cidade do México',
+    'mônaco': 'Mônaco',
+    'namíbia': 'Windhoek',
+    'nepal': 'Katmandu',
+    'nicarágua': 'Manágua',
+    'niger': 'Niamey',
+    'nigéria': 'Abuja',
+    'noruega': 'Oslo',
+    'nova zelândia': 'Wellington',
+    'omã': 'Mascate',
+    'panamá': 'Cidade do Panamá',
+    'papua-nova guiné': 'Port Moresby',
+    'paquistão': 'Islamabad',
+    'paraguai': 'Assunção',
+    'paraná': 'Curitiba',
+    'paraíba': 'João Pessoa',
+    'pará': 'Belém',
+    'países baixos': 'Amsterdã',
+    'pernambuco': 'Recife',
+    'peru': 'Lima',
+    'piauí': 'Teresina',
+    'polônia': 'Varsóvia',
+    'porto rico': 'San Juan',
+    'portugal': 'Lisboa',
+    'quirguistão': 'Bisqueque',
+    'quênia': 'Nairóbi',
+    'reino unido': 'Londres',
+    'república democrática do congo': 'Kinshasa',
+    'república dominicana': 'Santo Domingo',
+    'república tcheca': 'Praga',
+    'rio de janeiro': 'Rio de Janeiro',
+    'rio grande do norte': 'Natal',
+    'rio grande do sul': 'Porto Alegre',
+    'romênia': 'Bucareste',
+    'rondônia': 'Porto Velho',
+    'roraima': 'Boa Vista',
+    'ruanda': 'Kigali',
+    'rússia': 'Moscou',
+    'san marino': 'San Marino',
+    'santa catarina': 'Florianópolis',
+    'seicheles': 'Victoria',
+    'senegal': 'Dacar',
+    'sergipe': 'Aracaju',
+    'serra leoa': 'Freetown',
+    'singapura': 'Singapura',
+    'somália': 'Mogadíscio',
+    'sri lanka': 'Colombo',
+    'sudão': 'Cartum',
+    'sudão do sul': 'Juba',
+    'suécia': 'Estocolmo',
+    'suíça': 'Berna',
+    'são paulo': 'São Paulo',
+    'sérvia': 'Belgrado',
+    'síria': 'Damasco',
+    'tailândia': 'Bangkok',
+    'tajiquistão': 'Duchambe',
+    'tanzânia': 'Dodoma',
+    'timor-leste': 'Díli',
+    'tocantins': 'Palmas',
+    'togo': 'Lomé',
+    'trinidad e tobago': 'Porto de Espanha',
+    'tunísia': 'Túnis',
+    'turcomenistão': 'Asgabate',
+    'turquia': 'Ancara',
+    'ucrânia': 'Kiev',
+    'uganda': 'Kampala',
+    'uruguai': 'Montevidéu',
+    'uzbequistão': 'Tashkent',
+    'vaticano': 'Cidade do Vaticano',
+    'venezuela': 'Caracas',
+    'vietnã': 'Hanói',
+    'zimbábue': 'Harare',
+    'zâmbia': 'Lusaka',
+    'áfrica do sul': 'Pretória',
+    'áustria': 'Viena',
+    'índia': 'Nova Délhi'
+  };
+
+  /* índice sem acento: a pergunta chega como "França"/"Sergipe", a chave é acentuada */
+  var CAPITAIS_SEM_ACENTO = (function () {
+    var m = {};
+    for (var k in CAPITAIS) if (Object.prototype.hasOwnProperty.call(CAPITAIS, k)) m[semAcento(k)] = CAPITAIS[k];
+    return m;
+  })();
+
+
+  /* inglês irregular: mesmo papel das tabelas de português — fato de língua, não opinião de modelo */
+  var ING_VERBO = {
+    be: ['was/were'], begin: ['began'], break: ['broke'], bring: ['brought'], build: ['built'], buy: ['bought'],
+    catch: ['caught'], choose: ['chose'], come: ['came'], cost: ['cost'], cut: ['cut'], do: ['did'], draw: ['drew'],
+    drink: ['drank'], drive: ['drove'], eat: ['ate'], fall: ['fell'], feel: ['felt'], fight: ['fought'], find: ['found'],
+    fly: ['flew'], forget: ['forgot'], forgive: ['forgave'], get: ['got'], give: ['gave'], go: ['went'], grow: ['grew'],
+    have: ['had'], hear: ['heard'], hide: ['hid'], hit: ['hit'], hold: ['held'], hurt: ['hurt'], keep: ['kept'],
+    know: ['knew'], lead: ['led'], learn: ['learned/learnt'], leave: ['left'], lend: ['lent'], let: ['let'],
+    lie: ['lay'], lose: ['lost'], make: ['made'], mean: ['meant'], meet: ['met'], pay: ['paid'], put: ['put'],
+    read: ['read'], ride: ['rode'], ring: ['rang'], rise: ['rose'], run: ['ran'], say: ['said'], see: ['saw'],
+    sell: ['sold'], send: ['sent'], set: ['set'], shake: ['shook'], shine: ['shone'], shoot: ['shot'], show: ['showed'],
+    sing: ['sang'], sit: ['sat'], sleep: ['slept'], speak: ['spoke'], spend: ['spent'], stand: ['stood'],
+    steal: ['stole'], swim: ['swam'], take: ['took'], teach: ['taught'], tear: ['tore'], tell: ['told'],
+    think: ['thought'], throw: ['threw'], understand: ['understood'], wake: ['woke'], wear: ['wore'],
+    win: ['won'], write: ['wrote']
+  };
+  var ING_PLURAL = {
+    foot: 'feet', tooth: 'teeth', goose: 'geese', man: 'men', woman: 'women', child: 'children', mouse: 'mice',
+    louse: 'lice', ox: 'oxen', person: 'people', leaf: 'leaves', life: 'lives', knife: 'knives', wife: 'wives',
+    wolf: 'wolves', half: 'halves', shelf: 'shelves', thief: 'thieves', loaf: 'loaves', cactus: 'cacti',
+    fungus: 'fungi', nucleus: 'nuclei', syllabus: 'syllabi', analysis: 'analyses', crisis: 'crises',
+    thesis: 'theses', datum: 'data', medium: 'media', criterion: 'criteria', phenomenon: 'phenomena',
+    sheep: 'sheep', deer: 'deer', fish: 'fish', aircraft: 'aircraft', series: 'series', species: 'species',
+    quiz: 'quizzes', index: 'indices/indexes', matrix: 'matrices', vertex: 'vertices', appendix: 'appendices'
+  };
+  var ING_GRAU = {
+    good: { comp: 'better', sup: 'best' }, bad: { comp: 'worse', sup: 'worst' },
+    far: { comp: 'farther/further', sup: 'farthest/furthest' }, little: { comp: 'less', sup: 'least' },
+    much: { comp: 'more', sup: 'most' }, many: { comp: 'more', sup: 'most' },
+    old: { comp: 'older/elder', sup: 'oldest/eldest' }, late: { comp: 'later', sup: 'latest/last' },
+    well: { comp: 'better', sup: 'best' }, ill: { comp: 'worse', sup: 'worst' }
+  };
+
+  /* comparativo/superlativo regular com as regras de ortografia do inglês */
+  function grauRegular(p, tipo) {
+    var v = String(p || '').toLowerCase();
+    if (!/^[a-z]+$/.test(v)) return null;
+    var silabas = (v.match(/[aeiouy]+/g) || []).length;
+    var longo = silabas >= 3 || /(ful|ous|ive|able|ible|al|ic)$/.test(v);
+    if (longo) return (tipo === 'comp' ? 'more ' : 'most ') + v;
+    var raiz = v;
+    if (/[^aeiou]y$/.test(v)) raiz = v.slice(0, -1) + 'i';
+    else if (/e$/.test(v)) raiz = v.slice(0, -1);
+    else if (/^[a-z]*[aeiou][^aeiouwxy]$/.test(v) && silabas === 1) raiz = v + v.slice(-1);
+    return tipo === 'comp' ? raiz + 'er' : raiz + 'est';
+  }
+
+  var FATOS = [
+    { q: /capital do brasil/i, r: 'Brasília' },
+    { q: /(meses|m[êe]s).*(30|trinta) dias/i, r: '4 meses (abril, junho, setembro e novembro)' },
+    { q: /(meses|m[êe]s).*(31|trinta e um) dias/i, r: '7 meses (janeiro, março, maio, julho, agosto, outubro e dezembro)' },
+    { q: /quantos dias tem (um|o) ano bissexto/i, r: '366 dias' },
+    { q: /quantos (meses|dias|semanas)\s+(tem|h[áa])\s+(um|o|no)\s+ano\?*$/i, r: '12 meses, 365 dias (366 em ano bissexto) e 52 semanas' },
+    { q: /quantos dias tem (o m[êe]s de )?fevereiro\??\s*$/i, r: '28 dias (29 em ano bissexto)' },
+    { q: /quantos minutos tem (uma|1) hora\??\s*$/i, r: '60 minutos' },
+    { q: /quantos segundos tem (uma|1) hora\??\s*$/i, r: '3.600 segundos' },
+    { q: /quantos dias tem (uma|1) semana\??\s*$/i, r: '7 dias' },
+    { q: /quantos planetas.*sistema solar|planetas.*sistema solar/i, r: '8' },
+    { q: /planeta mais (pr[oó]ximo|perto).*sol/i, r: 'Mercúrio' },
+    { q: /maior planeta.*sistema solar|maior planeta do sistema/i, r: 'Júpiter' },
+    { q: /menor planeta.*sistema solar/i, r: 'Mercúrio' },
+    { q: /planeta vermelho/i, r: 'Marte' },
+    { q: /maior oceano/i, r: 'Pacífico' },
+    { q: /oceano.*banha o brasil/i, r: 'Atlântico' },
+    { q: /maior deserto do mundo/i, r: 'Antártico' },
+    { q: /maior deserto (quente|arenoso)/i, r: 'Saara' },
+    { q: /maior animal do mundo|maior animal que existe/i, r: 'Baleia-azul' },
+    { q: /maior animal terrestre/i, r: 'Elefante-africano' },
+    { q: /quantos ossos.*corpo humano/i, r: '206' },
+    { q: /quantos dentes.*adulto/i, r: '32' },
+    { q: /(f[oó]rmula|s[ií]mbolo qu[ií]mico) da [aá]gua/i, r: 'H2O' },
+    { q: /metal l[ií]quido/i, r: 'Mercúrio' },
+    { q: /valor aproximado de pi|quanto (vale|é) pi/i, r: '3,14159' },
+    { q: /unidade de for[cç]a no si/i, r: 'Newton' },
+    { q: /unidade de pot[eê]ncia no si/i, r: 'Watt' },
+    { q: /unidade de energia no si/i, r: 'Joule' },
+    { q: /unidade de press[aã]o no si/i, r: 'Pascal' },
+    { q: /unidade de corrente (el[eé]trica )?no si/i, r: 'Ampère' },
+    { q: /unidade de tens[aã]o( el[eé]trica)? no si/i, r: 'Volt' },
+    { q: /unidade de frequ[eê]ncia no si/i, r: 'Hertz' },
+    { q: /unidade de temperatura no si/i, r: 'Kelvin' },
+    { q: /unidade de massa no si/i, r: 'Quilograma' },
+    { q: /unidade de comprimento no si/i, r: 'Metro' },
+    { q: /quem escreveu ['"“]?dom casmurro/i, r: 'Machado de Assis' },
+    { q: /quem escreveu ['"“]?mem[oó]rias p[oó]stumas/i, r: 'Machado de Assis' },
+    { q: /quem escreveu ['"“]?grande sert[aã]o/i, r: 'Guimarães Rosa' },
+    { q: /quem escreveu ['"“]?vidas secas/i, r: 'Graciliano Ramos' },
+    { q: /quem escreveu ['"“]?o corti[cç]o/i, r: 'Aluísio Azevedo' },
+    { q: /quem escreveu ['"“]?iracema/i, r: 'José de Alencar' },
+    { q: /quem escreveu ['"“]?o guarani/i, r: 'José de Alencar' },
+    { q: /quem pintou .*mona lisa/i, r: 'Leonardo da Vinci' },
+    { q: /quem pintou .*grito/i, r: 'Edvard Munch' },
+    { q: /quem pintou .*guernica/i, r: 'Pablo Picasso' },
+    { q: /quem pintou .*(noite estrelada|noite estrelado)/i, r: 'Vincent van Gogh' },
+    { q: /quem pintou .*(última ceia|ultima ceia)/i, r: 'Leonardo da Vinci' },
+    { q: /idioma (falado )?no jap[aã]o|l[ií]ngua (falada )?no jap[aã]o/i, r: 'Japonês' },
+    { q: /moeda do jap[aã]o/i, r: 'Iene' },
+    { q: /moeda dos estados unidos|moeda norte-americana/i, r: 'Dólar' },
+    { q: /moeda da argentina/i, r: 'Peso argentino' },
+    { q: /quem descobriu o brasil/i, r: 'Pedro Álvares Cabral' },
+    { q: /quem proclamou a independ[eê]ncia do brasil/i, r: 'Dom Pedro I' },
+    { q: /(quantos|n[uú]mero de) estados.*brasil/i, r: '26 estados e o Distrito Federal' }
+  ];
+
+  var SYS = 'Responda em uma linha, apenas o resultado pedido. Não escreva raciocínio, preâmbulo, passos de pensamento nem repita a pergunta (nada de "Let me", "Actually", "Thinking process").';
   var UA = 'chat-da-casa/2.0 (roteador gratuito)';
 
   function agora() { return Date.now(); }
@@ -135,7 +637,20 @@
     var ent = await this._buscarJSON('https://www.wikidata.org/w/api.php?action=wbgetentities&ids=' + qid +
       '&props=claims&format=json&origin=*');
     var claims = ent && ent.entities && ent.entities[qid] && ent.entities[qid].claims;
-    var snak = claims && claims[propriedade] && claims[propriedade][0] && claims[propriedade][0].mainsnak;
+    // Defeito real encontrado em 2026-10-27: pegar claims[0] cru devolvia "Shigaraki Palace" como
+    // capital do Japão. Agora: posto 'preferred' primeiro, descarta afirmação com data de fim (P582)
+    // e prefere a de início (P580) mais recente.
+    var lista = (claims && claims[propriedade]) || [];
+    function posto(c) { return c.rank === 'preferred' ? 0 : (c.rank === 'deprecated' ? 2 : 1); }
+    function ano(c) {
+      var q = (c.qualifiers && c.qualifiers.P580 && c.qualifiers.P580[0] && c.qualifiers.P580[0].datavalue && c.qualifiers.P580[0].datavalue.value && c.qualifiers.P580[0].datavalue.value.time) || '';
+      var m = /([+-]?\d{4,})/.exec(q);
+      return m ? parseInt(m[1], 10) : -9999;
+    }
+    function terminou(c) { return !!(c.qualifiers && c.qualifiers.P582); }
+    lista = lista.filter(function (c) { return !terminou(c) && c.mainsnak && c.mainsnak.datavalue; });
+    lista.sort(function (x, y) { return (posto(x) - posto(y)) || (ano(y) - ano(x)); });
+    var snak = lista[0] && lista[0].mainsnak;
     var valor = snak && snak.datavalue && snak.datavalue.value;
     if (!valor) return null;
     var saida = null;
@@ -193,6 +708,15 @@
       return { texto: String(parseFloat(m[1].replace(',', '.')) * 2), ferramenta: 'dobro', fonte: 'calculo local' };
     }
 
+    /* --- proporção: "Se N custam V, quanto custam M?" --- */
+    if ((m = q.match(/se\s+(\d+(?:[.,]\d+)?)\b[^,]*custam\s*r?\$?\s*(\d+(?:[.,]\d+)?)[^?]*?quant[oa]s?\s+custam\s+(\d+(?:[.,]\d+)?)/i))) {
+      var qtd1 = parseFloat(m[1].replace(',', '.')), total = parseFloat(m[2].replace(',', '.')), qtd2 = parseFloat(m[3].replace(',', '.'));
+      if (qtd1 > 0) {
+        var res = Math.round((total / qtd1) * qtd2 * 1e6) / 1e6;
+        return { texto: String(res).replace('.', ','), ferramenta: 'proporcao', fonte: 'regra aritmética local' };
+      }
+    }
+
     /* --- sequência aritmética/geométrica --- */
     if ((m = q.match(/próximo:\s*([\d,\s]+),\?/i))) {
       var nums = m[1].split(',').map(Number).filter(function (x) { return !isNaN(x); });
@@ -203,6 +727,13 @@
         var r1 = nums[1] / nums[0], geo = nums[0] !== 0;
         for (k = 2; k < nums.length; k++) if (Math.abs(nums[k] / nums[k - 1] - r1) > 1e-9) geo = false;
         if (geo && r1 !== 0) return { texto: String(nums[nums.length - 1] * r1), ferramenta: 'sequencia-geo', fonte: 'calculo local' };
+        // razão constante com arredondamento (97,48,24 → 12): tolerância e a última razão, para não acumular erro
+        var ultima = nums[nums.length - 1], anterior = nums[nums.length - 2];
+        var rq = ultima / anterior, geoAprox = anterior !== 0;
+        for (k = 1; k < nums.length - 1; k++) {
+          if (Math.abs(nums[k] / nums[k - 1] - rq) > 0.02) geoAprox = false;
+        }
+        if (geoAprox && rq > 0 && rq < 1) return { texto: String(Math.round(ultima * rq)), ferramenta: 'sequencia-geo', fonte: 'calculo local' };
       }
     }
 
@@ -216,9 +747,66 @@
       if (t2) return { texto: t2.valor, ferramenta: 'traducao', fonte: t2.fonte };
     }
 
+    /* --- inglês irregular (tabela local) --- */
+    if ((m = q.match(/(?:past\s+(?:tense|simple)|simple past)\s+of\s+['"“‘]?([a-z]+)['"”’]?/i))) {
+      var iv = ING_VERBO[m[1].toLowerCase()];
+      if (iv) return { texto: iv[0], ferramenta: 'ingles-irregular', fonte: 'tabela local de inglês' };
+      if (/[^aeiou]y$/.test(m[1].toLowerCase())) return { texto: m[1].toLowerCase().slice(0, -1) + 'ied', ferramenta: 'ingles-irregular', fonte: 'regra de formação' };
+      if (/e$/.test(m[1].toLowerCase())) return { texto: m[1].toLowerCase() + 'd', ferramenta: 'ingles-irregular', fonte: 'regra de formação' };
+      return { texto: m[1].toLowerCase() + 'ed', ferramenta: 'ingles-irregular', fonte: 'regra de formação' };
+    }
+    if ((m = q.match(/plural\s+of\s+['"“‘]?([a-z]+)['"”’]?/i))) {
+      var ip = ING_PLURAL[m[1].toLowerCase()];
+      if (ip) return { texto: ip, ferramenta: 'ingles-plural', fonte: 'tabela local de inglês' };
+      var w = m[1].toLowerCase();
+      if (/(s|x|z|ch|sh)$/.test(w)) return { texto: w + 'es', ferramenta: 'ingles-plural', fonte: 'regra de formação' };
+      if (/[^aeiou]y$/.test(w)) return { texto: w.slice(0, -1) + 'ies', ferramenta: 'ingles-plural', fonte: 'regra de formação' };
+      return { texto: w + 's', ferramenta: 'ingles-plural', fonte: 'regra de formação' };
+    }
+    if ((m = q.match(/(comparative|superlative)\s+of\s+['"“‘]?([a-z]+)['"”’]?/i))) {
+      var tipoG = /comparative/i.test(m[1]) ? 'comp' : 'sup';
+      var g = ING_GRAU[m[2].toLowerCase()];
+      if (g) return { texto: g[tipoG], ferramenta: 'ingles-grau', fonte: 'tabela local de inglês' };
+      var reg = grauRegular(m[2], tipoG);
+      if (reg) return { texto: reg, ferramenta: 'ingles-grau', fonte: 'regra de formação' };
+      return null;
+    }
+
+    /* --- tempo fracionário: "N e meia" (1 hora e meia = 90 minutos) --- */
+    var convertido = {
+      minutos: { minuto: 1, hora: 60, dia: 1440, semana: 10080 },
+      horas: { hora: 1, dia: 24, semana: 168 },
+      dias: { dia: 1, semana: 7, mes: 30, mês: 30 },
+      segundos: { segundo: 1, minuto: 60, hora: 3600 }
+    };
+    if ((m = q.match(/quant[oa]s?\s+(minutos?|horas?|dias?|segundos?)\s+(?:tem|h[áa])\s+(?:(\d+|uma?|dois|duas|tr[eê]s)\s+)?(minutos?|horas?|dias?|segundos?|semanas?|m[eê]s|meses)\s+e\s+mei[ao]/i))) {
+      var alvoU = m[1].toLowerCase().replace(/s$/, '') + 's';
+      var qtd = m[2] ? (/^\d+$/.test(m[2]) ? parseInt(m[2], 10) : { um: 1, uma: 1, dois: 2, duas: 2, tres: 3, 'três': 3 }[semAcento(m[2])] || 1) : 1;
+      var fonteU = semAcento(m[3].toLowerCase()).replace(/s$/, '');
+      var tab = convertido[alvoU];
+      if (tab && tab[fonteU] != null) {
+        var total = qtd * tab[fonteU] * 1.5;
+        return { texto: String(Math.round(total * 100) / 100).replace('.', ','), ferramenta: 'tempo-fracionario', fonte: 'regra aritmética local' };
+      }
+    }
+
+    /* --- problema de taxa: X por minuto/hora/dia durante N --- */
+    if ((m = q.match(/(\d+(?:[.,]\d+)?)\s*(\w+)?\s*por\s+(segundo|minuto|hora|dia).*?(\d+(?:[.,]\d+)?)\s*(segundos?|minutos?|horas?|dias?)/i))) {
+      var unidade1 = { segundo: 'segundos', minuto: 'minutos', hora: 'horas', dia: 'dias' }[m[3].toLowerCase()];
+      var unidade2 = m[5].toLowerCase().replace(/s$/, '') + 's';
+      if (unidade1 === unidade2) {
+        var a = parseFloat(m[1].replace(',', '.')), b = parseFloat(m[4].replace(',', '.'));
+        var prod = Math.round(a * b * 1e6) / 1e6;
+        return { texto: String(prod).replace('.', ','), ferramenta: 'regra-de-taxa', fonte: 'regra aritmética local' };
+      }
+    }
+
     /* --- capital (Wikidata P36) --- */
-    if ((m = q.match(/qual\s+(?:é\s+)?a\s+capital\s+d[eo]\s+(.+?)\?*$/i))) {
-      var cap = await this._wikidata(m[1].trim(), 'P36', 'capital');
+    if ((m = q.match(/qual\s+(?:é\s+)?a\s+capital\s+d(?:a|o|e|os|as)?\s+(.+?)\?*$/i))) {
+      var alvoCap = m[1].trim();
+      var local = CAPITAIS_SEM_ACENTO[semAcento(alvoCap)] || CAPITAIS[semAcento(alvoCap)];
+      if (local) return { texto: local, ferramenta: 'capital', fonte: 'tabela local de capitais' };
+      var cap = await this._wikidata(alvoCap, 'P36', 'capital');
       if (cap) return { texto: cap.valor, ferramenta: 'capital', fonte: cap.fonte };
     }
     /* --- símbolo químico (Wikidata P246) --- */
@@ -226,10 +814,156 @@
       var sim = await this._wikidata(m[1].trim(), 'P246', 'símbolo');
       if (sim) return { texto: sim.valor, ferramenta: 'simbolo-quimico', fonte: sim.fonte };
     }
+    /* --- língua portuguesa: tabela e regra (fato de língua, não opinião) --- */
+    var lp = this._lingua(q);
+    if (lp) return lp;
+
+    /* --- regras determinísticas de lógica/aritmética de posição --- */
+    var pos;
+    if ((pos = q.match(/ultrapass\w*\s+(?:o|a)\s+(\d+)\s*[ºo°]?\s*(?:colocad|posi[cç][aã]o)/i))) {
+      return { texto: pos[1] + 'º lugar', ferramenta: 'regra-de-posicao', fonte: 'regra lógica local' };
+    }
+    // fila: "Rita é a 8ª. Quantas pessoas à frente dela?" → 7 (regra determinística, sem modelo)
+    if (/fila|posi[cç][aã]o|colocad/i.test(q)) {
+      var mPos = /(?:[ée]\s+[oa]|sou\s+[oa]|est[áa]\s+n[ao])\s+(\d+)/i.exec(q) || /(\d+)\s*[ºª°]/.exec(q);
+      var alvoFila = /(frente|atr[áa]s|depois|antes)/i.exec(q);
+      if (mPos && alvoFila) {
+        var n = parseInt(mPos[1], 10);
+        var totalFila = /(\d+)\s*pessoas/i.exec(q);
+        if (/frente|antes/i.test(alvoFila[1])) return { texto: String(n - 1), ferramenta: 'regra-de-fila', fonte: 'regra lógica local' };
+        if (totalFila && parseInt(totalFila[1], 10) > n) return { texto: String(parseInt(totalFila[1], 10) - n), ferramenta: 'regra-de-fila', fonte: 'regra lógica local' };
+      }
+    }
+    if ((pos = q.match(/ultrapass\w*\s+(?:o|a)\s+(último|primeiro|[uú]ltim[oa]|primeir[oa])/i))) {
+      return { texto: 'penúltimo lugar', ferramenta: 'regra-de-posicao', fonte: 'regra lógica local' };
+    }
+
+    /* --- fatos estáveis e símbolos de elemento (base local curada) --- */
+    var fato = this._fatos(q);
+    if (fato) return fato;
+
     /* --- unidade no SI (Wikidata P5061) --- */
     if ((m = q.match(/(?:unidade|medida)\s+(?:de|da|do)\s+(.+?)\s+no\s+si\?*$/i))) {
       var uni = await this._wikidata(m[1].trim(), 'P5061', 'unidade');
       if (uni) return { texto: uni.valor, ferramenta: 'unidade-si', fonte: uni.fonte };
+    }
+    return null;
+  };
+
+  /* ---------- português ---------- */
+  Roteador.prototype._lingua = function (q) {
+    var m, alvo, chave;
+    var limpa = function (t) { return String(t || '').replace(/^['"“‘]|['"”’]$/g, '').replace(/\?$/, '').trim().toLowerCase(); };
+
+    if ((m = q.match(/coletivo\s+de\s+(.+?)\??$/i))) {
+      chave = limpa(m[1]);
+      var col = COLETIVOS[chave] || COLETIVOS[chave.replace(/s$/, '')] || null;
+      if (col) return { texto: col, ferramenta: 'coletivo', fonte: 'base local de português' };
+      return null;
+    }
+    if ((m = q.match(/feminino\s+de\s+(.+?)\??$/i))) {
+      chave = limpa(m[1]);
+      var fem = IRREGULARES.feminino[chave];
+      if (fem) return { texto: fem, ferramenta: 'feminino', fonte: 'base local de português' };
+      if (/(or|ês|es|ão)$/.test(chave)) return { texto: chave.replace(/or$/, 'ora').replace(/ês$/, 'esa').replace(/ão$/, 'ona') + (/ora$/.test(chave.replace(/or$/, 'ora')) ? '' : ''), ferramenta: 'feminino', fonte: 'regra de formação' };
+      if (/o$/.test(chave)) return { texto: chave.slice(0, -1) + 'a', ferramenta: 'feminino', fonte: 'regra de formação' };
+      return null;
+    }
+    if ((m = q.match(/masculino\s+de\s+(.+?)\??$/i))) {
+      chave = limpa(m[1]);
+      var masc = IRREGULARES.masculino[chave];
+      if (masc) return { texto: masc, ferramenta: 'masculino', fonte: 'base local de português' };
+      if (/a$/.test(chave)) return { texto: chave.slice(0, -1) + 'o', ferramenta: 'masculino', fonte: 'regra de formação' };
+      return null;
+    }
+    if ((m = q.match(/plural\s+de\s+(.+?)\??$/i))) {
+      chave = limpa(m[1]);
+      var pl = IRREGULARES.plural[chave] || IRREGULARES.plural[semAcento(chave)];
+      if (pl) return { texto: pl, ferramenta: 'plural', fonte: 'base local de português' };
+      if (/^[a-zà-ÿ\-]+$/.test(chave)) return { texto: pluralRegular(chave), ferramenta: 'plural', fonte: 'regra de formação' };
+      return null;
+    }
+    if ((m = q.match(/superlativo\s+de\s+(.+?)\??$/i))) {
+      chave = limpa(m[1]);
+      var sup = IRREGULARES.superlativo[chave];
+      if (sup) return { texto: sup, ferramenta: 'superlativo', fonte: 'base local de português' };
+      if (/vel$/.test(chave)) return { texto: chave.replace(/vel$/, 'velíssimo'), ferramenta: 'superlativo', fonte: 'regra de formação' };
+      if (/z$/.test(chave)) return { texto: chave.slice(0, -1) + 'císsimo', ferramenta: 'superlativo', fonte: 'regra de formação' };
+      if (/il$/.test(chave)) return { texto: semAcento(chave).slice(0, -2) + 'ílimo', ferramenta: 'superlativo', fonte: 'regra de formação' };  // difícil→dificílimo, fácil→facílimo
+      if (/[aeiou]$/.test(chave)) return { texto: chave.slice(0, -1) + 'íssimo', ferramenta: 'superlativo', fonte: 'regra de formação' };
+      return null;
+    }
+    if ((m = q.match(/(aumentativo|diminutivo)\s+de\s+(.+?)\??$/i))) {
+      var tipo = m[1].toLowerCase(); chave = limpa(m[2]);
+      var tab = tipo === 'aumentativo' ? IRREGULARES.aumentativo : IRREGULARES.diminutivo;
+      var val = tab[chave];
+      if (val) return { texto: val, ferramenta: tipo, fonte: 'base local de português' };
+      if (tipo === 'aumentativo') {
+        if (/[aeiou]$/.test(chave)) return { texto: chave.slice(0, -1) + 'ão', ferramenta: tipo, fonte: 'regra de formação' };
+        return { texto: chave + 'zão', ferramenta: tipo, fonte: 'regra de formação' };
+      }
+      if (/[aeiou]$/.test(chave)) return { texto: chave.slice(0, -1) + 'inho', ferramenta: tipo, fonte: 'regra de formação' };
+      return { texto: chave + 'zinho', ferramenta: tipo, fonte: 'regra de formação' };
+    }
+    if ((m = q.match(/(ant[oô]nimo|sin[oô]nimo)\s+de\s+(.+?)\??$/i))) {
+      var qual = /ant/i.test(m[1]) ? ANTONIMOS : SINONIMOS;
+      chave = limpa(m[2]);
+      var par = qual[chave];
+      if (par) return { texto: par, ferramenta: /ant/i.test(m[1]) ? 'antonimo' : 'sinonimo', fonte: 'base local de português' };
+      return null;
+    }
+    if (/figura de (linguagem|pensamento|palavras|sintaxe)/i.test(q)) {
+      for (var fi = 0; fi < FIGURAS_FRASE.length; fi++) {
+        if (FIGURAS_FRASE[fi].q.test(q)) return { texto: FIGURAS_FRASE[fi].r, ferramenta: 'figura-de-linguagem', fonte: 'tabela local de figuras' };
+      }
+      return null;
+    }
+    if ((m = q.match(/classe\s+(?:gramatical\s+)?d[aoe]\s+(?:palavra\s+)?(.+?)\??$/i))) {
+      chave = limpa(m[1]);
+      var fixa = CLASSE_FIXA[chave];
+      if (fixa) return { texto: fixa, ferramenta: 'classe', fonte: 'base local de português' };
+      if (/mente$/.test(chave)) return { texto: 'advérbio', ferramenta: 'classe', fonte: 'sufixo -mente' };
+      if (/(oso|osa|ivo|iva|ável|ível|ico|ica|ado|ada|ido|ida|ento|enta|oso)$/.test(chave)) return { texto: 'adjetivo', ferramenta: 'classe', fonte: 'sufixo de adjetivo' };
+      if (/(ar|er|ir)$/.test(chave)) return { texto: 'verbo', ferramenta: 'classe', fonte: 'terminação verbal' };
+      if (/(ção|são|dade|mento|ismo|agem|ura|eza)$/.test(chave)) return { texto: 'substantivo', ferramenta: 'classe', fonte: 'sufixo de substantivo' };
+      return null;
+    }
+    if ((m = q.match(/quantas?\s+letras\s+tem\s+(?:a\s+palavra\s+)?(.+?)\??$/i))) {
+      var p = limpa(m[1]).replace(/[^a-zà-ÿ]/g, '');
+      if (p) return { texto: String(p.length), ferramenta: 'letras', fonte: 'contagem local' };
+      return null;
+    }
+    if ((m = q.match(/quantas?\s+s[ií]labas\s+tem\s+(?:a\s+palavra\s+)?(.+?)\??$/i))) {
+      var w = limpa(m[1]).replace(/[^a-zà-ÿ]/g, '');
+      if (w) return { texto: String(contarSilabas(w)), ferramenta: 'silabas', fonte: 'contagem local' };
+      return null;
+    }
+    return null;
+  };
+
+  /* ---------- fatos estáveis ---------- */
+  Roteador.prototype._fatos = function (q) {
+    var m;
+    for (var i = 0; i < FATOS.length; i++) {
+      if (FATOS[i].q.test(q)) return { texto: FATOS[i].r, ferramenta: 'fato-estavel', fonte: 'base local de fatos estáveis' };
+    }
+    if ((m = q.match(/s[ií]mbolo(?:\s+qu[ií]mico)?\s+d(?:a|o|e|os|as)\s+(?:elemento\s+)?(.+?)\??$/i))) {
+      var nome = semAcento(m[1].trim().toLowerCase());
+      var sim = SIMBOLO_DE[nome];
+      if (sim) return { texto: sim, ferramenta: 'simbolo-quimico', fonte: 'tabela periódica local' };
+      var el = ELEMENTO_DE[nome];
+      if (el) return { texto: el, ferramenta: 'elemento', fonte: 'tabela periódica local' };
+      return null;
+    }
+    if ((m = q.match(/elemento(?:\s+qu[ií]mico)?\s+(?:de\s+)?s[ií]mbolo\s+([a-z]{1,3})\b/i))) {
+      var e2 = ELEMENTO_DE[m[1].toLowerCase()];
+      if (e2) return { texto: e2, ferramenta: 'elemento', fonte: 'tabela periódica local' };
+      return null;
+    }
+    if ((m = q.match(/(?:metal|elemento)\s+d[oe]\s+s[ií]mbolo\s+['"]?([a-z]{1,3})['"]?\??$/i))) {
+      var e3 = ELEMENTO_DE[m[1].toLowerCase()];
+      if (e3) return { texto: e3, ferramenta: 'elemento', fonte: 'tabela periódica local' };
+      return null;
     }
     return null;
   };
@@ -276,6 +1010,12 @@
     this.metricas.porRota[id].ok++;
   };
 
+  /* resposta com conteúdo real: pelo menos um caractere alfanumérico depois de tirar marcação */
+  function util(t) {
+    var x = String(t || '').replace(/[*_`#>~\-\s]/g, '');
+    return x.length > 0 && /[0-9a-zà-ÿ]/i.test(x);
+  }
+
   Roteador.prototype._chamar = async function (rota, pergunta, timeoutMs) {
     var url = rota.base.replace(/\/$/, '') + '/chat/completions';
     var c = new AbortController();
@@ -300,8 +1040,9 @@
       var msg = d.choices && d.choices[0] && d.choices[0].message;
       if (!msg) return { erro: 'servidor', ms: agora() - t0 };
       var texto = (msg.content || '').trim();
-      if (!texto && msg.reasoning) texto = String(msg.reasoning).trim();
-      if (!texto) return { erro: 'servidor', ms: agora() - t0 };
+      if (!texto && msg.reasoning) texto = sanear(extrairConclusao(String(msg.reasoning)));
+      texto = sanear(texto);
+      if (!texto) return { erro: 'degenerada', ms: agora() - t0 };
       return { texto: texto, ms: agora() - t0 };
     } catch (e) {
       clearTimeout(t);
@@ -328,7 +1069,7 @@
         return { rota: rota, texto: r.texto || null, erro: r.erro || null, ms: r.ms };
       });
     }));
-    var validas = respostas.filter(function (x) { return x.texto; });
+    var validas = respostas.filter(function (x) { return !!sanear(x.texto); });
     if (!validas.length) return null;
 
     // agrupa por resposta normalizada
@@ -433,6 +1174,7 @@
   };
 
   var api = { Roteador: Roteador, CATALOGO: CATALOGO, normal: normal };
+  api.internos = { sanear: sanear, util: util, extrairConclusao: extrairConclusao };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   raiz.RoteadorIA = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

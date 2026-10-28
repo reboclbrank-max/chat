@@ -9,20 +9,8 @@ const banco = JSON.parse(fs.readFileSync(path.join(__dirname, arquivo), 'utf8'))
 const modo = process.argv[2] || 'depois';
 const CONC = parseInt(process.env.CONC || '3', 10);
 
-const norm = s => String(s).toLowerCase().normalize('NFC');
-function acertou(resp, gabs) {
-  if (!resp) return false;
-  const r = norm(resp);
-  for (const g0 of gabs) {
-    const g = norm(g0);
-    if (/^-?\d+(?:[.,]\d+)?$/.test(g)) {
-      const num = g.replace(',', '.');
-      const padrao = new RegExp('(?<![\\d.,-])' + num.replace('.', '[.,]') + '(?![\\d])');
-      if (padrao.test(r.replace(/r\$/g, ''))) return true;
-    } else if (r.includes(g)) return true;
-  }
-  return false;
-}
+const { normalizar: norm, acertou: acertouBase } = require('./pontuar.js');
+function acertou(resp, gabs, alts) { return acertouBase(resp, gabs, alts || null); }
 
 const rota = id => CATALOGO.find(x => x.id === id);
 async function chamarRotaFixa(idRota, pergunta) {
@@ -82,8 +70,8 @@ async function resolver(item) {
       const i = idx++;
       const it = banco[i];
       const r = await resolver(it);
-      res[i] = { id: it.id, tipo: it.tipo, q: it.q, gab: it.g, resp: r.texto ? String(r.texto).slice(0, 200) : '',
-                 ok: acertou(r.texto, it.g), erro: r.erro || null, fonte: r.fonte || null,
+      res[i] = { id: it.id, tipo: it.tipo, q: it.q, gab: it.g, resp: r.texto ? String(r.texto).slice(0, 400) : '',
+                 ok: acertou(r.texto, it.g, it.alts), erro: r.erro || null, fonte: r.fonte || null,
                  tentativas: r.tentativas ?? 1, ms: r.ms ?? null };
       if ((i + 1) % 25 === 0) process.stderr.write(`  ${i + 1}/${banco.length}\n`);
     }

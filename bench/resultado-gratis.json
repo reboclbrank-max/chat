@@ -1,58 +1,58 @@
 {
  "sum": {
   "modo": "gratis",
-  "total": 105,
-  "acertos": 104,
-  "acertoPct": 99,
+  "total": 84,
+  "acertos": 84,
+  "acertoPct": 100,
   "semResposta": 0,
   "semRespostaPct": 0,
   "taxa429": 0,
-  "respondeu": 105,
-  "acertoQuandoResponde": 99,
-  "errosDeConteudo": 1,
-  "latenciaMedianaMs": 6503,
-  "tentativasTotal": 179,
-  "duracaoS": 312,
+  "respondeu": 84,
+  "acertoQuandoResponde": 100,
+  "errosDeConteudo": 0,
+  "latenciaMedianaMs": 3904,
+  "tentativasTotal": 57,
+  "duracaoS": 100,
   "porTipo": {
    "mat": {
-    "n": 15,
-    "ok": 15,
+    "n": 14,
+    "ok": 14,
     "semResp": 0,
     "errado": 0
    },
    "seq": {
-    "n": 15,
-    "ok": 15,
+    "n": 12,
+    "ok": 12,
     "semResp": 0,
     "errado": 0
    },
    "logica": {
-    "n": 15,
-    "ok": 15,
-    "semResp": 0,
-    "errado": 0
-   },
-   "brasil": {
-    "n": 15,
-    "ok": 15,
+    "n": 12,
+    "ok": 12,
     "semResp": 0,
     "errado": 0
    },
    "lingua": {
-    "n": 15,
+    "n": 14,
     "ok": 14,
     "semResp": 0,
-    "errado": 1
+    "errado": 0
    },
    "eng": {
-    "n": 15,
-    "ok": 15,
+    "n": 12,
+    "ok": 12,
+    "semResp": 0,
+    "errado": 0
+   },
+   "brasil": {
+    "n": 10,
+    "ok": 10,
     "semResp": 0,
     "errado": 0
    },
    "mundo": {
-    "n": 15,
-    "ok": 15,
+    "n": 10,
+    "ok": 10,
     "semResp": 0,
     "errado": 0
    }
@@ -62,11 +62,11 @@
   {
    "id": 1,
    "tipo": "mat",
-   "q": "Quanto é 146+457?",
+   "q": "Quanto é 47 + 23 × 9?",
    "gab": [
-    "603"
+    "254"
    ],
-   "resp": "603",
+   "resp": "254",
    "ok": true,
    "erro": null,
    "fonte": "mathjs",
@@ -76,11 +76,11 @@
   {
    "id": 2,
    "tipo": "mat",
-   "q": "Quanto é 730+728?",
+   "q": "Quanto é (47 + 23) × 2?",
    "gab": [
-    "1458"
+    "140"
    ],
-   "resp": "1458",
+   "resp": "140",
    "ok": true,
    "erro": null,
    "fonte": "mathjs",
@@ -90,123 +90,123 @@
   {
    "id": 3,
    "tipo": "mat",
-   "q": "Quanto é 269+429?",
+   "q": "Quanto é 74²?",
    "gab": [
-    "698"
+    "5476"
    ],
-   "resp": "698",
+   "resp": "5476",
    "ok": true,
    "erro": null,
-   "fonte": "mathjs",
-   "tentativas": 0,
-   "ms": 0
+   "fonte": "gigante2",
+   "tentativas": 3,
+   "ms": 17410
   },
   {
    "id": 4,
    "tipo": "mat",
-   "q": "Quanto é 159+689?",
+   "q": "Quanto é a raiz quadrada de 289?",
    "gab": [
-    "848"
+    "17"
    ],
-   "resp": "848",
+   "resp": "17",
    "ok": true,
    "erro": null,
-   "fonte": "mathjs",
+   "fonte": "raiz",
    "tentativas": 0,
    "ms": 0
   },
   {
    "id": 5,
    "tipo": "mat",
-   "q": "Quanto é 706+201?",
+   "q": "Quanto é 12% de 250?",
    "gab": [
-    "907"
+    "30"
    ],
-   "resp": "907",
+   "resp": "30",
    "ok": true,
    "erro": null,
-   "fonte": "mathjs",
+   "fonte": "porcentagem",
    "tentativas": 0,
    "ms": 0
   },
   {
    "id": 6,
    "tipo": "mat",
-   "q": "Quanto é 791+478?",
+   "q": "Quanto é o dobro de 137?",
    "gab": [
-    "1269"
+    "274"
    ],
-   "resp": "1269",
+   "resp": "274",
    "ok": true,
    "erro": null,
-   "fonte": "mathjs",
+   "fonte": "dobro",
    "tentativas": 0,
    "ms": 0
   },
   {
    "id": 7,
    "tipo": "mat",
-   "q": "Quanto é 442+547?",
+   "q": "Quanto é a metade de 86?",
    "gab": [
-    "989"
+    "43"
    ],
-   "resp": "989",
+   "resp": "43",
    "ok": true,
    "erro": null,
-   "fonte": "mathjs",
+   "fonte": "metade",
    "tentativas": 0,
    "ms": 0
   },
   {
    "id": 8,
    "tipo": "mat",
-   "q": "Quanto é 488+445?",
+   "q": "Quanto é o triplo de 41?",
    "gab": [
-    "933"
+    "123"
    ],
-   "resp": "933",
+   "resp": "123",
    "ok": true,
    "erro": null,
-   "fonte": "mathjs",
-   "tentativas": 0,
-   "ms": 0
+   "fonte": "gigante2",
+   "tentativas": 3,
+   "ms": 4671
   },
   {
    "id": 9,
    "tipo": "mat",
-   "q": "Quanto é 27×13?",
+   "q": "Quanto é 9³?",
    "gab": [
-    "351"
+    "729"
    ],
-   "resp": "351",
+   "resp": "729",
    "ok": true,
    "erro": null,
-   "fonte": "mathjs",
-   "tentativas": 0,
-   "ms": 0
+   "fonte": "ultra",
+   "tentativas": 3,
+   "ms": 3047
   },
   {
    "id": 10,
    "tipo": "mat",
-   "q": "Quanto é 15×11?",
+   "q": "Quanto é 151 − 68?",
    "gab": [
-    "165"
+    "83"
    ],
-   "resp": "165",
+   "resp": "83",
    "ok": true,
    "erro": null,
-   "fonte": "mathjs",
-   "tentativas": 0,
-   "ms": 0
+   "fonte": "ultra",
+   "tentativas": 3,
+   "ms": 16722
   },
   {
    "id": 11,
    "tipo": "mat",
-   "q": "Quanto é 21×11?",
+   "q": "Quanto é 13 × 17?",
    "gab": [
-    "231"
+    "221"
    ],
-   "resp": "231",
+   "resp": "221",
    "ok": true,
    "erro": null,
    "fonte": "mathjs",
@@ -216,11 +216,11 @@
   {
    "id": 12,
    "tipo": "mat",
-   "q": "Quanto é 16×16?",
+   "q": "Quanto é 144 ÷ 12?",
    "gab": [
-    "256"
+    "12"
    ],
-   "resp": "256",
+   "resp": "12",
    "ok": true,
    "erro": null,
    "fonte": "mathjs",
@@ -230,53 +230,54 @@
   {
    "id": 13,
    "tipo": "mat",
-   "q": "Quanto é 25% de 400?",
+   "q": "Um retângulo tem 12 cm de largura e 7 cm de altura. Qual é a área?",
    "gab": [
-    "100"
+    "84"
    ],
-   "resp": "100",
+   "resp": "84 cm²",
    "ok": true,
    "erro": null,
-   "fonte": "porcentagem",
-   "tentativas": 0,
-   "ms": 0
+   "fonte": "ovhoss",
+   "tentativas": 3,
+   "ms": 3004
   },
   {
    "id": 14,
    "tipo": "mat",
-   "q": "Quanto é 5% de 400?",
+   "q": "Quantos lados tem um hexágono?",
    "gab": [
-    "20"
+    "6",
+    "seis"
    ],
-   "resp": "20",
+   "resp": "6",
    "ok": true,
    "erro": null,
-   "fonte": "porcentagem",
-   "tentativas": 0,
-   "ms": 0
+   "fonte": "ovhoss",
+   "tentativas": 3,
+   "ms": 14129
   },
   {
    "id": 15,
-   "tipo": "mat",
-   "q": "Quanto é 5% de 200?",
+   "tipo": "seq",
+   "q": "Próximo: 5, 12, 19, 26,?",
    "gab": [
-    "10"
+    "33"
    ],
-   "resp": "10",
+   "resp": "33",
    "ok": true,
    "erro": null,
-   "fonte": "porcentagem",
+   "fonte": "sequencia",
    "tentativas": 0,
    "ms": 0
   },
   {
    "id": 16,
    "tipo": "seq",
-   "q": "Próximo: 11,19,27,35,?",
+   "q": "Próximo: 8, 16, 24, 32,?",
    "gab": [
-    "43"
+    "40"
    ],
-   "resp": "43",
+   "resp": "40",
    "ok": true,
    "erro": null,
    "fonte": "sequencia",
@@ -286,67 +287,11 @@
   {
    "id": 17,
    "tipo": "seq",
-   "q": "Próximo: 17,26,35,44,?",
+   "q": "Próximo: 6, 18, 54, 162,?",
    "gab": [
-    "53"
+    "486"
    ],
-   "resp": "53",
-   "ok": true,
-   "erro": null,
-   "fonte": "sequencia",
-   "tentativas": 0,
-   "ms": 0
-  },
-  {
-   "id": 18,
-   "tipo": "seq",
-   "q": "Próximo: 23,35,47,59,?",
-   "gab": [
-    "71"
-   ],
-   "resp": "71",
-   "ok": true,
-   "erro": null,
-   "fonte": "sequencia",
-   "tentativas": 0,
-   "ms": 0
-  },
-  {
-   "id": 19,
-   "tipo": "seq",
-   "q": "Próximo: 31,38,45,52,?",
-   "gab": [
-    "59"
-   ],
-   "resp": "59",
-   "ok": true,
-   "erro": null,
-   "fonte": "sequencia",
-   "tentativas": 0,
-   "ms": 0
-  },
-  {
-   "id": 20,
-   "tipo": "seq",
-   "q": "Próximo: 41,47,53,59,?",
-   "gab": [
-    "65"
-   ],
-   "resp": "65",
-   "ok": true,
-   "erro": null,
-   "fonte": "sequencia",
-   "tentativas": 0,
-   "ms": 0
-  },
-  {
-   "id": 21,
-   "tipo": "seq",
-   "q": "Próximo: 3,15,75,375,?",
-   "gab": [
-    "1875"
-   ],
-   "resp": "1875",
+   "resp": "486",
    "ok": true,
    "erro": null,
    "fonte": "sequencia-geo",
@@ -354,13 +299,69 @@
    "ms": 0
   },
   {
+   "id": 18,
+   "tipo": "seq",
+   "q": "Próximo: 7, 14, 28, 56,?",
+   "gab": [
+    "112"
+   ],
+   "resp": "112",
+   "ok": true,
+   "erro": null,
+   "fonte": "sequencia-geo",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 19,
+   "tipo": "seq",
+   "q": "Próximo: 9, 18, 36, 72,?",
+   "gab": [
+    "144"
+   ],
+   "resp": "144",
+   "ok": true,
+   "erro": null,
+   "fonte": "sequencia-geo",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 20,
+   "tipo": "seq",
+   "q": "Próximo: 100, 50, 25,?",
+   "gab": [
+    "12.5"
+   ],
+   "resp": "12.5",
+   "ok": true,
+   "erro": null,
+   "fonte": "sequencia-geo",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 21,
+   "tipo": "seq",
+   "q": "Próximo: 44, 38, 32, 26,?",
+   "gab": [
+    "20"
+   ],
+   "resp": "20",
+   "ok": true,
+   "erro": null,
+   "fonte": "sequencia",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
    "id": 22,
    "tipo": "seq",
-   "q": "Próximo: 7,21,63,189,?",
+   "q": "Próximo: 2, 10, 50, 250,?",
    "gab": [
-    "567"
+    "1250"
    ],
-   "resp": "567",
+   "resp": "1250",
    "ok": true,
    "erro": null,
    "fonte": "sequencia-geo",
@@ -370,11 +371,11 @@
   {
    "id": 23,
    "tipo": "seq",
-   "q": "Próximo: 2,12,72,432,?",
+   "q": "Próximo: 11, 33, 99, 297,?",
    "gab": [
-    "2592"
+    "891"
    ],
-   "resp": "2592",
+   "resp": "891",
    "ok": true,
    "erro": null,
    "fonte": "sequencia-geo",
@@ -384,11 +385,11 @@
   {
    "id": 24,
    "tipo": "seq",
-   "q": "Próximo: 11,22,44,88,?",
+   "q": "Próximo: 81, 27, 9,?",
    "gab": [
-    "176"
+    "3"
    ],
-   "resp": "176",
+   "resp": "3",
    "ok": true,
    "erro": null,
    "fonte": "sequencia-geo",
@@ -398,25 +399,25 @@
   {
    "id": 25,
    "tipo": "seq",
-   "q": "Próximo: 13,52,208,832,?",
+   "q": "Próximo: 90, 45, 22.5,?",
    "gab": [
-    "3328"
+    "11.25"
    ],
-   "resp": "3328",
+   "resp": "11.25",
    "ok": true,
    "erro": null,
-   "fonte": "sequencia-geo",
-   "tentativas": 0,
-   "ms": 0
+   "fonte": "gigante2",
+   "tentativas": 3,
+   "ms": 1500
   },
   {
    "id": 26,
    "tipo": "seq",
-   "q": "Próximo: 500,250,125,?",
+   "q": "Próximo: 3, 9, 27, 81,?",
    "gab": [
-    "62"
+    "243"
    ],
-   "resp": "62.5",
+   "resp": "243",
    "ok": true,
    "erro": null,
    "fonte": "sequencia-geo",
@@ -425,109 +426,8 @@
   },
   {
    "id": 27,
-   "tipo": "seq",
-   "q": "Próximo: 320,160,80,?",
-   "gab": [
-    "40"
-   ],
-   "resp": "40",
-   "ok": true,
-   "erro": null,
-   "fonte": "sequencia-geo",
-   "tentativas": 0,
-   "ms": 0
-  },
-  {
-   "id": 28,
-   "tipo": "seq",
-   "q": "Próximo: 180,90,45,?",
-   "gab": [
-    "22"
-   ],
-   "resp": "22.5",
-   "ok": true,
-   "erro": null,
-   "fonte": "sequencia-geo",
-   "tentativas": 0,
-   "ms": 0
-  },
-  {
-   "id": 29,
-   "tipo": "seq",
-   "q": "Próximo: 97,48,24,?",
-   "gab": [
-    "12"
-   ],
-   "resp": "The user wants the next number in the sequence: 97, 48, 24, ?\nConstraint: Answer in one line, only the result. No explanation.\n\nLet's analyze the sequence: 97, 48, 24.\nDifferences: 97 - 48 = 49. 48 - ",
-   "ok": true,
-   "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 18094
-  },
-  {
-   "id": 30,
-   "tipo": "seq",
-   "q": "Próximo: 64,32,16,?",
-   "gab": [
-    "8"
-   ],
-   "resp": "8",
-   "ok": true,
-   "erro": null,
-   "fonte": "sequencia-geo",
-   "tentativas": 0,
-   "ms": 0
-  },
-  {
-   "id": 31,
    "tipo": "logica",
-   "q": "Se hoje é quinta-feira, que dia será daqui a 4 dias?",
-   "gab": [
-    "segunda",
-    "segunda-feira"
-   ],
-   "resp": "Segunda-feira",
-   "ok": true,
-   "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 6652
-  },
-  {
-   "id": 32,
-   "tipo": "logica",
-   "q": "Quantos meses do ano têm 30 dias?",
-   "gab": [
-    "4",
-    "quatro"
-   ],
-   "resp": "4",
-   "ok": true,
-   "erro": null,
-   "fonte": "ovhq",
-   "tentativas": 3,
-   "ms": 8122
-  },
-  {
-   "id": 33,
-   "tipo": "logica",
-   "q": "Quantos lados tem um octógono?",
-   "gab": [
-    "8",
-    "oito"
-   ],
-   "resp": "8",
-   "ok": true,
-   "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 2827
-  },
-  {
-   "id": 34,
-   "tipo": "logica",
-   "q": "Um relógio marca 9h. Que horas marcará daqui a 15 horas (0-23)?",
+   "q": "Um relógio marca 3h. Que horas marcará daqui a 21 horas (0-23)?",
    "gab": [
     "0",
     "zero",
@@ -536,341 +436,552 @@
    "resp": "0",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 1915
-  },
-  {
-   "id": 35,
-   "tipo": "logica",
-   "q": "Se 4 cadernos custam R$20, quanto custam 7?",
-   "gab": [
-    "35"
-   ],
-   "resp": "R$35",
-   "ok": true,
-   "erro": null,
    "fonte": "gigante2",
    "tentativas": 3,
-   "ms": 7344
+   "ms": 1442
   },
   {
-   "id": 36,
+   "id": 28,
    "tipo": "logica",
-   "q": "Pedro é mais novo que Lucas e Lucas é mais novo que Ivo. Quem é o mais velho?",
+   "q": "Numa fila de 15 pessoas, Ana é a 4ª. Quantas pessoas estão atrás dela?",
    "gab": [
-    "ivo"
+    "11"
    ],
-   "resp": "Thinking Process:\n\n1.  **Analyze the Request:**\n    *   Input: A logic puzzle in Portuguese (\"Pedro é mais novo que Lucas e Lucas é mais novo que Ivo. Quem é o mais velho?\").\n    *   Constraint 1: Res",
+   "resp": "11",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq397",
-   "tentativas": 3,
-   "ms": 15313
+   "fonte": "regra-de-fila",
+   "tentativas": 0,
+   "ms": 0
   },
   {
-   "id": 37,
+   "id": 29,
    "tipo": "logica",
-   "q": "Quantos minutos tem 2 horas e 15 minutos?",
+   "q": "Numa fila, João é o 9º. Quantas pessoas estão à frente dele?",
    "gab": [
-    "135",
-    "cento e trinta e cinco"
+    "8",
+    "oito"
    ],
-   "resp": "135",
+   "resp": "8",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 7262
+   "fonte": "regra-de-fila",
+   "tentativas": 0,
+   "ms": 0
   },
   {
-   "id": 38,
+   "id": 30,
    "tipo": "logica",
-   "q": "Numa fila, Rita é a 8ª. Quantas pessoas estão à frente dela?",
+   "q": "Se você ultrapassa o 2º colocado, em que posição fica?",
+   "gab": [
+    "2",
+    "segundo",
+    "2º"
+   ],
+   "resp": "2º lugar",
+   "ok": true,
+   "erro": null,
+   "fonte": "regra-de-posicao",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 31,
+   "tipo": "logica",
+   "q": "Uma torneira pinga 3 litros por minuto. Quantos litros em 14 minutos?",
+   "gab": [
+    "42"
+   ],
+   "resp": "42",
+   "ok": true,
+   "erro": null,
+   "fonte": "regra-de-taxa",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 32,
+   "tipo": "logica",
+   "q": "Se 5 cadernos custam R$30, quanto custam 8?",
+   "gab": [
+    "48"
+   ],
+   "resp": "48",
+   "ok": true,
+   "erro": null,
+   "fonte": "proporcao",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 33,
+   "tipo": "logica",
+   "q": "Quantos meses do ano têm 31 dias?",
    "gab": [
     "7",
     "sete"
    ],
-   "resp": "7",
+   "resp": "7 meses (janeiro, março, maio, julho, agosto, outubro e dezembro)",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 34,
+   "tipo": "logica",
+   "q": "Quantos dias tem fevereiro em um ano comum?",
+   "gab": [
+    "28",
+    "vinte e oito"
+   ],
+   "resp": "28",
+   "ok": true,
+   "erro": null,
+   "fonte": "gigante2",
    "tentativas": 3,
-   "ms": 5178
+   "ms": 6587
+  },
+  {
+   "id": 35,
+   "tipo": "logica",
+   "q": "Maria tem 3 maçãs a mais que Ana. Ana tem 12. Quantas Maria tem?",
+   "gab": [
+    "15"
+   ],
+   "resp": "15",
+   "ok": true,
+   "erro": null,
+   "fonte": "ovhq",
+   "tentativas": 3,
+   "ms": 7305
+  },
+  {
+   "id": 36,
+   "tipo": "logica",
+   "q": "Um número é maior que 30 e menor que 33. Que número é?",
+   "gab": [
+    "31",
+    "32"
+   ],
+   "resp": "31 ou 32",
+   "ok": true,
+   "erro": null,
+   "fonte": "gigante2",
+   "tentativas": 3,
+   "ms": 2744
+  },
+  {
+   "id": 37,
+   "tipo": "logica",
+   "q": "Quantas patas têm 4 cachorros?",
+   "gab": [
+    "16"
+   ],
+   "resp": "16.",
+   "ok": true,
+   "erro": null,
+   "fonte": "ovhq397",
+   "tentativas": 3,
+   "ms": 3728
+  },
+  {
+   "id": 38,
+   "tipo": "logica",
+   "q": "Quantos dias tem dois anos comuns?",
+   "gab": [
+    "730"
+   ],
+   "resp": "730",
+   "ok": true,
+   "erro": null,
+   "fonte": "gigante2",
+   "tentativas": 3,
+   "ms": 1057
   },
   {
    "id": 39,
-   "tipo": "logica",
-   "q": "Quantos dias tem três semanas?",
+   "tipo": "lingua",
+   "q": "Qual é o coletivo de peixes?",
    "gab": [
-    "21",
-    "vinte e um"
+    "cardume",
+    "cardume de peixes"
    ],
-   "resp": "21 dias",
+   "resp": "cardume",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 1726
+   "fonte": "coletivo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 40,
-   "tipo": "logica",
-   "q": "Uma torneira enche 5 litros por minuto. Quantos litros em 12 minutos?",
+   "tipo": "lingua",
+   "q": "Qual é o coletivo de abelhas?",
    "gab": [
-    "60",
-    "sessenta"
+    "enxame",
+    "colmeia"
    ],
-   "resp": "60 litros",
+   "resp": "enxame",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 7292
+   "fonte": "coletivo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 41,
-   "tipo": "logica",
-   "q": "Quantos segundos tem 5 minutos?",
+   "tipo": "lingua",
+   "q": "Qual o feminino de 'gato'?",
    "gab": [
-    "300",
-    "trezentos"
+    "gata"
    ],
-   "resp": "300",
+   "resp": "gata",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 3139
+   "fonte": "feminino",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 42,
-   "tipo": "logica",
-   "q": "Um livro de 480 páginas, 40 por dia: em quantos dias termino?",
+   "tipo": "lingua",
+   "q": "Qual o plural de 'cidadão'?",
    "gab": [
-    "12",
-    "doze"
+    "cidadãos"
    ],
-   "resp": "12 dias",
+   "resp": "cidadãos",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 2300
+   "fonte": "plural",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 43,
-   "tipo": "logica",
-   "q": "Quantas patas têm 12 cachorros?",
+   "tipo": "lingua",
+   "q": "Qual o plural de 'caracol'?",
    "gab": [
-    "48",
-    "quarenta e oito"
+    "caracóis"
    ],
-   "resp": "48",
+   "resp": "caracóis",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 4739
+   "fonte": "plural",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 44,
-   "tipo": "logica",
-   "q": "Quantos ovos há em 4 dúzias?",
+   "tipo": "lingua",
+   "q": "Qual o superlativo de 'salgado'?",
    "gab": [
-    "48",
-    "quarenta e oito"
+    "salgadíssimo"
    ],
-   "resp": "48",
+   "resp": "salgadíssimo",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 1693
+   "fonte": "superlativo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 45,
-   "tipo": "logica",
-   "q": "Quantas faces tem um cubo?",
+   "tipo": "lingua",
+   "q": "Qual o aumentativo de 'livro'?",
    "gab": [
-    "6",
-    "seis"
+    "livrão",
+    "livrona"
    ],
-   "resp": "6",
+   "resp": "livrão",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 9838
+   "fonte": "aumentativo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 46,
-   "tipo": "brasil",
-   "q": "Qual a capital de Roraima?",
+   "tipo": "lingua",
+   "q": "Qual o diminutivo de 'pão'?",
    "gab": [
-    "boa vista"
+    "pãozinho"
    ],
-   "resp": "Boa Vista",
+   "resp": "pãozinho",
    "ok": true,
    "erro": null,
-   "fonte": "capital",
+   "fonte": "diminutivo",
    "tentativas": 0,
    "ms": 0
   },
   {
    "id": 47,
-   "tipo": "brasil",
-   "q": "Qual a capital do Amapá?",
+   "tipo": "lingua",
+   "q": "Qual o antônimo de 'claro'?",
    "gab": [
-    "macapá",
-    "macapa"
+    "escuro"
    ],
-   "resp": "Macapá",
+   "resp": "escuro",
+   "ok": true,
+   "erro": null,
+   "fonte": "antonimo",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 48,
+   "tipo": "lingua",
+   "q": "Qual o antônimo de 'triste'?",
+   "gab": [
+    "alegre",
+    "feliz"
+   ],
+   "resp": "Alegre (ou feliz)",
    "ok": true,
    "erro": null,
    "fonte": "gigante2",
    "tentativas": 3,
-   "ms": 1662
-  },
-  {
-   "id": 48,
-   "tipo": "brasil",
-   "q": "Qual a capital do Acre?",
-   "gab": [
-    "rio branco"
-   ],
-   "resp": "Rio Branco",
-   "ok": true,
-   "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 2,
-   "ms": 2146
+   "ms": 2534
   },
   {
    "id": 49,
-   "tipo": "brasil",
-   "q": "Qual a capital de Rondônia?",
+   "tipo": "lingua",
+   "q": "Qual o sinônimo de 'rápido'?",
    "gab": [
-    "porto velho"
+    "veloz",
+    "ligeiro"
    ],
-   "resp": "Porto Velho",
+   "resp": "veloz",
    "ok": true,
    "erro": null,
-   "fonte": "capital",
+   "fonte": "sinonimo",
    "tentativas": 0,
    "ms": 0
   },
   {
    "id": 50,
-   "tipo": "brasil",
-   "q": "Qual a capital do Tocantins?",
+   "tipo": "lingua",
+   "q": "Quantas sílabas tem a palavra 'janela'?",
    "gab": [
-    "palmas"
+    "3",
+    "três"
    ],
-   "resp": "Palmas",
+   "resp": "3",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 4562
+   "fonte": "silabas",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 51,
-   "tipo": "brasil",
-   "q": "Qual a capital de Mato Grosso?",
+   "tipo": "lingua",
+   "q": "Qual a classe da palavra 'porém'?",
    "gab": [
-    "cuiabá",
-    "cuiaba"
+    "conjunção",
+    "conjuncao"
    ],
-   "resp": "Cuiabá",
+   "resp": "Conjunção adversativa.",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq",
-   "tentativas": 3,
-   "ms": 11381
+   "fonte": "gigante2",
+   "tentativas": 2,
+   "ms": 3904
   },
   {
    "id": 52,
-   "tipo": "brasil",
-   "q": "Qual a capital de Santa Catarina?",
+   "tipo": "lingua",
+   "q": "Qual a figura de linguagem em 'morri de saudade'?",
    "gab": [
-    "florianópolis",
-    "florianopolis"
+    "hipérbole",
+    "hiperbole"
    ],
-   "resp": "Florianópolis",
+   "resp": "Hipérbole",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 5798
+   "fonte": "figura-de-linguagem",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 53,
-   "tipo": "brasil",
-   "q": "Qual a capital do Rio de Janeiro?",
+   "tipo": "eng",
+   "q": "Past tense of 'go'?",
    "gab": [
-    "rio de janeiro"
+    "went"
    ],
-   "resp": "Rio de Janeiro.",
+   "resp": "went",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 8842
+   "fonte": "ingles-irregular",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 54,
-   "tipo": "brasil",
-   "q": "Qual a capital de São Paulo?",
+   "tipo": "eng",
+   "q": "Past tense of 'take'?",
    "gab": [
-    "são paulo",
-    "sao paulo"
+    "took"
    ],
-   "resp": "São Paulo",
+   "resp": "took",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 12144
+   "fonte": "ingles-irregular",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 55,
-   "tipo": "brasil",
-   "q": "Qual a capital de Minas Gerais?",
+   "tipo": "eng",
+   "q": "Past tense of 'swim'?",
    "gab": [
-    "belo horizonte"
+    "swam"
    ],
-   "resp": "Belo Horizonte",
+   "resp": "swam",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 2434
+   "fonte": "ingles-irregular",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 56,
-   "tipo": "brasil",
-   "q": "Qual a capital da Paraíba?",
+   "tipo": "eng",
+   "q": "Plural of 'mouse'?",
    "gab": [
-    "joão pessoa",
-    "joao pessoa"
+    "mice"
    ],
-   "resp": "João Pessoa",
+   "resp": "mice",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 2659
+   "fonte": "ingles-plural",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 57,
-   "tipo": "brasil",
-   "q": "Qual a capital do Maranhão?",
+   "tipo": "eng",
+   "q": "Plural of 'child'?",
    "gab": [
-    "são luís",
-    "sao luis"
+    "children"
    ],
-   "resp": "São Luís",
+   "resp": "children",
+   "ok": true,
+   "erro": null,
+   "fonte": "ingles-plural",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 58,
+   "tipo": "eng",
+   "q": "Plural of 'analysis'?",
+   "gab": [
+    "analyses"
+   ],
+   "resp": "analyses",
+   "ok": true,
+   "erro": null,
+   "fonte": "ingles-plural",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 59,
+   "tipo": "eng",
+   "q": "Comparative of 'far'?",
+   "gab": [
+    "farther",
+    "further"
+   ],
+   "resp": "farther/further",
+   "ok": true,
+   "erro": null,
+   "fonte": "ingles-grau",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 60,
+   "tipo": "eng",
+   "q": "Superlative of 'bad'?",
+   "gab": [
+    "worst"
+   ],
+   "resp": "worst",
+   "ok": true,
+   "erro": null,
+   "fonte": "ingles-grau",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 61,
+   "tipo": "eng",
+   "q": "Superlative of 'happy'?",
+   "gab": [
+    "happiest"
+   ],
+   "resp": "happiest",
+   "ok": true,
+   "erro": null,
+   "fonte": "ingles-grau",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 62,
+   "tipo": "eng",
+   "q": "Comparative of 'old'?",
+   "gab": [
+    "older",
+    "elder"
+   ],
+   "resp": "older/elder",
+   "ok": true,
+   "erro": null,
+   "fonte": "ingles-grau",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 63,
+   "tipo": "eng",
+   "q": "Superlative of 'difficult'?",
+   "gab": [
+    "most difficult"
+   ],
+   "resp": "most difficult",
+   "ok": true,
+   "erro": null,
+   "fonte": "ingles-grau",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 64,
+   "tipo": "eng",
+   "q": "Past tense of 'teach'?",
+   "gab": [
+    "taught"
+   ],
+   "resp": "taught",
+   "ok": true,
+   "erro": null,
+   "fonte": "ingles-irregular",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 65,
+   "tipo": "brasil",
+   "q": "Qual a capital de Alagoas?",
+   "gab": [
+    "Maceió"
+   ],
+   "resp": "Maceió",
    "ok": true,
    "erro": null,
    "fonte": "capital",
@@ -878,11 +989,11 @@
    "ms": 0
   },
   {
-   "id": 58,
+   "id": 66,
    "tipo": "brasil",
    "q": "Qual a capital do Ceará?",
    "gab": [
-    "fortaleza"
+    "Fortaleza"
    ],
    "resp": "Fortaleza",
    "ok": true,
@@ -892,484 +1003,142 @@
    "ms": 0
   },
   {
-   "id": 59,
-   "tipo": "brasil",
-   "q": "Qual a capital do Pará?",
-   "gab": [
-    "belém",
-    "belem"
-   ],
-   "resp": "Belém",
-   "ok": true,
-   "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 4699
-  },
-  {
-   "id": 60,
-   "tipo": "brasil",
-   "q": "Qual a capital do Amazonas?",
-   "gab": [
-    "manaus"
-   ],
-   "resp": "Manaus",
-   "ok": true,
-   "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 7265
-  },
-  {
-   "id": 61,
-   "tipo": "lingua",
-   "q": "Qual o feminino de 'padre'?",
-   "gab": [
-    "madre"
-   ],
-   "resp": "Madre",
-   "ok": true,
-   "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 11800
-  },
-  {
-   "id": 62,
-   "tipo": "lingua",
-   "q": "Qual o coletivo de abelhas?",
-   "gab": [
-    "enxame"
-   ],
-   "resp": "Enxame.",
-   "ok": true,
-   "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 2150
-  },
-  {
-   "id": 63,
-   "tipo": "lingua",
-   "q": "Quantas sílabas tem 'borboleta'?",
-   "gab": [
-    "4",
-    "quatro"
-   ],
-   "resp": "4",
-   "ok": true,
-   "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 7243
-  },
-  {
-   "id": 64,
-   "tipo": "lingua",
-   "q": "Qual o superlativo de 'mau'?",
-   "gab": [
-    "péssimo",
-    "pessimo"
-   ],
-   "resp": "péssimo",
-   "ok": true,
-   "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 4304
-  },
-  {
-   "id": 65,
-   "tipo": "lingua",
-   "q": "Qual o antônimo de 'grosso'?",
-   "gab": [
-    "fino"
-   ],
-   "resp": "fino",
-   "ok": true,
-   "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 5201
-  },
-  {
-   "id": 66,
-   "tipo": "lingua",
-   "q": "Qual o plural de 'cidadão'?",
-   "gab": [
-    "cidadãos",
-    "cidadaos"
-   ],
-   "resp": "cidadãos",
-   "ok": true,
-   "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 9511
-  },
-  {
    "id": 67,
-   "tipo": "lingua",
-   "q": "Qual o plural de 'papel'?",
+   "tipo": "brasil",
+   "q": "Qual a capital de Santa Catarina?",
    "gab": [
-    "papéis",
-    "papeis"
+    "Florianópolis"
    ],
-   "resp": "papéis",
+   "resp": "Florianópolis",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 2,
-   "ms": 9719
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 68,
-   "tipo": "lingua",
-   "q": "Qual o diminutivo de 'casa'?",
+   "tipo": "brasil",
+   "q": "Qual a capital do Rio Grande do Sul?",
    "gab": [
-    "casinha"
+    "Porto Alegre"
    ],
-   "resp": "casinha",
+   "resp": "Porto Alegre",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 6771
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 69,
-   "tipo": "lingua",
-   "q": "Qual a classe da palavra 'corajoso'?",
+   "tipo": "brasil",
+   "q": "Quantas unidades federativas o Brasil tem?",
    "gab": [
-    "adjetivo"
+    "27",
+    "vinte e sete",
+    "26 estados e o distrito federal"
    ],
-   "resp": "Adjetivo",
+   "resp": "27",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
+   "fonte": "ovhoss20",
    "tentativas": 3,
-   "ms": 2848
+   "ms": 782
   },
   {
    "id": 70,
-   "tipo": "lingua",
-   "q": "Qual a classe da palavra 'correr'?",
+   "tipo": "brasil",
+   "q": "Qual é a moeda do Brasil?",
    "gab": [
-    "verbo"
+    "real",
+    "r$"
    ],
-   "resp": "Verbo",
+   "resp": "Real (BRL)",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 7554
+   "fonte": "ovhoss20",
+   "tentativas": 1,
+   "ms": 1553
   },
   {
    "id": 71,
-   "tipo": "lingua",
-   "q": "Qual o antônimo de 'doce'?",
+   "tipo": "brasil",
+   "q": "Quantos estados o Brasil tem?",
    "gab": [
-    "amargo"
+    "26",
+    "vinte e seis"
    ],
-   "resp": "Amargo",
+   "resp": "26 estados e o Distrito Federal",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 2,
-   "ms": 11972
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 72,
-   "tipo": "lingua",
-   "q": "Qual o sinônimo de 'rápido'?",
+   "tipo": "brasil",
+   "q": "Qual é a sigla de São Paulo?",
    "gab": [
-    "veloz",
-    "ligeiro"
+    "sp"
    ],
-   "resp": "Veloz",
+   "resp": "SP",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
+   "fonte": "ovhq9",
    "tentativas": 2,
-   "ms": 1259
+   "ms": 19034
   },
   {
    "id": 73,
-   "tipo": "lingua",
-   "q": "Qual a figura de linguagem em 'seus olhos são duas estrelas'?",
+   "tipo": "brasil",
+   "q": "Qual é a sigla da Bahia?",
    "gab": [
-    "metáfora",
-    "metafora"
+    "ba"
    ],
-   "resp": "Metáfora",
+   "resp": "BA",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 12630
+   "fonte": "ovhq9",
+   "tentativas": 1,
+   "ms": 17586
   },
   {
    "id": 74,
-   "tipo": "lingua",
-   "q": "Quantas letras tem 'caderno'?",
+   "tipo": "brasil",
+   "q": "Qual é a língua oficial do Brasil?",
    "gab": [
-    "7",
-    "sete"
+    "português",
+    "português brasileiro",
+    "portugues"
    ],
-   "resp": "7",
+   "resp": "Português",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
+   "fonte": "ultra",
    "tentativas": 3,
-   "ms": 6503
+   "ms": 4967
   },
   {
    "id": 75,
-   "tipo": "lingua",
-   "q": "Qual o feminino de 'carneiro'?",
+   "tipo": "mundo",
+   "q": "Qual é a capital da Noruega?",
    "gab": [
-    "ovelha"
+    "oslo",
+    "cristiânia"
    ],
-   "resp": "carneira",
-   "ok": false,
+   "resp": "Oslo",
+   "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 6026
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 76,
-   "tipo": "eng",
-   "q": "Translate to Portuguese: 'window'",
-   "gab": [
-    "janela"
-   ],
-   "resp": "janela",
-   "ok": true,
-   "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 1651
-  },
-  {
-   "id": 77,
-   "tipo": "eng",
-   "q": "Translate to Portuguese: 'chair'",
-   "gab": [
-    "cadeira"
-   ],
-   "resp": "Cadeira",
-   "ok": true,
-   "erro": null,
-   "fonte": "traducao",
-   "tentativas": 0,
-   "ms": 0
-  },
-  {
-   "id": 78,
-   "tipo": "eng",
-   "q": "Translate to Portuguese: 'bread'",
-   "gab": [
-    "pão",
-    "pao"
-   ],
-   "resp": "pão",
-   "ok": true,
-   "erro": null,
-   "fonte": "traducao",
-   "tentativas": 0,
-   "ms": 0
-  },
-  {
-   "id": 79,
-   "tipo": "eng",
-   "q": "Translate to Portuguese: 'street'",
-   "gab": [
-    "rua"
-   ],
-   "resp": "rua",
-   "ok": true,
-   "erro": null,
-   "fonte": "traducao",
-   "tentativas": 0,
-   "ms": 0
-  },
-  {
-   "id": 80,
-   "tipo": "eng",
-   "q": "Translate to Portuguese: 'teacher'",
-   "gab": [
-    "professor",
-    "professora"
-   ],
-   "resp": "professor",
-   "ok": true,
-   "erro": null,
-   "fonte": "traducao",
-   "tentativas": 0,
-   "ms": 0
-  },
-  {
-   "id": 81,
-   "tipo": "eng",
-   "q": "Translate to English: 'mesa'",
-   "gab": [
-    "table"
-   ],
-   "resp": "table",
-   "ok": true,
-   "erro": null,
-   "fonte": "traducao",
-   "tentativas": 0,
-   "ms": 0
-  },
-  {
-   "id": 82,
-   "tipo": "eng",
-   "q": "Translate to English: 'porta'",
-   "gab": [
-    "door"
-   ],
-   "resp": "door",
-   "ok": true,
-   "erro": null,
-   "fonte": "traducao",
-   "tentativas": 0,
-   "ms": 0
-  },
-  {
-   "id": 83,
-   "tipo": "eng",
-   "q": "Translate to English: 'cavalo'",
-   "gab": [
-    "horse"
-   ],
-   "resp": "horse",
-   "ok": true,
-   "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 1739
-  },
-  {
-   "id": 84,
-   "tipo": "eng",
-   "q": "Translate to English: 'feliz'",
-   "gab": [
-    "happy"
-   ],
-   "resp": "happy",
-   "ok": true,
-   "erro": null,
-   "fonte": "traducao",
-   "tentativas": 0,
-   "ms": 0
-  },
-  {
-   "id": 85,
-   "tipo": "eng",
-   "q": "Translate to English: 'trabalho'",
-   "gab": [
-    "work",
-    "job"
-   ],
-   "resp": "work",
-   "ok": true,
-   "erro": null,
-   "fonte": "traducao",
-   "tentativas": 0,
-   "ms": 0
-  },
-  {
-   "id": 86,
-   "tipo": "eng",
-   "q": "Past tense of 'write'?",
-   "gab": [
-    "wrote"
-   ],
-   "resp": "wrote",
-   "ok": true,
-   "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 1027
-  },
-  {
-   "id": 87,
-   "tipo": "eng",
-   "q": "Past tense of 'drink'?",
-   "gab": [
-    "drank"
-   ],
-   "resp": "drank",
-   "ok": true,
-   "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 2021
-  },
-  {
-   "id": 88,
-   "tipo": "eng",
-   "q": "Plural of 'foot'?",
-   "gab": [
-    "feet"
-   ],
-   "resp": "feet",
-   "ok": true,
-   "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 11434
-  },
-  {
-   "id": 89,
-   "tipo": "eng",
-   "q": "Comparative of 'bad'?",
-   "gab": [
-    "worse"
-   ],
-   "resp": "worse",
-   "ok": true,
-   "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 10739
-  },
-  {
-   "id": 90,
-   "tipo": "eng",
-   "q": "Superlative of 'far'?",
-   "gab": [
-    "farthest",
-    "furthest"
-   ],
-   "resp": "farthest / furthest",
-   "ok": true,
-   "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 12354
-  },
-  {
-   "id": 91,
    "tipo": "mundo",
-   "q": "Qual a capital da Alemanha?",
-   "gab": [
-    "berlim",
-    "berlin"
-   ],
-   "resp": "Berlim",
-   "ok": true,
-   "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 6615
-  },
-  {
-   "id": 92,
-   "tipo": "mundo",
-   "q": "Qual a capital do Canadá?",
+   "q": "Qual é a capital do Canadá?",
    "gab": [
     "ottawa"
    ],
@@ -1381,66 +1150,21 @@
    "ms": 0
   },
   {
-   "id": 93,
+   "id": 77,
    "tipo": "mundo",
-   "q": "Qual a capital da Rússia?",
+   "q": "Qual é a capital do Egito?",
    "gab": [
-    "moscou",
-    "moscow"
+    "cairo"
    ],
-   "resp": "Moscou",
+   "resp": "Cairo",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 12526
-  },
-  {
-   "id": 94,
-   "tipo": "mundo",
-   "q": "Qual a capital da Índia?",
-   "gab": [
-    "nova délhi",
-    "new delhi",
-    "delhi"
-   ],
-   "resp": "Nova Délhi",
-   "ok": true,
-   "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 8807
-  },
-  {
-   "id": 95,
-   "tipo": "mundo",
-   "q": "Qual é o símbolo químico da prata?",
-   "gab": [
-    "ag"
-   ],
-   "resp": "Ag",
-   "ok": true,
-   "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 12913
-  },
-  {
-   "id": 96,
-   "tipo": "mundo",
-   "q": "Qual é o símbolo químico do ferro?",
-   "gab": [
-    "fe"
-   ],
-   "resp": "Fe",
-   "ok": true,
-   "erro": null,
-   "fonte": "simbolo-quimico",
+   "fonte": "capital",
    "tentativas": 0,
    "ms": 0
   },
   {
-   "id": 97,
+   "id": 78,
    "tipo": "mundo",
    "q": "Qual é o símbolo químico do sódio?",
    "gab": [
@@ -1454,115 +1178,37 @@
    "ms": 0
   },
   {
-   "id": 98,
+   "id": 79,
    "tipo": "mundo",
-   "q": "Qual o planeta conhecido como planeta vermelho?",
+   "q": "Qual é o símbolo químico do ferro?",
    "gab": [
-    "marte",
-    "mars"
+    "fe"
    ],
-   "resp": "Marte",
+   "resp": "Fe",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 2042
+   "fonte": "simbolo-quimico",
+   "tentativas": 0,
+   "ms": 0
   },
   {
-   "id": 99,
+   "id": 80,
    "tipo": "mundo",
-   "q": "Qual o maior oceano do mundo?",
+   "q": "Qual é o elemento de símbolo Ca?",
    "gab": [
-    "pacífico",
-    "pacifico"
+    "cálcio"
    ],
-   "resp": "Oceano Pacífico",
+   "resp": "cálcio",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 8847
+   "fonte": "elemento",
+   "tentativas": 0,
+   "ms": 0
   },
   {
-   "id": 100,
+   "id": 81,
    "tipo": "mundo",
-   "q": "Quantos continentes habitados existem?",
-   "gab": [
-    "5",
-    "cinco",
-    "6",
-    "seis"
-   ],
-   "resp": "Seis.",
-   "ok": true,
-   "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 4379
-  },
-  {
-   "id": 101,
-   "tipo": "mundo",
-   "q": "Quem escreveu 'Grande Sertão: Veredas'?",
-   "gab": [
-    "guimarães rosa",
-    "guimaraes rosa"
-   ],
-   "resp": "João Guimarães Rosa.",
-   "ok": true,
-   "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 4269
-  },
-  {
-   "id": 102,
-   "tipo": "mundo",
-   "q": "Quem pintou 'O Grito'?",
-   "gab": [
-    "edvard munch",
-    "munch"
-   ],
-   "resp": "Edvard Munch",
-   "ok": true,
-   "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 4613
-  },
-  {
-   "id": 103,
-   "tipo": "mundo",
-   "q": "Qual a unidade de potência no SI?",
-   "gab": [
-    "watt",
-    "w"
-   ],
-   "resp": "Watt (W)",
-   "ok": true,
-   "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 17845
-  },
-  {
-   "id": 104,
-   "tipo": "mundo",
-   "q": "Qual o metal do símbolo 'Pb'?",
-   "gab": [
-    "chumbo"
-   ],
-   "resp": "Chumbo",
-   "ok": true,
-   "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 10394
-  },
-  {
-   "id": 105,
-   "tipo": "mundo",
-   "q": "Qual o maior planeta do Sistema Solar?",
+   "q": "Qual é o maior planeta do sistema solar?",
    "gab": [
     "júpiter",
     "jupiter"
@@ -1570,9 +1216,55 @@
    "resp": "Júpiter",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 82,
+   "tipo": "mundo",
+   "q": "Quantos planetas tem o sistema solar?",
+   "gab": [
+    "8",
+    "oito"
+   ],
+   "resp": "8",
+   "ok": true,
+   "erro": null,
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 83,
+   "tipo": "mundo",
+   "q": "Qual é a moeda do Japão?",
+   "gab": [
+    "iene",
+    "ien",
+    "yen"
+   ],
+   "resp": "Iene",
+   "ok": true,
+   "erro": null,
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 84,
+   "tipo": "mundo",
+   "q": "Qual é o rio mais extenso do mundo?",
+   "gab": [
+    "nilo",
+    "amazonas"
+   ],
+   "resp": "O rio Nilo é geralmente considerado o mais extenso do mundo.",
+   "ok": true,
+   "erro": null,
+   "fonte": "ultra",
    "tentativas": 3,
-   "ms": 5531
+   "ms": 13121
   }
  ]
 }

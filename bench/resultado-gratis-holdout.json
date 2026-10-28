@@ -2,17 +2,17 @@
  "sum": {
   "modo": "gratis",
   "total": 105,
-  "acertos": 104,
-  "acertoPct": 99,
+  "acertos": 105,
+  "acertoPct": 100,
   "semResposta": 0,
   "semRespostaPct": 0,
   "taxa429": 0,
   "respondeu": 105,
-  "acertoQuandoResponde": 99,
-  "errosDeConteudo": 1,
-  "latenciaMedianaMs": 6503,
-  "tentativasTotal": 179,
-  "duracaoS": 312,
+  "acertoQuandoResponde": 100,
+  "errosDeConteudo": 0,
+  "latenciaMedianaMs": 8192,
+  "tentativasTotal": 45,
+  "duracaoS": 89,
   "porTipo": {
    "mat": {
     "n": 15,
@@ -40,9 +40,9 @@
    },
    "lingua": {
     "n": 15,
-    "ok": 14,
+    "ok": 15,
     "semResp": 0,
-    "errado": 1
+    "errado": 0
    },
    "eng": {
     "n": 15,
@@ -414,7 +414,8 @@
    "tipo": "seq",
    "q": "Próximo: 500,250,125,?",
    "gab": [
-    "62"
+    "62.5",
+    "62,5"
    ],
    "resp": "62.5",
    "ok": true,
@@ -442,7 +443,8 @@
    "tipo": "seq",
    "q": "Próximo: 180,90,45,?",
    "gab": [
-    "22"
+    "22.5",
+    "22,5"
    ],
    "resp": "22.5",
    "ok": true,
@@ -458,12 +460,12 @@
    "gab": [
     "12"
    ],
-   "resp": "The user wants the next number in the sequence: 97, 48, 24, ?\nConstraint: Answer in one line, only the result. No explanation.\n\nLet's analyze the sequence: 97, 48, 24.\nDifferences: 97 - 48 = 49. 48 - ",
+   "resp": "12",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 18094
+   "fonte": "sequencia-geo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 30,
@@ -487,12 +489,12 @@
     "segunda",
     "segunda-feira"
    ],
-   "resp": "Segunda-feira",
+   "resp": "segunda-feira",
    "ok": true,
    "erro": null,
    "fonte": "gigante2",
    "tentativas": 3,
-   "ms": 6652
+   "ms": 9120
   },
   {
    "id": 32,
@@ -502,12 +504,12 @@
     "4",
     "quatro"
    ],
-   "resp": "4",
+   "resp": "4 meses (abril, junho, setembro e novembro)",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq",
-   "tentativas": 3,
-   "ms": 8122
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 33,
@@ -520,9 +522,9 @@
    "resp": "8",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
+   "fonte": "gigante2",
    "tentativas": 3,
-   "ms": 2827
+   "ms": 14384
   },
   {
    "id": 34,
@@ -533,12 +535,12 @@
     "zero",
     "0h"
    ],
-   "resp": "0",
+   "resp": "0h",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
+   "fonte": "gigante2",
    "tentativas": 3,
-   "ms": 1915
+   "ms": 4597
   },
   {
    "id": 35,
@@ -547,12 +549,12 @@
    "gab": [
     "35"
    ],
-   "resp": "R$35",
+   "resp": "35",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 7344
+   "fonte": "proporcao",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 36,
@@ -561,12 +563,12 @@
    "gab": [
     "ivo"
    ],
-   "resp": "Thinking Process:\n\n1.  **Analyze the Request:**\n    *   Input: A logic puzzle in Portuguese (\"Pedro é mais novo que Lucas e Lucas é mais novo que Ivo. Quem é o mais velho?\").\n    *   Constraint 1: Res",
+   "resp": "Ivo",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq397",
+   "fonte": "ovhq",
    "tentativas": 3,
-   "ms": 15313
+   "ms": 19029
   },
   {
    "id": 37,
@@ -576,12 +578,12 @@
     "135",
     "cento e trinta e cinco"
    ],
-   "resp": "135",
+   "resp": "135 minutos",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
+   "fonte": "ovhoss",
    "tentativas": 3,
-   "ms": 7262
+   "ms": 8378
   },
   {
    "id": 38,
@@ -594,9 +596,9 @@
    "resp": "7",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 5178
+   "fonte": "regra-de-fila",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 39,
@@ -609,9 +611,9 @@
    "resp": "21 dias",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
+   "fonte": "ovhoss",
    "tentativas": 3,
-   "ms": 1726
+   "ms": 6830
   },
   {
    "id": 40,
@@ -621,12 +623,12 @@
     "60",
     "sessenta"
    ],
-   "resp": "60 litros",
+   "resp": "60",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 7292
+   "fonte": "regra-de-taxa",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 41,
@@ -636,12 +638,12 @@
     "300",
     "trezentos"
    ],
-   "resp": "300",
+   "resp": "300 segundos.",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
+   "fonte": "ovhq397",
    "tentativas": 3,
-   "ms": 3139
+   "ms": 20734
   },
   {
    "id": 42,
@@ -654,9 +656,9 @@
    "resp": "12 dias",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
+   "fonte": "ovhq397",
    "tentativas": 3,
-   "ms": 2300
+   "ms": 19299
   },
   {
    "id": 43,
@@ -671,7 +673,7 @@
    "erro": null,
    "fonte": "gigante2",
    "tentativas": 3,
-   "ms": 4739
+   "ms": 1627
   },
   {
    "id": 44,
@@ -686,7 +688,7 @@
    "erro": null,
    "fonte": "gigante2",
    "tentativas": 3,
-   "ms": 1693
+   "ms": 8728
   },
   {
    "id": 45,
@@ -696,12 +698,12 @@
     "6",
     "seis"
    ],
-   "resp": "6",
+   "resp": "Um cubo tem 6 faces.",
    "ok": true,
    "erro": null,
    "fonte": "gigante2",
    "tentativas": 3,
-   "ms": 9838
+   "ms": 4793
   },
   {
    "id": 46,
@@ -728,9 +730,9 @@
    "resp": "Macapá",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 1662
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 48,
@@ -742,9 +744,9 @@
    "resp": "Rio Branco",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 2,
-   "ms": 2146
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 49,
@@ -770,9 +772,9 @@
    "resp": "Palmas",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 4562
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 51,
@@ -785,9 +787,9 @@
    "resp": "Cuiabá",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq",
-   "tentativas": 3,
-   "ms": 11381
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 52,
@@ -800,9 +802,9 @@
    "resp": "Florianópolis",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 5798
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 53,
@@ -811,12 +813,12 @@
    "gab": [
     "rio de janeiro"
    ],
-   "resp": "Rio de Janeiro.",
+   "resp": "Rio de Janeiro",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 8842
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 54,
@@ -829,9 +831,9 @@
    "resp": "São Paulo",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 12144
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 55,
@@ -843,9 +845,9 @@
    "resp": "Belo Horizonte",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 2434
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 56,
@@ -858,9 +860,9 @@
    "resp": "João Pessoa",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 2659
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 57,
@@ -902,9 +904,9 @@
    "resp": "Belém",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 4699
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 60,
@@ -916,9 +918,9 @@
    "resp": "Manaus",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 7265
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 61,
@@ -927,12 +929,12 @@
    "gab": [
     "madre"
    ],
-   "resp": "Madre",
+   "resp": "madre",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 11800
+   "fonte": "feminino",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 62,
@@ -941,12 +943,12 @@
    "gab": [
     "enxame"
    ],
-   "resp": "Enxame.",
+   "resp": "enxame",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 2150
+   "fonte": "coletivo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 63,
@@ -959,9 +961,9 @@
    "resp": "4",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 7243
+   "fonte": "silabas",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 64,
@@ -974,9 +976,9 @@
    "resp": "péssimo",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 4304
+   "fonte": "superlativo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 65,
@@ -988,9 +990,9 @@
    "resp": "fino",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 5201
+   "fonte": "antonimo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 66,
@@ -1003,9 +1005,9 @@
    "resp": "cidadãos",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 9511
+   "fonte": "plural",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 67,
@@ -1018,9 +1020,9 @@
    "resp": "papéis",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 2,
-   "ms": 9719
+   "fonte": "plural",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 68,
@@ -1032,9 +1034,9 @@
    "resp": "casinha",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 6771
+   "fonte": "diminutivo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 69,
@@ -1043,12 +1045,12 @@
    "gab": [
     "adjetivo"
    ],
-   "resp": "Adjetivo",
+   "resp": "adjetivo",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 2848
+   "fonte": "classe",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 70,
@@ -1057,12 +1059,12 @@
    "gab": [
     "verbo"
    ],
-   "resp": "Verbo",
+   "resp": "verbo",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 7554
+   "fonte": "classe",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 71,
@@ -1071,12 +1073,12 @@
    "gab": [
     "amargo"
    ],
-   "resp": "Amargo",
+   "resp": "amargo",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 2,
-   "ms": 11972
+   "fonte": "antonimo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 72,
@@ -1086,12 +1088,12 @@
     "veloz",
     "ligeiro"
    ],
-   "resp": "Veloz",
+   "resp": "veloz",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 2,
-   "ms": 1259
+   "fonte": "sinonimo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 73,
@@ -1101,12 +1103,12 @@
     "metáfora",
     "metafora"
    ],
-   "resp": "Metáfora",
+   "resp": "Metáfora.",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
+   "fonte": "polli",
    "tentativas": 3,
-   "ms": 12630
+   "ms": 5704
   },
   {
    "id": 74,
@@ -1119,9 +1121,9 @@
    "resp": "7",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 6503
+   "fonte": "letras",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 75,
@@ -1130,12 +1132,12 @@
    "gab": [
     "ovelha"
    ],
-   "resp": "carneira",
-   "ok": false,
+   "resp": "ovelha",
+   "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 6026
+   "fonte": "feminino",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 76,
@@ -1147,9 +1149,9 @@
    "resp": "janela",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
+   "fonte": "gigante2",
    "tentativas": 3,
-   "ms": 1651
+   "ms": 2414
   },
   {
    "id": 77,
@@ -1249,7 +1251,7 @@
    "erro": null,
    "fonte": "gigante2",
    "tentativas": 3,
-   "ms": 1739
+   "ms": 892
   },
   {
    "id": 84,
@@ -1290,9 +1292,9 @@
    "resp": "wrote",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 1027
+   "fonte": "ingles-irregular",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 87,
@@ -1304,9 +1306,9 @@
    "resp": "drank",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 2021
+   "fonte": "ingles-irregular",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 88,
@@ -1318,9 +1320,9 @@
    "resp": "feet",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 11434
+   "fonte": "ingles-plural",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 89,
@@ -1332,9 +1334,9 @@
    "resp": "worse",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 10739
+   "fonte": "ingles-grau",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 90,
@@ -1344,12 +1346,12 @@
     "farthest",
     "furthest"
    ],
-   "resp": "farthest / furthest",
+   "resp": "farthest/furthest",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 12354
+   "fonte": "ingles-grau",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 91,
@@ -1362,9 +1364,9 @@
    "resp": "Berlim",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 6615
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 92,
@@ -1391,9 +1393,9 @@
    "resp": "Moscou",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 12526
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 94,
@@ -1407,9 +1409,9 @@
    "resp": "Nova Délhi",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 8807
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 95,
@@ -1421,9 +1423,9 @@
    "resp": "Ag",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 12913
+   "fonte": "simbolo-quimico",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 96,
@@ -1464,9 +1466,9 @@
    "resp": "Marte",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 2042
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 99,
@@ -1476,12 +1478,12 @@
     "pacífico",
     "pacifico"
    ],
-   "resp": "Oceano Pacífico",
+   "resp": "Pacífico",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 8847
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 100,
@@ -1493,12 +1495,12 @@
     "6",
     "seis"
    ],
-   "resp": "Seis.",
+   "resp": "6",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
+   "fonte": "vlqwen",
    "tentativas": 3,
-   "ms": 4379
+   "ms": 8192
   },
   {
    "id": 101,
@@ -1508,12 +1510,12 @@
     "guimarães rosa",
     "guimaraes rosa"
    ],
-   "resp": "João Guimarães Rosa.",
+   "resp": "Guimarães Rosa",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 4269
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 102,
@@ -1526,9 +1528,9 @@
    "resp": "Edvard Munch",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 4613
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 103,
@@ -1538,12 +1540,12 @@
     "watt",
     "w"
    ],
-   "resp": "Watt (W)",
+   "resp": "Watt",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 17845
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 104,
@@ -1552,12 +1554,12 @@
    "gab": [
     "chumbo"
    ],
-   "resp": "Chumbo",
+   "resp": "chumbo",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 10394
+   "fonte": "elemento",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 105,
@@ -1570,9 +1572,9 @@
    "resp": "Júpiter",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 5531
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   }
  ]
 }

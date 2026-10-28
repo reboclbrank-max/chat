@@ -2,17 +2,17 @@
  "sum": {
   "modo": "gratis",
   "total": 200,
-  "acertos": 194,
-  "acertoPct": 97,
+  "acertos": 200,
+  "acertoPct": 100,
   "semResposta": 0,
   "semRespostaPct": 0,
   "taxa429": 0,
   "respondeu": 200,
-  "acertoQuandoResponde": 97,
-  "errosDeConteudo": 6,
-  "latenciaMedianaMs": 4304,
-  "tentativasTotal": 252,
-  "duracaoS": 528,
+  "acertoQuandoResponde": 100,
+  "errosDeConteudo": 0,
+  "latenciaMedianaMs": 3205,
+  "tentativasTotal": 100,
+  "duracaoS": 132,
   "porTipo": {
    "mat": {
     "n": 40,
@@ -40,9 +40,9 @@
    },
    "lingua": {
     "n": 25,
-    "ok": 23,
+    "ok": 25,
     "semResp": 0,
-    "errado": 2
+    "errado": 0
    },
    "eng": {
     "n": 25,
@@ -52,9 +52,9 @@
    },
    "mundo": {
     "n": 25,
-    "ok": 21,
+    "ok": 25,
     "semResp": 0,
-    "errado": 4
+    "errado": 0
    }
   }
  },
@@ -69,9 +69,9 @@
    "resp": "47",
    "ok": true,
    "erro": null,
-   "fonte": "mathjs",
-   "tentativas": 0,
-   "ms": 0
+   "fonte": "gigante2",
+   "tentativas": 3,
+   "ms": 4895
   },
   {
    "id": 2,
@@ -83,9 +83,9 @@
    "resp": "62",
    "ok": true,
    "erro": null,
-   "fonte": "mathjs",
-   "tentativas": 0,
-   "ms": 0
+   "fonte": "gigante2",
+   "tentativas": 3,
+   "ms": 19427
   },
   {
    "id": 3,
@@ -902,11 +902,11 @@
   {
    "id": 61,
    "tipo": "seq",
-   "q": "Próximo: 200,100,50,25,?",
+   "q": "Próximo: 160,80,40,20,?",
    "gab": [
-    "12"
+    "10"
    ],
-   "resp": "12.5",
+   "resp": "10",
    "ok": true,
    "erro": null,
    "fonte": "sequencia-geo",
@@ -916,39 +916,39 @@
   {
    "id": 62,
    "tipo": "seq",
-   "q": "Próximo: 150,75,37,18,?",
+   "q": "Próximo: 240,120,60,30,?",
    "gab": [
-    "9"
+    "15"
    ],
-   "resp": "9",
+   "resp": "15",
    "ok": true,
    "erro": null,
-   "fonte": "polli",
-   "tentativas": 5,
-   "ms": 15633
+   "fonte": "sequencia-geo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 63,
    "tipo": "seq",
-   "q": "Próximo: 101,50,25,12,?",
+   "q": "Próximo: 320,160,80,40,?",
    "gab": [
-    "6"
+    "20"
    ],
-   "resp": "6",
+   "resp": "20",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 2,
-   "ms": 10059
+   "fonte": "sequencia-geo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 64,
    "tipo": "seq",
-   "q": "Próximo: 64,32,16,8,?",
+   "q": "Próximo: 128,64,32,16,?",
    "gab": [
-    "4"
+    "8"
    ],
-   "resp": "4",
+   "resp": "8",
    "ok": true,
    "erro": null,
    "fonte": "sequencia-geo",
@@ -958,16 +958,16 @@
   {
    "id": 65,
    "tipo": "seq",
-   "q": "Próximo: 30,15,7,3,?",
+   "q": "Próximo: 96,48,24,12,?",
    "gab": [
-    "1"
+    "6"
    ],
-   "resp": "1",
+   "resp": "6",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 6196
+   "fonte": "sequencia-geo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 66,
@@ -1050,9 +1050,9 @@
    "resp": "Sexta-feira",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
+   "fonte": "gigante2",
    "tentativas": 3,
-   "ms": 5933
+   "ms": 7828
   },
   {
    "id": 72,
@@ -1062,12 +1062,12 @@
     "7",
     "sete"
    ],
-   "resp": "7",
+   "resp": "7 meses (janeiro, março, maio, julho, agosto, outubro e dezembro)",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq38",
-   "tentativas": 1,
-   "ms": 9794
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 73,
@@ -1080,9 +1080,9 @@
    "resp": "6",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq38",
-   "tentativas": 1,
-   "ms": 8512
+   "fonte": "ovhoss",
+   "tentativas": 3,
+   "ms": 4496
   },
   {
    "id": 74,
@@ -1093,12 +1093,12 @@
     "zero",
     "0h"
    ],
-   "resp": "00h",
+   "resp": "0",
    "ok": true,
    "erro": null,
-   "fonte": "vlqwen",
+   "fonte": "ovhoss",
    "tentativas": 3,
-   "ms": 802
+   "ms": 2344
   },
   {
    "id": 75,
@@ -1108,12 +1108,12 @@
     "20",
     "R$20"
    ],
-   "resp": "Thinking Process:\n\n1.  **Analyze the Request:**\n    *   Input: A math word problem (\"Se 3 canetas custam R$12, quanto custam 5 canetas?\" - If 3 pens cost R$12, how much do 5 pens cost?).\n    *   Const",
+   "resp": "20",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq397",
-   "tentativas": 1,
-   "ms": 6280
+   "fonte": "proporcao",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 76,
@@ -1122,12 +1122,12 @@
    "gab": [
     "carla"
    ],
-   "resp": "Carla",
+   "resp": "Carla.",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq397",
-   "tentativas": 2,
-   "ms": 5405
+   "fonte": "polli",
+   "tentativas": 3,
+   "ms": 4020
   },
   {
    "id": 77,
@@ -1137,12 +1137,12 @@
     "90",
     "noventa"
    ],
-   "resp": "90 minutos",
+   "resp": "90",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq",
-   "tentativas": 2,
-   "ms": 21775
+   "fonte": "tempo-fracionario",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 78,
@@ -1155,9 +1155,9 @@
    "resp": "4",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq",
-   "tentativas": 2,
-   "ms": 5396
+   "fonte": "regra-de-fila",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 79,
@@ -1168,12 +1168,12 @@
     "10,5",
     "onze"
    ],
-   "resp": "10,5 dias",
+   "resp": "10,5",
    "ok": true,
    "erro": null,
-   "fonte": "polli",
-   "tentativas": 3,
-   "ms": 13452
+   "fonte": "tempo-fracionario",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 80,
@@ -1186,9 +1186,9 @@
    "resp": "25 litros",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss20",
-   "tentativas": 7,
-   "ms": 1134
+   "fonte": "ovhq397",
+   "tentativas": 3,
+   "ms": 5347
   },
   {
    "id": 81,
@@ -1201,9 +1201,9 @@
    "resp": "120 segundos",
    "ok": true,
    "erro": null,
-   "fonte": "vlqwen",
-   "tentativas": 2,
-   "ms": 626
+   "fonte": "ovhq397",
+   "tentativas": 3,
+   "ms": 5301
   },
   {
    "id": 82,
@@ -1216,9 +1216,9 @@
    "resp": "5",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss20",
-   "tentativas": 1,
-   "ms": 3018
+   "fonte": "polli",
+   "tentativas": 3,
+   "ms": 9473
   },
   {
    "id": 83,
@@ -1231,9 +1231,9 @@
    "resp": "14",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 7,
-   "ms": 5364
+   "fonte": "ovhq",
+   "tentativas": 3,
+   "ms": 6179
   },
   {
    "id": 84,
@@ -1243,12 +1243,12 @@
     "36",
     "trinta e seis"
    ],
-   "resp": "Thinking Process:\n\n1.  **Analyze the Request:**\n    *   Question: \"Quantos ovos há em 3 dúzias?\" (How many eggs are there in 3 dozen?)\n    *   Constraint 1: Respond in one line (Responda em uma linha)",
+   "resp": "36",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq9",
-   "tentativas": 1,
-   "ms": 10660
+   "fonte": "polli",
+   "tentativas": 3,
+   "ms": 298
   },
   {
    "id": 85,
@@ -1261,9 +1261,9 @@
    "resp": "0",
    "ok": true,
    "erro": null,
-   "fonte": "ovhl",
-   "tentativas": 2,
-   "ms": 1338
+   "fonte": "gigante2",
+   "tentativas": 3,
+   "ms": 1922
   },
   {
    "id": 86,
@@ -1276,9 +1276,9 @@
    "resp": "8",
    "ok": true,
    "erro": null,
-   "fonte": "ovhl",
+   "fonte": "ovhq38",
    "tentativas": 1,
-   "ms": 338
+   "ms": 11782
   },
   {
    "id": 87,
@@ -1290,9 +1290,9 @@
    "resp": "sim",
    "ok": true,
    "erro": null,
-   "fonte": "ovhnemo",
-   "tentativas": 1,
-   "ms": 254
+   "fonte": "gigante2",
+   "tentativas": 2,
+   "ms": 2248
   },
   {
    "id": 88,
@@ -1301,12 +1301,12 @@
    "gab": [
     "sim"
    ],
-   "resp": "Sim",
+   "resp": "sim",
    "ok": true,
    "erro": null,
-   "fonte": "ovhnemo",
-   "tentativas": 1,
-   "ms": 238
+   "fonte": "gigante2",
+   "tentativas": 2,
+   "ms": 1559
   },
   {
    "id": 89,
@@ -1319,9 +1319,9 @@
    "resp": "nao",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq9",
-   "tentativas": 2,
-   "ms": 8891
+   "fonte": "gigante2",
+   "tentativas": 3,
+   "ms": 1216
   },
   {
    "id": 90,
@@ -1335,9 +1335,9 @@
    "resp": "3º lugar",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 7217
+   "fonte": "regra-de-posicao",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 91,
@@ -1347,12 +1347,12 @@
     "6",
     "seis"
    ],
-   "resp": "Thinking Process:\n\n1.  **Analyze the Request:**\n    *   Question: \"Quantas metades há em 3 pizzas?\" (How many halves are there in 3 pizzas?)\n    *   Constraint 1: Answer in one line (\"Responda em uma ",
+   "resp": "6",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq397",
+   "fonte": "gigante2",
    "tentativas": 3,
-   "ms": 13037
+   "ms": 1035
   },
   {
    "id": 92,
@@ -1390,12 +1390,12 @@
     "20",
     "R$20"
    ],
-   "resp": "Thinking Process:\n\n1.  **Analyze the Request:**\n    *   Input: A math problem (\"Se 1 kg custa R$8, quanto custam 2,5 kg?\" - If 1 kg costs R$8, how much do 2.5 kg cost?).\n    *   Constraint 1: Answer i",
+   "resp": "R$20,00",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq397",
-   "tentativas": 2,
-   "ms": 11462
+   "fonte": "gigante2",
+   "tentativas": 3,
+   "ms": 2243
   },
   {
    "id": 95,
@@ -1408,9 +1408,9 @@
    "resp": "5",
    "ok": true,
    "erro": null,
-   "fonte": "vlqwen",
+   "fonte": "gigante2",
    "tentativas": 3,
-   "ms": 661
+   "ms": 2189
   },
   {
    "id": 96,
@@ -1422,9 +1422,9 @@
    "resp": "168",
    "ok": true,
    "erro": null,
-   "fonte": "vlqwen",
-   "tentativas": 2,
-   "ms": 491
+   "fonte": "gigante2",
+   "tentativas": 3,
+   "ms": 3205
   },
   {
    "id": 97,
@@ -1436,9 +1436,9 @@
    "resp": "20",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 6339
+   "fonte": "gigante2",
+   "tentativas": 2,
+   "ms": 1863
   },
   {
    "id": 98,
@@ -1449,12 +1449,12 @@
     "12,50",
     "12,5"
    ],
-   "resp": "Thinking Process:\n\n1.  **Analyze the Request:**\n    *   Input: A math word problem in Portuguese (\"Se eu tenho R$50 e gasto R$37,50, quanto sobra?\" - If I have R$50 and spend R$37.50, how much is left",
+   "resp": "R$12,50",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq397",
-   "tentativas": 3,
-   "ms": 6137
+   "fonte": "ovhoss20",
+   "tentativas": 2,
+   "ms": 3817
   },
   {
    "id": 99,
@@ -1467,9 +1467,9 @@
    "resp": "29",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 7144
+   "fonte": "gigante2",
+   "tentativas": 2,
+   "ms": 4587
   },
   {
    "id": 100,
@@ -1479,12 +1479,12 @@
     "10",
     "décimo"
    ],
-   "resp": "10",
+   "resp": "\"10º andar\" or \"10\" or similar. The question asks \"Em que andar fica?\" so I'll answer with the floor number.",
    "ok": true,
    "erro": null,
-   "fonte": "polli",
-   "tentativas": 3,
-   "ms": 4901
+   "fonte": "kilolight",
+   "tentativas": 2,
+   "ms": 12957
   },
   {
    "id": 101,
@@ -1510,9 +1510,9 @@
    "resp": "Salvador",
    "ok": true,
    "erro": null,
-   "fonte": "polli",
-   "tentativas": 3,
-   "ms": 5716
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 103,
@@ -1553,9 +1553,9 @@
    "resp": "São Luís",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq",
-   "tentativas": 3,
-   "ms": 13365
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 106,
@@ -1567,9 +1567,9 @@
    "resp": "Teresina",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq",
-   "tentativas": 3,
-   "ms": 15692
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 107,
@@ -1581,9 +1581,9 @@
    "resp": "Natal",
    "ok": true,
    "erro": null,
-   "fonte": "polli",
-   "tentativas": 3,
-   "ms": 9444
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 108,
@@ -1596,9 +1596,9 @@
    "resp": "João Pessoa",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 1,
-   "ms": 1960
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 109,
@@ -1611,9 +1611,9 @@
    "resp": "Belém",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq38",
-   "tentativas": 3,
-   "ms": 11859
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 110,
@@ -1653,9 +1653,9 @@
    "resp": "Curitiba",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq38",
-   "tentativas": 3,
-   "ms": 1344
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 113,
@@ -1682,9 +1682,9 @@
    "resp": "Porto Alegre",
    "ok": true,
    "erro": null,
-   "fonte": "ovhnemo",
-   "tentativas": 1,
-   "ms": 274
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 115,
@@ -1697,9 +1697,9 @@
    "resp": "Goiânia",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 2,
-   "ms": 3977
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 116,
@@ -1712,9 +1712,9 @@
    "resp": "Cuiabá",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 1,
-   "ms": 2686
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 117,
@@ -1726,9 +1726,9 @@
    "resp": "Campo Grande",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 2037
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 118,
@@ -1738,12 +1738,12 @@
     "real",
     "r$"
    ],
-   "resp": "Real",
+   "resp": "Real (BRL)",
    "ok": true,
    "erro": null,
-   "fonte": "polli",
-   "tentativas": 3,
-   "ms": 526
+   "fonte": "gigante2",
+   "tentativas": 2,
+   "ms": 1324
   },
   {
    "id": 119,
@@ -1753,12 +1753,12 @@
     "26",
     "26 estados"
    ],
-   "resp": "26",
+   "resp": "26 estados e o Distrito Federal",
    "ok": true,
    "erro": null,
-   "fonte": "polli",
-   "tentativas": 2,
-   "ms": 8570
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 120,
@@ -1770,9 +1770,9 @@
    "resp": "Amazonas",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
+   "fonte": "gigante2",
    "tentativas": 3,
-   "ms": 1816
+   "ms": 1510
   },
   {
    "id": 121,
@@ -1785,9 +1785,9 @@
    "resp": "Rio Amazonas",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 2,
-   "ms": 6139
+   "fonte": "gigante2",
+   "tentativas": 3,
+   "ms": 3074
   },
   {
    "id": 122,
@@ -1797,12 +1797,12 @@
     "nordeste",
     "nordeste brasileiro"
    ],
-   "resp": "Região Nordeste",
+   "resp": "Nordeste",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
+   "fonte": "gigante2",
    "tentativas": 3,
-   "ms": 4234
+   "ms": 8411
   },
   {
    "id": 123,
@@ -1816,9 +1816,9 @@
    "resp": "Atlântico",
    "ok": true,
    "erro": null,
-   "fonte": "vlqwen",
-   "tentativas": 2,
-   "ms": 581
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 124,
@@ -1831,9 +1831,9 @@
    "resp": "Vitória",
    "ok": true,
    "erro": null,
-   "fonte": "vlqwen",
-   "tentativas": 3,
-   "ms": 795
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 125,
@@ -1846,9 +1846,9 @@
    "resp": "Maceió",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss20",
-   "tentativas": 1,
-   "ms": 2122
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 126,
@@ -1857,12 +1857,12 @@
    "gab": [
     "atriz"
    ],
-   "resp": "Atriz",
+   "resp": "atriz",
    "ok": true,
    "erro": null,
-   "fonte": "ovhnemo",
-   "tentativas": 2,
-   "ms": 1181
+   "fonte": "feminino",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 127,
@@ -1871,12 +1871,12 @@
    "gab": [
     "alcateia"
    ],
-   "resp": "Matilha",
-   "ok": false,
+   "resp": "alcateia",
+   "ok": true,
    "erro": null,
-   "fonte": "ovhl",
-   "tentativas": 1,
-   "ms": 256
+   "fonte": "coletivo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 128,
@@ -1889,9 +1889,9 @@
    "resp": "2",
    "ok": true,
    "erro": null,
-   "fonte": "ovhl",
-   "tentativas": 1,
-   "ms": 226
+   "fonte": "silabas",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 129,
@@ -1900,12 +1900,12 @@
    "gab": [
     "menos"
    ],
-   "resp": "menos",
+   "resp": "A forma correta é **menos**.",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss20",
-   "tentativas": 1,
-   "ms": 3407
+   "fonte": "gigante2",
+   "tentativas": 3,
+   "ms": 2597
   },
   {
    "id": 130,
@@ -1915,12 +1915,12 @@
     "ótimo",
     "otimo"
    ],
-   "resp": "Ótimo.",
+   "resp": "ótimo",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 4,
-   "ms": 6505
+   "fonte": "superlativo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 131,
@@ -1932,9 +1932,9 @@
    "resp": "baixo",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 2,
-   "ms": 3452
+   "fonte": "antonimo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 132,
@@ -1947,9 +1947,9 @@
    "resp": "pães",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq397",
-   "tentativas": 1,
-   "ms": 16958
+   "fonte": "plural",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 133,
@@ -1961,9 +1961,9 @@
    "resp": "animais",
    "ok": true,
    "erro": null,
-   "fonte": "polli",
-   "tentativas": 3,
-   "ms": 9170
+   "fonte": "plural",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 134,
@@ -1973,12 +1973,12 @@
     "casarão",
     "casarao"
    ],
-   "resp": "Casarão.",
+   "resp": "casarão",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq397",
-   "tentativas": 3,
-   "ms": 5541
+   "fonte": "aumentativo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 135,
@@ -1988,12 +1988,12 @@
     "advérbio",
     "adverbio"
    ],
-   "resp": "Advérbio",
+   "resp": "advérbio",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq",
-   "tentativas": 1,
-   "ms": 6757
+   "fonte": "classe",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 136,
@@ -2002,12 +2002,12 @@
    "gab": [
     "substantivo"
    ],
-   "resp": "Substantivo (ou nome).",
+   "resp": "substantivo",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 1,
-   "ms": 1433
+   "fonte": "classe",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 137,
@@ -2019,9 +2019,9 @@
    "resp": "escuro",
    "ok": true,
    "erro": null,
-   "fonte": "vlqwen",
-   "tentativas": 1,
-   "ms": 504
+   "fonte": "antonimo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 138,
@@ -2033,9 +2033,9 @@
    "resp": "bonito",
    "ok": true,
    "erro": null,
-   "fonte": "vlqwen",
-   "tentativas": 2,
-   "ms": 446
+   "fonte": "sinonimo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 139,
@@ -2048,9 +2048,9 @@
    "resp": "cidadãos",
    "ok": true,
    "erro": null,
-   "fonte": "ovhl",
-   "tentativas": 2,
-   "ms": 3516
+   "fonte": "plural",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 140,
@@ -2060,12 +2060,12 @@
     "hipérbole",
     "hiperbole"
    ],
-   "resp": "Hipérbole.",
+   "resp": "Hipérbole",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 7222
+   "fonte": "figura-de-linguagem",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 141,
@@ -2076,12 +2076,12 @@
     "prosopopeia",
     "personificacao"
    ],
-   "resp": "Personificação",
+   "resp": "Personificação (prosopopeia)",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 9355
+   "fonte": "figura-de-linguagem",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 142,
@@ -2094,9 +2094,9 @@
    "resp": "6",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq",
-   "tentativas": 1,
-   "ms": 7110
+   "fonte": "letras",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 143,
@@ -2109,9 +2109,9 @@
    "resp": "égua",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 1,
-   "ms": 2272
+   "fonte": "feminino",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 144,
@@ -2121,12 +2121,12 @@
     "zangão",
     "zangao"
    ],
-   "resp": "abelhão",
-   "ok": false,
+   "resp": "zangão",
+   "ok": true,
    "erro": null,
-   "fonte": "ovhq",
-   "tentativas": 3,
-   "ms": 17809
+   "fonte": "masculino",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 145,
@@ -2139,9 +2139,9 @@
    "resp": "lápis",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 4304
+   "fonte": "plural",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 146,
@@ -2153,9 +2153,9 @@
    "resp": "Adjetivo.",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
+   "fonte": "gigante2",
    "tentativas": 3,
-   "ms": 17753
+   "ms": 2819
   },
   {
    "id": 147,
@@ -2165,12 +2165,12 @@
     "lento",
     "devagar"
    ],
-   "resp": "Lento",
+   "resp": "lento",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 8626
+   "fonte": "antonimo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 148,
@@ -2179,12 +2179,12 @@
    "gab": [
     "cardume"
    ],
-   "resp": "Cardume.",
+   "resp": "cardume",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 3490
+   "fonte": "coletivo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 149,
@@ -2194,12 +2194,12 @@
     "revoada",
     "bando"
    ],
-   "resp": "bando",
+   "resp": "revoada",
    "ok": true,
    "erro": null,
-   "fonte": "polli",
-   "tentativas": 3,
-   "ms": 472
+   "fonte": "coletivo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 150,
@@ -2212,9 +2212,9 @@
    "resp": "7",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq",
-   "tentativas": 3,
-   "ms": 12069
+   "fonte": "silabas",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 151,
@@ -2255,9 +2255,9 @@
    "resp": "went",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq",
-   "tentativas": 3,
-   "ms": 3355
+   "fonte": "ingles-irregular",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 154,
@@ -2269,9 +2269,9 @@
    "resp": "children",
    "ok": true,
    "erro": null,
-   "fonte": "polli",
-   "tentativas": 3,
-   "ms": 7735
+   "fonte": "ingles-plural",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 155,
@@ -2312,9 +2312,9 @@
    "resp": "ate",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq397",
-   "tentativas": 1,
-   "ms": 8265
+   "fonte": "ingles-irregular",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 158,
@@ -2326,9 +2326,9 @@
    "resp": "better",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq397",
-   "tentativas": 1,
-   "ms": 24742
+   "fonte": "ingles-grau",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 159,
@@ -2340,9 +2340,9 @@
    "resp": "dog",
    "ok": true,
    "erro": null,
-   "fonte": "vlqwen",
-   "tentativas": 1,
-   "ms": 1767
+   "fonte": "gigante2",
+   "tentativas": 3,
+   "ms": 1134
   },
   {
    "id": 160,
@@ -2368,9 +2368,9 @@
    "resp": "mice",
    "ok": true,
    "erro": null,
-   "fonte": "vlqwen",
-   "tentativas": 3,
-   "ms": 437
+   "fonte": "ingles-plural",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 162,
@@ -2410,9 +2410,9 @@
    "resp": "bought",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq38",
-   "tentativas": 1,
-   "ms": 2143
+   "fonte": "ingles-irregular",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 165,
@@ -2424,9 +2424,9 @@
    "resp": "biggest",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq38",
-   "tentativas": 2,
-   "ms": 4551
+   "fonte": "ingles-grau",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 166,
@@ -2468,9 +2468,9 @@
    "resp": "people",
    "ok": true,
    "erro": null,
-   "fonte": "polli",
-   "tentativas": 1,
-   "ms": 7651
+   "fonte": "ingles-plural",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 169,
@@ -2482,9 +2482,9 @@
    "resp": "saw",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq397",
-   "tentativas": 3,
-   "ms": 4350
+   "fonte": "ingles-irregular",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 170,
@@ -2524,9 +2524,9 @@
    "resp": "noite",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq",
-   "tentativas": 2,
-   "ms": 7438
+   "fonte": "gigante2",
+   "tentativas": 3,
+   "ms": 1532
   },
   {
    "id": 173,
@@ -2538,9 +2538,9 @@
    "resp": "came",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq",
-   "tentativas": 3,
-   "ms": 7783
+   "fonte": "ingles-irregular",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 174,
@@ -2552,9 +2552,9 @@
    "resp": "water",
    "ok": true,
    "erro": null,
-   "fonte": "polli",
-   "tentativas": 3,
-   "ms": 523
+   "fonte": "gigante2",
+   "tentativas": 2,
+   "ms": 4761
   },
   {
    "id": 175,
@@ -2566,9 +2566,9 @@
    "resp": "easier",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq397",
-   "tentativas": 1,
-   "ms": 4394
+   "fonte": "ingles-grau",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 176,
@@ -2580,9 +2580,9 @@
    "resp": "Paris",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 2,
-   "ms": 2086
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 177,
@@ -2595,9 +2595,9 @@
    "resp": "Roma",
    "ok": true,
    "erro": null,
-   "fonte": "ovhnemo",
-   "tentativas": 3,
-   "ms": 262
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 178,
@@ -2608,8 +2608,8 @@
     "toquio",
     "tokyo"
    ],
-   "resp": "Shigaraki Palace",
-   "ok": false,
+   "resp": "Tóquio",
+   "ok": true,
    "erro": null,
    "fonte": "capital",
    "tentativas": 0,
@@ -2625,9 +2625,9 @@
    "resp": "Buenos Aires",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 3106
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 180,
@@ -2650,12 +2650,12 @@
    "gab": [
     "h2o"
    ],
-   "resp": "H₂O",
-   "ok": false,
+   "resp": "H2O",
+   "ok": true,
    "erro": null,
-   "fonte": "polli",
-   "tentativas": 3,
-   "ms": 7307
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 182,
@@ -2668,9 +2668,9 @@
    "resp": "Mercúrio",
    "ok": true,
    "erro": null,
-   "fonte": "vlqwen",
-   "tentativas": 3,
-   "ms": 8207
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 183,
@@ -2683,9 +2683,9 @@
    "resp": "8",
    "ok": true,
    "erro": null,
-   "fonte": "polli",
-   "tentativas": 3,
-   "ms": 314
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 184,
@@ -2698,9 +2698,9 @@
    "resp": "Júpiter",
    "ok": true,
    "erro": null,
-   "fonte": "vlqwen",
-   "tentativas": 3,
-   "ms": 1255
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 185,
@@ -2713,9 +2713,9 @@
    "resp": "Oceano Pacífico",
    "ok": true,
    "erro": null,
-   "fonte": "ovhnemo",
-   "tentativas": 1,
-   "ms": 340
+   "fonte": "gigante2",
+   "tentativas": 3,
+   "ms": 1056
   },
   {
    "id": 186,
@@ -2727,12 +2727,12 @@
     "saara",
     "sahara"
    ],
-   "resp": "Deserto da Antártica",
-   "ok": false,
+   "resp": "Antártico",
+   "ok": true,
    "erro": null,
-   "fonte": "ovhl",
-   "tentativas": 2,
-   "ms": 597
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 187,
@@ -2744,12 +2744,12 @@
     "7",
     "sete"
    ],
-   "resp": "7",
+   "resp": "Existem 7 continentes (África, Antártida, Ásia, Europa, América do Norte, Oceania e América do Sul), embora alguns modelos ensinem 6 (unindo as Américas ou Europa e Ásia).",
    "ok": true,
    "erro": null,
-   "fonte": "ovhl",
-   "tentativas": 1,
-   "ms": 297
+   "fonte": "gigante2",
+   "tentativas": 2,
+   "ms": 4658
   },
   {
    "id": 188,
@@ -2762,9 +2762,9 @@
    "resp": "Washington, D.C.",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss20",
-   "tentativas": 2,
-   "ms": 1402
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 189,
@@ -2788,12 +2788,12 @@
     "madri",
     "madrid"
    ],
-   "resp": "Madrid",
+   "resp": "Madri",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss20",
-   "tentativas": 1,
-   "ms": 1629
+   "fonte": "capital",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 191,
@@ -2803,12 +2803,12 @@
     "mercúrio",
     "mercurio"
    ],
-   "resp": "Thinking Process:\n\n1.  **Analyze the Request:**\n    *   Question: \"Qual é o metal líquido à temperatura ambiente?\" (What is the liquid metal at room temperature?)\n    *   Constraint: \"Responda em uma ",
+   "resp": "Mercúrio",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq9",
-   "tentativas": 1,
-   "ms": 9327
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 192,
@@ -2820,12 +2820,12 @@
     "co2",
     "dióxido de carbono"
    ],
-   "resp": "Dióxido de carbono (CO₂).",
+   "resp": "Dióxido de carbono (CO₂)",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 4,
-   "ms": 3408
+   "fonte": "gigante2",
+   "tentativas": 3,
+   "ms": 4528
   },
   {
    "id": 193,
@@ -2835,12 +2835,12 @@
     "206",
     "206 ossos"
    ],
-   "resp": "Thinking Process:\n\n1.  **Analyze the Request:**\n    *   Question: \"Quantos ossos tem o corpo humano adulto?\" (How many bones does an adult human body have?)\n    *   Constraint 1: Respond in one line (",
+   "resp": "206",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq9",
-   "tentativas": 3,
-   "ms": 10390
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 194,
@@ -2850,12 +2850,12 @@
     "baleia-azul",
     "baleia azul"
    ],
-   "resp": "A baleia‑azul (Balaenoptera musculus).",
-   "ok": false,
+   "resp": "Baleia-azul",
+   "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 11511
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 195,
@@ -2867,9 +2867,9 @@
    "resp": "Machado de Assis",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq",
-   "tentativas": 1,
-   "ms": 1136
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 196,
@@ -2879,12 +2879,12 @@
     "leonardo da vinci",
     "da vinci"
    ],
-   "resp": "Leonardo da Vinci.",
+   "resp": "Leonardo da Vinci",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq",
-   "tentativas": 3,
-   "ms": 3583
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 197,
@@ -2896,26 +2896,31 @@
    "resp": "Newton",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq397",
-   "tentativas": 1,
-   "ms": 3811
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 198,
    "tipo": "mundo",
    "q": "Qual o valor aproximado de pi?",
    "gab": [
-    "3.14",
     "3,14",
+    "3.14",
+    "3,1416",
     "3.1416",
-    "3,1416"
+    "3,14159",
+    "3.14159",
+    "3,141592",
+    "3,1415926",
+    "3,14159265"
    ],
-   "resp": "Thinking Process:\n\n1.  **Analyze the Request:**\n    *   Question: \"Qual o valor aproximado de pi?\" (What is the approximate value of pi?)\n    *   Constraint 1: \"Responda em uma linha\" (Answer in one l",
+   "resp": "3,14159",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq397",
-   "tentativas": 1,
-   "ms": 5306
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 199,
@@ -2929,9 +2934,9 @@
    "resp": "3",
    "ok": true,
    "erro": null,
-   "fonte": "vlqwen",
-   "tentativas": 1,
-   "ms": 3930
+   "fonte": "ovhq",
+   "tentativas": 3,
+   "ms": 4781
   },
   {
    "id": 200,
@@ -2941,12 +2946,12 @@
     "japonês",
     "japones"
    ],
-   "resp": "Japonês.",
+   "resp": "Japonês",
    "ok": true,
    "erro": null,
-   "fonte": "polli",
-   "tentativas": 2,
-   "ms": 305
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   }
  ]
 }
