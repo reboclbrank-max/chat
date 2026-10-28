@@ -86,20 +86,22 @@ Nenhuma chave, nenhum centavo. Três mudanças no `roteador-ia.js`:
 |---|---|---|---|---|
 | v0 — uma rota, uma tentativa | 34,5% | 65,5% | 131 | 0,02 s |
 | v1 — cascata | 88,0% | 6,5% | 10 | 2,9 s |
-| **v2 — consulta exata + consenso** | **95,5%** | **0,0%** | **0** | 5,1 s |
+| **v2 — consulta exata + consenso** | **95,5% → 97,0%** (após o filtro de tradução) | **0,0%** | **0** | 4,3–5,1 s |
 
-Por tipo na v2: mat 40/40 · seq 30/30 · lógica 30/30 · Brasil 25/25 · inglês 25/25 · língua 20/25 · mundo 21/25.
+Por tipo na v2 final (194/200): mat 40/40 · seq 30/30 · lógica 30/30 · Brasil 25/25 · inglês 25/25 · língua 23/25 · mundo 21/25.
+
+O que subiu de 95,5% para 97,0% foi um **defeito real encontrado pela própria régua**: a memória de tradução às vezes devolve frase inteira ("da janela" para `window`). Agora, quando a origem é uma palavra só, a resposta com mais de duas palavras ou começando por artigo/preposição é **descartada** e o consenso decide.
 
 ### Prova contra overfitting: banco holdout de 105 itens nunca vistos
 
 Itens novos (estados que não estavam no banco, outras palavras, outros números), gerados com semente diferente:
 
-**102/105 = 97,1%**, com **zero** itens sem resposta. Por tipo: mat 15/15 · seq 15/15 · lógica 15/15 · Brasil 15/15 · língua 14/15 · inglês 14/15 · mundo 14/15.
+**102/105 = 97,1%**, com **zero** itens sem resposta, antes e depois do filtro de tradução. Por tipo: mat 15/15 · seq 15/15 · lógica 15/15 · Brasil 15/15 · língua 14/15 · **inglês 15/15** (era 14/15) · mundo 13/15 (era 14/15 — variação do consenso, não regressão de código).
 
 O ganho é do método (consulta exata + votação), não de decorar o banco — se fosse decorado, o holdout teria caído.
 
 ### O que ainda erra
-Língua portuguesa (formas irregulares como aumentativo/coletivo) e fatos de mundo sem propriedade Wikidata mapeada continuam dependendo do consenso dos modelos gratuitos: 9 erros em 200 e 3 em 105. É o teto honesto desta abordagem sem chave.
+Língua portuguesa (formas irregulares como aumentativo/coletivo) e fatos de mundo sem propriedade Wikidata mapeada continuam dependendo do consenso dos modelos gratuitos: **6 erros em 200** e **3 em 105**. É o teto honesto desta abordagem sem chave.
 
 ### Custo de rede
 Cada pergunta não-trivial faz 3 chamadas de LLM (paralelas) + 0–3 chamadas de consulta. Continua R$ 0, mas é mais tráfego nos gateways gratuitos — por isso o cache de 15 min e o disjuntor por rota seguem ligados.

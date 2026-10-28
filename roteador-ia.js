@@ -148,13 +148,22 @@
     return saida;
   };
 
+  var ARTIGOS = /^(o|a|os|as|um|uma|uns|umas|de|do|da|dos|das|em|no|na|nos|nas|the|of|to|in|on|at|a|an)\s+/i;
+
   Roteador.prototype._traduzir = async function (texto, de, para) {
     var url = 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(texto) + '&langpair=' + de + '|' + para;
     var d = await this._buscarJSON(url, 10000);
     var out = d && d.responseData && d.responseData.translatedText;
     if (!out) return null;
-    if (normal(out) === normal(texto)) return null;   // tradução idêntica = falhou, não é resposta
-    return { valor: String(out).trim(), fonte: 'mymemory ' + de + '>' + para };
+    out = String(out).trim().replace(/[.\u3002]+$/, '');
+    if (normal(out) === normal(texto)) return null;          // tradução idêntica = falhou
+    // Memória de tradução devolve frase inteira com artigo ("da janela" para "window").
+    // Quando a origem é UMA palavra, exigimos no máximo duas palavras e sem artigo/preposição
+    // na frente; caso contrário a consulta é descartada e o consenso dos modelos decide.
+    var palavrasOrigem = String(texto).trim().split(/\s+/).length;
+    var palavrasSaida = out.split(/\s+/).filter(Boolean).length;
+    if (palavrasOrigem === 1 && (palavrasSaida > 2 || ARTIGOS.test(out))) return null;
+    return { valor: out, fonte: 'mymemory ' + de + '>' + para };
   };
 
   Roteador.prototype._ferramenta = async function (pergunta) {
