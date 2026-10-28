@@ -6,23 +6,23 @@
   'use strict';
 
   var CATALOGO = [
-    { id: 'gigante2',  nome: 'Nemotron-3-Ultra-550B (Kilo)',  base: 'https://api.kilo.ai/api/gateway',                          modelo: 'nvidia/nemotron-3-ultra-550b-a55b:free',            classe: 'forte' },
-    { id: 'ultra',     nome: 'Nemotron-3-Ultra-550B (g4f)',   base: 'https://nvidia.g4f.dev/v1',                                modelo: 'nvidia/nemotron-3-ultra-550b-a55b',                 classe: 'forte' },
-    { id: 'ovhq397',   nome: 'Qwen3.5-397B (OVH)',            base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Qwen3.5-397B-A17B',                                 classe: 'forte' },
-    { id: 'ovhq',      nome: 'Qwen3.6-27B (OVH)',             base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Qwen3.6-27B',                                       classe: 'forte' },
-    { id: 'ovhoss',    nome: 'gpt-oss-120b (OVH)',            base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'gpt-oss-120b',                                      classe: 'forte' },
-    { id: 'glm',       nome: 'GLM-5.3 (g4f)',                 base: 'https://nvidia.g4f.dev/v1',                                modelo: 'z-ai/glm-5.3',                                      classe: 'forte' },
-    { id: 'g4super',   nome: 'Nemotron-Super-120B (g4f)',     base: 'https://nvidia.g4f.dev/v1',                                modelo: 'nvidia/nemotron-3-super-120b-a12b',                 classe: 'media' },
-    { id: 'polli',     nome: 'Pollinations openai-fast',      base: 'https://text.pollinations.ai/openai',                      modelo: 'openai-fast',                                       classe: 'media' },
-    { id: 'ovhq38',    nome: 'Qwen3.8-27B (OVH)',             base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Qwen3.8-27B',                                       classe: 'media' },
-    { id: 'kilolight', nome: 'Nemotron-3.5-Lightning (Kilo)', base: 'https://api.kilo.ai/api/gateway',                          modelo: 'nvidia/nemotron-3.5-lightning:free',                classe: 'media' },
-    { id: 'lagunas',   nome: 'Laguna-S-2.1 (Kilo)',           base: 'https://api.kilo.ai/api/gateway',                          modelo: 'poolside/laguna-s-2.1:free',                        classe: 'media' },
-    { id: 'vlqwen',    nome: 'Qwen2.5-VL-72B (OVH)',          base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Qwen2.5-VL-72B-Instruct',                           classe: 'media' },
-    { id: 'ovhoss20',  nome: 'gpt-oss-20b (OVH)',             base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'gpt-oss-20b',                                       classe: 'leve' },
-    { id: 'ovhq9',     nome: 'Qwen3.5-9B (OVH)',              base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Qwen3.5-9B',                                        classe: 'leve' },
-    { id: 'ovhl',      nome: 'Llama-3.3-70B (OVH)',           base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Meta-Llama-3_3-70B-Instruct',                       classe: 'leve' },
-    { id: 'ovhnemo',   nome: 'Mistral-Nemo (OVH)',            base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Mistral-Nemo-Instruct-2407',                        classe: 'leve' },
-    { id: 'nanoomni',  nome: 'Nano-Omni-30B (Kilo)',          base: 'https://api.kilo.ai/api/gateway',                          modelo: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free', classe: 'leve' },
+    { id: 'gigante2',  nome: 'Nemotron-3-Ultra-550B (Kilo)',  base: 'https://api.kilo.ai/api/gateway',                          modelo: 'nvidia/nemotron-3-ultra-550b-a55b:free',            classe: 'forte' , peso: 100 },
+    { id: 'ultra',     nome: 'Nemotron-3-Ultra-550B (g4f)',   base: 'https://nvidia.g4f.dev/v1',                                modelo: 'nvidia/nemotron-3-ultra-550b-a55b',                 classe: 'media' , peso: 10 },
+    { id: 'ovhq397',   nome: 'Qwen3.5-397B (OVH)',            base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Qwen3.5-397B-A17B',                                 classe: 'leve' , peso: 7 },
+    { id: 'ovhq',      nome: 'Qwen3.6-27B (OVH)',             base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Qwen3.6-27B',                                       classe: 'leve' , peso: 7 },
+    { id: 'ovhoss',    nome: 'gpt-oss-120b (OVH)',            base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'gpt-oss-120b',                                      classe: 'leve' , peso: 7 },
+    { id: 'glm',       nome: 'GLM-5.3 (g4f)',                 base: 'https://nvidia.g4f.dev/v1',                                modelo: 'z-ai/glm-5.3',                                      classe: 'leve' , peso: 0 },
+    { id: 'g4super',   nome: 'Nemotron-Super-120B (g4f)',     base: 'https://nvidia.g4f.dev/v1',                                modelo: 'nvidia/nemotron-3-super-120b-a12b',                 classe: 'leve' , peso: 0 },
+    { id: 'polli',     nome: 'Pollinations openai-fast',      base: 'https://text.pollinations.ai/openai',                      modelo: 'openai-fast',                                       classe: 'leve' , peso: 3 },
+    { id: 'ovhq38',    nome: 'Qwen3.8-27B (OVH)',             base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Qwen3.8-27B',                                       classe: 'leve' , peso: 7 },
+    { id: 'kilolight', nome: 'Nemotron-3.5-Lightning (Kilo)', base: 'https://api.kilo.ai/api/gateway',                          modelo: 'nvidia/nemotron-3.5-lightning:free',                classe: 'forte' , peso: 90 },
+    { id: 'lagunas',   nome: 'Laguna-S-2.1 (Kilo)',           base: 'https://api.kilo.ai/api/gateway',                          modelo: 'poolside/laguna-s-2.1:free',                        classe: 'forte' , peso: 73 },
+    { id: 'vlqwen',    nome: 'Qwen2.5-VL-72B (OVH)',          base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Qwen2.5-VL-72B-Instruct',                           classe: 'leve' , peso: 3 },
+    { id: 'ovhoss20',  nome: 'gpt-oss-20b (OVH)',             base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'gpt-oss-20b',                                       classe: 'leve' , peso: 7 },
+    { id: 'ovhq9',     nome: 'Qwen3.5-9B (OVH)',              base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Qwen3.5-9B',                                        classe: 'leve' , peso: 7 },
+    { id: 'ovhl',      nome: 'Llama-3.3-70B (OVH)',           base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Meta-Llama-3_3-70B-Instruct',                       classe: 'leve' , peso: 7 },
+    { id: 'ovhnemo',   nome: 'Mistral-Nemo (OVH)',            base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Mistral-Nemo-Instruct-2407',                        classe: 'leve' , peso: 7 },
+    { id: 'nanoomni',  nome: 'Nano-Omni-30B (Kilo)',          base: 'https://api.kilo.ai/api/gateway',                          modelo: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free', classe: 'media' , peso: 13 },
     { id: 'coherecode',nome: 'Cohere-North-Mini (Kilo)',      base: 'https://api.kilo.ai/api/gateway',                          modelo: 'cohere/north-mini-code:free',                       classe: 'leve' }
   ];
 
@@ -565,6 +565,7 @@
     this.catalogo = opcoes.catalogo || CATALOGO;
     this.saude = {};
     this.cache = new Map();
+    this._lerDisco();
     this.cacheMax = opcoes.cacheMax || 400;
     this.cacheTtl = opcoes.cacheTtl || 15 * 60 * 1000;
     this.orcamento = opcoes.orcamento || 110000;
@@ -579,6 +580,15 @@
       self.metricas.porRota[r.id] = { ok: 0, falhas: 0 };
     });
   }
+
+  /* intervalo mínimo entre chamadas da mesma rota: rajada é o que queima a cota gratuita */
+  Roteador.prototype._esperarVez = async function (rota) {
+    var s = this.saude[rota.id];
+    var intervalo = (rota.peso || 0) >= 70 ? 1200 : 300;
+    var falta = (s.ultimaChamada || 0) + intervalo - agora();
+    if (falta > 0) await new Promise(function (r) { setTimeout(r, falta); });
+    s.ultimaChamada = agora();
+  };
 
   Roteador.prototype.disponivel = function (id) {
     var s = this.saude[id];
@@ -1070,7 +1080,7 @@
       if (/^[a-zà-ÿ\-]+$/.test(chave)) return { texto: pluralRegular(chave), ferramenta: 'plural', fonte: 'regra de formação' };
       return null;
     }
-    if ((m = q.match(/superlativo\s+de\s+(.+?)\??$/i))) {
+    if ((m = q.match(/superlativo(?:\s+absoluto)?(?:\s+sint[ée]tico)?\s+de\s+(.+?)\??$/i))) {
       chave = limpa(m[1]);
       var sup = IRREGULARES.superlativo[chave];
       if (sup) return { texto: sup, ferramenta: 'superlativo', fonte: 'base local de português' };
@@ -1156,6 +1166,30 @@
   };
 
   /* ============ CACHE ============ */
+  var CHAVE_DISCO = 'roteador-cache-v1';
+
+  Roteador.prototype._lerDisco = function () {
+    if (typeof localStorage === 'undefined') return;
+    try {
+      var bruto = localStorage.getItem(CHAVE_DISCO);
+      if (!bruto) return;
+      var obj = JSON.parse(bruto) || {};
+      for (var k in obj) {
+        if (!Object.prototype.hasOwnProperty.call(obj, k)) continue;
+        if (agora() - obj[k].t > this.cacheTtl) continue;
+        this.cache.set(k, obj[k]);
+      }
+    } catch (e) { /* cache em disco é otimização, nunca requisito */ }
+  };
+  Roteador.prototype._gravarDisco = function () {
+    if (typeof localStorage === 'undefined') return;
+    try {
+      var obj = {};
+      this.cache.forEach(function (v, k) { obj[k] = v; });
+      localStorage.setItem(CHAVE_DISCO, JSON.stringify(obj));
+    } catch (e) { /* cota do navegador cheia: segue sem persistir */ }
+  };
+
   Roteador.prototype._cacheGet = function (chave) {
     var e = this.cache.get(chave);
     if (!e) return null;
@@ -1165,6 +1199,7 @@
   Roteador.prototype._cacheSet = function (chave, valor) {
     if (this.cache.size >= this.cacheMax) this.cache.delete(this.cache.keys().next().value);
     this.cache.set(chave, { v: valor, t: agora() });
+    this._gravarDisco();
   };
 
   /* ============ ROTAS ============ */
@@ -1174,15 +1209,21 @@
     var lista = [];
     ordem.forEach(function (classe) {
       var grupo = self.catalogo.filter(function (r) { return r.classe === classe; });
-      grupo.sort(function (a, b) { return self.saude[a.id].latMedia - self.saude[b.id].latMedia; });
+      grupo.sort(function (a, b) {
+        // peso = acerto medido no banco difícil (bench/medir-rotas.js). Força real antes de velocidade.
+        var dp = (b.peso || 0) - (a.peso || 0);
+        if (dp !== 0) return dp;
+        return self.saude[a.id].latMedia - self.saude[b.id].latMedia;
+      });
       lista = lista.concat(grupo);
     });
     return lista;
   };
 
-  Roteador.prototype._castigar = function (id, tipo) {
+  Roteador.prototype._castigar = function (id, tipo, espera) {
     var s = this.saude[id];
     s.falhas++; s.ultimoErro = tipo;
+    if (tipo === 'rate' && espera) { s.cooldownAte = agora() + Math.max(espera * 1000, 5000); return; }
     s.cooldownAte = agora() + (tipo === 'rate' ? 20000 + Math.random() * 15000
       : tipo === 'morto' ? 30 * 60 * 1000
       : tipo === 'timeout' ? 12000 : 8000);
@@ -1222,7 +1263,10 @@
       });
       clearTimeout(t);
       var bruto = await r.text();
-      if (r.status === 429) return { erro: 'rate', ms: agora() - t0 };
+      if (r.status === 429) {
+        var ra = parseInt(r.headers.get('retry-after') || '0', 10);
+        return { erro: 'rate', espera: ra > 0 ? ra : null, ms: agora() - t0 };
+      }
       if (r.status === 401 || r.status === 403 || r.status === 404 || r.status === 400) return { erro: 'morto', ms: agora() - t0 };
       if (!r.ok) return { erro: 'servidor', ms: agora() - t0 };
       var d;
@@ -1245,20 +1289,23 @@
   };
 
   /* ============ CONSENSO (3 votos) ============ */
-  Roteador.prototype._consenso = async function (pergunta, dificuldade) {
+  Roteador.prototype._consenso = async function (pergunta, dificuldade, opcoes) {
+    var opc = opcoes || {};
     var self = this;
     var candidatos = this._candidatos(dificuldade).filter(function (r) { return self.disponivel(r.id); });
     // um por base, para não votar três vezes no mesmo provedor
+    // top-N por peso medido; diversidade de host é desejável, mas nunca à custa de trocar um
+    // modelo de 100% por um de 7% só porque o host é outro
     var escolhidos = [], bases = {};
     for (var i = 0; i < candidatos.length && escolhidos.length < this.votos; i++) {
       var b = candidatos[i].base;
-      if (bases[b]) continue;
+      if (bases[b] && (candidatos[i].peso || 0) < 50) continue;
       bases[b] = true; escolhidos.push(candidatos[i]);
     }
     if (!escolhidos.length) return null;
 
     var respostas = await Promise.all(escolhidos.map(function (rota) {
-      return self._chamar(rota, pergunta, 22000).then(function (r) {
+      return self._chamar(rota, pergunta, opc.longo ? 45000 : 22000, opc.chamar).then(function (r) {
         if (r.texto) self._premiar(rota.id, r.ms); else self._castigar(rota.id, r.erro);
         return { rota: rota, texto: r.texto || null, erro: r.erro || null, ms: r.ms };
       });
@@ -1311,12 +1358,19 @@
     if (!escolhidos.length) return null;
 
     var pedido = Object.assign({ maxTokens: 1200, longo: true, segmento: 45000 }, opc.chamar || {});
-    var respostas = await Promise.all(escolhidos.map(function (rota) {
-      return self._chamar(rota, pergunta, pedido.segmento, pedido).then(function (r) {
-        if (r.texto) self._premiar(rota.id, r.ms); else self._castigar(rota.id, r.erro);
-        return { rota: rota, texto: r.texto || null, erro: r.erro || null, ms: r.ms, bruto: r.bruto || null };
-      });
-    }));
+    var respostas = [];
+    var inicio = agora();
+    for (var k = 0; k < escolhidos.length; k++) {
+      var rotaK = escolhidos[k];
+      if (k > 0 && agora() - inicio > (opc.orcamento || 90000)) break;
+      await this._esperarVez(rotaK);
+      var r = await this._chamar(rotaK, pergunta, pedido.segmento, pedido);
+      // 429: espera curta e vai para a próxima, em vez de disparar tudo junto e perder a cota
+      if (r.erro === 'rate') await new Promise(function (res) { setTimeout(res, 2500 + Math.random() * 2500); });
+      if (r.texto) this._premiar(rotaK.id, r.ms); else this._castigar(rotaK.id, r.erro, r.espera);
+      respostas.push({ rota: rotaK, texto: r.texto || null, erro: r.erro || null, ms: r.ms, bruto: r.bruto || null });
+      if (r.texto && opc.nota && opc.nota(r.texto) >= 6) break;   // resposta boa: para de gastar cota
+    }
 
     var validas = respostas.filter(function (x) { return x.texto; });
     if (!validas.length) return null;
@@ -1391,7 +1445,8 @@
     }
 
     if (usarConsenso) {
-      var c = await this._consenso(pergunta, dificuldade);
+      var c = await this._consenso(pergunta, dificuldade,
+        tipo === 'curto' ? null : { longo: true, chamar: { maxTokens: 1200 } });
       if (c) { this._cacheSet(chave, c); this.metricas.sucessos++; return c; }
     }
 

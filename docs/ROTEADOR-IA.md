@@ -140,3 +140,22 @@ O defeito que explicava o número ruim de texto e código: **`max_tokens: 400` f
 **Texto aberto é o limite honesto da rodada**, e agora é um número, não uma frase: ~40% dos pedidos longos ainda saem curtos, sem algum fato pedido ou cortados pelo provedor. A rubrica mede forma e cobertura — não mede qualidade literária, e não há juiz humano.
 
 Nas perguntas curtas nada regrediu (200/200, 105/105, 84/84) e o pontuador ganhou **modo estrito** — acento conta — com o **mesmo** resultado nos três bancos: o afrouxamento de acento não estava escondendo acerto.
+
+## 9. v4 (28/10/2026) — "o teto dos modelos grátis", medida rota por rota
+
+A frase anterior era: *"o teto de inteligência segue sendo o dos modelos gratuitos (~45 × 58)"*. A medição por rota (`bench/medir-rotas.js`, `bench/banco-duro.json` — 30 itens difíceis com resposta verificável) mostrou outra coisa:
+
+| rota | acertos nos 30 difíceis | mediana |
+|---|---|---|
+| **Nemotron-3-Ultra-550B (Kilo, grátis)** | **30/30 = 100%** | 3,7 s |
+| Nemotron-3.5-Lightning (Kilo) | 27/30 = 90% | 4,9 s |
+| Laguna-S-2.1 (Kilo) | 22/30 = 73% | 7,1 s |
+| Nano-Omni-30B (Kilo) | 4/30 = 13% | 0,1 s |
+| Qwen3.5-397B / Qwen3.6-27B / gpt-oss-120b (OVH) | 2/30 = 6,7% (28 erros) | 0,2 s |
+| GLM-5.3 / Nemotron-Super-120B (g4f) | 0/30 | — |
+
+O gargalo não era o modelo: era **a fila**. O roteador exigia "um host por voto" e por isso escalava OVH (morta, 429 imediato) só para diversificar, deixando de fora o modelo de 100%.
+
+Consertos: `peso` medido em cada rota; classe definida pela medição; consenso por força; vazão mínima entre chamadas; `Retry-After` respeitado; geração longa em série; fallback longo com 1200 tokens; **cache persistente em localStorage**.
+
+**O limite que sobra é cota.** Depois de ~1.000 chamadas de medição, Kilo e g4f passam a responder 429 por janelas: com cota, código 18/18 e difíceis 29-30/30; sem cota, código 16/18 e texto longo truncado. O grátis não é menos inteligente — é menos disponível.
