@@ -1,0 +1,892 @@
+{
+ "v": 1,
+ "criado": "2026-10-27",
+ "total": 105,
+ "itens": [
+  {
+   "id": 1,
+   "tipo": "mat",
+   "q": "Quanto é 146+457?",
+   "g": [
+    "603"
+   ]
+  },
+  {
+   "id": 2,
+   "tipo": "mat",
+   "q": "Quanto é 730+728?",
+   "g": [
+    "1458"
+   ]
+  },
+  {
+   "id": 3,
+   "tipo": "mat",
+   "q": "Quanto é 269+429?",
+   "g": [
+    "698"
+   ]
+  },
+  {
+   "id": 4,
+   "tipo": "mat",
+   "q": "Quanto é 159+689?",
+   "g": [
+    "848"
+   ]
+  },
+  {
+   "id": 5,
+   "tipo": "mat",
+   "q": "Quanto é 706+201?",
+   "g": [
+    "907"
+   ]
+  },
+  {
+   "id": 6,
+   "tipo": "mat",
+   "q": "Quanto é 791+478?",
+   "g": [
+    "1269"
+   ]
+  },
+  {
+   "id": 7,
+   "tipo": "mat",
+   "q": "Quanto é 442+547?",
+   "g": [
+    "989"
+   ]
+  },
+  {
+   "id": 8,
+   "tipo": "mat",
+   "q": "Quanto é 488+445?",
+   "g": [
+    "933"
+   ]
+  },
+  {
+   "id": 9,
+   "tipo": "mat",
+   "q": "Quanto é 27×13?",
+   "g": [
+    "351"
+   ]
+  },
+  {
+   "id": 10,
+   "tipo": "mat",
+   "q": "Quanto é 15×11?",
+   "g": [
+    "165"
+   ]
+  },
+  {
+   "id": 11,
+   "tipo": "mat",
+   "q": "Quanto é 21×11?",
+   "g": [
+    "231"
+   ]
+  },
+  {
+   "id": 12,
+   "tipo": "mat",
+   "q": "Quanto é 16×16?",
+   "g": [
+    "256"
+   ]
+  },
+  {
+   "id": 13,
+   "tipo": "mat",
+   "q": "Quanto é 25% de 400?",
+   "g": [
+    "100"
+   ]
+  },
+  {
+   "id": 14,
+   "tipo": "mat",
+   "q": "Quanto é 5% de 400?",
+   "g": [
+    "20"
+   ]
+  },
+  {
+   "id": 15,
+   "tipo": "mat",
+   "q": "Quanto é 5% de 200?",
+   "g": [
+    "10"
+   ]
+  },
+  {
+   "id": 16,
+   "tipo": "seq",
+   "q": "Próximo: 11,19,27,35,?",
+   "g": [
+    "43"
+   ]
+  },
+  {
+   "id": 17,
+   "tipo": "seq",
+   "q": "Próximo: 17,26,35,44,?",
+   "g": [
+    "53"
+   ]
+  },
+  {
+   "id": 18,
+   "tipo": "seq",
+   "q": "Próximo: 23,35,47,59,?",
+   "g": [
+    "71"
+   ]
+  },
+  {
+   "id": 19,
+   "tipo": "seq",
+   "q": "Próximo: 31,38,45,52,?",
+   "g": [
+    "59"
+   ]
+  },
+  {
+   "id": 20,
+   "tipo": "seq",
+   "q": "Próximo: 41,47,53,59,?",
+   "g": [
+    "65"
+   ]
+  },
+  {
+   "id": 21,
+   "tipo": "seq",
+   "q": "Próximo: 3,15,75,375,?",
+   "g": [
+    "1875"
+   ]
+  },
+  {
+   "id": 22,
+   "tipo": "seq",
+   "q": "Próximo: 7,21,63,189,?",
+   "g": [
+    "567"
+   ]
+  },
+  {
+   "id": 23,
+   "tipo": "seq",
+   "q": "Próximo: 2,12,72,432,?",
+   "g": [
+    "2592"
+   ]
+  },
+  {
+   "id": 24,
+   "tipo": "seq",
+   "q": "Próximo: 11,22,44,88,?",
+   "g": [
+    "176"
+   ]
+  },
+  {
+   "id": 25,
+   "tipo": "seq",
+   "q": "Próximo: 13,52,208,832,?",
+   "g": [
+    "3328"
+   ]
+  },
+  {
+   "id": 26,
+   "tipo": "seq",
+   "q": "Próximo: 500,250,125,?",
+   "g": [
+    "62"
+   ]
+  },
+  {
+   "id": 27,
+   "tipo": "seq",
+   "q": "Próximo: 320,160,80,?",
+   "g": [
+    "40"
+   ]
+  },
+  {
+   "id": 28,
+   "tipo": "seq",
+   "q": "Próximo: 180,90,45,?",
+   "g": [
+    "22"
+   ]
+  },
+  {
+   "id": 29,
+   "tipo": "seq",
+   "q": "Próximo: 97,48,24,?",
+   "g": [
+    "12"
+   ]
+  },
+  {
+   "id": 30,
+   "tipo": "seq",
+   "q": "Próximo: 64,32,16,?",
+   "g": [
+    "8"
+   ]
+  },
+  {
+   "id": 31,
+   "tipo": "logica",
+   "q": "Se hoje é quinta-feira, que dia será daqui a 4 dias?",
+   "g": [
+    "segunda",
+    "segunda-feira"
+   ]
+  },
+  {
+   "id": 32,
+   "tipo": "logica",
+   "q": "Quantos meses do ano têm 30 dias?",
+   "g": [
+    "4",
+    "quatro"
+   ]
+  },
+  {
+   "id": 33,
+   "tipo": "logica",
+   "q": "Quantos lados tem um octógono?",
+   "g": [
+    "8",
+    "oito"
+   ]
+  },
+  {
+   "id": 34,
+   "tipo": "logica",
+   "q": "Um relógio marca 9h. Que horas marcará daqui a 15 horas (0-23)?",
+   "g": [
+    "0",
+    "zero",
+    "0h"
+   ]
+  },
+  {
+   "id": 35,
+   "tipo": "logica",
+   "q": "Se 4 cadernos custam R$20, quanto custam 7?",
+   "g": [
+    "35"
+   ]
+  },
+  {
+   "id": 36,
+   "tipo": "logica",
+   "q": "Pedro é mais novo que Lucas e Lucas é mais novo que Ivo. Quem é o mais velho?",
+   "g": [
+    "ivo"
+   ]
+  },
+  {
+   "id": 37,
+   "tipo": "logica",
+   "q": "Quantos minutos tem 2 horas e 15 minutos?",
+   "g": [
+    "135",
+    "cento e trinta e cinco"
+   ]
+  },
+  {
+   "id": 38,
+   "tipo": "logica",
+   "q": "Numa fila, Rita é a 8ª. Quantas pessoas estão à frente dela?",
+   "g": [
+    "7",
+    "sete"
+   ]
+  },
+  {
+   "id": 39,
+   "tipo": "logica",
+   "q": "Quantos dias tem três semanas?",
+   "g": [
+    "21",
+    "vinte e um"
+   ]
+  },
+  {
+   "id": 40,
+   "tipo": "logica",
+   "q": "Uma torneira enche 5 litros por minuto. Quantos litros em 12 minutos?",
+   "g": [
+    "60",
+    "sessenta"
+   ]
+  },
+  {
+   "id": 41,
+   "tipo": "logica",
+   "q": "Quantos segundos tem 5 minutos?",
+   "g": [
+    "300",
+    "trezentos"
+   ]
+  },
+  {
+   "id": 42,
+   "tipo": "logica",
+   "q": "Um livro de 480 páginas, 40 por dia: em quantos dias termino?",
+   "g": [
+    "12",
+    "doze"
+   ]
+  },
+  {
+   "id": 43,
+   "tipo": "logica",
+   "q": "Quantas patas têm 12 cachorros?",
+   "g": [
+    "48",
+    "quarenta e oito"
+   ]
+  },
+  {
+   "id": 44,
+   "tipo": "logica",
+   "q": "Quantos ovos há em 4 dúzias?",
+   "g": [
+    "48",
+    "quarenta e oito"
+   ]
+  },
+  {
+   "id": 45,
+   "tipo": "logica",
+   "q": "Quantas faces tem um cubo?",
+   "g": [
+    "6",
+    "seis"
+   ]
+  },
+  {
+   "id": 46,
+   "tipo": "brasil",
+   "q": "Qual a capital de Roraima?",
+   "g": [
+    "boa vista"
+   ]
+  },
+  {
+   "id": 47,
+   "tipo": "brasil",
+   "q": "Qual a capital do Amapá?",
+   "g": [
+    "macapá",
+    "macapa"
+   ]
+  },
+  {
+   "id": 48,
+   "tipo": "brasil",
+   "q": "Qual a capital do Acre?",
+   "g": [
+    "rio branco"
+   ]
+  },
+  {
+   "id": 49,
+   "tipo": "brasil",
+   "q": "Qual a capital de Rondônia?",
+   "g": [
+    "porto velho"
+   ]
+  },
+  {
+   "id": 50,
+   "tipo": "brasil",
+   "q": "Qual a capital do Tocantins?",
+   "g": [
+    "palmas"
+   ]
+  },
+  {
+   "id": 51,
+   "tipo": "brasil",
+   "q": "Qual a capital de Mato Grosso?",
+   "g": [
+    "cuiabá",
+    "cuiaba"
+   ]
+  },
+  {
+   "id": 52,
+   "tipo": "brasil",
+   "q": "Qual a capital de Santa Catarina?",
+   "g": [
+    "florianópolis",
+    "florianopolis"
+   ]
+  },
+  {
+   "id": 53,
+   "tipo": "brasil",
+   "q": "Qual a capital do Rio de Janeiro?",
+   "g": [
+    "rio de janeiro"
+   ]
+  },
+  {
+   "id": 54,
+   "tipo": "brasil",
+   "q": "Qual a capital de São Paulo?",
+   "g": [
+    "são paulo",
+    "sao paulo"
+   ]
+  },
+  {
+   "id": 55,
+   "tipo": "brasil",
+   "q": "Qual a capital de Minas Gerais?",
+   "g": [
+    "belo horizonte"
+   ]
+  },
+  {
+   "id": 56,
+   "tipo": "brasil",
+   "q": "Qual a capital da Paraíba?",
+   "g": [
+    "joão pessoa",
+    "joao pessoa"
+   ]
+  },
+  {
+   "id": 57,
+   "tipo": "brasil",
+   "q": "Qual a capital do Maranhão?",
+   "g": [
+    "são luís",
+    "sao luis"
+   ]
+  },
+  {
+   "id": 58,
+   "tipo": "brasil",
+   "q": "Qual a capital do Ceará?",
+   "g": [
+    "fortaleza"
+   ]
+  },
+  {
+   "id": 59,
+   "tipo": "brasil",
+   "q": "Qual a capital do Pará?",
+   "g": [
+    "belém",
+    "belem"
+   ]
+  },
+  {
+   "id": 60,
+   "tipo": "brasil",
+   "q": "Qual a capital do Amazonas?",
+   "g": [
+    "manaus"
+   ]
+  },
+  {
+   "id": 61,
+   "tipo": "lingua",
+   "q": "Qual o feminino de 'padre'?",
+   "g": [
+    "madre"
+   ]
+  },
+  {
+   "id": 62,
+   "tipo": "lingua",
+   "q": "Qual o coletivo de abelhas?",
+   "g": [
+    "enxame"
+   ]
+  },
+  {
+   "id": 63,
+   "tipo": "lingua",
+   "q": "Quantas sílabas tem 'borboleta'?",
+   "g": [
+    "4",
+    "quatro"
+   ]
+  },
+  {
+   "id": 64,
+   "tipo": "lingua",
+   "q": "Qual o superlativo de 'mau'?",
+   "g": [
+    "péssimo",
+    "pessimo"
+   ]
+  },
+  {
+   "id": 65,
+   "tipo": "lingua",
+   "q": "Qual o antônimo de 'grosso'?",
+   "g": [
+    "fino"
+   ]
+  },
+  {
+   "id": 66,
+   "tipo": "lingua",
+   "q": "Qual o plural de 'cidadão'?",
+   "g": [
+    "cidadãos",
+    "cidadaos"
+   ]
+  },
+  {
+   "id": 67,
+   "tipo": "lingua",
+   "q": "Qual o plural de 'papel'?",
+   "g": [
+    "papéis",
+    "papeis"
+   ]
+  },
+  {
+   "id": 68,
+   "tipo": "lingua",
+   "q": "Qual o diminutivo de 'casa'?",
+   "g": [
+    "casinha"
+   ]
+  },
+  {
+   "id": 69,
+   "tipo": "lingua",
+   "q": "Qual a classe da palavra 'corajoso'?",
+   "g": [
+    "adjetivo"
+   ]
+  },
+  {
+   "id": 70,
+   "tipo": "lingua",
+   "q": "Qual a classe da palavra 'correr'?",
+   "g": [
+    "verbo"
+   ]
+  },
+  {
+   "id": 71,
+   "tipo": "lingua",
+   "q": "Qual o antônimo de 'doce'?",
+   "g": [
+    "amargo"
+   ]
+  },
+  {
+   "id": 72,
+   "tipo": "lingua",
+   "q": "Qual o sinônimo de 'rápido'?",
+   "g": [
+    "veloz",
+    "ligeiro"
+   ]
+  },
+  {
+   "id": 73,
+   "tipo": "lingua",
+   "q": "Qual a figura de linguagem em 'seus olhos são duas estrelas'?",
+   "g": [
+    "metáfora",
+    "metafora"
+   ]
+  },
+  {
+   "id": 74,
+   "tipo": "lingua",
+   "q": "Quantas letras tem 'caderno'?",
+   "g": [
+    "7",
+    "sete"
+   ]
+  },
+  {
+   "id": 75,
+   "tipo": "lingua",
+   "q": "Qual o feminino de 'carneiro'?",
+   "g": [
+    "ovelha"
+   ]
+  },
+  {
+   "id": 76,
+   "tipo": "eng",
+   "q": "Translate to Portuguese: 'window'",
+   "g": [
+    "janela"
+   ]
+  },
+  {
+   "id": 77,
+   "tipo": "eng",
+   "q": "Translate to Portuguese: 'chair'",
+   "g": [
+    "cadeira"
+   ]
+  },
+  {
+   "id": 78,
+   "tipo": "eng",
+   "q": "Translate to Portuguese: 'bread'",
+   "g": [
+    "pão",
+    "pao"
+   ]
+  },
+  {
+   "id": 79,
+   "tipo": "eng",
+   "q": "Translate to Portuguese: 'street'",
+   "g": [
+    "rua"
+   ]
+  },
+  {
+   "id": 80,
+   "tipo": "eng",
+   "q": "Translate to Portuguese: 'teacher'",
+   "g": [
+    "professor",
+    "professora"
+   ]
+  },
+  {
+   "id": 81,
+   "tipo": "eng",
+   "q": "Translate to English: 'mesa'",
+   "g": [
+    "table"
+   ]
+  },
+  {
+   "id": 82,
+   "tipo": "eng",
+   "q": "Translate to English: 'porta'",
+   "g": [
+    "door"
+   ]
+  },
+  {
+   "id": 83,
+   "tipo": "eng",
+   "q": "Translate to English: 'cavalo'",
+   "g": [
+    "horse"
+   ]
+  },
+  {
+   "id": 84,
+   "tipo": "eng",
+   "q": "Translate to English: 'feliz'",
+   "g": [
+    "happy"
+   ]
+  },
+  {
+   "id": 85,
+   "tipo": "eng",
+   "q": "Translate to English: 'trabalho'",
+   "g": [
+    "work",
+    "job"
+   ]
+  },
+  {
+   "id": 86,
+   "tipo": "eng",
+   "q": "Past tense of 'write'?",
+   "g": [
+    "wrote"
+   ]
+  },
+  {
+   "id": 87,
+   "tipo": "eng",
+   "q": "Past tense of 'drink'?",
+   "g": [
+    "drank"
+   ]
+  },
+  {
+   "id": 88,
+   "tipo": "eng",
+   "q": "Plural of 'foot'?",
+   "g": [
+    "feet"
+   ]
+  },
+  {
+   "id": 89,
+   "tipo": "eng",
+   "q": "Comparative of 'bad'?",
+   "g": [
+    "worse"
+   ]
+  },
+  {
+   "id": 90,
+   "tipo": "eng",
+   "q": "Superlative of 'far'?",
+   "g": [
+    "farthest",
+    "furthest"
+   ]
+  },
+  {
+   "id": 91,
+   "tipo": "mundo",
+   "q": "Qual a capital da Alemanha?",
+   "g": [
+    "berlim",
+    "berlin"
+   ]
+  },
+  {
+   "id": 92,
+   "tipo": "mundo",
+   "q": "Qual a capital do Canadá?",
+   "g": [
+    "ottawa"
+   ]
+  },
+  {
+   "id": 93,
+   "tipo": "mundo",
+   "q": "Qual a capital da Rússia?",
+   "g": [
+    "moscou",
+    "moscow"
+   ]
+  },
+  {
+   "id": 94,
+   "tipo": "mundo",
+   "q": "Qual a capital da Índia?",
+   "g": [
+    "nova délhi",
+    "new delhi",
+    "delhi"
+   ]
+  },
+  {
+   "id": 95,
+   "tipo": "mundo",
+   "q": "Qual é o símbolo químico da prata?",
+   "g": [
+    "ag"
+   ]
+  },
+  {
+   "id": 96,
+   "tipo": "mundo",
+   "q": "Qual é o símbolo químico do ferro?",
+   "g": [
+    "fe"
+   ]
+  },
+  {
+   "id": 97,
+   "tipo": "mundo",
+   "q": "Qual é o símbolo químico do sódio?",
+   "g": [
+    "na"
+   ]
+  },
+  {
+   "id": 98,
+   "tipo": "mundo",
+   "q": "Qual o planeta conhecido como planeta vermelho?",
+   "g": [
+    "marte",
+    "mars"
+   ]
+  },
+  {
+   "id": 99,
+   "tipo": "mundo",
+   "q": "Qual o maior oceano do mundo?",
+   "g": [
+    "pacífico",
+    "pacifico"
+   ]
+  },
+  {
+   "id": 100,
+   "tipo": "mundo",
+   "q": "Quantos continentes habitados existem?",
+   "g": [
+    "5",
+    "cinco",
+    "6",
+    "seis"
+   ]
+  },
+  {
+   "id": 101,
+   "tipo": "mundo",
+   "q": "Quem escreveu 'Grande Sertão: Veredas'?",
+   "g": [
+    "guimarães rosa",
+    "guimaraes rosa"
+   ]
+  },
+  {
+   "id": 102,
+   "tipo": "mundo",
+   "q": "Quem pintou 'O Grito'?",
+   "g": [
+    "edvard munch",
+    "munch"
+   ]
+  },
+  {
+   "id": 103,
+   "tipo": "mundo",
+   "q": "Qual a unidade de potência no SI?",
+   "g": [
+    "watt",
+    "w"
+   ]
+  },
+  {
+   "id": 104,
+   "tipo": "mundo",
+   "q": "Qual o metal do símbolo 'Pb'?",
+   "g": [
+    "chumbo"
+   ]
+  },
+  {
+   "id": 105,
+   "tipo": "mundo",
+   "q": "Qual o maior planeta do Sistema Solar?",
+   "g": [
+    "júpiter",
+    "jupiter"
+   ]
+  }
+ ]
+}

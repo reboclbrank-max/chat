@@ -4,7 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const { Roteador, CATALOGO } = require('../roteador-ia.js');
 
-const banco = JSON.parse(fs.readFileSync(path.join(__dirname, 'banco200.json'), 'utf8')).itens;
+const arquivo = process.env.BANCO || 'banco200.json';
+const banco = JSON.parse(fs.readFileSync(path.join(__dirname, arquivo), 'utf8')).itens;
 const modo = process.argv[2] || 'depois';
 const CONC = parseInt(process.env.CONC || '3', 10);
 
@@ -61,8 +62,8 @@ async function ferramenta(pergunta) {
 }
 
 async function resolver(item) {
-  if (modo === 'depois') {
-    const out = await rot.responder({ pergunta: item.q, dificuldade: 'dificil' });
+  if (modo === 'depois' || modo === 'gratis') {
+    const out = await rot.responder({ pergunta: item.q, dificuldade: modo === 'gratis' ? 'dificil' : 'dificil' });
     return out.texto ? { ...out, fonte: out.rota } : { texto: null, erro: out.erro, ms: out.ms, tentativas: out.tentativas };
   }
   const f = await ferramenta(item.q);
