@@ -33,10 +33,32 @@
 
   var CURTAS_OK = { sim: 1, nao: 1, 'não': 1, yes: 1, no: 1, oui: 1, ok: 1, 'é': 1 };
 
+  /* Pedaço de frase não é resposta. "Is it", "Actually, looking", "of the" — são restos de raciocínio
+     que os modelos pequenos devolvem quando o provedor corta a geração no meio. Aceitar isso é
+     entregar lixo com cara de resposta (medido: id 71 da régua de 200, resposta "Is it"). */
+  var FUNCIONAIS = ('a an the of and or to in on at that this these those it its is are was were be been ' +
+    'being do does did has have had i we you he she they me us them my your so but if as with for from by ' +
+    'not no yes actually looking let about which what who whom whose how why when where than then there ' +
+    'here just also very more most much many some any each every such own same too can could would should ' +
+    'will shall may might must').split(' ');
+  var SO_FUNCIONAIS = {};
+  FUNCIONAIS.forEach(function (w) { SO_FUNCIONAIS[w] = 1; });
+
+  function fragmento(t) {
+    var s = String(t || '').toLowerCase().replace(/[^a-zà-ÿ0-9\s']/g, ' ').trim();
+    if (!s) return true;
+    var pal = s.split(/\s+/).filter(Boolean);
+    if (pal.length > 6) return false;
+    return pal.every(function (p) { return SO_FUNCIONAIS[p] === 1; });
+  }
+
   /* devolve texto utilizável ou '' (resposta com preâmbulo de raciocínio não serve) */
   function sanear(t) {
     var s = String(t || '').trim();
     if (!util(s)) return '';
+    // resposta legítima de uma palavra (sim/não/yes/no) é resposta, ainda que seja palavra funcional
+    if (CURTAS_OK[s.toLowerCase()] === 1) return s;
+    if (fragmento(s)) return '';
     if (/^[\d.,\s%°+\-/]+$/.test(s)) return s;
     if (CABECALHO_RACIOCINIO.test(s)) {
       var marcado = /(?:resposta|answer|resultado|result|conclus[aã]o)\s*(?:[:\-]|(?:é|e|is)\b)\s*(.+)$/i.exec(s);
@@ -623,6 +645,42 @@
     return null;
   };
 
+  /* Aritmética não pode depender de serviço externo. Medido hoje: api.mathjs.org fora do ar
+     (timeout de 8 s) e "16×12" foi parar no modelo, que devolveu "× 12" — erro de conteúdo no item
+     28 da régua de 200. Avaliador abaixo é local, sem rede: precedência normal, parênteses, ^. */
+  function calcular(expr) {
+    var s = String(expr).replace(/,/g, '.').replace(/[×xX]/g, '*').replace(/÷/g, '/')
+      .replace(/²/g, '^2').replace(/³/g, '^3').replace(/\s+/g, '');
+    if (!/^[0-9+\-*/^().]+$/.test(s)) return null;
+    var pos = 0;
+    function num() {
+      var m = /^\d+(?:\.\d+)?/.exec(s.slice(pos));
+      if (!m) throw new Error('num');
+      pos += m[0].length; return parseFloat(m[0]);
+    }
+    function atomo() {
+      if (s[pos] === '(') { pos++; var v = soma(); if (s[pos] !== ')') throw new Error('paren'); pos++; return v; }
+      if (s[pos] === '-') { pos++; return -atomo(); }
+      return num();
+    }
+    function pot() { var b = atomo(); if (s[pos] === '^') { pos++; return Math.pow(b, pot()); } return b; }
+    function prod() {
+      var v = pot();
+      while (s[pos] === '*' || s[pos] === '/') { var op = s[pos++]; var r = pot(); v = op === '*' ? v * r : v / r; }
+      return v;
+    }
+    function soma() {
+      var v = prod();
+      while (s[pos] === '+' || s[pos] === '-') { var op = s[pos++]; var r = prod(); v = op === '+' ? v + r : v - r; }
+      return v;
+    }
+    try {
+      var r = soma();
+      if (pos !== s.length || !isFinite(r)) return null;
+      return Math.round(r * 1e6) / 1e6;
+    } catch (e) { return null; }
+  }
+
   Roteador.prototype._mathjs = async function (expr) {
     try {
       var url = 'https://api.mathjs.org/v4/?expr=' + encodeURIComponent(expr);
@@ -711,19 +769,59 @@
     return { valor: out, fonte: 'mymemory ' + de + '>' + para };
   };
 
+  var MESES_DIAS = { janeiro: 31, fevereiro: 28, 'março': 31, marco: 31, abril: 30, maio: 31, junho: 30,
+    julho: 31, agosto: 31, setembro: 30, outubro: 31, novembro: 30, dezembro: 31 };
+  var DIAS_SEMANA = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'];
+  function bissexto(a) { return (a % 4 === 0 && a % 100 !== 0) || a % 400 === 0; }
+
+  /* calendário é aritmética exata: não vale gastar modelo (e errar) nisso */
+  function calendarioLocal(q) {
+    var m, ano;
+    if ((m = q.match(/quantos\s+dias\s+(?:tem|h[áa])\s+(?:o\s+)?(?:m[êe]s\s+de\s+)?(janeiro|fevereiro|mar[çc]o|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro)(?:\s+de|\s+do\s+ano\s+de)?\s*(\d{4})?/i))) {
+      var mes = m[1].toLowerCase().replace('marco', 'março');
+      ano = m[2] ? parseInt(m[2], 10) : null;
+      var d = MESES_DIAS[mes];
+      if (mes === 'fevereiro' && ano) d = bissexto(ano) ? 29 : 28;
+      return { texto: String(d), ferramenta: 'calendario', fonte: 'calendário local' };
+    }
+    if ((m = q.match(/(?:o\s+ano\s+(?:de\s+)?)?(\d{4})\s+(?:é|e)\s+(?:um\s+ano\s+)?bissexto/i))) {
+      ano = parseInt(m[1], 10);
+      return { texto: bissexto(ano) ? 'Sim' : 'Não', ferramenta: 'calendario', fonte: 'calendário local' };
+    }
+    if ((m = q.match(/quantos\s+dias\s+(?:tem|h[áa])\s+(?:o\s+)?ano(?:\s+de|\s+de)?\s*(\d{4})/i))) {
+      ano = parseInt(m[1], 10);
+      return { texto: bissexto(ano) ? '366' : '365', ferramenta: 'calendario', fonte: 'calendário local' };
+    }
+    // "se hoje é terça-feira, que dia da semana será daqui a N dias?" — conta modular, sem modelo
+    if ((m = q.match(/hoje\s+[ée]\s+(domingo|segunda-feira|segunda|ter[çc]a-feira|ter[çc]a|quarta-feira|quarta|quinta-feira|quinta|sexta-feira|sexta|s[áa]bado)[^\d]{0,40}?(\d{1,3})\s+dia/i))) {
+      var base = m[1].toLowerCase().replace('-feira', '');
+      var nomes = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
+      var i0 = nomes.indexOf(base.replace('terca', 'terça').replace('sabado', 'sábado'));
+      if (i0 >= 0) {
+        var i1 = (i0 + parseInt(m[2], 10)) % 7;
+        return { texto: DIAS_SEMANA[i1], ferramenta: 'calendario', fonte: 'calendário local' };
+      }
+    }
+    return null;
+  }
+
   Roteador.prototype._ferramenta = async function (pergunta) {
     if (!this.ferramentasLigadas) return null;
     var m, p;
     var q = String(pergunta || '').trim();
+    var cal = calendarioLocal(q);
+    if (cal) return cal;
 
     /* --- vários saltos PRIMEIRO: "dobro de 15 menos metade de 8" não pode cair em "metade de 8" --- */
     var multi = this._encadeado(q);
     if (multi) return multi;
 
     /* --- aritmética e porcentagem --- */
-    if ((m = q.match(/quanto\s+é\s+([0-9.,\s+\-*/^×÷()%²³]+)\??$/i))) {
+    if ((m = q.match(/quanto\s+(?:é|e|vale|d[áa])\s*([0-9.,\s+\-*/^×÷()%²³xX]+)\??$/i))) {
       var expr = m[1].replace(/×/g, '*').replace(/÷/g, '/').replace(/,/g, '.')
         .replace(/²/g, '^2').replace(/³/g, '^3');
+      var local = calcular(expr);
+      if (local !== null) return { texto: String(local).replace('.', ','), ferramenta: 'calculo', fonte: 'aritmética local' };
       if (/^[\d\s+\-*/^().]+$/.test(expr) && /\d/.test(expr)) {
         var v = await this._mathjs(expr);
         if (v !== null) return { texto: v, ferramenta: 'mathjs', fonte: 'mathjs ' + expr };
@@ -958,6 +1056,18 @@
       if (bloco) saida.push(bloco);
     }
     return saida.join('\n\n');
+  }
+
+  /* Provedor grátis trunca no meio da frase. Em vez de entregar "…e a água passa" cortado,
+     fecha no último ponto final já escrito. Não inventa nada: só descarta a sobra. */
+  function fecharTexto(t) {
+    var s2 = String(t || '').trim();
+    if (!s2) return s2;
+    if (/[.!?…]["”)]?$/.test(s2)) return s2;
+    var m = /^[\s\S]*[.!?…]["”)]?/.exec(s2);
+    if (!m) return s2;
+    var corte = m[0].trim();
+    return corte.length >= 40 ? corte : s2;
   }
 
   /* nota de um texto longo: tamanho, fechamento, formato pedido e ausência de robô-speak */
@@ -1345,6 +1455,143 @@
   /* ============ GERAÇÃO LONGA (código e texto) ============ */
   /* Sem consenso: votação de maioria não faz sentido para texto longo nem para código.
      Em vez disso, dois provedores no máximo, e a escolha é por critério objetivo declarado. */
+  /* ============ TEXTO LONGO PARÁGRAFO A PARÁGRAFO ============
+     Medido na régua aberta: pedir "dois parágrafos, 70 palavras" numa chamada só devolvia um bloco
+     de 30 palavras cortado — o provedor grátis trunca antes de chegar ao fim. Pedindo UM parágrafo
+     por chamada, cada resposta cabe folgado no teto, o número de parágrafos é exato por construção
+     e o parágrafo que sai curto é refeito sozinho (não se joga fora o texto inteiro). */
+  /* Lista com N itens: um item por chamada. Pedir "5 itens" numa chamada só devolvia 1
+     (medido: régua aberta #10, 56 palavras, 1 item de 5). */
+  Roteador.prototype._listaLonga = async function (pergunta, ex) {
+    var self = this;
+    var n = Math.max(2, ex.itens || 1);
+    var inicio = agora();
+    var vistas = {}, rotas = [];
+    ['forte', 'media', 'leve'].forEach(function (cl) {
+      self._candidatos(cl).forEach(function (r) {
+        if (vistas[r.id] || !self.disponivel(r.id)) return;
+        vistas[r.id] = 1; rotas.push(r);
+      });
+    });
+    if (!rotas.length) return null;
+    var idx = 0, linhas = [], tentativas = 0;
+    for (var i = 0; i < n; i++) {
+      var feito = null;
+      for (var t = 0; t < 4 && !feito; t++) {
+        if (agora() - inicio > 110000) break;
+        var rota = rotas[idx++ % rotas.length];
+        var ped = 'Tema: ' + pergunta + '\n\nEscreva SOMENTE o item ' + (i + 1) + ' de ' + n +
+          ', em português do Brasil, em uma única linha, com 12 a 30 palavras, começando por "' + (i + 1) + '. ".' +
+          ' Não repita os itens anteriores, não escreva título nem introdução, e termine a frase.';
+        await this._esperarVez(rota);
+        var r = await this._chamar(rota, ped, 25000, { maxTokens: 300, longo: true, sistema: SYS_ABERTO });
+        tentativas++;
+        if (r.texto) this._premiar(rota.id, r.ms); else this._castigar(rota.id, r.erro, r.espera);
+        if (r.erro === 'rate') await new Promise(function (res) { setTimeout(res, 3000 + Math.random() * 3000); });
+        var txt = sanear(String(r.texto || '').trim()).replace(/\s*\n+\s*/g, ' ');
+        var palavras = txt.split(/\s+/).filter(Boolean).length;
+        if (txt && palavras >= 8 && /[.!?…]["”)]?$/.test(txt)) feito = String(i + 1) + '. ' + txt.replace(/^\d+[.)]\s*/, '');
+      }
+      if (!feito) return null;
+      linhas.push(feito);
+    }
+    var texto = linhas.join('\n');
+    if (!textoCompleto(texto, ex.minPalavras || 60)) return null;
+    return {
+      texto: texto, rota: 'lista-longa', rotaNome: 'geração item a item',
+      classe: 'forte', confianca: 'alta', tentativas: tentativas, ms: agora() - inicio,
+      candidatos: linhas.map(function (l) { return { palavras: l.split(/\s+/).filter(Boolean).length }; })
+    };
+  };
+
+  /* termos concretos do pedido: o pedido costuma nomear o que quer ver ("torneira", "ambiental",
+     "painel"). Repetir esses termos na instrução é o que faz o texto cobrir o que foi perguntado —
+     medido: parágrafo bem formado que esquecia "torneira" contava como falta de fato. */
+  var VAZIAS = { para: 1, como: 1, sobre: 1, entre: 1, quando: 1, porque: 1, isso: 1, esse: 1, essa: 1,
+    este: 1, esta: 1, aquele: 1, aquela: 1, 'não': 1, mais: 1, menos: 1, muito: 1, pouco: 1, todos: 1,
+    todas: 1, cada: 1, pelo: 1, pela: 1, seus: 1, suas: 1, nosso: 1, nossa: 1, pode: 1, fazer: 1,
+    escreva: 1, explique: 1, descreva: 1, argumente: 1, favor: 1, contra: 1, dicas: 1,
+    'parágrafo': 1, 'parágrafos': 1, paragrafos: 1, 'casa': 1 };
+
+  function termosDoPedido(q) {
+    var bruto = String(q || '');
+    var t = bruto.toLowerCase().replace(/[^\wà-ÿ\s]/g, ' ');
+    var vistos = {}, saida = [];
+    // sigla em caixa alta é termo do pedido mesmo sendo curta (LGPD, IPTU, SUS)
+    (bruto.match(/\b[A-ZÀ-Ý]{3,6}\b/g) || []).forEach(function (a) {
+      if (vistos[a]) return; vistos[a] = 1; saida.push(a);
+    });
+    t.split(/\s+/).forEach(function (w) {
+      if (w.length < 5 || VAZIAS[w] || vistos[w]) return;
+      vistos[w] = 1; saida.push(w);
+    });
+    return saida.slice(0, 4);
+  }
+
+  function instrucaoParagrafo(pergunta, i, n, minPor, foco) {
+    var termos = termosDoPedido(pergunta);
+    var exige = termos.length
+      ? ' Ao longo do parágrafo, use literalmente estes termos do pedido, quando fizer sentido: ' +
+        termos.join(', ') + '.'
+      : '';
+    return 'Tema do texto: ' + pergunta + '\n\n' +
+      'Escreva SOMENTE o parágrafo ' + (i + 1) + ' de ' + n + ', em português do Brasil, com ' +
+      (minPor + 15) + ' a ' + (minPor + 55) + ' palavras, em 3 a 5 frases completas. ' + (foco || '') + exige +
+      ' Não use listas, títulos, negrito nem prefácio do tipo "claro" ou "aqui está".\n' +
+      'Comece direto no conteúdo.';
+  }
+
+  Roteador.prototype._textoLongo = async function (pergunta, ex) {
+    var self = this;
+    var n = Math.max(2, ex.paragrafos || 1);
+    var minTotal = ex.minPalavras || 70;
+    // pedir com folga: o modelo devolve menos do que promete. Sem folga, a soma ficava abaixo do
+    // mínimo do pedido (medido: 55 palavras para um pedido de 60).
+    var minPor = Math.max(26, Math.ceil(minTotal / n) + 8);
+    var inicio = agora();
+    // catálogo inteiro por ordem de força: se as fortes estão em 429, ainda há as leves
+    var vistas = {}, rotas = [];
+    ['forte', 'media', 'leve'].forEach(function (cl) {
+      self._candidatos(cl).forEach(function (r) {
+        if (vistas[r.id] || !self.disponivel(r.id)) return;
+        vistas[r.id] = 1; rotas.push(r);
+      });
+    });
+    if (!rotas.length) return null;
+    var idx = 0, blocos = [], tentativas = 0;
+
+    for (var i = 0; i < n; i++) {
+      var feito = null;
+      for (var t = 0; t < 4 && !feito; t++) {
+        if (agora() - inicio > 110000) break;
+        var rota = rotas[idx++ % rotas.length];
+        var foco = i === 0
+          ? 'Comece definindo o assunto com precisão e dê um exemplo concreto.'
+          : 'Aprofunde um aspecto novo, sem repetir o que já foi dito, e cite um detalhe concreto (nome, número ou processo).';
+        if (i === n - 1) foco += ' Feche com uma frase de conclusão completa.';
+        var ped = instrucaoParagrafo(pergunta, i, n, minPor, foco);
+        await this._esperarVez(rota);
+        var r = await this._chamar(rota, ped, 30000, { maxTokens: 700, longo: true, sistema: SYS_ABERTO });
+        tentativas++;
+        if (r.texto) this._premiar(rota.id, r.ms); else this._castigar(rota.id, r.erro, r.espera);
+        if (r.erro === 'rate') await new Promise(function (res) { setTimeout(res, 3000 + Math.random() * 3000); });
+        var txt = sanear(String(r.texto || '').trim());
+        var palavras = txt.split(/\s+/).filter(Boolean).length;
+        var piso = t < 2 ? Math.floor(minPor * 0.8) : Math.floor(minPor * 0.55);
+        if (txt && palavras >= piso && /[.!?…]["”)]?\s*$/.test(txt)) feito = txt;
+      }
+      if (!feito) return null;      // parágrafo irrecuperável: o caminho antigo (uma chamada) tenta
+      blocos.push(feito);
+    }
+    var texto = blocos.join('\n\n');
+    if (!textoCompleto(texto, minTotal)) return null;
+    return {
+      texto: texto, rota: 'texto-longo', rotaNome: 'geração por parágrafo',
+      classe: 'forte', confianca: 'alta', tentativas: tentativas, ms: agora() - inicio,
+      candidatos: blocos.map(function (b) { return { palavras: b.split(/\s+/).filter(Boolean).length }; })
+    };
+  };
+
   Roteador.prototype._gerar = async function (pergunta, opcoes) {
     var self = this;
     var opc = opcoes || {};
@@ -1384,7 +1631,7 @@
     });
     this.metricas.consenso++;
     return {
-      texto: opc.transformar ? opc.transformar(melhor.texto) : melhor.texto,
+      texto: opc.transformar ? opc.transformar(melhor.texto) : fecharTexto(melhor.texto),
       rota: melhor.rota.id, rotaNome: melhor.rota.nome, classe: melhor.rota.classe,
       confianca: melhor.nota >= 5 ? 'alta' : (melhor.nota >= 3 ? 'media' : 'baixa'),
       nota: melhor.nota, tentativas: respostas.length, ms: melhor.ms,
@@ -1434,12 +1681,20 @@
       if (ex.itens) instrucao += ' O pedido exige uma lista com ' + ex.itens + ' itens numerados, um por linha.';
       var tetoPalavras = Math.max(200, Math.round(ex.minPalavras * 2.2));
       instrucao += ' Escreva entre ' + ex.minPalavras + ' e ' + tetoPalavras + ' palavras; termine o texto por completo.';
+      if (ex.itens >= 2) {
+        var lista = await this._listaLonga(pergunta, ex);
+        if (lista) { this._cacheSet(chave, lista); this.metricas.sucessos++; return lista; }
+      }
+      if (ex.paragrafos >= 2) {
+        var longo = await this._textoLongo(pergunta, ex);
+        if (longo) { this._cacheSet(chave, longo); this.metricas.sucessos++; return longo; }
+      }
       var ga = await this._gerar(pergunta, {
         tentativas: 3,
         chamar: { maxTokens: 1800, sistema: instrucao },
         minPalavras: ex.minPalavras,
         nota: function (t) { return notaTexto(ajustarParagrafos(t, ex.paragrafos), ex); },
-        transformar: function (t) { return ajustarParagrafos(t, ex.paragrafos); }
+        transformar: function (t) { return fecharTexto(ajustarParagrafos(t, ex.paragrafos)); }
       });
       if (ga) { this._cacheSet(chave, ga); this.metricas.sucessos++; return ga; }
     }
@@ -1453,6 +1708,9 @@
     var inicio = agora();
     var tentativas = 0;
     var erroFinal = 'sem rota';
+    // 3 rodadas era pouco: sob 429 a cota só volta depois de dezenas de segundos. A espera é
+    // limitada pelo orçamento, então rodada extra custa latência, não qualidade.
+    this.voltasMax = 4;
     for (var volta = 0; volta < this.voltasMax; volta++) {
       var eu = this;
       var cands = this._candidatos(dificuldade).filter(function (r) { return eu.disponivel(r.id); });
@@ -1495,7 +1753,7 @@
   };
 
   var api = { Roteador: Roteador, CATALOGO: CATALOGO, normal: normal };
-  api.internos = { sanear: sanear, util: util, extrairConclusao: extrairConclusao,
+  api.internos = { sanear: sanear, util: util, extrairConclusao: extrairConclusao, calendarioLocal: calendarioLocal, fragmento: fragmento, instrucaoParagrafo: instrucaoParagrafo, fecharTexto: fecharTexto, termosDoPedido: termosDoPedido, calcular: calcular,
                    classificarPedido: classificarPedido, extrairCodigo: extrairCodigo,
                    codigoInteiro: codigoInteiro, textoCompleto: textoCompleto,
                    exigenciaDoPedido: exigenciaDoPedido, notaTexto: notaTexto, ajustarParagrafos: ajustarParagrafos };

@@ -140,6 +140,44 @@ if (typeof sanear === 'function') {
   ];
   for (const [q, esperado] of cl) ok('classificador: ' + q.slice(0, 34) + ' → ' + esperado, I.classificarPedido && I.classificarPedido(q) === esperado, I.classificarPedido && I.classificarPedido(q));
 
+  // resto de raciocínio com só palavras funcionais ("Is it" — id 71 da régua de 200) não é resposta
+  ok('"Is it" é rejeitada (fragmento)', sanear('Is it') === '');
+  ok('"of the" é rejeitada (fragmento)', sanear('of the') === '');
+  ok('"Fifty" passa (não é fragmento)', sanear('Fifty') === 'Fifty');
+  ok('"no" passa (resposta curta legítima)', sanear('no') === 'no');
+
+  // calendário é aritmética exata: não pode voltar a ir para o modelo (errou fevereiro de 2028: "28")
+  const cal = I.calendarioLocal;
+  ok('calendário: fevereiro de 2028 = 29', cal && (cal('Quantos dias tem fevereiro de 2028?') || {}).texto === '29');
+  ok('calendário: fevereiro de 2027 = 28', cal && (cal('Quantos dias tem fevereiro de 2027?') || {}).texto === '28');
+  ok('calendário: 1900 não é bissexto', cal && (cal('O ano 1900 é bissexto?') || {}).texto === 'Não');
+  ok('calendário: 2000 é bissexto', cal && (cal('O ano 2000 é bissexto?') || {}).texto === 'Sim');
+  ok('calendário: 2024 tem 366 dias', cal && (cal('Quantos dias tem o ano de 2024?') || {}).texto === '366');
+  ok('calendário: terça + 10 dias = sexta', cal && (cal('Se hoje é terça-feira, que dia da semana será daqui a 10 dias?') || {}).texto === 'sexta-feira');
+
+  // texto longo: um parágrafo por chamada (o pedido de "2 parágrafos" numa chamada só voltava
+  // com 30 palavras e 1 bloco — medido na régua aberta)
+  const ip = I.instrucaoParagrafo;
+  ok('instrução de parágrafo: numera 2 de 3', ip && /parágrafo 2 de 3/.test(ip('Tema.', 1, 3, 30, '')));
+  ok('instrução de parágrafo: exige português do Brasil', ip && /português do Brasil/.test(ip('Tema.', 0, 2, 30, '')));
+  ok('instrução de parágrafo: proíbe lista e prefácio', ip && /Não use listas/.test(ip('Tema.', 0, 2, 30, '')) && /Comece direto/.test(ip('Tema.', 0, 2, 30, '')));
+  ok('instrução de parágrafo: faixa de palavras coerente', ip && /45 a 85 palavras/.test(ip('Tema.', 0, 2, 30, '')) );
+
+  // corte de provedor: fechar no último ponto final em vez de entregar frase pela metade
+  const ft = I.fecharTexto;
+  ok('fecharTexto corta frase incompleta', ft && ft('Primeira frase completa. Segunda frase completa. E a água passa pela') === 'Primeira frase completa. Segunda frase completa.');
+  ok('fecharTexto não mexe em texto já fechado', ft && ft('Já fechado.') === 'Já fechado.');
+  ok('fecharTexto preserva texto sem ponto', ft && ft('Curto demais sem ponto') === 'Curto demais sem ponto');
+
+  // aritmética local: mathjs.org ficou fora do ar e "16×12" foi para o modelo, que errou
+  const calc = I.calcular;
+  ok('aritmética: 16×12 = 192', calc && calc('16×12') === 192, String(calc && calc('16×12')));
+  ok('aritmética: precedência 2+3*4 = 14', calc && calc('2+3*4') === 14);
+  ok('aritmética: parênteses (2+3)*4 = 20', calc && calc('(2+3)*4') === 20);
+  ok('aritmética: potência 2^10 = 1024', calc && calc('2^10') === 1024);
+  ok('aritmética: expressão inválida devolve null', calc && calc('2+*3') === null);
+  ok('aritmética: não avalia código', calc && calc('require(1)') === null);
+
   // régua estrita: acento conta. Se o afrouxamento de acento estivesse mascarando erro, isto pega.
   ok('estrito: "caracois" não passa por "caracóis"', api.internos && require('../../bench/pontuar.js').acertou('caracois', ['caracóis'], null, { estrito: true }) === false);
   ok('estrito: "caracóis" passa', require('../../bench/pontuar.js').acertou('caracóis', ['caracóis'], null, { estrito: true }) === true);

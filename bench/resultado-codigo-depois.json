@@ -6,7 +6,7 @@
   "pct": 100,
   "comCodigo": 18,
   "codigoInteiro": 18,
-  "medianaMs": 9883
+  "medianaMs": 6920
  },
  "res": [
   {
@@ -17,7 +17,7 @@
    "inteiro": true,
    "motivo": "teste passou",
    "erro": null,
-   "ms": 7956,
+   "ms": 5368,
    "tokens": 5,
    "trecho": "```\nfunction soma(a, b) {\n  return a + b;\n}\n\nmodule.exports = soma;\n```"
   },
@@ -29,9 +29,9 @@
    "inteiro": true,
    "motivo": "teste passou",
    "erro": null,
-   "ms": 9049,
+   "ms": 6237,
    "tokens": 5,
-   "trecho": "```\nfunction fatorial(n) {\n  if (n < 0) throw new Error('n deve ser um inteiro não negativo');\n  let resultado = 1;\n  for (let i = 2; i <= n; i++) {\n    resultado *= i;\n  }\n  return resultado;\n}\n\nmodule.exports = fatoria"
+   "trecho": "```\nfunction fatorial(n) {\n  if (n < 0) return undefined;\n  let resultado = 1;\n  for (let i = 2; i <= n; i++) {\n    resultado *= i;\n  }\n  return resultado;\n}\n\nmodule.exports = fatorial;\n```"
   },
   {
    "id": 3,
@@ -41,9 +41,9 @@
    "inteiro": true,
    "motivo": "teste passou",
    "erro": null,
-   "ms": 9883,
+   "ms": 25634,
    "tokens": 5,
-   "trecho": "```\nfunction ehPrimo(num) {\n    if (num <= 1) return false;\n    if (num <= 3) return true;\n    if (num % 2 === 0 || num % 3 === 0) return false;\n    for (let i = 5; i * i <= num; i += 6) {\n        if (num % i === 0 || nu"
+   "trecho": "```\nfunction ehPrimo(numero) {\n  if (typeof numero !== 'number' || !Number.isInteger(numero) || numero <= 1) {\n    return false;\n  }\n  if (numero <= 3) {\n    return true;\n  }\n  if (numero % 2 === 0 || numero % 3 === 0) {"
   },
   {
    "id": 4,
@@ -53,9 +53,9 @@
    "inteiro": true,
    "motivo": "teste passou",
    "erro": null,
-   "ms": 5901,
+   "ms": 3039,
    "tokens": 5,
-   "trecho": "```\nfunction inverter(str) {\n  return str.split('').reverse().join('');\n}\n\nmodule.exports = { inverter };\n```"
+   "trecho": "```\nfunction inverter(str) {\n  return str.split('').reverse().join('');\n}\n\nmodule.exports = inverter;\n```"
   },
   {
    "id": 5,
@@ -65,9 +65,9 @@
    "inteiro": true,
    "motivo": "teste passou",
    "erro": null,
-   "ms": 53385,
-   "tokens": null,
-   "trecho": "```javascript\nfunction ehPalindromo(frase) {\n  const limpa = frase.toLowerCase().replace(/\\s+/g, '');\n  return limpa === limpa.split('').reverse().join('');\n}\n```"
+   "ms": 25237,
+   "tokens": 5,
+   "trecho": "```\nfunction ehPalindromo(str) {\n  const cleaned = str.replace(/\\s+/g, '').toLowerCase();\n  return cleaned === cleaned.split('').reverse().join('');\n}\n\nmodule.exports = ehPalindromo;\n```"
   },
   {
    "id": 6,
@@ -77,9 +77,9 @@
    "inteiro": true,
    "motivo": "teste passou",
    "erro": null,
-   "ms": 39425,
+   "ms": 2629,
    "tokens": 5,
-   "trecho": "```\nfunction maior(arr) {\n  if (arr.length === 0) return undefined;\n  let max = arr[0];\n  for (let i = 1; i < arr.length; i++) {\n    if (arr[i] > max) {\n      max = arr[i];\n    }\n  }\n  return max;\n}\n\nmodule.exports = mai"
+   "trecho": "```\nfunction maior(arr) {\n  if (!Array.isArray(arr) || arr.length === 0) {\n    return undefined;\n  }\n  let max = arr[0];\n  for (let i = 1; i < arr.length; i++) {\n    if (arr[i] > max) {\n      max = arr[i];\n    }\n  }\n  re"
   },
   {
    "id": 7,
@@ -89,9 +89,9 @@
    "inteiro": true,
    "motivo": "teste passou",
    "erro": null,
-   "ms": 11067,
+   "ms": 24926,
    "tokens": 5,
-   "trecho": "```\nfunction fibonacci(n) {\n  if (n < 0) throw new RangeError('n must be non-negative');\n  let a = 0, b = 1;\n  for (let i = 0; i < n; i++) {\n    [a, b] = [b, a + b];\n  }\n  return a;\n}\n\nmodule.exports = fibonacci;\n```"
+   "trecho": "```\nfunction fibonacci(n) {\n  if (n < 0) throw new Error('n must be non-negative');\n  let a = 0, b = 1;\n  for (let i = 0; i < n; i++) {\n    [a, b] = [b, a + b];\n  }\n  return a;\n}\n\nmodule.exports = fibonacci;\n```"
   },
   {
    "id": 8,
@@ -101,7 +101,7 @@
    "inteiro": true,
    "motivo": "teste passou",
    "erro": null,
-   "ms": 9516,
+   "ms": 2787,
    "tokens": 5,
    "trecho": "```\nfunction media(arr) {\n  if (!Array.isArray(arr) || arr.length === 0) return 0;\n  const sum = arr.reduce((acc, val) => acc + val, 0);\n  return sum / arr.length;\n}\n\nmodule.exports = media;\n```"
   },
@@ -113,9 +113,9 @@
    "inteiro": true,
    "motivo": "teste passou",
    "erro": null,
-   "ms": 18402,
+   "ms": 61701,
    "tokens": 5,
-   "trecho": "```\nfunction contarVogais(str) {\n  if (typeof str !== 'string') {\n    return 0;\n  }\n  let count = 0;\n  const vogais = 'aeiouAEIOU';\n  for (let char of str) {\n    if (vogais.includes(char)) {\n      count++;\n    }\n  }\n  re"
+   "trecho": "```\nfunction contarVogais(texto) {\n  if (typeof texto !== 'string') {\n    return 0;\n  }\n  let contador = 0;\n  const vogais = 'aeiouAEIOU';\n  for (let i = 0; i < texto.length; i++) {\n    if (vogais.includes(texto[i])) {\n "
   },
   {
    "id": 10,
@@ -125,7 +125,7 @@
    "inteiro": true,
    "motivo": "teste passou",
    "erro": null,
-   "ms": 8189,
+   "ms": 3593,
    "tokens": 5,
    "trecho": "```\nfunction ordenar(arr) {\n  return [...arr].sort((a, b) => a - b);\n}\n\nmodule.exports = ordenar;\n```"
   },
@@ -137,9 +137,9 @@
    "inteiro": true,
    "motivo": "teste passou",
    "erro": null,
-   "ms": 45548,
-   "tokens": null,
-   "trecho": "function unicos(arr) { return [...new Set(arr)]; }"
+   "ms": 3873,
+   "tokens": 5,
+   "trecho": "```\nfunction unicos(arr) {\n  return [...new Set(arr)];\n}\n\nmodule.exports = unicos;\n```"
   },
   {
    "id": 12,
@@ -149,9 +149,9 @@
    "inteiro": true,
    "motivo": "teste passou",
    "erro": null,
-   "ms": 9784,
-   "tokens": null,
-   "trecho": "function somaDigitos(n) { return String(n).split('').reduce((a, b) => a + Number(b), 0); }"
+   "ms": 4793,
+   "tokens": 5,
+   "trecho": "```\nfunction somaDigitos(numero) {\n  if (!Number.isInteger(numero) || numero < 0) {\n    throw new Error('O argumento deve ser um número inteiro positivo.');\n  }\n  return String(numero).split('').reduce((soma, digito) => "
   },
   {
    "id": 13,
@@ -161,9 +161,9 @@
    "inteiro": true,
    "motivo": "teste passou",
    "erro": null,
-   "ms": 6083,
+   "ms": 29444,
    "tokens": 5,
-   "trecho": "```\nfunction capitalizar(texto) {\n  if (typeof texto !== 'string') return '';\n  return texto.replace(/\\b\\w/g, char => char.toUpperCase());\n}\n\nmodule.exports = { capitalizar };\n```"
+   "trecho": "```\nfunction capitalizar(str) {\n  if (typeof str !== 'string') return '';\n  return str\n    .split(' ')\n    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())\n    .join(' ');\n}\n\nmodule.exports = capi"
   },
   {
    "id": 14,
@@ -173,9 +173,9 @@
    "inteiro": true,
    "motivo": "teste passou",
    "erro": null,
-   "ms": 4981,
+   "ms": 11392,
    "tokens": 5,
-   "trecho": "```\nfunction mdc(a, b) {\n  a = Math.abs(a);\n  b = Math.abs(b);\n  while (b !== 0) {\n    const temp = b;\n    b = a % b;\n    a = temp;\n  }\n  return a;\n}\n\nmodule.exports = { mdc };\n```"
+   "trecho": "```\nfunction mdc(a, b) {\n  a = Math.abs(a);\n  b = Math.abs(b);\n  while (b !== 0) {\n    const temp = b;\n    b = a % b;\n    a = temp;\n  }\n  return a;\n}\n\nmodule.exports = mdc;\n```"
   },
   {
    "id": 15,
@@ -185,7 +185,7 @@
    "inteiro": true,
    "motivo": "teste passou",
    "erro": null,
-   "ms": 11357,
+   "ms": 22407,
    "tokens": 5,
    "trecho": "```\nfunction fizzbuzz(n) {\n  const result = [];\n  for (let i = 1; i <= n; i++) {\n    if (i % 15 === 0) {\n      result.push('FizzBuzz');\n    } else if (i % 3 === 0) {\n      result.push('Fizz');\n    } else if (i % 5 === 0)"
   },
@@ -197,9 +197,9 @@
    "inteiro": true,
    "motivo": "teste passou",
    "erro": null,
-   "ms": 2792,
+   "ms": 6920,
    "tokens": 5,
-   "trecho": "```\nfunction celsiusParaF(celsius) {\n  if (typeof celsius !== 'number') {\n    throw new TypeError('O argumento deve ser um número');\n  }\n  return (celsius * 9/5) + 32;\n}\n\nmodule.exports = celsiusParaF;\n```"
+   "trecho": "```\nfunction celsiusParaF(celsius) {\n  return celsius * 9 / 5 + 32;\n}\n\nmodule.exports = celsiusParaF;\n```"
   },
   {
    "id": 17,
@@ -209,9 +209,9 @@
    "inteiro": true,
    "motivo": "teste passou",
    "erro": null,
-   "ms": 27440,
+   "ms": 27273,
    "tokens": 5,
-   "trecho": "```\nfunction segundoMaior(arr) {\n  if (!Array.isArray(arr) || arr.length === 0) return undefined;\n\n  const distinct = [...new Set(arr)];\n  if (distinct.length < 2) return undefined;\n\n  let max = -Infinity;\n  let secondMa"
+   "trecho": "```\nfunction segundoMaior(arr) {\n  const distinct = [...new Set(arr)];\n  if (distinct.length < 2) return undefined;\n  distinct.sort((a, b) => b - a);\n  return distinct[1];\n}\n\nmodule.exports = segundoMaior;\n```"
   },
   {
    "id": 18,
@@ -221,7 +221,7 @@
    "inteiro": true,
    "motivo": "teste passou",
    "erro": null,
-   "ms": 23779,
+   "ms": 6265,
    "tokens": 5,
    "trecho": "```\nfunction achatar(arr) {\n  return arr.reduce((acc, val) => acc.concat(val), []);\n}\n\nmodule.exports = achatar;\n```"
   }

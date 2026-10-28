@@ -1,0 +1,485 @@
+{
+ "sum": {
+  "modo": "gratis",
+  "total": 30,
+  "acertos": 30,
+  "acertoPct": 100,
+  "semResposta": 0,
+  "semRespostaPct": 0,
+  "taxa429": 0,
+  "respondeu": 30,
+  "acertoQuandoResponde": 100,
+  "errosDeConteudo": 0,
+  "latenciaMedianaMs": 2853,
+  "tentativasTotal": 60,
+  "duracaoS": 136,
+  "porTipo": {
+   "mat": {
+    "n": 9,
+    "ok": 9,
+    "semResp": 0,
+    "errado": 0
+   },
+   "seq": {
+    "n": 1,
+    "ok": 1,
+    "semResp": 0,
+    "errado": 0
+   },
+   "logica": {
+    "n": 8,
+    "ok": 8,
+    "semResp": 0,
+    "errado": 0
+   },
+   "mundo": {
+    "n": 7,
+    "ok": 7,
+    "semResp": 0,
+    "errado": 0
+   },
+   "lingua": {
+    "n": 5,
+    "ok": 5,
+    "semResp": 0,
+    "errado": 0
+   }
+  }
+ },
+ "res": [
+  {
+   "id": 1,
+   "tipo": "mat",
+   "q": "Um produto custa R$250. Tem 20% de desconto e depois 10% de imposto sobre o valor com desconto. Qual o preço final?",
+   "gab": [
+    "220"
+   ],
+   "resp": "R$ 220,00",
+   "ok": true,
+   "erro": null,
+   "fonte": "ultra",
+   "tentativas": 2,
+   "ms": 4485
+  },
+  {
+   "id": 2,
+   "tipo": "mat",
+   "q": "Quantos minutos há em 2 dias e 3 horas?",
+   "gab": [
+    "3060"
+   ],
+   "resp": "3060 minutos.",
+   "ok": true,
+   "erro": null,
+   "fonte": "ovhq397",
+   "tentativas": 3,
+   "ms": 4734
+  },
+  {
+   "id": 3,
+   "tipo": "mat",
+   "q": "Se 5 máquinas produzem 500 peças em 4 horas, quantas peças 8 máquinas produzem em 6 horas no mesmo ritmo?",
+   "gab": [
+    "1200"
+   ],
+   "resp": "1200 peças (or just 12",
+   "ok": true,
+   "erro": null,
+   "fonte": "ovhq",
+   "tentativas": 3,
+   "ms": 17703
+  },
+  {
+   "id": 4,
+   "tipo": "seq",
+   "q": "Qual é o próximo número da sequência: 2, 6, 12, 20, 30, ?",
+   "gab": [
+    "42"
+   ],
+   "resp": "42",
+   "ok": true,
+   "erro": null,
+   "fonte": "ovhoss",
+   "tentativas": 3,
+   "ms": 3715
+  },
+  {
+   "id": 5,
+   "tipo": "mat",
+   "q": "Um reservatório cheio perde um quarto na primeira hora e um terço do que sobrou na segunda hora. Restam 90 litros. Qual a capacidade total?",
+   "gab": [
+    "180"
+   ],
+   "resp": "180 litros",
+   "ok": true,
+   "erro": null,
+   "fonte": "ovhq38",
+   "tentativas": 3,
+   "ms": 1587
+  },
+  {
+   "id": 6,
+   "tipo": "mat",
+   "q": "A média de 5 números é 12. Um deles é 20. Qual é a média dos outros 4?",
+   "gab": [
+    "10"
+   ],
+   "resp": "10",
+   "ok": true,
+   "erro": null,
+   "fonte": "ovhq38",
+   "tentativas": 3,
+   "ms": 6553
+  },
+  {
+   "id": 7,
+   "tipo": "mat",
+   "q": "Quantos segundos há em 1 hora, 20 minutos e 30 segundos?",
+   "gab": [
+    "4830"
+   ],
+   "resp": "4830",
+   "ok": true,
+   "erro": null,
+   "fonte": "ovhoss20",
+   "tentativas": 1,
+   "ms": 1511
+  },
+  {
+   "id": 8,
+   "tipo": "mat",
+   "q": "Um carro percorre 45 km com 3 litros. Quantos litros ele gasta para 180 km?",
+   "gab": [
+    "12"
+   ],
+   "resp": "12 litros",
+   "ok": true,
+   "erro": null,
+   "fonte": "ovhoss20",
+   "tentativas": 3,
+   "ms": 4788
+  },
+  {
+   "id": 9,
+   "tipo": "mat",
+   "q": "Se x + 3 = 10 e y = 2x, quanto vale y?",
+   "gab": [
+    "14"
+   ],
+   "resp": "14",
+   "ok": true,
+   "erro": null,
+   "fonte": "ultra",
+   "tentativas": 5,
+   "ms": 1001
+  },
+  {
+   "id": 10,
+   "tipo": "mat",
+   "q": "Uma caixa tem 3 dúzias de ovos. Quantos ovos há em 7 caixas?",
+   "gab": [
+    "252"
+   ],
+   "resp": "252 ovos",
+   "ok": true,
+   "erro": null,
+   "fonte": "ultra",
+   "tentativas": 3,
+   "ms": 2972
+  },
+  {
+   "id": 11,
+   "tipo": "logica",
+   "q": "Todos os A são B. Alguns B são C. Podemos concluir que alguns A são C?",
+   "gab": [
+    "não",
+    "nao",
+    "não podemos concluir",
+    "não necessariamente",
+    "não é possível concluir"
+   ],
+   "resp": "Não.",
+   "ok": true,
+   "erro": null,
+   "fonte": "ultra",
+   "tentativas": 3,
+   "ms": 3293
+  },
+  {
+   "id": 12,
+   "tipo": "logica",
+   "q": "Quantos números de 1 a 100 são divisíveis por 3 e por 5 ao mesmo tempo?",
+   "gab": [
+    "6",
+    "seis"
+   ],
+   "resp": "6",
+   "ok": true,
+   "erro": null,
+   "fonte": "ultra",
+   "tentativas": 3,
+   "ms": 5919
+  },
+  {
+   "id": 13,
+   "tipo": "logica",
+   "q": "Se hoje é terça-feira, que dia da semana será daqui a 100 dias?",
+   "gab": [
+    "quinta",
+    "quinta-feira",
+    "quinta feira"
+   ],
+   "resp": "quinta-feira",
+   "ok": true,
+   "erro": null,
+   "fonte": "calendario",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 14,
+   "tipo": "logica",
+   "q": "Um relógio atrasa 2 minutos a cada hora. Depois de 6 horas, quantos minutos terá atrasado?",
+   "gab": [
+    "12",
+    "doze"
+   ],
+   "resp": "12 minutos",
+   "ok": true,
+   "erro": null,
+   "fonte": "ovhnemo",
+   "tentativas": 3,
+   "ms": 793
+  },
+  {
+   "id": 15,
+   "tipo": "logica",
+   "q": "Numa urna há 3 bolas vermelhas e 2 azuis. Qual a probabilidade de tirar uma azul, em fração?",
+   "gab": [
+    "2/5",
+    "2 em 5",
+    "40%"
+   ],
+   "resp": "2/5",
+   "ok": true,
+   "erro": null,
+   "fonte": "ovhq9",
+   "tentativas": 1,
+   "ms": 10275
+  },
+  {
+   "id": 16,
+   "tipo": "logica",
+   "q": "Qual é o menor inteiro positivo que dividido por 2 deixa resto 1, por 3 deixa resto 2 e por 5 deixa resto 4?",
+   "gab": [
+    "29"
+   ],
+   "resp": "29",
+   "ok": true,
+   "erro": null,
+   "fonte": "ovhq38",
+   "tentativas": 3,
+   "ms": 2160
+  },
+  {
+   "id": 17,
+   "tipo": "logica",
+   "q": "Se 3 gatos pegam 3 ratos em 3 minutos, quantos gatos pegam 100 ratos em 100 minutos?",
+   "gab": [
+    "3",
+    "três"
+   ],
+   "resp": "3 gatos.",
+   "ok": true,
+   "erro": null,
+   "fonte": "polli",
+   "tentativas": 3,
+   "ms": 512
+  },
+  {
+   "id": 18,
+   "tipo": "logica",
+   "q": "Ana é mais alta que Bia e mais baixa que Carla. Quem é a mais alta?",
+   "gab": [
+    "carla"
+   ],
+   "resp": "Carla.",
+   "ok": true,
+   "erro": null,
+   "fonte": "ovhl",
+   "tentativas": 3,
+   "ms": 1481
+  },
+  {
+   "id": 19,
+   "tipo": "mundo",
+   "q": "Qual é o planeta mais próximo do Sol?",
+   "gab": [
+    "mercúrio"
+   ],
+   "resp": "Mercúrio",
+   "ok": true,
+   "erro": null,
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 20,
+   "tipo": "mundo",
+   "q": "Qual é o maior órgão do corpo humano?",
+   "gab": [
+    "pele"
+   ],
+   "resp": "A pele.",
+   "ok": true,
+   "erro": null,
+   "fonte": "ovhl",
+   "tentativas": 3,
+   "ms": 2853
+  },
+  {
+   "id": 21,
+   "tipo": "mundo",
+   "q": "Quantos ossos tem o esqueleto humano adulto?",
+   "gab": [
+    "206"
+   ],
+   "resp": "206",
+   "ok": true,
+   "erro": null,
+   "fonte": "polli",
+   "tentativas": 3,
+   "ms": 6035
+  },
+  {
+   "id": 22,
+   "tipo": "mundo",
+   "q": "Qual é o metal que é líquido à temperatura ambiente?",
+   "gab": [
+    "mercúrio"
+   ],
+   "resp": "Mercúrio.",
+   "ok": true,
+   "erro": null,
+   "fonte": "ovhoss",
+   "tentativas": 3,
+   "ms": 2687
+  },
+  {
+   "id": 23,
+   "tipo": "mundo",
+   "q": "Qual é o gás mais abundante na atmosfera terrestre?",
+   "gab": [
+    "nitrogênio"
+   ],
+   "resp": "Nitrogênio.",
+   "ok": true,
+   "erro": null,
+   "fonte": "ovhoss",
+   "tentativas": 1,
+   "ms": 1571
+  },
+  {
+   "id": 24,
+   "tipo": "mundo",
+   "q": "Qual é o único mamífero capaz de voar?",
+   "gab": [
+    "morcego"
+   ],
+   "resp": "O morcego.",
+   "ok": true,
+   "erro": null,
+   "fonte": "ovhoss20",
+   "tentativas": 1,
+   "ms": 1354
+  },
+  {
+   "id": 25,
+   "tipo": "mundo",
+   "q": "Quantos cromossomos tem uma célula humana normal?",
+   "gab": [
+    "46",
+    "quarenta e seis"
+   ],
+   "resp": "46",
+   "ok": true,
+   "erro": null,
+   "fonte": "ovhoss20",
+   "tentativas": 1,
+   "ms": 924
+  },
+  {
+   "id": 26,
+   "tipo": "lingua",
+   "q": "Qual é o coletivo de lobos?",
+   "gab": [
+    "alcateia",
+    "matilha"
+   ],
+   "resp": "alcateia",
+   "ok": true,
+   "erro": null,
+   "fonte": "coletivo",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 27,
+   "tipo": "lingua",
+   "q": "Qual é o feminino de 'cavalo'?",
+   "gab": [
+    "égua"
+   ],
+   "resp": "égua",
+   "ok": true,
+   "erro": null,
+   "fonte": "feminino",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 28,
+   "tipo": "lingua",
+   "q": "Qual é o plural de 'cidadão'?",
+   "gab": [
+    "cidadãos"
+   ],
+   "resp": "cidadãos",
+   "ok": true,
+   "erro": null,
+   "fonte": "plural",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 29,
+   "tipo": "lingua",
+   "q": "Qual é o aumentativo de 'livro'?",
+   "gab": [
+    "livrão",
+    "livrona"
+   ],
+   "resp": "livrão",
+   "ok": true,
+   "erro": null,
+   "fonte": "aumentativo",
+   "tentativas": 0,
+   "ms": 0
+  },
+  {
+   "id": 30,
+   "tipo": "lingua",
+   "q": "Qual é o superlativo absoluto sintético de 'mau'?",
+   "gab": [
+    "péssimo"
+   ],
+   "resp": "péssimo",
+   "ok": true,
+   "erro": null,
+   "fonte": "superlativo",
+   "tentativas": 0,
+   "ms": 0
+  }
+ ]
+}

@@ -10,9 +10,9 @@
   "respondeu": 200,
   "acertoQuandoResponde": 100,
   "errosDeConteudo": 0,
-  "latenciaMedianaMs": 1816,
-  "tentativasTotal": 89,
-  "duracaoS": 115,
+  "latenciaMedianaMs": 535,
+  "tentativasTotal": 78,
+  "duracaoS": 108,
   "porTipo": {
    "mat": {
     "n": 40,
@@ -1047,12 +1047,12 @@
     "sexta",
     "sexta-feira"
    ],
-   "resp": "sexta-feira",
+   "resp": "Sexta-feira.",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 9453
+   "fonte": "polli",
+   "tentativas": 11,
+   "ms": 5789
   },
   {
    "id": 72,
@@ -1077,12 +1077,12 @@
     "6",
     "seis"
    ],
-   "resp": "Um hexágono tem 6 lados.",
+   "resp": "6",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
+   "fonte": "polli",
    "tentativas": 3,
-   "ms": 1075
+   "ms": 299
   },
   {
    "id": 74,
@@ -1096,9 +1096,9 @@
    "resp": "0",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
+   "fonte": "polli",
    "tentativas": 3,
-   "ms": 8261
+   "ms": 233
   },
   {
    "id": 75,
@@ -1125,9 +1125,9 @@
    "resp": "Carla.",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 2197
+   "fonte": "polli",
+   "tentativas": 1,
+   "ms": 218
   },
   {
    "id": 77,
@@ -1187,8 +1187,8 @@
    "ok": true,
    "erro": null,
    "fonte": "polli",
-   "tentativas": 3,
-   "ms": 310
+   "tentativas": 1,
+   "ms": 224
   },
   {
    "id": 81,
@@ -1198,12 +1198,12 @@
     "120",
     "cento e vinte"
    ],
-   "resp": "120 segundos.",
+   "resp": "120 segundos",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 1879
+   "fonte": "polli",
+   "tentativas": 1,
+   "ms": 213
   },
   {
    "id": 82,
@@ -1217,8 +1217,8 @@
    "ok": true,
    "erro": null,
    "fonte": "polli",
-   "tentativas": 3,
-   "ms": 1943
+   "tentativas": 1,
+   "ms": 224
   },
   {
    "id": 83,
@@ -1232,8 +1232,8 @@
    "ok": true,
    "erro": null,
    "fonte": "polli",
-   "tentativas": 3,
-   "ms": 597
+   "tentativas": 1,
+   "ms": 255
   },
   {
    "id": 84,
@@ -1247,8 +1247,8 @@
    "ok": true,
    "erro": null,
    "fonte": "polli",
-   "tentativas": 3,
-   "ms": 278
+   "tentativas": 1,
+   "ms": 236
   },
   {
    "id": 85,
@@ -1262,8 +1262,8 @@
    "ok": true,
    "erro": null,
    "fonte": "polli",
-   "tentativas": 3,
-   "ms": 6573
+   "tentativas": 1,
+   "ms": 269
   },
   {
    "id": 86,
@@ -1277,8 +1277,8 @@
    "ok": true,
    "erro": null,
    "fonte": "polli",
-   "tentativas": 3,
-   "ms": 438
+   "tentativas": 1,
+   "ms": 208
   },
   {
    "id": 87,
@@ -1290,9 +1290,9 @@
    "resp": "sim",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
+   "fonte": "polli",
    "tentativas": 1,
-   "ms": 1816
+   "ms": 454
   },
   {
    "id": 88,
@@ -1305,8 +1305,8 @@
    "ok": true,
    "erro": null,
    "fonte": "polli",
-   "tentativas": 2,
-   "ms": 10776
+   "tentativas": 1,
+   "ms": 209
   },
   {
    "id": 89,
@@ -1320,8 +1320,8 @@
    "ok": true,
    "erro": null,
    "fonte": "polli",
-   "tentativas": 3,
-   "ms": 459
+   "tentativas": 1,
+   "ms": 241
   },
   {
    "id": 90,
@@ -1350,9 +1350,9 @@
    "resp": "6",
    "ok": true,
    "erro": null,
-   "fonte": "vlqwen",
+   "fonte": "ovhoss20",
    "tentativas": 2,
-   "ms": 325
+   "ms": 1785
   },
   {
    "id": 92,
@@ -1390,12 +1390,12 @@
     "20",
     "R$20"
    ],
-   "resp": "R$20",
+   "resp": "R$20.00",
    "ok": true,
    "erro": null,
-   "fonte": "vlqwen",
-   "tentativas": 1,
-   "ms": 679
+   "fonte": "ovhoss20",
+   "tentativas": 3,
+   "ms": 3090
   },
   {
    "id": 95,
@@ -1405,12 +1405,12 @@
     "5",
     "cinco"
    ],
-   "resp": "5",
+   "resp": "5.",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss20",
-   "tentativas": 2,
-   "ms": 1218
+   "fonte": "ovhq397",
+   "tentativas": 1,
+   "ms": 7176
   },
   {
    "id": 96,
@@ -1422,9 +1422,9 @@
    "resp": "168 horas",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 2,
-   "ms": 2344
+   "fonte": "ovhq",
+   "tentativas": 3,
+   "ms": 4569
   },
   {
    "id": 97,
@@ -1438,7 +1438,7 @@
    "erro": null,
    "fonte": "polli",
    "tentativas": 3,
-   "ms": 555
+   "ms": 291
   },
   {
    "id": 98,
@@ -1449,12 +1449,12 @@
     "12,50",
     "12,5"
    ],
-   "resp": "R$12,50",
+   "resp": "R$ 12,50",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq",
+   "fonte": "ovhq38",
    "tentativas": 3,
-   "ms": 5477
+   "ms": 11318
   },
   {
    "id": 99,
@@ -1467,9 +1467,9 @@
    "resp": "29",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq",
-   "tentativas": 2,
-   "ms": 6229
+   "fonte": "polli",
+   "tentativas": 3,
+   "ms": 613
   },
   {
    "id": 100,
@@ -1479,12 +1479,12 @@
     "10",
     "décimo"
    ],
-   "resp": "\"10º andar\".",
+   "resp": "10º andar.",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq397",
-   "tentativas": 3,
-   "ms": 3663
+   "fonte": "ovhl",
+   "tentativas": 2,
+   "ms": 2074
   },
   {
    "id": 101,
@@ -1738,12 +1738,12 @@
     "real",
     "r$"
    ],
-   "resp": "Real",
+   "resp": "Real.",
    "ok": true,
    "erro": null,
-   "fonte": "polli",
+   "fonte": "ovhl",
    "tentativas": 3,
-   "ms": 302
+   "ms": 2232
   },
   {
    "id": 119,
@@ -1772,7 +1772,7 @@
    "erro": null,
    "fonte": "polli",
    "tentativas": 3,
-   "ms": 509
+   "ms": 250
   },
   {
    "id": 121,
@@ -1786,8 +1786,8 @@
    "ok": true,
    "erro": null,
    "fonte": "polli",
-   "tentativas": 2,
-   "ms": 8325
+   "tentativas": 3,
+   "ms": 296
   },
   {
    "id": 122,
@@ -1797,12 +1797,12 @@
     "nordeste",
     "nordeste brasileiro"
    ],
-   "resp": "Sergipe fica na região Nordeste do Brasil.",
+   "resp": "Nordeste",
    "ok": true,
    "erro": null,
-   "fonte": "polli",
+   "fonte": "ovhnemo",
    "tentativas": 2,
-   "ms": 1049
+   "ms": 535
   },
   {
    "id": 123,
@@ -1900,12 +1900,12 @@
    "gab": [
     "menos"
    ],
-   "resp": "menos",
+   "resp": "'Menos'",
    "ok": true,
    "erro": null,
-   "fonte": "ovhl",
+   "fonte": "ovhnemo",
    "tentativas": 2,
-   "ms": 9924
+   "ms": 767
   },
   {
    "id": 130,
@@ -2150,12 +2150,12 @@
    "gab": [
     "adjetivo"
    ],
-   "resp": "\"adjetivo\".",
+   "resp": "Adjetivo.",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq9",
-   "tentativas": 3,
-   "ms": 10428
+   "fonte": "ovhq",
+   "tentativas": 1,
+   "ms": 4580
   },
   {
    "id": 147,
@@ -2340,9 +2340,9 @@
    "resp": "dog",
    "ok": true,
    "erro": null,
-   "fonte": "polli",
+   "fonte": "ovhq9",
    "tentativas": 3,
-   "ms": 283
+   "ms": 5692
   },
   {
    "id": 160,
@@ -2524,9 +2524,9 @@
    "resp": "noite",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
+   "fonte": "ovhq",
    "tentativas": 1,
-   "ms": 1366
+   "ms": 3800
   },
   {
    "id": 173,
@@ -2552,9 +2552,9 @@
    "resp": "water",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq38",
+   "fonte": "ovhq",
    "tentativas": 3,
-   "ms": 3169
+   "ms": 2308
   },
   {
    "id": 175,
@@ -2710,12 +2710,12 @@
     "pacífico",
     "pacifico"
    ],
-   "resp": "Oceano Pacífico",
+   "resp": "Oceano Pacífico.",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq",
+   "fonte": "ovhl",
    "tentativas": 3,
-   "ms": 6126
+   "ms": 4699
   },
   {
    "id": 186,
@@ -2744,12 +2744,12 @@
     "7",
     "sete"
    ],
-   "resp": "Existem sete continentes.",
+   "resp": "7",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 1,
-   "ms": 2693
+   "fonte": "ovhnemo",
+   "tentativas": 3,
+   "ms": 506
   },
   {
    "id": 188,
@@ -2820,12 +2820,12 @@
     "co2",
     "dióxido de carbono"
    ],
-   "resp": "Dióxido de carbono (CO₂).",
+   "resp": "Dióxido de Carbono",
    "ok": true,
    "erro": null,
-   "fonte": "polli",
-   "tentativas": 3,
-   "ms": 298
+   "fonte": "ovhnemo",
+   "tentativas": 2,
+   "ms": 1348
   },
   {
    "id": 193,
@@ -2934,9 +2934,9 @@
    "resp": "3",
    "ok": true,
    "erro": null,
-   "fonte": "polli",
-   "tentativas": 3,
-   "ms": 425
+   "fonte": "ovhl",
+   "tentativas": 1,
+   "ms": 2443
   },
   {
    "id": 200,
