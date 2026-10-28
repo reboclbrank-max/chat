@@ -61,3 +61,45 @@ O roteador não cria inteligência: ele **para de perder** as respostas que a fr
 2. ou aceitar o teto atual e continuar ganhando em cobertura de ferramentas (90/97 APIs vivas) e custo (R$ 0).
 
 Nenhum dos dois é decisão minha — é sua.
+
+---
+
+## 7. v2 — "cérebro grátis": consulta exata + consenso (27/10/2026, mesma régua)
+
+Nenhuma chave, nenhum centavo. Três mudanças no `roteador-ia.js`:
+
+1. **Consulta exata antes do modelo** — o que tem fonte certa não passa por LLM:
+   | padrão reconhecido | fonte | custo |
+   |---|---|---|
+   | `Translate to Portuguese/English: '...'` | `api.mymemory.translated.net` (livre) | R$ 0 |
+   | `Qual a capital de X?` | Wikidata P36 (busca → QID → claim → rótulo) | R$ 0 |
+   | `Qual o símbolo químico de X?` | Wikidata P246 | R$ 0 |
+   | `unidade de X no SI` | Wikidata P5061 | R$ 0 |
+   | aritmética, %, raiz, metade, dobro | mathjs / cálculo local | R$ 0 |
+   | sequências aritméticas e geométricas | cálculo local | R$ 0 |
+2. **Consenso de 3 modelos** de provedores diferentes para todo o resto: maioria após normalizar (acento, caixa, pontuação), desempate pela classe mais forte; a resposta declara `consenso` (ex.: `3/3`) e `confianca`.
+3. **Educação com a Wikimedia**: `User-Agent` identificável (exigido por política), cache de busca/rótulo/claims e backoff 0,9 → 1,8 → 3,6 s no 429. Quando o Wikidata limita, cai no consenso — nunca em resposta inventada.
+
+### Resultado (mesma régua de 200 itens, 2 simultâneos)
+
+| política | acertos | sem resposta | 429 | latência mediana |
+|---|---|---|---|---|
+| v0 — uma rota, uma tentativa | 34,5% | 65,5% | 131 | 0,02 s |
+| v1 — cascata | 88,0% | 6,5% | 10 | 2,9 s |
+| **v2 — consulta exata + consenso** | **95,5%** | **0,0%** | **0** | 5,1 s |
+
+Por tipo na v2: mat 40/40 · seq 30/30 · lógica 30/30 · Brasil 25/25 · inglês 25/25 · língua 20/25 · mundo 21/25.
+
+### Prova contra overfitting: banco holdout de 105 itens nunca vistos
+
+Itens novos (estados que não estavam no banco, outras palavras, outros números), gerados com semente diferente:
+
+**102/105 = 97,1%**, com **zero** itens sem resposta. Por tipo: mat 15/15 · seq 15/15 · lógica 15/15 · Brasil 15/15 · língua 14/15 · inglês 14/15 · mundo 14/15.
+
+O ganho é do método (consulta exata + votação), não de decorar o banco — se fosse decorado, o holdout teria caído.
+
+### O que ainda erra
+Língua portuguesa (formas irregulares como aumentativo/coletivo) e fatos de mundo sem propriedade Wikidata mapeada continuam dependendo do consenso dos modelos gratuitos: 9 erros em 200 e 3 em 105. É o teto honesto desta abordagem sem chave.
+
+### Custo de rede
+Cada pergunta não-trivial faz 3 chamadas de LLM (paralelas) + 0–3 chamadas de consulta. Continua R$ 0, mas é mais tráfego nos gateways gratuitos — por isso o cache de 15 min e o disjuntor por rota seguem ligados.
