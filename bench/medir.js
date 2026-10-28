@@ -51,7 +51,9 @@ async function ferramenta(pergunta) {
 
 async function resolver(item) {
   if (modo === 'depois' || modo === 'gratis') {
-    const out = await rot.responder({ pergunta: item.q, dificuldade: modo === 'gratis' ? 'dificil' : 'dificil' });
+    const out = await rot.responder({ pergunta: item.q, dificuldade: 'dificil',
+      semFerramenta: process.env.SEM_LOCAIS === '1',   // mede "como era antes": sem rota local
+      tipo: process.env.FORCAR_TIPO || undefined });
     return out.texto ? { ...out, fonte: out.rota } : { texto: null, erro: out.erro, ms: out.ms, tentativas: out.tentativas };
   }
   const f = await ferramenta(item.q);

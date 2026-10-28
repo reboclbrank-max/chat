@@ -45,7 +45,8 @@
     // frase minúscula com ponto final e sem número é resto de raciocínio ("the price."), não resposta
     if (/^[a-zà-ÿ]/.test(s) && !/\d/.test(s) && s.split(/\s+/).length >= 2 && /[.!]$/.test(s)) return '';
     // palavra de 3 letras capitalizada é resposta cortada ("Hip" de hipérbole); sigla/elemento de 1-2 letras passa
-    if (/^[A-ZÀ-Ý][a-zà-ÿ]{2}$/.test(s) && !CURTAS_OK[s.toLowerCase()]) return '';
+    // 2–3 letras capitalizadas: só passa se for símbolo de elemento conhecido ou palavra curta legítima
+    if (/^[A-ZÀ-Ý][a-zà-ÿ]{1,2}$/.test(s) && !CURTAS_OK[s.toLowerCase()] && !ELEMENTO_DE[s.toLowerCase()]) return '';
     if (!PREAMBULO.test(s)) return s;
     var c = extrairConclusao(s);
     if (c && util(c) && !PREAMBULO.test(c) && c !== s) return c;
@@ -471,8 +472,27 @@
     return tipo === 'comp' ? raiz + 'er' : raiz + 'est';
   }
 
+  /* siglas das 27 unidades federativas: dado estável, não pergunta para modelo */
+  var SIGLAS_UF = {
+    acre: 'AC', alagoas: 'AL', amapá: 'AP', amazonas: 'AM', bahia: 'BA', ceará: 'CE',
+    'distrito federal': 'DF', 'espírito santo': 'ES', goiás: 'GO', maranhão: 'MA',
+    'mato grosso': 'MT', 'mato grosso do sul': 'MS', 'minas gerais': 'MG', pará: 'PA',
+    paraíba: 'PB', paraná: 'PR', pernambuco: 'PE', piauí: 'PI', 'rio de janeiro': 'RJ',
+    'rio grande do norte': 'RN', 'rio grande do sul': 'RS', rondônia: 'RO', roraima: 'RR',
+    'santa catarina': 'SC', 'são paulo': 'SP', sergipe: 'SE', tocantins: 'TO'
+  };
+
+  /* índice sem acento (a pergunta chega como "São Paulo", a chave é acentuada) */
+  var SIGLAS_SEM_ACENTO = (function () {
+    var m = {};
+    for (var k in SIGLAS_UF) if (Object.prototype.hasOwnProperty.call(SIGLAS_UF, k)) m[semAcento(k)] = SIGLAS_UF[k];
+    return m;
+  })();
+
   var FATOS = [
     { q: /capital do brasil/i, r: 'Brasília' },
+    { q: /(quantas|n[úu]mero de) unidades federativas/i, r: '27 (26 estados e o Distrito Federal)' },
+    { q: /quantos estados (o brasil )?(tem|h[áa])\??\s*$/i, r: '26 estados' },
     { q: /(meses|m[êe]s).*(30|trinta) dias/i, r: '4 meses (abril, junho, setembro e novembro)' },
     { q: /(meses|m[êe]s).*(31|trinta e um) dias/i, r: '7 meses (janeiro, março, maio, julho, agosto, outubro e dezembro)' },
     { q: /quantos dias tem (um|o) ano bissexto/i, r: '366 dias' },
@@ -686,9 +706,14 @@
     var m, p;
     var q = String(pergunta || '').trim();
 
+    /* --- vários saltos PRIMEIRO: "dobro de 15 menos metade de 8" não pode cair em "metade de 8" --- */
+    var multi = this._encadeado(q);
+    if (multi) return multi;
+
     /* --- aritmética e porcentagem --- */
-    if ((m = q.match(/quanto\s+é\s+([0-9.,\s+\-*/^×÷()%]+)\??$/i))) {
-      var expr = m[1].replace(/×/g, '*').replace(/÷/g, '/').replace(/,/g, '.');
+    if ((m = q.match(/quanto\s+é\s+([0-9.,\s+\-*/^×÷()%²³]+)\??$/i))) {
+      var expr = m[1].replace(/×/g, '*').replace(/÷/g, '/').replace(/,/g, '.')
+        .replace(/²/g, '^2').replace(/³/g, '^3');
       if (/^[\d\s+\-*/^().]+$/.test(expr) && /\d/.test(expr)) {
         var v = await this._mathjs(expr);
         if (v !== null) return { texto: v, ferramenta: 'mathjs', fonte: 'mathjs ' + expr };
@@ -718,7 +743,7 @@
     }
 
     /* --- sequência aritmética/geométrica --- */
-    if ((m = q.match(/próximo:\s*([\d,\s]+),\?/i))) {
+    if ((m = q.match(/pr[óo]ximo:\s*([\d,.\s]+),\s*\?/i))) {
       var nums = m[1].split(',').map(Number).filter(function (x) { return !isNaN(x); });
       if (nums.length >= 3) {
         var d1 = nums[1] - nums[0], igual = true, k;
@@ -818,6 +843,14 @@
     var lp = this._lingua(q);
     if (lp) return lp;
 
+    /* --- sigla de estado --- */
+    var mSigla = q.match(/sigla\s+d[aeo]s?\s+(.+?)\?*$/i);
+    if (mSigla) {
+      var chaveUf = semAcento(mSigla[1].trim().toLowerCase());
+      var uf = SIGLAS_SEM_ACENTO[chaveUf] || SIGLAS_UF[chaveUf];
+      if (uf) return { texto: uf, ferramenta: 'sigla-uf', fonte: 'tabela local de unidades federativas' };
+    }
+
     /* --- regras determinísticas de lógica/aritmética de posição --- */
     var pos;
     if ((pos = q.match(/ultrapass\w*\s+(?:o|a)\s+(\d+)\s*[ºo°]?\s*(?:colocad|posi[cç][aã]o)/i))) {
@@ -846,6 +879,160 @@
     if ((m = q.match(/(?:unidade|medida)\s+(?:de|da|do)\s+(.+?)\s+no\s+si\?*$/i))) {
       var uni = await this._wikidata(m[1].trim(), 'P5061', 'unidade');
       if (uni) return { texto: uni.valor, ferramenta: 'unidade-si', fonte: uni.fonte };
+    }
+    return null;
+  };
+
+  /* ---------- pedido longo: código e texto ---------- */
+  var SYS_CODIGO = 'Responda apenas com o código completo em um bloco de código, sem explicação antes nem depois. '
+    + 'O código precisa ser autossuficiente: sem biblioteca externa, sem leitura de arquivo, sem variável indefinida. '
+    + 'Se pedirem função, exporte com module.exports.';
+  var SYS_ABERTO = 'Responda em português do Brasil, no formato pedido, apenas com o texto final. '
+    + 'Sem preâmbulo ("claro", "com certeza"), sem comentar o pedido, sem escrever raciocínio. '
+    + 'Termine todas as frases; não deixe texto pela metade.';
+
+  var NUMERAIS = { um: 1, uma: 1, dois: 2, duas: 2, três: 3, 'três': 3, tres: 3, quatro: 4, cinco: 5,
+                  seis: 6, sete: 7, oito: 8, nove: 9, dez: 10 };
+
+  /* o que o pedido exige, em números: parágrafos, itens da lista e mínimo de palavras */
+  function exigenciaDoPedido(q) {
+    var t = String(q || ''), ex = { paragrafos: 0, itens: 0, minPalavras: 0 };
+    var m = /(\d+|um|uma|dois|duas|tr[eê]s|quatro|cinco|seis|sete|oito|nove|dez)\s+par[áa]grafos?/i.exec(t);
+    if (m) ex.paragrafos = /^\d+$/.test(m[1]) ? parseInt(m[1], 10) : (NUMERAIS[m[1].toLowerCase()] || 0);
+    else if (/em\s+(apenas\s+)?um\s+par[áa]grafo|um \u00fanico par[áa]grafo/i.test(t)) ex.paragrafos = 1;
+    var mi = /lista\s+(?:com|de)\s+(\d+|um|uma|dois|duas|tr[eê]s|quatro|cinco|seis|sete|oito|nove|dez)/i.exec(t)
+      || /(\d+|um|uma|dois|duas|tr[eê]s|quatro|cinco|seis|sete|oito|nove|dez)\s+(?:dicas|argumentos|itens|passos|exemplos)/i.exec(t);
+    if (mi) ex.itens = /^\d+$/.test(mi[1]) ? parseInt(mi[1], 10) : (NUMERAIS[mi[1].toLowerCase()] || 0);
+    if (/em\s+tr[eê]s\s+passos|ponto a ponto/i.test(t) && !ex.itens) ex.itens = 3;
+    ex.minPalavras = ex.paragrafos ? 45 * ex.paragrafos : (ex.itens ? 12 * ex.itens : 60);
+    return ex;
+  }
+
+  function classificarPedido(q) {
+    var t = String(q || '');
+    if (/```|\bem (javascript|python|typescript|node)\b|(escreva|implemente|crie|faça)\b[^?]{0,60}\b(função|programa|classe|código|script|algoritmo|endpoint)\b/i.test(t)) return 'codigo';
+    if (/(escreva|redija|explique|resuma|descreva|compare|argumente|conte uma história|faça um[ao]?\s+(texto|roteiro|artigo|poema|e-mail|resumo|plano|lista)|lista de \d+|passo a passo)/i.test(t)) return 'aberto';
+    return 'curto';
+  }
+
+  /* tira o código do bloco; devolve '' quando não há código reconhecível */
+  function extrairCodigo(texto) {
+    var t = String(texto || '');
+    var m = /```(?:javascript|js|jsx|ts|typescript|python|py)?\s*\n([\s\S]*?)```/i.exec(t);
+    var corpo = m ? m[1] : t;
+    corpo = corpo.replace(/^\s*(aqui est[áa]|segue|certo)[^\n]*\n/i, '').trim();
+    if (!/function|=>|class |const |let |var |def |console\.log|module\.exports/.test(corpo)) return '';
+    return corpo.trim();
+  }
+
+  /* código completo? (chaves/fechamento coerentes — não prova correção, só prova que não cortou) */
+  function codigoInteiro(codigo) {
+    if (!codigo || codigo.length < 40) return false;
+    var abre = (codigo.match(/[{([]/g) || []).length, fecha = (codigo.match(/[})\]]/g) || []).length;
+    if (abre !== fecha) return false;
+    return /}\s*;?\s*$/.test(codigo.trim()) || /return\b/.test(codigo);
+  }
+
+  /* estrutura é formatação: se o pedido quer N parágrafos e veio um bloco só,
+     quebra nas fronteiras de frase. Não inventa conteúdo — só reorganiza o que veio. */
+  function ajustarParagrafos(t, n) {
+    var texto = String(t || '').trim();
+    if (!n || n < 2 || !texto) return texto;
+    var blocos = texto.split(/\n+/).filter(function (x) { return x.trim().length > 0; });
+    if (blocos.length >= n) return texto;
+    var frases = texto.split(/(?<=[.!?…])\s+/).map(function (f) { return f.trim(); }).filter(Boolean);
+    if (frases.length < n * 2) return texto;   // sem frases suficientes, dividir seria inventar
+    var porBloco = Math.ceil(frases.length / n), saida = [];
+    for (var i = 0; i < n; i++) {
+      var bloco = frases.slice(i * porBloco, (i + 1) * porBloco).join(' ');
+      if (bloco) saida.push(bloco);
+    }
+    return saida.join('\n\n');
+  }
+
+  /* nota de um texto longo: tamanho, fechamento, formato pedido e ausência de robô-speak */
+  function notaTexto(t, ex) {
+    var s2 = String(t || '').trim();
+    if (!s2) return 0;
+    var palavras = s2.split(/\s+/).filter(Boolean).length;
+    var paragrafos = s2.split(/\n+/).filter(function (p) { return p.trim().length > 0; }).length;
+    var itens = (s2.match(/^\s*(?:[-*•]|\d+[.)])\s+\S/gm) || []).length;
+    var p = 0;
+    if (palavras >= (ex.minPalavras || 60)) p += 3; else if (palavras >= (ex.minPalavras || 60) * 0.6) p += 1;
+    if (/[.!?…"”)]\s*$/.test(s2)) p += 3;                       // fechou o texto
+    if (ex.paragrafos && paragrafos >= ex.paragrafos) p += 3;
+    if (ex.paragrafos && paragrafos === 1 && ex.paragrafos > 1) p -= 1;
+    if (ex.itens && itens >= ex.itens) p += 3;
+    if (/\b(como (um )?modelo de linguagem|n[ãa]o posso (te )?ajudar)/i.test(s2)) p -= 4;
+    if (/^\s*(claro|certamente|com certeza|aqui est[áa]|segue)/i.test(s2)) p -= 1;
+    return p;
+  }
+
+  /* texto completo? termina em pontuação, tem parágrafo e não é preâmbulo de raciocínio */
+  function textoCompleto(t, minPalavras) {
+    var s2 = String(t || '').trim();
+    if (!s2) return 0;
+    var palavras = s2.split(/\s+/).length;
+    var p = 0;
+    if (palavras >= (minPalavras || 40)) p += 2;
+    if (/[.!?…"”)]\s*$/.test(s2)) p += 2;
+    if (!/\b(claro|certamente|com certeza|aqui est[áa]|segue (o|a))\b\s*[!.,:]/i.test(s2.slice(0, 60))) p += 1;
+    if (/\n\s*\n/.test(s2)) p += 1;
+    if (/\b(como (um )?modelo de linguagem|n[ãa]o posso (te )?ajudar|desculpe)/i.test(s2)) p -= 3;
+    return p;
+  }
+
+  /* ---------- vários saltos ---------- */
+  var EXTENSO = { dois: 2, duas: 2, tres: 3, quatro: 4, cinco: 5, seis: 6, sete: 7, oito: 8, nove: 9, dez: 10 };
+
+  /* "Quatro canetas", "Três horas" → dígitos: os padrões do compositor trabalham com número */
+  function comDigitos(t) {
+    return String(t).replace(/\b(dois|duas|tr[eê]s|quatro|cinco|seis|sete|oito|nove|dez)\b/gi, function (w) {
+      var v = EXTENSO[semAcento(w.toLowerCase())];
+      return v ? String(v) : w;
+    });
+  }
+
+  Roteador.prototype._encadeado = function (q) {
+    var m, num = function (t) { return parseFloat(String(t).replace(',', '.')); };
+    q = comDigitos(q);
+    var fmt = function (v) { return String(Math.round(v * 1e6) / 1e6).replace('.', ','); };
+
+    // troco: cada X custa R$Y, compra Z, paga com R$W
+    if ((m = q.match(/(?:cada|o)\s+\w+\s+custa\s*r?\$?\s*(\d+(?:[.,]\d+)?).*?(?:compra|compro|leva|levou)\s+(\d+).*?paga\s+com\s+r?\$?\s*(\d+(?:[.,]\d+)?)/i))) {
+      var preco = num(m[1]), qtd = num(m[2]), pago = num(m[3]);
+      if (preco * qtd <= pago) return { texto: fmt(pago - preco * qtd), ferramenta: 'encadeado-troco', fonte: 'regra aritmética local (2 passos)' };
+    }
+    // consumo: faz K km por litro, tanque L litros → km
+    if ((m = q.match(/(\d+(?:[.,]\d+)?)\s*km\s*(?:por|com um litro|\/)\s*litros?.*?(\d+(?:[.,]\d+)?)\s*litros?/i))
+      || (m = q.match(/faz\s+(\d+(?:[.,]\d+)?)\s*km\s+por\s+litro[^?]*?(\d+(?:[.,]\d+)?)\s*litros/i))) {
+      return { texto: fmt(num(m[1]) * num(m[2])), ferramenta: 'encadeado-consumo', fonte: 'regra aritmética local (2 passos)' };
+    }
+    // dois trechos: X km/h por N horas e depois mais M horas
+    if ((m = q.match(/(\d+(?:[.,]\d+)?)\s*km\s*(?:por|\/)\s*hora.*?(\d+(?:[.,]\d+)?)\s*horas?.*?(?:mais|depois|e ainda)\s*(\d+(?:[.,]\d+)?)\s*horas?/i))) {
+      return { texto: fmt(num(m[1]) * (num(m[2]) + num(m[3]))), ferramenta: 'encadeado-distancia', fonte: 'regra aritmética local (2 passos)' };
+    }
+    // saldo: tinha A, ganhou B, gastou C
+    if ((m = q.match(/tinha\s+(\d+).*?(?:ganhou|recebeu)\s+(\d+).*?(?:gastou|perdeu)\s+(\d+)/i))) {
+      return { texto: fmt(num(m[1]) + num(m[2]) - num(m[3])), ferramenta: 'encadeado-saldo', fonte: 'regra aritmética local (3 passos)' };
+    }
+    // caixas: N caixas com M unidades cada, K estragam
+    if ((m = q.match(/(\d+)\s*caixas?\s+com\s+(\d+)[^?]*?cada[^?]*?(\d+)\s*\w*\s*(?:estrag|quebr|amass|danific|fora|perdid)/i))) {
+      return { texto: fmt(num(m[1]) * num(m[2]) - num(m[3])), ferramenta: 'encadeado-caixas', fonte: 'regra aritmética local (2 passos)' };
+    }
+    // proporção + desconto: N custam V, quer M com desconto de P%
+    if ((m = q.match(/(\d+)\s*\w+\s+custam\s*r?\$?\s*(\d+(?:[.,]\d+)?).*?quant[oa]s?\s+custam\s+(\d+).*?desconto\s+de\s+(\d+(?:[.,]\d+)?)\s*%/i))) {
+      var unit = num(m[2]) / num(m[1]), bruto = unit * num(m[3]);
+      return { texto: fmt(bruto * (1 - num(m[4]) / 100)), ferramenta: 'encadeado-desconto', fonte: 'regra aritmética local (2 passos)' };
+    }
+    // metade/dobro combinados: dobro de A menos metade de B
+    if ((m = q.match(/(dobro|triplo|qu[áa]druplo|\d+\s*vezes)\s+de\s+(\d+(?:[.,]\d+)?).*?menos\s+a\s+metade\s+de\s+(\d+(?:[.,]\d+)?)/i))) {
+      var vezes = { dobro: 2, triplo: 3, quadruplo: 4 }[semAcento(m[1].toLowerCase().replace(/\s+/g, ''))] || parseInt(m[1], 10) || 2;
+      return { texto: fmt(vezes * num(m[2]) - num(m[3]) / 2), ferramenta: 'encadeado-multiplo-metade', fonte: 'regra aritmética local (2 passos)' };
+    }
+    // horas → minutos → segundos
+    if ((m = q.match(/(\d+(?:[.,]\d+)?)\s*horas?\s+e\s+(\d+)\s*minutos?.*?quant[oa]s?\s+segundos/i))) {
+      return { texto: fmt(num(m[1]) * 3600 + num(m[2]) * 60), ferramenta: 'encadeado-tempo', fonte: 'regra aritmética local (2 passos)' };
     }
     return null;
   };
@@ -1016,18 +1203,21 @@
     return x.length > 0 && /[0-9a-zà-ÿ]/i.test(x);
   }
 
-  Roteador.prototype._chamar = async function (rota, pergunta, timeoutMs) {
+  Roteador.prototype._chamar = async function (rota, pergunta, timeoutMs, opcoes) {
+    var opc = opcoes || {};
     var url = rota.base.replace(/\/$/, '') + '/chat/completions';
     var c = new AbortController();
-    var limite = timeoutMs || this.timeoutRota;
+    var limite = timeoutMs || (opc.longo ? 45000 : this.timeoutRota);
     var t = setTimeout(function () { c.abort(); }, limite);
     var t0 = agora();
     try {
       var r = await fetch(url, {
         method: 'POST', signal: c.signal, headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: rota.modelo, temperature: 0, max_tokens: 400,
-          messages: [{ role: 'system', content: SYS }, { role: 'user', content: pergunta }]
+          model: rota.modelo,
+          temperature: opc.temperatura == null ? 0 : opc.temperatura,
+          max_tokens: opc.maxTokens || 400,
+          messages: [{ role: 'system', content: opc.sistema || SYS }, { role: 'user', content: pergunta }]
         })
       });
       clearTimeout(t);
@@ -1040,10 +1230,14 @@
       var msg = d.choices && d.choices[0] && d.choices[0].message;
       if (!msg) return { erro: 'servidor', ms: agora() - t0 };
       var texto = (msg.content || '').trim();
+      if (opc.longo) {
+        if (!util(texto)) return { erro: 'degenerada', ms: agora() - t0 };
+        return { texto: texto, ms: agora() - t0, bruto: d.choices[0].finish_reason || null };
+      }
       if (!texto && msg.reasoning) texto = sanear(extrairConclusao(String(msg.reasoning)));
       texto = sanear(texto);
       if (!texto) return { erro: 'degenerada', ms: agora() - t0 };
-      return { texto: texto, ms: agora() - t0 };
+      return { texto: texto, ms: agora() - t0, bruto: d.choices[0].finish_reason || null };
     } catch (e) {
       clearTimeout(t);
       return { erro: e && e.name === 'AbortError' ? 'timeout' : 'rede', ms: agora() - t0 };
@@ -1101,6 +1295,49 @@
     };
   };
 
+  /* ============ GERAÇÃO LONGA (código e texto) ============ */
+  /* Sem consenso: votação de maioria não faz sentido para texto longo nem para código.
+     Em vez disso, dois provedores no máximo, e a escolha é por critério objetivo declarado. */
+  Roteador.prototype._gerar = async function (pergunta, opcoes) {
+    var self = this;
+    var opc = opcoes || {};
+    var tentativas = opc.tentativas || 2;
+    var cands = this._candidatos(opc.dificuldade || 'media').filter(function (r) { return self.disponivel(r.id); });
+    var escolhidos = [], bases = {};
+    for (var i = 0; i < cands.length && escolhidos.length < tentativas; i++) {
+      if (bases[cands[i].base]) continue;
+      bases[cands[i].base] = true; escolhidos.push(cands[i]);
+    }
+    if (!escolhidos.length) return null;
+
+    var pedido = Object.assign({ maxTokens: 1200, longo: true, segmento: 45000 }, opc.chamar || {});
+    var respostas = await Promise.all(escolhidos.map(function (rota) {
+      return self._chamar(rota, pergunta, pedido.segmento, pedido).then(function (r) {
+        if (r.texto) self._premiar(rota.id, r.ms); else self._castigar(rota.id, r.erro);
+        return { rota: rota, texto: r.texto || null, erro: r.erro || null, ms: r.ms, bruto: r.bruto || null };
+      });
+    }));
+
+    var validas = respostas.filter(function (x) { return x.texto; });
+    if (!validas.length) return null;
+
+    var nota = opc.nota || function (t) { return textoCompleto(t, opc.minPalavras); };
+    var melhor = null;
+    validas.forEach(function (x) {
+      // cortado pelo teto do provedor é pior do que uma resposta mais curta e inteira
+      var n = nota(x.texto) - (x.bruto === 'length' ? 4 : 0);
+      if (!melhor || n > melhor.nota) melhor = { texto: x.texto, rota: x.rota, nota: n, ms: x.ms, bruto: x.bruto };
+    });
+    this.metricas.consenso++;
+    return {
+      texto: opc.transformar ? opc.transformar(melhor.texto) : melhor.texto,
+      rota: melhor.rota.id, rotaNome: melhor.rota.nome, classe: melhor.rota.classe,
+      confianca: melhor.nota >= 5 ? 'alta' : (melhor.nota >= 3 ? 'media' : 'baixa'),
+      nota: melhor.nota, tentativas: respostas.length, ms: melhor.ms,
+      candidatos: validas.map(function (x) { return { rota: x.rota.id, nota: nota(x.texto), palavras: String(x.texto).split(/\s+/).length }; })
+    };
+  };
+
   /* ============ API PRINCIPAL ============ */
   Roteador.prototype.responder = async function (pedido) {
     var pergunta = typeof pedido === 'string' ? pedido : pedido.pergunta;
@@ -1122,6 +1359,35 @@
         this._cacheSet(chave, res);
         return res;
       }
+    }
+
+    /* pedido longo (texto/código) não passa por consenso nem por 400 tokens */
+    var tipo = (typeof pedido === 'object' && pedido.tipo) || (usarFerramenta === false ? 'curto' : classificarPedido(pergunta));
+    if (tipo === 'codigo') {
+      var gc = await this._gerar(pergunta, {
+        chamar: { maxTokens: 1600, sistema: SYS_CODIGO },
+        minPalavras: 0,
+        nota: function (t) { var cod = extrairCodigo(t); return codigoInteiro(cod) ? 5 : (cod ? 2 : 0); },
+        transformar: function (t) { var cod = extrairCodigo(t); return cod ? '```\n' + cod + '\n```' : t; }
+      });
+      if (gc) { this._cacheSet(chave, gc); this.metricas.sucessos++; return gc; }
+    }
+    if (tipo === 'aberto') {
+      var ex = exigenciaDoPedido(pergunta);
+      var instrucao = SYS_ABERTO;
+      if (ex.paragrafos) instrucao += ' O pedido exige ' + ex.paragrafos + ' parágrafo(s): entregue exatamente '
+        + ex.paragrafos + ' bloco(s) separados por uma linha em branco, cada um com pelo menos 3 frases completas.';
+      if (ex.itens) instrucao += ' O pedido exige uma lista com ' + ex.itens + ' itens numerados, um por linha.';
+      var tetoPalavras = Math.max(200, Math.round(ex.minPalavras * 2.2));
+      instrucao += ' Escreva entre ' + ex.minPalavras + ' e ' + tetoPalavras + ' palavras; termine o texto por completo.';
+      var ga = await this._gerar(pergunta, {
+        tentativas: 3,
+        chamar: { maxTokens: 1800, sistema: instrucao },
+        minPalavras: ex.minPalavras,
+        nota: function (t) { return notaTexto(ajustarParagrafos(t, ex.paragrafos), ex); },
+        transformar: function (t) { return ajustarParagrafos(t, ex.paragrafos); }
+      });
+      if (ga) { this._cacheSet(chave, ga); this.metricas.sucessos++; return ga; }
     }
 
     if (usarConsenso) {
@@ -1174,7 +1440,10 @@
   };
 
   var api = { Roteador: Roteador, CATALOGO: CATALOGO, normal: normal };
-  api.internos = { sanear: sanear, util: util, extrairConclusao: extrairConclusao };
+  api.internos = { sanear: sanear, util: util, extrairConclusao: extrairConclusao,
+                   classificarPedido: classificarPedido, extrairCodigo: extrairCodigo,
+                   codigoInteiro: codigoInteiro, textoCompleto: textoCompleto,
+                   exigenciaDoPedido: exigenciaDoPedido, notaTexto: notaTexto, ajustarParagrafos: ajustarParagrafos };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   raiz.RoteadorIA = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

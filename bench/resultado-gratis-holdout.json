@@ -10,9 +10,9 @@
   "respondeu": 105,
   "acertoQuandoResponde": 100,
   "errosDeConteudo": 0,
-  "latenciaMedianaMs": 8192,
-  "tentativasTotal": 45,
-  "duracaoS": 89,
+  "latenciaMedianaMs": 3689,
+  "tentativasTotal": 36,
+  "duracaoS": 62,
   "porTipo": {
    "mat": {
     "n": 15,
@@ -489,12 +489,12 @@
     "segunda",
     "segunda-feira"
    ],
-   "resp": "segunda-feira",
+   "resp": "Segunda-feira.",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
+   "fonte": "ovhq397",
    "tentativas": 3,
-   "ms": 9120
+   "ms": 17949
   },
   {
    "id": 32,
@@ -522,9 +522,9 @@
    "resp": "8",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 14384
+   "fonte": "ovhoss",
+   "tentativas": 2,
+   "ms": 1594
   },
   {
    "id": 34,
@@ -535,12 +535,12 @@
     "zero",
     "0h"
    ],
-   "resp": "0h",
+   "resp": "0",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
+   "fonte": "polli",
    "tentativas": 3,
-   "ms": 4597
+   "ms": 1534
   },
   {
    "id": 35,
@@ -563,12 +563,12 @@
    "gab": [
     "ivo"
    ],
-   "resp": "Ivo",
+   "resp": "Ivo.",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq",
-   "tentativas": 3,
-   "ms": 19029
+   "fonte": "ovhoss20",
+   "tentativas": 4,
+   "ms": 1193
   },
   {
    "id": 37,
@@ -581,9 +581,9 @@
    "resp": "135 minutos",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 8378
+   "fonte": "ovhq38",
+   "tentativas": 1,
+   "ms": 2647
   },
   {
    "id": 38,
@@ -608,12 +608,12 @@
     "21",
     "vinte e um"
    ],
-   "resp": "21 dias",
+   "resp": "21",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
-   "tentativas": 3,
-   "ms": 6830
+   "fonte": "ovhoss20",
+   "tentativas": 1,
+   "ms": 947
   },
   {
    "id": 40,
@@ -638,12 +638,12 @@
     "300",
     "trezentos"
    ],
-   "resp": "300 segundos.",
+   "resp": "the quantity. \"300\" is the quantity. \"3",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq397",
-   "tentativas": 3,
-   "ms": 20734
+   "fonte": "ovhq9",
+   "tentativas": 1,
+   "ms": 10935
   },
   {
    "id": 42,
@@ -653,12 +653,12 @@
     "12",
     "doze"
    ],
-   "resp": "12 dias",
+   "resp": "12 dias.",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq397",
-   "tentativas": 3,
-   "ms": 19299
+   "fonte": "ovhq9",
+   "tentativas": 1,
+   "ms": 13309
   },
   {
    "id": 43,
@@ -671,9 +671,9 @@
    "resp": "48",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
+   "fonte": "ultra",
    "tentativas": 3,
-   "ms": 1627
+   "ms": 3689
   },
   {
    "id": 44,
@@ -686,9 +686,9 @@
    "resp": "48",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
+   "fonte": "ovhoss",
    "tentativas": 3,
-   "ms": 8728
+   "ms": 4852
   },
   {
    "id": 45,
@@ -698,12 +698,12 @@
     "6",
     "seis"
    ],
-   "resp": "Um cubo tem 6 faces.",
+   "resp": "6",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 4793
+   "fonte": "ovhoss",
+   "tentativas": 2,
+   "ms": 2444
   },
   {
    "id": 46,
@@ -1103,12 +1103,12 @@
     "metáfora",
     "metafora"
    ],
-   "resp": "Metáfora.",
+   "resp": "Metáfora",
    "ok": true,
    "erro": null,
-   "fonte": "polli",
+   "fonte": "ultra",
    "tentativas": 3,
-   "ms": 5704
+   "ms": 5558
   },
   {
    "id": 74,
@@ -1149,9 +1149,9 @@
    "resp": "janela",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
+   "fonte": "polli",
    "tentativas": 3,
-   "ms": 2414
+   "ms": 5320
   },
   {
    "id": 77,
@@ -1249,9 +1249,9 @@
    "resp": "horse",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
+   "fonte": "ovhq",
    "tentativas": 3,
-   "ms": 892
+   "ms": 4895
   },
   {
    "id": 84,
@@ -1498,9 +1498,9 @@
    "resp": "6",
    "ok": true,
    "erro": null,
-   "fonte": "vlqwen",
+   "fonte": "polli",
    "tentativas": 3,
-   "ms": 8192
+   "ms": 284
   },
   {
    "id": 101,
