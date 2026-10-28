@@ -105,3 +105,22 @@ Língua portuguesa (formas irregulares como aumentativo/coletivo) e fatos de mun
 
 ### Custo de rede
 Cada pergunta não-trivial faz 3 chamadas de LLM (paralelas) + 0–3 chamadas de consulta. Continua R$ 0, mas é mais tráfego nos gateways gratuitos — por isso o cache de 15 min e o disjuntor por rota seguem ligados.
+
+## 7. v2.2 (28/10/2026) — o limite honesto da v2.1, atacado
+
+A v2.1 terminou em 97,0% e com "6 erros em 200" na seção de limite. A auditoria desses 6 mudou o diagnóstico: **4 eram falhas da régua** (subscrito em H₂O, hífen U+2011, gênero *Antártica*/*antártico*, sinônimo *matilha*/*alcateia* não declarado em `alts`) e **2 eram defeito real** (capital do Japão vinda de claim Wikidata antiga; *abelhão* como masculino de abelha). O pontuador único passou a ser `bench/pontuar.js` (12/12), e ele exige que erro continue erro.
+
+Depois disso, cada classe de erro deixou de ser opinião de modelo e virou **rota local** (R$ 0, 0 ms):
+
+| classe | antes | agora |
+|---|---|---|
+| capital de país/estado | rota só casava `d[eo]`; "capital **da** França" ia ao modelo e virava 429 | `da/do/de/dos/das` + tabela de **205 capitais** (países + 27 UFs) |
+| símbolo químico | "símbolo químico **da** prata" caía no modelo | mesmo conserto + tabela dos 118 elementos |
+| inglês irregular | 100% no provedor (4 itens do holdout morreram em 429) | tabela local + regra de formação |
+| resposta degenerada | `**`, "Thinking Process", "Refinement", "Given the constraint", "the price." entregues como resposta | `sanear()` rejeita, pune a rota e retenta |
+| fila, proporção, taxa, tempo fracionário, calendário, figuras | consenso (ou erro) | regra determinística com teste |
+| plural `-l` e superlativo | `caracols`, `salgadoíssimo` | `caracóis`, `salgadíssimo`, `dificílimo` |
+
+Números na mesma régua, sem chave: **200 → 200/200**, **holdout 105 → 105/105**, **banco fresco 84 (escrito depois dos ajustes) → 84/84**. Mediana ~3 s (era 4,9 s). Barreira: 97/97, com `tools/testes/roteador-gratis.js` permanente.
+
+**O que continua fora:** fatos de mundo fora das tabelas, perguntas de vários saltos, redação longa, código e visão não são medidos por esta régua; a régua aceita acento e precisão numérica equivalente por decisão explícita; e o teto dos modelos gratuitos (~45 × ~58 do topo pago) segue igual — só que perguntas determinísticas agora não consultam modelo, então nessa classe o grátis não perde para o pago.

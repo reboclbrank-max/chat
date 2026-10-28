@@ -27,7 +27,9 @@ for ini in [10,13,17,20,25]:
 # ---- +15 sequências (completa 30) ----
 for ini,r in [(1,7),(4,9),(6,11),(9,4),(12,6)]:
     t=[ini+r*i for i in range(5)]; seqs.append((t,t[-1]+r))
-for ini in [200,150,101,64,30]:
+# CORRIGIDO 2026-10-27: 200,100,50,25 -> 12,5 (era gravado 12 por divisão inteira).
+# Agora só entram inícios cuja metade é inteira em todas as etapas.
+for ini in [160,240,320,128,96]:
     t=[ini, ini//2, ini//4, ini//8]; seqs.append((t,t[-1]//2))
 for base in [1,2,4,5,6]:
     t=[base**k for k in range(1,5)]; seqs.append((t,t[-1]*base))
@@ -136,6 +138,7 @@ mu=[("Qual a capital da França?",["paris"]),("Qual a capital da Itália?",["rom
 for q,g in mu: add("mundo",q,g)
 
 assert len(itens)==200, len(itens)
-json.dump({"v":1,"criado":"2026-10-27","total":len(itens),"itens":itens}, open('/home/user/chat-work/bench/banco200.json','w'), ensure_ascii=False, indent=1)
+import os
+json.dump({"v":2,"criado":"2026-10-27","corrigido":"gabarito de sequência 200,100,50,25 e truncamento do pontuador","total":len(itens),"itens":itens}, open(os.path.join(os.path.dirname(os.path.abspath(__file__)),'banco200.json'),'w'), ensure_ascii=False, indent=1)
 import collections
 print(len(itens), collections.Counter(i['tipo'] for i in itens))
