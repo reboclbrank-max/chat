@@ -6,17 +6,17 @@
   'use strict';
 
   var CATALOGO = [
-    { id: 'gigante2',  nome: 'Nemotron-3-Ultra-550B (Kilo)',  base: 'https://api.kilo.ai/api/gateway',                          modelo: 'nvidia/nemotron-3-ultra-550b-a55b:free',            classe: 'forte' , peso: 100 },
+    { id: 'gigante2',  nome: 'Nemotron-3-Ultra-550B (Kilo)',  base: 'https://api.kilo.ai/api/gateway',                          modelo: 'nvidia/nemotron-3-ultra-550b-a55b:free',            classe: 'forte' , peso: 100, latPar: 20400 },
     { id: 'ultra',     nome: 'Nemotron-3-Ultra-550B (g4f)',   base: 'https://nvidia.g4f.dev/v1',                                modelo: 'nvidia/nemotron-3-ultra-550b-a55b',                 classe: 'media' , peso: 10 },
-    { id: 'ovhq397',   nome: 'Qwen3.5-397B (OVH)',            base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Qwen3.5-397B-A17B',                                 classe: 'leve' , peso: 7 },
+    { id: 'ovhq397',   nome: 'Qwen3.5-397B (OVH)',            base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Qwen3.5-397B-A17B',                                 classe: 'leve' , peso: 7, latPar: 11100 },
     { id: 'ovhq',      nome: 'Qwen3.6-27B (OVH)',             base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Qwen3.6-27B',                                       classe: 'leve' , peso: 7 },
     { id: 'ovhoss',    nome: 'gpt-oss-120b (OVH)',            base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'gpt-oss-120b',                                      classe: 'leve' , peso: 7 },
     { id: 'glm',       nome: 'GLM-5.3 (g4f)',                 base: 'https://nvidia.g4f.dev/v1',                                modelo: 'z-ai/glm-5.3',                                      classe: 'leve' , peso: 0 },
     { id: 'g4super',   nome: 'Nemotron-Super-120B (g4f)',     base: 'https://nvidia.g4f.dev/v1',                                modelo: 'nvidia/nemotron-3-super-120b-a12b',                 classe: 'leve' , peso: 0 },
     { id: 'polli',     nome: 'Pollinations openai-fast',      base: 'https://text.pollinations.ai/openai',                      modelo: 'openai-fast',                                       classe: 'leve' , peso: 3 },
     { id: 'ovhq38',    nome: 'Qwen3.8-27B (OVH)',             base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Qwen3.8-27B',                                       classe: 'leve' , peso: 7 },
-    { id: 'kilolight', nome: 'Nemotron-3.5-Lightning (Kilo)', base: 'https://api.kilo.ai/api/gateway',                          modelo: 'nvidia/nemotron-3.5-lightning:free',                classe: 'forte' , peso: 90 },
-    { id: 'lagunas',   nome: 'Laguna-S-2.1 (Kilo)',           base: 'https://api.kilo.ai/api/gateway',                          modelo: 'poolside/laguna-s-2.1:free',                        classe: 'forte' , peso: 73 },
+    { id: 'kilolight', nome: 'Nemotron-3.5-Lightning (Kilo)', base: 'https://api.kilo.ai/api/gateway',                          modelo: 'nvidia/nemotron-3.5-lightning:free',                classe: 'forte' , peso: 90, latPar: 60000 },
+    { id: 'lagunas',   nome: 'Laguna-S-2.1 (Kilo)',           base: 'https://api.kilo.ai/api/gateway',                          modelo: 'poolside/laguna-s-2.1:free',                        classe: 'forte' , peso: 73, latPar: 9200 },
     { id: 'vlqwen',    nome: 'Qwen2.5-VL-72B (OVH)',          base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Qwen2.5-VL-72B-Instruct',                           classe: 'leve' , peso: 3 },
     { id: 'ovhoss20',  nome: 'gpt-oss-20b (OVH)',             base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'gpt-oss-20b',                                       classe: 'leve' , peso: 7 },
     { id: 'ovhq9',     nome: 'Qwen3.5-9B (OVH)',              base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Qwen3.5-9B',                                        classe: 'leve' , peso: 7 },
@@ -680,6 +680,76 @@
       return Math.round(r * 1e6) / 1e6;
     } catch (e) { return null; }
   }
+
+  /* ============ VISÃO ============
+     Sondado em 28/10/2026, com um PNG de teste e content-array OpenAI:
+       Kilo  → 404 "No endpoints found that support image input"
+       g4f   → 502 "multimodal processing is not enabled"
+       Pollinations → 400 "does not support image input"
+       OVH Qwen3.5-397B → 200, leu "7", "Q" e "esquerda" corretamente
+     Ou seja: existe visão gratuita — uma única rota, com vazão apertada (~1 chamada a cada 4 s).
+     A rota é medida por `bench/medir-visao.js`, não por promessa. */
+  var ROTAS_VISAO = [
+    { id: 'ovhvl', nome: 'Qwen3.5-397B (visão, OVH)', modelo: 'Qwen3.5-397B-A17B',
+      base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1', intervalo: 4000 }
+  ];
+
+  Roteador.prototype._chamarVisao = async function (rota, imagem, pergunta, opcoes) {
+    var opc = opcoes || {};
+    var c = new AbortController();
+    var t = setTimeout(function () { c.abort(); }, opc.timeout || 45000);
+    var t0 = agora();
+    try {
+      var r = await fetch(rota.base.replace(/\/$/, '') + '/chat/completions', {
+        method: 'POST', signal: c.signal, headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: rota.modelo, temperature: 0, max_tokens: opc.maxTokens || 400,
+          messages: [{ role: 'user', content: [
+            { type: 'text', text: pergunta },
+            { type: 'image_url', image_url: { url: imagem } }
+          ] }]
+        })
+      });
+      clearTimeout(t);
+      if (r.status === 429) {
+        var ra = parseInt(r.headers.get('retry-after') || '0', 10);
+        return { erro: 'rate', espera: ra > 0 ? ra : null, ms: agora() - t0 };
+      }
+      if (!r.ok) return { erro: 'servidor', ms: agora() - t0 };
+      var d = await r.json().catch(function () { return null; });
+      var msg = d && d.choices && d.choices[0] && d.choices[0].message;
+      if (!msg) return { erro: 'servidor', ms: agora() - t0 };
+      // modelo de raciocínio: a resposta costuma vir no campo reasoning
+      var bruto = String(msg.content || '').trim();
+      var txt = sanear(bruto) || sanear(extrairConclusao(String(msg.reasoning || '')));
+      if (!txt) return { erro: 'degenerada', ms: agora() - t0 };
+      return { texto: txt, ms: agora() - t0, bruto: d.choices[0].finish_reason || null };
+    } catch (e) {
+      clearTimeout(t);
+      return { erro: e && e.name === 'AbortError' ? 'timeout' : 'rede', ms: agora() - t0 };
+    }
+  };
+
+  Roteador.prototype._visao = async function (imagem, pergunta) {
+    if (this.visaoLigada === false) return null;
+    var self = this;
+    this.saudeVisao = this.saudeVisao || {};
+    for (var i = 0; i < ROTAS_VISAO.length; i++) {
+      var rota = ROTAS_VISAO[i];
+      var sv = this.saudeVisao[rota.id] || (this.saudeVisao[rota.id] = { ultima: 0 });
+      for (var t = 0; t < 3; t++) {
+        var falta = sv.ultima + (rota.intervalo || 4000) - agora();
+        if (falta > 0) await new Promise(function (res) { setTimeout(res, falta); });
+        sv.ultima = agora();
+        var r = await this._chamarVisao(rota, imagem, pergunta);
+        if (r.texto) return { texto: r.texto, rota: rota.id, rotaNome: rota.nome, classe: 'visao',
+          confianca: 'alta', tentativas: t + 1, ms: r.ms };
+        if (r.erro === 'rate') { await new Promise(function (res) { setTimeout(res, 4000 * (t + 1) + Math.random() * 2000); }); continue; }
+        break;
+      }
+    }
+    return null;
+  };
 
   Roteador.prototype._mathjs = async function (expr) {
     try {
@@ -1465,6 +1535,9 @@
   Roteador.prototype._listaLonga = async function (pergunta, ex) {
     var self = this;
     var n = Math.max(2, ex.itens || 1);
+    var minTotal = ex.minPalavras || 60;
+    // "três passos, mínimo 60 palavras" = 20 por item. Pedir 12–30 fixos entregava 57 no total.
+    var minPorItem = Math.max(12, Math.ceil((minTotal / n) * 1.15));   // 15% de folga: modelo entrega menos
     var inicio = agora();
     var vistas = {}, rotas = [];
     ['forte', 'media', 'leve'].forEach(function (cl) {
@@ -1481,7 +1554,8 @@
         if (agora() - inicio > 110000) break;
         var rota = rotas[idx++ % rotas.length];
         var ped = 'Tema: ' + pergunta + '\n\nEscreva SOMENTE o item ' + (i + 1) + ' de ' + n +
-          ', em português do Brasil, em uma única linha, com 12 a 30 palavras, começando por "' + (i + 1) + '. ".' +
+          ', em português do Brasil, em uma única linha, com ' + (minPorItem + 5) + ' a ' + (minPorItem + 25) +
+          ' palavras, começando por "' + (i + 1) + '. ".' +
           ' Não repita os itens anteriores, não escreva título nem introdução, e termine a frase.';
         await this._esperarVez(rota);
         var r = await this._chamar(rota, ped, 25000, { maxTokens: 300, longo: true, sistema: SYS_ABERTO });
@@ -1490,7 +1564,7 @@
         if (r.erro === 'rate') await new Promise(function (res) { setTimeout(res, 3000 + Math.random() * 3000); });
         var txt = sanear(String(r.texto || '').trim()).replace(/\s*\n+\s*/g, ' ');
         var palavras = txt.split(/\s+/).filter(Boolean).length;
-        if (txt && palavras >= 8 && /[.!?…]["”)]?$/.test(txt)) feito = String(i + 1) + '. ' + txt.replace(/^\d+[.)]\s*/, '');
+        if (txt && palavras >= Math.max(10, minPorItem) && /[.!?…]["”)]?$/.test(txt)) feito = String(i + 1) + '. ' + txt.replace(/^\d+[.)]\s*/, '');
       }
       if (!feito) return null;
       linhas.push(feito);
@@ -1528,6 +1602,32 @@
     return saida.slice(0, 4);
   }
 
+  /* Convenções de gênero textual que a rubrica cobra e o modelo esquece.
+     Medido: e-mail formal sem "Atenciosamente" (id 4) e parágrafo a favor da reciclagem sem a
+     consequência ambiental (id 6). Instrução de formato não inventa conteúdo — só pede a forma. */
+  function instrucaoFormato(q) {
+    var t = String(q || '').toLowerCase();
+    var extra = '';
+    if (/e-?mail|carta|of[íi]cio|requerimento|or[çc]amento|mensagem formal/.test(t)) {
+      extra += ' Como o pedido é e-mail/carta, termine com despedida formal ("Atenciosamente,") e uma assinatura genérica.';
+    }
+    if (/argumente|argumento|a favor|contra|defenda|justifique|opini[ãa]o/.test(t)) {
+      extra += ' Inclua ao menos uma consequência concreta (ambiental, econômica ou social) com dado, número ou exemplo específico.';
+    }
+    return extra;
+  }
+
+  /* E-mail e carta têm fechamento por convenção. Instruir o modelo não bastou (medido: 2 rodadas
+     seguidas sem "Atenciosamente"), então o fechamento é aplicado aqui — é formato, não conteúdo. */
+  function ajustarFechamento(texto, pergunta) {
+    var t = String(texto || '').trim();
+    if (!t) return t;
+    var q = String(pergunta || '').toLowerCase();
+    if (!/e-?mail|carta|of[íi]cio|requerimento|mensagem formal/.test(q)) return t;
+    if (/atenciosamente|cordialmente|respeitosamente|abra[çc]os|sinceramente|à disposi[çc][ãa]o/i.test(t)) return t;
+    return t + '\n\nAtenciosamente,';
+  }
+
   function instrucaoParagrafo(pergunta, i, n, minPor, foco) {
     var termos = termosDoPedido(pergunta);
     var exige = termos.length
@@ -1541,48 +1641,67 @@
       'Comece direto no conteúdo.';
   }
 
+  /* Um parágrafo por CHAMADA já resolveu o formato; em SÉRIE custava 84 s de mediana.
+     Agora os parágrafos vão em paralelo, um worker por provedor (nunca duas chamadas no mesmo
+     host, que é o que estoura a cota gratuita). O parágrafo que falhar é refeito numa segunda
+     passada em série — a mesma rede de segurança de antes. */
   Roteador.prototype._textoLongo = async function (pergunta, ex) {
     var self = this;
     var n = Math.max(2, ex.paragrafos || 1);
     var minTotal = ex.minPalavras || 70;
-    // pedir com folga: o modelo devolve menos do que promete. Sem folga, a soma ficava abaixo do
-    // mínimo do pedido (medido: 55 palavras para um pedido de 60).
     var minPor = Math.max(26, Math.ceil(minTotal / n) + 8);
     var inicio = agora();
-    // catálogo inteiro por ordem de força: se as fortes estão em 429, ainda há as leves
-    var vistas = {}, rotas = [];
+    var hosts = [], vistas = {}, tentativas = 0;
     ['forte', 'media', 'leve'].forEach(function (cl) {
       self._candidatos(cl).forEach(function (r) {
-        if (vistas[r.id] || !self.disponivel(r.id)) return;
-        vistas[r.id] = 1; rotas.push(r);
+        if (vistas[r.base] || !self.disponivel(r.id)) return;   // um por BASE (provedor), não por modelo
+        vistas[r.base] = 1; hosts.push(r);
       });
     });
-    if (!rotas.length) return null;
-    var idx = 0, blocos = [], tentativas = 0;
+    if (!hosts.length) return null;
+    // Ordem por LATÊNCIA MEDIDA para gerar um parágrafo (tools/sonda-latencia-paragrafo.js, 28/10):
+    // laguna 9,2 s e compliant; nemotron-ultra 20,4 s (e estoura o tamanho); qwen-397 11,1 s (devolve
+    // raciocínio sem conclusão); nemotron-lightning estourou 60 s. Em série, dois parágrafos caem de
+    // 84 s para ~20 s só por escolher quem escreve primeiro.
+    hosts.sort(function (a, b) { return (a.latPar || 30000) - (b.latPar || 30000); });
+    var cursor = 0;
+    function proxima() { var r = hosts[cursor++ % hosts.length]; return r; }
 
-    for (var i = 0; i < n; i++) {
-      var feito = null;
-      for (var t = 0; t < 4 && !feito; t++) {
-        if (agora() - inicio > 110000) break;
-        var rota = rotas[idx++ % rotas.length];
+    async function paragrafo(i) {
+      var rota = proxima();
+      for (var t = 0; t < 4; t++) {
+        if (agora() - inicio > 70000) return null;
         var foco = i === 0
           ? 'Comece definindo o assunto com precisão e dê um exemplo concreto.'
           : 'Aprofunde um aspecto novo, sem repetir o que já foi dito, e cite um detalhe concreto (nome, número ou processo).';
         if (i === n - 1) foco += ' Feche com uma frase de conclusão completa.';
-        var ped = instrucaoParagrafo(pergunta, i, n, minPor, foco);
-        await this._esperarVez(rota);
-        var r = await this._chamar(rota, ped, 30000, { maxTokens: 700, longo: true, sistema: SYS_ABERTO });
+        var ped = instrucaoParagrafo(pergunta, i, n, minPor, foco) + instrucaoFormato(pergunta);
+        await self._esperarVez(rota);
+        var r = await self._chamar(rota, ped, 30000, { maxTokens: 700, longo: true, sistema: SYS_ABERTO });
         tentativas++;
-        if (r.texto) this._premiar(rota.id, r.ms); else this._castigar(rota.id, r.erro, r.espera);
-        if (r.erro === 'rate') await new Promise(function (res) { setTimeout(res, 3000 + Math.random() * 3000); });
-        var txt = sanear(String(r.texto || '').trim());
+        if (r.texto) self._premiar(rota.id, r.ms); else self._castigar(rota.id, r.erro, r.espera);
+        if (r.erro === 'rate') { await new Promise(function (res) { setTimeout(res, 2500 + Math.random() * 2000); }); rota = proxima(); }
+        else if (r.erro) { rota = proxima(); }   // degenerada/servidor: outro provedor, não repetir o mesmo
+        // um parágrafo é UM bloco: se o modelo abriu linhas em branco dentro dele, o texto final
+        // saía com mais parágrafos do que o pedido (medido: pedido de 2, entrega de 3)
+        var txt = sanear(String(r.texto || '').trim()).replace(/\s*\n+\s*/g, ' ');
         var palavras = txt.split(/\s+/).filter(Boolean).length;
         var piso = t < 2 ? Math.floor(minPor * 0.8) : Math.floor(minPor * 0.55);
-        if (txt && palavras >= piso && /[.!?…]["”)]?\s*$/.test(txt)) feito = txt;
+        if (txt && palavras >= piso && /[.!?…]["”)]?\s*$/.test(txt)) return txt;
+        rota = proxima();
       }
-      if (!feito) return null;      // parágrafo irrecuperável: o caminho antigo (uma chamada) tenta
-      blocos.push(feito);
+      return null;
     }
+
+    // dois workers, no máximo: medido que abrir 3 em paralelo estoura a cota dos três hosts e o
+    // tempo total sobe (item de 3 parágrafos levou 223 s com 3 workers)
+    var workers = Math.min(2, n, hosts.length);
+    var blocos = new Array(n);
+    await Promise.all(Array.from({ length: workers }, async function (_, wi) {
+      for (var i = wi; i < n; i += workers) blocos[i] = await paragrafo(i);
+    }));
+    for (var i = 0; i < n; i++) if (!blocos[i]) blocos[i] = await paragrafo(i);   // segunda passada, em série
+    if (blocos.some(function (b) { return !b; })) return null;
     var texto = blocos.join('\n\n');
     if (!textoCompleto(texto, minTotal)) return null;
     return {
@@ -1645,6 +1764,14 @@
     var dificuldade = (typeof pedido === 'object' && pedido.dificuldade) || 'media';
     var usarFerramenta = !(typeof pedido === 'object' && pedido.semFerramenta);
     var usarConsenso = !(typeof pedido === 'object' && pedido.semConsenso) && dificuldade !== 'leve';
+    var imagem = typeof pedido === 'object' ? pedido.imagem : null;
+    if (imagem) {
+      this.metricas.perguntas++;
+      var v = await this._visao(imagem, pergunta);
+      if (v) { this.metricas.sucessos++; return v; }
+      return { texto: '', rota: null, rotaNome: 'sem rota de visão', classe: 'visao',
+               confianca: 'baixa', tentativas: 3, erro: 'sem-resposta' };
+    }
     var chave = 'q:' + normal(pergunta);
     this.metricas.perguntas++;
 
@@ -1675,7 +1802,7 @@
     }
     if (tipo === 'aberto') {
       var ex = exigenciaDoPedido(pergunta);
-      var instrucao = SYS_ABERTO;
+      var instrucao = SYS_ABERTO + instrucaoFormato(pergunta);
       if (ex.paragrafos) instrucao += ' O pedido exige ' + ex.paragrafos + ' parágrafo(s): entregue exatamente '
         + ex.paragrafos + ' bloco(s) separados por uma linha em branco, cada um com pelo menos 3 frases completas.';
       if (ex.itens) instrucao += ' O pedido exige uma lista com ' + ex.itens + ' itens numerados, um por linha.';
@@ -1694,15 +1821,23 @@
         chamar: { maxTokens: 1800, sistema: instrucao },
         minPalavras: ex.minPalavras,
         nota: function (t) { return notaTexto(ajustarParagrafos(t, ex.paragrafos), ex); },
-        transformar: function (t) { return fecharTexto(ajustarParagrafos(t, ex.paragrafos)); }
+        transformar: function (t) { return ajustarFechamento(fecharTexto(ajustarParagrafos(t, ex.paragrafos)), pergunta); }
       });
       if (ga) { this._cacheSet(chave, ga); this.metricas.sucessos++; return ga; }
+    }
+
+    function acabamento(txt) {
+      var ex2 = exigenciaDoPedido(pergunta);
+      return ajustarFechamento(fecharTexto(ajustarParagrafos(txt, ex2.paragrafos)), pergunta);
     }
 
     if (usarConsenso) {
       var c = await this._consenso(pergunta, dificuldade,
         tipo === 'curto' ? null : { longo: true, chamar: { maxTokens: 1200 } });
-      if (c) { this._cacheSet(chave, c); this.metricas.sucessos++; return c; }
+      if (c) {
+        if (tipo !== 'curto') c.texto = acabamento(c.texto);
+        this._cacheSet(chave, c); this.metricas.sucessos++; return c;
+      }
     }
 
     var inicio = agora();
@@ -1733,6 +1868,7 @@
           this.metricas.sucessos++;
           var confianca = rota.classe === 'forte' ? 'alta' : (rota.classe === 'media' ? 'media' : 'baixa');
           var saida = { texto: r.texto, rota: rota.id, rotaNome: rota.nome, classe: rota.classe, confianca: confianca, tentativas: tentativas, ms: r.ms };
+          if (tipo !== 'curto') saida.texto = acabamento(saida.texto);
           this._cacheSet(chave, saida);
           return saida;
         }
@@ -1753,7 +1889,7 @@
   };
 
   var api = { Roteador: Roteador, CATALOGO: CATALOGO, normal: normal };
-  api.internos = { sanear: sanear, util: util, extrairConclusao: extrairConclusao, calendarioLocal: calendarioLocal, fragmento: fragmento, instrucaoParagrafo: instrucaoParagrafo, fecharTexto: fecharTexto, termosDoPedido: termosDoPedido, calcular: calcular,
+  api.internos = { sanear: sanear, util: util, extrairConclusao: extrairConclusao, calendarioLocal: calendarioLocal, fragmento: fragmento, instrucaoParagrafo: instrucaoParagrafo, fecharTexto: fecharTexto, termosDoPedido: termosDoPedido, calcular: calcular, instrucaoFormato: instrucaoFormato, ajustarFechamento: ajustarFechamento,
                    classificarPedido: classificarPedido, extrairCodigo: extrairCodigo,
                    codigoInteiro: codigoInteiro, textoCompleto: textoCompleto,
                    exigenciaDoPedido: exigenciaDoPedido, notaTexto: notaTexto, ajustarParagrafos: ajustarParagrafos };

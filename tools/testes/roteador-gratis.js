@@ -178,6 +178,31 @@ if (typeof sanear === 'function') {
   ok('aritmética: expressão inválida devolve null', calc && calc('2+*3') === null);
   ok('aritmética: não avalia código', calc && calc('require(1)') === null);
 
+  // convenções de gênero textual: e-mail fecha com despedida, argumento cita consequência concreta
+  const fmt = I.instrucaoFormato;
+  ok('formato: e-mail pede despedida formal', fmt && /Atenciosamente/.test(fmt('Escreva um e-mail formal pedindo orçamento de 20 cadeiras.')));
+  ok('formato: carta também pede despedida', fmt && /Atenciosamente/.test(fmt('Escreva uma carta ao prefeito sobre a praça.')));
+  ok('formato: argumento pede consequência concreta', fmt && /consequ[êe]ncia concreta/.test(fmt('Escreva um parágrafo argumentando a favor da reciclagem.')));
+  ok('formato: pergunta neutra não ganha instrução', fmt && fmt('Explique o que é a LGPD em dois parágrafos.') === '');
+
+  // fechamento de e-mail é convenção aplicada por código (o modelo não cumpriu instruído)
+  const fech = I.ajustarFechamento;
+  ok('fechamento: e-mail sem despedida ganha "Atenciosamente,"',
+     fech && /Atenciosamente/.test(fech('Prezados, gostaria de orçamento para 20 cadeiras.', 'Escreva um e-mail formal pedindo orçamento.')));
+  ok('fechamento: não duplica despedida existente',
+     fech && (fech('Atenciosamente, Fulano', 'Escreva um e-mail.') || '').match(/atenciosamente/gi).length === 1);
+  ok('fechamento: "agradeço a atenção" NÃO conta como despedida',
+     fech && /Atenciosamente,/.test(fech('Prezados, gostaria de orçamento. Agradeço a atenção.', 'Escreva um e-mail formal.')));
+  ok('fechamento: texto que não é e-mail não é tocado',
+     fech && fech('Texto solto.', 'Explique em dois parágrafos a fotossíntese.') === 'Texto solto.');
+
+  // visão: existe rota multimodal gratuita medida (OVH Qwen3.5-397B); sem ela, o roteador tem de
+  // dizer que não tem rota — nunca inventar descrição de imagem
+  const Rv = new api.Roteador();
+  Rv.visaoLigada = false;
+  const semVisao = await Rv.responder({ pergunta: 'O que há nesta imagem?', imagem: 'data:image/png;base64,AA==' });
+  ok('visão desligada devolve sem-resposta honesta', !!(semVisao && semVisao.texto === '' && semVisao.erro === 'sem-resposta'));
+
   // régua estrita: acento conta. Se o afrouxamento de acento estivesse mascarando erro, isto pega.
   ok('estrito: "caracois" não passa por "caracóis"', api.internos && require('../../bench/pontuar.js').acertou('caracois', ['caracóis'], null, { estrito: true }) === false);
   ok('estrito: "caracóis" passa', require('../../bench/pontuar.js').acertou('caracóis', ['caracóis'], null, { estrito: true }) === true);
