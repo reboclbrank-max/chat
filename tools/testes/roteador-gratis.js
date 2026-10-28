@@ -113,12 +113,44 @@ if (typeof sanear === 'function') {
     ['Qual o superlativo de \'salgado\'?', /^salgadíssimo$/],
     ['Qual o superlativo de \'difícil\'?', /^dificílimo$/],
     ['Qual o superlativo de \'feliz\'?', /^felicíssimo$/],
-    ['Qual a figura de linguagem em \'morri de saudade\'?', /hip[ée]rbole/i]
+    ['Qual a figura de linguagem em \'morri de saudade\'?', /hip[ée]rbole/i],
+    // rodada 94: vários saltos (compositor local de 2–3 passos)
+    ['Cada pastel custa R$6. Você compra 4 e paga com R$50. Quanto de troco?', /^26$/],
+    ['Um carro faz 14 km por litro e o tanque tem 30 litros. Quantos km ele anda?', /^420$/],
+    ['Um caminhão anda 60 km por hora por 3 horas e depois mais 2 horas. Quantos km no total?', /^300$/],
+    ['Pedro tinha 120 reais, ganhou 45 e gastou 37. Com quanto ficou?', /^128$/],
+    ['São 8 caixas com 15 latas cada e 12 latas amassam. Quantas latas boas sobram?', /^108$/],
+    ['Quatro canetas custam R$10. Quanto custam 6 canetas com desconto de 20%?', /^12$/],
+    ['Qual o triplo de 14 menos a metade de 10?', /^37$/],
+    ['Três horas e 15 minutos têm quantos segundos?', /^11700$/],
+    ['Uma pessoa dorme 8 horas por dia. Quantas horas ela dorme em 30 dias?', /^240$/]
   ];
   for (const [pergunta, esperado] of casos) {
     const f = await r._ferramenta(pergunta);
     ok('rota local: ' + pergunta, !!f && esperado.test(String(f.texto)), f ? String(f.texto) : 'sem rota');
   }
+
+  // rodada 94: classificador, extração de código, exigência do pedido e nota de formato
+  const I = api.internos || {};
+  const cl = [
+    ['Escreva uma função em JavaScript que soma dois números', 'codigo'],
+    ['Explique em dois parágrafos o que é fotossíntese.', 'aberto'],
+    ['Qual a capital da França?', 'curto'],
+    ['Quantos meses do ano têm 30 dias?', 'curto']
+  ];
+  for (const [q, esperado] of cl) ok('classificador: ' + q.slice(0, 34) + ' → ' + esperado, I.classificarPedido && I.classificarPedido(q) === esperado, I.classificarPedido && I.classificarPedido(q));
+
+  // régua estrita: acento conta. Se o afrouxamento de acento estivesse mascarando erro, isto pega.
+  ok('estrito: "caracois" não passa por "caracóis"', api.internos && require('../../bench/pontuar.js').acertou('caracois', ['caracóis'], null, { estrito: true }) === false);
+  ok('estrito: "caracóis" passa', require('../../bench/pontuar.js').acertou('caracóis', ['caracóis'], null, { estrito: true }) === true);
+  ok('quebra em N parágrafos sem inventar conteúdo', I.ajustarParagrafos && I.ajustarParagrafos('A. B. C. D.', 2) === 'A. B.\n\nC. D.');
+  ok('extrai código de bloco markdown', I.extrairCodigo && I.extrairCodigo('claro:\n```js\nfunction soma(a,b){return a+b}\nmodule.exports={soma};\n```') === 'function soma(a,b){return a+b}\nmodule.exports={soma};');
+  ok('código cortado não passa por inteiro', I.codigoInteiro && I.codigoInteiro('function soma(a,b){') === false);
+  ok('código completo passa por inteiro', I.codigoInteiro && I.codigoInteiro('function soma(a,b){return a+b}\nmodule.exports={soma};') === true);
+  ok('pedido de 2 parágrafos é lido', I.exigenciaDoPedido && I.exigenciaDoPedido('Explique em dois parágrafos o que é X.').paragrafos === 2);
+  ok('pedido de lista de 5 é lido', I.exigenciaDoPedido && I.exigenciaDoPedido('Escreva uma lista com 5 dicas.').itens === 5);
+  ok('nota de texto cobra parágrafo', I.notaTexto && I.notaTexto('Um parágrafo só com várias palavras aqui e mais texto para chegar ao mínimo exigido.', { paragrafos: 2, minPalavras: 10 }) <
+     I.notaTexto('Primeiro parágrafo com várias palavras aqui.\nSegundo parágrafo também completo e fechado.', { paragrafos: 2, minPalavras: 10 }));
 
   // régua: o autoteste do pontuador é parte da barreira
   const p = spawnSync('node', [path.join(RAIZ, 'bench', 'pontuar.js')], { encoding: 'utf8' });

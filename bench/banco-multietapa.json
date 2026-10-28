@@ -1,0 +1,156 @@
+{
+ "fonte": "rodada 94 — 18 problemas de 2-3 saltos",
+ "itens": [
+  {
+   "id": 1,
+   "tipo": "multi",
+   "q": "Cada pastel custa R$6. Você compra 4 e paga com R$50. Quanto de troco?",
+   "g": [
+    "26",
+    "vinte e seis"
+   ]
+  },
+  {
+   "id": 2,
+   "tipo": "multi",
+   "q": "Um carro faz 14 km por litro e o tanque tem 30 litros. Quantos km ele anda?",
+   "g": [
+    "420"
+   ]
+  },
+  {
+   "id": 3,
+   "tipo": "multi",
+   "q": "Um caminhão anda 60 km por hora por 3 horas e depois mais 2 horas. Quantos km no total?",
+   "g": [
+    "300"
+   ]
+  },
+  {
+   "id": 4,
+   "tipo": "multi",
+   "q": "Pedro tinha 120 reais, ganhou 45 e gastou 37. Com quanto ficou?",
+   "g": [
+    "128"
+   ]
+  },
+  {
+   "id": 5,
+   "tipo": "multi",
+   "q": "São 8 caixas com 15 latas cada e 12 latas amassam. Quantas latas boas sobram?",
+   "g": [
+    "108"
+   ]
+  },
+  {
+   "id": 6,
+   "tipo": "multi",
+   "q": "Quatro canetas custam R$10. Quanto custam 6 canetas com desconto de 20%?",
+   "g": [
+    "12"
+   ]
+  },
+  {
+   "id": 7,
+   "tipo": "multi",
+   "q": "Qual o triplo de 14 menos a metade de 10?",
+   "g": [
+    "37"
+   ]
+  },
+  {
+   "id": 8,
+   "tipo": "multi",
+   "q": "Três horas e 15 minutos têm quantos segundos?",
+   "g": [
+    "11700"
+   ]
+  },
+  {
+   "id": 9,
+   "tipo": "multi",
+   "q": "Uma pessoa dorme 8 horas por dia. Quantas horas ela dorme em 30 dias?",
+   "g": [
+    "240"
+   ]
+  },
+  {
+   "id": 10,
+   "tipo": "multi",
+   "q": "Ana tem o dobro de Beto. Beto tem 7 figurinhas. Quantas os dois têm juntos?",
+   "g": [
+    "21",
+    "vinte e um"
+   ]
+  },
+  {
+   "id": 11,
+   "tipo": "multi",
+   "q": "Um produto de R$80 tem 25% de desconto e depois 10% de imposto sobre o valor com desconto. Qual o preço final?",
+   "g": [
+    "66",
+    "R$66",
+    "66,00"
+   ]
+  },
+  {
+   "id": 12,
+   "tipo": "multi",
+   "q": "Três operários fazem a obra em 12 dias. Seis operários, no mesmo ritmo, fazem em quantos dias?",
+   "g": [
+    "6",
+    "seis"
+   ]
+  },
+  {
+   "id": 13,
+   "tipo": "multi",
+   "q": "Uma prova tem 60 questões e dois terços foram respondidas corretamente. Quantas ficaram erradas?",
+   "g": [
+    "20",
+    "vinte"
+   ]
+  },
+  {
+   "id": 14,
+   "tipo": "multi",
+   "q": "Um trem anda a 60 km por hora. Quanto tempo ele leva para 150 km, em minutos?",
+   "g": [
+    "150"
+   ]
+  },
+  {
+   "id": 15,
+   "tipo": "multi",
+   "q": "Cada caixa pesa 12 kg. Você carrega 5 caixas e mais 3 kg de embalagem. Qual o peso total?",
+   "g": [
+    "63"
+   ]
+  },
+  {
+   "id": 16,
+   "tipo": "multi",
+   "q": "Você tem R$200, paga 3 parcelas de R$45 e depois recebe R$30. Quanto sobra?",
+   "g": [
+    "95"
+   ]
+  },
+  {
+   "id": 17,
+   "tipo": "multi",
+   "q": "Um litro de tinta cobre 8 metros quadrados. Quantos litros são necessários para uma parede de 24 metros quadrados?",
+   "g": [
+    "3",
+    "três"
+   ]
+  },
+  {
+   "id": 18,
+   "tipo": "multi",
+   "q": "Um ônibus leva 45 minutos para percorrer 30 km. Mantendo a mesma velocidade, quantos km ele percorre em 2 horas?",
+   "g": [
+    "80"
+   ]
+  }
+ ]
+}

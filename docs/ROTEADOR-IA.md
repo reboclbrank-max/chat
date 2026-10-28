@@ -124,3 +124,19 @@ Depois disso, cada classe de erro deixou de ser opinião de modelo e virou **rot
 Números na mesma régua, sem chave: **200 → 200/200**, **holdout 105 → 105/105**, **banco fresco 84 (escrito depois dos ajustes) → 84/84**. Mediana ~3 s (era 4,9 s). Barreira: 97/97, com `tools/testes/roteador-gratis.js` permanente.
 
 **O que continua fora:** fatos de mundo fora das tabelas, perguntas de vários saltos, redação longa, código e visão não são medidos por esta régua; a régua aceita acento e precisão numérica equivalente por decisão explícita; e o teto dos modelos gratuitos (~45 × ~58 do topo pago) segue igual — só que perguntas determinísticas agora não consultam modelo, então nessa classe o grátis não perde para o pago.
+
+## 8. v3 (28/10/2026) — o que era "não medido" agora tem régua
+
+A v2.2 terminou dizendo que redação longa, código e vários saltos *não eram medidos*. Viraram três réguas verificáveis por máquina:
+
+| régua | como mede | antes | depois |
+|---|---|---|---|
+| **código** (`bench/medir-codigo.js`) | a função escrita é **executada** contra testes reais, em processo separado | 13/18 = 72,2% | **18/18 = 100%** |
+| **vários saltos** (`bench/banco-multietapa.json`) | gabarito calculado, 18 problemas de 2–3 passos | 16/18 = 88,9% | **18/18 = 100%** |
+| **texto aberto** (`bench/medir-aberto.js`) | rubrica objetiva: tamanho, parágrafos/itens pedidos, fatos exigidos, texto fechado, sem preâmbulo de robô | 3/24 = 12,5% | **14–15/24 = 58–63%** |
+
+O defeito que explicava o número ruim de texto e código: **`max_tokens: 400` fixo** em todas as chamadas. Em redação cortava a frase, em código cortava a função. Agora `tipo: 'codigo' | 'aberto'` abre caminho generativo (1600/1800 tokens, três provedores, sem consenso) e a escolha entre candidatos prefere resposta **inteira** a resposta longa cortada.
+
+**Texto aberto é o limite honesto da rodada**, e agora é um número, não uma frase: ~40% dos pedidos longos ainda saem curtos, sem algum fato pedido ou cortados pelo provedor. A rubrica mede forma e cobertura — não mede qualidade literária, e não há juiz humano.
+
+Nas perguntas curtas nada regrediu (200/200, 105/105, 84/84) e o pontuador ganhou **modo estrito** — acento conta — com o **mesmo** resultado nos três bancos: o afrouxamento de acento não estava escondendo acerto.

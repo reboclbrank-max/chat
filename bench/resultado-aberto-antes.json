@@ -1,0 +1,434 @@
+{
+ "sum": {
+  "modo": "antes",
+  "total": 24,
+  "passaram": 3,
+  "pct": 12.5,
+  "medianaPalavras": 50,
+  "cortados": 9,
+  "curtos": 13,
+  "faltouFato": 11,
+  "medianaMs": 14406
+ },
+ "res": [
+  {
+   "id": 1,
+   "q": "Explique em dois parágrafos o que é fotossíntese.",
+   "ok": false,
+   "falhas": [
+    "parágrafos (1<2)"
+   ],
+   "palavras": 88,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 41753,
+   "texto": "A fotossíntese é o processo pelo qual as plantas, algas e algumas bactérias convertem luz solar, dióxido de carbono e água em glicose e oxigênio, usando clorofila para capturar energia luminosa; esse processo ocorre nas cloroplastos, onde a energia solar é transformada em energia química, alimentando a vida na Terra. O ciclo envolve duas fases principais: a fase clara, que gera ATP e NADPH, e a fase escura (Ciclo de Calvin), que fixa CO₂ em glicose, sustentando a produção de biomassa e a liberação de oxigênio como subproduto.",
+   "trecho": "A fotossíntese é o processo pelo qual as plantas, algas e algumas bactérias convertem luz solar, dióxido de carbono e água em glicose e oxigênio, usando clorofila para capturar energia luminosa; esse ",
+   "fim": "e, sustentando a produção de biomassa e a liberação de oxigênio como subproduto."
+  },
+  {
+   "id": 2,
+   "q": "Explique em dois parágrafos a diferença entre vírus e bactéria.",
+   "ok": false,
+   "falhas": [
+    "curto (2<70)",
+    "parágrafos (1<2)",
+    "falta fato #1 (bact[ée]ri)",
+    "falta fato #2 (v[íi]rus)",
+    "falta fato #3 (antibi[óo]tic)",
+    "não terminou a frase (provável corte por limite de tokens)"
+   ],
+   "palavras": 2,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 20453,
+   "texto": "This is",
+   "trecho": "This is",
+   "fim": "This is"
+  },
+  {
+   "id": 3,
+   "q": "Resuma em três parágrafos o que foi a Revolução Industrial.",
+   "ok": false,
+   "falhas": [
+    "curto (11<90)",
+    "parágrafos (1<3)",
+    "falta fato #1 (s[ée]culo (XVIII)",
+    "falta fato #2 (m[áa]quina)",
+    "falta fato #3 (urbaniza)",
+    "não terminou a frase (provável corte por limite de tokens)"
+   ],
+   "palavras": 11,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 114378,
+   "texto": "If I output three paragraphs, I will have line breaks, which",
+   "trecho": "If I output three paragraphs, I will have line breaks, which",
+   "fim": "If I output three paragraphs, I will have line breaks, which"
+  },
+  {
+   "id": 4,
+   "q": "Escreva um e-mail formal pedindo orçamento de 20 cadeiras para um escritório. Máximo 200 palavras.",
+   "ok": false,
+   "falhas": [
+    "falta fato #1 (or[çc]amento)",
+    "falta fato #2 (cadeira)",
+    "falta fato #3 (atenciosamente)",
+    "não terminou a frase (provável corte por limite de tokens)"
+   ],
+   "palavras": 2,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 5984,
+   "texto": "Prezado(a) Senhor(a),",
+   "trecho": "Prezado(a) Senhor(a),",
+   "fim": "Prezado(a) Senhor(a),"
+  },
+  {
+   "id": 5,
+   "q": "Explique em três passos como fazer um bolo simples.",
+   "ok": false,
+   "falhas": [
+    "curto (32<60)"
+   ],
+   "palavras": 32,
+   "paragrafos": 1,
+   "itens": 1,
+   "erro": null,
+   "ms": 7701,
+   "texto": "1. Misture farinha, açúcar, ovos, leite e fermento; 2. Despeje a massa em forma untada e leve ao forno pré-aquecido a 180 °C por 30‑40 min; 3. Deixe esfriar, desenforme e sirva.",
+   "trecho": "1. Misture farinha, açúcar, ovos, leite e fermento; 2. Despeje a massa em forma untada e leve ao forno pré-aquecido a 180 °C por 30‑40 min; 3. Deixe esfriar, desenforme e sirva.",
+   "fim": "forno pré-aquecido a 180 °C por 30‑40 min; 3. Deixe esfriar, desenforme e sirva."
+  },
+  {
+   "id": 6,
+   "q": "Escreva um parágrafo argumentando a favor da reciclagem.",
+   "ok": false,
+   "falhas": [
+    "falta fato #3 (ambient)"
+   ],
+   "palavras": 71,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 16373,
+   "texto": "A reciclagem é essencial porque reduz a extração de recursos naturais, diminui a quantidade de resíduos que poluem solos e oceanos, economiza energia ao reutilizar materiais já processados e gera empregos verdes, contribuindo simultaneamente para a mitigação das mudanças climáticas ao cortar emissões de gases de efeito estufa, o que demonstra que adotar práticas de reciclagem é um investimento inteligente e responsável para garantir um futuro sustentável para as próximas gerações.",
+   "trecho": "A reciclagem é essencial porque reduz a extração de recursos naturais, diminui a quantidade de resíduos que poluem solos e oceanos, economiza energia ao reutilizar materiais já processados e gera empr",
+   "fim": "nte e responsável para garantir um futuro sustentável para as próximas gerações."
+  },
+  {
+   "id": 7,
+   "q": "Explique o ciclo da água em dois parágrafos.",
+   "ok": false,
+   "falhas": [
+    "curto (43<70)",
+    "parágrafos (1<2)"
+   ],
+   "palavras": 43,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 55839,
+   "texto": "A água evapora dos oceanos, lagos e solos, sobe como vapor, condensa em nuvens, precipita como chuva ou neve, infiltra no solo ou escorre para corpos d'água, onde volta a evaporar, completando o ciclo contínuo de circulação e renovação da água na Terra.",
+   "trecho": "A água evapora dos oceanos, lagos e solos, sobe como vapor, condensa em nuvens, precipita como chuva ou neve, infiltra no solo ou escorre para corpos d'água, onde volta a evaporar, completando o ciclo",
+   "fim": "aporar, completando o ciclo contínuo de circulação e renovação da água na Terra."
+  },
+  {
+   "id": 8,
+   "q": "Explique o que é inflação em dois parágrafos.",
+   "ok": false,
+   "falhas": [
+    "parágrafos (1<2)"
+   ],
+   "palavras": 105,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 5929,
+   "texto": "Inflação é a elevação generalizada e contínua dos preços de bens e serviços, que reduz o poder de compra da moeda ao longo do tempo; ela pode ser causada por excesso de demanda, aumento de custos de produção ou expansão monetária, e costuma ser medida por índices como o IPCA, refletindo variações em categorias como alimentação, habitação e transporte. Quando a inflação persiste, pode levar a ajustes nos salários, juros e políticas fiscais, exigindo que governos e bancos centrais adotem medidas de controle, como aumento de taxas de juros ou restrição de liquidez, para estabilizar a economia e proteger o poder de compra dos consumidores.",
+   "trecho": "Inflação é a elevação generalizada e contínua dos preços de bens e serviços, que reduz o poder de compra da moeda ao longo do tempo; ela pode ser causada por excesso de demanda, aumento de custos de p",
+   "fim": "idez, para estabilizar a economia e proteger o poder de compra dos consumidores."
+  },
+  {
+   "id": 9,
+   "q": "Explique a diferença entre juros simples e juros compostos em dois parágrafos.",
+   "ok": false,
+   "falhas": [
+    "curto (13<70)",
+    "parágrafos (1<2)",
+    "falta fato #2 (compost)",
+    "não terminou a frase (provável corte por limite de tokens)"
+   ],
+   "palavras": 13,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 39367,
+   "texto": "Juros simples calculam o rendimento apenas sobre o capital inicial (J = P·i·",
+   "trecho": "Juros simples calculam o rendimento apenas sobre o capital inicial (J = P·i·",
+   "fim": "Juros simples calculam o rendimento apenas sobre o capital inicial (J = P·i·"
+  },
+  {
+   "id": 10,
+   "q": "Escreva uma lista com 5 dicas práticas para economizar água em casa.",
+   "ok": false,
+   "falhas": [
+    "curto (4<50)",
+    "itens (0<5)",
+    "falta fato #1 ([áa]gua)",
+    "falta fato #2 (torneira)",
+    "não terminou a frase (provável corte por limite de tokens)"
+   ],
+   "palavras": 4,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 5791,
+   "texto": "Must be in Portuguese",
+   "trecho": "Must be in Portuguese",
+   "fim": "Must be in Portuguese"
+  },
+  {
+   "id": 11,
+   "q": "Explique por que o céu é azul em dois parágrafos.",
+   "ok": false,
+   "falhas": [
+    "curto (56<70)",
+    "parágrafos (1<2)",
+    "não terminou a frase (provável corte por limite de tokens)"
+   ],
+   "palavras": 56,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 11362,
+   "texto": "We could output a single line that says \"O céu é azul devido à dispersão de Rayleigh, onde moléculas de ar espalham mais a luz azul de comprimento de onda curto do que as cores de comprimento de onda longo; ao nascer e pôr do sol, a luz percorre mais atmosfera, espalhando o azul e deixando",
+   "trecho": "We could output a single line that says \"O céu é azul devido à dispersão de Rayleigh, onde moléculas de ar espalham mais a luz azul de comprimento de onda curto do que as cores de comprimento de onda ",
+   "fim": "nascer e pôr do sol, a luz percorre mais atmosfera, espalhando o azul e deixando"
+  },
+  {
+   "id": 12,
+   "q": "Resuma em três parágrafos a Segunda Guerra Mundial.",
+   "ok": false,
+   "falhas": [
+    "parágrafos (1<3)"
+   ],
+   "palavras": 122,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 11059,
+   "texto": "A Segunda Guerra Mundial (1939-1945) começou com a invasão alemã à Polônia e expandiu-se globalmente entre as potências do Eixo (Alemanha, Itália, Japão) e os Aliados (Reino Unido, URSS, EUA, China), caracterizando-se pela blitzkrieg, Holocausto e batalhas decisivas como Stalingrado e Midway; o ponto de virada ocorreu em 1942-1943 com a entrada massiva dos EUA e a resistência soviética, invertendo o momentum a favor dos Aliados nos teatros europeu e do Pacífico; a guerra terminou com a rendição incondicional da Alemanha em maio de 1945 após a tomada de Berlim e a do Japão em setembro após os bombardeios atômicos de Hiroshima e Nagasaki, resultando em cerca de 70-85 milhões de mortes, a criação da ONU e o início da Guerra Fria.",
+   "trecho": "A Segunda Guerra Mundial (1939-1945) começou com a invasão alemã à Polônia e expandiu-se globalmente entre as potências do Eixo (Alemanha, Itália, Japão) e os Aliados (Reino Unido, URSS, EUA, China), ",
+   "fim": "em cerca de 70-85 milhões de mortes, a criação da ONU e o início da Guerra Fria."
+  },
+  {
+   "id": 13,
+   "q": "Explique como funciona uma vacina em dois parágrafos.",
+   "ok": false,
+   "falhas": [
+    "curto (50<70)",
+    "parágrafos (1<2)",
+    "falta fato #2 (ant[íi]geno)"
+   ],
+   "palavras": 50,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 5199,
+   "texto": "Uma vacina introduz no organismo uma versão inofensiva de um patógeno (atenuado, inativado, fragmentos proteicos ou material genético) que estimula o sistema imunológico a produzir anticorpos e células de memória sem causar a doença, preparando o corpo para responder rapidamente e neutralizar o agente infeccioso real em um contato futuro.",
+   "trecho": "Uma vacina introduz no organismo uma versão inofensiva de um patógeno (atenuado, inativado, fragmentos proteicos ou material genético) que estimula o sistema imunológico a produzir anticorpos e célula",
+   "fim": "sponder rapidamente e neutralizar o agente infeccioso real em um contato futuro."
+  },
+  {
+   "id": 14,
+   "q": "Explique o que é uma função em programação para quem nunca programou, em dois parágrafos.",
+   "ok": false,
+   "falhas": [
+    "curto (35<70)",
+    "parágrafos (1<2)",
+    "falta fato #2 (par[âa]metro)"
+   ],
+   "palavras": 35,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 20062,
+   "texto": "Uma função é como uma receita reutilizável: você dá um nome a um conjunto de instruções, passa ingredientes (dados) e ela devolve o prato pronto (resultado), permitindo usar o mesmo código várias vezes sem repeti‑lo.",
+   "trecho": "Uma função é como uma receita reutilizável: você dá um nome a um conjunto de instruções, passa ingredientes (dados) e ela devolve o prato pronto (resultado), permitindo usar o mesmo código várias veze",
+   "fim": "o pronto (resultado), permitindo usar o mesmo código várias vezes sem repeti‑lo."
+  },
+  {
+   "id": 15,
+   "q": "Explique o que é a LGPD em dois parágrafos.",
+   "ok": false,
+   "falhas": [
+    "parágrafos (1<2)"
+   ],
+   "palavras": 170,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 68414,
+   "texto": "A Lei Geral de Proteção de Dados (LGPD) é um marco legal brasileiro que estabelece regras para o tratamento de dados pessoais, visando proteger a privacidade e os direitos fundamentais das pessoas. Entrada em vigor em setembro de 2020, a LGPD aplica-se a qualquer operação que envolva coleta, produção, recepção, classificação, utilização, acesso, reprodução, transmissão, distribuição, processamento, arquivamento, armazenamento, eliminação, avaliação ou controle de dados pessoais. Ela estabelece princípios como finalidade, necessidade e transparência, além de definir direitos dos titulares dos dados, como acesso, retificação e exclusão. A LGPD também cria o papel do encarregado de dados e prevê sanções para empresas que não cumprirem as normas. A LGPD alinha o Brasil aos padrões internacionais de proteção de dados, como o Regulamento Geral de Proteção de Dados da União Europeia (GDPR), facilitando assim a troca de informações com outros países. Além disso, a lei incentiva a adoção de boas práticas de governança de dados, promovendo confiança entre empresas e consumidores, e impulsionando a inovação tecnológica de forma ética e responsável.",
+   "trecho": "A Lei Geral de Proteção de Dados (LGPD) é um marco legal brasileiro que estabelece regras para o tratamento de dados pessoais, visando proteger a privacidade e os direitos fundamentais das pessoas. En",
+   "fim": "nsumidores, e impulsionando a inovação tecnológica de forma ética e responsável."
+  },
+  {
+   "id": 16,
+   "q": "Descreva em dois parágrafos o caminho da água da chuva até a torneira de casa.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 157,
+   "paragrafos": 2,
+   "itens": 0,
+   "erro": null,
+   "ms": 16978,
+   "texto": "A água da chuva primeiro se infiltra no solo ou é captada em reservatórios e nascentes que alimentam os lençóis freáticos. Conforme penetra nas camadas de solo e rocha, ela recarrega os aquíferos subterrâneos, passando por processos naturais de filtração que removem impurezas e partículas. Essa água subterrânea é então extraída por poços ou captada em rios e lagos que recebem o escoamento superficial das bacias hidrográficas, onde passa por estações de tratamento que realizam a coagulação, floculação, decantação, filtração e desinfecção para torná‑la potável.\n\nDepois de tratada, a água é bombeada para o sistema de distribuição municipal, que a conduz por meio de uma rede de tubulações de alta pressão até os reservatórios de pressão localizados próximos aos bairros. A partir desses reservatórios, a água segue pelos ramais menores até chegar às casas, onde, ao abrir a torneira, a pressão da rede faz com que a água flua pelos encanamentos internos até o ponto de consumo.",
+   "trecho": "A água da chuva primeiro se infiltra no solo ou é captada em reservatórios e nascentes que alimentam os lençóis freáticos. Conforme penetra nas camadas de solo e rocha, ela recarrega os aquíferos subt",
+   "fim": "rede faz com que a água flua pelos encanamentos internos até o ponto de consumo."
+  },
+  {
+   "id": 17,
+   "q": "Escreva um texto de dois parágrafos sobre os impactos das redes sociais na vida das pessoas.",
+   "ok": false,
+   "falhas": [
+    "parágrafos (1<2)"
+   ],
+   "palavras": 92,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 14406,
+   "texto": "As redes sociais transformaram profundamente a comunicação e o acesso à informação, permitindo conexões instantâneas globais, a formação de comunidades de apoio e a amplificação de vozes antes marginalizadas, além de servirem como vitrines profissionais e ferramentas de mobilização social; por outro lado, o uso excessivo e passivo dessas plataformas está associado ao aumento de ansiedade, depressão e baixa autoestima, impulsionados pela cultura da comparação, cyberbullying, disseminação de desinformação e a economia da atenção que vicia usuários através de algoritmos projetados para maximizar o tempo de tela em detrimento do bem-estar real.",
+   "trecho": "As redes sociais transformaram profundamente a comunicação e o acesso à informação, permitindo conexões instantâneas globais, a formação de comunidades de apoio e a amplificação de vozes antes margina",
+   "fim": "itmos projetados para maximizar o tempo de tela em detrimento do bem-estar real."
+  },
+  {
+   "id": 18,
+   "q": "Dê quatro argumentos contra o desperdício de alimentos.",
+   "ok": false,
+   "falhas": [
+    "curto (4<60)",
+    "itens (0<4)",
+    "falta fato #1 (desperd[íi]cio)",
+    "falta fato #2 (alimento)",
+    "falta fato #3 (fome)",
+    "não terminou a frase (provável corte por limite de tokens)"
+   ],
+   "palavras": 4,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 9640,
+   "texto": "No extra text whatsoever",
+   "trecho": "No extra text whatsoever",
+   "fim": "No extra text whatsoever"
+  },
+  {
+   "id": 19,
+   "q": "Explique a diferença entre clima e tempo em um parágrafo.",
+   "ok": false,
+   "falhas": [
+    "curto (42<50)"
+   ],
+   "palavras": 42,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 3317,
+   "texto": "Clima é o padrão médio das condições atmosféricas (temperatura, umidade, precipitação, vento) observado em uma região ao longo de longos períodos (geralmente 30 anos ou mais), enquanto tempo refere-se ao estado momentâneo e variável da atmosfera em um local e hora específicos.",
+   "trecho": "Clima é o padrão médio das condições atmosféricas (temperatura, umidade, precipitação, vento) observado em uma região ao longo de longos períodos (geralmente 30 anos ou mais), enquanto tempo refere-se",
+   "fim": "-se ao estado momentâneo e variável da atmosfera em um local e hora específicos."
+  },
+  {
+   "id": 20,
+   "q": "Resuma em três parágrafos a teoria da evolução de Darwin.",
+   "ok": false,
+   "falhas": [
+    "curto (8<90)",
+    "parágrafos (1<3)",
+    "falta fato #1 (sele[çc][ãa]o natural)",
+    "falta fato #2 (darwin)",
+    "falta fato #3 (esp[ée]cie)"
+   ],
+   "palavras": 8,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 15639,
+   "texto": "\"Resuma em três parágrafos...\" (Summarize in three paragraphs...).",
+   "trecho": "\"Resuma em três parágrafos...\" (Summarize in three paragraphs...).",
+   "fim": "\"Resuma em três parágrafos...\" (Summarize in three paragraphs...)."
+  },
+  {
+   "id": 21,
+   "q": "Escreva uma mensagem curta e educada cobrando um pagamento atrasado de um cliente. Máximo 150 palavras.",
+   "ok": false,
+   "falhas": [
+    "não terminou a frase (provável corte por limite de tokens)"
+   ],
+   "palavras": 94,
+   "paragrafos": 7,
+   "itens": 0,
+   "erro": null,
+   "ms": 11244,
+   "texto": "Prezado(a) [Nome do Cliente],\n\nEsperamos que esteja tudo bem. Gostaríamos de lembrá-lo(a) que a fatura nº [XXXXX], com vencimento em [data], ainda não foi quitada. Entendemos que imprevistos podem acontecer e, por isso, pedimos a gentileza de regularizar o pagamento o quanto antes.\n\nCaso já tenha efetuado a transferência, por favor desconsidere esta mensagem e nos envie o comprovante. Se precisar de alguma informação adicional ou desejar negociar outra forma de pagamento, estamos à disposição pelo telefone [número] ou e‑mail [e‑mail].\n\nAgradecemos a atenção e a parceria.\n\nAtenciosamente,  \n[Seu Nome]  \n[Seu Cargo] – [Empresa]",
+   "trecho": "Prezado(a) [Nome do Cliente],\n\nEsperamos que esteja tudo bem. Gostaríamos de lembrá-lo(a) que a fatura nº [XXXXX], com vencimento em [data], ainda não foi quitada. Entendemos que imprevistos podem aco",
+   "fim": " a atenção e a parceria.\n\nAtenciosamente,  \n[Seu Nome]  \n[Seu Cargo] – [Empresa]"
+  },
+  {
+   "id": 22,
+   "q": "Explique em dois parágrafos como funciona a energia solar fotovoltaica.",
+   "ok": false,
+   "falhas": [
+    "curto (14<70)",
+    "parágrafos (1<2)",
+    "falta fato #1 (painel)",
+    "falta fato #2 (sol)",
+    "falta fato #3 (eletricidade)",
+    "não terminou a frase (provável corte por limite de tokens)"
+   ],
+   "palavras": 14,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 45869,
+   "texto": "Usually, in these strict constraint scenarios, the \"one line\" instruction from the system prompt",
+   "trecho": "Usually, in these strict constraint scenarios, the \"one line\" instruction from the system prompt",
+   "fim": "e strict constraint scenarios, the \"one line\" instruction from the system prompt"
+  },
+  {
+   "id": 23,
+   "q": "Explique em dois parágrafos o que é inteligência artificial, sem jargão.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 154,
+   "paragrafos": 2,
+   "itens": 0,
+   "erro": null,
+   "ms": 6498,
+   "texto": "Inteligência artificial é a capacidade de máquinas realizarem tarefas que, até então, exigiam inteligência humana, como reconhecer imagens, entender fala, traduzir idiomas ou tomar decisões baseadas em dados. Em vez de seguir uma lista fixa de instruções, esses sistemas aprendem com exemplos: mostram-se a eles muitos casos — fotos de gatos e cachorros, e-mails spam e legítimos, movimentos de xadrez — e eles ajustam internamente seus parâmetros para identificar padrões e fazer previsões sobre novos casos que nunca viram antes.\n\nNa prática, a IA está presente no dia a dia quando o celular sugere a próxima palavra ao digitar, quando um serviço de streaming recomenda filmes, quando um carro freia sozinho ao detectar um obstáculo ou quando um chatbot responde dúvidas de clientes. Ela não “pensa” como pessoas, mas processa enormes quantidades de informação rapidamente, encontrando regularidades que seriam impossíveis de programar manualmente, e assim amplia a automação de tarefas cognitivas repetitivas ou complexas.",
+   "trecho": "Inteligência artificial é a capacidade de máquinas realizarem tarefas que, até então, exigiam inteligência humana, como reconhecer imagens, entender fala, traduzir idiomas ou tomar decisões baseadas e",
+   "fim": "ente, e assim amplia a automação de tarefas cognitivas repetitivas ou complexas."
+  },
+  {
+   "id": 24,
+   "q": "Escreva um parágrafo explicando a importância de dormir bem.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 67,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 5914,
+   "texto": "Dormir bem é fundamental para a saúde física e mental, pois durante o sono o corpo realiza processos essenciais de reparação celular, consolidação da memória, regulação hormonal e fortalecimento do sistema imunológico, enquanto a privação crônica aumenta o risco de doenças cardiovasculares, obesidade, diabetes, transtornos de ansiedade e depressão, além de prejudicar a cognição, a concentração e a capacidade de tomada de decisões no dia a dia.",
+   "trecho": "Dormir bem é fundamental para a saúde física e mental, pois durante o sono o corpo realiza processos essenciais de reparação celular, consolidação da memória, regulação hormonal e fortalecimento do si",
+   "fim": "ar a cognição, a concentração e a capacidade de tomada de decisões no dia a dia."
+  }
+ ]
+}

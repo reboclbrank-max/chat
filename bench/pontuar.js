@@ -39,7 +39,29 @@ function contemRadical(respostaNormalizada, alvo) {
   return new RegExp('(^|[^a-z0-9])' + r.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[a-z]*').test(respostaNormalizada);
 }
 
-function acertou(resposta, gabaritos, alternativas) {
+/* modo estrito: não perdoa acento ("caracois" ≠ "caracóis"). Serve para medir quanto o
+   afrouxamento de acento vale — número, não opinião. */
+function normalizarEstrito(t) {
+  return String(t || '').toLowerCase().normalize('NFC')
+    .replace(/[\u2010\u2011]/g, '-').replace(/\s+/g, ' ').trim();
+}
+
+function acertouEstrito(resposta, gabaritos, alternativas) {
+  if (resposta == null || String(resposta).trim() === '') return false;
+  const r = normalizarEstrito(resposta);
+  const lista = [].concat(gabaritos || [], alternativas || []);
+  for (const bruto of lista) {
+    const g = normalizarEstrito(bruto);
+    if (!g) continue;
+    if (r.includes(g)) return true;
+    const palavras = g.split(' ').filter((p) => p.length >= 5);
+    if (palavras.length && palavras.some((p) => r.includes(p))) return true;
+  }
+  return false;
+}
+
+function acertou(resposta, gabaritos, alternativas, opcoes) {
+  if (opcoes && opcoes.estrito) return acertouEstrito(resposta, gabaritos, alternativas);
   if (resposta == null || String(resposta).trim() === '') return false;
   const r = normalizar(resposta);
   const lista = [].concat(gabaritos || [], alternativas || []);

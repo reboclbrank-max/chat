@@ -1,0 +1,110 @@
+[
+ {
+  "id": 1,
+  "nome": "soma",
+  "q": "Escreva uma função em JavaScript chamada soma que recebe dois números e retorna a soma. Responda só com o código.",
+  "testes": "const { soma } = require('./alvo.js'); if (soma(2,3) !== 5 || soma(-4,4) !== 0 || soma(0.5,0.5) !== 1) throw new Error('soma errada'); console.log('ok');"
+ },
+ {
+  "id": 2,
+  "nome": "fatorial",
+  "q": "Escreva uma função em JavaScript chamada fatorial que recebe n e retorna n!. Responda só com o código.",
+  "testes": "const { fatorial } = require('./alvo.js'); if (fatorial(0) !== 1 || fatorial(5) !== 120 || fatorial(7) !== 5040) throw new Error('fatorial errado'); console.log('ok');"
+ },
+ {
+  "id": 3,
+  "nome": "ehPrimo",
+  "q": "Escreva uma função em JavaScript chamada ehPrimo que diz se um número é primo. Responda só com o código.",
+  "testes": "const { ehPrimo } = require('./alvo.js'); if (ehPrimo(7) !== true || ehPrimo(8) !== false || ehPrimo(1) !== false || ehPrimo(97) !== true) throw new Error('ehPrimo errado'); console.log('ok');"
+ },
+ {
+  "id": 4,
+  "nome": "inverter",
+  "q": "Escreva uma função em JavaScript chamada inverter que recebe uma string e devolve invertida. Responda só com o código.",
+  "testes": "const { inverter } = require('./alvo.js'); if (inverter('abc') !== 'cba' || inverter('') !== '' || inverter('ovo') !== 'ovo') throw new Error('inverter errado'); console.log('ok');"
+ },
+ {
+  "id": 5,
+  "nome": "ehPalindromo",
+  "q": "Escreva uma função em JavaScript chamada ehPalindromo que ignora maiúsculas e espaços e diz se a frase é palíndroma. Responda só com o código.",
+  "testes": "const { ehPalindromo } = require('./alvo.js'); if (!ehPalindromo('A base do teto desaba') || !ehPalindromo('ovo') || ehPalindromo('casa')) throw new Error('palindromo errado'); console.log('ok');"
+ },
+ {
+  "id": 6,
+  "nome": "maior",
+  "q": "Escreva uma função em JavaScript chamada maior que recebe um array de números e retorna o maior. Responda só com o código.",
+  "testes": "const { maior } = require('./alvo.js'); if (maior([1,9,3]) !== 9 || maior([-5,-2,-9]) !== -2 || maior([4]) !== 4) throw new Error('maior errado'); console.log('ok');"
+ },
+ {
+  "id": 7,
+  "nome": "fibonacci",
+  "q": "Escreva uma função em JavaScript chamada fibonacci que recebe n e retorna o n-ésimo termo (fib(0)=0, fib(1)=1). Responda só com o código.",
+  "testes": "const { fibonacci } = require('./alvo.js'); if (fibonacci(0) !== 0 || fibonacci(1) !== 1 || fibonacci(10) !== 55) throw new Error('fibonacci errado'); console.log('ok');"
+ },
+ {
+  "id": 8,
+  "nome": "media",
+  "q": "Escreva uma função em JavaScript chamada media que recebe um array de números e retorna a média. Responda só com o código.",
+  "testes": "const { media } = require('./alvo.js'); if (media([2,4,6]) !== 4 || media([10]) !== 10) throw new Error('media errada'); console.log('ok');"
+ },
+ {
+  "id": 9,
+  "nome": "contarVogais",
+  "q": "Escreva uma função em JavaScript chamada contarVogais que conta as vogais de uma string (sem acento). Responda só com o código.",
+  "testes": "const { contarVogais } = require('./alvo.js'); if (contarVogais('casa') !== 2 || contarVogais('aeiou') !== 5 || contarVogais('xyz') !== 0) throw new Error('vogais errado'); console.log('ok');"
+ },
+ {
+  "id": 10,
+  "nome": "ordenar",
+  "q": "Escreva uma função em JavaScript chamada ordenar que recebe um array de números e retorna em ordem crescente sem alterar o original. Responda só com o código.",
+  "testes": "const { ordenar } = require('./alvo.js'); const a = [3,1,2]; const b = ordenar(a); if (String(b) !== '1,2,3' || String(a) !== '3,1,2') throw new Error('ordenar errado'); console.log('ok');"
+ },
+ {
+  "id": 11,
+  "nome": "unicos",
+  "q": "Escreva uma função em JavaScript chamada unicos que remove valores repetidos de um array. Responda só com o código.",
+  "testes": "const { unicos } = require('./alvo.js'); if (unicos([1,1,2,3,3]) .join() !== '1,2,3') throw new Error('unicos errado'); console.log('ok');"
+ },
+ {
+  "id": 12,
+  "nome": "somaDigitos",
+  "q": "Escreva uma função em JavaScript chamada somaDigitos que soma os dígitos de um número inteiro positivo. Responda só com o código.",
+  "testes": "const { somaDigitos } = require('./alvo.js'); if (somaDigitos(123) !== 6 || somaDigitos(9005) !== 14) throw new Error('somaDigitos errado'); console.log('ok');"
+ },
+ {
+  "id": 13,
+  "nome": "capitalizar",
+  "q": "Escreva uma função em JavaScript chamada capitalizar que deixa a primeira letra de cada palavra maiúscula. Responda só com o código.",
+  "testes": "const { capitalizar } = require('./alvo.js'); if (capitalizar('bom dia brasil') !== 'Bom Dia Brasil') throw new Error('capitalizar errado: ' + capitalizar('bom dia brasil')); console.log('ok');"
+ },
+ {
+  "id": 14,
+  "nome": "mdc",
+  "q": "Escreva uma função em JavaScript chamada mdc que calcula o máximo divisor comum de dois números. Responda só com o código.",
+  "testes": "const { mdc } = require('./alvo.js'); if (mdc(12,18) !== 6 || mdc(7,13) !== 1 || mdc(100,75) !== 25) throw new Error('mdc errado'); console.log('ok');"
+ },
+ {
+  "id": 15,
+  "nome": "fizzbuzz",
+  "q": "Escreva uma função em JavaScript chamada fizzbuzz que recebe n e retorna um array de 1 a n com Fizz para múltiplos de 3, Buzz de 5 e FizzBuzz de ambos. Responda só com o código.",
+  "testes": "const { fizzbuzz } = require('./alvo.js'); const r = fizzbuzz(15); if (r.length !== 15 || r[2] !== 'Fizz' || r[4] !== 'Buzz' || r[14] !== 'FizzBuzz' || r[0] !== 1) throw new Error('fizzbuzz errado: ' + JSON.stringify(r)); console.log('ok');"
+ },
+ {
+  "id": 16,
+  "nome": "celsiusParaF",
+  "q": "Escreva uma função em JavaScript chamada celsiusParaF que converte Celsius em Fahrenheit. Responda só com o código.",
+  "testes": "const { celsiusParaF } = require('./alvo.js'); if (celsiusParaF(0) !== 32 || celsiusParaF(100) !== 212 || celsiusParaF(-40) !== -40) throw new Error('conversao errada: ' + celsiusParaF(0)); console.log('ok');"
+ },
+ {
+  "id": 17,
+  "nome": "segundoMaior",
+  "q": "Escreva uma função em JavaScript chamada segundoMaior que retorna o segundo maior valor distinto de um array (ignorando repetições). Responda só com o código.",
+  "testes": "const { segundoMaior } = require('./alvo.js'); if (segundoMaior([5,1,9,9,3]) !== 5 || segundoMaior([2,2,1]) !== 1) throw new Error('segundoMaior errado: ' + segundoMaior([5,1,9,9,3])); console.log('ok');"
+ },
+ {
+  "id": 18,
+  "nome": "achatar",
+  "q": "Escreva uma função em JavaScript chamada achatar que transforma um array de arrays em um array só. Responda só com o código.",
+  "testes": "const { achatar } = require('./alvo.js'); if (achatar([[1,2],[3],[4,5]]).join() !== '1,2,3,4,5') throw new Error('achatar errado'); console.log('ok');"
+ }
+]

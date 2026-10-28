@@ -10,9 +10,9 @@
   "respondeu": 84,
   "acertoQuandoResponde": 100,
   "errosDeConteudo": 0,
-  "latenciaMedianaMs": 3904,
-  "tentativasTotal": 57,
-  "duracaoS": 100,
+  "latenciaMedianaMs": 2795,
+  "tentativasTotal": 39,
+  "duracaoS": 71,
   "porTipo": {
    "mat": {
     "n": 14,
@@ -97,9 +97,9 @@
    "resp": "5476",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 17410
+   "fonte": "mathjs",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 4,
@@ -167,9 +167,9 @@
    "resp": "123",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
+   "fonte": "ultra",
    "tentativas": 3,
-   "ms": 4671
+   "ms": 11731
   },
   {
    "id": 9,
@@ -181,9 +181,9 @@
    "resp": "729",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 3047
+   "fonte": "mathjs",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 10,
@@ -197,7 +197,7 @@
    "erro": null,
    "fonte": "ultra",
    "tentativas": 3,
-   "ms": 16722
+   "ms": 11429
   },
   {
    "id": 11,
@@ -234,12 +234,12 @@
    "gab": [
     "84"
    ],
-   "resp": "84 cm²",
+   "resp": "84 cm²",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
+   "fonte": "ultra",
    "tentativas": 3,
-   "ms": 3004
+   "ms": 19691
   },
   {
    "id": 14,
@@ -252,9 +252,9 @@
    "resp": "6",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss",
+   "fonte": "ovhq",
    "tentativas": 3,
-   "ms": 14129
+   "ms": 6929
   },
   {
    "id": 15,
@@ -406,9 +406,9 @@
    "resp": "11.25",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 1500
+   "fonte": "sequencia-geo",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 26,
@@ -436,9 +436,9 @@
    "resp": "0",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
+   "fonte": "ovhoss",
    "tentativas": 3,
-   "ms": 1442
+   "ms": 2280
   },
   {
    "id": 28,
@@ -539,9 +539,9 @@
    "resp": "28",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
+   "fonte": "polli",
    "tentativas": 3,
-   "ms": 6587
+   "ms": 1615
   },
   {
    "id": 35,
@@ -553,9 +553,9 @@
    "resp": "15",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq",
+   "fonte": "polli",
    "tentativas": 3,
-   "ms": 7305
+   "ms": 257
   },
   {
    "id": 36,
@@ -568,9 +568,9 @@
    "resp": "31 ou 32",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 2744
+   "fonte": "vlqwen",
+   "tentativas": 4,
+   "ms": 2699
   },
   {
    "id": 37,
@@ -579,12 +579,12 @@
    "gab": [
     "16"
    ],
-   "resp": "16.",
+   "resp": "16",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq397",
-   "tentativas": 3,
-   "ms": 3728
+   "fonte": "vlqwen",
+   "tentativas": 4,
+   "ms": 4834
   },
   {
    "id": 38,
@@ -593,12 +593,12 @@
    "gab": [
     "730"
    ],
-   "resp": "730",
+   "resp": "730 dias.",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
+   "fonte": "ovhoss",
    "tentativas": 3,
-   "ms": 1057
+   "ms": 2478
   },
   {
    "id": 39,
@@ -737,12 +737,12 @@
     "alegre",
     "feliz"
    ],
-   "resp": "Alegre (ou feliz)",
+   "resp": "feliz",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 3,
-   "ms": 2534
+   "fonte": "ovhoss",
+   "tentativas": 2,
+   "ms": 2196
   },
   {
    "id": 49,
@@ -782,12 +782,12 @@
     "conjunção",
     "conjuncao"
    ],
-   "resp": "Conjunção adversativa.",
+   "resp": "Conjunção.",
    "ok": true,
    "erro": null,
-   "fonte": "gigante2",
-   "tentativas": 2,
-   "ms": 3904
+   "fonte": "ovhq397",
+   "tentativas": 1,
+   "ms": 4668
   },
   {
    "id": 52,
@@ -1039,12 +1039,12 @@
     "vinte e sete",
     "26 estados e o distrito federal"
    ],
-   "resp": "27",
+   "resp": "27 (26 estados e o Distrito Federal)",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss20",
-   "tentativas": 3,
-   "ms": 782
+   "fonte": "fato-estavel",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 70,
@@ -1054,12 +1054,12 @@
     "real",
     "r$"
    ],
-   "resp": "Real (BRL)",
+   "resp": "Real",
    "ok": true,
    "erro": null,
-   "fonte": "ovhoss20",
+   "fonte": "ovhq",
    "tentativas": 1,
-   "ms": 1553
+   "ms": 2795
   },
   {
    "id": 71,
@@ -1069,7 +1069,7 @@
     "26",
     "vinte e seis"
    ],
-   "resp": "26 estados e o Distrito Federal",
+   "resp": "26 estados",
    "ok": true,
    "erro": null,
    "fonte": "fato-estavel",
@@ -1086,9 +1086,9 @@
    "resp": "SP",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq9",
-   "tentativas": 2,
-   "ms": 19034
+   "fonte": "sigla-uf",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 73,
@@ -1100,9 +1100,9 @@
    "resp": "BA",
    "ok": true,
    "erro": null,
-   "fonte": "ovhq9",
-   "tentativas": 1,
-   "ms": 17586
+   "fonte": "sigla-uf",
+   "tentativas": 0,
+   "ms": 0
   },
   {
    "id": 74,
@@ -1113,12 +1113,12 @@
     "português brasileiro",
     "portugues"
    ],
-   "resp": "Português",
+   "resp": "Português.",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 4967
+   "fonte": "ovhq",
+   "tentativas": 1,
+   "ms": 6634
   },
   {
    "id": 75,
@@ -1259,12 +1259,12 @@
     "nilo",
     "amazonas"
    ],
-   "resp": "O rio Nilo é geralmente considerado o mais extenso do mundo.",
+   "resp": "Rio Amazonas.",
    "ok": true,
    "erro": null,
-   "fonte": "ultra",
-   "tentativas": 3,
-   "ms": 13121
+   "fonte": "polli",
+   "tentativas": 2,
+   "ms": 281
   }
  ]
 }
