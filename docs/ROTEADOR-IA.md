@@ -159,3 +159,21 @@ O gargalo não era o modelo: era **a fila**. O roteador exigia "um host por voto
 Consertos: `peso` medido em cada rota; classe definida pela medição; consenso por força; vazão mínima entre chamadas; `Retry-After` respeitado; geração longa em série; fallback longo com 1200 tokens; **cache persistente em localStorage**.
 
 **O limite que sobra é cota.** Depois de ~1.000 chamadas de medição, Kilo e g4f passam a responder 429 por janelas: com cota, código 18/18 e difíceis 29-30/30; sem cota, código 16/18 e texto longo truncado. O grátis não é menos inteligente — é menos disponível.
+
+## 10. v5 (28/10/2026) — o texto aberto: 62,5% → 91,7%
+
+A régua aberta (24 pedidos longos, mesma rubrica) media 15/24. O diagnóstico: o texto inteiro era pedido numa chamada só. O provedor grátis, com teto de tokens, devolve **um bloco de 30 palavras** ou **texto cortado no meio da frase**.
+
+| | antes | depois |
+|---|---|---|
+| aprovados | 15/24 = 62,5% | **22/24 = 91,7%** |
+| cortados | 5 | **0** |
+| curtos | 4 | **0** |
+| falta de fato | 4 | 2 |
+| mediana de tempo | 53,9 s | 84,0 s (pior) |
+
+Consertos: um parágrafo por chamada (número de parágrafos exato por construção), lista um item por chamada, refazer só o parágrafo curto, fechar no último ponto final já escrito, termos do pedido dentro da instrução, folga de 8 palavras no alvo por parágrafo.
+
+Também nesta rodada: calendário local (bissexto, dias do mês/ano, dia da semana), rejeição de fragmento de raciocínio (`Is it`), avaliador aritmético local (o `api.mathjs.org` estava fora do ar; `16×12` ia para o modelo e voltava `× 12`), quarta rodada de espera sob 429 e `bench/medir.js` gravando `resultado-<modo>-<banco>.json`.
+
+Régua de 200 volta a **200/200** (mediana 952 ms), holdout 105/105, difícil 30/30, código 18/18.
