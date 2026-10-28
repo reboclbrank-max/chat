@@ -163,6 +163,21 @@ if (typeof sanear === 'function') {
   ok('instrução de parágrafo: proíbe lista e prefácio', ip && /Não use listas/.test(ip('Tema.', 0, 2, 30, '')) && /Comece direto/.test(ip('Tema.', 0, 2, 30, '')));
   ok('instrução de parágrafo: faixa de palavras coerente', ip && /45 a 85 palavras/.test(ip('Tema.', 0, 2, 30, '')) );
 
+  // corte de provedor: fechar no último ponto final em vez de entregar frase pela metade
+  const ft = I.fecharTexto;
+  ok('fecharTexto corta frase incompleta', ft && ft('Primeira frase completa. Segunda frase completa. E a água passa pela') === 'Primeira frase completa. Segunda frase completa.');
+  ok('fecharTexto não mexe em texto já fechado', ft && ft('Já fechado.') === 'Já fechado.');
+  ok('fecharTexto preserva texto sem ponto', ft && ft('Curto demais sem ponto') === 'Curto demais sem ponto');
+
+  // aritmética local: mathjs.org ficou fora do ar e "16×12" foi para o modelo, que errou
+  const calc = I.calcular;
+  ok('aritmética: 16×12 = 192', calc && calc('16×12') === 192, String(calc && calc('16×12')));
+  ok('aritmética: precedência 2+3*4 = 14', calc && calc('2+3*4') === 14);
+  ok('aritmética: parênteses (2+3)*4 = 20', calc && calc('(2+3)*4') === 20);
+  ok('aritmética: potência 2^10 = 1024', calc && calc('2^10') === 1024);
+  ok('aritmética: expressão inválida devolve null', calc && calc('2+*3') === null);
+  ok('aritmética: não avalia código', calc && calc('require(1)') === null);
+
   // régua estrita: acento conta. Se o afrouxamento de acento estivesse mascarando erro, isto pega.
   ok('estrito: "caracois" não passa por "caracóis"', api.internos && require('../../bench/pontuar.js').acertou('caracois', ['caracóis'], null, { estrito: true }) === false);
   ok('estrito: "caracóis" passa', require('../../bench/pontuar.js').acertou('caracóis', ['caracóis'], null, { estrito: true }) === true);

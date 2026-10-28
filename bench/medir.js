@@ -107,7 +107,7 @@ async function resolver(item) {
   };
   // nome do arquivo carrega o banco: sem isso, cada rodada sobrescrevia a prova da anterior e o
   // erro residual deixava de ser auditável item a item
-  const banco = path.basename(arquivo, '.json');
-  fs.writeFileSync(path.join(__dirname, `resultado-${modo}-${banco}.json`), JSON.stringify({ sum, res }, null, 1));
+  const nomeBanco = path.basename(arquivo, '.json');
+  fs.writeFileSync(path.join(__dirname, `resultado-${modo}-${nomeBanco}.json`), JSON.stringify({ sum, res }, null, 1));
   console.log(JSON.stringify(sum, null, 1));
 })();

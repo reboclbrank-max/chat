@@ -645,6 +645,42 @@
     return null;
   };
 
+  /* Aritmética não pode depender de serviço externo. Medido hoje: api.mathjs.org fora do ar
+     (timeout de 8 s) e "16×12" foi parar no modelo, que devolveu "× 12" — erro de conteúdo no item
+     28 da régua de 200. Avaliador abaixo é local, sem rede: precedência normal, parênteses, ^. */
+  function calcular(expr) {
+    var s = String(expr).replace(/,/g, '.').replace(/[×xX]/g, '*').replace(/÷/g, '/')
+      .replace(/²/g, '^2').replace(/³/g, '^3').replace(/\s+/g, '');
+    if (!/^[0-9+\-*/^().]+$/.test(s)) return null;
+    var pos = 0;
+    function num() {
+      var m = /^\d+(?:\.\d+)?/.exec(s.slice(pos));
+      if (!m) throw new Error('num');
+      pos += m[0].length; return parseFloat(m[0]);
+    }
+    function atomo() {
+      if (s[pos] === '(') { pos++; var v = soma(); if (s[pos] !== ')') throw new Error('paren'); pos++; return v; }
+      if (s[pos] === '-') { pos++; return -atomo(); }
+      return num();
+    }
+    function pot() { var b = atomo(); if (s[pos] === '^') { pos++; return Math.pow(b, pot()); } return b; }
+    function prod() {
+      var v = pot();
+      while (s[pos] === '*' || s[pos] === '/') { var op = s[pos++]; var r = pot(); v = op === '*' ? v * r : v / r; }
+      return v;
+    }
+    function soma() {
+      var v = prod();
+      while (s[pos] === '+' || s[pos] === '-') { var op = s[pos++]; var r = prod(); v = op === '+' ? v + r : v - r; }
+      return v;
+    }
+    try {
+      var r = soma();
+      if (pos !== s.length || !isFinite(r)) return null;
+      return Math.round(r * 1e6) / 1e6;
+    } catch (e) { return null; }
+  }
+
   Roteador.prototype._mathjs = async function (expr) {
     try {
       var url = 'https://api.mathjs.org/v4/?expr=' + encodeURIComponent(expr);
@@ -781,9 +817,11 @@
     if (multi) return multi;
 
     /* --- aritmética e porcentagem --- */
-    if ((m = q.match(/quanto\s+é\s+([0-9.,\s+\-*/^×÷()%²³]+)\??$/i))) {
+    if ((m = q.match(/quanto\s+(?:é|e|vale|d[áa])\s*([0-9.,\s+\-*/^×÷()%²³xX]+)\??$/i))) {
       var expr = m[1].replace(/×/g, '*').replace(/÷/g, '/').replace(/,/g, '.')
         .replace(/²/g, '^2').replace(/³/g, '^3');
+      var local = calcular(expr);
+      if (local !== null) return { texto: String(local).replace('.', ','), ferramenta: 'calculo', fonte: 'aritmética local' };
       if (/^[\d\s+\-*/^().]+$/.test(expr) && /\d/.test(expr)) {
         var v = await this._mathjs(expr);
         if (v !== null) return { texto: v, ferramenta: 'mathjs', fonte: 'mathjs ' + expr };
@@ -1018,6 +1056,18 @@
       if (bloco) saida.push(bloco);
     }
     return saida.join('\n\n');
+  }
+
+  /* Provedor grátis trunca no meio da frase. Em vez de entregar "…e a água passa" cortado,
+     fecha no último ponto final já escrito. Não inventa nada: só descarta a sobra. */
+  function fecharTexto(t) {
+    var s2 = String(t || '').trim();
+    if (!s2) return s2;
+    if (/[.!?…]["”)]?$/.test(s2)) return s2;
+    var m = /^[\s\S]*[.!?…]["”)]?/.exec(s2);
+    if (!m) return s2;
+    var corte = m[0].trim();
+    return corte.length >= 40 ? corte : s2;
   }
 
   /* nota de um texto longo: tamanho, fechamento, formato pedido e ausência de robô-speak */
@@ -1410,10 +1460,83 @@
      de 30 palavras cortado — o provedor grátis trunca antes de chegar ao fim. Pedindo UM parágrafo
      por chamada, cada resposta cabe folgado no teto, o número de parágrafos é exato por construção
      e o parágrafo que sai curto é refeito sozinho (não se joga fora o texto inteiro). */
+  /* Lista com N itens: um item por chamada. Pedir "5 itens" numa chamada só devolvia 1
+     (medido: régua aberta #10, 56 palavras, 1 item de 5). */
+  Roteador.prototype._listaLonga = async function (pergunta, ex) {
+    var self = this;
+    var n = Math.max(2, ex.itens || 1);
+    var inicio = agora();
+    var vistas = {}, rotas = [];
+    ['forte', 'media', 'leve'].forEach(function (cl) {
+      self._candidatos(cl).forEach(function (r) {
+        if (vistas[r.id] || !self.disponivel(r.id)) return;
+        vistas[r.id] = 1; rotas.push(r);
+      });
+    });
+    if (!rotas.length) return null;
+    var idx = 0, linhas = [], tentativas = 0;
+    for (var i = 0; i < n; i++) {
+      var feito = null;
+      for (var t = 0; t < 4 && !feito; t++) {
+        if (agora() - inicio > 110000) break;
+        var rota = rotas[idx++ % rotas.length];
+        var ped = 'Tema: ' + pergunta + '\n\nEscreva SOMENTE o item ' + (i + 1) + ' de ' + n +
+          ', em português do Brasil, em uma única linha, com 12 a 30 palavras, começando por "' + (i + 1) + '. ".' +
+          ' Não repita os itens anteriores, não escreva título nem introdução, e termine a frase.';
+        await this._esperarVez(rota);
+        var r = await this._chamar(rota, ped, 25000, { maxTokens: 300, longo: true, sistema: SYS_ABERTO });
+        tentativas++;
+        if (r.texto) this._premiar(rota.id, r.ms); else this._castigar(rota.id, r.erro, r.espera);
+        if (r.erro === 'rate') await new Promise(function (res) { setTimeout(res, 3000 + Math.random() * 3000); });
+        var txt = sanear(String(r.texto || '').trim()).replace(/\s*\n+\s*/g, ' ');
+        var palavras = txt.split(/\s+/).filter(Boolean).length;
+        if (txt && palavras >= 8 && /[.!?…]["”)]?$/.test(txt)) feito = String(i + 1) + '. ' + txt.replace(/^\d+[.)]\s*/, '');
+      }
+      if (!feito) return null;
+      linhas.push(feito);
+    }
+    var texto = linhas.join('\n');
+    if (!textoCompleto(texto, ex.minPalavras || 60)) return null;
+    return {
+      texto: texto, rota: 'lista-longa', rotaNome: 'geração item a item',
+      classe: 'forte', confianca: 'alta', tentativas: tentativas, ms: agora() - inicio,
+      candidatos: linhas.map(function (l) { return { palavras: l.split(/\s+/).filter(Boolean).length }; })
+    };
+  };
+
+  /* termos concretos do pedido: o pedido costuma nomear o que quer ver ("torneira", "ambiental",
+     "painel"). Repetir esses termos na instrução é o que faz o texto cobrir o que foi perguntado —
+     medido: parágrafo bem formado que esquecia "torneira" contava como falta de fato. */
+  var VAZIAS = { para: 1, como: 1, sobre: 1, entre: 1, quando: 1, porque: 1, isso: 1, esse: 1, essa: 1,
+    este: 1, esta: 1, aquele: 1, aquela: 1, 'não': 1, mais: 1, menos: 1, muito: 1, pouco: 1, todos: 1,
+    todas: 1, cada: 1, pelo: 1, pela: 1, seus: 1, suas: 1, nosso: 1, nossa: 1, pode: 1, fazer: 1,
+    escreva: 1, explique: 1, descreva: 1, argumente: 1, favor: 1, contra: 1, dicas: 1,
+    'parágrafo': 1, 'parágrafos': 1, paragrafos: 1, 'casa': 1 };
+
+  function termosDoPedido(q) {
+    var bruto = String(q || '');
+    var t = bruto.toLowerCase().replace(/[^\wà-ÿ\s]/g, ' ');
+    var vistos = {}, saida = [];
+    // sigla em caixa alta é termo do pedido mesmo sendo curta (LGPD, IPTU, SUS)
+    (bruto.match(/\b[A-ZÀ-Ý]{3,6}\b/g) || []).forEach(function (a) {
+      if (vistos[a]) return; vistos[a] = 1; saida.push(a);
+    });
+    t.split(/\s+/).forEach(function (w) {
+      if (w.length < 5 || VAZIAS[w] || vistos[w]) return;
+      vistos[w] = 1; saida.push(w);
+    });
+    return saida.slice(0, 4);
+  }
+
   function instrucaoParagrafo(pergunta, i, n, minPor, foco) {
+    var termos = termosDoPedido(pergunta);
+    var exige = termos.length
+      ? ' Ao longo do parágrafo, use literalmente estes termos do pedido, quando fizer sentido: ' +
+        termos.join(', ') + '.'
+      : '';
     return 'Tema do texto: ' + pergunta + '\n\n' +
       'Escreva SOMENTE o parágrafo ' + (i + 1) + ' de ' + n + ', em português do Brasil, com ' +
-      (minPor + 15) + ' a ' + (minPor + 55) + ' palavras, em 3 a 5 frases completas. ' + (foco || '') +
+      (minPor + 15) + ' a ' + (minPor + 55) + ' palavras, em 3 a 5 frases completas. ' + (foco || '') + exige +
       ' Não use listas, títulos, negrito nem prefácio do tipo "claro" ou "aqui está".\n' +
       'Comece direto no conteúdo.';
   }
@@ -1422,7 +1545,9 @@
     var self = this;
     var n = Math.max(2, ex.paragrafos || 1);
     var minTotal = ex.minPalavras || 70;
-    var minPor = Math.max(26, Math.ceil(minTotal / n));
+    // pedir com folga: o modelo devolve menos do que promete. Sem folga, a soma ficava abaixo do
+    // mínimo do pedido (medido: 55 palavras para um pedido de 60).
+    var minPor = Math.max(26, Math.ceil(minTotal / n) + 8);
     var inicio = agora();
     // catálogo inteiro por ordem de força: se as fortes estão em 429, ainda há as leves
     var vistas = {}, rotas = [];
@@ -1452,7 +1577,8 @@
         if (r.erro === 'rate') await new Promise(function (res) { setTimeout(res, 3000 + Math.random() * 3000); });
         var txt = sanear(String(r.texto || '').trim());
         var palavras = txt.split(/\s+/).filter(Boolean).length;
-        if (txt && palavras >= Math.floor(minPor * 0.8) && /[.!?…]["”)]?\s*$/.test(txt)) feito = txt;
+        var piso = t < 2 ? Math.floor(minPor * 0.8) : Math.floor(minPor * 0.55);
+        if (txt && palavras >= piso && /[.!?…]["”)]?\s*$/.test(txt)) feito = txt;
       }
       if (!feito) return null;      // parágrafo irrecuperável: o caminho antigo (uma chamada) tenta
       blocos.push(feito);
@@ -1505,7 +1631,7 @@
     });
     this.metricas.consenso++;
     return {
-      texto: opc.transformar ? opc.transformar(melhor.texto) : melhor.texto,
+      texto: opc.transformar ? opc.transformar(melhor.texto) : fecharTexto(melhor.texto),
       rota: melhor.rota.id, rotaNome: melhor.rota.nome, classe: melhor.rota.classe,
       confianca: melhor.nota >= 5 ? 'alta' : (melhor.nota >= 3 ? 'media' : 'baixa'),
       nota: melhor.nota, tentativas: respostas.length, ms: melhor.ms,
@@ -1555,6 +1681,10 @@
       if (ex.itens) instrucao += ' O pedido exige uma lista com ' + ex.itens + ' itens numerados, um por linha.';
       var tetoPalavras = Math.max(200, Math.round(ex.minPalavras * 2.2));
       instrucao += ' Escreva entre ' + ex.minPalavras + ' e ' + tetoPalavras + ' palavras; termine o texto por completo.';
+      if (ex.itens >= 2) {
+        var lista = await this._listaLonga(pergunta, ex);
+        if (lista) { this._cacheSet(chave, lista); this.metricas.sucessos++; return lista; }
+      }
       if (ex.paragrafos >= 2) {
         var longo = await this._textoLongo(pergunta, ex);
         if (longo) { this._cacheSet(chave, longo); this.metricas.sucessos++; return longo; }
@@ -1564,7 +1694,7 @@
         chamar: { maxTokens: 1800, sistema: instrucao },
         minPalavras: ex.minPalavras,
         nota: function (t) { return notaTexto(ajustarParagrafos(t, ex.paragrafos), ex); },
-        transformar: function (t) { return ajustarParagrafos(t, ex.paragrafos); }
+        transformar: function (t) { return fecharTexto(ajustarParagrafos(t, ex.paragrafos)); }
       });
       if (ga) { this._cacheSet(chave, ga); this.metricas.sucessos++; return ga; }
     }
@@ -1623,7 +1753,7 @@
   };
 
   var api = { Roteador: Roteador, CATALOGO: CATALOGO, normal: normal };
-  api.internos = { sanear: sanear, util: util, extrairConclusao: extrairConclusao, calendarioLocal: calendarioLocal, fragmento: fragmento, instrucaoParagrafo: instrucaoParagrafo,
+  api.internos = { sanear: sanear, util: util, extrairConclusao: extrairConclusao, calendarioLocal: calendarioLocal, fragmento: fragmento, instrucaoParagrafo: instrucaoParagrafo, fecharTexto: fecharTexto, termosDoPedido: termosDoPedido, calcular: calcular,
                    classificarPedido: classificarPedido, extrairCodigo: extrairCodigo,
                    codigoInteiro: codigoInteiro, textoCompleto: textoCompleto,
                    exigenciaDoPedido: exigenciaDoPedido, notaTexto: notaTexto, ajustarParagrafos: ajustarParagrafos };
