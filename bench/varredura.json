@@ -1,0 +1,314 @@
+[
+ {
+  "id": "vlqwen",
+  "nome": "Qwen-VL-72B (OVH-EU)",
+  "status": 200,
+  "tipo": "ok",
+  "ms": 1026,
+  "amostra": "{\"id\":\"chatcmpl-be545ecce895f7ca\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assis"
+ },
+ {
+  "id": "ultra",
+  "nome": "Ultra-550B",
+  "status": 200,
+  "tipo": "ok",
+  "ms": 2216,
+  "amostra": "{\"id\":\"chatcmpl-d88171ef-d628-4b7c-b800-2154d85d290d\",\"choices\":[{\"index\":0,\"mes"
+ },
+ {
+  "id": "llm7code",
+  "nome": "Codestral (llm7)",
+  "status": 200,
+  "tipo": "ok",
+  "ms": 776,
+  "amostra": "{\"id\":\"chatcmpl_706db5991de547f680552c067168b543\",\"created\":1793157517,\"model\":\""
+ },
+ {
+  "id": "ovhoss",
+  "nome": "OVH-GPT-OSS-120B",
+  "status": 200,
+  "tipo": "ok",
+  "ms": 959,
+  "amostra": "{\"id\":\"chatcmpl-97f6038f9589a4ce\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assis"
+ },
+ {
+  "id": "ovhl",
+  "nome": "OVH-Llama-70B",
+  "status": 200,
+  "tipo": "ok",
+  "ms": 727,
+  "amostra": "{\"id\":\"chatcmpl-a077e01efe2cd938\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assis"
+ },
+ {
+  "id": "ovhm",
+  "nome": "OVH-Mistral-24B",
+  "status": 200,
+  "tipo": "ok",
+  "ms": 556,
+  "amostra": "{\"id\":\"chatcmpl-bb4f116dea8f9c32\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assis"
+ },
+ {
+  "id": "ovhq9",
+  "nome": "OVH-Qwen-9B",
+  "status": 200,
+  "tipo": "ok",
+  "ms": 653,
+  "amostra": "{\"id\":\"chatcmpl-a4e0d6fde023cea7\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assis"
+ },
+ {
+  "id": "ovhoss20",
+  "nome": "OVH-GPT-OSS-20B",
+  "status": 200,
+  "tipo": "ok",
+  "ms": 478,
+  "amostra": "{\"id\":\"chatcmpl-bcd8545f083f4309\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assis"
+ },
+ {
+  "id": "ovhq397",
+  "nome": "🐉 Qwen-397B (a BESTA)",
+  "status": 200,
+  "tipo": "ok",
+  "ms": 515,
+  "amostra": "{\"id\":\"chatcmpl-9434a7419bdcda0f\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assis"
+ },
+ {
+  "id": "ovhnemo",
+  "nome": "OVH-Mistral-Nemo",
+  "status": 200,
+  "tipo": "ok",
+  "ms": 286,
+  "amostra": "{\"id\":\"chatcmpl-87155ff36dfbcac6\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assis"
+ },
+ {
+  "id": "polli",
+  "nome": "Pollinations",
+  "status": 200,
+  "tipo": "ok",
+  "ms": 5235,
+  "amostra": "{\"id\":\"pllns_55fb2662592f445ad706432522780d4c\",\"choices\":[{\"index\":0,\"message\":{"
+ },
+ {
+  "id": "kilolight",
+  "nome": "Nemotron-3.5-Lightning (Kilo)",
+  "status": 200,
+  "tipo": "ok",
+  "ms": 850,
+  "amostra": "{\"id\":\"gen-1793157521-hpk1uz7v5NUwBmVrFrvX\",\"object\":\"chat.completion\",\"created\""
+ },
+ {
+  "id": "gigante2",
+  "nome": "GIGANTE-550B (rota 2, via Kilo)",
+  "status": 200,
+  "tipo": "ok",
+  "ms": 1063,
+  "amostra": "{\"id\":\"gen-1793157521-KFiqg0DBRcSC6sHGbkDV\",\"object\":\"chat.completion\",\"created\""
+ },
+ {
+  "id": "lagunas",
+  "nome": "Laguna-S-2.1 (Kilo, ressuscitado)",
+  "status": 200,
+  "tipo": "ok",
+  "ms": 1132,
+  "amostra": "{\"id\":\"gen-1793157522-APWXLFkaC2j86D0CIgqF\",\"object\":\"chat.completion\",\"created\""
+ },
+ {
+  "id": "nanoomni",
+  "nome": "Nano-Omni-30B (Kilo)",
+  "status": 200,
+  "tipo": "ok",
+  "ms": 1339,
+  "amostra": "{\"id\":\"gen-1793157521-k73b8zF0mHHDP2EbYiZF\",\"object\":\"chat.completion\",\"created\""
+ },
+ {
+  "id": "coherecode",
+  "nome": "Cohere-North-Mini (ESPECIALISTA EM CÓDIGO)",
+  "status": 200,
+  "tipo": "ok",
+  "ms": 625,
+  "amostra": "{\"id\":\"gen-1793157523-c80EELueHigGCVmgoGN6\",\"object\":\"chat.completion\",\"created\""
+ },
+ {
+  "id": "glm",
+  "nome": "GLM-5.3",
+  "status": 200,
+  "tipo": "ok",
+  "ms": 18521,
+  "amostra": "{\"id\":\"chatcmpl-44108905-a8a2-4f3d-abce-527d0bbca99a\",\"choices\":[{\"index\":0,\"mes"
+ },
+ {
+  "id": "ovhq",
+  "nome": "OVH-Qwen-27B",
+  "status": 200,
+  "tipo": "ok",
+  "ms": 20308,
+  "amostra": "{\"id\":\"chatcmpl-9e84f695d44c60c7\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assis"
+ },
+ {
+  "id": "llm7ds4",
+  "nome": "DeepSeek-V4-Flash (llm7)",
+  "status": 400,
+  "tipo": "erro-json",
+  "ms": 318,
+  "amostra": "{\"error\":{\"message\":\"Model 'DeepSeek-V4-Flash-0731' is currently unavailable.\",\""
+ },
+ {
+  "id": "llm7glm",
+  "nome": "LLM7-GLM-Flash",
+  "status": 400,
+  "tipo": "erro-json",
+  "ms": 316,
+  "amostra": "{\"error\":{\"message\":\"Model 'GLM-5.3-Flash' is currently unavailable.\",\"type\":\"in"
+ },
+ {
+  "id": "glamaH",
+  "nome": "Claude-Haiku-5.5",
+  "status": 401,
+  "tipo": "erro-json",
+  "ms": 210,
+  "amostra": "{\"error\":{\"code\":\"unauthorized\",\"message\":\"Missing authorization header\"}}"
+ },
+ {
+  "id": "glamaS",
+  "nome": "Claude-Sonnet-5.5",
+  "status": 401,
+  "tipo": "erro-json",
+  "ms": 205,
+  "amostra": "{\"error\":{\"code\":\"unauthorized\",\"message\":\"Missing authorization header\"}}"
+ },
+ {
+  "id": "upst",
+  "nome": "Solar-Pro2",
+  "status": 401,
+  "tipo": "erro-json",
+  "ms": 483,
+  "amostra": "{\"error\":{\"message\":\"Your API key is invalid. Please verify your API key or gene"
+ },
+ {
+  "id": "kimi",
+  "nome": "Kimi-K3",
+  "status": 404,
+  "tipo": "erro-json",
+  "ms": 1827,
+  "amostra": "{\"error\":{\"message\":\"Unknown model: moonshotai/kimi-k3. Available: auto, best, f"
+ },
+ {
+  "id": "ovhm7",
+  "nome": "OVH-Mistral-7B",
+  "status": 404,
+  "tipo": "erro-json",
+  "ms": 148,
+  "amostra": "{\"error\":{\"code\":\"model_not_found\",\"message\":\"The model `Mistral-7B-Instruct-v0."
+ },
+ {
+  "id": "oss20",
+  "nome": "GPT-OSS-20B",
+  "status": 429,
+  "tipo": "erro-json",
+  "ms": 248,
+  "amostra": "{\"error\":{\"code\":\"429\",\"message\":\"Too Many Requests\",\"id\":\"pdx1::9ppcr-179315751"
+ },
+ {
+  "id": "auto",
+  "nome": "Auto",
+  "status": 429,
+  "tipo": "erro-json",
+  "ms": 253,
+  "amostra": "{\"error\":{\"code\":\"429\",\"message\":\"Too Many Requests\",\"id\":\"pdx1::2bnjl-179315751"
+ },
+ {
+  "id": "light",
+  "nome": "Lightning",
+  "status": 429,
+  "tipo": "erro-json",
+  "ms": 39,
+  "amostra": "{\"error\":{\"code\":\"429\",\"message\":\"Too Many Requests\",\"id\":\"pdx1::xfjfp-179315751"
+ },
+ {
+  "id": "ds41",
+  "nome": "DeepSeek-V4.1",
+  "status": 429,
+  "tipo": "erro-json",
+  "ms": 25,
+  "amostra": "{\"error\":{\"code\":\"429\",\"message\":\"Too Many Requests\",\"id\":\"pdx1::cn2sq-179315751"
+ },
+ {
+  "id": "nano",
+  "nome": "Nano-Omni",
+  "status": 429,
+  "tipo": "erro-json",
+  "ms": 71,
+  "amostra": "{\"error\":{\"code\":\"429\",\"message\":\"Too Many Requests\",\"id\":\"pdx1::pv75f-179315751"
+ },
+ {
+  "id": "muse",
+  "nome": "Muse-Glimmer",
+  "status": 429,
+  "tipo": "erro-json",
+  "ms": 22,
+  "amostra": "{\"error\":{\"code\":\"429\",\"message\":\"Too Many Requests\",\"id\":\"pdx1::cn2sq-179315751"
+ },
+ {
+  "id": "gemma31",
+  "nome": "Gemma-4-31B",
+  "status": 429,
+  "tipo": "erro-json",
+  "ms": 27,
+  "amostra": "{\"error\":{\"code\":\"429\",\"message\":\"Too Many Requests\",\"id\":\"pdx1::xfjfp-179315751"
+ },
+ {
+  "id": "diff",
+  "nome": "DiffusionGemma",
+  "status": 429,
+  "tipo": "erro-json",
+  "ms": 25,
+  "amostra": "{\"error\":{\"code\":\"429\",\"message\":\"Too Many Requests\",\"id\":\"pdx1::m7bls-179315751"
+ },
+ {
+  "id": "laguna",
+  "nome": "Laguna-g4f",
+  "status": 429,
+  "tipo": "erro-json",
+  "ms": 25,
+  "amostra": "{\"error\":{\"code\":\"429\",\"message\":\"Too Many Requests\",\"id\":\"pdx1::6chzn-179315751"
+ },
+ {
+  "id": "llm7nemo",
+  "nome": "Mistral-Nemo (llm7)",
+  "status": 429,
+  "tipo": "erro-json",
+  "ms": 252,
+  "amostra": "{\"error\":{\"message\":\"Rate limit exceeded. Retry after 1 seconds.\",\"type\":\"rate_l"
+ },
+ {
+  "id": "llm7",
+  "nome": "LLM7-Default",
+  "status": 429,
+  "tipo": "erro-json",
+  "ms": 320,
+  "amostra": "{\"error\":{\"message\":\"Rate limit exceeded. Retry after 1 seconds.\",\"type\":\"rate_l"
+ },
+ {
+  "id": "g4super",
+  "nome": "Nemotron-Super-120B",
+  "status": 429,
+  "tipo": "erro-json",
+  "ms": 25,
+  "amostra": "{\"error\":{\"code\":\"429\",\"message\":\"Too Many Requests\",\"id\":\"pdx1::c9jp9-179315752"
+ },
+ {
+  "id": "flash",
+  "nome": "GLM-Flash",
+  "status": 504,
+  "tipo": "nao-json",
+  "ms": 26661,
+  "amostra": "An error occurred with your deployment FUNCTION_INVOCATION_TIMEOUT pdx1::6496c"
+ },
+ {
+  "id": "ovhq38",
+  "nome": "OVH-Qwen3.8-27B",
+  "status": 0,
+  "tipo": "timeout",
+  "ms": 45002,
+  "amostra": "This operation was aborted"
+ }
+]
