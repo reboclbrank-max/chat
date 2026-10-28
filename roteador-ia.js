@@ -33,10 +33,32 @@
 
   var CURTAS_OK = { sim: 1, nao: 1, 'não': 1, yes: 1, no: 1, oui: 1, ok: 1, 'é': 1 };
 
+  /* Pedaço de frase não é resposta. "Is it", "Actually, looking", "of the" — são restos de raciocínio
+     que os modelos pequenos devolvem quando o provedor corta a geração no meio. Aceitar isso é
+     entregar lixo com cara de resposta (medido: id 71 da régua de 200, resposta "Is it"). */
+  var FUNCIONAIS = ('a an the of and or to in on at that this these those it its is are was were be been ' +
+    'being do does did has have had i we you he she they me us them my your so but if as with for from by ' +
+    'not no yes actually looking let about which what who whom whose how why when where than then there ' +
+    'here just also very more most much many some any each every such own same too can could would should ' +
+    'will shall may might must').split(' ');
+  var SO_FUNCIONAIS = {};
+  FUNCIONAIS.forEach(function (w) { SO_FUNCIONAIS[w] = 1; });
+
+  function fragmento(t) {
+    var s = String(t || '').toLowerCase().replace(/[^a-zà-ÿ0-9\s']/g, ' ').trim();
+    if (!s) return true;
+    var pal = s.split(/\s+/).filter(Boolean);
+    if (pal.length > 6) return false;
+    return pal.every(function (p) { return SO_FUNCIONAIS[p] === 1; });
+  }
+
   /* devolve texto utilizável ou '' (resposta com preâmbulo de raciocínio não serve) */
   function sanear(t) {
     var s = String(t || '').trim();
     if (!util(s)) return '';
+    // resposta legítima de uma palavra (sim/não/yes/no) é resposta, ainda que seja palavra funcional
+    if (CURTAS_OK[s.toLowerCase()] === 1) return s;
+    if (fragmento(s)) return '';
     if (/^[\d.,\s%°+\-/]+$/.test(s)) return s;
     if (CABECALHO_RACIOCINIO.test(s)) {
       var marcado = /(?:resposta|answer|resultado|result|conclus[aã]o)\s*(?:[:\-]|(?:é|e|is)\b)\s*(.+)$/i.exec(s);
@@ -711,10 +733,48 @@
     return { valor: out, fonte: 'mymemory ' + de + '>' + para };
   };
 
+  var MESES_DIAS = { janeiro: 31, fevereiro: 28, 'março': 31, marco: 31, abril: 30, maio: 31, junho: 30,
+    julho: 31, agosto: 31, setembro: 30, outubro: 31, novembro: 30, dezembro: 31 };
+  var DIAS_SEMANA = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'];
+  function bissexto(a) { return (a % 4 === 0 && a % 100 !== 0) || a % 400 === 0; }
+
+  /* calendário é aritmética exata: não vale gastar modelo (e errar) nisso */
+  function calendarioLocal(q) {
+    var m, ano;
+    if ((m = q.match(/quantos\s+dias\s+(?:tem|h[áa])\s+(?:o\s+)?(?:m[êe]s\s+de\s+)?(janeiro|fevereiro|mar[çc]o|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro)(?:\s+de|\s+do\s+ano\s+de)?\s*(\d{4})?/i))) {
+      var mes = m[1].toLowerCase().replace('marco', 'março');
+      ano = m[2] ? parseInt(m[2], 10) : null;
+      var d = MESES_DIAS[mes];
+      if (mes === 'fevereiro' && ano) d = bissexto(ano) ? 29 : 28;
+      return { texto: String(d), ferramenta: 'calendario', fonte: 'calendário local' };
+    }
+    if ((m = q.match(/(?:o\s+ano\s+(?:de\s+)?)?(\d{4})\s+(?:é|e)\s+(?:um\s+ano\s+)?bissexto/i))) {
+      ano = parseInt(m[1], 10);
+      return { texto: bissexto(ano) ? 'Sim' : 'Não', ferramenta: 'calendario', fonte: 'calendário local' };
+    }
+    if ((m = q.match(/quantos\s+dias\s+(?:tem|h[áa])\s+(?:o\s+)?ano(?:\s+de|\s+de)?\s*(\d{4})/i))) {
+      ano = parseInt(m[1], 10);
+      return { texto: bissexto(ano) ? '366' : '365', ferramenta: 'calendario', fonte: 'calendário local' };
+    }
+    // "se hoje é terça-feira, que dia da semana será daqui a N dias?" — conta modular, sem modelo
+    if ((m = q.match(/hoje\s+[ée]\s+(domingo|segunda-feira|segunda|ter[çc]a-feira|ter[çc]a|quarta-feira|quarta|quinta-feira|quinta|sexta-feira|sexta|s[áa]bado)[^\d]{0,40}?(\d{1,3})\s+dia/i))) {
+      var base = m[1].toLowerCase().replace('-feira', '');
+      var nomes = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
+      var i0 = nomes.indexOf(base.replace('terca', 'terça').replace('sabado', 'sábado'));
+      if (i0 >= 0) {
+        var i1 = (i0 + parseInt(m[2], 10)) % 7;
+        return { texto: DIAS_SEMANA[i1], ferramenta: 'calendario', fonte: 'calendário local' };
+      }
+    }
+    return null;
+  }
+
   Roteador.prototype._ferramenta = async function (pergunta) {
     if (!this.ferramentasLigadas) return null;
     var m, p;
     var q = String(pergunta || '').trim();
+    var cal = calendarioLocal(q);
+    if (cal) return cal;
 
     /* --- vários saltos PRIMEIRO: "dobro de 15 menos metade de 8" não pode cair em "metade de 8" --- */
     var multi = this._encadeado(q);
@@ -1345,6 +1405,67 @@
   /* ============ GERAÇÃO LONGA (código e texto) ============ */
   /* Sem consenso: votação de maioria não faz sentido para texto longo nem para código.
      Em vez disso, dois provedores no máximo, e a escolha é por critério objetivo declarado. */
+  /* ============ TEXTO LONGO PARÁGRAFO A PARÁGRAFO ============
+     Medido na régua aberta: pedir "dois parágrafos, 70 palavras" numa chamada só devolvia um bloco
+     de 30 palavras cortado — o provedor grátis trunca antes de chegar ao fim. Pedindo UM parágrafo
+     por chamada, cada resposta cabe folgado no teto, o número de parágrafos é exato por construção
+     e o parágrafo que sai curto é refeito sozinho (não se joga fora o texto inteiro). */
+  function instrucaoParagrafo(pergunta, i, n, minPor, foco) {
+    return 'Tema do texto: ' + pergunta + '\n\n' +
+      'Escreva SOMENTE o parágrafo ' + (i + 1) + ' de ' + n + ', em português do Brasil, com ' +
+      (minPor + 15) + ' a ' + (minPor + 55) + ' palavras, em 3 a 5 frases completas. ' + (foco || '') +
+      ' Não use listas, títulos, negrito nem prefácio do tipo "claro" ou "aqui está".\n' +
+      'Comece direto no conteúdo.';
+  }
+
+  Roteador.prototype._textoLongo = async function (pergunta, ex) {
+    var self = this;
+    var n = Math.max(2, ex.paragrafos || 1);
+    var minTotal = ex.minPalavras || 70;
+    var minPor = Math.max(26, Math.ceil(minTotal / n));
+    var inicio = agora();
+    // catálogo inteiro por ordem de força: se as fortes estão em 429, ainda há as leves
+    var vistas = {}, rotas = [];
+    ['forte', 'media', 'leve'].forEach(function (cl) {
+      self._candidatos(cl).forEach(function (r) {
+        if (vistas[r.id] || !self.disponivel(r.id)) return;
+        vistas[r.id] = 1; rotas.push(r);
+      });
+    });
+    if (!rotas.length) return null;
+    var idx = 0, blocos = [], tentativas = 0;
+
+    for (var i = 0; i < n; i++) {
+      var feito = null;
+      for (var t = 0; t < 4 && !feito; t++) {
+        if (agora() - inicio > 110000) break;
+        var rota = rotas[idx++ % rotas.length];
+        var foco = i === 0
+          ? 'Comece definindo o assunto com precisão e dê um exemplo concreto.'
+          : 'Aprofunde um aspecto novo, sem repetir o que já foi dito, e cite um detalhe concreto (nome, número ou processo).';
+        if (i === n - 1) foco += ' Feche com uma frase de conclusão completa.';
+        var ped = instrucaoParagrafo(pergunta, i, n, minPor, foco);
+        await this._esperarVez(rota);
+        var r = await this._chamar(rota, ped, 30000, { maxTokens: 700, longo: true, sistema: SYS_ABERTO });
+        tentativas++;
+        if (r.texto) this._premiar(rota.id, r.ms); else this._castigar(rota.id, r.erro, r.espera);
+        if (r.erro === 'rate') await new Promise(function (res) { setTimeout(res, 3000 + Math.random() * 3000); });
+        var txt = sanear(String(r.texto || '').trim());
+        var palavras = txt.split(/\s+/).filter(Boolean).length;
+        if (txt && palavras >= Math.floor(minPor * 0.8) && /[.!?…]["”)]?\s*$/.test(txt)) feito = txt;
+      }
+      if (!feito) return null;      // parágrafo irrecuperável: o caminho antigo (uma chamada) tenta
+      blocos.push(feito);
+    }
+    var texto = blocos.join('\n\n');
+    if (!textoCompleto(texto, minTotal)) return null;
+    return {
+      texto: texto, rota: 'texto-longo', rotaNome: 'geração por parágrafo',
+      classe: 'forte', confianca: 'alta', tentativas: tentativas, ms: agora() - inicio,
+      candidatos: blocos.map(function (b) { return { palavras: b.split(/\s+/).filter(Boolean).length }; })
+    };
+  };
+
   Roteador.prototype._gerar = async function (pergunta, opcoes) {
     var self = this;
     var opc = opcoes || {};
@@ -1434,6 +1555,10 @@
       if (ex.itens) instrucao += ' O pedido exige uma lista com ' + ex.itens + ' itens numerados, um por linha.';
       var tetoPalavras = Math.max(200, Math.round(ex.minPalavras * 2.2));
       instrucao += ' Escreva entre ' + ex.minPalavras + ' e ' + tetoPalavras + ' palavras; termine o texto por completo.';
+      if (ex.paragrafos >= 2) {
+        var longo = await this._textoLongo(pergunta, ex);
+        if (longo) { this._cacheSet(chave, longo); this.metricas.sucessos++; return longo; }
+      }
       var ga = await this._gerar(pergunta, {
         tentativas: 3,
         chamar: { maxTokens: 1800, sistema: instrucao },
@@ -1453,6 +1578,9 @@
     var inicio = agora();
     var tentativas = 0;
     var erroFinal = 'sem rota';
+    // 3 rodadas era pouco: sob 429 a cota só volta depois de dezenas de segundos. A espera é
+    // limitada pelo orçamento, então rodada extra custa latência, não qualidade.
+    this.voltasMax = 4;
     for (var volta = 0; volta < this.voltasMax; volta++) {
       var eu = this;
       var cands = this._candidatos(dificuldade).filter(function (r) { return eu.disponivel(r.id); });
@@ -1495,7 +1623,7 @@
   };
 
   var api = { Roteador: Roteador, CATALOGO: CATALOGO, normal: normal };
-  api.internos = { sanear: sanear, util: util, extrairConclusao: extrairConclusao,
+  api.internos = { sanear: sanear, util: util, extrairConclusao: extrairConclusao, calendarioLocal: calendarioLocal, fragmento: fragmento, instrucaoParagrafo: instrucaoParagrafo,
                    classificarPedido: classificarPedido, extrairCodigo: extrairCodigo,
                    codigoInteiro: codigoInteiro, textoCompleto: textoCompleto,
                    exigenciaDoPedido: exigenciaDoPedido, notaTexto: notaTexto, ajustarParagrafos: ajustarParagrafos };
