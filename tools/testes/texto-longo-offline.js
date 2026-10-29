@@ -38,8 +38,15 @@ function paragrafoBom(n, i) {
   let vezC = 0;
   globalThis.fetch = async (url, opcoes) => {
     const corpo = JSON.parse(opcoes.body);
-    const pergunta = corpo.messages[0].content;
+    // messages[0] é o SISTEMA; o pedido do usuário é a última mensagem
+    const pergunta = corpo.messages[corpo.messages.length - 1].content;
     chamadas.push({ url, pergunta });
+    // a chamada de PLANO (lista de elementos) responde com lista, não com parágrafo
+    if (/elementos concretos que um texto completo/.test(String(pergunta))) {
+      const lista = 'clorofila\ncloroplastos\nluz solar\ndióxido de carbono\noxigênio\nglicose';
+      return { ok: true, status: 200, headers: { get: () => null },
+        text: async () => JSON.stringify({ choices: [{ message: { content: lista }, finish_reason: 'stop' }] }) };
+    }
     const m = /parágrafo (\d+) de (\d+)/i.exec(pergunta);
     const i = m ? parseInt(m[1], 10) - 1 : 0;
 
@@ -85,7 +92,10 @@ function paragrafoBom(n, i) {
     // quem devolve raciocínio não é "erro de transporte" (não vira falha de rede), mas tem de sair
     // da frente: o teste é que ele não é chamado de novo para o resto do texto
     const chamadasA = chamadas.filter((c) => c.url.indexOf('host-a') >= 0).length;
+    // 1 chamada é o PLANO (legítima); o que não pode é ele ser escolhido para os parágrafos
     ok('host que devolve raciocínio sai da frente', chamadasA <= 2, 'chamado ' + chamadasA + 'x');
+    ok('houve uma chamada de planejamento antes de escrever',
+       chamadas.length > 2 && /elementos concretos que um texto completo/.test(JSON.stringify(chamadas)));
     ok('host bom foi usado', /Parágrafo [12] do teste/.test(o.texto));
     const porHost = chamadas.reduce((acc, c) => { const k = c.url.replace('https://', '').split('/')[0]; acc[k] = (acc[k] || 0) + 1; return acc; }, {});
     ok('houve troca de host (não insistiu só no primeiro)', Object.keys(porHost).length >= 2, JSON.stringify(porHost));

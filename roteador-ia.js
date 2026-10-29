@@ -1689,6 +1689,10 @@
     // Pedir um dado verificável em TODO parágrafo é instrução genérica, não adaptação ao gabarito.
     exige += ' Inclua obrigatoriamente pelo menos um dado verificável: um nome próprio, uma data, ' +
       'um número ou um termo técnico específico da área.';
+    // articulação: medido em bench/estilo.js — os textos saíam com 0,5 conectivo por 100 palavras
+    // (frases corretas, soltas, sem ligação). Instrução genérica de coesão, não de conteúdo.
+    exige += ' Articule as frases entre si com conectivos variados (por exemplo: além disso, porém, ' +
+      'portanto, uma vez que, já que, assim), sem repetir sempre o mesmo.';
     // TENTATIVA DESCARTADA (medida em 28/10): pedir "cubra definição, funcionamento, exemplo e
     // consequências" alongou o texto e PIOROU a cobertura — o item da fotossíntese passou a não citar
     // oxigênio e levou 102 s. Instrução de cobertura ampla faz o modelo divagar em vez de cobrir.
@@ -1738,6 +1742,27 @@
 
     var notaPar = {}, cursor = 0;
     hosts.forEach(function (h) { notaPar[h.id] = 0; });
+
+    // PLANO antes de escrever: uma chamada curta lista os elementos concretos que um texto completo
+    // sobre o tema precisa citar (coisas, processos, agentes, consequências). Ataca a cauda de "falta
+    // de um termo" — texto bem formado que simplesmente não NOMEIA o objeto principal do assunto.
+    // Se o plano falhar, o texto sai sem ele: planejar não pode derrubar a geração.
+    var plano = [];
+    try {
+      var hostPlano = hosts[0];
+      await this._esperarVez(hostPlano);
+      var rPlano = await this._chamar(hostPlano,
+        'Tema: ' + pergunta + '\n\nListe, em até 6 linhas curtas (2 a 5 palavras cada), os elementos ' +
+        'concretos que um texto completo sobre esse tema precisa citar: objetos, processos, agentes, ' +
+        'lugares ou consequências. Responda SOMENTE a lista, uma por linha, sem introdução, sem ' +
+        'numeração e sem explicação.', 12000, { maxTokens: 160, longo: false });
+      if (rPlano.texto) {
+        plano = String(rPlano.texto).split(/\n+/)
+          .map(function (l) { return sanear(String(l)).replace(/^[-*•\d.)\s]+/, '').trim(); })
+          .filter(function (l) { return l && l.split(/\s+/).length <= 6 && l.length >= 3; })
+          .slice(0, 6);
+      }
+    } catch (e) { plano = []; }
     function proxima() { return hosts[cursor++ % hosts.length]; }
     function melhorLivre(usados) {
       var melhor = null;
@@ -1750,6 +1775,8 @@
 
     async function paragrafo(i, usados) {
       var rota = melhorLivre(usados || {});
+      var tentados = {};
+      for (var k in (usados || {})) tentados[k] = 1;
       for (var t = 0; t < 4; t++) {
         // 3+ parágrafos custam mais chamadas: prazo maior, senão cai no caminho de reserva
         if (agora() - inicio > (n >= 3 ? 115000 : 85000)) return null;
@@ -1758,6 +1785,14 @@
           : 'Aprofunde um aspecto novo, sem repetir o que já foi dito, e cite um detalhe concreto (nome, número ou processo).';
         if (i === n - 1) foco += ' Feche com uma frase de conclusão completa.';
         var ped = instrucaoParagrafo(pergunta, i, n, minPor, foco) + instrucaoFormato(pergunta);
+        // distribui o plano entre os parágrafos (cada um cobre uma fatia, todos cobrem o conjunto)
+        if (plano.length) {
+          var fatia = plano.filter(function (_, k) { return k % n === i; });
+          if (!fatia.length) fatia = plano.slice(0, 2);
+          ped += '\n\nUm texto completo sobre o tema precisa citar, entre outros: ' +
+            plano.join('; ') + '. Inclua nesta parte, com naturalidade e sem virar lista, ' +
+            (fatia.length > 1 ? 'estes elementos: ' + fatia.join(' e ') + '.' : 'este elemento: ' + fatia[0] + '.');
+        }
         // coesão: se o parágrafo anterior já existe, entra como contexto e proíbe repetição
         if (i > 0 && blocos[i - 1]) {
           ped += '\n\nO parágrafo anterior, já escrito, foi: "' + String(blocos[i - 1]).slice(0, 700) +
@@ -1777,9 +1812,11 @@
           notaPar[rota.id] = (notaPar[rota.id] || 0) + 1;
           return txt;
         }
-        // lixo ou curto: este host desce na fila e o parágrafo vai para outro
+        // lixo ou curto: este host desce na fila e o parágrafo vai para OUTRO host — repetir no mesmo
+        // host que acabou de devolver raciocínio é queimar a chamada duas vezes
         if (r.texto || r.erro) notaPar[rota.id] = (notaPar[rota.id] || 0) - 1;
-        rota = proxima();
+        tentados[rota.id] = 1;
+        rota = melhorLivre(tentados);
       }
       return null;
     }

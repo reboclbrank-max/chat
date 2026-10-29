@@ -199,3 +199,22 @@ Arquitetura, medida: paralelo **não** compensa (laguna faz 6 parágrafos seguid
 Latência do texto longo: 84 s (v5) → 30,6 s (v6) → **16–19 s** (v7, janela boa).
 
 Qualidade, 4 execuções completas do mesmo código: **18, 19, 21, 18 de 24** (média 79,2%). A amplitude (3 itens) é maior que a diferença entre v5/v6/v7 — logo, número dessa régua só vale com 3 execuções e a amplitude ao lado.
+
+## 13. v8 (29/10/2026) — planejar antes de escrever, e medir estilo
+
+**Plano antes do texto.** `_textoLongo` faz uma chamada curta que lista até 6 elementos concretos que
+um texto completo sobre o tema precisa citar (objetos, processos, agentes, consequências) e distribui
+essa lista entre os parágrafos. É o que ataca a cauda de "falta de um termo": texto bem formado que
+não nomeia o objeto principal do assunto. Se o plano falha, o texto sai sem ele — planejar não pode
+derrubar a geração. Medição: itens #6, #15 e #16 (que falhavam) passaram; régua completa **22/24**.
+
+**Estilo medido.** `bench/estilo.js` mede fraseMed, % de frases com mais de 35 palavras, repetição de
+conteúdo, conectivos explícitos por 100 palavras e variedade lexical, com limites declarados. Primeira
+medição (24 textos): fraseMed 25, longas 0%, repetição 22%, conectivos 0,4/100. A instrução de
+"conectivos variados" não moveu a medida — o limite está na medida (não conta subordinação), e está
+declarado no próprio instrumento para não virar placar falso.
+
+**Dedupe de host no parágrafo.** Host que devolve raciocínio ou texto curto não é reescolhido para o
+mesmo parágrafo: antes o retry voltava para o mesmo host e queimava a chamada duas vezes.
+
+**Visão remedida** com o código da v7: 11/11, mediana 2,6 s.
