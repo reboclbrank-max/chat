@@ -1,0 +1,369 @@
+{
+  "versao": 2,
+  "aviso": "Indicadores descritivos; não avaliam qualidade literária, coesão ou veracidade.",
+  "total": 24,
+  "medianas": {
+    "fraseMed": 23,
+    "longasPct": 0,
+    "repeticao": 13.52,
+    "conectivosPor100": 1.66
+  },
+  "itens": [
+    {
+      "id": 1,
+      "palavras": 225,
+      "frases": 10,
+      "fraseMed": 22,
+      "longasPct": 0,
+      "repeticao": 20.8,
+      "variedadeLexical": 79.2,
+      "ocorrenciasConectivos": 4,
+      "tiposConectivos": {
+        "pois": 1,
+        "também": 1,
+        "portanto": 1,
+        "mas": 1
+      },
+      "conectivosPor100": 1.78
+    },
+    {
+      "id": 2,
+      "palavras": 191,
+      "frases": 9,
+      "fraseMed": 23,
+      "longasPct": 0,
+      "repeticao": 13.79,
+      "variedadeLexical": 86.21,
+      "ocorrenciasConectivos": 4,
+      "tiposConectivos": {
+        "mas": 1,
+        "enquanto": 1,
+        "além disso": 1,
+        "portanto": 1
+      },
+      "conectivosPor100": 2.09
+    },
+    {
+      "id": 3,
+      "palavras": 272,
+      "frases": 12,
+      "fraseMed": 19,
+      "longasPct": 8.33,
+      "repeticao": 21.57,
+      "variedadeLexical": 78.43,
+      "ocorrenciasConectivos": 6,
+      "tiposConectivos": {
+        "mas": 2,
+        "também": 3,
+        "portanto": 1
+      },
+      "conectivosPor100": 2.21
+    },
+    {
+      "id": 4,
+      "palavras": 106,
+      "frases": 7,
+      "fraseMed": 15,
+      "longasPct": 0,
+      "repeticao": 13.24,
+      "variedadeLexical": 86.76,
+      "ocorrenciasConectivos": 0,
+      "tiposConectivos": {},
+      "conectivosPor100": 0
+    },
+    {
+      "id": 5,
+      "palavras": 66,
+      "frases": 6,
+      "fraseMed": 9.5,
+      "longasPct": 0,
+      "repeticao": 7.5,
+      "variedadeLexical": 92.5,
+      "ocorrenciasConectivos": 1,
+      "tiposConectivos": {
+        "depois": 1
+      },
+      "conectivosPor100": 1.52
+    },
+    {
+      "id": 6,
+      "palavras": 141,
+      "frases": 5,
+      "fraseMed": 22,
+      "longasPct": 20,
+      "repeticao": 3.7,
+      "variedadeLexical": 96.3,
+      "ocorrenciasConectivos": 3,
+      "tiposConectivos": {
+        "porque": 1,
+        "além disso": 1,
+        "portanto": 1
+      },
+      "conectivosPor100": 2.13
+    },
+    {
+      "id": 7,
+      "palavras": 196,
+      "frases": 8,
+      "fraseMed": 23,
+      "longasPct": 12.5,
+      "repeticao": 18.87,
+      "variedadeLexical": 81.13,
+      "ocorrenciasConectivos": 3,
+      "tiposConectivos": {
+        "assim": 2,
+        "pois": 1
+      },
+      "conectivosPor100": 1.53
+    },
+    {
+      "id": 8,
+      "palavras": 208,
+      "frases": 9,
+      "fraseMed": 25,
+      "longasPct": 0,
+      "repeticao": 23.01,
+      "variedadeLexical": 76.99,
+      "ocorrenciasConectivos": 3,
+      "tiposConectivos": {
+        "assim": 2,
+        "também": 1
+      },
+      "conectivosPor100": 1.44
+    },
+    {
+      "id": 9,
+      "palavras": 218,
+      "frases": 8,
+      "fraseMed": 19.5,
+      "longasPct": 25,
+      "repeticao": 33.04,
+      "variedadeLexical": 66.96,
+      "ocorrenciasConectivos": 7,
+      "tiposConectivos": {
+        "enquanto": 2,
+        "primeiro": 1,
+        "mas": 1,
+        "assim": 1,
+        "além disso": 1,
+        "portanto": 1
+      },
+      "conectivosPor100": 3.21
+    },
+    {
+      "id": 10,
+      "palavras": 81,
+      "frases": 10,
+      "fraseMed": 7,
+      "longasPct": 0,
+      "repeticao": 2.27,
+      "variedadeLexical": 97.73,
+      "ocorrenciasConectivos": 1,
+      "tiposConectivos": {
+        "enquanto": 1
+      },
+      "conectivosPor100": 1.23
+    },
+    {
+      "id": 11,
+      "palavras": 36,
+      "frases": 1,
+      "fraseMed": 36,
+      "longasPct": 100,
+      "repeticao": 5.88,
+      "variedadeLexical": 94.12,
+      "ocorrenciasConectivos": 1,
+      "tiposConectivos": {
+        "porque": 1
+      },
+      "conectivosPor100": 2.78
+    },
+    {
+      "id": 12,
+      "palavras": 23,
+      "frases": 1,
+      "fraseMed": 23,
+      "longasPct": 0,
+      "repeticao": 6.67,
+      "variedadeLexical": 93.33,
+      "ocorrenciasConectivos": 0,
+      "tiposConectivos": {},
+      "conectivosPor100": 0
+    },
+    {
+      "id": 13,
+      "palavras": 187,
+      "frases": 8,
+      "fraseMed": 25.5,
+      "longasPct": 0,
+      "repeticao": 19.63,
+      "variedadeLexical": 80.37,
+      "ocorrenciasConectivos": 4,
+      "tiposConectivos": {
+        "assim": 2,
+        "mas": 1,
+        "também": 1
+      },
+      "conectivosPor100": 2.14
+    },
+    {
+      "id": 14,
+      "palavras": 209,
+      "frases": 8,
+      "fraseMed": 25,
+      "longasPct": 12.5,
+      "repeticao": 19.05,
+      "variedadeLexical": 80.95,
+      "ocorrenciasConectivos": 4,
+      "tiposConectivos": {
+        "assim": 2,
+        "além disso": 1,
+        "pois": 1
+      },
+      "conectivosPor100": 1.91
+    },
+    {
+      "id": 15,
+      "palavras": 192,
+      "frases": 8,
+      "fraseMed": 22.5,
+      "longasPct": 0,
+      "repeticao": 17.59,
+      "variedadeLexical": 82.41,
+      "ocorrenciasConectivos": 6,
+      "tiposConectivos": {
+        "também": 3,
+        "além disso": 1,
+        "assim": 1,
+        "mas": 1
+      },
+      "conectivosPor100": 3.13
+    },
+    {
+      "id": 16,
+      "palavras": 157,
+      "frases": 6,
+      "fraseMed": 25.5,
+      "longasPct": 0,
+      "repeticao": 15.73,
+      "variedadeLexical": 84.27,
+      "ocorrenciasConectivos": 1,
+      "tiposConectivos": {
+        "enquanto": 1
+      },
+      "conectivosPor100": 0.64
+    },
+    {
+      "id": 17,
+      "palavras": 187,
+      "frases": 8,
+      "fraseMed": 22.5,
+      "longasPct": 0,
+      "repeticao": 22.94,
+      "variedadeLexical": 77.06,
+      "ocorrenciasConectivos": 2,
+      "tiposConectivos": {
+        "assim": 2
+      },
+      "conectivosPor100": 1.07
+    },
+    {
+      "id": 18,
+      "palavras": 84,
+      "frases": 8,
+      "fraseMed": 9.5,
+      "longasPct": 0,
+      "repeticao": 4,
+      "variedadeLexical": 96,
+      "ocorrenciasConectivos": 1,
+      "tiposConectivos": {
+        "pois": 1
+      },
+      "conectivosPor100": 1.19
+    },
+    {
+      "id": 19,
+      "palavras": 79,
+      "frases": 3,
+      "fraseMed": 27,
+      "longasPct": 0,
+      "repeticao": 10.87,
+      "variedadeLexical": 89.13,
+      "ocorrenciasConectivos": 2,
+      "tiposConectivos": {
+        "por outro lado": 1,
+        "enquanto": 1
+      },
+      "conectivosPor100": 2.53
+    },
+    {
+      "id": 20,
+      "palavras": 175,
+      "frases": 6,
+      "fraseMed": 28,
+      "longasPct": 16.67,
+      "repeticao": 30.61,
+      "variedadeLexical": 69.39,
+      "ocorrenciasConectivos": 5,
+      "tiposConectivos": {
+        "assim": 1,
+        "também": 3,
+        "mas": 1
+      },
+      "conectivosPor100": 2.86
+    },
+    {
+      "id": 21,
+      "palavras": 72,
+      "frases": 7,
+      "fraseMed": 9,
+      "longasPct": 0,
+      "repeticao": 10,
+      "variedadeLexical": 90,
+      "ocorrenciasConectivos": 0,
+      "tiposConectivos": {},
+      "conectivosPor100": 0
+    },
+    {
+      "id": 22,
+      "palavras": 45,
+      "frases": 1,
+      "fraseMed": 45,
+      "longasPct": 100,
+      "repeticao": 3.45,
+      "variedadeLexical": 96.55,
+      "ocorrenciasConectivos": 0,
+      "tiposConectivos": {},
+      "conectivosPor100": 0
+    },
+    {
+      "id": 23,
+      "palavras": 131,
+      "frases": 4,
+      "fraseMed": 32.5,
+      "longasPct": 50,
+      "repeticao": 2.63,
+      "variedadeLexical": 97.37,
+      "ocorrenciasConectivos": 1,
+      "tiposConectivos": {
+        "mas": 1
+      },
+      "conectivosPor100": 0.76
+    },
+    {
+      "id": 24,
+      "palavras": 84,
+      "frases": 3,
+      "fraseMed": 27,
+      "longasPct": 0,
+      "repeticao": 3.92,
+      "variedadeLexical": 96.08,
+      "ocorrenciasConectivos": 2,
+      "tiposConectivos": {
+        "pois": 1,
+        "portanto": 1
+      },
+      "conectivosPor100": 2.38
+    }
+  ]
+}

@@ -216,13 +216,12 @@ if (typeof sanear === 'function') {
   ok('numerarLista respeita o limite pedido', nl && nl('- a\n- b\n- c', 2) === '1. a\n2. b');
   ok('numerarLista não toca texto sem lista', nl && nl('Texto corrido sem marcadores.', 3) === 'Texto corrido sem marcadores.');
 
-  // cobertura: todo parágrafo tem de carregar um dado verificável (foi o que derrubou 3 itens
-  // da régua aberta com texto bem formado e sem nada concreto)
+  // Pedir nomes e estatísticas obrigatórias encorajava números sem fonte. Verifica a nova instrução.
   const ipc = I.instrucaoParagrafo;
-  ok('instrução de parágrafo exige dado verificável',
-     ipc && /dado verificável/.test(ipc('Explique o que é a LGPD em dois parágrafos.', 0, 2, 50, '')));
-  ok('instrução de parágrafo exige nome, data, número ou termo técnico',
-     ipc && /nome próprio/.test(ipc('Explique o que é a LGPD em dois parágrafos.', 0, 2, 50, '')));
+  ok('instrução de parágrafo evita dados e fontes inventados',
+     ipc && /não invente dados, datas, estatísticas nem fontes/.test(ipc('Explique o que é a LGPD em dois parágrafos.', 0, 2, 50, '')));
+  ok('instrução favorece exemplo qualitativo quando incerto',
+     ipc && /exemplo qualitativo/.test(ipc('Explique o que é a LGPD em dois parágrafos.', 0, 2, 50, '')));
 
   // a regra de "frase minúscula = resto de raciocínio" NÃO pode matar parágrafo longo
   // (bug real da rodada 98: 356 palavras descartadas e 119 s de espera)
@@ -231,20 +230,11 @@ if (typeof sanear === 'function') {
   ok('parágrafo longo começando com minúscula passa', sanear(parLongo) === parLongo, JSON.stringify(String(sanear(parLongo)).slice(0, 30)));
   ok('resto curto de raciocínio continua rejeitado', sanear('the price.') === '' && sanear('actually looking here.') === '');
 
-  // coesão: a instrução de parágrafo tem de pedir conectivos variados (bench/estilo.js mediu 0,5/100)
-  ok('instrução de parágrafo pede conectivos variados',
-     ipc && /conectivos variados/.test(ipc('Explique a LGPD em dois parágrafos.', 0, 2, 50, '')));
-  ok('bench/estilo.js mede um texto saudável como saudável',
-     (() => {
-       const e = require('../../bench/estilo.js');
-       const bom = 'A fotossíntese é o processo pelo qual as plantas convertem luz em energia química. ' +
-         'Além disso, ela ocorre nos cloroplastos e envolve duas etapas bem distintas entre si. ' +
-         'Porém, a primeira etapa depende diretamente da luz captada pela clorofila das folhas. ' +
-         'Portanto, a segunda etapa pode acontecer no escuro, quando o carbono já foi fixado. ' +
-         'Uma vez que a clorofila capta luz, o processo inteiro começa nas folhas verdes da planta. ' +
-         'Assim, a planta produz glicose e libera oxigênio para o ambiente ao seu redor.';
-       return e.saudavel(e.medidas(bom));
-     })());
+  // Medidas de superfície não podem rotular automaticamente uma redação como boa ou ruim.
+  ok('medidor de estilo conta conectivo com acento e vírgula',
+     require('../../bench/estilo.js').medidas('Além disso, o texto continua.').ocorrenciasConectivos === 1);
+  ok('instrução pede coesão sem forçar lista de conectivos',
+     ipc && /clara e coerente/.test(ipc('Explique em dois parágrafos.', 0, 2, 50, '')));
 
   // régua estrita: acento conta. Se o afrouxamento de acento estivesse mascarando erro, isto pega.
   ok('estrito: "caracois" não passa por "caracóis"', api.internos && require('../../bench/pontuar.js').acertou('caracois', ['caracóis'], null, { estrito: true }) === false);

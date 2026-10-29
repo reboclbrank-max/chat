@@ -1,0 +1,9 @@
+✔ #101  212p 19022ms
+✔ #102  209p 68488ms
+✔ #103  102p 27174ms
+✘ #104   69p 235523ms  curto (69<70) · parágrafos (1<2)
+✔ #105   85p 55987ms
+✔ #106  167p 114177ms
+
+{"modo":"depois","total":6,"passaram":5,"pct":83.3,"medianaPalavras":167,"cortados":0,"curtos":1,"faltouFato":0,"medianaMs":68488}
+salvo em /home/user/chat-v2/bench/resultado-aberto-holdout-100.json

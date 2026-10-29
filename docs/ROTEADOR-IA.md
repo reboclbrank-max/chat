@@ -186,35 +186,58 @@ Régua de 200 volta a **200/200** (mediana 952 ms), holdout 105/105, difícil 30
 
 **Resíduos de conteúdo.** `Atenciosamente.` aplicado por código em e-mail/carta; falsos positivos `agradeço a atenção` e `ficamos à disposição` deixaram de contar como despedida; lista cobra a cota de palavras por item; `numerarLista` numera listas soltas.
 
-## 12. v7 (29/10/2026) — os bugs atrás do "numero que caiu", e a regra de medir
+## 12. v7 (29/10/2026) — investigação e retificação metodológica
 
-Três defeitos reais, achados ao investigar a queda de 22/24 para 20/24:
+Foram corrigidos casos de `sanear()` que rejeitavam texto extenso, cabeçalhos de raciocínio e
+falhas de recuperação de lista. Isso **não demonstra que esses casos causaram a diferença** entre
+as execuções da régua.
 
-1. `sanear()` rejeitava parágrafo inteiro — a regra "frase com minúscula, sem número e com ponto final é resto de raciocínio" não tinha limite de tamanho. Parágrafo de 356 palavras descartado; item levou 119 s. Agora vale só até 12 palavras.
-2. Raciocínio em inglês ("We need to produce only paragraph 1 of 2…") era aceito como parágrafo. Cabeçalho de raciocínio ampliado.
-3. Lista inteira caía quando um item falhava (3 passos/60 palavras entregues com 36). Agora espera a rota livre e refaz só o item.
+Retificação: os quatro resultados 18, 19, 21 e 18 de 24 foram descritos como "mesmo código".
+Os logs correspondem, respectivamente, a versões distintas: `90bcece`, `459acc1`, `a2bb362` e
+`8fd04dd`. Cotas e condições também variaram. Esses números não provam nem equivalência
+estatística nem uma relação causal entre paralelismo, velocidade e cobertura. Logs preservados em
+`bench/historico-aberto-98-run{1..4}.log`. Comparações futuras devem incluir versões e repetições.
 
-Arquitetura, medida: paralelo **não** compensa (laguna faz 6 parágrafos seguidos em 3,8–9,6 s; 2–3 workers estouram cota e levam 130–200 s) e o dedupe por provedor passa a escolher o modelo de **menor latência medida**, não o de maior peso.
+## 13. v8 (29/10/2026) — planejamento e limite da primeira medida de estilo
 
-Latência do texto longo: 84 s (v5) → 30,6 s (v6) → **16–19 s** (v7, janela boa).
+Duas execuções da mesma versão `5e6d626` deram **22/24 e 20/24** na rubrica original, com
+medianas de **24,0 e 82,9 s**, respectivamente. Preservamos integralmente as duas respostas e
+logs em `bench/resultado-aberto-99-{a,b}.json` e `bench/historico-aberto-99-{a,b}.log`.
+Amostra pequena; não prova causalidade nem substitui a terceira repetição anteriormente proposta.
 
-Qualidade, 4 execuções completas do mesmo código: **18, 19, 21, 18 de 24** (média 79,2%). A amplitude (3 itens) é maior que a diferença entre v5/v6/v7 — logo, número dessa régua só vale com 3 execuções e a amplitude ao lado.
+Retificação do gabarito: a primeira execução reprovou "espalhamento de Rayleigh" (#11); a
+segunda reprovou "painéis" (#22). O histórico permanece reprodutível no banco anterior. Com as
+**duas equivalências justificadas** no novo banco, e apenas reavaliando as mesmas respostas, as
+contagens passam a 23/24 e 21/24. Não se trata de uma nova geração.
 
-## 13. v8 (29/10/2026) — planejar antes de escrever, e medir estilo
+Retificação do estilo: a v1 não reconhecia muitos conectivos acentuados ou seguidos de pontuação
+ e contava tipos em vez de ocorrências. Os antigos números 0,5→0,4 e as classificações de texto
+"doente" são inválidos. A v2 corrige a contagem e não atribui qualidade por limiares inventados.
+Ver `docs/AVALIACAO-TEXTO-ABERTO.md` para os limites e uma leitura qualitativa identificada.
 
-**Plano antes do texto.** `_textoLongo` faz uma chamada curta que lista até 6 elementos concretos que
-um texto completo sobre o tema precisa citar (objetos, processos, agentes, consequências) e distribui
-essa lista entre os parágrafos. É o que ataca a cauda de "falta de um termo": texto bem formado que
-não nomeia o objeto principal do assunto. Se o plano falha, o texto sai sem ele — planejar não pode
-derrubar a geração. Medição: itens #6, #15 e #16 (que falhavam) passaram; régua completa **22/24**.
+**Visão:** nova execução da régua de 11 imagens simples: 11/11, mediana **2,6 s na última
+chamada ao provedor**, duração total 260 s. A medida não registrou a duração de cada pedido
+incluindo espera; não é correto chamar 2,6 s de tempo total do usuário.
 
-**Estilo medido.** `bench/estilo.js` mede fraseMed, % de frases com mais de 35 palavras, repetição de
-conteúdo, conectivos explícitos por 100 palavras e variedade lexical, com limites declarados. Primeira
-medição (24 textos): fraseMed 25, longas 0%, repetição 22%, conectivos 0,4/100. A instrução de
-"conectivos variados" não moveu a medida — o limite está na medida (não conta subordinação), e está
-declarado no próprio instrumento para não virar placar falso.
 
-**Dedupe de host no parágrafo.** Host que devolve raciocínio ou texto curto não é reescolhido para o
-mesmo parágrafo: antes o retry voltava para o mesmo host e queimava a chamada duas vezes.
+## 14. v9 (29/10/2026) — gabarito auditado, qualidade sem placar falso
 
-**Visão remedida** com o código da v7: 11/11, mediana 2,6 s.
+O banco original e as respostas completas foram preservados; quatro alternativas foram
+justificadas em `docs/AUDITORIA-REGUA-ABERTA-100.md`. A reavaliação das mesmas respostas não é
+geração nova. Uma passada real do gerador, com a rubrica original, deu **21/24 e 27,6 s** de
+mediana; o holdout de seis perguntas deu **5/6** (o item #104 ficou com um parágrafo, após
+235,5 s). Ambos usaram o código com hash `eccc2a2d…`, anterior apenas à adição dos metadados
+de aviso de formato e verificação; uma nova medição está em andamento.
+
+O cronômetro da visão agora registra duração total por pedido além da última tentativa. O dado
+anterior de 2,6 s era apenas o tempo da última chamada, não o tempo de espera total do usuário.
+
+O prompt não obriga nome próprio, data ou número não verificado. O plano é recebido como lista
+multilinha e filtrado; a segunda tentativa tem prazo próprio limitado. Testes offline conferem que
+uma falha de plano não derruba o texto e que um bloco bom não é descartado durante o retry.
+
+`bench/estilo.js` v2 corrige o bug de acentuação/pontuação e registra ocorrências, mas só fornece
+indicadores descritivos. `docs/AVALIACAO-TEXTO-ABERTO.md` apresenta rubrica e uma leitura
+qualitativa exploratória pelo assistente, não uma validação humana independente. O roteador
+marca respostas abertas como **não verificadas**; quando o fallback não entrega a quantidade de
+parágrafos/itens solicitada, informa o aviso às quatro interfaces, sem modificar o texto bruto.

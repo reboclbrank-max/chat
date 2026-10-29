@@ -1,0 +1,51 @@
+{
+  "versao": 2,
+  "aviso": "Indicadores descritivos; não avaliam qualidade literária, coesão ou veracidade.",
+  "total": 3,
+  "medianas": {
+    "fraseMed": 30,
+    "longasPct": 0,
+    "repeticao": 2.56,
+    "conectivosPor100": 0
+  },
+  "itens": [
+    {
+      "id": "microconto",
+      "palavras": 68,
+      "frases": 1,
+      "fraseMed": 68,
+      "longasPct": 100,
+      "repeticao": 2.56,
+      "variedadeLexical": 97.44,
+      "ocorrenciasConectivos": 1,
+      "tiposConectivos": {
+        "mas": 1
+      },
+      "conectivosPor100": 1.47
+    },
+    {
+      "id": "poema",
+      "palavras": 110,
+      "frases": 4,
+      "fraseMed": 27.5,
+      "longasPct": 0,
+      "repeticao": 7.41,
+      "variedadeLexical": 92.59,
+      "ocorrenciasConectivos": 0,
+      "tiposConectivos": {},
+      "conectivosPor100": 0
+    },
+    {
+      "id": "convite",
+      "palavras": 30,
+      "frases": 1,
+      "fraseMed": 30,
+      "longasPct": 0,
+      "repeticao": 0,
+      "variedadeLexical": 100,
+      "ocorrenciasConectivos": 0,
+      "tiposConectivos": {},
+      "conectivosPor100": 0
+    }
+  ]
+}
