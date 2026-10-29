@@ -1,0 +1,489 @@
+{
+  "aviso": "Reavaliação do MESMO texto; não é uma nova geração nem avalia verdade ou qualidade literária.",
+  "gabaritoHistoricoSha256": "f00a1ed677974487bc70024ddb4e083e3fd11fe41e139c5a1270f7c6d68558e2",
+  "gabaritoCorrigidoSha256": "3c23382ded2b1ea498bbb11e195338eb141921318fa1a595c02c32f1f08a3223",
+  "gabaritoContextual101Sha256": "2d52e2b7a86f46187acc30b55c140525356951bdfdd2d0dcfad1aea1f7fad4ee",
+  "resultados": [
+    {
+      "arquivo": "resultado-aberto-99-a.json",
+      "sha256": "602a1a370f73123f2b1deb9b6dc9dd60e4d9b2287e06e36d6882408bec7a83fe",
+      "gravadoOriginal": {
+        "modo": "depois",
+        "total": 24,
+        "passaram": 22,
+        "pct": 91.7,
+        "medianaPalavras": 223,
+        "cortados": 0,
+        "curtos": 0,
+        "faltouFato": 2,
+        "medianaMs": 24006
+      },
+      "pontuacaoHistorica": {
+        "total": 24,
+        "passaram": 22,
+        "falhas": [
+          {
+            "id": 6,
+            "falhas": [
+              "falta fato #2 (res[íi]duo)"
+            ]
+          },
+          {
+            "id": 11,
+            "falhas": [
+              "falta fato #1 (dispers)"
+            ]
+          }
+        ]
+      },
+      "pontuacaoCorrigida": {
+        "total": 24,
+        "passaram": 24,
+        "falhas": []
+      },
+      "itensComMudancaDeResultado": [
+        6,
+        11
+      ],
+      "pontuacaoContextual101": {
+        "total": 24,
+        "passaram": 24,
+        "falhas": []
+      },
+      "itensComMudancaContextual101": []
+    },
+    {
+      "arquivo": "resultado-aberto-99-b.json",
+      "sha256": "61bab3692338b7a39ea0cc3af5c19b670ccbe16be73bcd128adcb9d6000f7892",
+      "gravadoOriginal": {
+        "modo": "depois",
+        "total": 24,
+        "passaram": 20,
+        "pct": 83.3,
+        "medianaPalavras": 136,
+        "cortados": 0,
+        "curtos": 2,
+        "faltouFato": 2,
+        "medianaMs": 82861
+      },
+      "pontuacaoHistorica": {
+        "total": 24,
+        "passaram": 20,
+        "falhas": [
+          {
+            "id": 6,
+            "falhas": [
+              "falta fato #2 (res[íi]duo)"
+            ]
+          },
+          {
+            "id": 8,
+            "falhas": [
+              "curto (42<70)",
+              "parágrafos (1<2)"
+            ]
+          },
+          {
+            "id": 14,
+            "falhas": [
+              "curto (40<70)",
+              "parágrafos (1<2)"
+            ]
+          },
+          {
+            "id": 22,
+            "falhas": [
+              "falta fato #1 (painel)"
+            ]
+          }
+        ]
+      },
+      "pontuacaoCorrigida": {
+        "total": 24,
+        "passaram": 22,
+        "falhas": [
+          {
+            "id": 8,
+            "falhas": [
+              "curto (42<70)",
+              "parágrafos (1<2)"
+            ]
+          },
+          {
+            "id": 14,
+            "falhas": [
+              "curto (40<70)",
+              "parágrafos (1<2)"
+            ]
+          }
+        ]
+      },
+      "itensComMudancaDeResultado": [
+        6,
+        22
+      ],
+      "pontuacaoContextual101": {
+        "total": 24,
+        "passaram": 22,
+        "falhas": [
+          {
+            "id": 8,
+            "falhas": [
+              "curto (42<70)",
+              "parágrafos (1<2)"
+            ]
+          },
+          {
+            "id": 14,
+            "falhas": [
+              "curto (40<70)",
+              "parágrafos (1<2)"
+            ]
+          }
+        ]
+      },
+      "itensComMudancaContextual101": []
+    },
+    {
+      "arquivo": "resultado-aberto-100-original.json",
+      "sha256": "c7c92f337a67bcd426b40b981f78fdad04c7c3f9c005fd3e500878431008ced8",
+      "gravadoOriginal": {
+        "modo": "depois",
+        "total": 24,
+        "passaram": 21,
+        "pct": 87.5,
+        "medianaPalavras": 206,
+        "cortados": 0,
+        "curtos": 0,
+        "faltouFato": 3,
+        "medianaMs": 27580
+      },
+      "pontuacaoHistorica": {
+        "total": 24,
+        "passaram": 21,
+        "falhas": [
+          {
+            "id": 6,
+            "falhas": [
+              "falta fato #3 (ambient)"
+            ]
+          },
+          {
+            "id": 16,
+            "falhas": [
+              "falta fato #1 (rio)"
+            ]
+          },
+          {
+            "id": 22,
+            "falhas": [
+              "falta fato #1 (painel)"
+            ]
+          }
+        ]
+      },
+      "pontuacaoCorrigida": {
+        "total": 24,
+        "passaram": 23,
+        "falhas": [
+          {
+            "id": 16,
+            "falhas": [
+              "falta fato #1 (rio)"
+            ]
+          }
+        ]
+      },
+      "itensComMudancaDeResultado": [
+        6,
+        22
+      ],
+      "pontuacaoContextual101": {
+        "total": 24,
+        "passaram": 23,
+        "falhas": [
+          {
+            "id": 16,
+            "falhas": [
+              "falta fato #1 (rio)"
+            ]
+          }
+        ]
+      },
+      "itensComMudancaContextual101": []
+    },
+    {
+      "arquivo": "resultado-aberto-101-intermediario-original.json",
+      "sha256": "54bac08c91b8af6359bc4e068d5fbaaaedc3e82bcc7466446dd35b39f1db50c8",
+      "gravadoOriginal": {
+        "modo": "depois",
+        "total": 24,
+        "totalPrevisto": 24,
+        "completo": true,
+        "passaram": 15,
+        "pct": 62.5,
+        "medianaPalavras": 162,
+        "cortados": 0,
+        "curtos": 2,
+        "faltouFato": 2,
+        "medianaMs": 18726
+      },
+      "pontuacaoHistorica": {
+        "total": 24,
+        "passaram": 15,
+        "falhas": [
+          {
+            "id": 1,
+            "falhas": [
+              "vazio"
+            ]
+          },
+          {
+            "id": 3,
+            "falhas": [
+              "falta fato #1 (s[ée]culo (XVIII)"
+            ]
+          },
+          {
+            "id": 4,
+            "falhas": [
+              "vazio"
+            ]
+          },
+          {
+            "id": 5,
+            "falhas": [
+              "curto (58<60)"
+            ]
+          },
+          {
+            "id": 10,
+            "falhas": [
+              "itens (3<5)"
+            ]
+          },
+          {
+            "id": 16,
+            "falhas": [
+              "vazio"
+            ]
+          },
+          {
+            "id": 18,
+            "falhas": [
+              "curto (28<60)",
+              "itens (1<4)"
+            ]
+          },
+          {
+            "id": 22,
+            "falhas": [
+              "falta fato #1 (painel)"
+            ]
+          },
+          {
+            "id": 23,
+            "falhas": [
+              "parágrafos (1<2)"
+            ]
+          }
+        ]
+      },
+      "pontuacaoCorrigida": {
+        "total": 24,
+        "passaram": 15,
+        "falhas": [
+          {
+            "id": 1,
+            "falhas": [
+              "vazio"
+            ]
+          },
+          {
+            "id": 3,
+            "falhas": [
+              "falta fato #1 (s[ée]culo (XVIII)"
+            ]
+          },
+          {
+            "id": 4,
+            "falhas": [
+              "vazio"
+            ]
+          },
+          {
+            "id": 5,
+            "falhas": [
+              "curto (58<60)"
+            ]
+          },
+          {
+            "id": 10,
+            "falhas": [
+              "itens (3<5)"
+            ]
+          },
+          {
+            "id": 16,
+            "falhas": [
+              "vazio"
+            ]
+          },
+          {
+            "id": 18,
+            "falhas": [
+              "curto (28<60)",
+              "itens (1<4)"
+            ]
+          },
+          {
+            "id": 22,
+            "falhas": [
+              "falta fato #1 (painel)"
+            ]
+          },
+          {
+            "id": 23,
+            "falhas": [
+              "parágrafos (1<2)"
+            ]
+          }
+        ]
+      },
+      "itensComMudancaDeResultado": [],
+      "pontuacaoContextual101": {
+        "total": 24,
+        "passaram": 16,
+        "falhas": [
+          {
+            "id": 1,
+            "falhas": [
+              "vazio"
+            ]
+          },
+          {
+            "id": 4,
+            "falhas": [
+              "vazio"
+            ]
+          },
+          {
+            "id": 5,
+            "falhas": [
+              "curto (58<60)"
+            ]
+          },
+          {
+            "id": 10,
+            "falhas": [
+              "itens (3<5)"
+            ]
+          },
+          {
+            "id": 16,
+            "falhas": [
+              "vazio"
+            ]
+          },
+          {
+            "id": 18,
+            "falhas": [
+              "curto (28<60)",
+              "itens (1<4)"
+            ]
+          },
+          {
+            "id": 22,
+            "falhas": [
+              "falta fato #1 (painel)"
+            ]
+          },
+          {
+            "id": 23,
+            "falhas": [
+              "parágrafos (1<2)"
+            ]
+          }
+        ]
+      },
+      "itensComMudancaContextual101": [
+        3
+      ]
+    },
+    {
+      "arquivo": "resultado-aberto-101-original.json",
+      "sha256": "79c67246f00c9369dfb00cb7c7fcffa4f4bc381ed0883ef9730e6edc502ce282",
+      "gravadoOriginal": {
+        "modo": "depois",
+        "total": 24,
+        "totalPrevisto": 24,
+        "completo": true,
+        "passaram": 22,
+        "pct": 91.7,
+        "medianaPalavras": 162,
+        "cortados": 0,
+        "curtos": 1,
+        "faltouFato": 2,
+        "medianaMs": 9670.5
+      },
+      "pontuacaoHistorica": {
+        "total": 24,
+        "passaram": 22,
+        "falhas": [
+          {
+            "id": 3,
+            "falhas": [
+              "curto (89<90)",
+              "parágrafos (1<3)",
+              "falta fato #3 (urbaniza)"
+            ]
+          },
+          {
+            "id": 22,
+            "falhas": [
+              "falta fato #1 (painel)"
+            ]
+          }
+        ]
+      },
+      "pontuacaoCorrigida": {
+        "total": 24,
+        "passaram": 22,
+        "falhas": [
+          {
+            "id": 3,
+            "falhas": [
+              "curto (89<90)",
+              "parágrafos (1<3)",
+              "falta fato #3 (urbaniza)"
+            ]
+          },
+          {
+            "id": 22,
+            "falhas": [
+              "falta fato #1 (painel)"
+            ]
+          }
+        ]
+      },
+      "itensComMudancaDeResultado": [],
+      "pontuacaoContextual101": {
+        "total": 24,
+        "passaram": 23,
+        "falhas": [
+          {
+            "id": 3,
+            "falhas": [
+              "curto (89<90)",
+              "parágrafos (1<3)",
+              "falta fato #3 (urbaniza)"
+            ]
+          }
+        ]
+      },
+      "itensComMudancaContextual101": [
+        22
+      ]
+    }
+  ]
+}

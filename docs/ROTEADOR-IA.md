@@ -201,7 +201,8 @@ estatística nem uma relação causal entre paralelismo, velocidade e cobertura.
 ## 13. v8 (29/10/2026) — planejamento e limite da primeira medida de estilo
 
 Duas execuções da mesma versão `5e6d626` deram **22/24 e 20/24** na rubrica original, com
-medianas de **24,0 e 82,9 s**, respectivamente. Preservamos integralmente as duas respostas e
+medianas convencionais recalculadas de **23,4375 e 76,1385 s**, respectivamente. Os antigos
+JSONs rotularam o valor central superior como mediana: 24,006 e 82,861 s. Preservamos as respostas e
 logs em `bench/resultado-aberto-99-{a,b}.json` e `bench/historico-aberto-99-{a,b}.log`.
 Amostra pequena; não prova causalidade nem substitui a terceira repetição anteriormente proposta.
 
@@ -225,8 +226,8 @@ incluindo espera; não é correto chamar 2,6 s de tempo total do usuário.
 
 O banco original e as respostas completas foram preservados; quatro alternativas foram
 justificadas em `docs/AUDITORIA-REGUA-ABERTA-100.md`. A reavaliação das mesmas respostas não é
-geração nova. Uma passada real do gerador, com a rubrica original, deu **21/24 e 27,6 s** de
-mediana; o holdout de seis perguntas deu **5/6** (o item #104 ficou com um parágrafo, após
+geração nova. Uma passada real do gerador, com a rubrica original, deu **21/24 e 26,2815 s** de
+mediana convencional (o JSON antigo indica 27,580 s, valor central superior); o holdout de seis perguntas deu **5/6** (o item #104 ficou com um parágrafo, após
 235,5 s). Ambos usaram o código com hash `eccc2a2d…`, anterior apenas à adição dos metadados
 de aviso de formato e verificação. A repetição com esses metadados foi interrompida após 4/24
 itens, sem placar, quando um item levou 307 s. O arquivo `bench/diff-avisos-100.patch`, aplicado
@@ -245,3 +246,20 @@ indicadores descritivos. `docs/AVALIACAO-TEXTO-ABERTO.md` apresenta rubrica e um
 qualitativa exploratória pelo assistente, não uma validação humana independente. O roteador
 marca respostas abertas como **não verificadas**; quando o fallback não entrega a quantidade de
 parágrafos/itens solicitada, informa o aviso às quatro interfaces, sem modificar o texto bruto.
+
+## 15. v10 (29/10/2026) — recuperação, checkpoint e limites de verdade
+
+A rodada 101 tenta uma resposta completa também em listas, conserva trechos fechados, não
+apaga linhas de continuação e permite retomar uma rota depois de seu cooldown dentro do prazo,
+sem antecipar `Retry-After`. Parcial é sinalizado e não é armazenado no cache. O medidor grava
+cada item, identifica código/banco/rubrica/medidor por hash e não aceita prefixo como placar.
+A mediana para quantidade par foi corrigida e os números antigos acima foram retificados a
+partir dos tempos individuais, sem alterar os JSONs históricos.
+
+Na **mesma régua original**, 100 → 101 final deu 21/24 → 22/24; holdout 5/6 → 6/6.
+A 101 intermediária deu 15/24 e 5/6; todas as versões ficam registradas, não só a melhor.
+O #16 final passou no formato mas contém “floração” em vez de uma etapa identificável de
+tratamento, e o #104 generalizou incorretamente o bloqueio de reservas de obras emprestadas.
+A rubrica não verifica essas afirmações. No banco suplementar contextual, reavaliando as
+**mesmas respostas**, 100 e final 101 têm 23/24; o banco original não foi alterado.
+Ver `docs/RODADA-101-RESULTADOS.md` para falhas, fontes, horários, rastros, medidor e limites.

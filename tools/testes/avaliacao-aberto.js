@@ -3,6 +3,7 @@
 const assert = require('assert');
 const novo = require('../../bench/banco-aberto.json');
 const antigo = require('../../bench/banco-aberto-antes-100.json');
+const auditado101 = require('../../bench/banco-aberto-auditado-101.json');
 const { avaliar } = require('../../bench/avaliar-aberto.js');
 const e = require('../../bench/estilo.js');
 const api = require('../../roteador-ia.js');
@@ -48,6 +49,31 @@ for (const variante of ['painel', 'painéis', 'paineis', 'placa', 'módulo solar
 assert.strictEqual(apenasTermos(antigo, 22, 'Os painéis usam luz para gerar corrente.'), false);
 assert.strictEqual(apenasTermos(novo, 22, 'A luz gera corrente.'), false, 'não basta apenas luz e corrente');
 assert.strictEqual(apenasTermos(novo, 22, 'O módulo de atendimento recebe luz para gerar corrente.'), false, 'módulo genérico não é painel fotovoltaico');
+
+// Alternativas adicionais apenas para reavaliação suplementar. Não mudam a régua original.
+assert.deepStrictEqual(auditado101.map((x) => x.id), novo.map((x) => x.id));
+for (const item of auditado101) {
+  const base = porId(novo, item.id);
+  if (![3, 22].includes(item.id)) assert.deepStrictEqual(item, base, 'item não auditado em 101 mudou: ' + item.id);
+  else {
+    assert.deepStrictEqual({ ...item, contem: base.contem }, base, 'limites ou enunciado mudaram em #' + item.id);
+    assert.strictEqual(item.contem.length, base.contem.length);
+    assert(item.contem[0].startsWith(base.contem[0] + '|'), 'alternativas anteriores preservadas em #' + item.id);
+    assert.deepStrictEqual(item.contem.slice(1), base.contem.slice(1));
+  }
+}
+const britanha = 'A Revolução Industrial começou na Grã-Bretanha, com vapor e gente do campo nas cidades.';
+assert.strictEqual(apenasTermos(novo, 3, britanha), false);
+assert.strictEqual(apenasTermos(auditado101, 3, britanha), true);
+assert.strictEqual(apenasTermos(auditado101, 3, 'A Revolução Industrial não começou na Grã-Bretanha, com vapor e gente do campo nas cidades.'), false);
+assert.strictEqual(apenasTermos(auditado101, 3, 'A Revolução Industrial surgiu em 1760; na Grã-Bretanha havia vapor e gente do campo nas cidades.'), false);
+const modulosContextuais = 'A energia solar fotovoltaica usa luz para gerar corrente; cada célula é agrupada em módulos e conectada ao sistema.';
+assert.strictEqual(apenasTermos(novo, 22, modulosContextuais), false);
+assert.strictEqual(apenasTermos(auditado101, 22, modulosContextuais), true);
+assert.strictEqual(apenasTermos(auditado101, 22, 'A energia solar fotovoltaica usa luz para gerar corrente; as células não são agrupadas em módulos.'), false);
+assert.strictEqual(apenasTermos(auditado101, 22, 'A energia solar fotovoltaica usa luz para gerar corrente; células são agrupadas em módulos de atendimento.'), false);
+assert.strictEqual(apenasTermos(auditado101, 22, 'Uma célula é agrupada em módulos para receber luz e gerar corrente.'), false);
+assert.strictEqual(apenasTermos(auditado101, 22, 'Os painéis usam luz para gerar corrente.'), true, 'alternativas da rodada 100 mantidas');
 assert.strictEqual(avaliar('Claro, a luz azul é espalhada.', porId(novo, 11)).falhas.includes('preâmbulo'), true);
 assert.strictEqual(avaliar('', {}).falhas[0], 'vazio');
 

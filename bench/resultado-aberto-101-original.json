@@ -1,0 +1,823 @@
+{
+ "sum": {
+  "modo": "depois",
+  "total": 24,
+  "totalPrevisto": 24,
+  "completo": true,
+  "passaram": 22,
+  "pct": 91.7,
+  "medianaPalavras": 162,
+  "cortados": 0,
+  "curtos": 1,
+  "faltouFato": 2,
+  "medianaMs": 9670.5
+ },
+ "res": [
+  {
+   "id": 1,
+   "q": "Explique em dois parágrafos o que é fotossíntese.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 222,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 11064,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:06:58.210Z",
+     "msParede": 11051,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "A fotossíntese é o processo biológico pelo qual plantas, algas e algumas bactérias convertem energia luminosa em energia química armazenável. Ele ocorre principalmente nas folhas, dentro dos cloroplastos, organelas que contêm a clorofila. A clorofila absorve a luz solar, especialmente na faixa azul e vermelha do espectro, e utiliza essa energia para transformar dióxido de carbono, absorvido do ar por meio dos estômatos, e água, absorvida pelas raízes, em glicose e oxigênio. Esse processo é dividido em duas etapas principais: a fase luminosa, que ocorre nas membranas tilacoides e produz ATP e NADPH, e a fase escura, ou ciclo de Calvin, que ocorre no estroma e utiliza essas moléculas para fixar o carbono e sintetizar a glicose.\n\nA fotossíntese é essencial para a vida na Terra, pois é a principal fonte de oxigênio atmosférico e a base da cadeia alimentar. A glicose produzida serve como fonte de energia para o organismo fotossintetizante e, indiretamente, para outros seres vivos que a consomem. Além disante, o processo remove dióxido de carbono do ar, ajudando a regular o clima global. A eficiência da fotossíntese depende de fatores como intensidade luminosa, concentração de dióxido de carbono, temperatura e disponibilidade de água. Estudos mostram que condições adversas, como seca ou poluição, podem reduzir significativamente a capacidade de uma planta de realizar fotossíntese, impactando seu crescimento e produtividade.",
+   "trecho": "A fotossíntese é o processo biológico pelo qual plantas, algas e algumas bactérias convertem energia luminosa em energia química armazenável. Ele ocorre principalmente nas folhas, dentro dos cloroplas",
+   "fim": "uma planta de realizar fotossíntese, impactando seu crescimento e produtividade."
+  },
+  {
+   "id": 2,
+   "q": "Explique em dois parágrafos a diferença entre vírus e bactéria.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 159,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 10106,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:07:09.276Z",
+     "msParede": 10097,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Vírus e bactérias são agentes infecciosos, mas possuem características biológicas distintas. Os vírus são partículas muito pequenas, compostas apenas de material genético (DNA ou RNA) envolto por uma cápside proteica, e necessitam de uma célula hospedeira para se replicarem. Eles não possuem estruturas celulares, não realizam metabolismo próprio e não podem ser cultivados em meios de cultura convencionais. Já as bactérias são células unicelulares completas, com parede celular, membrana plasmática, ribossomos e material genético próprio, capazes de se dividir por binary fission e sobreviver em diversos ambientes, incluindo meios de cultura.\n\nA principal diferença clínica está no tratamento: infecções bacterianas podem ser tratadas com antibióticos, que atacam estruturas específicas das bactérias, enquanto infecções virais não respondem a antibióticos, exigindo medicamentos antivirais ou o sistema imunológico para combater a infecção. Além disso, os vírus são muito menores que as bactérias e só podem ser visualizados por meio de microscopia eletrônica, enquanto as bactérias podem ser vistos com microscópios ópticos convencionais.",
+   "trecho": "Vírus e bactérias são agentes infecciosos, mas possuem características biológicas distintas. Os vírus são partículas muito pequenas, compostas apenas de material genético (DNA ou RNA) envolto por uma ",
+   "fim": ", enquanto as bactérias podem ser vistos com microscópios ópticos convencionais."
+  },
+  {
+   "id": 3,
+   "q": "Resuma em três parágrafos o que foi a Revolução Industrial.",
+   "ok": false,
+   "falhas": [
+    "curto (89<90)",
+    "parágrafos (1<3)",
+    "falta fato #3 (urbaniza)"
+   ],
+   "palavras": 89,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 110002,
+   "rota": "texto-longo",
+   "tentativasSelecionadas": 4,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": "Restrições de formato não atendidas: 1 de 3 parágrafos. Confira ou tente novamente.",
+   "incompleto": true,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:07:19.378Z",
+     "msParede": 518,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-29T11:07:19.897Z",
+     "msParede": 35003,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-29T11:07:54.900Z",
+     "msParede": 18209,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-29T11:08:13.109Z",
+     "msParede": 33021,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-29T11:08:46.130Z",
+     "msParede": 23245,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    }
+   ],
+   "texto": "Para resuma a Revolução Industrial, basta observar como a produção passou de artesanal para mecanizada no final do século XVIII, quando a máquina a vapor de James Watt impulsionou fábricas de tecidos em Manchester. Esse processo transformou a economia, deslocando mão‑de‑obra rural para centros urbanos e gerando crescimento populacional e tecnológico. A industrialização também introduziu novos métodos de transporte, como os primeiros trens a vapor, que conectaram regiões e facilitaram o comércio. Assim, a Revolução Industrial marcou o início da era moderna, alterando profundamente a organização social e econômica.",
+   "trecho": "Para resuma a Revolução Industrial, basta observar como a produção passou de artesanal para mecanizada no final do século XVIII, quando a máquina a vapor de James Watt impulsionou fábricas de tecidos ",
+   "fim": "início da era moderna, alterando profundamente a organização social e econômica."
+  },
+  {
+   "id": 4,
+   "q": "Escreva um e-mail formal pedindo orçamento de 20 cadeiras para um escritório. Máximo 200 palavras.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 82,
+   "paragrafos": 16,
+   "itens": 5,
+   "nota": 3,
+   "erro": null,
+   "ms": 5273,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:09:09.378Z",
+     "msParede": 5271,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Assunto: Solicitação de orçamento para 20 cadeiras\n\nPrezados Senhores,\n\nVenho por meio desta solicitar orçamento para aquisição de 20 cadeiras destinadas a nosso escritório.\n\nGostaríamos de informações sobre:\n- Modelos disponíveis\n- Preços unitários e totais\n- Prazos de entrega\n- Condições de pagamento\n- Garantia oferecida\n\nRogo retornarem com proposta detalhada contendo todos os valores envolvidos, incluindo possíveis taxas de frete e instalação.\n\nAguardo resposta no prazo máximo de 5 dias úteis.\n\nAtenciosamente,\nCarlos Mendes\nGerente Administrativo\nTech Solutions Ltda.\ncarlos.mendes@techsolutions.com.",
+   "trecho": "Assunto: Solicitação de orçamento para 20 cadeiras\n\nPrezados Senhores,\n\nVenho por meio desta solicitar orçamento para aquisição de 20 cadeiras destinadas a nosso escritório.\n\nGostaríamos de informaçõe",
+   "fim": "des\nGerente Administrativo\nTech Solutions Ltda.\ncarlos.mendes@techsolutions.com."
+  },
+  {
+   "id": 5,
+   "q": "Explique em três passos como fazer um bolo simples.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 106,
+   "paragrafos": 3,
+   "itens": 3,
+   "nota": 9,
+   "erro": null,
+   "ms": 7233,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:09:14.652Z",
+     "msParede": 7232,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "1. Prepara a massa: em uma tigela, misture 2 xícares de farinha de trigo, 2 ovos, 1 xícara de leite, 1/2 xícara de óleo e 1 colher de sopa de fermento em pó até obter uma massa homogênea.\n2. Asa o bolo: despeje a massa em uma forma untada e enfarinhada, nivelando com uma espátula, e leve ao forno preaquecido a 180 °C por cerca de 35 a 40 minutos, ou até que ao inserir um palito este saia limpo.\n3. Sirva: deixe o bolo esfriar na forma por 10 minutos, desenforme-o em uma grade e sirva cortado em fatias, acompanhado de cobertura de sua preferência.",
+   "trecho": "1. Prepara a massa: em uma tigela, misture 2 xícares de farinha de trigo, 2 ovos, 1 xícara de leite, 1/2 xícara de óleo e 1 colher de sopa de fermento em pó até obter uma massa homogênea.\n2. Asa o bol",
+   "fim": "ma grade e sirva cortado em fatias, acompanhado de cobertura de sua preferência."
+  },
+  {
+   "id": 6,
+   "q": "Escreva um parágrafo argumentando a favor da reciclagem.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 164,
+   "paragrafos": 1,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 8240,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:09:21.887Z",
+     "msParede": 8239,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "A reciclagem é essencial para a sustentabilidade ambiental, pois reduz significativamente a quantidade de resíduos enviados a aterros e ao lixão, diminuindo a contaminação do solo e da água por substâncias tóxicas. Quando materiais como papel, plástico, vidro e metal são coletados e processados corretamente, eles retornam à cadeia produtiva como novas matérias-primas, economizando recursos naturais como madeira, petróleo e minerais, além de reduzir o consumo de energia necessário para a produção de novos produtos. Por exemplo, reciclar papel pode diminuir o uso de energia em até 60% em comparação com a produção a partir de celulose virgem, e reciclar alumínio evita a extração de bauxita, preservando ecossistemas. Além disante os benefícios ambientais, a reciclagem gera empregos em setores verdes, estimula a economia circular e promove a educação ambiental, conscientizando a população sobre consumo responsável. Portanto, adotar práticas de reciclagem em escala municipal, empresarial e doméstica é um passo concreto para mitigar os impactos negativos da produção atual e construir um futuro mais sustentável.",
+   "trecho": "A reciclagem é essencial para a sustentabilidade ambiental, pois reduz significativamente a quantidade de resíduos enviados a aterros e ao lixão, diminuindo a contaminação do solo e da água por substâ",
+   "fim": " os impactos negativos da produção atual e construir um futuro mais sustentável."
+  },
+  {
+   "id": 7,
+   "q": "Explique o ciclo da água em dois parágrafos.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 152,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 10223,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:09:30.127Z",
+     "msParede": 10221,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "O ciclo da água, também chamado de hidrolise, é um processo contínuo que move a água entre a superfície da Terra e a atmosfera. Ele começa com a evaporação, quando o calor do sol transforma a água dos oceanos, rios e lagos em vapor d'água, que sobe para a atmosfera. A transpiração, proveniente de plantas, também adiciona vapor à atmosfera. Ao esfriar, o vapor condensa formando nuvens, processo chamado condensação. Quando as gotas se unem e tornam pesadas, ocorre a precipitação, caindo como chuva, neve ou granizo sobre a terra.\n\nApós a precipitação, a água retorna aos corpos d'água por meio da escoência superficial ou infiltrando-se no solo, recarregando lençóis freáticos. Essa água pode ser absorvida por plantas ou voltar a evaporar, reiniciando o ciclo. O ciclo da água é essencial para distribuir água doce, regular o clima e sustentar a vida em todos os ambientes, garantindo o equilíbrio hídrico do planeta.",
+   "trecho": "O ciclo da água, também chamado de hidrolise, é um processo contínuo que move a água entre a superfície da Terra e a atmosfera. Ele começa com a evaporação, quando o calor do sol transforma a água dos",
+   "fim": "tentar a vida em todos os ambientes, garantindo o equilíbrio hídrico do planeta."
+  },
+  {
+   "id": 8,
+   "q": "Explique o que é inflação em dois parágrafos.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 186,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 11410,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:09:40.351Z",
+     "msParede": 11409,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Inflação é o aumento generalizado e contínuo dos preços de bens e serviços em uma economia ao longo do tempo. Quando a inflação ocorre, cada unidade de moeda compra menos do que comprava anteriormente, reduzindo o poder de compra da moeda. Ela pode ser causada por diversos fatores, como aumento da demanda por produtos, escassez de oferta, elevação de custos de produção, políticas fiscais ou monetárias excessivas, e expectativas de inflação futura. A inflação é medida por índices como o Índice de Preços ao Consumidor (IPC), que monitora a variação de preços de uma cesta de bens e serviços típicos de um consumidor médio.\n\nA inflação pode ter efeitos positivos ou negativos, dependendo de sua intensidade e duração. Níveis moderados de inflação são considerados saudáveis para a economia, pois incentivam o consumo e o investimento, evitando a estagnação. No entanto, inflação alta e descontrolada corroí o poder de compra, gera incerteza econômica e pode levar à crise financeira. Para controlá-la, bancos centrais utilizam ferramentas como a taxa de juros, que ao ser aumentada, reduz o crédito e a demanda, ajudando a conter a subida dos preços.",
+   "trecho": "Inflação é o aumento generalizado e contínuo dos preços de bens e serviços em uma economia ao longo do tempo. Quando a inflação ocorre, cada unidade de moeda compra menos do que comprava anteriormente",
+   "fim": "r aumentada, reduz o crédito e a demanda, ajudando a conter a subida dos preços."
+  },
+  {
+   "id": 9,
+   "q": "Explique a diferença entre juros simples e juros compostos em dois parágrafos.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 183,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 8248,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:09:51.762Z",
+     "msParede": 8246,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Juros simples é um tipo de remuneração em que o valor gerado é calculado apenas sobre o capital inicial, sem considerar os juros acumulados em períodos anteriores. A fórmula básica é J = C × i × t, onde J representa os juros, C o capital, i a taxa e t o tempo. Esse modelo é comum em empréstimos de curto prazo ou financiamentos simples, pois oferece previsibilidade nos valores a serem pagos. Como os juros não incidem sobre juros, o crescimento do devedor ou investidor segue uma proporção linear ao longo do tempo.\n\nJuros compostos, por outro lado, calcula o rendimento sobre o capital inicial e também sobre os juros acumulados de períodos anteriores, gerando um efeito de multiplicação do valor. A fórmula é M = C × (1 + i)^t, onde M é o montante final. Esse sistema é amplamente utilizado em aplicações financeiras de longo prazo, como poupança, investimentos e empréstimos bancários. A vantagem para o investidor é que o patrimônio cresce de forma exponencial, enquanto para o devedor pode acarretar um aumento significativo da dívida ao longo do tempo.",
+   "trecho": "Juros simples é um tipo de remuneração em que o valor gerado é calculado apenas sobre o capital inicial, sem considerar os juros acumulados em períodos anteriores. A fórmula básica é J = C × i × t, on",
+   "fim": "a o devedor pode acarretar um aumento significativo da dívida ao longo do tempo."
+  },
+  {
+   "id": 10,
+   "q": "Escreva uma lista com 5 dicas práticas para economizar água em casa.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 93,
+   "paragrafos": 5,
+   "itens": 5,
+   "nota": 9,
+   "erro": null,
+   "ms": 5771,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:10:00.011Z",
+     "msParede": 5770,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "1. Instale torneiras e chuveiros de baixa vazão para reduzir o consumo sem perder pressão.\n2. Reaproveite a água da lavagem de vegetais e legumes para regar plantas ou limpar superfícies.\n3. Lave a louça e a roupa apenas quando a máquina estiver cheia, evitando ciclos incompletos.\n4. Desligue o chuveiro enquanto se ensaboa o corpo ou lê a etiqueta do shampoo para não perder tempo com água corrente.\n5. Use baldes ou recipientes para coletar água da torneira enquanto espera a temperatura ideal, aproveitando-a para regar o jardim ou limpar o pátio.",
+   "trecho": "1. Instale torneiras e chuveiros de baixa vazão para reduzir o consumo sem perder pressão.\n2. Reaproveite a água da lavagem de vegetais e legumes para regar plantas ou limpar superfícies.\n3. Lave a lo",
+   "fim": "spera a temperatura ideal, aproveitando-a para regar o jardim ou limpar o pátio."
+  },
+  {
+   "id": 11,
+   "q": "Explique por que o céu é azul em dois parágrafos.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 190,
+   "paragrafos": 2,
+   "itens": 0,
+   "erro": null,
+   "ms": 70548,
+   "rota": "texto-longo",
+   "tentativasSelecionadas": 4,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:10:05.783Z",
+     "msParede": 655,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-29T11:10:06.439Z",
+     "msParede": 15305,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-29T11:10:21.744Z",
+     "msParede": 24137,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-29T11:10:45.881Z",
+     "msParede": 25140,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:11:11.022Z",
+     "msParede": 5306,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "A cor azul do céu resulta da dispersão da luz solar pelas moléculas de gases da atmosfera. Esse fenômeno, conhecido como dispersão de Rayleigh, afeta mais fortemente os comprimentos de onda curtos, como o azul e o violeta. Como o olho humano é mais sensível ao azul do que ao violeta, percebemos o céu predominantemente azul durante o dia. Um exemplo cotidiano é observar o céu ao meio-dia, quando a luz percorre uma camada relativamente fina de ar e a tonalidade azul se torna intensa.\n\nDurante o entardecer, a luz solar atravessa uma camada atmosférica muito mais espessa, o que faz com que a maior parte do azul seja dispersa antes de chegar ao observador, deixando passar tons mais longos, como o laranja e o vermelho. Esse mesmo princípio explica por que o céu perde a intensidade azul em dias muito nublados, já que as gotas de água dispersam todos os comprimentos de onda de forma mais uniforme, resultando em uma aparência cinza. Além disso, em altitudes elevadas, onde há menos moléculas para dispersão, o céu tende a um azul mais pálido, aproximando-se do esverdeado que se vê no horizonte.",
+   "trecho": "A cor azul do céu resulta da dispersão da luz solar pelas moléculas de gases da atmosfera. Esse fenômeno, conhecido como dispersão de Rayleigh, afeta mais fortemente os comprimentos de onda curtos, co",
+   "fim": "ende a um azul mais pálido, aproximando-se do esverdeado que se vê no horizonte."
+  },
+  {
+   "id": 12,
+   "q": "Resuma em três parágrafos a Segunda Guerra Mundial.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 345,
+   "paragrafos": 3,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 19151,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:11:16.331Z",
+     "msParede": 19149,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "A Segunda Guerra Mundial (1939-1945) começou quando a Alemanha nazista, liderada por Adolf Hitler, invadiu a Polônia em 1º de setembro de 1939. Em resposta, a Grã-Bretanha e a França declararam guerra à Alemanha. Nos anos seguintes, a Alemanha expandiu seu controle sobre a Europa, ocupando países como a França, os Países Baixos e a União Soviética, após romper o Pacto Molotov-Ribbentropvski em junho de 1941. Paralelamente, o Japão, buscando hegemonia no Pacífico, atacou a base norte-americana de Pearl Harbor em 7 de dezembro de 1941, levando os Estados Unidos à guerra. O conflito envolveu milhões de soldados e civis, com batalhas marcantes como a Batalha de Stalingrado, que marcou a virada estratégica no front oriental, e a Batalha do Atlântico, onde a Marinha Britânica enfrentou os submarinos alemães.\n\nO exército soviético, após resistir à ofensiva alemã em Stalingrado, começou a empurrar as forças nazistas de volta para o oeste, avançando até Berlim. Nos anos finais da guerra, os Aliados intensificaram os ataques aéreos sobre as cidades alemãs, enquanto os Estados Unidos lideraram o avanço no Pacífico, capturando ilhas japonesas uma a uma. Em 8 de maio de 1945, a Alemanha rendeu-se incondicionalmente, após a suicidio de Hitler. No entanto, o Japão resistiu por mais alguns meses, até que os Estados Unidos lançaram bombas atômicas em Hiroshima e Nagasaki em agosto de 1945, forçando a rendição japonesa em 2 de setembro de 1945.\n\nA Segunda Guerra Mundial resultou em aproximadamente 70 a 85 milhões de mortes, incluindo o Holocausto, no qual seis milhões de judeus foram assassinados pelo regime nazista. O conflito redesenhou as fronteiras globais, levando à divisão da Europa entre o bloco capitalista, liderado pelos EUA, e o socialista, liderado pela União Soviética, iniciando a Guerra Fria. A ONU foi fundada em 1945 para promover a paz e a cooperação internacional. A Alemanha e a Japão foram desmilitarizados e ocupados, enquanto a Itália perdeu seu império colonial. O conflito também impulsionou avanços tecnológicos, como o desenvolvimento da energia nuclear, e transformou as relações internacionais, estabelecendo os EUA e a União Soviética como superpotências.",
+   "trecho": "A Segunda Guerra Mundial (1939-1945) começou quando a Alemanha nazista, liderada por Adolf Hitler, invadiu a Polônia em 1º de setembro de 1939. Em resposta, a Grã-Bretanha e a França declararam guerra",
+   "fim": "es internacionais, estabelecendo os EUA e a União Soviética como superpotências."
+  },
+  {
+   "id": 13,
+   "q": "Explique como funciona uma vacina em dois parágrafos.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 169,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 8623,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:11:35.483Z",
+     "msParede": 8623,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Uma vacina funciona introduzindo no organismo uma forma inofofativa ou atenuada do patógeno que causa uma doença, como vírus morto, proteínas específicas ou material genético (como em vacinas de RNA). Esse componente não causa a doença, mas é reconhecido pelo sistema imunológico como um invasor estranho. O sistema imunológico, então, produz anticorpos e ativa células T para combater o agente. Essa resposta também gera células da memória imunológica, que \"lembram\" do patógeno, permitindo uma reação mais rápida e eficaz em futuras exposições.\n\nQuando a pessoa é posteriormente exposta ao patógeno real, o sistema imunológico já está preparado para atacá-lo rapidamente, evitando que ele se multiplique e cause a doença. Por isso, vacinas reduzem significativamente o risco de infecções graves, hospitalizações e complicações. No entanto, a eficácia pode variar entre indivíduos, e algumas vacinas exigem reforços ao long do tempo para manter a proteção. O desenvolvimento de uma vacina envolve testes rigorosos em laboratório, animais e ensaios clínicos em humanos para garantir sua segurança e eficácia antes da liberação pública.",
+   "trecho": "Uma vacina funciona introduzindo no organismo uma forma inofofativa ou atenuada do patógeno que causa uma doença, como vírus morto, proteínas específicas ou material genético (como em vacinas de RNA).",
+   "fim": "os em humanos para garantir sua segurança e eficácia antes da liberação pública."
+  },
+  {
+   "id": 14,
+   "q": "Explique o que é uma função em programação para quem nunca programou, em dois parágrafos.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 184,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 7029,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:11:44.107Z",
+     "msParede": 7028,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Uma função em programação é como uma receita de culinária: um conjunto de passos organizados que realizam uma tarefa específica. Imagine que você quer preparar um pão. Em vez de repetir todos os passos toda vez, você cria uma receita com os ingredientes e as etapas, e só precisa segui-la quando quiser o pão. Na programação, a função funciona igual: você escreve uma vez o bloco de instruções que resolvem um problema, dá um nome a ela e, sempre que precisar daquela solução, chama a função pelo nome. Isso evita retrabalho e deixa o código mais limpo e fácil de entender.\n\nAlém disante, as funções podem receber informações para personalizar o resultado, assim como uma receita pode pedir mais ou menos sal dependendo do gosto. Essas informações são chamadas parâmetros, e a função devolve um resultado chamado retorno. Por exemplo, uma função chamada \"calcularÁrea\" pode receber a largura e a altura de um retângulo e devolver a área correspondente. Dividir um programa em funções ajuda a organizar o pensamento, corrigir erros com mais facilidade e reutilizar trechos de código em diferentes partes do sistema.",
+   "trecho": "Uma função em programação é como uma receita de culinária: um conjunto de passos organizados que realizam uma tarefa específica. Imagine que você quer preparar um pão. Em vez de repetir todos os passo",
+   "fim": " mais facilidade e reutilizar trechos de código em diferentes partes do sistema."
+  },
+  {
+   "id": 15,
+   "q": "Explique o que é a LGPD em dois parágrafos.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 184,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 13910,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:11:51.137Z",
+     "msParede": 13909,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "A Lei Geral de Proteção de Dados (LGPD) é uma legislação brasileira sancionada em 2018 e vigente desde 2020, regulamentada pela Lei nº 13.709. Ela estabelece regras para o tratamento de dados pessoais, aplicando-se a qualquer operação realizada por controladores e encarregados, seja em âmbito público ou privado. O objetivo principal é proteger os direitos dos titulares dos dados, como acesso, retificação, eliminação e portabilidade, garantindo transparência no uso das informações. A lei também instituiu a Autoridade Nacional de Proteção de Dados (ANPD), responsável por fiscalizar e aplicar sanções em casos de descumprimento.\n\nO tratamento de dados pessoais sob a LGPD exige base legal para cada operação, podendo ser consentimento, execução de contrato, cumprimento de obrigação legal, entre outras hipóteses. Empresas e organizações devem adotar medidas de segurança, elaborar relatórios de impacto e nomear encarregado para supervisionar o processo. As infrações são punidas com multas que podem chegar a 2% do faturamento da empresa, limitada a R$ 50 milhões por caso. A lei aplica-se a qualquer controlador ou encarregado que trate dados de indivíduos localizados no Brasil, independentemente de onde a operação seja realizada.",
+   "trecho": "A Lei Geral de Proteção de Dados (LGPD) é uma legislação brasileira sancionada em 2018 e vigente desde 2020, regulamentada pela Lei nº 13.709. Ela estabelece regras para o tratamento de dados pessoais",
+   "fim": "duos localizados no Brasil, independentemente de onde a operação seja realizada."
+  },
+  {
+   "id": 16,
+   "q": "Descreva em dois parágrafos o caminho da água da chuva até a torneira de casa.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 154,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 9586,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:12:05.049Z",
+     "msParede": 9585,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "A água da chuva começa sua jornada quando precipita sobre a superfície terrestre, escoando pelas encostas e lençóis freáticos, alimentando rios, lagos e represas. Esses corpos d'água recebem a água que, após ser tratada em estações de potabilização, é direcionada para a rede de distribuição urbana. O processo de tratamento envolve coleta, filtração, desinfecção e floração, garantindo que o líquido atenda aos padrões de potabilidade exigidos por órgãos reguladores como a ANA e o Ministério da Saúde.\n\nAo chegar à sua casa, a água percorre tubulações subterrâneas ou aéreas, alimentadas por bombas ou vias gravitárias, até o ponto de consumo. Antes de chegar ao torneira, ela pode passar por um medidor de consumo, que registra o volume utilizado para faturamento. Ao abrir a torneira, a água já tratada e filtrada flui diretamente da rede, pronta para consumo humano, sendo possível verificar sua qualidade por meio de análises periódicas realizadas por órgãos públicos ou privados.",
+   "trecho": "A água da chuva começa sua jornada quando precipita sobre a superfície terrestre, escoando pelas encostas e lençóis freáticos, alimentando rios, lagos e represas. Esses corpos d'água recebem a água qu",
+   "fim": "dade por meio de análises periódicas realizadas por órgãos públicos ou privados."
+  },
+  {
+   "id": 17,
+   "q": "Escreva um texto de dois parágrafos sobre os impactos das redes sociais na vida das pessoas.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 163,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 12996,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:12:14.636Z",
+     "msParede": 12993,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "As redes sociais transformaram a forma como as pessoas se comunicam, compartilham informações e constroem relacionamentos. Plataformas como Instagram, Facebook e TikTok permitem que usuários mantenham contato com amigos e familiares distantes, ampliando o alcance das interações sociais. Além disso, facilitam o acesso a notícias, eventos culturais e movimentos sociais, democratizando a informação e incentivando a participação cidadã. No entanto, esse uso constante pode levar à dependência, redução do tempo de atenção e comparações que afetam a autoestima, especialmente entre jovens.\n\nParalelamente, as redes sociais influenciaram significativamente o comportamento de consumo e a economia digital. Empresas utilizam essas plataformas para divulgar produtos, enquanto influenciadores digitais moldam tendências e opiniões. Ao mesmo tempo, o excesso de exposição a conteúdos filtrados pode distorcer a percepção da realidade, contribuindo para ansiedade e isolamento. A pressão por likes e compartilhamentos também reforça padrões estéticos e comportamentais, impactando a saúde mental. Assim, o desafio está em equilibrar os benefícios da conectividade com o cuidado sobre o bem-estar individual.",
+   "trecho": "As redes sociais transformaram a forma como as pessoas se comunicam, compartilham informações e constroem relacionamentos. Plataformas como Instagram, Facebook e TikTok permitem que usuários mantenham",
+   "fim": "ibrar os benefícios da conectividade com o cuidado sobre o bem-estar individual."
+  },
+  {
+   "id": 18,
+   "q": "Dê quatro argumentos contra o desperdício de alimentos.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 110,
+   "paragrafos": 4,
+   "itens": 4,
+   "nota": 9,
+   "erro": null,
+   "ms": 9755,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:12:27.633Z",
+     "msParede": 9755,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "1. O desperdício de alimentos aumenta as emissões de gases de efeito estufa, pois a decomposição na lixão libera metano, um poluente 25 vezes mais potente que o dióxido de carbono.\n2. Recursos como água, terra e energia são desperdiçados na produção de alimentos que não são consumidos, agravando a escassez de recursos naturais em regiões já vulneráveis.\n3. O custo financeiro para famílias e empresas é elevado, já que alimentos comprados e armazenados incorretamente representam perdas diretas no orçamento.\n4. Enquanto milhões de pessoas sofrem de fome, o desperdício de alimentos é uma injustiça social, pois alimentos seguros e nutritivos são descartados em vez de redistribuídos para quem precisa.",
+   "trecho": "1. O desperdício de alimentos aumenta as emissões de gases de efeito estufa, pois a decomposição na lixão libera metano, um poluente 25 vezes mais potente que o dióxido de carbono.\n2. Recursos como ág",
+   "fim": "seguros e nutritivos são descartados em vez de redistribuídos para quem precisa."
+  },
+  {
+   "id": 19,
+   "q": "Explique a diferença entre clima e tempo em um parágrafo.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 115,
+   "paragrafos": 1,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 9130,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:12:37.390Z",
+     "msParede": 9128,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Clima e tempo são conceitos relacionados à atmosfera, mas diferem em escala e características. Tempo refere-se às condições atmosféricas em um momento específico e local, como temperatura, umidade, vento, precipitação e visibilidade, variando de minutos a dias. Já o clima é a média estatística dessas condições ao longo de períodos prolongados, geralmente 30 anos, em uma região. O tempo é dinâmico e imprevisível, enquanto o clima é mais estável e definidor das características gerais de um lugar, como a frequência de secas ou a intensidade de invernos. Assim, o tempo é o que experimentamos diariamente, e o clima é o padrão que explica por que certas condições atmosféricas ocorrem com maior regularidade em determinada zona.",
+   "trecho": "Clima e tempo são conceitos relacionados à atmosfera, mas diferem em escala e características. Tempo refere-se às condições atmosféricas em um momento específico e local, como temperatura, umidade, ve",
+   "fim": "ertas condições atmosféricas ocorrem com maior regularidade em determinada zona."
+  },
+  {
+   "id": 20,
+   "q": "Resuma em três parágrafos a teoria da evolução de Darwin.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 259,
+   "paragrafos": 3,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 14231,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:12:46.520Z",
+     "msParede": 14230,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "A teoria da evolução de Darwin, apresentada em \"A origem das espécies\" (1859), propõe que as espécies mudam ao longo do tempo por meio de um processo natural de seleção. Darwin baseou-se em observações durante sua viagem no HMS Beagle, especialmente nas Galápagos, onde notou variações entre espécies em diferentes ilhas. Ele argumentou que os seres vivos descendem de ancestrais comuns e que as variações hereditárias que conferem vantagens para a sobrevivência em um ambiente específico tendem a ser preservadas. Esse mecanismo, chamado seleção natural, explica como características úteis se tornam mais comuns nas populações ao longo de gerações.\n\nO segundo pilar da teoria é a luta pela existência, derivada da observação de que os seres vivos produzem mais descendentes do que o ambiente pode suportar. Isso leva à competição por recursos limitados, como alimento, espaço e parceiros reprodutivos. Dentre os indivíduos, alguns apresentam variações genéticas que aumentam suas chances de sobreviver e se reproduzir. Esses indivíduos deixam mais descendentes, transmitindo as características vantajosas às gerações futuras. Assim, a população evolui gradualmente, adaptando-se melhor ao ambiente.\n\nPor fim, a teoria de Darwin explica a diversidade da vida como resultado de processos naturais, sem necessidade de intervenções sobrenaturais. A seleção natural atua sobre variações aleatórias, favorecendo adaptações que aumentam a aptidão biológica. Exemplos incluem a resistência de bactérias a antibióticos e a adaptação de aves com bicos específicos para alimentos disponíveis. A teoria também fornece a base para a biologia moderna, integrando genética, ecologia e paleontologia para entender como os organismos se relacionam e se adaptam ao longo do tempo.",
+   "trecho": "A teoria da evolução de Darwin, apresentada em \"A origem das espécies\" (1859), propõe que as espécies mudam ao longo do tempo por meio de um processo natural de seleção. Darwin baseou-se em observaçõe",
+   "fim": "a para entender como os organismos se relacionam e se adaptam ao longo do tempo."
+  },
+  {
+   "id": 21,
+   "q": "Escreva uma mensagem curta e educada cobrando um pagamento atrasado de um cliente. Máximo 150 palavras.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 78,
+   "paragrafos": 5,
+   "itens": 0,
+   "nota": 3,
+   "erro": null,
+   "ms": 6043,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:13:00.752Z",
+     "msParede": 6042,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Prezado(a) [Nome do Cliente],\n\nEspero que esta mensagem o(a) encontre bem. Gostaríamos de informar que ainda não recebemos o pagamento referente ao serviço/produto [descrever brevemente], cujo vencimento foi em [data]. Até o momento, não houve contato para regularização.\n\nSolicitamos gentilmente que normalizemos essa pendência o quanto antes, evitando impactos em futuros serviços. Caso já tenha realizado o pagamento, agradecemos e pedimos a confirmação para atualização em nosso sistema.\n\nFicamos à disposição para quaisquer esclarecimentos ou ajustes necessários.\n\nAtenciosamente.",
+   "trecho": "Prezado(a) [Nome do Cliente],\n\nEspero que esta mensagem o(a) encontre bem. Gostaríamos de informar que ainda não recebemos o pagamento referente ao serviço/produto [descrever brevemente], cujo vencime",
+   "fim": "sposição para quaisquer esclarecimentos ou ajustes necessários.\n\nAtenciosamente."
+  },
+  {
+   "id": 22,
+   "q": "Explique em dois parágrafos como funciona a energia solar fotovoltaica.",
+   "ok": false,
+   "falhas": [
+    "falta fato #1 (painel)"
+   ],
+   "palavras": 142,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 10393,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:13:06.796Z",
+     "msParede": 10393,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "A energia solar fotovoltaica converte a luz do Sol diretamente em eletricidade por meio de células solares, geralmente feitas de silício. Quando a luz atinge a célula, os fótons excitem os elétrons do material semicondutor, liberando-os para fluir em um circuito, gerando corrente elétrica contínua. Cada célula produz uma pequena tensão, por isso elas são agrupadas em módulos e conectadas para aumentar a potência.\n\nO sistema completo inclui inversores, que transformam a corrente contínua em corrente alternada para uso em residências ou indúststrias, e um sistema de instalação que orienta os módulos em direção ao Sol. A energia excedente pode ser armazenada em baterias ou injetada na rede elétrica. A eficiência depende da qualidade das células, da incidência de luz e das condições climáticas, mas o sistema não possui partes móveis, o que reduz manutenção e torna a tecnologia sustentável e durável.",
+   "trecho": "A energia solar fotovoltaica converte a luz do Sol diretamente em eletricidade por meio de células solares, geralmente feitas de silício. Quando a luz atinge a célula, os fótons excitem os elétrons do",
+   "fim": "artes móveis, o que reduz manutenção e torna a tecnologia sustentável e durável."
+  },
+  {
+   "id": 23,
+   "q": "Explique em dois parágrafos o que é inteligência artificial, sem jargão.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 161,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 6428,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:13:17.191Z",
+     "msParede": 6427,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Inteligência artificial é a capacidade de máquinas de aprenderem e tomar decisões com base em dados, sem serem programadas explicitamente para cada tarefa. Funciona como um sistema que analisa informações, identifica padrões e usa esse conhecimento para resolver problemas ou prever resultados, de forma semelhante ao jeito que as pessoas aprendem com experiências. Por exemplo, quando um algoritmo reconhece rostos em fotos ou recomenda filmes com base no que você assistiu antes, ele está usando processos inspirados na inteligência humana, mas executados por computadores.\n\nEsses sistemas dependem de grandes volumes de dados e de métodos estatísticos para melhorar seu desempenho ao longo do tempo. Quanto mais dados recebem, mais precisos tendem a ficar, mas também podem reproduzir vieses presentes nesses dados. Aplicações comuns incluem assistentes virtuais, tradutores automáticos e até sistemas que ajudam médicos a diagnosticar doenças. Apesar do avanço, a tecnologia ainda não entende o mundo como um ser humano, limitando-se a padrões específicos e exigindo supervisão para evitar erros.",
+   "trecho": "Inteligência artificial é a capacidade de máquinas de aprenderem e tomar decisões com base em dados, sem serem programadas explicitamente para cada tarefa. Funciona como um sistema que analisa informa",
+   "fim": "ano, limitando-se a padrões específicos e exigindo supervisão para evitar erros."
+  },
+  {
+   "id": 24,
+   "q": "Escreva um parágrafo explicando a importância de dormir bem.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 163,
+   "paragrafos": 1,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 7792,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:13:23.621Z",
+     "msParede": 7792,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Dormir bem é essencial para o funcionamento adequado do corpo e da mente, pois durante o sono ocorrem processos vitais como a reparação de tecidos, a consolidação da memória e o fortalecimento do sistema imunológico. Uma noite de sono de qualidade ajuda a regular o humor, reduzindo o estresse e a ansiedade, além de melhorar a concentração, a atenção e o desempenho cognitivo no dia seguinte. Dormir menos do que o necessário pode levar a fadiga crônica, aumentar o risco de doenças cardiovasculares, diabetes e obesidade, e prejudicar a capacidade de reagir em situações críticas. Recomenda-se entre sete e nove horas de sono por noite para adultos, mantendo uma rotina consistente, evitando telas antes de dormir e criando um ambiente propício, como uma cama confortável e um quarto escuro e silencioso. Priorizar o sono é, portanto, uma forma de cuidar da saúde integral, contribuindo para o bem-estar físico, emocional e social, e aumentando a produtividade e a qualidade de vida no longo prazo.",
+   "trecho": "Dormir bem é essencial para o funcionamento adequado do corpo e da mente, pois durante o sono ocorrem processos vitais como a reparação de tecidos, a consolidação da memória e o fortalecimento do sist",
+   "fim": "nal e social, e aumentando a produtividade e a qualidade de vida no longo prazo."
+  }
+ ],
+ "meta": {
+  "iniciado": "2026-10-29T11:06:58.193Z",
+  "terminado": "2026-10-29T11:13:31.415Z",
+  "banco": "banco-aberto-antes-100.json",
+  "bancoSha256": "f00a1ed677974487bc70024ddb4e083e3fd11fe41e139c5a1270f7c6d68558e2",
+  "codigoSha256": "5ff3587204e2b1394bcbb7f64b4705cc605a83bdf59c4b159e419192f4f48e27",
+  "rubricaSha256": "f3ff579d3ca2a56b735b1c414791eab1050eb58e0367d5ec2c1bbad8ba25665e",
+  "medidorSha256": "2feb2f0b95259c62ab6196b54bb54d426b7e1defadf1ea6d3877ec56cac5352e",
+  "concorrencia": 1,
+  "janelas": [
+   {
+    "iniciado": "2026-10-29T11:06:58.193Z",
+    "terminado": "2026-10-29T11:13:31.415Z"
+   }
+  ],
+  "retomadas": 0,
+  "invalido": false
+ }
+}
