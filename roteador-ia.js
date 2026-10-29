@@ -1767,6 +1767,19 @@
     // cota dos provedores e faz o item custar 130–200 s. Paralelismo aqui troca qualidade e tempo
     // por disputa de cota — não compensa.
     for (var i = 0; i < n; i++) blocos[i] = await paragrafo(i, {});
+
+    // Cota apertada não pode virar texto quebrado. Se faltou parágrafo, espera a rota mais próxima
+    // de sair do cooldown e tenta de novo — em vez de cair no caminho de reserva, que devolve uma
+    // chamada só e trunca (medido: itens de 2 parágrafos entregues com 41-44 palavras na régua).
+    if (blocos.some(function (b) { return !b; })) {
+      var t = agora();
+      var proximos = this.catalogo
+        .filter(function (r) { return !self.saude[r.id].morta && self.saude[r.id].cooldownAte > t; })
+        .map(function (r) { return self.saude[r.id].cooldownAte; });
+      var espera = proximos.length ? Math.min(Math.min.apply(null, proximos) - t + 500, 40000) : 5000;
+      if (espera > 0) await new Promise(function (res) { setTimeout(res, espera); });
+      for (var j = 0; j < n; j++) if (!blocos[j]) blocos[j] = await paragrafo(j, {});
+    }
     if (blocos.some(function (b) { return !b; })) return null;
     var texto = blocos.join('\n\n');
     // 90% do mínimo: texto curto passa em textoCompleto (que só dá nota), mas não cumpre o pedido
