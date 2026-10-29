@@ -1259,6 +1259,118 @@
     if (Object.keys(cobertos).length / qt.length < 0.75) return [];
     return usadas;
   }
+  /* ============ BUSCA VIVA (texto aberto, sem chave, sem cota diária) ============
+     A base estática de 82 trechos foi medida e não superou a versão anterior. O que faltava nos
+     casos de fato (#16 rio/represa, #13 antígeno, #14 parâmetro, #17 isolamento) é a fonte estar
+     no contexto. Aqui a fonte é buscada na hora, no texto aberto da Wikipédia em português.
+     Regras: teto de tempo curto, recorte de tamanho, sem pergunta do usuário saindo na URL de
+     busca depois da primeira consulta (só o título resolvido), e o trecho entra rotulado como
+     referência — não como verdade. Nada disso verifica se o texto é correto. */
+  var VIVO_TETO_CHARS = 1800, VIVO_TETO_MS = 6000;
+
+  function recortarFonte(texto, teto) {
+    var t = String(texto || '').replace(/\s+/g, ' ').trim();
+    if (!t) return '';
+    if (t.length <= teto) return t;
+    var corte = t.slice(0, teto);
+    var fim = Math.max(corte.lastIndexOf('. '), corte.lastIndexOf('! '), corte.lastIndexOf('? '));
+    return fim > teto * 0.5 ? corte.slice(0, fim + 1) : corte;
+  }
+
+  /* Casamento pergunta -> artigo. A versão anterior consultava a frase inteira (a busca da
+     Wikipédia é por título, devolvia vazio) e, quando caía nos termos, pegava o primeiro
+     resultado do termo mais específico — foi assim que "caminho da água da chuva até a torneira"
+     virou o artigo "Caminho". Agora a consulta é a lista de termos juntos e a escolha é do
+     resultado que cobre mais termos no título+resumo; com menos de 2 termos cobertos, não usa
+     fonte nenhuma. Só os termos vão para a rede: a pergunta do usuário não sai inteira. */
+  var VIVO_MIN_TERMOS = 2;
+
+  /* Termos para a BUSCA, que são outros: `termosDoPedido` exige 5 letras porque serve de
+     instrução ao modelo, e isso descarta justamente as palavras que mais pesam numa consulta
+     em português (água, rio, casa, luz, sol). Aqui o corte é 4 letras. */
+  var VAZIAS_PEDIDO = ('dois duas tres três quatro cinco seis onde qual quais quando quanto quantos ' +
+    'explique explicar descreva descrever escreva escrever liste listar faca faça diga mostre resuma ' +
+    'compare cite crie cria paragrafo parágrafo paragrafos parágrafos frase frases palavra palavras ' +
+    'lista listas itens item maximo máximo minimo mínimo formato texto sobre mais menos entre ' +
+    'funciona funcionam serve servem').split(/\s+/).reduce(function (a, w) { a[w] = 1; return a; }, {});
+
+  function termosDeBusca(q) {
+    var t = String(q || '').toLowerCase().replace(/[^\wà-ÿ\s]/g, ' ');
+    var vistos = {}, saida = [];
+    t.split(/\s+/).forEach(function (w) {
+      if (w.length < 4 || VAZIAS[w] || VAZIAS_PEDIDO[w] || vistos[w]) return;
+      vistos[w] = 1; saida.push(w);
+    });
+    // 4 termos e busca combinada: medido em bench/medir-fontes-vivas.js. Com 3 termos o
+    // resultado caiu (26/105 fatos cobertos contra 34/105 com 4).
+    return saida.slice(0, 4);
+  }
+
+  function radicalTermo(t) {
+    return String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]/g, '').slice(0, 6);
+  }
+
+  /* Decisão de casamento, separada da rede: é o que o banco de medição precisa poder exercitar
+     com a mesma regra do produto. Devolve { escolhido, nota } ou null. */
+  function escolherFonte(achados, termos) {
+    var melhor = null, melhorNota = 0, melhorTitulo = 0;
+    var semAcento = function (x) {
+      return String(x || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    };
+    for (var i = 0; i < (achados || []).length; i++) {
+      var titulo = semAcento(achados[i].title);
+      var alvo = titulo + ' ' + semAcento(String(achados[i].snippet || '').replace(/<[^>]+>/g, ''));
+      var nota = 0, noTitulo = 0;
+      for (var k = 0; k < termos.length; k++) {
+        var r = radicalTermo(termos[k]);
+        if (!r) continue;
+        if (alvo.indexOf(r) >= 0) nota++;
+        if (titulo.indexOf(r) >= 0) noTitulo++;
+      }
+      // O resumo casa por acidente (a página cita "água" de passagem). O título é o que diz do
+      // que o artigo trata — sem ele, "caminho da água" virava "Os Trapalhões e o Mágico de Oróz".
+      // Exceção: cobertura total dos termos (sigla que só aparece no resumo, ex. LGPD).
+      if (noTitulo < 1 && nota < termos.length) continue;
+      if (nota > melhorNota) { melhorNota = nota; melhorTitulo = noTitulo; melhor = achados[i]; }
+    }
+    if (!melhor || melhorNota < Math.min(VIVO_MIN_TERMOS, termos.length)) return null;
+    return { escolhido: melhor, nota: melhorNota, noTitulo: melhorTitulo };
+  }
+
+  async function buscarFonteViva(pergunta) {
+    var termos = termosDeBusca(pergunta);
+    if (!termos.length) return null;
+    var cab = { 'Accept': 'application/json' };
+    if (typeof window === 'undefined') cab['User-Agent'] = UA;
+    function buscar(url) {
+      var c = new AbortController(), t = setTimeout(function () { c.abort(); }, VIVO_TETO_MS);
+      return fetch(url, { headers: cab, signal: c.signal }).finally(function () { clearTimeout(t); });
+    }
+    try {
+      var busca = await buscar('https://pt.wikipedia.org/w/api.php?action=query&list=search&srlimit=5' +
+        '&format=json&origin=*&srsearch=' + encodeURIComponent(termos.join(' ')));
+      var achados = ((await busca.json()).query || {}).search || [];
+      var decisao = escolherFonte(achados, termos);
+      if (!decisao) return null;
+      var extra = await buscar('https://pt.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext=1' +
+        '&redirects=1&format=json&origin=*&titles=' + encodeURIComponent(decisao.escolhido.title));
+      var pg = Object.values(((await extra.json()).query || {}).pages || {})[0] || {};
+      var trecho = recortarFonte(pg.extract || '', VIVO_TETO_CHARS);
+      if (!trecho || trecho.length < 200) return null;
+      return {
+        id: 'vivo:' + (pg.title || decisao.escolhido.title).slice(0, 60),
+        titulo: pg.title || decisao.escolhido.title,
+        url: 'https://pt.wikipedia.org/wiki/' + encodeURIComponent((pg.title || decisao.escolhido.title).replace(/ /g, '_')),
+        licenca: 'CC BY-SA 4.0 (Wikipédia em português)',
+        trecho: trecho,
+        escopo: 'texto aberto buscado na hora',
+        termosCobertos: decisao.nota,
+        termosNoTitulo: decisao.noTitulo
+      };
+    } catch (e) { return null; }
+  }
+
   async function carregarFontesLocais() {
     if (FONTES_LOCAIS) return FONTES_LOCAIS;
     if (FONTES_CARREGANDO) return FONTES_CARREGANDO;
@@ -1335,19 +1447,26 @@
 
   /* estrutura é formatação: se o pedido quer N parágrafos e veio um bloco só,
      quebra nas fronteiras de frase. Não inventa conteúdo — só reorganiza o que veio. */
+  /* Formatação, não conteúdo: agrupa as frases que o modelo já escreveu em N blocos.
+     A regra anterior exigia 2 frases por parágrafo (frases >= n*2) e desistia com 4 frases para
+     3 parágrafos — foi a causa medida das falhas "parágrafos (1<3)" e "parágrafos (2<3)".
+     Exige apenas 1 frase por bloco, distribui de forma equilibrada e NUNCA cria texto novo. */
   function ajustarParagrafos(t, n) {
     var texto = String(t || '').trim();
     if (!n || n < 2 || !texto) return texto;
     var blocos = texto.split(/\n+/).filter(function (x) { return x.trim().length > 0; });
     if (blocos.length >= n) return texto;
     var frases = texto.split(/(?<=[.!?…])\s+/).map(function (f) { return f.trim(); }).filter(Boolean);
-    if (frases.length < n * 2) return texto;   // sem frases suficientes, dividir seria inventar
-    var porBloco = Math.ceil(frases.length / n), saida = [];
+    if (frases.length < n) return texto;   // menos frases que blocos: dividir seria cortar frase no meio
+    // Reparte equilibrado: sobram frases nas primeiras, nenhuma fica sozinha por acidente.
+    var base = Math.floor(frases.length / n), resto = frases.length % n, saida = [], pos = 0;
     for (var i = 0; i < n; i++) {
-      var bloco = frases.slice(i * porBloco, (i + 1) * porBloco).join(' ');
+      var quantas = base + (i < resto ? 1 : 0);
+      var bloco = frases.slice(pos, pos + quantas).join(' ');
+      pos += quantas;
       if (bloco) saida.push(bloco);
     }
-    return saida.join('\n\n');
+    return saida.length >= n ? saida.join('\n\n') : texto;
   }
 
   /* Formato e veracidade são coisas diferentes: comprimento e parágrafos não certificam fatos.
@@ -2274,8 +2393,12 @@
     // justifica impor o custo/variação a toda pergunta aberta.
     var permitirFontes = tipoInicial === 'aberto' && usarFerramenta && this.ferramentasLigadas &&
       typeof pedido === 'object' && pedido.fontes === true;
+    // Busca viva: fonte buscada na hora, em texto aberto. Desligada por padrão (custa uma
+    // consulta e cresce o prompt); medida item a item antes de qualquer promoção.
+    var permitirVivo = false;   // ver comentário em _textoLongo: busca viva não qualificada
     // Não reutilizar respostas antigas ou sem fontes em um pedido que as utiliza, nem vice-versa.
-    var chave = 'q:' + normal(pergunta) + (tipoInicial === 'aberto' ? (permitirFontes ? ':fontes-v1' : ':sem-fontes') : '');
+    var chave = 'q:' + normal(pergunta) + (tipoInicial === 'aberto'
+      ? (permitirVivo ? ':vivo-v1' : (permitirFontes ? ':fontes-v1' : ':sem-fontes')) : '');
     this.metricas.perguntas++;
 
     var doCache = this._cacheGet(chave);
@@ -2318,6 +2441,10 @@
       // Todas as etapas de geração compartilham um único prazo. Ferramentas locais ou
       // consultas anteriores podem gastar parte dele; não há cascata extra de minutos.
       var prazoAberto = inicioPedido + this.orcamento;
+      // A busca viva NÃO está ligada ao produto. Medido nesta rodada: a busca por termos do
+      // pedido devolve artigo tangencial ("caminho da água" -> artigo "Caminho"), exatamente o
+      // defeito que já custou a rodada 102. Fica exportada para estudo em bench/, sem uso em
+      // responder(). Retorno de fonte ao contexto continua sendo só o opt-in `fontes:true`.
       var fontes = permitirFontes ? selecionarFontesLocais(pergunta, await carregarFontesLocais()) : [];
       var contexto = contextoFontes(fontes);
       var instrucao = SYS_ABERTO + instrucaoFormato(pergunta);
@@ -2338,13 +2465,35 @@
           (termosPedido.length ? ' e cite, quando fizer sentido, os termos concretos do pedido (' + termosPedido.join(', ') + ')' : '') +
           '. Não acrescente referência que não esteja nos trechos.';
       }
+      // Formato entra uma única vez, antes de pontuar e de decidir se o candidato já serve.
+      // Antes disso o caminho rápido era pontuado como 1 bloco e sempre perdia para o caminho
+      // de várias chamadas, mesmo quando uma chamada só já bastava.
+      function padronizarFormato(cand) {
+        if (!cand || !cand.texto || ex.paragrafos < 2) return cand;
+        // A quebra de parágrafo é arrumação de forma, não conteúdo. Duas travas, as duas
+        // medidas como falhas reais antes desta correção:
+        //  • geração cortada (faltou parágrafo) não pode ser repartida — o leitor veria dois
+        //    blocos e um aviso a menos justamente quando metade da resposta não existiu;
+        //  • texto abaixo do piso de conteúdo (90% do alvo de palavras) não vira "formatado":
+        //    repartir 8 palavras em dois parágrafos só maquia uma resposta curta.
+        if (cand.parcial || cand.cortado) return cand;
+        var nPalavras = String(cand.texto).trim().split(/\s+/).filter(Boolean).length;
+        if (nPalavras < Math.floor((ex.minPalavras || 0) * 0.9)) return cand;
+        var t = ajustarParagrafos(cand.texto, ex.paragrafos);
+        return t === cand.texto ? cand : Object.assign({}, cand, { texto: t });
+      }
       function guardarAberto(cand) {
+        cand = padronizarFormato(cand);
         if (!cand || !cand.texto) return;
         var a = anotarRespostaAberta(cand, ex);
         var pontos = notaTexto(a.texto, ex) + (a.incompleto ? 0 : 6) - (a.cortado ? 4 : 0);
         if (!melhorAberto || pontos > pontosMelhor) { melhorAberto = a; pontosMelhor = pontos; }
       }
       function devolverAberto(cand) {
+        // Ponto único de formatação: qualquer caminho (rápido, parágrafos, lista) passa por aqui.
+        // O teste ponta a ponta mostrou que o caminho rápido devolvia 1 bloco quando o pedido era
+        // de 3, porque a normalização só existia em alguns ramos.
+        cand = padronizarFormato(cand);
         var a = anotarRespostaAberta(cand, ex);
         a.msParede = agora() - inicioPedido;
         if (fontes.length) a.fontesConsultadas = fontes.map(function (f) {
@@ -2374,17 +2523,23 @@
             return ajustarFechamento(fecharTexto(limpo), pergunta);
           }
         });
+        // O rascunho bruto é o que serve de ponto de partida: depois de padronizado ele já
+        // parece ter todos os blocos e o reaproveitamento seria descartado.
+        var rapidoBruto = rapido;
+        rapido = padronizarFormato(rapido);
         guardarAberto(rapido);
         if (candidatoAbertoCompleto(rapido, ex)) return devolverAberto(rapido);
       }
       if (ex.paragrafos >= 2 && agora() < prazoAberto) {
         var longo = await this._textoLongo(pergunta, ex,
-          { prazo: prazoAberto, blocosIniciais: blocosAproveitaveis(rapido, ex), semPlano: !rapido || !!contexto, contexto: contexto });
+          { prazo: prazoAberto, blocosIniciais: blocosAproveitaveis(rapidoBruto, ex), semPlano: !rapido || !!contexto, contexto: contexto });
+        longo = padronizarFormato(longo);
         guardarAberto(longo);
         if (candidatoAbertoCompleto(longo, ex)) return devolverAberto(longo);
       } else if (ex.itens >= 2 && agora() < prazoAberto) {
         var lista = await this._listaLonga(pergunta, ex,
           { prazo: prazoAberto, itensIniciais: itensAproveitaveis(rapido, ex), contexto: contexto });
+        lista = padronizarFormato(lista);
         guardarAberto(lista);
         if (candidatoAbertoCompleto(lista, ex)) return devolverAberto(lista);
       }
@@ -2406,6 +2561,7 @@
             return ajustarFechamento(fecharTexto(ajustarParagrafos(limpo, ex.paragrafos)), pergunta);
           }
         });
+        ga = padronizarFormato(ga);
         guardarAberto(ga);
         if (candidatoAbertoCompleto(ga, ex)) return devolverAberto(ga);
       }
@@ -2486,7 +2642,9 @@
                    candidatoAbertoCompleto: candidatoAbertoCompleto, blocosAproveitaveis: blocosAproveitaveis,
                    exigenciaDoPedido: exigenciaDoPedido, notaTexto: notaTexto, ajustarParagrafos: ajustarParagrafos,
                    tokensFonte: tokensFonte, selecionarFontesLocais: selecionarFontesLocais, fonteUrlSegura: fonteUrlSegura,
-                   trechoSeguro: trechoSeguro, contextoFontes: contextoFontes };
+                   trechoSeguro: trechoSeguro, contextoFontes: contextoFontes,
+                   buscarFonteViva: buscarFonteViva, recortarFonte: recortarFonte, radicalTermo: radicalTermo,
+                   termosDeBusca: termosDeBusca, escolherFonte: escolherFonte };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   raiz.RoteadorIA = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
