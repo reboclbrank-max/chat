@@ -8,3 +8,6 @@ npm-debug.log*
 # Relatórios de cobertura gerados localmente.
 coverage/
 .nyc_output/
+
+# texto de terceiros baixado pela medição de fontes (não versionar)
+bench/cache-fontes-vivas.json
