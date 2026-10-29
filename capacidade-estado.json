@@ -1,6 +1,6 @@
 {
   "esquema": "placar-capacidade-v2",
-  "gerado_em": "2026-10-28T17:03:46.461Z",
+  "gerado_em": "2026-10-29T17:22:02.904Z",
   "aviso": "Indicador interno de cobertura; não é resultado observável do produto, não é teste de QI, consciência nem garantia de disponibilidade.",
   "total_em_100": 100,
   "canal_real": {
@@ -89,11 +89,11 @@
     "baterias": 5,
     "media_bateria": 100,
     "qualidade_rastreavel": false,
-    "cobertura_questoes": 18,
+    "cobertura_questoes": 19,
     "respostas_auditadas": 50
   },
   "proximas_melhorias": [
-    "rastreabilidade da qualidade: completar 3 amostras recentes distintas, 30 respostas e 20 questões; fotografia atual: 5 amostra(s), 50 resposta(s), 18 questão(ões). O 100/100 interno não certifica essa rastreabilidade."
+    "rastreabilidade da qualidade: completar 3 amostras recentes distintas, 30 respostas e 20 questões; fotografia atual: 5 amostra(s), 50 resposta(s), 19 questão(ões). O 100/100 interno não certifica essa rastreabilidade."
   ],
   "limites": [
     "Serviços gratuitos podem atrasar, interromper agendas ou limitar recursos.",
