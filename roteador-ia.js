@@ -1683,59 +1683,64 @@
      falham com frequência. Esperar o host ruim "em paralelo" custava mais que esperar o bom em
      série. Paralelo só entra quando o host principal começa a falhar (aí dois workers, em bases
      diferentes, para não estourar a cota de nenhuma). */
+  /* Texto longo = um parágrafo por CHAMADA (formato exato por construção) e os parágrafos em
+     PARALELO, um worker por provedor — nunca dois no mesmo host, que é o que estoura a cota.
+     A ordem dos hosts é por LATÊNCIA MEDIDA para escrever parágrafo (tools/sonda-latencia-paragrafo.js)
+     e cada worker aprende dentro da execução: quem entrega parágrafo sobe, quem devolve raciocínio,
+     texto curto ou 429 desce. Parágrafo que falha é refeito numa segunda passada, em série. */
   Roteador.prototype._textoLongo = async function (pergunta, ex) {
     var self = this;
     var n = Math.max(2, ex.paragrafos || 1);
     var minTotal = ex.minPalavras || 70;
     var minPor = Math.max(26, Math.ceil(minTotal / n) + 12);
     var inicio = agora();
-    var hosts = [], vistas = {}, tentativas = 0;
+    // um host por BASE (provedor), e o representante da base é o MAIS RÁPIDO para escrever
+    // parágrafo. Antes o dedupe pegava o primeiro da lista (peso 100 = gigante2, 35 s de timeout)
+    // e descartava o laguna, que é da mesma base e entrega em 4–9 s — foi o que fez item custar 200 s.
+    var porBase = {}, hosts = [], tentativas = 0;
     ['forte', 'media', 'leve'].forEach(function (cl) {
       self._candidatos(cl).forEach(function (r) {
-        if (vistas[r.base] || !self.disponivel(r.id)) return;   // um por BASE (provedor)
-        vistas[r.base] = 1; hosts.push(r);
+        if (!self.disponivel(r.id)) return;
+        var atual = porBase[r.base];
+        if (!atual || (r.latPar || 30000) < (atual.latPar || 30000)) porBase[r.base] = r;
       });
     });
+    Object.keys(porBase).forEach(function (b) { hosts.push(porBase[b]); });
     if (!hosts.length) return null;
     // latPar alto = medido como NÃO entregador de parágrafo (qwen-397 devolve raciocínio sem conclusão)
     hosts.sort(function (a, b) { return (a.latPar || 30000) - (b.latPar || 30000); });
 
-    var cursor = 0;
-    function proxima() { var r = hosts[cursor++ % hosts.length]; return r; }
-    var blocos = new Array(n);
-    var falhasSeguidas = 0;
-    // nota de parágrafo por rota, aprendida nesta execução: quem devolve raciocínio ou falha desce
-    var notaPar = {};
+    var notaPar = {}, cursor = 0;
     hosts.forEach(function (h) { notaPar[h.id] = 0; });
-    function melhorHost() {
-      var melhor = hosts[0];
-      hosts.forEach(function (h) { if ((notaPar[h.id] || 0) > (notaPar[melhor.id] || 0)) melhor = h; });
-      return melhor;
+    function proxima() { return hosts[cursor++ % hosts.length]; }
+    function melhorLivre(usados) {
+      var melhor = null;
+      hosts.forEach(function (h) {
+        if (usados[h.id]) return;
+        if (!melhor || (notaPar[h.id] || 0) > (notaPar[melhor.id] || 0)) melhor = h;
+      });
+      return melhor || hosts[0];
     }
 
-    for (var i = 0; i < n; i++) {
-      var feito = null;
-      var rota = falhasSeguidas >= 2 ? proxima() : melhorHost();
-      for (var t = 0; t < 4 && !feito; t++) {
-        if (agora() - inicio > (n >= 3 ? 115000 : 85000)) break;
+    async function paragrafo(i, usados) {
+      var rota = melhorLivre(usados || {});
+      for (var t = 0; t < 4; t++) {
+        // 3+ parágrafos custam mais chamadas: prazo maior, senão cai no caminho de reserva
+        if (agora() - inicio > (n >= 3 ? 115000 : 85000)) return null;
         var foco = i === 0
           ? 'Comece definindo o assunto com precisão e dê um exemplo concreto.'
           : 'Aprofunde um aspecto novo, sem repetir o que já foi dito, e cite um detalhe concreto (nome, número ou processo).';
         if (i === n - 1) foco += ' Feche com uma frase de conclusão completa.';
         var ped = instrucaoParagrafo(pergunta, i, n, minPor, foco) + instrucaoFormato(pergunta);
-        // coesão: o parágrafo anterior entra como contexto e proíbe repetição
+        // coesão: se o parágrafo anterior já existe, entra como contexto e proíbe repetição
         if (i > 0 && blocos[i - 1]) {
           ped += '\n\nO parágrafo anterior, já escrito, foi: "' + String(blocos[i - 1]).slice(0, 700) +
             '"\nNão repita esse conteúdo; acrescente informação nova.';
         }
-        await this._esperarVez(rota);
-        var r = await this._chamar(rota, ped, 35000, { maxTokens: 800, longo: true, sistema: SYS_ABERTO });
+        await self._esperarVez(rota);
+        var r = await self._chamar(rota, ped, 35000, { maxTokens: 800, longo: true, sistema: SYS_ABERTO });
         tentativas++;
-        if (r.texto) { this._premiar(rota.id, r.ms); falhasSeguidas = 0; }
-        else {
-          this._castigar(rota.id, r.erro, r.espera); falhasSeguidas++; rota = proxima();
-          notaPar[rota.id] = (notaPar[rota.id] || 0) - 2;   // quem falha desce na fila
-        }
+        if (r.texto) self._premiar(rota.id, r.ms); else self._castigar(rota.id, r.erro, r.espera);
         if (r.erro === 'rate') await new Promise(function (res) { setTimeout(res, 2500 + Math.random() * 2000); });
         // um parágrafo é UM bloco: se o modelo abriu linhas em branco, o texto saía com mais
         // parágrafos do que o pedido (medido: pedido de 2, entrega de 3)
@@ -1743,16 +1748,23 @@
         var palavras = txt.split(/\s+/).filter(Boolean).length;
         var piso = t < 2 ? Math.floor(minPor * 0.8) : Math.floor(minPor * 0.55);
         if (txt && palavras >= piso && /[.!?…]["”)]?\s*$/.test(txt)) {
-          feito = txt;
-          notaPar[rota.id] = (notaPar[rota.id] || 0) + 1;     // entregou parágrafo: sobe na fila
-        } else if (r.texto) {
-          notaPar[rota.id] = (notaPar[rota.id] || 0) - 1;     // entregou lixo: desce
-          rota = proxima();
+          notaPar[rota.id] = (notaPar[rota.id] || 0) + 1;
+          return txt;
         }
+        // lixo ou curto: este host desce na fila e o parágrafo vai para outro
+        if (r.texto || r.erro) notaPar[rota.id] = (notaPar[rota.id] || 0) - 1;
+        rota = proxima();
       }
-      if (!feito) return null;   // parágrafo irrecuperável: o caminho de reserva (uma chamada) tenta
-      blocos[i] = feito;
+      return null;
     }
+
+    var blocos = new Array(n);
+    // SÉRIE no host mais bem colocado, e não paralelo: medido em 28/10 que o laguna entrega 6
+    // parágrafos seguidos em 3,8–9,6 s sem 429, enquanto abrir 2–3 workers em paralelo estoura a
+    // cota dos provedores e faz o item custar 130–200 s. Paralelismo aqui troca qualidade e tempo
+    // por disputa de cota — não compensa.
+    for (var i = 0; i < n; i++) blocos[i] = await paragrafo(i, {});
+    if (blocos.some(function (b) { return !b; })) return null;
     var texto = blocos.join('\n\n');
     if (!textoCompleto(texto, minTotal)) return null;
     return {
