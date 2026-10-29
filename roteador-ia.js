@@ -1625,7 +1625,25 @@
     var q = String(pergunta || '').toLowerCase();
     if (!/e-?mail|carta|of[íi]cio|requerimento|mensagem formal/.test(q)) return t;
     if (/atenciosamente|cordialmente|respeitosamente|abra[çc]os|sinceramente|à disposi[çc][ãa]o/i.test(t)) return t;
-    return t + '\n\nAtenciosamente,';
+    // ponto final, não vírgula: a verificação de "texto fechado" exige pontuação terminal
+    return t + '\n\nAtenciosamente.';
+  }
+
+  /* Numera as linhas de uma lista solta ("- X", "* X") para o formato que o pedido exigiu. */
+  function numerarLista(t, n) {
+    var linhas = String(t || '').split(/\n+/).map(function (l) { return l.trim(); }).filter(Boolean);
+    var itens = linhas.filter(function (l) { return /^[-*•]\s+/.test(l) || /^\d+[.)]\s+/.test(l); });
+    if (!itens.length) return String(t || '').trim();
+    var saida = [], k = 0;
+    linhas.forEach(function (l) {
+      if (/^[-*•]\s+/.test(l) || /^\d+[.)]\s+/.test(l)) {
+        k++;
+        if (k <= (n || 99)) saida.push(k + '. ' + l.replace(/^([-*•]|\d+[.)])\s+/, ''));
+      } else if (k === 0) {
+        saida.push(l);   // linha de abertura, se houver
+      }
+    });
+    return saida.join('\n');
   }
 
   function instrucaoParagrafo(pergunta, i, n, minPor, foco) {
@@ -1821,7 +1839,14 @@
         chamar: { maxTokens: 1800, sistema: instrucao },
         minPalavras: ex.minPalavras,
         nota: function (t) { return notaTexto(ajustarParagrafos(t, ex.paragrafos), ex); },
-        transformar: function (t) { return ajustarFechamento(fecharTexto(ajustarParagrafos(t, ex.paragrafos)), pergunta); }
+        transformar: function (t) {
+          if (ex.itens >= 2) {
+            // lista vinda de uma chamada só costuma voltar com menos itens e menos palavras do que o
+            // pedido: numera o que existe e, se faltar item, o texto é recusado (numeroLista abaixo)
+            return ajustarFechamento(fecharTexto(numerarLista(t, ex.itens)), pergunta);
+          }
+          return ajustarFechamento(fecharTexto(ajustarParagrafos(t, ex.paragrafos)), pergunta);
+        }
       });
       if (ga) { this._cacheSet(chave, ga); this.metricas.sucessos++; return ga; }
     }
@@ -1889,7 +1914,7 @@
   };
 
   var api = { Roteador: Roteador, CATALOGO: CATALOGO, normal: normal };
-  api.internos = { sanear: sanear, util: util, extrairConclusao: extrairConclusao, calendarioLocal: calendarioLocal, fragmento: fragmento, instrucaoParagrafo: instrucaoParagrafo, fecharTexto: fecharTexto, termosDoPedido: termosDoPedido, calcular: calcular, instrucaoFormato: instrucaoFormato, ajustarFechamento: ajustarFechamento,
+  api.internos = { sanear: sanear, util: util, extrairConclusao: extrairConclusao, calendarioLocal: calendarioLocal, fragmento: fragmento, instrucaoParagrafo: instrucaoParagrafo, fecharTexto: fecharTexto, termosDoPedido: termosDoPedido, calcular: calcular, instrucaoFormato: instrucaoFormato, ajustarFechamento: ajustarFechamento, numerarLista: numerarLista,
                    classificarPedido: classificarPedido, extrairCodigo: extrairCodigo,
                    codigoInteiro: codigoInteiro, textoCompleto: textoCompleto,
                    exigenciaDoPedido: exigenciaDoPedido, notaTexto: notaTexto, ajustarParagrafos: ajustarParagrafos };

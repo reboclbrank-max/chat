@@ -192,7 +192,7 @@ if (typeof sanear === 'function') {
   ok('fechamento: não duplica despedida existente',
      fech && (fech('Atenciosamente, Fulano', 'Escreva um e-mail.') || '').match(/atenciosamente/gi).length === 1);
   ok('fechamento: "agradeço a atenção" NÃO conta como despedida',
-     fech && /Atenciosamente,/.test(fech('Prezados, gostaria de orçamento. Agradeço a atenção.', 'Escreva um e-mail formal.')));
+     fech && /Atenciosamente[.,]/.test(fech('Prezados, gostaria de orçamento. Agradeço a atenção.', 'Escreva um e-mail formal.')));
   ok('fechamento: texto que não é e-mail não é tocado',
      fech && fech('Texto solto.', 'Explique em dois parágrafos a fotossíntese.') === 'Texto solto.');
 
@@ -202,6 +202,15 @@ if (typeof sanear === 'function') {
   Rv.visaoLigada = false;
   const semVisao = await Rv.responder({ pergunta: 'O que há nesta imagem?', imagem: 'data:image/png;base64,AA==' });
   ok('visão desligada devolve sem-resposta honesta', !!(semVisao && semVisao.texto === '' && semVisao.erro === 'sem-resposta'));
+
+  // fechamento termina em PONTO: a verificação de texto fechado exige pontuação terminal
+  ok('fechamento termina em ponto final',
+     fech && /Atenciosamente\.$/.test(fech('Prezados, gostaria de orçamento.', 'Escreva um e-mail formal.').trim()));
+  // lista solta vira lista numerada de N itens
+  const nl = I.numerarLista;
+  ok('numerarLista converte marcadores em 1..N', nl && nl('- a\n- b\n- c', 3) === '1. a\n2. b\n3. c');
+  ok('numerarLista respeita o limite pedido', nl && nl('- a\n- b\n- c', 2) === '1. a\n2. b');
+  ok('numerarLista não toca texto sem lista', nl && nl('Texto corrido sem marcadores.', 3) === 'Texto corrido sem marcadores.');
 
   // régua estrita: acento conta. Se o afrouxamento de acento estivesse mascarando erro, isto pega.
   ok('estrito: "caracois" não passa por "caracóis"', api.internos && require('../../bench/pontuar.js').acertou('caracois', ['caracóis'], null, { estrito: true }) === false);
