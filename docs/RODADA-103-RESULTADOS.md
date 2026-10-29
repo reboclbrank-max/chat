@@ -144,3 +144,64 @@ Comportamento 24/24 · misto 34/34 · estática 49/49. Novos: `roteamento-com-ch
   teste garante que é assim.
 - **A base de fontes continua pequena, datada e escrita pelo mesmo agente** que implementou.
 - Rubrica corrigida **não é** verificação de verdade factual. Ela mede forma e termo.
+
+---
+
+## 7. Comparação pareada 103 — antes e depois na mesma régua
+
+Controle `5ff3587…` (main@96b093c) × candidato `roteador-ia.js` desta rodada, rubrica corrigida
+aplicada aos dois lados, mesma agenda de 88 respostas, `seed` idêntica à de 102.
+Janela: **15:54:37Z → 16:45:12Z** (50 min 35 s). Resultado bruto em `bench/resultado-pareado-103.json`.
+
+| grupo | A (controle) | B (candidato 103) |
+|---|---|---|
+| original (24) | 22/24 | 21/24 |
+| holdout (6) | 6/6 | 4/6 |
+| novo (6) | 5/6 | 6/6 |
+| repetições (8) | 5/8 | 7/8 |
+| **total (44)** | **38/44** | **38/44** |
+
+**Empate.** Não há ganho de qualidade a declarar.
+
+### O que mudou de fato, medido por chamada
+
+| métrica | 102 | 103 | leitura |
+|---|---|---|---|
+| custo médio de um `timeout` | 24,8 s | **17,8 s** | **−28%**: o timeout adaptativo funciona |
+| timeouts na janela | 21 | 63 | a janela de 103 pegou provedor pior |
+| tentativas por resposta | 2,36 | 2,99 | mais cascata, não menos |
+| tempo em tentativa perdida | 42,1% | 51,2% | **pior** |
+| respostas no teto de 110 s | 4 | 6 | pior |
+
+O mecanismo fez o que devia — encurtou a espera por rota lenta em 28% — mas a janela teve
+**três vezes mais timeouts** e o total desperdiçado subiu. As duas coisas são verdade ao mesmo tempo
+e nenhuma delas autoriza dizer que o chat ficou melhor.
+
+### As 12 discordâncias, item a item
+
+| item | A | B | causa |
+|---|---|---|---|
+| holdout #101 | ok | falha | B cortado em 114 s (1 parágrafo) |
+| #20 | ok | falha | B cortado em 110 s (78 palavras, 1 parágrafo) |
+| #6 | ok | falha | falta "ambiental" |
+| novo #206 | falha ("costa") | ok | — |
+| #14 | falha ("parâmetro") | ok | — |
+| holdout #104 | ok | falha | B cortado em 110 s |
+| #17 | falha (cortado) | ok | — |
+| #22 r0 | ok | falha ("painel") | B não usou painel/painéis/módulo solar |
+| #22 r1 | falha | ok | — |
+| #22 r2 | ok | falha (**vazio** em 106 s) | falha de rede, não de conteúdo |
+| holdout #104 r1 | falha (cortado) | ok | — |
+| #16 r2 | falha (cortado + sem rio/tratamento) | ok | — |
+
+**5 das 12 discordâncias são truncamento no teto de 110 s**, e vão para os dois lados sem padrão
+(A 3, B 3, contando o vazio). Isso é instrumento e cota, não qualidade de resposta.
+
+### Conclusão honesta
+
+1. **O placar não melhorou.** 38 = 38. Qualquer afirmação de melhora seria falsa.
+2. **O custo por timeout caiu 28%** — é a única melhoria dura desta janela, e é de mecanismo.
+3. **O pior problema da janela foi externo**: cota no fim do dia produziu 63 timeouts e 6 cortes
+   em 110 s. Nenhuma mudança de código resolve isso; só uma rota com chave ou o cérebro local.
+4. **A rota Groq está pronta e inativa.** Sem chave, é como se não existisse — e o teste garante
+   que é assim. Com chave, muda a fonte de computação, não o gabarito.
