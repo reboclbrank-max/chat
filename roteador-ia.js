@@ -8,7 +8,7 @@
   var CATALOGO = [
     { id: 'gigante2',  nome: 'Nemotron-3-Ultra-550B (Kilo)',  base: 'https://api.kilo.ai/api/gateway',                          modelo: 'nvidia/nemotron-3-ultra-550b-a55b:free',            classe: 'forte' , peso: 100, latPar: 20400 },
     { id: 'ultra',     nome: 'Nemotron-3-Ultra-550B (g4f)',   base: 'https://nvidia.g4f.dev/v1',                                modelo: 'nvidia/nemotron-3-ultra-550b-a55b',                 classe: 'media' , peso: 10 },
-    { id: 'ovhq397',   nome: 'Qwen3.5-397B (OVH)',            base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Qwen3.5-397B-A17B',                                 classe: 'leve' , peso: 7, latPar: 11100 },
+    { id: 'ovhq397',   nome: 'Qwen3.5-397B (OVH)',            base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Qwen3.5-397B-A17B',                                 classe: 'leve' , peso: 7, latPar: 900000 },  // devolve raciocínio sem conclusão: não escreve parágrafo
     { id: 'ovhq',      nome: 'Qwen3.6-27B (OVH)',             base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Qwen3.6-27B',                                       classe: 'leve' , peso: 7 },
     { id: 'ovhoss',    nome: 'gpt-oss-120b (OVH)',            base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'gpt-oss-120b',                                      classe: 'leve' , peso: 7 },
     { id: 'glm',       nome: 'GLM-5.3 (g4f)',                 base: 'https://nvidia.g4f.dev/v1',                                modelo: 'z-ai/glm-5.3',                                      classe: 'leve' , peso: 0 },
@@ -28,7 +28,7 @@
 
   /* Modelos da OVH devolvem só 'reasoning' às vezes. Devolver o monólogo inteiro é defeito:
      a pessoa pergunta e recebe "Thinking Process: 1. Analyze...". Aqui a conclusão é extraída. */
-  var CABECALHO_RACIOCINIO = /^(thinking\s*process|reasoning|analysis|analisando|cadeia de pensamento|chain of thought|step\s*1|1\.\s*analy|refinement|constraint says|draft|verify|given\b)/i;
+  var CABECALHO_RACIOCINIO = /^(thinking\s*process|reasoning|analysis|analisando|cadeia de pensamento|chain of thought|step\s*1|1\.\s*analy|refinement|constraint says|draft|verify|given\b|we\s+need|we\s+must|i\s+need|i\s+must|the\s+user\s+wants|let\s+me|okay,)/i;
   var PREAMBULO = /^(thinking|reasoning|analysis|analisando|analiso|let me|let's|hmm|okay|ok\b|wait|first,|firstly|next,|the user|user asks|the question|i need|i should|i'll|we need|looking at|actually|so,|now,|vou |preciso |deixa eu|refinement|constraint|draft|verify|double-check|checking|note:|final check|given\b|the constraint|given that)/i;
 
   var CURTAS_OK = { sim: 1, nao: 1, 'não': 1, yes: 1, no: 1, oui: 1, ok: 1, 'é': 1 };
@@ -64,8 +64,12 @@
       var marcado = /(?:resposta|answer|resultado|result|conclus[aã]o)\s*(?:[:\-]|(?:é|e|is)\b)\s*(.+)$/i.exec(s);
       return (marcado && util(marcado[1])) ? marcado[1].trim() : '';
     }
-    // frase minúscula com ponto final e sem número é resto de raciocínio ("the price."), não resposta
-    if (/^[a-zà-ÿ]/.test(s) && !/\d/.test(s) && s.split(/\s+/).length >= 2 && /[.!]$/.test(s)) return '';
+    // frase minúscula com ponto final e sem número é resto de raciocínio ("the price."), não resposta.
+    // O limite de tamanho é essencial: sem ele esta regra rejeitava PARÁGRAFO INTEIRO que começa com
+    // minúscula e não cita número — e o gerador de texto longo descartava texto bom (medido: 356
+    // palavras jogadas fora e 119 s de espera para entregar 172).
+    var nPalavrasSan = s.split(/\s+/).length;
+    if (nPalavrasSan <= 12 && /^[a-zà-ÿ]/.test(s) && !/\d/.test(s) && nPalavrasSan >= 2 && /[.!]$/.test(s)) return '';
     // palavra de 3 letras capitalizada é resposta cortada ("Hip" de hipérbole); sigla/elemento de 1-2 letras passa
     // 2–3 letras capitalizadas: só passa se for símbolo de elemento conhecido ou palavra curta legítima
     if (/^[A-ZÀ-Ý][a-zà-ÿ]{1,2}$/.test(s) && !CURTAS_OK[s.toLowerCase()] && !ELEMENTO_DE[s.toLowerCase()]) return '';
@@ -1658,6 +1662,10 @@
       ? ' Ao longo do parágrafo, use literalmente estes termos do pedido, quando fizer sentido: ' +
         termos.join(', ') + '.'
       : '';
+    // cobertura: texto bem formado que não cita nada concreto falhava na régua por "falta de fato".
+    // Pedir um dado verificável em TODO parágrafo é instrução genérica, não adaptação ao gabarito.
+    exige += ' Inclua obrigatoriamente pelo menos um dado verificável: um nome próprio, uma data, ' +
+      'um número ou um termo técnico específico da área.';
     return 'Tema do texto: ' + pergunta + '\n\n' +
       'Escreva SOMENTE o parágrafo ' + (i + 1) + ' de ' + n + ', em português do Brasil, com ' +
       (minPor + 15) + ' a ' + (minPor + 55) + ' palavras, em 3 a 5 frases completas. ' + (foco || '') + exige +
@@ -1669,70 +1677,82 @@
      Agora os parágrafos vão em paralelo, um worker por provedor (nunca duas chamadas no mesmo
      host, que é o que estoura a cota gratuita). O parágrafo que falhar é refeito numa segunda
      passada em série — a mesma rede de segurança de antes. */
+  /* Parágrafos: um por chamada (formato exato por construção). A ordem dos hosts é por LATÊNCIA
+     MEDIDA (tools/sonda-latencia-paragrafo.js) e a geração é em SÉRIE no host mais rápido — medido:
+     laguna escreve um parágrafo em 5–9 s e cumpre o tamanho; g4f/pollinations levam 20–25 s e
+     falham com frequência. Esperar o host ruim "em paralelo" custava mais que esperar o bom em
+     série. Paralelo só entra quando o host principal começa a falhar (aí dois workers, em bases
+     diferentes, para não estourar a cota de nenhuma). */
   Roteador.prototype._textoLongo = async function (pergunta, ex) {
     var self = this;
     var n = Math.max(2, ex.paragrafos || 1);
     var minTotal = ex.minPalavras || 70;
-    var minPor = Math.max(26, Math.ceil(minTotal / n) + 8);
+    var minPor = Math.max(26, Math.ceil(minTotal / n) + 12);
     var inicio = agora();
-    var hosts = [], porBase = {}, tentativas = 0;
+    var hosts = [], vistas = {}, tentativas = 0;
     ['forte', 'media', 'leve'].forEach(function (cl) {
       self._candidatos(cl).forEach(function (r) {
-        if (!self.disponivel(r.id)) return;
-        // um por BASE (provedor), mas o escolhido é o MAIS RÁPIDO para escrever parágrafo — antes
-        // ficava com o primeiro da lista (nemotron-ultra, 20 s) e descartava laguna (9 s)
-        var atual = porBase[r.base];
-        if (!atual || (r.latPar || 30000) < (atual.latPar || 30000)) porBase[r.base] = r;
+        if (vistas[r.base] || !self.disponivel(r.id)) return;   // um por BASE (provedor)
+        vistas[r.base] = 1; hosts.push(r);
       });
     });
-    Object.keys(porBase).forEach(function (b) { hosts.push(porBase[b]); });
     if (!hosts.length) return null;
-    // Ordem por LATÊNCIA MEDIDA para gerar um parágrafo (tools/sonda-latencia-paragrafo.js, 28/10):
-    // laguna 9,2 s e compliant; nemotron-ultra 20,4 s (e estoura o tamanho); qwen-397 11,1 s (devolve
-    // raciocínio sem conclusão); nemotron-lightning estourou 60 s. Em série, dois parágrafos caem de
-    // 84 s para ~20 s só por escolher quem escreve primeiro.
+    // latPar alto = medido como NÃO entregador de parágrafo (qwen-397 devolve raciocínio sem conclusão)
     hosts.sort(function (a, b) { return (a.latPar || 30000) - (b.latPar || 30000); });
+
     var cursor = 0;
     function proxima() { var r = hosts[cursor++ % hosts.length]; return r; }
+    var blocos = new Array(n);
+    var falhasSeguidas = 0;
+    // nota de parágrafo por rota, aprendida nesta execução: quem devolve raciocínio ou falha desce
+    var notaPar = {};
+    hosts.forEach(function (h) { notaPar[h.id] = 0; });
+    function melhorHost() {
+      var melhor = hosts[0];
+      hosts.forEach(function (h) { if ((notaPar[h.id] || 0) > (notaPar[melhor.id] || 0)) melhor = h; });
+      return melhor;
+    }
 
-    async function paragrafo(i) {
-      var rota = proxima();
-      for (var t = 0; t < 4; t++) {
-        // 3+ parágrafos são mais raros e custam mais chamadas: prazo maior, senão o texto cai no
-        // caminho de reserva e volta como bloco único (medido: 141 palavras, 1 parágrafo de 3)
-        if (agora() - inicio > (n >= 3 ? 115000 : 70000)) return null;
+    for (var i = 0; i < n; i++) {
+      var feito = null;
+      var rota = falhasSeguidas >= 2 ? proxima() : melhorHost();
+      for (var t = 0; t < 4 && !feito; t++) {
+        if (agora() - inicio > (n >= 3 ? 115000 : 85000)) break;
         var foco = i === 0
           ? 'Comece definindo o assunto com precisão e dê um exemplo concreto.'
           : 'Aprofunde um aspecto novo, sem repetir o que já foi dito, e cite um detalhe concreto (nome, número ou processo).';
         if (i === n - 1) foco += ' Feche com uma frase de conclusão completa.';
         var ped = instrucaoParagrafo(pergunta, i, n, minPor, foco) + instrucaoFormato(pergunta);
-        await self._esperarVez(rota);
-        var r = await self._chamar(rota, ped, 30000, { maxTokens: 700, longo: true, sistema: SYS_ABERTO });
+        // coesão: o parágrafo anterior entra como contexto e proíbe repetição
+        if (i > 0 && blocos[i - 1]) {
+          ped += '\n\nO parágrafo anterior, já escrito, foi: "' + String(blocos[i - 1]).slice(0, 700) +
+            '"\nNão repita esse conteúdo; acrescente informação nova.';
+        }
+        await this._esperarVez(rota);
+        var r = await this._chamar(rota, ped, 35000, { maxTokens: 800, longo: true, sistema: SYS_ABERTO });
         tentativas++;
-        if (r.texto) self._premiar(rota.id, r.ms); else self._castigar(rota.id, r.erro, r.espera);
-        if (r.erro === 'rate') { await new Promise(function (res) { setTimeout(res, 2500 + Math.random() * 2000); }); rota = proxima(); }
-        else if (r.erro) { rota = proxima(); }   // degenerada/servidor: outro provedor, não repetir o mesmo
-        // um parágrafo é UM bloco: se o modelo abriu linhas em branco dentro dele, o texto final
-        // saía com mais parágrafos do que o pedido (medido: pedido de 2, entrega de 3)
+        if (r.texto) { this._premiar(rota.id, r.ms); falhasSeguidas = 0; }
+        else {
+          this._castigar(rota.id, r.erro, r.espera); falhasSeguidas++; rota = proxima();
+          notaPar[rota.id] = (notaPar[rota.id] || 0) - 2;   // quem falha desce na fila
+        }
+        if (r.erro === 'rate') await new Promise(function (res) { setTimeout(res, 2500 + Math.random() * 2000); });
+        // um parágrafo é UM bloco: se o modelo abriu linhas em branco, o texto saía com mais
+        // parágrafos do que o pedido (medido: pedido de 2, entrega de 3)
         var txt = sanear(String(r.texto || '').trim()).replace(/\s*\n+\s*/g, ' ');
         var palavras = txt.split(/\s+/).filter(Boolean).length;
         var piso = t < 2 ? Math.floor(minPor * 0.8) : Math.floor(minPor * 0.55);
-        if (txt && palavras >= piso && /[.!?…]["”)]?\s*$/.test(txt)) return txt;
-        rota = proxima();
+        if (txt && palavras >= piso && /[.!?…]["”)]?\s*$/.test(txt)) {
+          feito = txt;
+          notaPar[rota.id] = (notaPar[rota.id] || 0) + 1;     // entregou parágrafo: sobe na fila
+        } else if (r.texto) {
+          notaPar[rota.id] = (notaPar[rota.id] || 0) - 1;     // entregou lixo: desce
+          rota = proxima();
+        }
       }
-      return null;
+      if (!feito) return null;   // parágrafo irrecuperável: o caminho de reserva (uma chamada) tenta
+      blocos[i] = feito;
     }
-
-    // dois workers, no máximo: medido que abrir 3 em paralelo estoura a cota dos três hosts e o
-    // tempo total sobe (item de 3 parágrafos levou 223 s com 3 workers)
-    // até 3 workers quando há 3 provedores distintos e o pedido tem 3+ parágrafos
-    var workers = Math.min(n >= 3 ? 3 : 2, n, hosts.length);
-    var blocos = new Array(n);
-    await Promise.all(Array.from({ length: workers }, async function (_, wi) {
-      for (var i = wi; i < n; i += workers) blocos[i] = await paragrafo(i);
-    }));
-    for (var i = 0; i < n; i++) if (!blocos[i]) blocos[i] = await paragrafo(i);   // segunda passada, em série
-    if (blocos.some(function (b) { return !b; })) return null;
     var texto = blocos.join('\n\n');
     if (!textoCompleto(texto, minTotal)) return null;
     return {
