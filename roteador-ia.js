@@ -1688,7 +1688,9 @@
     async function paragrafo(i) {
       var rota = proxima();
       for (var t = 0; t < 4; t++) {
-        if (agora() - inicio > 70000) return null;
+        // 3+ parágrafos são mais raros e custam mais chamadas: prazo maior, senão o texto cai no
+        // caminho de reserva e volta como bloco único (medido: 141 palavras, 1 parágrafo de 3)
+        if (agora() - inicio > (n >= 3 ? 115000 : 70000)) return null;
         var foco = i === 0
           ? 'Comece definindo o assunto com precisão e dê um exemplo concreto.'
           : 'Aprofunde um aspecto novo, sem repetir o que já foi dito, e cite um detalhe concreto (nome, número ou processo).';
