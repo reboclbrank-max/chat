@@ -177,3 +177,11 @@ Consertos: um parágrafo por chamada (número de parágrafos exato por construç
 Também nesta rodada: calendário local (bissexto, dias do mês/ano, dia da semana), rejeição de fragmento de raciocínio (`Is it`), avaliador aritmético local (o `api.mathjs.org` estava fora do ar; `16×12` ia para o modelo e voltava `× 12`), quarta rodada de espera sob 429 e `bench/medir.js` gravando `resultado-<modo>-<banco>.json`.
 
 Régua de 200 volta a **200/200** (mediana 952 ms), holdout 105/105, difícil 30/30, código 18/18.
+
+## 11. v6 (28/10/2026) — visão com régua, parágrafos em paralelo
+
+**Visão.** Sondagem com PNG e content-array OpenAI, rota por rota: Kilo 404 ("No endpoints found that support image input"), g4f 502 ("multimodal processing is not enabled"), Pollinations 400 ("does not support image input"), **OVH Qwen3.5-397B 200** (leu `7`, `Q`, `esquerda`). Rota `ovhvl` no roteador, vazão de 6 s, 5 tentativas respeitando `Retry-After`. Régua: `bench/banco-visao.json` (11 imagens, gabarito objetivo) + `bench/medir-visao.js` → **11/11 (100%)**, mediana 2,4 s. Sem rota de visão, o roteador devolve sem-resposta.
+
+**Texto longo, latência.** `tools/sonda-latencia-paragrafo.js`: laguna 9,2 s e compliant; nemotron-ultra 20,4 s e 359 palavras (estoura); qwen-397 11,1 s mas devolve raciocínio sem conclusão; lightning acima de 60 s. Parágrafos vão em paralelo (até 3 workers em 3 provedores distintos), com o host escolhido por **latência medida** — antes o primeiro da lista era o nemotron-ultra e o laguna era descartado por ser do mesmo provedor. Item de 3 parágrafos: 223 s → ~26 s.
+
+**Resíduos de conteúdo.** `Atenciosamente.` aplicado por código em e-mail/carta; falsos positivos `agradeço a atenção` e `ficamos à disposição` deixaram de contar como despedida; lista cobra a cota de palavras por item; `numerarLista` numera listas soltas.
