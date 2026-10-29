@@ -1628,7 +1628,7 @@
     var t = String(texto || '').trim();
     if (!t) return t;
     var q = String(pergunta || '').toLowerCase();
-    if (!/e-?mail|carta|of[íi]cio|requerimento|mensagem formal/.test(q)) return t;
+    if (!/e-?mail|carta|of[íi]cio|requerimento|or[çc]amento|mensagem|cobran[çc]a/.test(q)) return t;
     // "ficamos à disposição" é frase de corpo, não despedida — já causou falso positivo uma vez
     if (/atenciosamente|cordialmente|respeitosamente|abra[çc]os|sinceramente/i.test(t)) return t;
     // ponto final, não vírgula: a verificação de "texto fechado" exige pontuação terminal
@@ -1675,13 +1675,17 @@
     var minTotal = ex.minPalavras || 70;
     var minPor = Math.max(26, Math.ceil(minTotal / n) + 8);
     var inicio = agora();
-    var hosts = [], vistas = {}, tentativas = 0;
+    var hosts = [], porBase = {}, tentativas = 0;
     ['forte', 'media', 'leve'].forEach(function (cl) {
       self._candidatos(cl).forEach(function (r) {
-        if (vistas[r.base] || !self.disponivel(r.id)) return;   // um por BASE (provedor), não por modelo
-        vistas[r.base] = 1; hosts.push(r);
+        if (!self.disponivel(r.id)) return;
+        // um por BASE (provedor), mas o escolhido é o MAIS RÁPIDO para escrever parágrafo — antes
+        // ficava com o primeiro da lista (nemotron-ultra, 20 s) e descartava laguna (9 s)
+        var atual = porBase[r.base];
+        if (!atual || (r.latPar || 30000) < (atual.latPar || 30000)) porBase[r.base] = r;
       });
     });
+    Object.keys(porBase).forEach(function (b) { hosts.push(porBase[b]); });
     if (!hosts.length) return null;
     // Ordem por LATÊNCIA MEDIDA para gerar um parágrafo (tools/sonda-latencia-paragrafo.js, 28/10):
     // laguna 9,2 s e compliant; nemotron-ultra 20,4 s (e estoura o tamanho); qwen-397 11,1 s (devolve
@@ -1721,7 +1725,8 @@
 
     // dois workers, no máximo: medido que abrir 3 em paralelo estoura a cota dos três hosts e o
     // tempo total sobe (item de 3 parágrafos levou 223 s com 3 workers)
-    var workers = Math.min(2, n, hosts.length);
+    // até 3 workers quando há 3 provedores distintos e o pedido tem 3+ parágrafos
+    var workers = Math.min(n >= 3 ? 3 : 2, n, hosts.length);
     var blocos = new Array(n);
     await Promise.all(Array.from({ length: workers }, async function (_, wi) {
       for (var i = wi; i < n; i += workers) blocos[i] = await paragrafo(i);

@@ -195,6 +195,8 @@ if (typeof sanear === 'function') {
      fech && /Atenciosamente[.,]/.test(fech('Prezados, gostaria de orçamento. Agradeço a atenção.', 'Escreva um e-mail formal.')));
   ok('fechamento: "ficamos à disposição" NÃO conta como despedida',
      fech && /Atenciosamente[.,]/.test(fech('Prezados. Ficamos à disposição para esclarecimentos.', 'Escreva um e-mail formal.')));
+  ok('fechamento: mensagem/cobrança também fecha',
+     fech && /Atenciosamente[.,]/.test(fech('Olá, seu pagamento está atrasado.', 'Escreva uma mensagem curta cobrando um pagamento atrasado.')));
   ok('fechamento: texto que não é e-mail não é tocado',
      fech && fech('Texto solto.', 'Explique em dois parágrafos a fotossíntese.') === 'Texto solto.');
 
