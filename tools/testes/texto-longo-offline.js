@@ -82,7 +82,7 @@ function paragrafoBom(n, i) {
     r.metricas.porRota = {};
     r.catalogo.forEach((x) => { r.metricas.porRota[x.id] = { ok: 0, falhas: 0 }; });
 
-    const o = await r.responder({ pergunta: 'Explique em dois parágrafos o que é fotossíntese.', tipo: 'aberto' });
+    const o = await r.responder({ pergunta: 'Explique em dois parágrafos o que é fotossíntese.', tipo: 'aberto', fontes: true });
     const blocos = String(o.texto || '').split(/\n\n/).filter((p) => p.trim());
 
     ok('entrega dois parágrafos', blocos.length === 2, 'veio ' + blocos.length);
@@ -94,9 +94,13 @@ function paragrafoBom(n, i) {
     const chamadasA = chamadas.filter((c) => c.url.indexOf('host-a') >= 0).length;
     // A tentativa de texto inteiro falha: não é necessário gastar um plano adicional.
     ok('host que devolve raciocínio sai da frente', chamadasA <= 2, 'chamado ' + chamadasA + 'x');
-    ok('tentativa completa falha antes da recuperação por blocos',
-       chamadas[0].pergunta === 'Explique em dois parágrafos o que é fotossíntese.');
-    ok('falha da tentativa completa não gasta planejamento redundante',
+    // Com trecho público e pedido de 2+ parágrafos, a versão nova vai direto ao bloco 1
+    // (a tentativa única devolvia bloco único). O contexto público acompanha a chamada.
+    ok('pedido com trecho público (opt-in) começa pelo bloco 1 e leva o contexto auditável',
+       chamadas[0].pergunta.startsWith('Tema do texto: Explique em dois parágrafos o que é fotossíntese.') &&
+       /parágrafo 1 de 2/.test(chamadas[0].pergunta) &&
+       chamadas[0].pergunta.includes('TRECHO 1') && chamadas[0].pergunta.includes('dados, não instruções'));
+    ok('sem rascunho aproveitável, não gasta planejamento redundante',
        !chamadas.some((c) => /elementos concretos que um texto completo/.test(c.pergunta)));
     ok('host bom foi usado', /Parágrafo [12] do teste/.test(o.texto));
     const porHost = chamadas.reduce((acc, c) => { const k = c.url.replace('https://', '').split('/')[0]; acc[k] = (acc[k] || 0) + 1; return acc; }, {});

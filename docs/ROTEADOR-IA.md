@@ -263,3 +263,16 @@ tratamento, e o #104 generalizou incorretamente o bloqueio de reservas de obras 
 A rubrica não verifica essas afirmações. No banco suplementar contextual, reavaliando as
 **mesmas respostas**, 100 e final 101 têm 23/24; o banco original não foi alterado.
 Ver `docs/RODADA-101-RESULTADOS.md` para falhas, fontes, horários, rastros, medidor e limites.
+
+
+## 16. v11 (29/10/2026) — trechos públicos auditáveis e fim do cadastro pendente
+
+**Estado: opcional, desligado por padrão.** A comparação pareada completa desta rodada mediu a camada ligada em toda pergunta aberta e ela **não superou** a versão anterior: 17/24 contra 21/24 no banco original, 5/6 contra 6/6 no holdout, 6/6 contra 5/6 no conjunto novo e 34/44 contra 37/44 no total. Por isso o envio mantém o comportamento anterior e só consulta a base com `fontes: true` explícito (`!melhor fontes: <pergunta>` na interface). Detalhes, discordâncias e limites em `docs/RODADA-102-RESULTADOS.md`.
+
+Quando pedida, a camada consulta **antes de gerar** um arquivo local e versionado, `fontes-publicas.json`, com trechos curtos de páginas públicas escolhidas (wikipedia com `oldid` fixo, CAESB, BNDES, Secretaria de Educação de Goiânia, Biblioteca de Itajaí). Não há busca na web no momento da pergunta: a pergunta não vai a buscador, a terceiro novo ou à URL de origem. O casamento é aproximado por tokens, aceita no máximo dois trechos, exige cobertura mínima da pergunta e recusa fonte sem relação (por exemplo, “juros compostos” não recebe a página de compostagem). Se não houver cobertura suficiente, o texto sai **sem** fonte local e **sem citação decorativa**.
+
+A fonte é tratada como dado não confiável: URL só HTTPS e host de `pt.wikipedia.org` ou `*.gov.br`, sem credencial ou porta; trecho com aparente instrução é descartado; o pedido recebe instrução explícita para não seguir ordens do trecho, não tratar regra institucional como universal e não inventar referência. A resposta continua marcada `verificacaoFactual: nao_verificada`; os usados vão em `fontesConsultadas` e a interface mostra ligação, data do retrato, licença e o aviso de que a fonte **não verifica cada afirmação**. O cache separa pedidos com e sem fontes.
+
+Limites declarados: é um conjunto pequeno e datado, escrito e revisado pelo mesmo agente que fez a solução; não cobre notícia, lei atualizada, números recentes ou tema fora da lista; link vivo não prova o conteúdo nem a adequação ao caso; o filtro de injeção é conservador, não uma garantia. Um modelo pode ignorar ou distorcer o trecho. Isso **não** é verificação factual automática, aprendizado contínuo nem treinamento do modelo.
+
+A mesma rodada pausou a rota LLM7 no produto: os termos exigem aprovação escrita para integração em outro produto e não há prova de autorização. As chamadas diretas foram retiradas do chat principal, das quatro células e do `dna.json`; a reserva de texto aberto de e-mail/Telegram foi substituída por rota OVH já gratuita, exercitada em teste com rede simulada. Entradas antigas no navegador continuam sujeitas a allowlist ou bloqueio de host. Um proxy de terceiro não é identificável por esse filtro e permanece fora do alcance desta mudança.

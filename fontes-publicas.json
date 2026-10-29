@@ -1,0 +1,832 @@
+{
+  "versao": 1,
+  "coletadoEm": "2026-10-29T14:05:34.704Z",
+  "nota": "Trechos públicos para orientação, não respostas prontas. Conjunto limitado e potencialmente desatualizado; a seleção não comprova que as afirmações geradas são verdadeiras.",
+  "fontes": [
+    {
+      "id": "educacao-industrial",
+      "titulo": "Secretaria de Educação de Goiânia: cidades e industrialização",
+      "url": "https://sme.goiania.go.gov.br/conexaoescola/ensino_fundamental/historia-as-cidades-e-a-industrializacao/",
+      "licenca": "trechos citados para referência com atribuição",
+      "revisao": null,
+      "termos": "revolução industrial industrialização máquinas vapor cidade campo história trabalho",
+      "trecho": "“A Revolução Industrial, iniciada na Inglaterra no século XVIII, é um exemplo de processo que alterou o modo como as atividades produtivas humanas são realizadas e contribuiu para o aumento da população nas cidades.” … “Várias famílias migraram do campo para a cidade em busca de novas oportunidades de emprego.”",
+      "escopo": "Material didático: uma síntese, não um estudo exaustivo."
+    },
+    {
+      "id": "bndes-fotovoltaica",
+      "titulo": "BNDES: energia solar fotovoltaica",
+      "url": "https://blogdodesenvolvimento.bndes.gov.br/categoria/infraestrutura/A-energia-solar-no-Brasil/",
+      "licenca": "trechos citados para referência com atribuição",
+      "revisao": null,
+      "termos": "energia solar fotovoltaica luz sol paineis painel placas modulos celulas corrente eletricidade",
+      "trecho": "“No efeito fotovoltaico (FV), a obtenção da energia elétrica ocorre pela incidência de fótons da radiação solar sobre um material semicondutor” … “células solares, que interligadas constituem o núcleo dos chamados painéis solares.”",
+      "escopo": "Descrição dos componentes; não afirma que toda instalação tenha bateria."
+    },
+    {
+      "id": "caesb-agua",
+      "titulo": "CAESB: tratamento convencional de água",
+      "url": "https://www.caesb.df.gov.br/como-a-agua-e-tratada/",
+      "licenca": "trechos citados para referência com atribuição",
+      "revisao": null,
+      "termos": "agua chuva manancial rio represa torneira residencias abastecimento tratamento eta filtração floculação distribuição",
+      "trecho": "“A água bruta é retirada do manancial (rios, lagos ou represas) e encaminhada para o início do processo de tratamento” … “Dependendo da qualidade da água a ser tratada, algumas destas etapas poderão não ser necessárias” … “Coagulação e Floculação” … “Decantação” … “Filtração” … “Desinfecção & Fluoretação”.",
+      "escopo": "Exemplo de tratamento convencional; etapas podem variar."
+    },
+    {
+      "id": "itajai-biblioteca",
+      "titulo": "Biblioteca Municipal de Itajaí: acervo, empréstimos e reservas",
+      "url": "https://servicos.itajai.sc.gov.br/servico/25-biblioteca_municipal.html",
+      "licenca": "trechos citados para referência com atribuição",
+      "revisao": null,
+      "termos": "biblioteca catalogo acervo livro livros emprestimo emprestar emprestado reserva consulta organizar",
+      "trecho": "“Quando o título desejado estiver emprestado, é possível realizar a reserva on-line e, quando o exemplar for devolvido, automaticamente fica disponível por até 48 horas para o próximo leitor retirar.” … “A pesquisa é feita pelo site … digitando no campo ‘Expressão’ o título do livro, ou um autor ou assunto a ser procurado.”",
+      "escopo": "Regras de uma biblioteca específica; outras bibliotecas podem ter regras diferentes."
+    },
+    {
+      "id": "wiki-596",
+      "titulo": "Wikipédia: Célula",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72915594",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-09-02T00:35:48Z",
+      "termos": "Célula",
+      "trecho": "Célula é a unidade estrutural e funcional básica de todas as formas de vida ou organismos. O termo vem da palavra latina cellula cujo significado é 'pequeno aposento'. Uma célula biológica consiste basicamente em uma membrana celular semipermeável que envolve o citoplasma, o qual contém o material genético. A maioria das células só é visível ao microscópio. Com exceção de tipos celulares altamente diferenciados (como glóbulos vermelhos e gametas), a maioria das células é capaz de replicação e síntese de proteínas e alguns tipos delas são móveis. As células surgiram na Terra há cerca de quatro bilhões de anos. Todos os organismos são agrupados em procariontes e eucariontes. Os procariontes são unicelulares e incluem arqueas e bactérias. Os eucariontes podem ser unicelulares ou multicelulares e incluem protistas, plantas, animais, a maioria dos tipos de fungos e algumas espécies de algas.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-3610",
+      "titulo": "Wikipédia: Vírus",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72020912",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-04-03T16:56:06Z",
+      "termos": "Vírus",
+      "trecho": "Vírus (do latim virus, \"veneno\" ou \"toxina\") são pequenos agentes infecciosos, a maioria com 20-300 nm de diâmetro, apesar de existirem vírus ɡiɡantes de (0,6–1,5 µm), que apresentam genoma constituído de uma ou várias moléculas de ácido nucleico (DNA ou RNA), as quais possuem a forma de fita simples ou dupla. Os ácidos nucleicos dos vírus geralmente apresentam-se revestidos por um envoltório proteico formado por uma ou várias proteínas, que pode ainda ser revestido por um complexo envelope formado por uma bicamada lipídica. As partículas virais são estruturas extremamente pequenas, submicroscópicas. A maioria dos vírus é tão diminuta que está além dos limites de resolução dos microscópios ópticos comuns. Por isso, para a sua visualização é frequente o uso de microscópios eletrônicos.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-5313",
+      "titulo": "Wikipédia: Água",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72968719",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-09-13T05:28:52Z",
+      "termos": "Água",
+      "trecho": "Água (fórmula química: H2O) é uma substância química cujas moléculas são formadas por dois átomos de hidrogênio e um de oxigênio. É abundante no Universo, nomeadamente na Terra, onde cobre grande parte de sua superfície e é o maior constituinte dos fluidos dos seres vivos. As temperaturas do planeta permitem a ocorrência da água em seus três estados físicos principais. A água líquida, que em pequenas quantidades parece incolor, mas manifesta sua coloração azulada em grandes volumes, constitui os oceanos, rios e lagos que cobrem quase três quartos da superfície do planeta. Nas regiões polares, concentram-se as massas de gelo e vapor constitui parte da atmosfera terrestre. Mais especificamente, a água líquida tem duas fases líquida com grandes diferenças de estrutura e densidade.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-8810",
+      "titulo": "Wikipédia: Biblioteconomia",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72346379",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-05-29T21:57:16Z",
+      "termos": "Biblioteconomia",
+      "trecho": "Biblioteconomia é uma área interdisciplinar e multidisciplinar do conhecimento que estuda as práticas, perspectivas e as aplicações de métodos de representação, e gestão da informação e do conhecimento, em diferentes ambientes de informação, tais como bibliotecas, centros de documentação, e centros de pesquisa. Atualmente, a área está entrelaçada com diversas outras áreas, principalmente com a Ciência da Informação e a Documentação. A primeira escola de Biblioteconomia do mundo foi criada por Melvil Dewey, que não só participou da criação da American Library Association (ALA), como criou também a Classificação Decimal de Dewey. Outros grandes nomes como Johannes Gutenberg e Gabriel Naudé, além de períodos como o Renascimento e a Revolução Francesa, também estão atrelados à história da área.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-8811",
+      "titulo": "Wikipédia: Biblioteca",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=70210706",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2025-05-30T19:58:24Z",
+      "termos": "Biblioteca",
+      "trecho": "Uma biblioteca (do grego βιβλιοϑήκη, composto de βιβλίον, biblion — \"livro\", e ϑήκη theca — \"depósito\"), na definição tradicional do termo, é um local em que são guardados livros, documentos tridimensionais, e demais publicações para o público estudar, ler, e consultar tais obras. Desta forma, os três objetivos das bibliotecas são: A guarda dos livros e demais publicações em local livre de perigo, onde não sejam roubados, incendiados e demais perigos; A conservação, que não sejam estragados porque o público manuseia constantemente as obras, ou porque os documentos ficam úmidos, quentes e ou em situações similares; A organização segundo algumas regras para catalogar e arquivar as obras impressas, com intuito de que seja possível de se encontrarem de maneira imediata por meio de classificações como autor, assunto, ou diferente caraterística de importância.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-10962",
+      "titulo": "Wikipédia: Fotossíntese",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73032270",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-09-22T14:33:52Z",
+      "termos": "Fotossíntese",
+      "trecho": "Fotossíntese é o processo pelo qual plantas, algas e algumas bactérias captam parte da energia da luz e a guardam em substâncias orgânicas. Essa energia permite que produzam matéria para crescer e chega aos demais seres vivos pelas cadeias alimentares. Na forma realizada por plantas, algas e cianobactérias, a água e o dióxido de carbono participam da formação de matéria orgânica, e o oxigênio é liberado. Quase todo o oxigênio livre da atmosfera e das águas tem essa origem. Outras bactérias aproveitam a luz sem liberar oxigênio porque retiram elétrons de substâncias diferentes da água, em uma forma chamada fotossíntese anoxigênica. Dentro das células, pigmentos como a clorofila absorvem luz e iniciam uma sequência de transferências de energia e elétrons. A energia captada alimenta a produção de compostos orgânicos a partir do carbono do CO2.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-12265",
+      "titulo": "Wikipédia: Energia eólica",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72404074",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-06-09T14:56:22Z",
+      "termos": "Energia eólica",
+      "trecho": "Energia eólica é a transformação da energia do vento em energia útil, tal como na utilização de aerogeradores para produzir eletricidade, moinhos de vento para produzir energia mecânica ou velas para impulsionar veleiros. A energia eólica, enquanto alternativa aos combustíveis fósseis, é renovável, está permanentemente disponível, pode ser produzida em qualquer região, é limpa, não produz gases de efeito de estufa durante a produção e requer menos terreno. O impacto ambiental é geralmente menos problemático do que o de outras fontes de energia. Os parques eólicos são conjuntos de centenas de aerogeradores individuais ligados a uma rede de transmissão de energia elétrica, eles ficam localizados em campos abertos. Os parques eólicos de pequena dimensão são usados na produção de energia em áreas isoladas.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-13217",
+      "titulo": "Wikipédia: Bactéria",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73033010",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-09-22T16:58:21Z",
+      "termos": "Bactéria",
+      "trecho": "Bactéria (pronúncia em português: [bɐkˈtɛ.ri.ɐ], do grego: βακτηριον, bakterion, que significa \"bastão\") é um tipo de célula biológica. Elas constituem um grande domínio de micro-organismos procariontes. Possuindo tipicamente alguns micrômetros de comprimento, as bactérias podem ter diversos formatos, variando de esferas até bastões e espirais. As bactérias figuram entre as primeiras formas de vida a aparecer na Terra e estão presentes na maioria dos seus habitats, sendo encontradas no ar, solo, água, fontes termais ácidas, resíduos radioativos, fundo dos oceanos e na superfície e interior de plantas e animais. Sua sobrevivência nestes ambientes se dá devido à sua grande diversidade metabólica e capacidade adaptativa. A maioria das bactérias ainda não foi caracterizada. O estudo das bactérias é conhecido como bacteriologia, um ramo da microbiologia.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-25967",
+      "titulo": "Wikipédia: Vacina",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72262664",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-05-18T10:49:02Z",
+      "termos": "Vacina",
+      "trecho": "Vacina é uma preparação biológica que fornece imunidade adquirida ativa para uma doença particular. Uma vacina tipicamente contém um agente que se assemelha a um microrganismo causador de doenças e é muitas vezes feita de formas enfraquecidas ou mortas do micróbio, das suas toxinas ou de uma das suas proteínas de superfície. O agente estimula o sistema imunológico do corpo a reconhecê-lo como uma ameaça, destruí-lo e a manter um registro seu (memória imunológica) para que possa mais facilmente reconhecer e destruir qualquer um desses microrganismos que mais tarde encontre. As vacinas podem ser profilácticas (exemplo: para prevenir ou melhorar os efeitos de uma futura infecção por qualquer patógeno natural ou \"selvagem\"), ou terapêuticas (por exemplo, vacinas contra o câncer estão a ser pesquisadas).",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-40402",
+      "titulo": "Wikipédia: Energia hidráulica",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=71868974",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-03-05T11:54:31Z",
+      "termos": "Energia hidráulica",
+      "trecho": "A energia hidráulica ou energia hídrica é a energia obtida a partir da energia potencial de uma massa de água. A forma na qual ela se manifesta na natureza é nos fluxos de água, como rios e lagos e pode ser aproveitada por meio de um desnível ou queda d'água. Pode ser convertida na forma de energia mecânica (rotação de um eixo) através de turbinas hidráulicas ou moinhos de água. As turbinas por sua vez podem ser usadas como acionamento de um equipamento industrial, como um compressor, ou de um gerador elétrico, com a finalidade de prover energia elétrica para uma rede de energia.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-55080",
+      "titulo": "Wikipédia: Ciclo hidrológico",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72013472",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-04-01T23:38:58Z",
+      "termos": "Ciclo hidrológico",
+      "trecho": "O ciclo da água, conhecido cientificamente como o ciclo hidrológico, refere-se à troca contínua de água na hidrosfera, entre a atmosfera, a água do solo, águas superficiais, subterrâneas e das plantas. A ciência que estuda o ciclo hidrológico é a hidrologia. A água se move perpetuamente através de cada uma destas regiões no ciclo da água constituindo os seguintes processos principais de transferência: Evaporação dos oceanos e outros corpos d'água (rios, lagos e lagunas) no ar e a evapotranspiração das plantas terrestres e animais para o ar. Precipitação, pela condensação do vapor de água do ar e caindo diretamente na terra ou no mar. Escoamento superficial sobre a terra, geralmente atingem o mar. A maior parte do vapor de água sobre os oceanos retorna aos oceanos, mas os ventos transportam o vapor de água para a terra com a mesma taxa de escoamento para o mar, a cerca de 36 Tt por ano.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-111856",
+      "titulo": "Wikipédia: Sistema imunitário",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73190219",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-12T13:36:30Z",
+      "termos": "Sistema imunitário",
+      "trecho": "O sistema imunitário, sistema imunológico ou ainda sistema imune é um sistema de estruturas e processos biológicos que protegem o organismo contra doenças. De modo a funcionar corretamente, o sistema imunitário deve detectar uma imensa variedade de agentes, desde os vírus aos parasitas, e distingui-los do tecido saudável do próprio corpo. O cientista que cunhou o termo foi Ilya Ilyich Mechnikov em 1882, que é considerado o pai da imunologia. Os agentes patogénicos podem rapidamente evoluir e adaptar-se de modo a evitar a detecção e neutralização por parte do sistema imunitário, pelo que os vários mecanismos de defesa também evoluíram no sentido de os reconhecer e neutralizar. Até mesmo os simples organismos unicelulares possuem um sistema imunitário rudimentar, na forma de enzimas que os protegem de infecções por bacteriófagos.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-989406",
+      "titulo": "Wikipédia: Abastecimento público de água",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=71502538",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-01-07T20:05:45Z",
+      "termos": "Abastecimento público de água",
+      "trecho": "O abastecimento público de água é o fornecimento de água potável por serviços públicos, organizações comerciais, empreendimentos comunitários ou por indivíduos, geralmente por meio de um sistema de bombas, tubulações e tratamento. Os sistemas públicos de abastecimento de água são cruciais para o bom funcionamento das sociedades, sendo fundamental para a saúde pública. Os aspectos da qualidade do serviço incluem a continuidade do fornecimento, a qualidade da água e a pressão da água. A responsabilidade institucional pelo abastecimento de água é organizada de forma diferente em diferentes países e regiões. Geralmente inclui questões relacionadas a políticas e regulamentações, prestação de serviços e padronização.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-1206447",
+      "titulo": "Wikipédia: Estação de tratamento de água",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72062776",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-04-12T13:57:00Z",
+      "termos": "Estação de tratamento de água",
+      "trecho": "Estação de tratamento de água ou também abreviado como ETA é um local em que realiza a purificação da água captada de alguma fonte para torná-la própria para o consumo e assim utilizá-la para abastecer uma determinada população. A captação da água bruta é feita em rios ou represas que possam suprir a demanda por água da população e das indústrias abastecidas levando em conta o ritmo de crescimento. Antes que vá para o sistema de distribuição de água através de adutoras, passa por um processo de tratamento com várias etapas.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-4863490",
+      "titulo": "Wikipédia: Energia solar fotovoltaica",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72822204",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-08-15T11:00:56Z",
+      "termos": "Energia solar fotovoltaica",
+      "trecho": "A energia solar fotovoltaica é a energia obtida através da conversão direta da luz em eletricidade por meio do efeito fotovoltaico. A célula fotovoltaica, um dispositivo fabricado com material semicondutor, é a unidade fundamental desse processo de conversão. Este tipo de energia usa-se para alimentar uma grande variedade de aplicativos e aparelhos autónomos, para abastecer refúgios ou moradias isoladas da rede elétrica e para produzir eletricidade a grande escala através de redes de distribuição. Devido à crescente demanda de energias renováveis, a fabricação de células solares e instalações fotovoltaicas tem avançado consideravelmente nos últimos anos. Entre os anos 2001 e 2015 produziu-se um crescimento exponencial da produção de energia fotovoltaica, dobrando-se aproximadamente a cada dois anos.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-783",
+      "titulo": "Wikipédia: Evolução",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73063404",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-09-27T01:01:55Z",
+      "termos": "Evolução",
+      "trecho": "Na biologia, Evolução (também conhecida como evolução biológica, genética ou orgânica) é a mudança das características hereditárias de uma população de seres vivos de uma geração para outra. Este processo faz com que as populações de organismos mudem e se diversifiquem ao longo do tempo. O termo \"evolução\" pode referir-se à evidência observacional que constitui o fato científico intrínseco à teoria da evolução biológica, ou, em acepção completa, à teoria em sua completude. Uma teoria científica é por definição um conjunto indissociável de todas as evidências verificáveis conhecidas e das ideias testáveis e testadas àquelas atreladas. Do ponto de vista genético, a evolução pode ser definida como qualquer alteração no número de genes ou na frequência dos alelos de um ou um conjunto de genes em uma população e ao longo das gerações.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-984",
+      "titulo": "Wikipédia: História do Brasil",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73212581",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-14T23:42:12Z",
+      "termos": "História do Brasil",
+      "trecho": "História do Brasil começa com a chegada dos primeiros humanos na América do Sul há pelo menos 22 000 anos AP. Em fins do século XV, quando do Tratado de Tordesilhas, toda a área hoje conhecida como Brasil era habitada por comunidades seminômades que subsistiam da caça, pesca, coleta e agricultura. Em 22 de abril de 1500, Pedro Álvares Cabral, capitão-mor de expedição portuguesa a caminho das Índias, chegou, na hoje conhecida, Porto Seguro na Bahia, tornando a região colônia do Reino de Portugal. Na década de 1530, a Coroa Portuguesa implementou uma política de colonização para a terra recém-descoberta que se organizou por meio da distribuição de capitanias hereditárias a membros da nobreza, porém, esse sistema malogrou, uma vez que somente as capitanias de Pernambuco e São Vicente prosperaram.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-1671",
+      "titulo": "Wikipédia: Revolução Industrial",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73117557",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-03T23:46:40Z",
+      "termos": "Revolução Industrial",
+      "trecho": "Revolução Industrial, também chamada de Primeira Revolução Industrial, foi a transição para novos processos de produção, na Grã-Bretanha, na Europa continental e nos Estados Unidos, a partir de c. 1760 até algum momento entre 1820 e 1840. Essa transição incluiu a passagem de métodos de produção manual para a produção mecânica, novos processos de fabricação de produtos químicos e metalúrgicos, o uso de energia a vapor e hidráulica, o desenvolvimento de máquinas-ferramentas e a ascensão do sistema fabril mecanizado. Além do aumento da produção, houve também, nesse período, um crescimento populacional sem precedentes. A indústria têxtil foi dominante da Revolução Industrial, em termos de geração de emprego, valor da produção e volume de capital, além de também ter sido a primeira a usar os novos métodos e técnicas.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-1769",
+      "titulo": "Wikipédia: Segunda Guerra Mundial",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72938949",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-09-07T14:07:50Z",
+      "termos": "Segunda Guerra Mundial",
+      "trecho": "Segunda Guerra Mundial foi um conflito militar global que durou de 1939 a 1945, envolvendo a maioria das nações do mundo — incluindo todas as grandes potências — organizadas em duas alianças militares opostas: os Aliados e o Eixo. Foi a guerra mais abrangente da história, com mais de 100 milhões de militares mobilizados. Em estado de \"guerra total\", os principais envolvidos dedicaram toda sua capacidade econômica, industrial e científica a serviço dos esforços de guerra, deixando de lado a distinção entre recursos civis e militares. Marcado por um número significante de ataques contra civis, incluindo o Holocausto e a única vez em que armas nucleares foram utilizadas em combate, foi o conflito mais letal da história da humanidade, que resultou na morte de 50-70 milhões de pessoas.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-2827",
+      "titulo": "Wikipédia: Antibiótico",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73065605",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-09-27T09:49:09Z",
+      "termos": "Antibiótico",
+      "trecho": "Antibiótico (do grego αντί - anti+ βιοτικός - biotikos, \"contra um ser vivo\") é qualquer medicamento capaz de combater uma infecção causada por microrganismos que causam infecções a outro organismo. Não destroem vírus. O termo antibiótico tem sido utilizado de modo mais restrito para indicar substâncias que atingem bactérias, embora possa ser utilizado em sentido mais amplo contra outros parasitas (protozoários, fungos ou helmintos). Ele pode ser bactericida, quando tem efeito mortífero sobre a bactéria, ou bacteriostático, se interrompe a sua reprodução ou inibe seu metabolismo mas também causa efeitos significativos em doenças causadas por vírus como a gripe. As primeiras substâncias descobertas eram produzidas por fungos, como a penicilina.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-3087",
+      "titulo": "Wikipédia: Ecossistema",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73044774",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-09-24T13:53:37Z",
+      "termos": "Ecossistema",
+      "trecho": "Um ecossistema, ou sistema ecológico, reúne os seres vivos de um lugar, o ambiente físico e as relações entre eles. Pode caber numa poça, num tronco em decomposição ou numa floresta, e também pode abranger parte de um oceano. Seus limites dependem da pergunta que se quer responder, e todos os ecossistemas da Terra integram a biosfera. Na maior parte dos ecossistemas, plantas, algas e certos microrganismos captam energia da luz e produzem matéria orgânica. Animais obtêm essa energia ao se alimentar, enquanto decompositores transformam os restos e devolvem nutrientes ao ambiente. A energia atravessa o sistema e se dispersa como calor, mas a água e elementos como carbono e nitrogênio voltam a circular em ciclos biogeoquímicos. Estações, secas, incêndios, inundações, mudanças no clima e a própria atividade dos organismos transformam os ecossistemas.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-8978",
+      "titulo": "Wikipédia: Reciclagem",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=71596839",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-01-23T14:35:01Z",
+      "termos": "Reciclagem",
+      "trecho": "Reciclagem é o processo de conversão de desperdício em materiais ou produtos de potencial utilidade. Este processo permite reduzir o consumo de matérias-primas, de utilização de energia e a poluição do ar e da água, ao reduzir também a necessidade de tratamento convencional de lixo e a emissão de gases do efeito estufa. A reciclagem é um componente essencial da gestão de resíduos moderna e é o terceiro componente da hierarquia dos resíduos \"reduzir, reutilizar e reciclar\". Entre os materiais recicláveis estão diversos tipos de vidro, papel, metal, plástico, tecido e componentes eletrónicos. A compostagem ou reutilização de detritos biodegradáveis, como lixo de cozinha ou de jardim, também é considerada reciclagem.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-9853",
+      "titulo": "Wikipédia: Biodiversidade",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72106041",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-04-20T10:35:39Z",
+      "termos": "Biodiversidade",
+      "trecho": "Biodiversidade, ou diversidade biológica, pode ser definida como a variabilidade entre os seres vivos de todas as origens, a terrestre, a marinha e outros ecossistemas aquáticos, e os complexos ecológicos dos quais fazem parte. Essa variabilidade aparece apenas como resultado da natureza em si, sem sofrer intervenção humana. Assim, ela pode variar de acordo com as diferentes regiões ecológicas. Refere-se, portanto, à variedade de vida no planeta Terra, incluindo a variedade genética dentro das populações e espécies, a variedade de espécies da flora, da fauna, de fungos microscópicos e de micro-organismos. Pode-se compreender, do termo \"conservação\", a manutenção dos recursos que constituem a terra, bem como os seres vivos que a compõem, dentre eles, o homem.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-14501",
+      "titulo": "Wikipédia: Desflorestação",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=68784588",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2024-10-09T01:16:23Z",
+      "termos": "Desflorestação",
+      "trecho": "Desflorestação, desflorestamento, desmate ou desmatamento é o processo de desaparecimento completo e permanente de florestas, atualmente causado em sua maior parte por atividades humanas. Embora o conceito se aplique em senso estrito à perda de florestas, formações vegetais cujo principal componente são as árvores, muitas vezes ele é aplicado às perdas de cobertura vegetal de formações naturalmente esparsas, arbustivas ou rasteiras, como as savanas, as pradarias e o cerrado, significando, em seu sentido lato, a perda permanente de todo tipo de cobertura vegetal original em determinada área. Áreas desflorestadas historicamente mas que por qualquer razão recuperaram sua cobertura não entram no cômputo atual da desflorestação.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-35610",
+      "titulo": "Wikipédia: Seleção natural",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73172172",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-10T15:02:25Z",
+      "termos": "Seleção natural",
+      "trecho": "Seleção natural (AO 1945: Selecção natural) é o processo proposto por Charles Darwin e Alfred Wallace, os dois responsáveis pela teoria da evolução por seleção natural. A alta fecundidade e a recorrente competição pela sobrevivência em cada espécie geram o pressuposto para esse processo. Outros mecanismos de evolução das espécies incluem a deriva genética, o fluxo gênico, as mutações e o isolamento geográfico. O conceito básico de seleção natural é que características favoráveis que são hereditárias tornam-se mais comuns em gerações sucessivas de uma população de organismos que se reproduzem, e que características desfavoráveis que são hereditárias tornam-se menos comuns.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-42277",
+      "titulo": "Wikipédia: Inflação",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=71935401",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-03-17T16:12:31Z",
+      "termos": "Inflação",
+      "trecho": "Em economia, a inflação é um aumento geral nos preços de bens e serviços em uma economia. Quando o nível geral de preços aumenta, cada unidade de moeda compra menos bens e serviços; consequentemente, a inflação corresponde a uma redução do poder de compra do dinheiro. O oposto da inflação é a deflação, uma diminuição sustentada do nível geral de preços de bens e serviços. A medida comum de inflação é a taxa de inflação, a variação percentual anualizada de um índice de preços geral. Como os preços não aumentam todos na mesma proporção, o índice de preços ao consumidor (IPC) é frequentemente usado para esse fim. Os economistas acreditam que a inflação muito alta e a hiperinflação – que têm efeitos severamente perturbadores na economia real – são causadas pelo crescimento excessivo persistente da oferta monetária. As opiniões sobre taxas de inflação baixas a moderadas são mais variadas.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-104899",
+      "titulo": "Wikipédia: Escravidão no Brasil",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73299850",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-26T23:07:47Z",
+      "termos": "Escravidão no Brasil",
+      "trecho": "Escravidão no Brasil, também referida como sistema escravocrata brasileiro, ou escravismo, ou escravatura, foi a forma de relação social e econômica de produção, que usava mão de obra escrava, adotada de uma forma geral no país desde o período colonial, até pouco antes do final do Império (no século XIX). É marcada principalmente pela exploração da mão de obra de negros trazidos da África e transformados em escravos no Brasil pelos colonizadores portugueses. Este tipo de relação de produção teria sido legalmente finalizada em 1888 com a abolição da escravatura. Muitos povos indígenas também foram vítimas desse processo; a escravidão indígena foi abolida oficialmente pelo Marquês de Pombal no final do século XVIII.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-176138",
+      "titulo": "Wikipédia: Juro",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73125556",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-05T05:07:17Z",
+      "termos": "Juro",
+      "trecho": "Juro é a remuneração cobrada pelo empréstimo de dinheiro (ou outro item). É expresso como um percentual sobre o valor emprestado (taxa de juro). O juro pode ser compreendido como uma espécie de \"aluguel\" de dinheiro. A taxa é uma compensação paga pelo tomador do empréstimo para ter o direito de usar o dinheiro até o dia do pagamento. O credor, por outro lado, recebe uma compensação por não poder usar esse dinheiro até o dia do pagamento e por correr o risco de não receber o dinheiro de volta (risco de inadimplência).",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-271007",
+      "titulo": "Wikipédia: Compostagem",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=69864219",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2025-04-04T16:20:41Z",
+      "termos": "Compostagem",
+      "trecho": "Compostagem é o conjunto de técnicas aplicadas para estimular a decomposição de materiais orgânicos por organismos heterótrofos aeróbios, com a finalidade de obter no menor tempo possível, um material estável, rico em substâncias húmicas e nutrientes minerais formando assim um solo humífero.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-599",
+      "titulo": "Wikipédia: Clima",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73076785",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-09-28T17:21:50Z",
+      "termos": "Clima",
+      "trecho": "O clima (do grego para \"inclinação\", referindo ao ângulo formado pelo eixo de Rotação da Terra e seu plano de translação) compreende um padrão da atmosfera da Terra. Fenômenos como frentes frias, tempestades, furacões e outros estão associados tanto às variações meteorológicas preditas pelas leis físicas determinísticas, assim como a um conjunto de variações aleatórias dos elementos meteorológicos (temperatura, precipitação, vento, umidade, pressão do ar), cuja principal ferramenta de investigação é a estatística. As semelhanças em várias regiões da Terra de tipos específicos caracterizam os diversos tipos de clima, para o que são consideradas as variações médias do tempo meteorológico ao longo das estações do ano num período de não menos de 30 anos. Em suma, o clima corresponde ao comportamento médio dos elementos atmosféricos num determinado lugar, durante, pelo menos, trinta anos.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-1008",
+      "titulo": "Wikipédia: Internet",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72911613",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-09-01T08:07:22Z",
+      "termos": "Internet",
+      "trecho": "A Internet é um sistema global de redes de computadores interligadas que utilizam um conjunto próprio de protocolos (Internet Protocol Suite ou TCP/IP) com o propósito de servir progressivamente usuários no mundo inteiro. É uma rede de várias outras redes, que consiste de milhões de empresas privadas, públicas, acadêmicas e de governo, com alcance local e global e que está ligada por uma ampla variedade de tecnologias de rede eletrônica, sem fio e ópticas. A Internet traz uma extensa gama de recursos de informação e serviços, tais como os documentos inter-relacionados de hipertextos da World Wide Web (WWW), redes ponto a ponto (peer-to-peer) e infraestrutura de apoio a correio eletrônico (e-mails).",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-9539",
+      "titulo": "Wikipédia: Oceano",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72850104",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-08-20T07:06:26Z",
+      "termos": "Oceano",
+      "trecho": "O oceano é o corpo de água salgada que cobre aproximadamente 70,8% da Terra. O oceano é convencionalmente dividido em grandes corpos de água, também denominados oceanos (em ordem decrescente de área: Oceano Pacífico, Oceano Atlântico, Oceano Índico, Oceano Antártico e Oceano Ártico), que, por sua vez, são em grande parte subdivididos em mares, golfos e outros corpos de água. O oceano contém 97% da água da Terra e é o principal componente da hidrosfera terrestre, funcionando como um enorme reservatório de calor no orçamento energético da Terra, além de integrar o ciclo do carbono e o ciclo hidrológico, que formam a base dos padrões de clima e tempo em todo o mundo. O oceano é essencial à vida na Terra, abrigando a maior parte dos animais e da vida protista do planeta.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-12378",
+      "titulo": "Wikipédia: Produto interno bruto",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72793007",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-08-10T01:20:09Z",
+      "termos": "Produto interno bruto",
+      "trecho": "Produto interno bruto (PIB) é uma medida monetária do valor de mercado total de todos os bens finais e serviços produzidos e prestados durante um período específico (normalmente um ano) por um país ou por países. O PIB é frequentemente utilizado para medir a atividade econômica de um país ou região. Os principais componentes do PIB são o consumo, os gastos do governo, as exportações líquidas (exportações menos importações) e o investimento. A alteração de qualquer um desses fatores pode aumentar o tamanho da economia. Por exemplo, o crescimento populacional por meio de imigração em massa pode elevar o consumo e a demanda por serviços públicos, contribuindo assim para o crescimento do PIB. No entanto, o PIB não é uma medida do padrão de vida geral nem do bem-estar, pois não leva em conta como a renda é distribuída entre a população.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-12722",
+      "titulo": "Wikipédia: Inteligência artificial",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73275430",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-23T17:51:00Z",
+      "termos": "Inteligência artificial",
+      "trecho": "Inteligência artificial (frequentemente abreviada por IA ou AI, do inglês artificial intelligence) é, de forma genérica, a capacidade de máquinas demonstrarem inteligência, raciocínio e aprendizado de forma semelhante ao pensamento humano. O campo busca desenvolver máquinas autónomas ou sistemas especialistas capazes de simular o comportamento humano e realizar tarefas complexas de forma independente. Trata-se de um sistema que permite aos computadores executar funções avançadas, como a análise de dados em grande escala e a formulação de previsões ou recomendações. Como campo de pesquisa na ciência da computação, dedica-se ao estudo e desenvolvimento de métodos e softwares que capacitam as máquinas a perceberem o seu ambiente e a utilizarem o aprendizado para tomar ações que maximizem as hipóteses de atingir objetivos definidos.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-29561",
+      "titulo": "Wikipédia: Céu",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=70975002",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2025-10-05T22:34:29Z",
+      "termos": "Céu",
+      "trecho": "Céu (do latim cælum) é o panorama obtido a partir da Terra ou da superfície de outro astro celeste qualquer quando se olha para o universo que os rodeia. O panorama obtido pode mostrar-se significativamente influenciado pela presença ou não de atmosfera ao redor do astro no qual situa-se o observador. Em ausência de atmosfera o céu mostra-se negro, e nele destacam-se nitidamente as estrelas e demais astros. Em presença de atmosfera, durante o dia, o céu terrestre mostra-se azulado, e a dispersão da luz estabelece intensidade média de luz que normalmente ofusca os demais astros celestes à exceção do sol e da lua, não sendo aqueles visíveis no céu durante o dia, portanto. O céu noturno assemelha-se bem ao que espera-se encontrar nos casos onde há ausência de atmosfera. Nuvens e outros elementos climáticos também afetam o céu, determinando por vezes belos panoramas.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-36108",
+      "titulo": "Wikipédia: Mudança do clima",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73115640",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-03T18:47:01Z",
+      "termos": "Mudança do clima",
+      "trecho": "A mudança climática contemporânea inclui tanto o aquecimento global – o aumento contínuo da temperatura média global – quanto os seus efeitos mais amplos no sistema climático da Terra. A mudança climática em um sentido mais amplo também inclui alterações de longo prazo anteriores no clima da Terra. A atual elevação das temperaturas globais é impulsionada por atividades humanas, especialmente a queima de combustíveis fósseis (carvão, óleo e gás natural) desde a Revolução Industrial. O uso de combustíveis fósseis, o desmatamento e algumas práticas agrícolas e industriais liberam gases do efeito estufa. Esses gases absorvem parte do calor que a Terra irradia após ser aquecida pela luz solar, aquecendo a baixa atmosfera.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-40845",
+      "titulo": "Wikipédia: Sono",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72356125",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-05-31T16:45:14Z",
+      "termos": "Sono",
+      "trecho": "Sono é um estado sedentário da mente e do corpo. É caracterizada por consciência alterada, atividade sensorial relativamente inibida, atividade muscular reduzida e interações reduzidas com o ambiente. Distingue-se da vigília por uma capacidade diminuída de reagir a estímulos, mas mais reativa do que um coma ou distúrbios da consciência, com o sono exibindo diferentes padrões cerebrais ativos. O sono ocorre em períodos repetitivos, nos quais o corpo alterna entre dois modos distintos: o sono com MRO e o sono sem MRO. Embora MRO signifique \"movimento rápido dos olhos\", esse modo de sono tem muitos outros aspectos, incluindo a paralisia virtual do corpo. Os sonhos são uma sucessão de imagens, ideias, emoções e sensações que geralmente ocorrem involuntariamente na mente durante certas fases do sono.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-54246",
+      "titulo": "Wikipédia: Imposto",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72062730",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-04-12T13:43:42Z",
+      "termos": "Imposto",
+      "trecho": "Imposto (do latim imposìtu-, particípio passado de imponère: \"impor\", \"pôr como obrigação\") é um tributo cobrado pelas autoridades públicas sobre os recursos ou bens das pessoas físicas ou jurídicas estabelecidas ou que tenham interesses em seu território. A partir da ocorrência de um fato gerador, o imposto é calculado mediante a aplicação de uma alíquota a uma base de cálculo, e o não pagamento do valor estipulado acarreta a imposição de sanções civis e penais ao contribuinte, na forma da lei.Diferentemente de outros tributos, como a taxa e a contribuição de melhoria, o imposto não é vinculado a uma contrapartida: é devido, independentemente de qualquer contraprestação específica do Estado ao contribuinte. Os impostos são frequentemente divididos em diretos e indiretos. Os impostos diretos incidem sobre a renda, o patrimônio e o lucro, sendo o imposto de renda o principal exemplo.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-109426",
+      "titulo": "Wikipédia: Tempo (meteorologia)",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72962262",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-09-11T21:40:35Z",
+      "termos": "Tempo (meteorologia)",
+      "trecho": "Tempo é o estado da atmosfera terrestre em um lugar e momento específicos, geralmente expresso pela temperatura, umidade, nebulosidade e estabilidade atmosférica. Na Terra, a maior parte dos fenômenos meteorológicos ocorre na troposfera, a camada mais baixa da atmosfera, logo abaixo da estratosfera. O tempo se refere à temperatura, à precipitação e às demais condições atmosféricas de um dia para outro. O clima corresponde às médias dessas condições ao longo de períodos mais longos. Sem outra especificação, o termo \"tempo\", em seu sentido meteorológico, geralmente se refere ao tempo na Terra. O tempo resulta das diferenças de pressão atmosférica, temperatura e umidade entre um lugar e outro. Essas diferenças podem decorrer do ângulo de incidência da luz solar em cada local, que varia com a latitude.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-272655",
+      "titulo": "Wikipédia: Atmosfera da Terra",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72964738",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-09-12T12:36:52Z",
+      "termos": "Atmosfera da Terra",
+      "trecho": "A atmosfera da Terra, ou atmosfera terrestre, é uma camada de gases misturados, chamada de ar, que envolve a superfície da Terra e é retida pela gravidade. Ela contém quantidades variáveis de aerossóis e partículas em suspensão, que dão origem a fenômenos do tempo, como nuvens e névoa seca. A atmosfera protege a superfície terrestre do espaço exterior, interceptando a maioria dos meteoroides e grande parte da radiação solar ultravioleta. Ela reduz a variação diária de temperatura, atenuando os extremos entre o dia e a noite, e mantém a superfície aquecida pela retenção de calor do efeito estufa. As correntes de ar redistribuem calor e umidade entre as regiões, e a atmosfera proporciona as condições químicas e climáticas que permitem a existência e a evolução da vida na Terra.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-626810",
+      "titulo": "Wikipédia: Refrigeração",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72383414",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-06-05T15:23:22Z",
+      "termos": "Refrigeração",
+      "trecho": "A refrigeração é a ação de resfriar determinado ambiente de forma descontrolada, tanto para viabilizar processos e, conservar produtos (refrigeração comercial e industrial) ou efetuar climatização para conforto técnico ou conforto térmico (como por exemplo ar-condicionado e ventilação). O condicionamento do ar é um ciclo fechado onde um gás refrigerador é bombeado e comprimido pelo sistema, sendo resfriado ao passar na válvula de expansão e no evaporador. Sistema composto por: compressor, expansor, evaporador e, condensador. No Brasil, o R-134a / HFC-134a' e o CO2 / R-744 são usados juntos nos sistemas em cascata, como gás refrigerante de alta temperatura; O uso de CO2 como gás refrigerante foi uma forma desenvolvida na Europa na década de 2010.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-3439180",
+      "titulo": "Wikipédia: Educação financeira",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73124890",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-05T02:30:06Z",
+      "termos": "Educação financeira",
+      "trecho": "A educação financeira é uma área transversal e Interdisciplinar cujo propósito é auxiliar indivíduos na escolha de seus rendimentos, no consumo sustentável, em suas decisões sobre investimentos, e na prevenção de situações problemáticas; não deve ser confundida com a matemática financeira, enquanto a primeira se trata de uma área que comunica com as outras como a economia, biologia (meio ambiente e saúde), história, sociologia, geografia, etc., a segunda é específica da matemática. Desde o surgimento do sistema capitalista, as pessoas tiveram a necessidade de se adaptar ao novo conceito de dinheiro e a suas variáveis (mais complexas, comparativamente aos sistemas econômicos anteriores). As novas relações de troca, domínio e poder fundamentaram as bases econômicas e sociais vigentes ainda nos dias de hoje..",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-5788086",
+      "titulo": "Wikipédia: Lei Geral de Proteção de Dados Pessoais",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72364522",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-06-02T02:16:03Z",
+      "termos": "Lei Geral de Proteção de Dados Pessoais",
+      "trecho": "A Lei Geral de Proteção de Dados Pessoais (com sigla LGPD ou LGPDP), ou Lei nº 13.709/2018, é uma lei federal brasileira promulgada em 2018, que estabelece normas para a proteção e tratamento de dados pessoais em território nacional, bem como a proteção de direitos fundamentais, particularmente a privacidade, a honra e a intimidade. A LGPD também alterou os artigos 7º e 16º do chamado Marco Civil da Internet, lei federal que traz normas legais referentes ao uso da Internet no território brasileiro. Desde a promulgação da LGPD, o Brasil passou a fazer parte dos países que contam com uma legislação específica para a proteção de dados pessoais e da privacidade dos seus cidadãos.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-249",
+      "titulo": "Wikipédia: Agricultura",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72042789",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-04-08T01:28:49Z",
+      "termos": "Agricultura",
+      "trecho": "Agricultura é a prática de cultivar plantas e criar gado. Foi o principal desenvolvimento na ascensão da civilização humana sedentária, por meio da qual o uso de espécies domesticadas criou excedentes de alimentos que permitiram às pessoas viver nas cidades. A história da agricultura começou há milhares de anos. Depois de coletar grãos silvestres por pelo menos 105 mil anos, os primeiros agricultores começaram a plantá-los há cerca de 11,5 mil anos. Animais como porcos, ovelhas e bois foram domesticados há mais de 10 mil anos. As plantas foram cultivadas independentemente em pelo menos onze regiões do mundo. Desde o século XX, no entanto, a agricultura industrial baseada na monocultura em grande escala passou a dominar a produção agrícola, embora cerca de 2 bilhões de pessoas ainda dependiam da agricultura de subsistência.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-661",
+      "titulo": "Wikipédia: Democracia",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73273825",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-23T13:54:23Z",
+      "termos": "Democracia",
+      "trecho": "Democracia (do em grego clássico: δημοκρατία , dēmos 'povo' e kratos 'governo') é um sistema de governo no qual o poder do Estado é investido no povo ou em sua população em geral. Numa definição minimalista de democracia, os governantes são eleitos através de eleições justas e competitivas, enquanto definições mais abrangentes associam também a democracia às garantias de liberdades civis e direitos humanos. Contrasta com formas de governo em que o poder não é investido na população geral, como em sistemas autoritários. A opinião pública do mundo ocidental é fortemente favorável aos sistemas democráticos de governo. De acordo com os Índices de Democracia V-Dem e The Economist Democracy Index, menos de metade da população mundial vivia numa democracia em 2022. O termo surgiu no século V a.C.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-1123",
+      "titulo": "Wikipédia: Lua",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73289764",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-25T15:19:26Z",
+      "termos": "Lua",
+      "trecho": "Lua é o único satélite natural da Terra e o quinto maior do Sistema Solar. É o maior satélite natural de um planeta no sistema solar em relação ao tamanho do seu corpo primário, tendo 27% do diâmetro e 60% da densidade da Terra, o que representa 1⁄81 da sua massa. Entre os satélites cuja densidade é conhecida, a Lua é o segundo mais denso, atrás de Io. Estima-se que a formação da Lua tenha ocorrido há cerca de 4,51 mil milhões* de anos, relativamente pouco tempo após a formação da Terra. Embora no passado tenham sido propostas várias hipóteses para a sua origem, a explicação mais consensual atualmente é a de que a Lua tenha sido formada a partir dos detritos de um impacto de proporções gigantescas entre a Terra e um outro corpo do tamanho de Marte.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-1211",
+      "titulo": "Wikipédia: Música",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73170592",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-10T08:09:00Z",
+      "termos": "Música",
+      "trecho": "Música é um arranjo de sons feitos para criar alguma combinação na forma, harmonia, melodia, ritmo ou outro conteúdo expressivoA música é geralmente considerada um elemento cultural universal presente em todas as sociedades humanas. As definições de música variam muito em conteúdo e abordagem. Embora os estudiosos concordem que a música é definida por um pequeno número de elementos específicos, não há consenso sobre quais são esses elementos necessários. A música é frequentemente caracterizada como um meio altamente versátil de expressão da criatividade humana. Diversas atividades estão envolvidas na criação musical, sendo frequentemente divididas nas categorias de composição, improvisação e performance. A música pode ser executada utilizando uma grande variedade de instrumentos musicais, incluindo a voz humana.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-1547",
+      "titulo": "Wikipédia: Pintura",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73050641",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-09-25T10:39:58Z",
+      "termos": "Pintura",
+      "trecho": "A pintura refere-se genericamente à técnica de aplicar pigmento em forma pastosa, líquida ou em pó a uma superfície, a fim de colori-la, atribuindo-lhe matizes, tons e texturas. Em um sentido mais específico, é a arte de pintar uma superfície, tais como papel, tela, ou uma parede (pintura mural ou afrescos). Devido ao fato de grandes obras de arte, tais como a Mona Lisa e A Última Ceia, do renascentista Leonardo Da Vinci, serem pinturas a óleo, a técnica é historicamente considerada uma das mais tradicionais das artes plásticas. Com o desenvolvimento tecnológico dos materiais, outras técnicas tornaram-se igualmente importantes como, por exemplo, a tinta acrílica. Diferencia-se do desenho pelo uso dos pigmentos líquidos e do uso constante da cor, enquanto aquele apropria-se principalmente de materiais secos. No entanto, há controvérsias sobre essa definição de pintura.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-1723",
+      "titulo": "Wikipédia: Sistema Solar",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73136885",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-06T14:29:46Z",
+      "termos": "Sistema Solar",
+      "trecho": "Sistema Solar compreende o conjunto constituído pelo Sol e todos os corpos celestes que estão sob seu domínio gravitacional. O sistema formou-se há cerca de 4,6 mil milhões de anos, quando uma região densa de uma nuvem molecular colapsou, criando o Sol e um disco protoplanetário a partir do qual os corpos orbitais se agruparam. No interior do núcleo do Sol, o hidrogénio é fundido em hélio durante mil milhões de anos, libertando energia que, ao longo de períodos de tempo ainda mais extensos, é emitida através da camada exterior do Sol, a fotosfera. Isto cria a heliosfera e um gradiente de temperatura decrescente ao longo do Sistema Solar. 99,86% da massa do Sistema Solar é constituída quase inteiramente pela massa do Sol. Os próximos objetos mais massivos do sistema são os oito planetas que, por definição, dominam as órbitas que ocupam.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-4821",
+      "titulo": "Wikipédia: Constituição",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72667626",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-07-21T10:14:20Z",
+      "termos": "Constituição",
+      "trecho": "Constituição é o conjunto de normas jurídicas que ocupa o topo da hierarquia do direito de um Estado, e que pode ou não ser codificado como um documento escrito. Tipicamente, a constituição enumera e limita os poderes e funções do Estado, e assim formam, ou seja, constituem a entidade que é esse Estado. No caso dos países (denominação coloquial do Estado nacional soberano) e das regiões autônomas dos países, o termo refere-se especificamente a uma constituição que define a política fundamental, princípios políticos e estabelece a estrutura, procedimentos, poderes e direitos de um governo. Ao limitar o alcance do próprio governo, a maioria das constituições garante certos direitos para as pessoas.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-9713",
+      "titulo": "Wikipédia: Direitos humanos",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72778716",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-08-07T14:32:28Z",
+      "termos": "Direitos humanos",
+      "trecho": "Direitos humanos são os direitos básicos e liberdades dos seres humanos que são inalienáveis e independentes de raça, género, nacionalidade, etnia, religião ou qualquer outra condição.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-9859",
+      "titulo": "Wikipédia: Gravidade",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73129597",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-05T17:52:53Z",
+      "termos": "Gravidade",
+      "trecho": "Na física, a gravidade (do latim gravitas, \"peso\"), também chamada de gravitação ou interação gravitacional, é uma das quatro interações fundamentais da física. Na descrição newtoniana, é a força de atração entre corpos com massa. Na relatividade geral, é explicada pela geometria do espaço-tempo e pela distribuição de matéria e energia. No universo primitivo, a atração gravitacional fez o gás composto sobretudo de hidrogênio e hélio se concentrar em halos de matéria escura. O resfriamento do gás permitiu sua contração, e o aquecimento das regiões centrais de algumas dessas concentrações levou à fusão nuclear e à formação das primeiras estrelas. A gravidade também reuniu matéria em galáxias, aglomerados e na estrutura em grande escala do universo. A interação tem alcance ilimitado nos modelos newtoniano e relativístico, embora o campo de um corpo isolado enfraqueça com a distância.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-12300",
+      "titulo": "Wikipédia: Teatro",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73290406",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-25T16:54:41Z",
+      "termos": "Teatro",
+      "trecho": "Teatro (do grego θέατρον, romaniz.: theátron) é uma forma de arte em que um ator ou um conjunto de atores interpreta uma história ou atividades para o público em um determinado espaço. Com o auxílio de dramaturgos ou de situações improvisadas, de diretores e de técnicos, o espetáculo tem como objetivo apresentar uma situação e despertar sentimentos no público. Também se denomina teatro o edifício em que essa forma de arte é desenvolvida, podendo ser igualmente utilizado para apresentações de dança, concertos, recitais e outras atividades culturais.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-13448",
+      "titulo": "Wikipédia: Alimentação",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=69672790",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2025-03-04T14:20:32Z",
+      "termos": "Alimentação",
+      "trecho": "A alimentação é o processo pelo qual os organismos obtêm e assimilam alimentos ou nutrientes para as suas funções vitais, incluindo o crescimento, movimento, reprodução e manutenção da temperatura do corpo. Na linguagem vernácula, alimentação é o conjunto de hábitos e substâncias que o homem usa, não só em relação às suas funções vitais, mas também como um elemento da sua cultura e para manter ou melhorar a sua saúde. No que diz respeito aos animais, há quatro tipos de alimentação, sendo elas: Alimentação por filtro - obter comida suspensa na água. Alimentação por sedimentos - obter partículas de comida no solo. Alimentação de fluidos - obter comida consumindo fluidos de outros organismos. Alimentação em massa - obter comida comendo peças de outros organismos.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-24826",
+      "titulo": "Wikipédia: Segurança alimentar",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73170739",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-10T09:31:47Z",
+      "termos": "Segurança alimentar",
+      "trecho": "Segurança alimentar é um termo que começou a ser utilizado durante a Primeira Guerra Mundial na Europa. Com a traumática experiência da guerra, vivenciada sobretudo na Europa, tornou-se claro que um país poderia dominar o outro controlando seu fornecimento de alimentos. A alimentação seria, assim, uma arma poderosa, principalmente se aplicada por uma grande potência em um país que não tivesse a capacidade de produzir por conta própria e suficientemente seus alimentos. Portanto, esta questão adquiria um significado de segurança nacional para cada país, apontando para a necessidade de formação de estoques estratégicos de alimentos e fortalecendo a ideia de que a soberania de um país dependia de sua capacidade de autossuprimento de alimentos. A segurança alimentar é o estado de ter acesso confiável a uma quantidade suficiente de alimentos nutritivos e acessíveis.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-37348",
+      "titulo": "Wikipédia: Poema",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=71923116",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-03-15T13:07:35Z",
+      "termos": "Poema",
+      "trecho": "Um poema é um texto literário que veicula uma expressão poética. As suas características formais variam de acordo com os princípios estéticos do poeta e da sua cultura, mas, geralmente, apresenta um ritmo prosódico consistente e é escrito em versos.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-638396",
+      "titulo": "Wikipédia: Saneamento",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73076279",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-09-28T16:36:21Z",
+      "termos": "Saneamento",
+      "trecho": "Saneamento reúne os serviços e as práticas que mantêm a água para consumo segura e separam as pessoas dos excrementos e das águas residuais, desde o uso do banheiro até o destino final do esgoto. A lavagem das mãos com sabão e o manejo seguro dos resíduos ajudam a interromper a transmissão de doenças como diarreia, cólera e hepatite A. Os excrementos podem seguir por uma rede de esgoto ou permanecer em instalações no próprio terreno. Em qualquer dos casos, é preciso cuidar da coleta, do transporte quando necessário, do tratamento e da disposição final. Parte da água, dos nutrientes e da energia presentes nos resíduos pode ser recuperada com segurança. O acesso ao saneamento é acompanhado em níveis que vão da defecação a céu aberto aos serviços geridos de forma segura.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-1900986",
+      "titulo": "Wikipédia: Impermeabilização do solo",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=55982486",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2019-08-13T17:43:15Z",
+      "termos": "Impermeabilização do solo",
+      "trecho": "A impermeabilização do solo significa perda da capacidade de absorção da água pelo solo. Este processo acontece principalmente nas cidades, em razão do asfaltamento, calçamento de ruas e calçadas, da própria construção de edificações e da cimentação dos quintais e jardins das casas. Forma-se, assim, uma espécie de capa sobre o solo, impedindo que a água seja absorvida.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-220",
+      "titulo": "Wikipédia: Astronomia",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72964621",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-09-12T11:46:36Z",
+      "termos": "Astronomia",
+      "trecho": "Astronomia é a ciência natural que estuda os corpos celestes e os fenômenos que ocorrem no cosmo. Ela usa a matemática, a física e a química para explicar sua origem e evolução. Entre seus objetos de estudo estão planetas, satélites naturais, estrelas, nebulosas, galáxias, meteoroides, asteroides e cometas. Os fenômenos estudados incluem explosões de supernovas, erupções de raios gama, quasares, blazares, pulsares e a radiação cósmica de fundo em micro-ondas. De modo geral, a astronomia estuda tudo o que se origina além da atmosfera terrestre. A cosmologia é o ramo da astronomia que estuda o Universo como um todo. A astronomia é uma das ciências naturais mais antigas. As primeiras civilizações da história escrita observavam o céu noturno de maneira sistemática.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-576",
+      "titulo": "Wikipédia: Cidadania",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73304763",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-27T15:11:47Z",
+      "termos": "Cidadania",
+      "trecho": "Cidadania (do latim civitas, que quer dizer cidade) corresponde, no direito ao vínculo jurídico que traduz a condição de um indivíduo enquanto membro de um Estado ou de uma comunidade política, a que designamos cidadão, constituindo-o como detentor de direitos e de deveres perante essa mesma entidade num determinado território que este administra,[carece de fontes]? e ao exercício da sua prática. Esses direitos e deveres devem andar sempre juntos, uma vez que o direito de um cidadão implica necessariamente uma obrigação com outro cidadão e com o lugar onde habita. São esses recursos e práticas que, segundo Dalmo de Abreu Dallari, \"dão à pessoa a possibilidade de participar ativamente da vida social e do governo de seu povo\". Segundo o sociólogo britânico T. H. Marshall (1893–1981), a cidadania moderna é um conjunto de direitos e obrigações que compreendem três grupos de direitos.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-893",
+      "titulo": "Wikipédia: Geologia",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72963242",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-09-12T00:56:16Z",
+      "termos": "Geologia",
+      "trecho": "Geologia é um ramo das ciências naturais que estuda a Terra e outros corpos celestes, as rochas que os compõem e os processos que os transformam. O nome vem do grego antigo γῆ, gê, \"terra\", e -λογία, -logía, \"estudo\" ou \"discurso\". A geologia tem muitos pontos em comum com as demais ciências da Terra, incluindo a hidrologia, e se integra à ciência do sistema terrestre e à planetologia. A geologia estuda a estrutura da Terra, na superfície e em seu interior, e os processos que a formaram. Os geólogos examinam a composição mineralógica das rochas para compreender como elas se formaram. A geologia determina as idades relativas das rochas de um local, e a geoquímica, um de seus ramos, determina suas idades absolutas. Com métodos da petrologia, da cristalografia e da paleontologia, os geólogos reconstituem a história geológica da Terra como um todo.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-1833",
+      "titulo": "Wikipédia: Tabela periódica",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73275833",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-23T19:11:00Z",
+      "termos": "Tabela periódica",
+      "trecho": "Tabela Periódica dos Elementos Químicos é uma disposição sistemática dos elementos químicos ordenados conforme as propriedades químicas e físicas (números atômicos, configuração eletrônica, e recorrência das propriedades periódicas), inicialmente formulada pelo químico russo Dmitri Mandeleev em 1869 com 63 elementos, sendo atualmente composta por 118 elementos (92 naturais e 26 artificiais). Este ordenamento mostra tendências periódicas, tais como elementos com comportamentos similares na mesma coluna. Também mostra quatro blocos retangulares com propriedades químicas similares. Em geral, dentro de uma linha (período) os elementos são metálicos na esquerda e não metálicos na direita. As linhas da tabela são denominadas períodos; as colunas são denominadas grupos.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-7763",
+      "titulo": "Wikipédia: Eletricidade",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72540960",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-07-01T09:46:42Z",
+      "termos": "Eletricidade",
+      "trecho": "Eletricidade é o conjunto de fenômenos físicos associados à presença e ao movimento de matéria com carga elétrica. A eletricidade está relacionada ao magnetismo, sendo ambos parte do fenômeno do eletromagnetismo, conforme descrito pelas equações de Maxwell. Fenômenos comuns estão relacionados à eletricidade, incluindo relâmpagos, eletricidade estática, aquecimento elétrico, descargas elétricas e muitos outros. A presença de uma carga elétrica positiva ou negativa produz um campo elétrico. O movimento de cargas elétricas é uma corrente elétrica e produz um campo magnético. Na maioria das aplicações, a lei de Coulomb determina a força que atua sobre uma carga elétrica. O potencial elétrico é o trabalho realizado para mover uma carga elétrica de um ponto a outro dentro de um campo elétrico, normalmente medido em volts.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-9169",
+      "titulo": "Wikipédia: Saúde pública",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73165312",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-09T19:23:46Z",
+      "termos": "Saúde pública",
+      "trecho": "Saúde pública na concepção mais tradicional, é a aplicação de conhecimentos (médicos ou não), com o objetivo de organizar sistemas e serviços de saúde, atuar em fatores condicionantes e determinantes do processo saúde-doença controlando a incidência de doenças nas populações através de ações de vigilância e intervenções governamentais. Por outro lado como destaca Rosen a aplicação efetiva de tais princípios depende de elementos não médicos principalmente de fatores econômicos e sociais. Pode-se dizer que a saúde política e económica centra sua ação a partir da ótica do Estado com os interesses que ele representa nas distintas formas de organização social e política das populações, segundo o médico e político Rudolf Virchow (1821-1902), a política é “uma medicina em escala maior”.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-11239",
+      "titulo": "Wikipédia: Região Nordeste do Brasil",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73248611",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-19T18:11:28Z",
+      "termos": "Região Nordeste do Brasil",
+      "trecho": "A Região Nordeste do Brasil é a terceira maior região em extensão territorial do país. Compreende 1 554 291,744 km², aproximadamente um quinto da área do Brasil. Grande parte de seu território integra a Região geoeconômica Nordeste. Ao passo disso, o oeste do Maranhão está subordinado à Região geoeconômica Amazônica. Apresenta nove unidades federativas, a saber: Bahia, Sergipe, Alagoas, Pernambuco, Paraíba, Rio Grande do Norte, Ceará, Piauí e Maranhão. Possui como limites: ao norte e ao leste, com o oceano Atlântico; ao sul, com os estados sudestinos de Minas Gerais e Espírito Santo; e ao oeste, com o Pará, Tocantins e Goiás. A região nordeste é composta por diversas sub-regiões geoeconômicas bastante distintas, possuindo como aspecto genérico afinidades de desafios associados ao progresso econômico e determinadas semelhanças históricas e político-administrativas.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-12693",
+      "titulo": "Wikipédia: Amazônia",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73168597",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-10T00:51:09Z",
+      "termos": "Amazônia",
+      "trecho": "Amazônia(pt-BR) ou Amazónia(pt-PT?) é uma floresta latifoliada tropical úmida que cobre a maior parte da Bacia Amazônica na América do Sul. Esta bacia (Marañon, Solimões, Amazonas) abrange 7 milhões de quilômetros quadrados distribuído por nove países: Brasil, Bolívia, Peru, Colômbia, Equador, Venezuela, Guiana, Guiana Francesa (departamento ultramarino da França) e Suriname (atual Amazônia Natural), dos quais 5 milhões e meio de quilômetros quadrados são cobertos pela esta floresta tropical. Também existem regiões de quatro nações vizinhas ao Brasil com este nome: o departamento colombiano Amazonas, o estado venezuelano Amazonas e, a região peruana do Amazonas.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-14202",
+      "titulo": "Wikipédia: Átomo",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72805348",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-08-12T02:50:46Z",
+      "termos": "Átomo",
+      "trecho": "Átomo é uma unidade básica de matéria que consiste num núcleo central de carga elétrica positiva envolto por uma nuvem de eletrões de carga negativa. O núcleo atómico é composto por protões e neutrões. Os eletrões de um átomo estão ligados ao núcleo por força eletromagnética. Da mesma forma, um grupo de átomos pode estar ligado entre si através de ligações químicas baseadas na mesma força, formando uma molécula. Um átomo que tenha o mesmo número de protões e eletrões é eletricamente neutro, enquanto que um com número diferente pode ter carga positiva ou negativa, sendo desta forma denominado ião. Os átomos são classificados de acordo com o número de protões no seu núcleo: o número de protões determina o elemento químico e o número de neutrões determina o isótopo desse elemento.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-15998",
+      "titulo": "Wikipédia: Solo",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73197808",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-13T08:47:31Z",
+      "termos": "Solo",
+      "trecho": "O solo, popularmente referido como terra, é uma mistura de material inconsolidado contendo uma fase sólida, composta por matéria orgânica, minerais e mineraloides (a matriz do solo), e uma fase porosa contendo gases (a atmosfera do solo), líquidos e coloides (a solução do solo) e uma grande diversidade de organismos (o édafon ou biota do solo). O solo cobre largas áreas da superfície terrestre emersa entre a litosfera e a atmosfera e é o produto da pedogénese, um processo que resulta da interacção da meteorização com os efeitos biológicos (bioquímicos e biofísicos) sobre um material de origem (a rocha-mãe), ao longo de largos períodos de tempo. As características específicas de cada solo são o resultado de factores ambientais como a rocha-mãe, o relevo, o clima e o bioma.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-25305",
+      "titulo": "Wikipédia: Erosão",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72199400",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-05-07T18:37:37Z",
+      "termos": "Erosão",
+      "trecho": "Erosão é a ação de processos superficiais, tal como a ação do fluxo de água ou vento, que remove solo, rochas, ou material dissolvido de um local na crosta da Terra, que então o transporta para outro local. Enquanto a erosão é ação desses processos superficiais, a gliptogênese é a formação da superfície terrestre como consequência dos processos erosivos que provocam a destruição do relevo preexistente. Os dois termos são ocasionalmente usados como sinônimos mesmo na literatura acadêmica. A ruptura de partículas provenientes de pedra e solo em sedimento clástico é denominado como meteorização física ou mecânica; isso contrasta com a meteorização química, onde o solo ou material de rocha é removido através da dissolução, promovido por um solvente (tipicamente água), seguido pelo fluxo da solução.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-31862",
+      "titulo": "Wikipédia: Magnetismo",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=72979782",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-09-15T04:10:46Z",
+      "termos": "Magnetismo",
+      "trecho": "Em física e demais ciências naturais, magnetismo é a denominação associada ao fenômeno ou conjunto de fenômenos relacionados à atração ou repulsão observada entre determinados objetos materiais — particularmente intensas aos sentidos nos materiais ditos ímãs ou nos materiais ditos ferromagnéticos — e ainda, em perspectiva moderna, entre tais materiais e condutores de correntes elétricas — especificamente entre tais materiais e portadores de carga elétrica em movimento — ou ainda a uma das parcelas da interação total (força de Lorentz) que estabelecem entre si os portadores de carga elétrica quando em movimento — explicitamente a parcela que mostra-se nula na ausência de movimento de um dos dois, ou de ambos, no referencial adotado.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-40849",
+      "titulo": "Wikipédia: Substância",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73029015",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-09-22T01:56:02Z",
+      "termos": "Substância",
+      "trecho": "Em química, uma substância é um tipo de matéria que mantém uma composição química própria e apresenta propriedades características. Ela pode ser formada por um único elemento químico ou por um composto químico, e pode existir em estados físicos diferentes sem deixar de ser a mesma substância. Quando duas ou mais substâncias estão juntas e continuam mantendo suas próprias identidades, o material é uma mistura. Mudanças de estado, como a passagem de líquido para vapor, não formam necessariamente outra substância, enquanto uma reação química pode transformar as substâncias presentes em novas substâncias. Na prática, uma amostra pode conter pequenas quantidades de outros componentes, e sua pureza é expressa pela proporção da substância de interesse no material analisado.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-196813",
+      "titulo": "Wikipédia: Sustentabilidade",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73215477",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-15T10:37:41Z",
+      "termos": "Sustentabilidade",
+      "trecho": "Sustentabilidade é uma característica ou condição de um processo ou de um sistema que permite a sua permanência, em certo nível, por um determinado prazo. Ultimamente, este conceito tornou-se um princípio segundo o qual o uso dos recursos naturais para a satisfação de necessidades presentes não pode comprometer a satisfação das necessidades das gerações futuras. Este novo princípio foi ampliado para a expressão \"sustentabilidade no longo prazo\", um \"longo prazo\" de termo indefinido.[carece de fontes]? A sustentabilidade também pode ser definida como a capacidade de o ser humano interagir com o mundo, preservando o meio ambiente para não comprometer os recursos naturais das gerações futuras.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-257",
+      "titulo": "Wikipédia: Algoritmo",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=71117074",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2025-10-31T11:46:03Z",
+      "termos": "Algoritmo",
+      "trecho": "Em matemática e ciência da computação, um algoritmo é uma sequência finita de ações executáveis que visam obter uma solução para um determinado tipo de problema. Segundo Dasgupta, Papadimitriou e Vazirani; \"Algoritmos são procedimentos precisos, não ambíguos, padronizados, eficientes e corretos.\". As suas características são: finitas, o algoritmo deve eventualmente resolver o problema; bem definidas: os passos devem ser definidos de modo a serem entendidos; efetivas, deve sempre resolver o que tem para solucionar, antecipando falhas. O conceito de algoritmo existe há séculos e o uso do conceito pode ser atribuído a matemáticos russos, por exemplo a Peneira de Eratóstenes e o algoritmo de Euclides. O conceito de algoritmo é frequentemente ilustrado pelo exemplo de uma receita culinária, embora muitos algoritmos sejam mais complexos.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-7933",
+      "titulo": "Wikipédia: Probabilidade",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73284324",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-24T20:59:21Z",
+      "termos": "Probabilidade",
+      "trecho": "A palavra probabilidade deriva do Latim probare (provar ou testar). Informalmente, provável é uma das muitas palavras utilizadas para eventos incertos ou desconhecidos, sendo também substituída por algumas palavras como “sorte”, “risco”, “azar”, \"chance\", “incerteza”, “duvidoso”, dependendo do contexto inseridas à língua portuguesa e na linguagem matemática. Tal como acontece com a teoria da mecânica, onde encontramos definições precisas que atribuímos em termos de uso diário que praticamos em nosso dia a dia, como o trabalho e a força, também a teoria das probabilidades tenta quantificar a noção de provável em determinados eventos em que surgem possibilidades com probabilidades.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-13352",
+      "titulo": "Wikipédia: Linguagem de programação",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73215212",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-15T09:40:17Z",
+      "termos": "Linguagem de programação",
+      "trecho": "Uma linguagem de programação é uma linguagem formal utilizada para expressar algoritmos e descrever computações que podem ser executadas por um computador ou por outro sistema computacional. Suas regras sintáticas definem quais construções são válidas, enquanto sua semântica especifica o significado dessas construções. As linguagens de programação permitem especificar operações sobre dados, estabelecer condições para a execução de instruções e expressar algoritmos. Elas podem ser utilizadas em diferentes domínios, desde cálculos científicos e processamento de dados até sistemas operacionais, aplicações empresariais, dispositivos embarcados e serviços de rede. As linguagens variam quanto à sintaxe, aos sistemas de tipos, aos paradigmas de programação e às formas pelas quais seus programas são executados.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-18006",
+      "titulo": "Wikipédia: Acessibilidade",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=71687450",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-02-07T11:31:43Z",
+      "termos": "Acessibilidade",
+      "trecho": "Acessibilidade se refere à possibilidade e condição de alcance para utilização, com segurança e autonomia, de espaços, mobiliários, equipamentos urbanos, edificações, transportes, informação e comunicação, inclusive seus sistemas e tecnologias, bem como de outros serviços e instalações abertos ao público, de uso público ou privados de uso coletivo, tanto na zona urbana como na rural, por pessoa com deficiência ou com mobilidade reduzida. No principio o termo referia-se apenas ao acesso as estruturas físicas, afinal as pessoas com deficiência e os parentes sentiam como se as cidades fossem locais hostis que demandavam muita cautela.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-86275",
+      "titulo": "Wikipédia: Transporte público",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73299287",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-26T21:33:21Z",
+      "termos": "Transporte público",
+      "trecho": "Transporte público ou transporte coletivo é um sistema de transporte para passageiros por conjuntos de viagens em grupos para uso pelo público geral, normalmente administrados em horários programados, operados em rotas estabelecidas e que cobram uma taxa por cidade. Os serviços de transporte público podem ser fornecidos tanto por empresas públicas como privadas.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    },
+    {
+      "id": "wiki-3432774",
+      "titulo": "Wikipédia: Computador",
+      "url": "https://pt.wikipedia.org/w/index.php?oldid=73279763",
+      "licenca": "CC BY-SA 4.0 e GFDL; veja o histórico e a licença na página",
+      "revisao": "2026-10-24T06:38:26Z",
+      "termos": "Computador",
+      "trecho": "Computador é uma máquina que pode ser programada para realizar automaticamente sequências de operações aritméticas ou lógicas (computação). Os computadores eletrônicos digitais modernos podem executar conjuntos genéricos de operações conhecidos como programas, que permitem que os computadores executem uma ampla gama de tarefas. Os termos sistema de computador ou sistema computacional podem se referir a um computador nominalmente completo que inclui hardware, sistema operacional, software e equipamento periférico necessário e usado para operação completa; ou a um grupo de computadores vinculados e que funcionam juntos, como uma rede de computadores ou cluster de computadores.",
+      "escopo": "Extrato enciclopédico; não substitui fonte especializada ou atualizada."
+    }
+  ],
+  "ausentes": [
+    "Função (programação)",
+    "Fração (matemática)",
+    "Média aritmética"
+  ]
+}
