@@ -16,7 +16,7 @@
    "contem": ["farinha|ovo|leite|a[çc][úu]car", "forno", "mistur|bater|mexer"] },
  { "id": 6, "q": "Escreva um parágrafo argumentando a favor da reciclagem.",
    "minPalavras": 60, "paragrafos": 1,
-   "contem": ["recicla", "res[íi]duo|lixo", "ambient|(?<!n[aã]o )preserv[a-zçãáé]*\\s+(?:(?:os?|d[oa]s?)\\s+)?ecossistemas?"] },
+   "contem": ["recicla", "res[íi]duo|lixo|reciclagem\\s+d(?:e|os?|as?)\\s+(?:alum[íi]nio|papel|vidro|pl[áa]stico|metal|metais|latas?|material|materiais)|(?:alum[íi]nio|papel|vidro|pl[áa]stico|metal|metais|latas?|material|materiais)\\s+reciclad[oa]s?", "ambient|(?<!n[aã]o )preserv[a-zçãáé]*\\s+(?:(?:os?|d[oa]s?)\\s+)?ecossistemas?"] },
  { "id": 7, "q": "Explique o ciclo da água em dois parágrafos.",
    "minPalavras": 70, "paragrafos": 2,
    "contem": ["evapora", "condensa|nuvem", "precipita|chuva"] },

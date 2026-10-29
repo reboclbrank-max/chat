@@ -14,15 +14,20 @@ assert.deepStrictEqual(novo.map((x) => x.id), antigo.map((x) => x.id));
 for (const item of novo.filter((x) => ![6, 11, 16, 22].includes(x.id))) {
   assert.deepStrictEqual(item, porId(antigo, item.id), 'item não auditado mudou: ' + item.id);
 }
-for (const [id, indice] of [[6, 2], [11, 0], [16, 0], [22, 0]]) {
+for (const [id, indices] of [[6, [1, 2]], [11, [0]], [16, [0]], [22, [0]]]) {
   const antes = porId(antigo, id), depois = porId(novo, id);
   assert.deepStrictEqual({ ...depois, contem: antes.contem }, antes, 'mudança fora de contem #' + id);
   assert.strictEqual(depois.contem.length, antes.contem.length);
   depois.contem.forEach((padrao, i) => {
-    if (i === indice) assert(padrao.startsWith(antes.contem[i] + '|'), 'alternativa histórica preservada #' + id);
+    if (indices.includes(i)) assert(padrao.startsWith(antes.contem[i] + '|'), 'alternativa histórica preservada #' + id);
     else assert.strictEqual(padrao, antes.contem[i], 'outro fato alterado #' + id);
   });
 }
+const materialReciclado = 'A reciclagem de alumínio reduz impactos ambientais.';
+assert.strictEqual(apenasTermos(antigo, 6, materialReciclado), false);
+assert.strictEqual(apenasTermos(novo, 6, materialReciclado), true, 'reciclagem de material é reaproveitamento de descartados');
+assert.strictEqual(apenasTermos(novo, 6, 'O papel reciclado reduz danos ambientais.'), true);
+assert.strictEqual(apenasTermos(novo, 6, 'A reciclagem ajuda o meio ambiente e o alumínio é caro.'), false, 'material solto não prova reciclagem desse material');
 const preservacao = 'Reciclar o lixo ajuda a sociedade preservando ecossistemas.';
 assert.strictEqual(apenasTermos(antigo, 6, preservacao), false);
 assert.strictEqual(apenasTermos(novo, 6, preservacao), true, 'proteger ecossistemas é um benefício ambiental');

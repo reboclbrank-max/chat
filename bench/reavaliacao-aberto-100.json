@@ -1,7 +1,7 @@
 {
   "aviso": "Reavaliação do MESMO texto; não é uma nova geração nem avalia verdade ou qualidade literária.",
   "gabaritoHistoricoSha256": "f00a1ed677974487bc70024ddb4e083e3fd11fe41e139c5a1270f7c6d68558e2",
-  "gabaritoCorrigidoSha256": "b0d31b84212b3151f0c9c2c875e98df13ba67c97502d743ffc9a674185f3481d",
+  "gabaritoCorrigidoSha256": "3c23382ded2b1ea498bbb11e195338eb141921318fa1a595c02c32f1f08a3223",
   "resultados": [
     {
       "arquivo": "resultado-aberto-99-a.json",
@@ -37,17 +37,11 @@
       },
       "pontuacaoCorrigida": {
         "total": 24,
-        "passaram": 23,
-        "falhas": [
-          {
-            "id": 6,
-            "falhas": [
-              "falta fato #2 (res[íi]duo)"
-            ]
-          }
-        ]
+        "passaram": 24,
+        "falhas": []
       },
       "itensComMudancaDeResultado": [
+        6,
         11
       ]
     },
@@ -99,14 +93,8 @@
       },
       "pontuacaoCorrigida": {
         "total": 24,
-        "passaram": 21,
+        "passaram": 22,
         "falhas": [
-          {
-            "id": 6,
-            "falhas": [
-              "falta fato #2 (res[íi]duo)"
-            ]
-          },
           {
             "id": 8,
             "falhas": [
@@ -124,6 +112,7 @@
         ]
       },
       "itensComMudancaDeResultado": [
+        6,
         22
       ]
     },

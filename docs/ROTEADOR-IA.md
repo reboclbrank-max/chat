@@ -207,8 +207,9 @@ Amostra pequena; não prova causalidade nem substitui a terceira repetição ant
 
 Retificação do gabarito: a primeira execução reprovou "espalhamento de Rayleigh" (#11); a
 segunda reprovou "painéis" (#22). O histórico permanece reprodutível no banco anterior. Com as
-**duas equivalências justificadas** no novo banco, e apenas reavaliando as mesmas respostas, as
-contagens passam a 23/24 e 21/24. Não se trata de uma nova geração.
+alternativas justificadas para #6, #11 e #22 no novo banco, e apenas reavaliando as mesmas
+respostas, as contagens passam a 24/24 e 22/24. Isso **não** atesta veracidade: a resposta A #8
+contém um número contradito pelo IBGE. Não se trata de uma nova geração.
 
 Retificação do estilo: a v1 não reconhecia muitos conectivos acentuados ou seguidos de pontuação
  e contava tipos em vez de ocorrências. Os antigos números 0,5→0,4 e as classificações de texto
