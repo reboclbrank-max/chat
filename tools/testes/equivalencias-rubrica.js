@@ -61,4 +61,29 @@ ok('exemplo negativo de cada equivalência é de fato rejeitado', () => {
   }
 });
 
+ok('ETA é aceita como Estação de Tratamento de Água, e só no contexto de água', () => {
+  assert(satisfaz('A água captada segue para a ETA, onde é filtrada.', 'tratamento|esta[çc][ãa]o'));
+  assert(!satisfaz('O aplicativo mostra a ETA até a entrega do pedido.', 'tratamento|esta[çc][ãa]o'), 'ETA de entrega não é tratamento');
+});
+
+ok('manancial, córrego, aquífero e poço contam como origem da água', () => {
+  assert(satisfaz('A água da chuva alimenta aquíferos e córregos que servem de manancial.', 'rio|represa|reservat[óo]rio|a[çc]ude'));
+  assert(!satisfaz('A água da chuva escorre pela calçada até o bueiro.', 'rio|represa|reservat[óo]rio|a[çc]ude'), 'sem origem nomeada não pode passar');
+});
+
+ok('patógeno/microrganismo valem como agente da vacina, e só no contexto de vacina', () => {
+  assert(satisfaz('A vacina apresenta o patógeno enfraquecido e treina a memória imunológica.', 'ant[íi]geno|v[íi]rus|bact[ée]ri'));
+  assert(!satisfaz('O iogurte é feito com microrganismos que fermentam o leite.', 'ant[íi]geno|v[íi]rus|bact[ée]ri'), 'microrganismo fora de vacina não vale');
+});
+
+ok('a linguagem simples do pedido conta como "entrada/parâmetro"', () => {
+  assert(satisfaz('A função pode receber informações, como um nome, e usá-las na saudação.', 'par[âa]metro|entrada|argumento'));
+  assert(!satisfaz('A empresa recebe informações do cliente por telefone.', 'par[âa]metro|entrada|argumento'), 'receber informação fora de função não vale');
+});
+
+ok('autoestima/solidão contam como efeito psicológico das redes sociais', () => {
+  assert(satisfaz('O uso constante das redes sociais afeta a autoestima dos adolescentes.', 'isolamento|ansiedade|sa[úu]de mental|compara'));
+  assert(!satisfaz('A autoestima do time subiu depois da vitória.', 'isolamento|ansiedade|sa[úu]de mental|compara'), 'autoestima fora de redes sociais não vale');
+});
+
 console.log('\n' + n + ' contratos de equivalência da rubrica passaram');

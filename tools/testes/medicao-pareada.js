@@ -29,7 +29,10 @@ assert.equal(sha('bench/banco-aberto-antes-100.json'),'f00a1ed677974487bc70024dd
 assert.equal(sha('bench/controle-101-roteador.js'),'5ff3587204e2b1394bcbb7f64b4705cc605a83bdf59c4b159e419192f4f48e27');
 assert.equal(sha('bench/avaliar-aberto.js'),'84994993f185630095ffb3f5111f0ad49837a6f29565da75df55f1f767579f90');
 // As equivalências mudam a nota: o arquivo também fica preso ao hash para não mudar em silêncio.
-assert.equal(sha('bench/equivalencias-rubrica.js'),'ec65bd1c0dd7ab21b5f914d50b345105ec8c2e4d15bb053d2d23fef96a8f5ab3');
+// Rodada 106: cinco equivalências novas (ETA, manancial/córrego/aquífero, patógeno, entrada em
+// linguagem simples, autoestima/solidão), cada uma com fonte, negativo rejeitado e teste. Por
+// isso o hash muda — e é trocado a mão, de propósito, nunca em silêncio.
+assert.equal(sha('bench/equivalencias-rubrica.js'),'85521da73005c35e2e2eec83f1c5e3ae04bedb0727867a2ba52491cdd1fe9849');
 for(const it of novo) {
   assert.equal(avaliar('',it).ok,false,'vazio não pode passar');
   const t='Uma resposta sem os conceitos específicos. '.repeat(20)+'\n\n'+ 'Outra parte sem os conceitos específicos. '.repeat(20);
