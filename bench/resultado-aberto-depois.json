@@ -2,13 +2,13 @@
  "sum": {
   "modo": "depois",
   "total": 24,
-  "passaram": 20,
-  "pct": 83.3,
-  "medianaPalavras": 174,
+  "passaram": 18,
+  "pct": 75,
+  "medianaPalavras": 205,
   "cortados": 0,
-  "curtos": 0,
-  "faltouFato": 4,
-  "medianaMs": 30593
+  "curtos": 1,
+  "faltouFato": 5,
+  "medianaMs": 16067
  },
  "res": [
   {
@@ -16,129 +16,134 @@
    "q": "Explique em dois parágrafos o que é fotossíntese.",
    "ok": true,
    "falhas": [],
-   "palavras": 172,
+   "palavras": 201,
    "paragrafos": 2,
    "itens": 0,
    "erro": null,
-   "ms": 16047,
-   "texto": "A fotossíntese é o processo biológico pelo qual as plantas convertem energia luminosa em energia química, armazenando-a em moléculas de glicose. Durante a fotossíntese, a clorofila absorve a luz solar, que excita elétrons que migram por uma cadeia de transporte, gerando ATP e NADPH. Esses compostos alimentam a reação de fixação do dióxido de carbono, formando glicose e liberando oxigênio como subproduto. Um exemplo concreto de fotossíntese é a planta de tomate, que transforma luz solar em açúcar e oxigênio, sustentando seu crescimento e a produção de frutos.\n\nAlém disso, a fotossíntese depende da enzima rubisco, que catalisa a fixação de CO₂ em 3-fosfoglicerato, um passo crucial do ciclo de Calvin. Em condições ideais, cada molécula de glicose produzida requer a geração de 3 ATP e 2 NADPH, refletindo a eficiência energética do processo. Estudos mostram que em plantas como a alface, a taxa de fotossíntese pode chegar a 20 µmol CO₂ m⁻² s⁻¹ sob luz intensa. Assim, a fotossíntese não apenas sustenta a vida vegetal, mas também regula a atmosfera terrestre.",
-   "trecho": "A fotossíntese é o processo biológico pelo qual as plantas convertem energia luminosa em energia química, armazenando-a em moléculas de glicose. Durante a fotossíntese, a clorofila absorve a luz solar",
-   "fim": "ese não apenas sustenta a vida vegetal, mas também regula a atmosfera terrestre."
+   "ms": 13127,
+   "texto": "A fotossíntese é o processo biológico pelo qual plantas, algas e cianobactérias convertem energia luminosa em compostos orgânicos, utilizando dióxido de carbono e água. Por exemplo, a folha de uma planta de café realiza fotossíntese para produzir glicose, armazenando energia para seu crescimento. Esse processo ocorre nas cloroplastos, organelas que contêm clorofila, e pode ser resumido pela equação química 6CO₂ + 6H₂O + luz solar → C₆H₁₂O₆ + 6O₂. A fotossíntese é essencial para a vida na Terra, pois gera oxigênio e forma a base da cadeia alimentar.\n\nA fotossíntese também desempenha um papel crucial no regulação do clima global, pois remove grandes quantidades de dióxido de carbono da atmosfera. Estudos estimam que a fotossíntese em ecossistemas marinhos, especialmente pela ação de fitoplâncton como *Prochlorococcus*, é responsável por cerca de 20% do oxigênio produzido na Terra. Além diso, a fotossíntese depende de pigmentos acessórios, como a carotenina, que captam comprimentos de onda adicionais da luz solar e protegem as cloroplastos contra danos causados pela radiação excessiva. Esses mecanismos permitem que a fotossíntese continue eficiente mesmo em condições de baixa luminosidade ou ambientes extremos. Portanto, a fotossíntese não apenas sustenta a vida, mas também mantém o equilíbrio dos ciclos biogeoquímicos do planeta.",
+   "trecho": "A fotossíntese é o processo biológico pelo qual plantas, algas e cianobactérias convertem energia luminosa em compostos orgânicos, utilizando dióxido de carbono e água. Por exemplo, a folha de uma pla",
+   "fim": "nta a vida, mas também mantém o equilíbrio dos ciclos biogeoquímicos do planeta."
   },
   {
    "id": 2,
    "q": "Explique em dois parágrafos a diferença entre vírus e bactéria.",
    "ok": true,
    "falhas": [],
-   "palavras": 192,
+   "palavras": 174,
    "paragrafos": 2,
    "itens": 0,
    "erro": null,
-   "ms": 33082,
-   "texto": "Vírus e bactéria são agentes infecciosos que diferem fundamentalmente em estrutura e modo de replicação. Enquanto a bactéria é um microrganismo unicelular com material genético próprio e capacidade de se reproduzir de forma independente, o vírus é apenas material genético envolto por proteína, incapaz de replicar sem uma célula hospedeira. A diferença entre eles se evidencia em doenças como a gripe, causada por vírus influenza, e a tuberculose, causada pela bactéria Mycobacterium tuberculosis. Assim, compreender essa distinção é essencial para escolher tratamentos adequados, pois antibióticos agem apenas sobre bactérias, não sobre vírus.\n\nEnquanto o vírus da gripe contém 8 segmentos de RNA, a bactéria Escherichia coli possui um genoma circular de 4,6 milhões de pares de bases. Essa diferença determina que o vírus depende de células hospedeiras para replicar, enquanto a bactéria pode se multiplicar de forma autônoma. Além disso, a bactéria apresenta parede celular com peptidoglicano, estrutura que confere resistência a antibióticos como a penicilina, algo que os vírus não têm. O vírus, por outro lado, utiliza enzimas virais para transcrever seu RNA em proteínas essenciais. Assim, a diferença entre vírus e bactéria reflete em suas estratégias de sobrevivência e tratamento.",
-   "trecho": "Vírus e bactéria são agentes infecciosos que diferem fundamentalmente em estrutura e modo de replicação. Enquanto a bactéria é um microrganismo unicelular com material genético próprio e capacidade de",
-   "fim": "ntre vírus e bactéria reflete em suas estratégias de sobrevivência e tratamento."
+   "ms": 16067,
+   "texto": "A principal diferença entre vírus e bactéria reside em sua estrutura celular e capacidade de vida independente. Vírus são partículas acéticas que só se replicam dentro de células hospedeiras, como o HIV, causador da AIDS, enquanto bactéria são células unicelulares autônomas, como a Streptococcus pyogenes, que pode causar infecções respiratórias. A diferença entre vírus e bactéria também envolve o tratamento: antibióticos combatem bactérias, mas são ineficazes contra vírus.\n\nOutra diferença crucial entre vírus e bactéria diz respeito ao tamanho e à necessidade de equipamentos específicos para visualização. Vírus possuem diâmetro entre 20 e 300 nanômetros, como o vírus da gripe sazonal H1N1, identificado globalmente em 1918, enquanto bactéria como a Escherichia coli têm cerca de 2000 nanômetros, visíveis ao microscópio de luz. Além diso, a bactéria pode sobreviver em ambientes extremos, como o calor das fontes hidrotermais, graças a esporos resistentes, algo que o vírus não consegue. Por fim, a diferença entre vírus e bactéria também se reflete na resposta imunológica: o sistema imunado produz anticorpos específicos contra cada patógeno, mas com mecanismos distintos.",
+   "trecho": "A principal diferença entre vírus e bactéria reside em sua estrutura celular e capacidade de vida independente. Vírus são partículas acéticas que só se replicam dentro de células hospedeiras, como o H",
+   "fim": "roduz anticorpos específicos contra cada patógeno, mas com mecanismos distintos."
   },
   {
    "id": 3,
    "q": "Resuma em três parágrafos o que foi a Revolução Industrial.",
-   "ok": true,
-   "falhas": [],
-   "palavras": 244,
+   "ok": false,
+   "falhas": [
+    "falta fato #1 (s[ée]culo (XVIII)"
+   ],
+   "palavras": 283,
    "paragrafos": 3,
    "itens": 0,
    "erro": null,
-   "ms": 121582,
-   "texto": "A Revolução Industrial foi um período de profunda transformação tecnológica, econômica e social iniciado na Grã-Bretanha em meados do século XVIII, marcando a transição da produção artesanal e agrária para a manufatura mecanizada e a indústria de fábrica. Impulsionada pela invenção da máquina a vapor, pelo uso do carvão mineral e do ferro, e por inovações na indústria têxtil, ela permitiu a produção em massa, a redução de custos e o aumento exponencial da produtividade, alterando radicalmente a relação do ser humano com o trabalho e a natureza.\n\nEsse processo provocou uma reestruturação social sem precedentes, com o êxodo rural massivo e o surgimento de grandes centros urbanos industriais, onde a classe operária (proletariado) vivia em condições precárias de moradia, saúde e trabalho, enquanto a burguesia industrial acumulava capital e poder político. As longas jornadas, o trabalho infantil e a ausência de direitos trabalhistas geraram conflitos de classe que deram origem ao movimento sindical, ao socialismo e a novas legislações de proteção ao trabalhador ao longo do século XIX.\n\nEm uma segunda fase, a partir de meados do século XIX, a revolução se expandiu para outros países europeus, Estados Unidos e Japão, incorporando a eletricidade, o petróleo, o aço, a indústria química e os meios de transporte e comunicação (ferrovias, telégrafo, automóvel). Essa \"Segunda Revolução Industrial\" consolidou o capitalismo global, intensificou o imperialismo e a disputa por mercados e matérias-primas, lançando as bases da sociedade tecnológica, urbanizada e interconectada que caracteriza o mundo contemporâneo.",
-   "trecho": "A Revolução Industrial foi um período de profunda transformação tecnológica, econômica e social iniciado na Grã-Bretanha em meados do século XVIII, marcando a transição da produção artesanal e agrária",
-   "fim": " tecnológica, urbanizada e interconectada que caracteriza o mundo contemporâneo."
+   "ms": 15376,
+   "texto": "A Revolução Industrial foi um período de transformações econômicas e sociais que começou na Grã-Bretanha por volta de 1760, marcado pela substituição do trabalho artesanal pela produção em larga escala. Para resumir, esse processo introduziu máquinas mecânicas, como o motor a vapor de James Watt, e mudou a organização do trabalho nas fábricas. Essa revolução industrial ampliou a produção de bens, gerou novas classes sociais e acelerou o crescimento urbano, especialmente na Europa e nos Estados Unidos.\n\nPara resumir, a revolução industrial também transformou profundamente o transporte e a logística produtiva. A construção do trem de ferro Birmingham and Derby, em 1838, permitiu o deslocamento rápido de matérias-primas e produtos acabados, integrando as fábricas às redes comerciais nacionais e internacionais. Esse avanço técnico, baseado no uso de trilhos de ferro fundido e locomotivas a vapor, reduziu custos e prazos de entrega, ampliando a escala da produção industrial. Além disso, a padronização de peças por meio do sistema de tolerâncias machinistas, introduzido por Eli Whitney, facilitou a manutenção e a substituição de componentes, tornando as linhas de produção mais eficientes e menos dependentes de artesãos.\n\nPara resumir, a revolução industrial também ampliou a demanda por mão de obra barata, impulsionando a urbanização acelerada e a exploração de trabalhadores, especialmente crianças. Nesse contexto, a Lei de Regulação do Trabalho Infantil de 1833, sancionada pelo rei Guilherme IV da Grã-Bretanha, limitou a jornada dos menores a oito horas por dia nas fábricas, marcando um dos primeiros passos da legislação social industrial. Apesar das restrições, milhares de crianças continuaram a trabalhar em condições precárias, alimentando a produção de tecidos em fábricas mecanizadas. Essa dualidade entre inovação técnica e custos humanos revela o preço social da modernização industrial.",
+   "trecho": "A Revolução Industrial foi um período de transformações econômicas e sociais que começou na Grã-Bretanha por volta de 1760, marcado pela substituição do trabalho artesanal pela produção em larga escal",
+   "fim": "vação técnica e custos humanos revela o preço social da modernização industrial."
   },
   {
    "id": 4,
    "q": "Escreva um e-mail formal pedindo orçamento de 20 cadeiras para um escritório. Máximo 200 palavras.",
    "ok": true,
    "falhas": [],
-   "palavras": 59,
-   "paragrafos": 5,
+   "palavras": 107,
+   "paragrafos": 6,
    "itens": 0,
-   "nota": -1,
+   "nota": 3,
    "erro": null,
-   "ms": 46125,
-   "texto": "Assunto: Solicitação de Orçamento – Aquisição de Cadeiras para Escritório\n\nPrezada Equipe de Vendas,\n\nEspero que esta mensagem os encontre bem.\n\nGostaria de solicitar um orçamento formal para a aquisição de vinte cadeiras ergonômicas destinadas ao nosso escritório corporativo. Preferencialmente, buscamos modelos com ajuste de altura, apoio lombar e revestimento em tecido respirável na cor cinza ou preta.\n\nAtenciosamente.",
-   "trecho": "Assunto: Solicitação de Orçamento – Aquisição de Cadeiras para Escritório\n\nPrezada Equipe de Vendas,\n\nEspero que esta mensagem os encontre bem.\n\nGostaria de solicitar um orçamento formal para a aquisi",
-   "fim": "mbar e revestimento em tecido respirável na cor cinza ou preta.\n\nAtenciosamente."
+   "ms": 79728,
+   "texto": "Assunto: Solicitação de Orçamento – 20 Cadeiras para Escritório  \n\nPrezado(a) [Nome do Fornecedor],  \n\nGostaria de solicitar um orçamento para a aquisição de 20 cadeiras ergonômicas destinadas ao nosso escritório. As cadeiras devem possuir encosto ajustável, apoio lombar, assento com regulagem de altura e rodízios para piso carpetado. Caso possuam opções de cores neutras (preto, cinza ou azul marinho), favor incluir no orçamento.  \n\nPor favor, informe: preço unitário, condições de pagamento, prazo de entrega, garantia e possibilidade de desconto para volume. Caso necessitem de mais detalhes, estou à disposição para uma reunião ou chamada.  \n\nAgradeço a atenção e aguardo o retorno até o dia 15 de setembro.\n\nAtenciosamente.",
+   "trecho": "Assunto: Solicitação de Orçamento – 20 Cadeiras para Escritório  \n\nPrezado(a) [Nome do Fornecedor],  \n\nGostaria de solicitar um orçamento para a aquisição de 20 cadeiras ergonômicas destinadas ao noss",
+   "fim": "gradeço a atenção e aguardo o retorno até o dia 15 de setembro.\n\nAtenciosamente."
   },
   {
    "id": 5,
    "q": "Explique em três passos como fazer um bolo simples.",
-   "ok": true,
-   "falhas": [],
-   "palavras": 86,
+   "ok": false,
+   "falhas": [
+    "curto (45<60)"
+   ],
+   "palavras": 45,
    "paragrafos": 3,
    "itens": 3,
    "nota": 9,
    "erro": null,
-   "ms": 76936,
-   "texto": "1. Misture 2 xícaras de açúcar, 1 xícara de manteiga, 4 ovos e 1 colher de chá de essência de baunilha até obter um creme homogêneo.\n2. Acrescente 3 xícaras de farinha de trigo, 2 colheres de sopa de fermento em pó e 1/2 xícara de leite, mexendo até a massa ficar lisa e sem grumos.\n3. Despeje a massa em uma forma untada, leve ao forno pré-aquecido a 180°C por 35 a 40 minutos, ou até que o centro saia limpo ao inserir um palito.",
-   "trecho": "1. Misture 2 xícaras de açúcar, 1 xícara de manteiga, 4 ovos e 1 colher de chá de essência de baunilha até obter um creme homogêneo.\n2. Acrescente 3 xícaras de farinha de trigo, 2 colheres de sopa de ",
-   "fim": " 180°C por 35 a 40 minutos, ou até que o centro saia limpo ao inserir um palito."
+   "ms": 135834,
+   "texto": "1. Pré-aqueça o forno a 180 °C e unte uma forma com manteiga e farinha.\n2. Misture ovos, açúcar, óleo, leite, farinha e fermento até obter uma massa homogênea.\n3. Despeje a massa na forma e asse por cerca de 35 minutos ou até dourar.",
+   "trecho": "1. Pré-aqueça o forno a 180 °C e unte uma forma com manteiga e farinha.\n2. Misture ovos, açúcar, óleo, leite, farinha e fermento até obter uma massa homogênea.\n3. Despeje a massa na forma e asse por c",
+   "fim": "gênea.\n3. Despeje a massa na forma e asse por cerca de 35 minutos ou até dourar."
   },
   {
    "id": 6,
    "q": "Escreva um parágrafo argumentando a favor da reciclagem.",
-   "ok": true,
-   "falhas": [],
-   "palavras": 123,
+   "ok": false,
+   "falhas": [
+    "falta fato #3 (ambient)"
+   ],
+   "palavras": 67,
    "paragrafos": 1,
    "itens": 0,
-   "nota": 9,
    "erro": null,
-   "ms": 25325,
-   "texto": "A reciclagem é essencial para reduzir a pressão sobre os recursos naturais e mitigar os impactos climáticos, pois transforma resíduos em matéria‑prima sem a necessidade de extração virgem. No Brasil, a reciclagem de alumínio poupa cerca de 95 % da energia requerida para produzir o metal a partir da bauxita, o que equivale a uma economia de aproximadamente 14 milhões de megawatt‑hora por ano, segundo a Associação Brasileira do Alumínio. Além disso, cada tonelada de plástico reciclado evita a emissão de 2,5 toneladas de CO₂, contribuindo diretamente para as metas de redução de gases de efeito estufa do Acordo de Paris. Portanto, investir em coleta seletiva e em tecnologias de reaproveitamento gera benefícios ambientais mensuráveis, cria empregos verdes e fortalece a economia circular.",
-   "trecho": "A reciclagem é essencial para reduzir a pressão sobre os recursos naturais e mitigar os impactos climáticos, pois transforma resíduos em matéria‑prima sem a necessidade de extração virgem. No Brasil, ",
-   "fim": "os ambientais mensuráveis, cria empregos verdes e fortalece a economia circular."
+   "ms": 102380,
+   "texto": "A reciclagem é um pilar fundamental para a sustentabilidade, pois reduz drasticamente a extração de recursos naturais finitos, diminui o volume de lixo em aterros sanitários — evitando a contaminação do solo e lençóis freáticos — e consome significativamente menos energia na fabricação de novos produtos, o que, por sua vez, reduz a emissão de gases de efeito estufa e impulsiona a economia circular gerando empregos verdes.",
+   "trecho": "A reciclagem é um pilar fundamental para a sustentabilidade, pois reduz drasticamente a extração de recursos naturais finitos, diminui o volume de lixo em aterros sanitários — evitando a contaminação ",
+   "fim": "gases de efeito estufa e impulsiona a economia circular gerando empregos verdes."
   },
   {
    "id": 7,
    "q": "Explique o ciclo da água em dois parágrafos.",
    "ok": true,
    "falhas": [],
-   "palavras": 146,
+   "palavras": 152,
    "paragrafos": 2,
    "itens": 0,
    "erro": null,
-   "ms": 5986,
-   "texto": "O ciclo da água é o processo contínuo de movimentação da água entre a superfície terrestre e a atmosfera, envolvendo evaporação, condensação, precipitação e escoamento. Por exemplo, quando a água do mar evapora sob o calor do sol, forma nuvens que depois liberam chuva sobre a floresta. Esse ciclo garante a renovação dos recursos hídricos e a distribuição da água por toda a superfície do planeta.\n\nQuando a água se acumula nos corpos d'água, a evaporação transforma a superfície em vapor, que sobe e forma nuvens. Em regiões tropicais, a temperatura média de evaporação pode chegar a 30 °C, acelerando a formação de nuvens de chuva. Quando essas nuvens liberam 200 mm de precipitação em 24 h, a água retorna ao solo, alimentando rios como o Amazonas, que tem 7.062 km de extensão. Assim, o ciclo da água mantém o equilíbrio dos ecossistemas terrestres e marinhos.",
-   "trecho": "O ciclo da água é o processo contínuo de movimentação da água entre a superfície terrestre e a atmosfera, envolvendo evaporação, condensação, precipitação e escoamento. Por exemplo, quando a água do m",
-   "fim": "sim, o ciclo da água mantém o equilíbrio dos ecossistemas terrestres e marinhos."
+   "ms": 14295,
+   "texto": "O ciclo da água é um processo contínuo que move a água entre a superfície terrestre e a atmosfera. Por exemplo, quando a água do mar evapora, forma nuvens e retorna como chuva. Esse ciclo envolve etapas como evaporação, condensação e precipitação. A água representa cerca de 71% da superfície terrestre, segundo dados da NASA. O ciclo garante a distribuição de água doce em diferentes regiões do planeta.\n\nA transpiração vegetal contribui significativamente para o ciclo, especialmente em ecossistemas como a Floresta Amazônica, onde árvores liberam centenas de milhões de toneladas de vapor d'água diariamente. Estudos da Universidade de Stanford, publicados em 2018, revelaram que até 36% da precipitação na América do Sul depende desse processo biológico. Além disso, o ciclo também inclui a infiltração dos solos, alimentando lençóis freáticos e garantindo o reabastecimento de rios durante secas prolongadas. Esse equilíbrio natural é essencial para sustentar a vida em todos os continentes.",
+   "trecho": "O ciclo da água é um processo contínuo que move a água entre a superfície terrestre e a atmosfera. Por exemplo, quando a água do mar evapora, forma nuvens e retorna como chuva. Esse ciclo envolve etap",
+   "fim": "se equilíbrio natural é essencial para sustentar a vida em todos os continentes."
   },
   {
    "id": 8,
    "q": "Explique o que é inflação em dois parágrafos.",
    "ok": true,
    "falhas": [],
-   "palavras": 179,
+   "palavras": 230,
    "paragrafos": 2,
    "itens": 0,
    "erro": null,
-   "ms": 34297,
-   "texto": "Inflação é o aumento generalizado e contínuo dos preços de bens e serviços em uma economia ao longo do tempo, reduzindo o poder aquisitivo da moeda local. Por exemplo, se uma cesta básica que custava R$ 100,00 há dez anos passa a custar R$ 180,00 hoje, ocorreu uma inflação de 80% nesse período. Esse fenômeno afeta diretamente o orçamento das famílias, especialmente os consumidores de baixa renda, que precisam reajustar suas despesas. A inflação também pode ser medida por índices como o IPCA, que reflete a variação de preços em categorias específicas da economia.\n\nA inflação também se relaciona diretamente com a política monetária adotada pelos bancos centrais. No Brasil, o Banco Central utiliza a taxa Selic como ferramenta principal para conter a inflação, ajustando-a conforme a meta estabelecida pelo Conselho Monetário. Por exemplo, em 2022, a taxa Selic chegou a 13,75% ao ano, um nível elevado, justamente para conter pressões inflacionárias causadas pela crise energética e pela alta de preços internacionais. Assim, o controle da inflação depende de decisões estratégicas que equilibram crescimento econômico e estabilidade de preços.",
-   "trecho": "Inflação é o aumento generalizado e contínuo dos preços de bens e serviços em uma economia ao longo do tempo, reduzindo o poder aquisitivo da moeda local. Por exemplo, se uma cesta básica que custava ",
-   "fim": "sões estratégicas que equilibram crescimento econômico e estabilidade de preços."
+   "ms": 13378,
+   "texto": "Inflação é o aumento generalizado e contínuo dos preços de bens e serviços em uma economia ao longo do tempo, reduzindo o poder aquisitivo da moeda local. Por exemplo, entre 2021 e 2023, o Brasil enfrentou uma inflação acumulada de mais de 20%, segundo dados do Instituto Nacional de Estatística e Geografia (IBGE), o que feez o preço de produtos como o litro de combustível subir de R$ 4,90 para R$ 6,80. Esse fenômeno ocorre quando a oferta de moeda cresce mais rapidamente do que a produção de bens, desencadeando pressões inflacionárias. A inflação é medida pelo Índice Nacional de Preços ao Consumidor Amplo (IPCA), que reflete a variação dos preços em uma cesta de produtos essenciais.\n\nA inflação também pode ser agravada por choques externos, como a crise energética de 2022, que elevou os preços de matérias-primas e encareceu a produção industrial em todo o mundo. Nesse contexto, o Banco Central do Brasil adota a meta de inflação, fixada em 3% ao ano, com uma margem de tolerância de mais ou menos 1,5 ponto percentual, conforme estabelecido pelo Copom (Comitê de Política Monetária). Para conter a inflação, o órgão utiliza ferramentas como o aumento da taxa Selic, que atinge 13,75% ao ano em 2023, desincentivando o consumo e ajudando a estabilizar os preços. Assim, o controle da inflação depende tanto de políticas monetárias quanto de fatores estruturais da economia.",
+   "trecho": "Inflação é o aumento generalizado e contínuo dos preços de bens e serviços em uma economia ao longo do tempo, reduzindo o poder aquisitivo da moeda local. Por exemplo, entre 2021 e 2023, o Brasil enfr",
+   "fim": "depende tanto de políticas monetárias quanto de fatores estruturais da economia."
   },
   {
    "id": 9,
    "q": "Explique a diferença entre juros simples e juros compostos em dois parágrafos.",
    "ok": true,
    "falhas": [],
-   "palavras": 185,
+   "palavras": 235,
    "paragrafos": 2,
    "itens": 0,
    "erro": null,
-   "ms": 4959,
-   "texto": "A diferença entre juros simples e compostos está na forma como o rendimento é calculado sobre o capital inicial. Os juros simples são aplicados apenas sobre o valor original emprestado ou investido, sem considerar os acúmeros anteriores. Por exemplo, ao aplicar R$ 1.000,00 com juros simples de 5% ao mês, o lucro será sempre R$ 50,00 a cada período. Já os juros compostos incidem sobre o saldo total, incluindo os juros acumulados, fazendo o montante creser exponencialmente ao longo do tempo.\n\nAlém da forma de cálculo, a diferença entre juros simples e compostos também se reflete na forma como o capital cresce ao longo do tempo, especialmente em contratos de longo prazo. No caso de juros compostos, cada período acumula não apenas o valor principal, mas também os juros já gerados, o que pode ser observado no Processo nº 12345-6/2023, onde o valor final ultrapassou em 35% o montante previsto com juros simples. Essa característica torna os juros compostos mais sensíveis a variações de taxa e a reinvestimento, exigindo maior atenção na gestão de risco. Portanto, compreender essa diferença é essencial para decisões financeiras estratégicas.",
-   "trecho": "A diferença entre juros simples e compostos está na forma como o rendimento é calculado sobre o capital inicial. Os juros simples são aplicados apenas sobre o valor original emprestado ou investido, s",
-   "fim": ", compreender essa diferença é essencial para decisões financeiras estratégicas."
+   "ms": 17767,
+   "texto": "Juros simples são calculados apenas sobre o valor inicial do empréstimo, sem considerar os acúmerulos anteriores. A diferença entre juros simples e compostos fica evidente ao comparar duas aplicações de R$ 1.000 ao ano. Com juros simples de 10% ao ano, o rendimento será de R$ 100 por ano, totalizando R$ 1.300 ao final de três anos. Já com juros compostos, o segundo ano rende sobre R$ 1.100, resultando em R$ 1.331. Essa distinção mostra como os juros compostos geram renda sobre renda, amplamente utilizado em aplicações financeiras desde 1602, quando a Bolsa de Amsterdã introduziu esse sistema.\n\nA principal diferença entre juros simples e compostos também se manifesta na sensibilidade a variações de prazo e taxa. Em um empréstio de R$ 50.000 com parcelamento de 24 meses, a simulação do Banco Central (BACEN) demonstra que juros simples de 1,5% ao mês geram encargos de R$ 18.000, enquanto juros compostos nesse mesmo período acumulam R$ 21.687 em juros, diferença de R$ 3.687 devido à capitalização mensal. Esse efeito é amplificado em contratos de longo prazo, como seguros de vida, onde a fórmula de juros compostos é aplicada segundo a legislação brasileira (Lei 13.466/2017), tornando o custo real significativamente maior que o indicado por juros simples. Portanto, ao avaliar ofertas financeiras, é essencial identificar qual tipo de juros está sendo cobrado, pois a escolha entre juros simples e compostos redefine o impacto econômico real do compromisso.",
+   "trecho": "Juros simples são calculados apenas sobre o valor inicial do empréstimo, sem considerar os acúmerulos anteriores. A diferença entre juros simples e compostos fica evidente ao comparar duas aplicações ",
+   "fim": "ntre juros simples e compostos redefine o impacto econômico real do compromisso."
   },
   {
    "id": 10,
@@ -150,8 +155,8 @@
    "itens": 5,
    "nota": 9,
    "erro": null,
-   "ms": 109688,
-   "texto": "1. Feche a torneira enquanto escova os dentes ou faz a barba, economizando até 12 litros por minuto.\n2. Instale arejadores nas torneiras e chuveiros de baixo fluxo para reduzir o consumo sem perder pressão.\n3. Reutilize a água da lavagem de vegetais para regar plantas ou limpar pisos.\n4. Conserte vazamentos imediatamente; uma gota por segundo desperdiça cerca de 15 litros por dia.\n5. Use a máquina de lavar louça e a lavadora de roupas apenas com carga completa, preferindo ciclos econômicos.",
+   "ms": 55486,
+   "texto": "1. Feche a torneira enquanto escova os dentes ou faz a barba, economizando até 12 litros por minuto.\n2. Instale arejadores nas torneiras e chuveiros de baixo fluxo para reduzir o consumo sem perder pressão.\n3. Reutilize a água da lavagem de vegetais para regar plantas ou limpar pisos.\n4. Conserte vazamentos imediatamente; uma gota por segundo desperdiça cerca de 20 litros por dia.\n5. Use a máquina de lavar louça e a lavadora de roupas apenas com carga completa, preferindo ciclos econômicos.",
    "trecho": "1. Feche a torneira enquanto escova os dentes ou faz a barba, economizando até 12 litros por minuto.\n2. Instale arejadores nas torneiras e chuveiros de baixo fluxo para reduzir o consumo sem perder pr",
    "fim": " e a lavadora de roupas apenas com carga completa, preferindo ciclos econômicos."
   },
@@ -160,119 +165,117 @@
    "q": "Explique por que o céu é azul em dois parágrafos.",
    "ok": true,
    "falhas": [],
-   "palavras": 176,
+   "palavras": 277,
    "paragrafos": 2,
    "itens": 0,
    "erro": null,
-   "ms": 9224,
-   "texto": "O céu aparece azul devido ao fenômeno chamado dispersão da luz solar pela atmosfera terrestre. Quando a luz solar entra em contato com as moléculas de ar e partículas suspensas, os raios de luz azul, que possuem menor comprimento de onda, são dispersos em todas as direções com maior intensidade do que outras cores. Por exemplo, durante um dia ensolarado, essa dispersão seletiva faz com que a radiação azul seja a que mais atinge nossos olhos, tornando o céu de um tom azul intenso.\n\nO coeficiente de espalhamento Rayleigh para a luz azul (λ = 450 nm) é de aproximadamente 1,5 × 10⁻⁴ m⁻¹, o que faz com que a atmosfera atue como um filtro seletivo. Além disso, a composição gasosa – 78,08 % de N₂ e 20,95 % de O₂ – amplifica a difusão de comprimentos de onda curtos. Pequenas partículas de aerossol, com diâmetro médio de 0,1 µm, contribuem para a dispersão de Tyndall, intensificando ainda mais a cor azul. Assim, a interação entre moléculas e aerossóis cria o céu azul que observamos diariamente.",
-   "trecho": "O céu aparece azul devido ao fenômeno chamado dispersão da luz solar pela atmosfera terrestre. Quando a luz solar entra em contato com as moléculas de ar e partículas suspensas, os raios de luz azul, ",
-   "fim": "nteração entre moléculas e aerossóis cria o céu azul que observamos diariamente."
+   "ms": 10665,
+   "texto": "O céu aparece azul devido à dispersão da luz solar pela atmosfera terrestre, um fenômeno conhecido como dispersão de Rayleigh. Quando a luz solar entra na nossa atmosfera, ela colide com moléculas de ar e partículas menores que o comprimento de onda da luz visível. A luz azul, que possui um comprimento de onda mais curto (cerca de 450 a 495 nanômetros), é dispersa em todas as direções com maior intensidade do que outras cores, como o vermelho ou o amarelo. Por exemplo, durante o dia, essa dispersão seletaiva faz com que enxerguemos o céu azul do entardecer ao meio-dia. O físico inglês John William Strutt, também conhecido como Lord Rayleigh, foi quem formalizou matematicamente essa teoria no final do século XIX, explicando por que o céu não aparece verde ou violeta, apesar de essas cores também serem dispersas.\n\nEssa dispersão se dá porque a intensidade da luz dispersa é inversamente proporcional à quarta potência do comprimento de onda, conforme descrito pela equação de Rayleigh, o que explica por que o azul — com cerca de 475 nanômetros — domina a percepção visual. Durante o entardecer, a luz percorre uma camada atmosférica mais espessa, e os comprimentos de onda azuis são dispersos antes mesmo de chegar ao observador, deixando predominantes as tons vermelhos e laranja. Um detalhe concreto é que a atmosfera contém aproximadamente 78% de nitrogênio e 21% de oxigênio, moléculas que atuam como os principais dispersores dessa radiação. Além diso, a poluição e as partículas maiores podem intensificar esse efeito, especialmente em áreas urbanas. Portanto, o azul do céu é fruto de uma interação precisa entre a física da luz e a composição da atmosfera.",
+   "trecho": "O céu aparece azul devido à dispersão da luz solar pela atmosfera terrestre, um fenômeno conhecido como dispersão de Rayleigh. Quando a luz solar entra na nossa atmosfera, ela colide com moléculas de ",
+   "fim": "ruto de uma interação precisa entre a física da luz e a composição da atmosfera."
   },
   {
    "id": 12,
    "q": "Resuma em três parágrafos a Segunda Guerra Mundial.",
-   "ok": false,
-   "falhas": [
-    "falta fato #3 (aliado)"
-   ],
-   "palavras": 279,
+   "ok": true,
+   "falhas": [],
+   "palavras": 246,
    "paragrafos": 3,
    "itens": 0,
    "erro": null,
-   "ms": 41304,
-   "texto": "A Segunda Guerra Mundial, também conhecida como segunda guerra mundial, foi um conflito militar global que envolveu a maioria das nações do mundo, divididas em dois blocos: as potências aliadas e as eixo. Para resumir, o conflito começou em 1939, quando a Alemanha nazista, liderada por Adolf Hitler, invadiu a Polônia, desencadeando a entrada da Grã-Bretanha e da França em guerra contra a Alemanha.\n\nA Segunda Guerra Mundial teve seu desfecho marcado por decisões que redesenhou o mapa geopolítico. Em 8 de maio de 1945, a Alemanha assinou a rendição incondicional em Reims, encerrando a luta no frente ocidental. Paralelamente, o conflito no Pacífico se encerraria com os Estados Unidos lançarem duas bombas atômicas, em 6 de agosto sobre Hiroshima e 9 de agosto sobre Nagasaki, resultando na rendição do Japão em 2 de setembro. Assim, a Segunda Guerra Mundial, a mais destrutiva da história, terminou com o uso pela primeira vez de armas nucleares, estabelecendo o início da era atômica e das relações de poder entre superpotências.\n\nPara resumir a segunda guerra mundial, é imprescindível destacar o papel decisivo da Guerra do Pacífico, onde o Exército Imperial Japonês avançou sobre o Pacífico após a Batalha de Pearl Harbor, em 7 de dezembro de 1941, atacando forças norte-americanas com 353 aeronaves. A segunda fase dessa guerra mundial viu a entrada dos Estados Unidos na guerra mundial após o ataque, mobilizando milhões de soldados e redefinindo o mapa geopolítico global. O conflito terminou com a rendição incondicional do Japão em 2 de setembro de 1945, após os bombardeamentos atômicos de Hiroshima e Nagasaki, encerrando a guerra mundial com o uso de armas nucleares pela primeira e única vez na história.",
-   "trecho": "A Segunda Guerra Mundial, também conhecida como segunda guerra mundial, foi um conflito militar global que envolveu a maioria das nações do mundo, divididas em dois blocos: as potências aliadas e as e",
-   "fim": "erra mundial com o uso de armas nucleares pela primeira e única vez na história."
+   "ms": 20186,
+   "texto": "A Segunda Guerra Mundial, também conhecida como a segunda guerra mundial da história, foi um conflito global que envolveu mais de trinta países. Para resumir, ela começou em 1º de setembro de 1939, quando a Alemanha nazista, liderada por Adolf Hitler, invadiu a Polônia, desencadeando a entrada da Grã-Bretanha e da França em guerra contra a Alemanha.\n\nPara resumir a segunda guerra mundial, é imprescindível destacar o papel decisivo da frente oriental, onde a Operação Barbarossa, lançada em 22 de junho de 1941, mobilizou mais de três milhões de soldados alemães contra a União Soviética. A batalha de Stalingrado, travada entre agosto de 1942 e fevereiro de 1943, marcou a virada estratégica, com a rendição da 6ª Armada Alemã após 200 dias de combates intensos. Essa sequência de eventos transformou a guerra mundial, ao enfraquecer a Alemanha e fortalecer o avanço soviético em direção a Berlim.\n\nPara resumir a segunda guerra mundial, outro aspecto crucial foi a participação brasileira, que entrou oficialmente em 1942 após a assinatura do Tratado de Aliança, em 1943, com forças que incluíram o 1º Regimento de Aviação, com 100 aviões de caça. O Brasil também enviou cerca de 25 mil soldados para a Força Expedicionária Brasileira, que lutou na Itália, contribuindo para a derrota do eixo na Europa. Essa participação ampliou o apoio internacional ao esforço de guerra aliado e consolidou a presença sul-americana no conflito. Assim, a guerra mundial revelou-se verdadeiramente global, com envolvimento de nações de todos os continentes.",
+   "trecho": "A Segunda Guerra Mundial, também conhecida como a segunda guerra mundial da história, foi um conflito global que envolveu mais de trinta países. Para resumir, ela começou em 1º de setembro de 1939, qu",
+   "fim": "u-se verdadeiramente global, com envolvimento de nações de todos os continentes."
   },
   {
    "id": 13,
    "q": "Explique como funciona uma vacina em dois parágrafos.",
    "ok": true,
    "falhas": [],
-   "palavras": 182,
+   "palavras": 205,
    "paragrafos": 2,
    "itens": 0,
    "erro": null,
-   "ms": 8590,
-   "texto": "Uma vacina é um preparado que funciona introduzindo no organismo uma substância que imita um patógeno, sem causar a doença, para que o sistema imunológico aprenda a reconhecê-lo e combati-lo. Por exemplo, a vacina contra a gripe contém proteínas da própria gripe, mas doença alguma é provocada. Assim, o corpo produz anticorpos e células de memória, garantindo proteção futura. Quando o indivíduo entra em contato com o vírus real, o sistema imunológico já sabe como funciona e reage rapidamente, evitando ou reduzindo a infecção.\n\nAlém disso, a vacina de mRNA, como a Pfizer‑BioNTech, funciona introduzindo uma sequência de RNA que codifica a proteína spike do SARS‑CoV‑2, instruindo as células a produzir essa proteína e desencadeando uma resposta imunológica. O processo envolve a encapsulação do RNA em lipídios, formando nanopartículas que facilitam a entrada celular. Estudos mostram que, após a segunda dose, os níveis de anticorpos IgG atingem 1,5 milhão de unidades por mililitro, um aumento de 10 vezes em relação à primeira dose. Assim, a vacina não apenas previne a doença, mas também fortalece a memória imunológica, garantindo proteção a longo prazo.",
-   "trecho": "Uma vacina é um preparado que funciona introduzindo no organismo uma substância que imita um patógeno, sem causar a doença, para que o sistema imunológico aprenda a reconhecê-lo e combati-lo. Por exem",
-   "fim": ", mas também fortalece a memória imunológica, garantindo proteção a longo prazo."
+   "ms": 12971,
+   "texto": "Uma vacina é um preparo que funciona introduzindo no organismo uma substância que estimula o sistema imunológico a produzir anticorpos, sem causar a doença real. Por exemplo, a vacina contra a gripe sazonal contém proteínas da hemaglutinina, uma superfície viral, que ativam a resposta imune. Quando o corpo identifica essa proteína, os linfócitos B e T se multiplicam e criam memória imunológica, permitindo que, na próxima exposição ao vírus, a reação seja rápida e eficaz. Assim, a vacina previne complicações graves, como pneumonia, reduzindo hospitalizações em até 60% em idosos imunizados.\n\nAlém de ativar a imunidade adaptativa, uma vacina pode modular a resposta imune inata por meio de adjuvantes, substâncias que intensificam a reação do organismo. O adjuvante AS03, utilizado na vacina da gripe da Sanofi, aumentou em 3,7 vezes a produção de anticorpos em comparação a formulações sem o componente. Essa estratégia é especialmente útil em populações imunologicamente fragilizadas, como idosos, em que a resposta natural à antígeno é mais fraca. A inclusão de adjuvantes permite doses menores de antígeno, mantendo a eficácia, o que amplia a disponibilidade de imunizantes em tempos de pandemia. Portanto, o uso de adjuvantes mostra como a vacina evolui tecnologicamente para garantir maior proteção em diferentes grupos da população.",
+   "trecho": "Uma vacina é um preparo que funciona introduzindo no organismo uma substância que estimula o sistema imunológico a produzir anticorpos, sem causar a doença real. Por exemplo, a vacina contra a gripe s",
+   "fim": "tecnologicamente para garantir maior proteção em diferentes grupos da população."
   },
   {
    "id": 14,
    "q": "Explique o que é uma função em programação para quem nunca programou, em dois parágrafos.",
-   "ok": false,
-   "falhas": [
-    "falta fato #2 (par[âa]metro)"
-   ],
-   "palavras": 192,
+   "ok": true,
+   "falhas": [],
+   "palavras": 224,
    "paragrafos": 2,
    "itens": 0,
    "erro": null,
-   "ms": 30593,
-   "texto": "Uma função em programação é um bloco de instruções que realiza uma tarefa específica e pode ser reutilizado ao longo do código. Se você nunca programou, imagine que uma função é como uma receita de culinária: você segue passo a passo para obter um resultado, como misturar ingredientes e assar um bolo. Por exemplo, uma função chamada \"calcular_media\" recebe números, soma todos eles e divide pelo total, devolvendo o resultado pronto. Em programação, essas funções ajudam a organizar o trabalho, evitando repetições e deixando o código mais claro e fácil de entender.\n\nUma função em programação age como uma receita de culinária: você define uma sequência de passos que pode ser reaproveitada sempre que necessário, evitando a repetição de código. Para quem nunca programou, pensar em blocos reutilizáveis ajuda a organizar ideias complexas em partes menores. Por exemplo, a função `calcular_media` no Python recebe uma lista de números e retorna o valor médio, podendo ser chamada quantas vezes for preciso em diferentes partes do programa. Essa reutilização torna o processo de desenvolvimento mais rápido e menos propenso a erros. Portanto, dominar funções é essencial para quem deseja aprender programação de forma estruturada.",
-   "trecho": "Uma função em programação é um bloco de instruções que realiza uma tarefa específica e pode ser reutilizado ao longo do código. Se você nunca programou, imagine que uma função é como uma receita de cu",
-   "fim": " funções é essencial para quem deseja aprender programação de forma estruturada."
+   "ms": 12930,
+   "texto": "Uma função em programação é um bloco de instruções reutilizável que executa uma tarefa específica, permitindo organizar e simplificar o código. Se você nunca programou, pense em uma função como uma receita de culinária: você define os passos uma vez e pode usá-los sempre que precisar. Por exemplo, a função \"calcular_media\" pode receber três números e retornar o resultado da média aritmética. Esse conceito é fundamental desde os primeiros dias da programação, como em 1957, quando a linguagem Fortran introduziu sub-rotinas para evitar repetições. Assim, funções ajudam programadores, mesmo que nunca tenham programado antes, a resolverem problemas de forma mais eficiente.\n\nAlém de organizar o código, uma função em programação pode receber parâmetros e retornar valores, o que permite que ela se comporte de forma dinâmica conforme a entrada fornecida. Se você nunca programou, é importante entender que funções podem chamar outras funções, criando uma estrutura em camadas conhecida como escopo de execução. Por exemplo, na linguagem Python, a função embutida `len()` retorna o número de itens em uma sequência, como uma lista ou string, e é usada milhões de vezes por dia em aplicações reais. Esse mecanismo de reutilização e composição é o que torna a programação poderosa, permitindo que quem nunca programou resolva problemas complexos com poucas linhas. Em resumo, dominar funções é essencial para qualquer pessoa que deseja aprender a programar.",
+   "trecho": "Uma função em programação é um bloco de instruções reutilizável que executa uma tarefa específica, permitindo organizar e simplificar o código. Se você nunca programou, pense em uma função como uma re",
+   "fim": "ominar funções é essencial para qualquer pessoa que deseja aprender a programar."
   },
   {
    "id": 15,
    "q": "Explique o que é a LGPD em dois parágrafos.",
    "ok": true,
    "falhas": [],
-   "palavras": 193,
+   "palavras": 223,
    "paragrafos": 2,
    "itens": 0,
    "erro": null,
-   "ms": 10118,
-   "texto": "A Lei Geral de Proteção de Dados, conhecida como LGPD, é uma legislação brasileira que regulamenta o tratamento de dados pessoais, garantindo direitos e privacidade dos indivíduos. Ela aplica-se a qualquer organização que processe informações de cidadãos, como uma loja virtual que coleta endereços de e-mail para envio de promoções. A LGPD estabelece princípios como transparência, finalidade e segurança, exigindo que os dados sejam usados apenas para os propósitos informados. Seu objetivo é criar um ambiente digital mais seguro e equilibrado entre o consumidor e as empresas.\n\nAlém das disposições gerais, a LGPD impõe obrigações de segurança da informação, exigindo que as empresas adotem medidas técnicas capazes de proteger os dados pessoais contra acessos não autorizados e vazamentos. Em 2024, o Ministério Público Federal ajuizou o processo nº 0012345-6/2024 contra a empresa XYZ, alegando que a falta de consentimento expresso para o tratamento de dados de clientes resultou em multa de R$ 1,5 milhão. Esse caso demonstra que a fiscalização tem se intensificado, com a ANPD já emitindo 12 decisões de sanção no ano passado. Conclui-se que a conformidade com a LGPD é essencial para evitar sanções e garantir a confiança dos usuários.",
-   "trecho": "A Lei Geral de Proteção de Dados, conhecida como LGPD, é uma legislação brasileira que regulamenta o tratamento de dados pessoais, garantindo direitos e privacidade dos indivíduos. Ela aplica-se a qua",
-   "fim": " com a LGPD é essencial para evitar sanções e garantir a confiança dos usuários."
+   "ms": 11243,
+   "texto": "A Lei Geral de Proteção de Dados (LGPD) é uma legislação brasileira que regulamenta o tratamento de dados pessoais, estabelecendo direitos e deveres tanto para os titulares quanto para os responsáveis pelo processamento dessas informações. Aprovada em 13 de setembro de 2018 e sancionada por Michel Temer, a LGPD entrou em vigor em 1º de setembro de 2020, com aplicação gradual até agosto de 2021. Um exemplo concreto é a obrigatoriedade de empresas como Facebook e Google informarem os usuários sobre como seus dados são coletados e utilizados. A lei prevê sanções que podem chegar a 2% do faturamento da empresa, limitada a R$ 50 milhões por infração. O texto legal contempla dez princípios fundamentais, incluindo a necessidade, a transparência e a segurança na manipulação dos dados pessoais.\n\nA LGPD também instituiu a figura do Encarregado de Proteção de Dados (DPO), prevista no artigo 41, que atua como intermediário entre a organização e as autoridades competentes. Empresas como Magazine Luiza nomearam profissionais para esse cargo, garantindo canais formais para resposta a solicitações de titulares. Além disso, a autoridade nacional designada para fiscalizar a lei é a Autoridade Nacional de Proteção de Dados (ANPD), criada pela própria LGPD. Com isso, a LGPD transformou a privacidade em responsabilidade compartilhada, exigindo governança, transparência e cultura de proteção em qualquer organização que processe dados pessoais no Brasil.",
+   "trecho": "A Lei Geral de Proteção de Dados (LGPD) é uma legislação brasileira que regulamenta o tratamento de dados pessoais, estabelecendo direitos e deveres tanto para os titulares quanto para os responsáveis",
+   "fim": "ltura de proteção em qualquer organização que processe dados pessoais no Brasil."
   },
   {
    "id": 16,
    "q": "Descreva em dois parágrafos o caminho da água da chuva até a torneira de casa.",
-   "ok": true,
-   "falhas": [],
-   "palavras": 174,
+   "ok": false,
+   "falhas": [
+    "falta fato #1 (rio)"
+   ],
+   "palavras": 251,
    "paragrafos": 2,
    "itens": 0,
    "erro": null,
-   "ms": 34498,
-   "texto": "O caminho da água da chuva até a torneira de casa começa quando os resíduos da chuva caem sobre o telhado da casa e são coletados por canaletas. Essas águas descem por tubulações até o solo, onde se misturam a resíduos orgânicos e substâncias químicas presentes no ambiente. Em seguida, o sistema de esgoto parcialmente trata essa água, que é direcionada para estações de tratamento. Após passar por processos de filtração e desinfecção, a água potabilizada retorna ao sistema de distribuição, pronta para ser liberada na torneira.\n\nAo longo do caminho entre a chuva e a torneira, a água passa por estações de tratamento que garantem sua potabilidade. Após ser coletada em reservatórios, o líquido é submetido ao processo de coagulação e floculação, seguido pela filtração em areia e desinfecção com cloro, conforme exige a legislação vigente. Essas etapas removem sedimentos, microrganismos e resíduos químicos, transformando a água em produto seguro para consumo. Por fim, o sistema de distribuição pressiona o conteúdo até as redes subterrâneas que abastecem diretamente a torneira de cada residência.",
-   "trecho": "O caminho da água da chuva até a torneira de casa começa quando os resíduos da chuva caem sobre o telhado da casa e são coletados por canaletas. Essas águas descem por tubulações até o solo, onde se m",
-   "fim": "é as redes subterrâneas que abastecem diretamente a torneira de cada residência."
+   "ms": 13932,
+   "texto": "O caminho da água da chuva até a torneira de casa envolve processos naturais e urbanos interligados. Quando a chuva atinge o solo, parte da água é absorvida pelo solo e se torna água subterrânea, alimentando lençóis freáticos que podem ser captados por poços. Em cidades como São Paulo, essa captação ocorre por meio de sistemas de perfuração de poços profundos, conforme regulamentação do Departamento de Águas de São Paulo (DAEE). A água subterrânea é então encaminhada a estações de tratamento, onde passa por etapas como coagulação, floculação e filtração, garantindo sua potabilidade antes de chegar à torneira. Esse processo pode durar horas ou dias, dependendo da distância entre o ponto de captação e o consumidor final.\n\nApós a estação de tratamento, a água segue por uma rede de distribuição composta por tubulações de ferro fundido e dutos de alta pressão, mantendo-se em movimento contínuo graças a bombas de elevação instaladas em pontos estratégicos, como a Estação Elevatória Sé, em São Paulo, que opera 24 horas por dia. Essa infraestrutura, com diâmetros que variam de 100 a 1200 milímetros, garante o fornecimento estável mesmo em períodos de pico, como o registrado em janeiro de 2020, quando a demanda atingiu 13,2 milhões de metros cúbicos por dia. O caminho percorrido pela água tratada pode ser monitorado em tempo real pelo Sistema de Informações de Águas (SIÁGUA), permitindo ajustes rápidos em caso de vazamentos ou interrupções. Assim, o ciclo iniciado pela chuva se encerra de forma controlada e segura na torneira de casa.",
+   "trecho": "O caminho da água da chuva até a torneira de casa envolve processos naturais e urbanos interligados. Quando a chuva atinge o solo, parte da água é absorvida pelo solo e se torna água subterrânea, alim",
+   "fim": "iniciado pela chuva se encerra de forma controlada e segura na torneira de casa."
   },
   {
    "id": 17,
    "q": "Escreva um texto de dois parágrafos sobre os impactos das redes sociais na vida das pessoas.",
-   "ok": false,
-   "falhas": [
-    "falta fato #3 (conex[ãa]o)"
-   ],
-   "palavras": 169,
+   "ok": true,
+   "falhas": [],
+   "palavras": 210,
    "paragrafos": 2,
    "itens": 0,
    "erro": null,
-   "ms": 47215,
-   "texto": "As redes sociais transformaram a forma como as pessoas se relacionam e compartilham informações no dia a dia. Um exemplo concreto é a forma como adolescentes usam plataformas como Instagram e TikTok para construir sua identidade e manter conexões com amigos. Os impactos dessas redes sociais são visíveis em aspectos como autoestima, produtividade e até padrões de sono. Ao escrever sobre esse tema, é importante reconhecer que o texto precisa refletir tanto os benefícios quanto os riscos dessa conectividade constante.\n\nEm 2023, o Ministério da Saúde divulgou o relatório “Saúde Digital 2023”, que aponta que 62% das interações em redes sociais geram ansiedade, evidenciando a urgência de políticas públicas. Esse dado, presente no texto oficial, mostra que a exposição constante a curadoria de conteúdo pode distorcer a percepção de realidade, levando usuários a comparações prejudiciais. A plataforma TikTok, por exemplo, lançou o programa “Bem‑Estar Digital”, com 1,2 milhão de usuários ativos, demonstrando iniciativas de mitigação. Assim, os impactos das redes sociais exigem atenção contínua para proteger a saúde mental.",
-   "trecho": "As redes sociais transformaram a forma como as pessoas se relacionam e compartilham informações no dia a dia. Um exemplo concreto é a forma como adolescentes usam plataformas como Instagram e TikTok p",
-   "fim": "impactos das redes sociais exigem atenção contínua para proteger a saúde mental."
+   "ms": 15614,
+   "texto": "As redes sociais transformaram a comunicação cotidiana, gerando impactos profundos na vida das pessoas. Uma pesquisa da Universidade de São Paulo, publicada em 2023, revelou que 78% dos usuários brasileiros passam mais de três horas diárias conectados a plataformas digitais. Essas redes sociais influenciam desde relacionamentos interpessoais até hábitos de consumo, como o caso de influenciadores digitais que movimentaram R$ 2,3 bilhões em vendas no Brasil em 2022. O texto precisa refletir como esses impactos redefinem identidades e dinâmicas sociais contemporâneas.\n\nAlém dos aspectos já mencionados, as redes sociais também vêm redefinindo o comportamento cognitivo das pessoas, especialmente na capacidade de concentração e processamento de informações. Estudos apontam que a exposição constante a algoritmos de recomendação, como os utilizados pelo TikTok, reduz o tempo médio de atenção de jovens de 16 a 24 anos para menos de oito segundos, superando até a duração do famoso experimento de Pavlov com cães. Esse padrão de estímulo rápido cria uma dependência psicológica comprovada por neuroimagem cerebral, segundo pesquisas do Instituto Nacional de Saúde Mental, nos Estados Unidos. O texto precisa reconhecer que esses impactos vão além da superfície, atingindo diretamente a neuroplasticidade do cérebro. Portanto, as redes sociais não apenas conectam pessoas, mas estão reprogramando o modo como o cérebro humano processa realidade.",
+   "trecho": "As redes sociais transformaram a comunicação cotidiana, gerando impactos profundos na vida das pessoas. Uma pesquisa da Universidade de São Paulo, publicada em 2023, revelou que 78% dos usuários brasi",
+   "fim": "essoas, mas estão reprogramando o modo como o cérebro humano processa realidade."
   },
   {
    "id": 18,
    "q": "Dê quatro argumentos contra o desperdício de alimentos.",
-   "ok": true,
-   "falhas": [],
-   "palavras": 84,
+   "ok": false,
+   "falhas": [
+    "falta fato #3 (fome)"
+   ],
+   "palavras": 98,
    "paragrafos": 4,
    "itens": 4,
    "nota": 9,
    "erro": null,
-   "ms": 137479,
-   "texto": "1. O desperdício de alimentos aumenta a emissão de gases de efeito estufa, pois a decomposição em aterros libera metano, responsável por cerca de 8 % das emissões globais segundo a FAO.\n2. Economicamente, famílias brasileiras perdem em média R$ 1.200 por ano ao jogar comida fora, reduzindo o poder de compra.\n3. Socialmente, o alimento descartado poderia alimentar milhões de pessoas em situação de insegurança alimentar, agravando a fome.\n4. Ambientalmente, a produção desnecessária consome água, terra e energia, pressionando recursos naturais finitos.",
-   "trecho": "1. O desperdício de alimentos aumenta a emissão de gases de efeito estufa, pois a decomposição em aterros libera metano, responsável por cerca de 8 % das emissões globais segundo a FAO.\n2. Economicame",
-   "fim": "ecessária consome água, terra e energia, pressionando recursos naturais finitos."
+   "ms": 124218,
+   "texto": "1. O desperdício de alimentos aumenta as emissões de gases de efeito estufa, pois a decomposição em aterros libera metano, responsável por cerca de 8% das emissões globais segundo a FAO.\n2. No Brasil, cerca de 26 milhões de toneladas de alimentos são descartadas anualmente, representando uma perda econômica estimada em R$ 100 bilhões.\n3. O desperdício reduz a disponibilidade de alimentos para populações vulneráveis, agravando a insegurança alimentar que atinge 10% da população mundial.\n4. A produção desnecessária consome água, terra e energia, e cada quilo de alimento jogado fora equivale a 1.300 litros de água desperdiçada.",
+   "trecho": "1. O desperdício de alimentos aumenta as emissões de gases de efeito estufa, pois a decomposição em aterros libera metano, responsável por cerca de 8% das emissões globais segundo a FAO.\n2. No Brasil,",
+   "fim": "cada quilo de alimento jogado fora equivale a 1.300 litros de água desperdiçada."
   },
   {
    "id": 19,
@@ -284,84 +287,84 @@
    "itens": 0,
    "nota": 9,
    "erro": null,
-   "ms": 11611,
-   "texto": "O tempo refere-se às condições atmosféricas momentâneas, como temperatura, umidade, vento e precipitação, que podem mudar de hora em hora ou de dia para dia. Já o clima é a média estatística desses elementos ao longo de períodos longos, geralmente trinta anos, e descreve o padrão típico de uma região. Portanto, enquanto o tempo informa o que está acontecendo agora, o clima indica o que se espera historicamente para aquele local.",
+   "ms": 23769,
+   "texto": "O tempo refere-se às condições atmosféricas momentâneas, como temperatura, umidade, vento e precipitação, que podem mudar de hora em hora ou de dia para dia. Já o clima é a média estatística desses elementos ao longo de períodos longos, geralmente trinta anos, e descreve o padrão típico de uma região. Portanto, enquanto o tempo indica o que está acontecendo agora, o clima mostra o que se espera historicamente para aquele local.",
    "trecho": "O tempo refere-se às condições atmosféricas momentâneas, como temperatura, umidade, vento e precipitação, que podem mudar de hora em hora ou de dia para dia. Já o clima é a média estatística desses el",
-   "fim": "ntecendo agora, o clima indica o que se espera historicamente para aquele local."
+   "fim": "ntecendo agora, o clima mostra o que se espera historicamente para aquele local."
   },
   {
    "id": 20,
    "q": "Resuma em três parágrafos a teoria da evolução de Darwin.",
    "ok": true,
    "falhas": [],
-   "palavras": 234,
+   "palavras": 350,
    "paragrafos": 3,
    "itens": 0,
    "erro": null,
-   "ms": 24025,
-   "texto": "A teoria da evolução de darwin propõe que as espécies mudam ao longo do tempo por meio de mecanismos naturais. Para resumir, darwin observou que indivíduos com características vantajosas para sua sobrevivência e reprodução deixam mais descendentes, passando essas características ao longo das gerações. Um exemplo concreto é a adaptação das focas à água, cujos ancestrais terrestres desenvolveram membros alongados e camada de gordura para nadar, demonstrando como a evolução responde a pressões ambientais.\n\nPara resumir, a teoria da evolução de darwin explica como espécies mudam ao longo do tempo por meio de mecanismos naturais. Um aspecto menos conhecido é que darwin também propôs a seleção por parentesco, sugerindo que os indivíduos mais similares aos pais têm vantagem. Ele observou que, em ilhas como a Galápagos, as espécies de aves divergem rapidamente devido a pressões ecológicas distintas. Essas ideias foram publicadas em 1859, na obra \"A origem das espécies\", consolidando a teoria da evolução como base da biologia moderna.\n\nPara resuma a teoria de Darwin, é essencial reconhecer que a evolução não ocorre apenas por seleção natural, mas também por mutação aleatória e migração genética. Em 1835, durante a expedição à Ilha de Galápagos, ele observou que as tartarugas apresentavam bicos de tamanhos distintos, refletindo adaptações ao ambiente. Esse detalhe concreto demonstra como pequenas variações podem ser favorecidas ao longo de gerações. Assim, a teoria de Darwin permanece central para compreender a diversidade biológica.",
-   "trecho": "A teoria da evolução de darwin propõe que as espécies mudam ao longo do tempo por meio de mecanismos naturais. Para resumir, darwin observou que indivíduos com características vantajosas para sua sobr",
-   "fim": ", a teoria de Darwin permanece central para compreender a diversidade biológica."
+   "ms": 30735,
+   "texto": "A teoria da evolução de Darwin, publicada em 1859 em \"A origem das espécies\", propõe que as espécies mudam ao longo do tempo por meio de mecanismos naturais. Para resumir, Darwin argumentou que indivíduos com características vantajosas para a sobrevivência em seu ambiente tendem a deixar mais descendentes, passando essas características ao longo das gerações. Um exemplo concreto é a adaptação das asas dos pássaros, que evoluíram a partir de membros de répteis que viveram em ambientes variados. A seleção natural, termo técnico central, explica como características como a resistência à doença ou a capacidade de camuflagem se tornam predominantes. Assim, a teoria da evolução darwiniana fornece uma explicação científica coerente para a diversidade da vida.\n\nA teoria da evolução de Darwin também incorpora a noção de que a variação hereditária é essencial para o avanço evolutivo, conforme demonstrado por estudos modernos com a fruta *Drosophila melanogaster*, cujos experimentos de H. J. Muller em 1927 revelaram que a radiação X induz mutações genéticas, ampliando a base de variação sobre a qual a seleção natural atua. Para resumir, essa descoberta reforçou a ideia de que a evolução depende tanto de pressões ambientais quanto de mudanças no material genético. Assim, a teoria darwiniana, ao integrar a genética, explica como processos como a mutação, a recombinação genética e a seleção natural interagem para moldar a biodiversidade. Portanto, a evolução não é apenas um mecanismo lento, mas também impulsionado por eventos moleculares e ambientais que geram novas oportunidades adaptativas.\n\nPara resumir, a teoria da evolução de Darwin ganhou respaldo científico adicional com a síntese moderna, que integra a genética mendeliana, estabelecida por Ronald Fisher em 1918, demonstrando como as frequências alelicas mudam em populações ao longo do tempo. Esse arcabouço matemático, conhecido como equação de Fisher, mostra que a evolução pode ser descrita por processos como deriva genética, migração e seleção natural, todos quantificáveis. Assim, a teoria darwiniana, ao se fundir à genética populacional, explica não apenas a origem das espécies, mas também os mecanismos que regulam a diversidade genética. Portanto, a evolução continua sendo uma das ideias mais robustas e fundamentais da biologia.",
+   "trecho": "A teoria da evolução de Darwin, publicada em 1859 em \"A origem das espécies\", propõe que as espécies mudam ao longo do tempo por meio de mecanismos naturais. Para resumir, Darwin argumentou que indiví",
+   "fim": "evolução continua sendo uma das ideias mais robustas e fundamentais da biologia."
   },
   {
    "id": 21,
    "q": "Escreva uma mensagem curta e educada cobrando um pagamento atrasado de um cliente. Máximo 150 palavras.",
-   "ok": false,
-   "falhas": [
-    "falta fato #2 (atenciosamente)"
-   ],
-   "palavras": 66,
-   "paragrafos": 2,
+   "ok": true,
+   "falhas": [],
+   "palavras": 79,
+   "paragrafos": 5,
    "itens": 0,
    "nota": 3,
    "erro": null,
-   "ms": 93705,
-   "texto": "Prezado(a) [Nome do Cliente],\n\nEspero que esteja bem. Gostaria de lembrar que a fatura nº 12345, com vencimento em 10/08/2025, encontra-se em aberto no valor de R$ 2.450,00. Caso já tenha realizado o pagamento, por favor desconsidere este aviso. Caso contrário, agradecemos a regularização o mais breve possível para evitar encargos adicionais. Estamos à disposição para qualquer dúvida ou para enviar a segunda via do boleto.",
-   "trecho": "Prezado(a) [Nome do Cliente],\n\nEspero que esteja bem. Gostaria de lembrar que a fatura nº 12345, com vencimento em 10/08/2025, encontra-se em aberto no valor de R$ 2.450,00. Caso já tenha realizado o ",
-   "fim": "stamos à disposição para qualquer dúvida ou para enviar a segunda via do boleto."
+   "ms": 31960,
+   "texto": "Prezado(a) [Nome do Cliente],\n\nEspero que esteja bem. Gostaria de lembrar gentilmente que a fatura nº [número] no valor de R$ [valor], com vencimento em [data de vencimento], encontra-se em aberto. Caso já tenha realizado o pagamento, por favor desconsidere este aviso e nos envie o comprovante para nossa conferência.\n\nCaso precise de alguma informação adicional ou deseje negociar uma nova data, estou à disposição para ajudar.\n\nAgradeço a atenção e aguardamos a regularização o mais breve possível.\n\nAtenciosamente.",
+   "trecho": "Prezado(a) [Nome do Cliente],\n\nEspero que esteja bem. Gostaria de lembrar gentilmente que a fatura nº [número] no valor de R$ [valor], com vencimento em [data de vencimento], encontra-se em aberto. Ca",
+   "fim": "o a atenção e aguardamos a regularização o mais breve possível.\n\nAtenciosamente."
   },
   {
    "id": 22,
    "q": "Explique em dois parágrafos como funciona a energia solar fotovoltaica.",
-   "ok": true,
-   "falhas": [],
-   "palavras": 164,
+   "ok": false,
+   "falhas": [
+    "falta fato #1 (painel)"
+   ],
+   "palavras": 242,
    "paragrafos": 2,
    "itens": 0,
    "erro": null,
-   "ms": 10083,
-   "texto": "A energia solar fotovoltaica funciona convertendo a luz do Sol diretamente em eletricidade por meio de células semicondutoras, como as de silício presentes em um telhado residencial. Quando os fótons atingem a superfície da placa solar, eles liberam elétrons do material, gerando uma corrente elétrica contínua que é transformada em corrente alternada para uso nas instalações. Esse processo permite que a energia solar seja aproveitada mesmo em dias nublados, embora com menor eficiência.\n\nAlém da simples conversão de luz em corrente, a energia solar fotovoltaica depende de um inversor que transforma a corrente contínua gerada pelos painéis em corrente alternada utilizável nas residências. Esse inversor, como o modelo SMA Sunny Boy 5.0, opera a 48 V de entrada e entrega 5 kW de potência, garantindo compatibilidade com a rede pública. Em sistemas híbridos, a bateria Tesla Powerwall 10 kWh armazena excedentes, permitindo que a energia solar funcione mesmo à noite. Assim, a integração de armazenamento aumenta a autonomia e a confiabilidade do sistema fotovoltaico.",
-   "trecho": "A energia solar fotovoltaica funciona convertendo a luz do Sol diretamente em eletricidade por meio de células semicondutoras, como as de silício presentes em um telhado residencial. Quando os fótons ",
-   "fim": "de armazenamento aumenta a autonomia e a confiabilidade do sistema fotovoltaico."
+   "ms": 15195,
+   "texto": "A energia solar fotovoltaica é uma forma de gerar eletricidade a partir da luz do Sol usando células fotovoltaicas. Ela funciona por meio do efeito fotovoltaico, descoberto em 1908 por o físico Albert Einstein, que converte a radiação luminosa em corrente elétrica. Um exemplo concreto é a usina solar fotovoltaica de São Pedro da Aldeia, no Rio de Janeiro, que gera energia limpa para milhares de residências. Cada módulo é composto por células de silício cristalino que, ao serem iluminadas, liberam elétrons e produzem corrente contínua. Essa tecnologia tem se expandido rapidamente, tornando-se uma alternativa viável e sustentável para a matriz energética brasileira.\n\nA usina solar fotovoltaica de São Pedro da Aldeia, inaugurada em 2015, possui capacidade instalada de 1 megawatt e opera com rastreadores solares de eixo único que aumentam em até 25% a eficiência da geração. Esse sistema funciona ajustando a inclinação dos módulos ao longo do dia, seguindo o movimento do Sol, e é controlado por um inversor de string que converte a corrente contínua em corrente alternada compatível com a rede elétrica. A energia solar fotovoltaica também pode ser armazenada em baterias de íon-lítio, permitindo o uso noturno e reduzindo a dependência da rede convencional. Além disso, o desempenho desses sistemas é monitorado remotamente por meio de softwares como o SolarEdge, que identificam falhas e otimizam a produção em tempo real. Dessa forma, a tecnologia fotovoltaica continua evoluindo, tornando a energia solar cada vez mais eficiente e acessível.",
+   "trecho": "A energia solar fotovoltaica é uma forma de gerar eletricidade a partir da luz do Sol usando células fotovoltaicas. Ela funciona por meio do efeito fotovoltaico, descoberto em 1908 por o físico Albert",
+   "fim": "ontinua evoluindo, tornando a energia solar cada vez mais eficiente e acessível."
   },
   {
    "id": 23,
    "q": "Explique em dois parágrafos o que é inteligência artificial, sem jargão.",
    "ok": true,
    "falhas": [],
-   "palavras": 178,
+   "palavras": 198,
    "paragrafos": 2,
    "itens": 0,
    "erro": null,
-   "ms": 25622,
-   "texto": "Inteligência artificial é a capacidade de máquinas de aprenderem padrões e tomar decisões sem serem programadas passo a passo. Um exemplo concreto é o reconhecimento de voz em assistentes virtuais, que entendem comandos falados e respondem adequadamente. Essa tecnologia usa algoritmos para processar dados, identificar relações e melhorar desempenho ao longo do tempo. Apesar de avanços significativos, explicar o conceito sem jargão técnico exige cuidado para não confundir o usuário. A inteligência artificial não precisa replicar o raciocínio humano para ser útil no dia a dia.\n\nO algoritmo GPT‑4, criado pela OpenAI, conta com 175 bilhões de parâmetros, o que permite que a inteligência artificial produza textos que se assemelham ao estilo humano. Quando treinado em grandes volumes de dados, ele aprende a reconhecer padrões sem depender de jargão técnico. Em 2023, o modelo foi usado para gerar resumos de artigos científicos, reduzindo o tempo de leitura em 40 %. Esse avanço mostra que a inteligência artificial pode acelerar pesquisas sem exigir que os usuários compreendam termos complexos. Assim, a tecnologia continua a democratizar o acesso ao conhecimento.",
-   "trecho": "Inteligência artificial é a capacidade de máquinas de aprenderem padrões e tomar decisões sem serem programadas passo a passo. Um exemplo concreto é o reconhecimento de voz em assistentes virtuais, qu",
-   "fim": "complexos. Assim, a tecnologia continua a democratizar o acesso ao conhecimento."
+   "ms": 18081,
+   "texto": "Inteligência artificial é a capacidade de máquinas de aprenderem padrões e tomar decisões sem serem programadas passo a passo para cada situação. Um exemplo concreto é o reconhecimento de voz do assistente virtual Siri, lançado pela Apple em 2011, que entende comandos falados e responde perguntas. Para explicar isso sem jargão, basta dizer que o sistema analisa milhões de vozes, identifica palavras e associa a ações, como tocar música ou enviar mensagens. Essa combinação de inteligência e processamento rápido permite que a tecnologia artificial seja útil no dia a dia.\n\nA inteligência artificial também é usada para prever riscos em tempo real, como no sistema de alerta de desastres naturais desenvolvido pelo Centro Nacional de Monitoramento Ambiental, que analisa dados de satélite e sensores no solo para prever enchentes com 90% de precisão. Esse tipo de inteligência artificial não precisa de jargão técnico para ser entendido: basta dizer que a máquina aprende com exemplos passados e melhora seu desempenho automaticamente. O processo por trás disso é chamado de aprendizado de máquina, onde algoritmos como o XGBoost são treinados com milhares de registros históricos. Com isso, a tecnologia artificial ajuda governos e cidadãos a agirem antes que ocorram danos.",
+   "trecho": "Inteligência artificial é a capacidade de máquinas de aprenderem padrões e tomar decisões sem serem programadas passo a passo para cada situação. Um exemplo concreto é o reconhecimento de voz do assis",
+   "fim": "ecnologia artificial ajuda governos e cidadãos a agirem antes que ocorram danos."
   },
   {
    "id": 24,
    "q": "Escreva um parágrafo explicando a importância de dormir bem.",
    "ok": true,
    "falhas": [],
-   "palavras": 82,
+   "palavras": 80,
    "paragrafos": 1,
    "itens": 0,
    "nota": 9,
    "erro": null,
-   "ms": 14691,
-   "texto": "Dormir bem é fundamental para a saúde física e mental, pois durante o sono o corpo realiza processos de reparação celular, consolidação da memória e regulação hormonal. A privação crônica de sono está associada a maior risco de doenças cardiovasculares, obesidade, diabetes e transtornos de humor, além de reduzir a capacidade de atenção e a produtividade no trabalho. Portanto, manter uma rotina de sono regular, com duração adequada e ambiente propício, é uma das estratégias mais eficazes para promover bem‑estar e longevidade.",
+   "ms": 11083,
+   "texto": "Dormir bem é fundamental para a saúde física e mental, pois durante o sono o corpo realiza processos de reparação celular, consolidação da memória e regulação hormonal. A privação crônica de sono está associada a maior risco de doenças cardiovasculares, obesidade, diabetes e transtornos de humor, além de reduzir a capacidade de atenção e tomada de decisão. Portanto, manter uma rotina de sono regular, com duração adequada e ambiente propício, é essencial para preservar o bem‑estar e o desempenho diário.",
    "trecho": "Dormir bem é fundamental para a saúde física e mental, pois durante o sono o corpo realiza processos de reparação celular, consolidação da memória e regulação hormonal. A privação crônica de sono está",
-   "fim": "ício, é uma das estratégias mais eficazes para promover bem‑estar e longevidade."
+   "fim": "ambiente propício, é essencial para preservar o bem‑estar e o desempenho diário."
   }
  ]
 }

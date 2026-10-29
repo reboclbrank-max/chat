@@ -1666,6 +1666,9 @@
     // Pedir um dado verificável em TODO parágrafo é instrução genérica, não adaptação ao gabarito.
     exige += ' Inclua obrigatoriamente pelo menos um dado verificável: um nome próprio, uma data, ' +
       'um número ou um termo técnico específico da área.';
+    // TENTATIVA DESCARTADA (medida em 28/10): pedir "cubra definição, funcionamento, exemplo e
+    // consequências" alongou o texto e PIOROU a cobertura — o item da fotossíntese passou a não citar
+    // oxigênio e levou 102 s. Instrução de cobertura ampla faz o modelo divagar em vez de cobrir.
     return 'Tema do texto: ' + pergunta + '\n\n' +
       'Escreva SOMENTE o parágrafo ' + (i + 1) + ' de ' + n + ', em português do Brasil, com ' +
       (minPor + 15) + ' a ' + (minPor + 55) + ' palavras, em 3 a 5 frases completas. ' + (foco || '') + exige +
@@ -1766,6 +1769,10 @@
     for (var i = 0; i < n; i++) blocos[i] = await paragrafo(i, {});
     if (blocos.some(function (b) { return !b; })) return null;
     var texto = blocos.join('\n\n');
+    // 90% do mínimo: texto curto passa em textoCompleto (que só dá nota), mas não cumpre o pedido
+    // (medido: item de 60 palavras entregue com 45 e aceito)
+    var totalPalavras = texto.split(/\s+/).filter(Boolean).length;
+    if (totalPalavras < Math.floor(minTotal * 0.9)) return null;
     if (!textoCompleto(texto, minTotal)) return null;
     return {
       texto: texto, rota: 'texto-longo', rotaNome: 'geração por parágrafo',
