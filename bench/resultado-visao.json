@@ -5,8 +5,8 @@
   "acertos": 11,
   "pct": 100,
   "semResposta": 0,
-  "duracaoS": 284,
-  "latenciaMedianaMs": 2369
+  "duracaoS": 260,
+  "latenciaMedianaMs": 2602
  },
  "res": [
   {
@@ -18,7 +18,7 @@
    "resp": "7",
    "ok": true,
    "rota": "ovhvl",
-   "ms": 1681
+   "ms": 1708
   },
   {
    "id": 2,
@@ -29,7 +29,7 @@
    "resp": "9",
    "ok": true,
    "rota": "ovhvl",
-   "ms": 1459
+   "ms": 2042
   },
   {
    "id": 3,
@@ -40,7 +40,7 @@
    "resp": "123",
    "ok": true,
    "rota": "ovhvl",
-   "ms": 1301
+   "ms": 2910
   },
   {
    "id": 4,
@@ -51,7 +51,7 @@
    "resp": "Q",
    "ok": true,
    "rota": "ovhvl",
-   "ms": 1593
+   "ms": 2567
   },
   {
    "id": 5,
@@ -62,7 +62,7 @@
    "resp": "AZUL",
    "ok": true,
    "rota": "ovhvl",
-   "ms": 2626
+   "ms": 2748
   },
   {
    "id": 6,
@@ -73,7 +73,7 @@
    "resp": "CASA",
    "ok": true,
    "rota": "ovhvl",
-   "ms": 3533
+   "ms": 2607
   },
   {
    "id": 7,
@@ -85,7 +85,7 @@
    "resp": "3",
    "ok": true,
    "rota": "ovhvl",
-   "ms": 2369
+   "ms": 2602
   },
   {
    "id": 8,
@@ -97,7 +97,7 @@
    "resp": "2",
    "ok": true,
    "rota": "ovhvl",
-   "ms": 1663
+   "ms": 1342
   },
   {
    "id": 9,
@@ -108,7 +108,7 @@
    "resp": "42",
    "ok": true,
    "rota": "ovhvl",
-   "ms": 3128
+   "ms": 2430
   },
   {
    "id": 10,
@@ -119,7 +119,7 @@
    "resp": "esquerda",
    "ok": true,
    "rota": "ovhvl",
-   "ms": 2753
+   "ms": 4293
   },
   {
    "id": 11,
@@ -130,7 +130,7 @@
    "resp": "direita",
    "ok": true,
    "rota": "ovhvl",
-   "ms": 2545
+   "ms": 4816
   }
  ]
 }
