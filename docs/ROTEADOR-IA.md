@@ -185,3 +185,17 @@ Régua de 200 volta a **200/200** (mediana 952 ms), holdout 105/105, difícil 30
 **Texto longo, latência.** `tools/sonda-latencia-paragrafo.js`: laguna 9,2 s e compliant; nemotron-ultra 20,4 s e 359 palavras (estoura); qwen-397 11,1 s mas devolve raciocínio sem conclusão; lightning acima de 60 s. Parágrafos vão em paralelo (até 3 workers em 3 provedores distintos), com o host escolhido por **latência medida** — antes o primeiro da lista era o nemotron-ultra e o laguna era descartado por ser do mesmo provedor. Item de 3 parágrafos: 223 s → ~26 s.
 
 **Resíduos de conteúdo.** `Atenciosamente.` aplicado por código em e-mail/carta; falsos positivos `agradeço a atenção` e `ficamos à disposição` deixaram de contar como despedida; lista cobra a cota de palavras por item; `numerarLista` numera listas soltas.
+
+## 12. v7 (29/10/2026) — os bugs atrás do "numero que caiu", e a regra de medir
+
+Três defeitos reais, achados ao investigar a queda de 22/24 para 20/24:
+
+1. `sanear()` rejeitava parágrafo inteiro — a regra "frase com minúscula, sem número e com ponto final é resto de raciocínio" não tinha limite de tamanho. Parágrafo de 356 palavras descartado; item levou 119 s. Agora vale só até 12 palavras.
+2. Raciocínio em inglês ("We need to produce only paragraph 1 of 2…") era aceito como parágrafo. Cabeçalho de raciocínio ampliado.
+3. Lista inteira caía quando um item falhava (3 passos/60 palavras entregues com 36). Agora espera a rota livre e refaz só o item.
+
+Arquitetura, medida: paralelo **não** compensa (laguna faz 6 parágrafos seguidos em 3,8–9,6 s; 2–3 workers estouram cota e levam 130–200 s) e o dedupe por provedor passa a escolher o modelo de **menor latência medida**, não o de maior peso.
+
+Latência do texto longo: 84 s (v5) → 30,6 s (v6) → **16–19 s** (v7, janela boa).
+
+Qualidade, 4 execuções completas do mesmo código: **18, 19, 21, 18 de 24** (média 79,2%). A amplitude (3 itens) é maior que a diferença entre v5/v6/v7 — logo, número dessa régua só vale com 3 execuções e a amplitude ao lado.

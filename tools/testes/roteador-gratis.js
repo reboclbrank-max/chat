@@ -216,6 +216,21 @@ if (typeof sanear === 'function') {
   ok('numerarLista respeita o limite pedido', nl && nl('- a\n- b\n- c', 2) === '1. a\n2. b');
   ok('numerarLista não toca texto sem lista', nl && nl('Texto corrido sem marcadores.', 3) === 'Texto corrido sem marcadores.');
 
+  // cobertura: todo parágrafo tem de carregar um dado verificável (foi o que derrubou 3 itens
+  // da régua aberta com texto bem formado e sem nada concreto)
+  const ipc = I.instrucaoParagrafo;
+  ok('instrução de parágrafo exige dado verificável',
+     ipc && /dado verificável/.test(ipc('Explique o que é a LGPD em dois parágrafos.', 0, 2, 50, '')));
+  ok('instrução de parágrafo exige nome, data, número ou termo técnico',
+     ipc && /nome próprio/.test(ipc('Explique o que é a LGPD em dois parágrafos.', 0, 2, 50, '')));
+
+  // a regra de "frase minúscula = resto de raciocínio" NÃO pode matar parágrafo longo
+  // (bug real da rodada 98: 356 palavras descartadas e 119 s de espera)
+  const parLongo = 'a fotossíntese é o processo pelo qual as plantas convertem luz em energia química. ' +
+    'Ela ocorre nos cloroplastos e envolve duas etapas distintas. A primeira depende da luz.';
+  ok('parágrafo longo começando com minúscula passa', sanear(parLongo) === parLongo, JSON.stringify(String(sanear(parLongo)).slice(0, 30)));
+  ok('resto curto de raciocínio continua rejeitado', sanear('the price.') === '' && sanear('actually looking here.') === '');
+
   // régua estrita: acento conta. Se o afrouxamento de acento estivesse mascarando erro, isto pega.
   ok('estrito: "caracois" não passa por "caracóis"', api.internos && require('../../bench/pontuar.js').acertou('caracois', ['caracóis'], null, { estrito: true }) === false);
   ok('estrito: "caracóis" passa', require('../../bench/pontuar.js').acertou('caracóis', ['caracóis'], null, { estrito: true }) === true);

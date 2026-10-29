@@ -1,0 +1,27 @@
+✔ # 1  228p 17880ms  
+✔ # 2  189p 12175ms  
+✔ # 3  260p 22858ms  
+✔ # 4   99p 76189ms  
+✘ # 5   36p 162491ms  curto (36<60)
+✘ # 6  102p 68736ms  falta fato #3 (ambient)
+✔ # 7  197p 10334ms  
+✔ # 8  205p 16488ms  
+✔ # 9  257p 19276ms  
+✔ #10   65p 115924ms  
+✔ #11  224p 13573ms  
+✔ #12  286p 18737ms  
+✔ #13  224p 20277ms  
+✔ #14  217p 14630ms  
+✔ #15  244p 14995ms  
+✔ #16  179p  9724ms  
+✔ #17  202p 10300ms  
+✔ #18   92p 78832ms  
+✔ #19   75p 17549ms  
+✔ #20  293p 21434ms  
+✔ #21   78p 41144ms  
+✘ #22  231p 26635ms  falta fato #1 (painel)
+✔ #23  179p 10860ms  
+✔ #24   85p  9916ms  
+
+{"modo":"depois","total":24,"passaram":21,"pct":87.5,"medianaPalavras":202,"cortados":0,"curtos":1,"faltouFato":2,"medianaMs":18737}
+salvo em /home/user/chat-v2/bench/resultado-aberto-depois.json
