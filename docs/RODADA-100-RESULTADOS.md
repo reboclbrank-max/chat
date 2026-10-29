@@ -19,9 +19,11 @@ Data: 29/10/2026. Este registro separa os resultados medidos das hipóteses e pr
 | 100, rubrica original | 21/24, mediana 27,6 s | Código `eccc2a2d…`, antes da adição dos avisos; uma execução |
 | 100, mesmos textos com gabarito corrigido | 23/24 | Correção de #6 e #22; **não é uma nova execução** |
 | Holdout aberto | 5/6 | Uma execução, seis questões públicas; #104 veio com um parágrafo e 69 palavras após 235,5 s |
-| Visão, remedição anterior | 11/11, zero sem-resposta | 11 imagens sintéticas simples; 2,6 s é a última chamada, execução total 260 s |
+| Visão, código final | 11/11, zero sem-resposta | 11 imagens sintéticas simples; mediana de **9,49 s de parede**, 3,79 s da última chamada, total 260 s |
 
-As medições finais, com o código dos avisos e o cronômetro completo de visão, são registradas em arquivo próprio assim que concluídas; não se projeta o resultado antecipadamente. As quatro execuções da rodada 98 foram feitas com **códigos diferentes**, ao contrário do que foi dito antes; não sustentam uma conclusão de equivalência estatística ou causa única.
+A repetição da régua após acrescentar os avisos foi interrompida em **4/24**, sem placar: o item #3 demorou 307 s e a cota estava pressionada. Não há três execuções completas da versão final. A medição de 21/24 e o holdout 5/6 usaram a versão imediatamente anterior, com SHA-256 registrado; `bench/diff-avisos-100.patch` aplicado em reverso recompõe esse hash e permite conferir que a diferença são os metadados de aviso. Os testes verificam que o texto bruto não muda. A amostra de seis perguntas é pública e não foi medida antes: **não prova melhoria no holdout**.
+
+As quatro execuções da rodada 98 foram feitas com **códigos diferentes**, ao contrário do que foi dito antes; não sustentam uma conclusão de equivalência estatística ou causa única.
 
 ## Avaliação qualitativa
 
@@ -35,9 +37,13 @@ node tools/testes/roteador-resiliencia.js
 node tools/testes/estado-aberto.js
 node bench/reavaliar-aberto.js bench/resultado-aberto-99-a.json bench/resultado-aberto-99-b.json bench/resultado-aberto-100-original.json
 node bench/estilo.js bench/resultado-aberto-99-a.json
+# Conferir a diferença entre a versão textual medida e a versão com aviso:
+cp roteador-ia.js /tmp/roteador-comparar.js
+patch --reverse /tmp/roteador-comparar.js < bench/diff-avisos-100.patch
+sha256sum /tmp/roteador-comparar.js
 ```
 
-A barreira local passou **101/101**, com três cenários ignorados por pré-requisitos ausentes; a continuidade, **22/22**. A medição e o roteador usam provedores gratuitos, sujeitos a disponibilidade e cota.
+A visão final está em `bench/resultado-visao-100.json`. Quatro pedidos precisaram de três tentativas e demoraram cerca de 48–57 s; a mediana esconde essa cauda. A barreira local passou **101/101**, com três cenários ignorados por pré-requisitos ausentes; a continuidade, **22/22**. A medição e o roteador usam provedores gratuitos, sujeitos a disponibilidade e cota.
 
 ## O que permanece aberto
 

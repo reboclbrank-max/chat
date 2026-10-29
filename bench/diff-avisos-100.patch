@@ -1,0 +1,50 @@
+--- roteador-medido-antes-do-aviso.js
++++ roteador-final.js
+@@ -1140,0 +1141,21 @@
++  /* Formato e veracidade são coisas diferentes: comprimento e parágrafos não certificam fatos.
++     O aviso é metadado; não adultera a resposta nem a rubrica de texto. */
++  function anotarRespostaAberta(resposta, ex) {
++    if (!resposta || !resposta.texto) return resposta;
++    var r = Object.assign({}, resposta), faltas = [];
++    var blocos = String(r.texto).split(/\n+/).filter(function (p) { return p.trim().length > 0; }).length;
++    var itens = (String(r.texto).match(/^\s*(?:[-*•]|\d+[.)])\s+\S/gm) || []).length;
++    ex = ex || {};
++    if (ex.paragrafos >= 2 && blocos < ex.paragrafos) faltas.push(blocos + ' de ' + ex.paragrafos + ' parágrafos');
++    if (ex.itens >= 2 && itens < ex.itens) faltas.push(itens + ' de ' + ex.itens + ' itens');
++    r.confianca = 'nao_verificada';
++    r.verificacaoFactual = 'nao_verificada';
++    if (faltas.length) {
++      r.incompleto = true;
++      r.avisoFormato = 'A resposta veio com ' + faltas.join(' e ') + ' solicitados. Confira ou tente novamente.';
++    } else {
++      delete r.incompleto; delete r.avisoFormato;
++    }
++    return r;
++  }
++
+@@ -1925 +1946,8 @@
+-    if (doCache) { this.metricas.cacheAcertos++; return Object.assign({}, doCache, { cache: true }); }
++    if (doCache) {
++      this.metricas.cacheAcertos++;
++      var respostaCache = Object.assign({}, doCache, { cache: true });
++      var tipoCache = (typeof pedido === 'object' && pedido.tipo) || classificarPedido(pergunta);
++      if (tipoCache === 'aberto' && !respostaCache.ferramenta)
++        respostaCache = anotarRespostaAberta(respostaCache, exigenciaDoPedido(pergunta));
++      return respostaCache;
++    }
+@@ -1959 +1987 @@
+-        if (lista) { this._cacheSet(chave, lista); this.metricas.sucessos++; return lista; }
++        if (lista) { lista = anotarRespostaAberta(lista, ex); this._cacheSet(chave, lista); this.metricas.sucessos++; return lista; }
+@@ -1963 +1991 @@
+-        if (longo) { this._cacheSet(chave, longo); this.metricas.sucessos++; return longo; }
++        if (longo) { longo = anotarRespostaAberta(longo, ex); this._cacheSet(chave, longo); this.metricas.sucessos++; return longo; }
+@@ -1979 +2007 @@
+-      if (ga) { this._cacheSet(chave, ga); this.metricas.sucessos++; return ga; }
++      if (ga) { ga = anotarRespostaAberta(ga, ex); this._cacheSet(chave, ga); this.metricas.sucessos++; return ga; }
+@@ -1991,0 +2020 @@
++        if (tipo === 'aberto') c = anotarRespostaAberta(c, exigenciaDoPedido(pergunta));
+@@ -2024,0 +2054 @@
++          if (tipo === 'aberto') saida = anotarRespostaAberta(saida, exigenciaDoPedido(pergunta));
+@@ -2045 +2075 @@
+-  api.internos = { sanear: sanear, util: util, extrairConclusao: extrairConclusao, calendarioLocal: calendarioLocal, fragmento: fragmento, instrucaoParagrafo: instrucaoParagrafo, extrairPlano: extrairPlano, fecharTexto: fecharTexto, termosDoPedido: termosDoPedido, calcular: calcular, instrucaoFormato: instrucaoFormato, ajustarFechamento: ajustarFechamento, numerarLista: numerarLista,
++  api.internos = { sanear: sanear, util: util, extrairConclusao: extrairConclusao, calendarioLocal: calendarioLocal, fragmento: fragmento, instrucaoParagrafo: instrucaoParagrafo, extrairPlano: extrairPlano, fecharTexto: fecharTexto, termosDoPedido: termosDoPedido, calcular: calcular, instrucaoFormato: instrucaoFormato, ajustarFechamento: ajustarFechamento, numerarLista: numerarLista, anotarRespostaAberta: anotarRespostaAberta,

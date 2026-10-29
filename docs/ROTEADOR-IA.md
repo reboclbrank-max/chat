@@ -227,10 +227,13 @@ justificadas em `docs/AUDITORIA-REGUA-ABERTA-100.md`. A reavaliação das mesmas
 geração nova. Uma passada real do gerador, com a rubrica original, deu **21/24 e 27,6 s** de
 mediana; o holdout de seis perguntas deu **5/6** (o item #104 ficou com um parágrafo, após
 235,5 s). Ambos usaram o código com hash `eccc2a2d…`, anterior apenas à adição dos metadados
-de aviso de formato e verificação; uma nova medição está em andamento.
+de aviso de formato e verificação. A repetição com esses metadados foi interrompida após 4/24
+itens, sem placar, quando um item levou 307 s. O arquivo `bench/diff-avisos-100.patch`, aplicado
+em reverso, reconstitui o hash da versão medida; os testes de aviso não alteram o texto bruto.
 
-O cronômetro da visão agora registra duração total por pedido além da última tentativa. O dado
-anterior de 2,6 s era apenas o tempo da última chamada, não o tempo de espera total do usuário.
+O cronômetro da visão agora registra duração total por pedido além da última tentativa. No novo
+teste, 11/11: mediana real **9,49 s**, mediana da última chamada 3,79 s, total 260 s. O dado
+anterior de 2,6 s era apenas a última chamada, não o tempo total do usuário.
 
 O prompt não obriga nome próprio, data ou número não verificado. O plano é recebido como lista
 multilinha e filtrado; a segunda tentativa tem prazo próprio limitado. Testes offline conferem que
