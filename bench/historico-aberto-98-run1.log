@@ -1,0 +1,27 @@
+✔ # 1  201p 13127ms  
+✔ # 2  174p 16067ms  
+✘ # 3  283p 15376ms  falta fato #1 (s[ée]culo (XVIII)
+✔ # 4  107p 79728ms  
+✘ # 5   45p 135834ms  curto (45<60)
+✘ # 6   67p 102380ms  falta fato #3 (ambient)
+✔ # 7  152p 14295ms  
+✔ # 8  230p 13378ms  
+✔ # 9  235p 17767ms  
+✔ #10   83p 55486ms  
+✔ #11  277p 10665ms  
+✔ #12  246p 20186ms  
+✔ #13  205p 12971ms  
+✔ #14  224p 12930ms  
+✔ #15  223p 11243ms  
+✘ #16  251p 13932ms  falta fato #1 (rio)
+✔ #17  210p 15614ms  
+✘ #18   98p 124218ms  falta fato #3 (fome)
+✔ #19   71p 23769ms  
+✔ #20  350p 30735ms  
+✔ #21   79p 31960ms  
+✘ #22  242p 15195ms  falta fato #1 (painel)
+✔ #23  198p 18081ms  
+✔ #24   80p 11083ms  
+
+{"modo":"depois","total":24,"passaram":18,"pct":75,"medianaPalavras":205,"cortados":0,"curtos":1,"faltouFato":5,"medianaMs":16067}
+salvo em /home/user/chat-v2/bench/resultado-aberto-depois.json
