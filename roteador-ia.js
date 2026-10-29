@@ -691,7 +691,7 @@
      A rota é medida por `bench/medir-visao.js`, não por promessa. */
   var ROTAS_VISAO = [
     { id: 'ovhvl', nome: 'Qwen3.5-397B (visão, OVH)', modelo: 'Qwen3.5-397B-A17B',
-      base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1', intervalo: 4000 }
+      base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1', intervalo: 6000 }
   ];
 
   Roteador.prototype._chamarVisao = async function (rota, imagem, pergunta, opcoes) {
@@ -737,14 +737,19 @@
     for (var i = 0; i < ROTAS_VISAO.length; i++) {
       var rota = ROTAS_VISAO[i];
       var sv = this.saudeVisao[rota.id] || (this.saudeVisao[rota.id] = { ultima: 0 });
-      for (var t = 0; t < 3; t++) {
-        var falta = sv.ultima + (rota.intervalo || 4000) - agora();
+      // a cota de visão é a mais apertada do conjunto: 5 tentativas, respeitando Retry-After
+      for (var t = 0; t < 5; t++) {
+        var falta = sv.ultima + (rota.intervalo || 6000) - agora();
         if (falta > 0) await new Promise(function (res) { setTimeout(res, falta); });
         sv.ultima = agora();
         var r = await this._chamarVisao(rota, imagem, pergunta);
         if (r.texto) return { texto: r.texto, rota: rota.id, rotaNome: rota.nome, classe: 'visao',
           confianca: 'alta', tentativas: t + 1, ms: r.ms };
-        if (r.erro === 'rate') { await new Promise(function (res) { setTimeout(res, 4000 * (t + 1) + Math.random() * 2000); }); continue; }
+        if (r.erro === 'rate') {
+          var espera = r.espera ? r.espera * 1000 : (6000 * (t + 1) + Math.random() * 2000);
+          await new Promise(function (res) { setTimeout(res, Math.min(espera, 25000)); });
+          continue;
+        }
         break;
       }
     }
@@ -1624,7 +1629,8 @@
     if (!t) return t;
     var q = String(pergunta || '').toLowerCase();
     if (!/e-?mail|carta|of[íi]cio|requerimento|mensagem formal/.test(q)) return t;
-    if (/atenciosamente|cordialmente|respeitosamente|abra[çc]os|sinceramente|à disposi[çc][ãa]o/i.test(t)) return t;
+    // "ficamos à disposição" é frase de corpo, não despedida — já causou falso positivo uma vez
+    if (/atenciosamente|cordialmente|respeitosamente|abra[çc]os|sinceramente/i.test(t)) return t;
     // ponto final, não vírgula: a verificação de "texto fechado" exige pontuação terminal
     return t + '\n\nAtenciosamente.';
   }
