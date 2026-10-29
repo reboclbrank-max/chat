@@ -27,7 +27,9 @@ const sum=resumo(completo,agenda);assert(sum.original.A.completo&&sum.original.B
 function sha(p){return crypto.createHash('sha256').update(fs.readFileSync(path.join(raiz,p))).digest('hex');}
 assert.equal(sha('bench/banco-aberto-antes-100.json'),'f00a1ed677974487bc70024ddb4e083e3fd11fe41e139c5a1270f7c6d68558e2');
 assert.equal(sha('bench/controle-101-roteador.js'),'5ff3587204e2b1394bcbb7f64b4705cc605a83bdf59c4b159e419192f4f48e27');
-assert.equal(sha('bench/avaliar-aberto.js'),'f3ff579d3ca2a56b735b1c414791eab1050eb58e0367d5ec2c1bbad8ba25665e');
+assert.equal(sha('bench/avaliar-aberto.js'),'84994993f185630095ffb3f5111f0ad49837a6f29565da75df55f1f767579f90');
+// As equivalências mudam a nota: o arquivo também fica preso ao hash para não mudar em silêncio.
+assert.equal(sha('bench/equivalencias-rubrica.js'),'ec65bd1c0dd7ab21b5f914d50b345105ec8c2e4d15bb053d2d23fef96a8f5ab3');
 for(const it of novo) {
   assert.equal(avaliar('',it).ok,false,'vazio não pode passar');
   const t='Uma resposta sem os conceitos específicos. '.repeat(20)+'\n\n'+ 'Outra parte sem os conceitos específicos. '.repeat(20);

@@ -6,6 +6,11 @@
   'use strict';
 
   var CATALOGO = [
+    /* Rotas com chave do dono. O mecanismo fica pronto e INATIVO enquanto não houver chave:
+       `disponivel()` devolve false e a rota nem é tentada. Nenhuma chave vai para o repositório;
+       a pessoa cola com `!chave groq <valor>` e ela fica só no localStorage do navegador.
+       Groq: contrato proíbe treinar com input/output do cliente (ver docs/RODADA-103). */
+    { id: 'groq',      nome: 'Groq gpt-oss-120b',             base: 'https://api.groq.com/openai/v1',                            modelo: 'openai/gpt-oss-120b',                               classe: 'forte' , peso: 98, chaveLS: 'rebocl_chave_groq' },
     { id: 'gigante2',  nome: 'Nemotron-3-Ultra-550B (Kilo)',  base: 'https://api.kilo.ai/api/gateway',                          modelo: 'nvidia/nemotron-3-ultra-550b-a55b:free',            classe: 'forte' , peso: 100, latPar: 20400 },
     { id: 'ultra',     nome: 'Nemotron-3-Ultra-550B (g4f)',   base: 'https://nvidia.g4f.dev/v1',                                modelo: 'nvidia/nemotron-3-ultra-550b-a55b',                 classe: 'media' , peso: 10 },
     { id: 'ovhq397',   nome: 'Qwen3.5-397B (OVH)',            base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Qwen3.5-397B-A17B',                                 classe: 'leve' , peso: 7, latPar: 900000 },  // devolve raciocínio sem conclusão: não escreve parágrafo
@@ -600,13 +605,23 @@
     this.cacheTtl = opcoes.cacheTtl || 15 * 60 * 1000;
     this.orcamento = opcoes.orcamento || 110000;
     this.timeoutRota = opcoes.timeoutRota || 25000;
+    // Piso e teto do timeout adaptativo por rota (ver _limiteRota).
+    this.timeoutMinimo = opcoes.timeoutMinimo || 6000;
+    // De onde sai a chave da rota. No navegador é o localStorage; em teste/Node é injetável.
+    this.lerChave = opcoes.lerChave || function (servico) {
+      try {
+        if (typeof localStorage === 'undefined' || !localStorage) return null;
+        var v = localStorage.getItem(servico);
+        return v && String(v).trim() ? String(v).trim() : null;
+      } catch (e) { return null; }
+    };
     this.voltasMax = opcoes.voltasMax || 4;
     this.votos = opcoes.votos || 3;              // quantos modelos votam no consenso
     this.ferramentasLigadas = opcoes.ferramentas !== false;
     this.metricas = { perguntas: 0, tentativas: 0, sucessos: 0, falhas: 0, cacheAcertos: 0, ferramenta: 0, consenso: 0, consensoDivergente: 0, porRota: {} };
     var self = this;
     this.catalogo.forEach(function (r) {
-      self.saude[r.id] = { ok: 0, falhas: 0, cooldownAte: 0, latMedia: 3000, ultimoErro: null, morta: false };
+      self.saude[r.id] = { ok: 0, falhas: 0, falhasSeguidas: 0, cooldownAte: 0, latMedia: 3000, latAmostras: 0, ultimoErro: null, morta: false };
       self.metricas.porRota[r.id] = { ok: 0, falhas: 0 };
     });
   }
@@ -641,8 +656,27 @@
     var s = this.saude[id];
     if (!s || s.morta) return false;
     var rota = this.catalogo.find(function (r) { return r.id === id; });
-    return !!rota && agora() >= this._ateDisponivel(rota);
+    if (!rota) return false;
+    // Rota que exige chave só existe quando a chave existe. Sem chave: não é tentada,
+    // não consome tempo e não aparece em erro para a pessoa.
+    if (rota.chaveLS && !this.lerChave(rota.chaveLS)) return false;
+    return agora() >= this._ateDisponivel(rota);
   };
+
+  /* Timeout por rota a partir do que a própria rota já mostrou.
+     Medido na rodada 102: 21 timeouts custaram 24,8 s cada (8,7 min da janela) — esperar 25 s
+     por rota que nunca respondeu é o maior desperdício isolado do sistema.
+     Regra: sem amostra, usa o teto configurado; com amostra, 2,5× a latência média observada,
+     respeitando piso e teto; rota que já estourou o relógio 2× seguidas desce para 1,6×. */
+  Roteador.prototype._limiteRota = function (rota, tetoPedido) {
+    var s = this.saude[rota.id];
+    var pedido = tetoPedido || this.timeoutRota;
+    if (!s || !s.latAmostras) return pedido;   // sem amostra: comportamento antigo, intacto
+    var fator = s.falhasSeguidas >= 2 && s.ultimoErro === 'timeout' ? 1.6 : 2.5;
+    var estimado = Math.round(s.latMedia * fator);
+    return Math.max(this.timeoutMinimo, Math.min(pedido, estimado));
+  };
+
 
   /* ============ CONSULTAS EXATAS (R$ 0, sem LLM) ============ */
 
@@ -1617,6 +1651,11 @@
     ordem.forEach(function (classe) {
       var grupo = self.catalogo.filter(function (r) { return r.classe === classe; });
       grupo.sort(function (a, b) {
+        // Rota que falhou 3+ vezes seguidas nesta sessão vai para o fim da classe: continua
+        // alcançável como último recurso, mas não gasta 25 s na frente de quem responde.
+        var pa = self.saude[a.id].falhasSeguidas >= 3 ? 1 : 0;
+        var pb = self.saude[b.id].falhasSeguidas >= 3 ? 1 : 0;
+        if (pa !== pb) return pa - pb;
         // peso = acerto medido no banco difícil (bench/medir-rotas.js). Força real antes de velocidade.
         var dp = (b.peso || 0) - (a.peso || 0);
         if (dp !== 0) return dp;
@@ -1629,7 +1668,7 @@
 
   Roteador.prototype._castigar = function (id, tipo, espera) {
     var s = this.saude[id], rota = this.catalogo.find(function (r) { return r.id === id; });
-    s.falhas++; s.ultimoErro = tipo;
+    s.falhas++; s.falhasSeguidas = (s.falhasSeguidas || 0) + 1; s.ultimoErro = tipo;
     this.metricas.porRota[id].falhas++;
     if (tipo === 'rate') {
       // Retry-After não é encurtado para caber no orçamento do usuário: paramos antes.
@@ -1651,9 +1690,11 @@
   Roteador.prototype._premiar = function (id, ms) {
     var s = this.saude[id];
     s.ok++;
+    s.falhasSeguidas = 0;
     // Uma resposta em voo não cancela um 429 mais recente da mesma rota.
     if (s.cooldownAte <= agora()) s.cooldownAte = 0;
     s.latMedia = s.latMedia * 0.7 + (ms || 0) * 0.3;
+    s.latAmostras = (s.latAmostras || 0) + 1;
     this.metricas.porRota[id].ok++;
   };
 
@@ -1679,12 +1720,18 @@
     var opc = opcoes || {};
     var url = rota.base.replace(/\/$/, '') + '/chat/completions';
     var c = new AbortController();
-    var limite = timeoutMs || (opc.longo ? 45000 : this.timeoutRota);
+    var limite = this._limiteRota(rota, timeoutMs || (opc.longo ? 45000 : this.timeoutRota));
     var t = setTimeout(function () { c.abort(); }, limite);
     var t0 = agora();
     try {
+      var cabecalhos = { 'Content-Type': 'application/json' };
+      if (rota.chaveLS) {
+        var chave = this.lerChave(rota.chaveLS);
+        if (!chave) return { erro: 'sem_chave', ms: agora() - t0 };
+        cabecalhos['Authorization'] = 'Bearer ' + chave;
+      }
       var r = await fetch(url, {
-        method: 'POST', signal: c.signal, headers: { 'Content-Type': 'application/json' },
+        method: 'POST', signal: c.signal, headers: cabecalhos,
         body: JSON.stringify({
           model: rota.modelo,
           temperature: opc.temperatura == null ? 0 : opc.temperatura,

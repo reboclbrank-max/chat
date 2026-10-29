@@ -46,7 +46,12 @@ assert.strictEqual(apenasTermos(novo, 11, 'A luz azul sofre dispersão.'), true,
 for (const variante of ['painel', 'painéis', 'paineis', 'placa', 'módulo solar', 'módulos solares', 'módulo fotovoltaico', 'módulos fotovoltaicos']) {
   assert.strictEqual(apenasTermos(novo, 22, 'O ' + variante + ' usa luz para gerar corrente.'), true, variante);
 }
-assert.strictEqual(apenasTermos(antigo, 22, 'Os painéis usam luz para gerar corrente.'), false);
+// O falso negativo histórico era do MOTOR da rubrica, não do banco: a regex crua não via o plural.
+// A correção vale para a rubrica inteira (os dois lados da comparação), então o banco antigo
+// também passa a aceitar "painéis" — registrado aqui para o histórico não ser reescrito.
+const casaCru = (padrao, texto) => new RegExp(padrao, 'i').test(texto);
+assert.strictEqual(casaCru(porId(antigo, 22).contem[0], 'Os painéis usam luz para gerar corrente.'), false, 'regex crua do gabarito antigo');
+assert.strictEqual(apenasTermos(antigo, 22, 'Os painéis usam luz para gerar corrente.'), true, 'depois das equivalências verificáveis, o plural é reconhecido também no banco antigo');
 assert.strictEqual(apenasTermos(novo, 22, 'A luz gera corrente.'), false, 'não basta apenas luz e corrente');
 assert.strictEqual(apenasTermos(novo, 22, 'O módulo de atendimento recebe luz para gerar corrente.'), false, 'módulo genérico não é painel fotovoltaico');
 
@@ -63,10 +68,19 @@ for (const item of auditado101) {
   }
 }
 const britanha = 'A Revolução Industrial começou na Grã-Bretanha, com vapor e gente do campo nas cidades.';
-assert.strictEqual(apenasTermos(novo, 3, britanha), false);
+// Rodada 103: a equivalência verificável "Grã-Bretanha ≈ Inglaterra" passa a valer para a rubrica
+// inteira (antes só existia no banco auditado de 101, e a régua de 102 usou o banco anterior).
+assert.strictEqual(apenasTermos(novo, 3, britanha), true, 'Grã-Bretanha com verbo de origem é o mesmo fato');
 assert.strictEqual(apenasTermos(auditado101, 3, britanha), true);
-assert.strictEqual(apenasTermos(auditado101, 3, 'A Revolução Industrial não começou na Grã-Bretanha, com vapor e gente do campo nas cidades.'), false);
-assert.strictEqual(apenasTermos(auditado101, 3, 'A Revolução Industrial surgiu em 1760; na Grã-Bretanha havia vapor e gente do campo nas cidades.'), false);
+// A guarda de negação continua valendo — é o que impede aceitar o contrário do fato.
+assert.strictEqual(apenasTermos(auditado101, 3, 'A Revolução Industrial não começou na Grã-Bretanha, com vapor e gente do campo nas cidades.'), false, 'negação não pode passar');
+assert.strictEqual(apenasTermos(novo, 3, 'A Revolução Industrial não começou na Grã-Bretanha, com vapor e gente do campo nas cidades.'), false, 'negação também não passa no banco base');
+// Rodada 103: "surgiu em 1760" é o século XVIII por aritmética (1700–1799), não por sinônimo.
+// Vale para a rubrica vigente (banco base). O banco auditado de 101 tem padrão próprio e mais
+// longo, e continua com o veredito que a auditoria de 101 fixou — as duas réguas não se misturam.
+assert.strictEqual(apenasTermos(novo, 3, 'A Revolução Industrial surgiu em 1760, com vapor e gente do campo nas cidades.'), true, '1760 é século XVIII');
+assert.strictEqual(apenasTermos(novo, 3, 'A Revolução Industrial surgiu em 1860, com vapor e gente do campo nas cidades.'), false, '1860 é século XIX');
+assert.strictEqual(apenasTermos(auditado101, 3, 'A Revolução Industrial surgiu em 1760; na Grã-Bretanha havia vapor e gente do campo nas cidades.'), false, 'padrão próprio do banco de 101 não muda');
 const modulosContextuais = 'A energia solar fotovoltaica usa luz para gerar corrente; cada célula é agrupada em módulos e conectada ao sistema.';
 assert.strictEqual(apenasTermos(novo, 22, modulosContextuais), false);
 assert.strictEqual(apenasTermos(auditado101, 22, modulosContextuais), true);
