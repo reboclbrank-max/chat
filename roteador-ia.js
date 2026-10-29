@@ -1217,11 +1217,20 @@
     if (!s || /(?:ignore|ignorar|desconsidere|esqueca|esqueça).{0,40}(?:instru|regras|sistema|prompt)|(?:system|assistant|developer)\s*:/i.test(s)) return '';
     return s.slice(0, 1200);
   }
+  /* Pedido em que enciclopédia atrapalha em vez de ajudar: escrita criativa, mensagem pessoal,
+     código. O mesmo critério vale para a base estática e para a busca viva — antes ele vivia só
+     dentro de selecionarFontesLocais. */
+  function fonteExternaPermitida(pergunta) {
+    var q = String(pergunta || '');
+    if (q.length > 900) return false;
+    if (/e-?mail|mensagem|carta|poema|hist[oó]ria fict[ií]cia|roteiro|c[oó]digo|fun[çc][ãa]o em programa/i.test(q)) return false;
+    return /(explique|explicando|resuma|descreva|o que [eé]|como funciona|escreva.*(?:sobre|import[aâ]ncia))/i.test(q);
+  }
+
   function selecionarFontesLocais(pergunta, base) {
     var q = String(pergunta || '');
     // Escrita criativa ou pessoal não precisa ser contaminada com uma enciclopédia genérica.
-    if (q.length > 900 || /e-?mail|mensagem|carta|poema|hist[oó]ria fict[ií]cia|roteiro|c[oó]digo|fun[çc][ãa]o em programa/i.test(q)) return [];
-    if (!/(explique|explicando|resuma|descreva|o que [eé]|como funciona|escreva.*(?:sobre|import[aâ]ncia))/i.test(q)) return [];
+    if (!fonteExternaPermitida(q)) return [];
     var qt = tokensFonte(q);
     if (!qt.length || qt.length > 14) return [];
     var linhas = base && Array.isArray(base.fontes) ? base.fontes : [];
@@ -1267,6 +1276,15 @@
      busca depois da primeira consulta (só o título resolvido), e o trecho entra rotulado como
      referência — não como verdade. Nada disso verifica se o texto é correto. */
   var VIVO_TETO_CHARS = 1800, VIVO_TETO_MS = 6000;
+  /* Ligado no produto (navegador) e na medição em Node via CHAT_FONTE_VIVA=1. Fica desligado em
+     `npm test` e em qualquer execução offline: teste de rede não é teste. */
+  function fonteVivaLigada(ambiente, pedido) {
+    if (typeof pedido === 'object' && pedido && pedido.fontes === 'vivo') return true;
+    if (typeof pedido === 'object' && pedido && pedido.fontes === false) return false;
+    if (typeof ambiente === 'object' && ambiente && ambiente.processo && ambiente.processo.env &&
+        ambiente.processo.env.CHAT_FONTE_VIVA === '1') return true;
+    return typeof ambiente === 'object' && ambiente && ambiente.navegador === true;
+  }
 
   function recortarFonte(texto, teto) {
     var t = String(texto || '').replace(/\s+/g, ' ').trim();
@@ -1283,8 +1301,6 @@
      virou o artigo "Caminho". Agora a consulta é a lista de termos juntos e a escolha é do
      resultado que cobre mais termos no título+resumo; com menos de 2 termos cobertos, não usa
      fonte nenhuma. Só os termos vão para a rede: a pergunta do usuário não sai inteira. */
-  var VIVO_MIN_TERMOS = 2;
-
   /* Termos para a BUSCA, que são outros: `termosDoPedido` exige 5 letras porque serve de
      instrução ao modelo, e isso descarta justamente as palavras que mais pesam numa consulta
      em português (água, rio, casa, luz, sol). Aqui o corte é 4 letras. */
@@ -1306,52 +1322,145 @@
     return saida.slice(0, 4);
   }
 
-  function radicalTermo(t) {
-    return String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]/g, '').slice(0, 6);
+  /* Radical comparável: sem acento, sem pontuação e sem plural. Sem tirar o plural, "rede
+     social" não casa com "redes sociais" e "oceano" não casa com "oceanos" — medido na
+     auditoria dos 36 itens. */
+  function normalizarPalavra(t) {
+    var w = String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]/g, '');
+    if (w.length <= 3) return w;
+    // Plural em português não é só "-s": sociais/social, animais/animal, papéis/papel.
+    // Sem isso "redes sociais" não casa com o título "Rede social" — medido no banco.
+    if (/ais$/.test(w)) return w.slice(0, -3) + 'al';
+    if (/eis$/.test(w)) return w.slice(0, -3) + 'el';
+    if (/ois$/.test(w)) return w.slice(0, -3) + 'ol';
+    if (/oes$/.test(w)) return w.slice(0, -3) + 'ao';
+    if (/aes$/.test(w)) return w.slice(0, -3) + 'ao';
+    if (/ns$/.test(w)) return w.slice(0, -2) + 'm';
+    return /s$/.test(w) ? w.slice(0, -1) : w;
+  }
+  function radicalTermo(t) { return normalizarPalavra(t).slice(0, 6); }
+
+  var PALAVRAS_DE_TITULO = ('de da do das dos e em na no nas nos para por com sobre a o as os ' +
+    'the of and').split(/\s+/).reduce(function (a, w) { a[w] = 1; return a; }, {});
+
+  function palavrasDoTitulo(titulo) {
+    return String(titulo || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s]/g, ' ').split(/\s+/)
+      .filter(function (w) { return w.length >= 3 && !PALAVRAS_DE_TITULO[w]; });
   }
 
   /* Decisão de casamento, separada da rede: é o que o banco de medição precisa poder exercitar
      com a mesma regra do produto. Devolve { escolhido, nota } ou null. */
-  function escolherFonte(achados, termos) {
-    var melhor = null, melhorNota = 0, melhorTitulo = 0;
-    var semAcento = function (x) {
-      return String(x || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    };
+  /* Casamento pergunta -> artigo, versão 2.
+     A versão 1 aceitava qualquer resultado que cobrisse 2 termos em título+resumo, e por isso
+     aceitou "Super Mario Bros. 35" para "fases da Lua" (o resumo fala de fases do jogo) e
+     "Cakewalk" para "receita de bolo". Dois critérios novos, medidos um a um na auditoria:
+       • temaNoTitulo: ao menos um termo do pedido precisa estar no TÍTULO do artigo. O resumo
+         casa por acidente e não diz do que o artigo trata;
+       • coberturaTitulo: ao menos metade das palavras do título precisa existir no pedido. Isso
+         derruba "Educação na cidade de São Paulo" para "impermeabilização do solo" sem derrubar
+         "Água pluvial" (metade das palavras do título está no pedido).
+     Exceção documentada: pergunta de um termo único (sigla, ex. LGPD) aceita quando o termo
+     aparece no resumo — não há ambiguidade sobre qual seja o tema. */
+  // Pelo menos 1/3 das palavras do título precisa existir no pedido (comparação inteira, sem
+  // erro de ponto flutuante): "Estação de tratamento de água" passa com "água", "Educação na
+  // cidade de São Paulo" não passa em pergunta nenhuma do banco.
+  var VIVO_FRACAO_TITULO = 3;
+  /* Palavras de relação, não de assunto. "caminho da água" casa com o título "Caminho" e o artigo
+     não tem nada a ver com o pedido — foi o defeito da rodada 102. Cobertura por palavra de
+     relação não conta como tema: para aceitar, é preciso um termo-sujeito no título ou dois
+     termos quaisquer. */
+  var TERMOS_RELACIONAIS = ('caminho forma modo jeito processo passo passos diferenca diferenca ' +
+    'importancia motivo razao causa efeito impacto ajuda funcionamento exemplo exemplos dica dicas ' +
+    'vantagem vantagens risco riscos tipo tipos papel relacao finalidade objetivo').split(/\s+/)
+    .reduce(function (a, w) { a[w] = 1; return a; }, {});
+  function termoRelacional(t) {
+    var r = normalizarPalavra(t);
+    return !!TERMOS_RELACIONAIS[r] || !!TERMOS_RELACIONAIS[radicalTermo(t)];
+  }
+
+  function escolherFonte(achados, termos, siglas) {
+    // Sigla em caixa alta (LGPD, SUS): o artigo quase nunca é titulado pela sigla, é titulado por
+    // extenso. Só nesse caso — pergunta de um termo só, sigla encontrada no resumo — o critério
+    // de título é dispensado, e continua exigindo que o resumo fale dela.
+    var sigla = (siglas || []).length === 1 ? normalizarPalavra(siglas[0]) : null;
+    var melhor = null, registro = null;
     for (var i = 0; i < (achados || []).length; i++) {
-      var titulo = semAcento(achados[i].title);
-      var alvo = titulo + ' ' + semAcento(String(achados[i].snippet || '').replace(/<[^>]+>/g, ''));
-      var nota = 0, noTitulo = 0;
+      var bruto = achados[i] || {};
+      var titulo = normalizarPalavra(bruto.title).slice(0, 0) || String(bruto.title || '');
+      var tituloNorm = String(bruto.title || '').toLowerCase().normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+      var resumo = String(bruto.snippet || '').replace(/<[^>]+>/g, '').toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      var temaNoTitulo = 0, naFonte = 0, temaSujeito = 0;
       for (var k = 0; k < termos.length; k++) {
         var r = radicalTermo(termos[k]);
         if (!r) continue;
-        if (alvo.indexOf(r) >= 0) nota++;
-        if (titulo.indexOf(r) >= 0) noTitulo++;
+        if (tituloNorm.indexOf(r) >= 0) {
+          temaNoTitulo++; naFonte++;
+          if (!termoRelacional(termos[k])) temaSujeito++;
+        } else if (resumo.indexOf(r) >= 0) naFonte++;
       }
-      // O resumo casa por acidente (a página cita "água" de passagem). O título é o que diz do
-      // que o artigo trata — sem ele, "caminho da água" virava "Os Trapalhões e o Mágico de Oróz".
-      // Exceção: cobertura total dos termos (sigla que só aparece no resumo, ex. LGPD).
-      if (noTitulo < 1 && nota < termos.length) continue;
-      if (nota > melhorNota) { melhorNota = nota; melhorTitulo = noTitulo; melhor = achados[i]; }
+      var palavras = palavrasDoTitulo(bruto.title);
+      var dentro = palavras.filter(function (w) {
+        var rw = radicalTermo(w);
+        return termos.some(function (t) {
+          var rt = radicalTermo(t);
+          return rt && rw && (rt.indexOf(rw) === 0 || rw.indexOf(rt) === 0);
+        });
+      }).length;
+      var coberturaTitulo = palavras.length ? dentro / palavras.length : 0;
+      var termoUnicoNoResumo = termos.length === 1 && naFonte >= 1;
+      if (sigla && termos.length === 1 && resumo.indexOf(sigla.slice(0, 6)) >= 0) termoUnicoNoResumo = true;
+      // Regra estrita: TODAS as palavras do título precisam aparecer no pedido. É o que separa
+      // "Fotossíntese" (aceita) de "Ciclo da água subterrânea" para "ciclo da água",
+      // "Fases de Vênus" para "fases da Lua" e "Alimento geneticamente modificado" para
+      // "desperdício de alimentos" — os três últimos estavam sendo aceitos e estão errados.
+      // Custo: perde artigo bom com título mais específico que o pedido (ex. "Água pluvial",
+      // "Lavagem das mãos"). Precisão antes de cobertura: contexto errado é pior que ausência.
+      var tituloDentro = palavras.length === 0 ||
+        (dentro === palavras.length && dentro * VIVO_FRACAO_TITULO >= palavras.length);
+      var temaForte = temaSujeito >= 1 || temaNoTitulo >= 2;
+      var aceita = temaForte && tituloDentro;
+      if (!aceita && termoUnicoNoResumo) aceita = tituloDentro || !!sigla;
+      var nota = { title: bruto.title, nota: naFonte, temaNoTitulo: temaNoTitulo,
+        temaSujeito: temaSujeito, coberturaTitulo: coberturaTitulo, tituloDentro: tituloDentro,
+        aceita: aceita, ordem: i };
+      if (!registro) registro = nota;
+      if (!aceita) continue;
+      // Ordem: termo-sujeito no título, termos no título, termos no título+resumo, título mais
+      // colado ao pedido. Sem o terceiro critério, "Água" e "Água encanada" empatavam e a ordem
+      // da busca decidia.
+      if (!melhor || nota.temaSujeito > melhor.temaSujeito ||
+          (nota.temaSujeito === melhor.temaSujeito && nota.temaNoTitulo > melhor.temaNoTitulo) ||
+          (nota.temaSujeito === melhor.temaSujeito && nota.temaNoTitulo === melhor.temaNoTitulo &&
+            nota.nota > melhor.nota) ||
+          (nota.temaSujeito === melhor.temaSujeito && nota.temaNoTitulo === melhor.temaNoTitulo &&
+            nota.nota === melhor.nota && nota.coberturaTitulo > melhor.coberturaTitulo)) melhor = nota;
     }
-    if (!melhor || melhorNota < Math.min(VIVO_MIN_TERMOS, termos.length)) return null;
-    return { escolhido: melhor, nota: melhorNota, noTitulo: melhorTitulo };
+    if (!melhor) return null;
+    var achado = achados.filter(function (a) { return a.title === melhor.title; })[0] || melhor;
+    return { escolhido: achado, nota: melhor.nota, temaNoTitulo: melhor.temaNoTitulo,
+      temaSujeito: melhor.temaSujeito, coberturaTitulo: melhor.coberturaTitulo, recusado: registro };
   }
 
-  async function buscarFonteViva(pergunta) {
+  async function buscarFonteViva(pergunta, prazo) {
     var termos = termosDeBusca(pergunta);
     if (!termos.length) return null;
     var cab = { 'Accept': 'application/json' };
     if (typeof window === 'undefined') cab['User-Agent'] = UA;
     function buscar(url) {
-      var c = new AbortController(), t = setTimeout(function () { c.abort(); }, VIVO_TETO_MS);
+      var restante = prazo ? Math.max(0, prazo - Date.now()) : VIVO_TETO_MS;
+      if (!restante) return Promise.reject(new Error('sem prazo'));
+      var c = new AbortController(), t = setTimeout(function () { c.abort(); }, Math.min(VIVO_TETO_MS, restante));
       return fetch(url, { headers: cab, signal: c.signal }).finally(function () { clearTimeout(t); });
     }
     try {
       var busca = await buscar('https://pt.wikipedia.org/w/api.php?action=query&list=search&srlimit=5' +
         '&format=json&origin=*&srsearch=' + encodeURIComponent(termos.join(' ')));
       var achados = ((await busca.json()).query || {}).search || [];
-      var decisao = escolherFonte(achados, termos);
+      var decisao = escolherFonte(achados, termos, termosDoPedido(pergunta));
       if (!decisao) return null;
       var extra = await buscar('https://pt.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext=1' +
         '&redirects=1&format=json&origin=*&titles=' + encodeURIComponent(decisao.escolhido.title));
@@ -2393,12 +2502,20 @@
     // justifica impor o custo/variação a toda pergunta aberta.
     var permitirFontes = tipoInicial === 'aberto' && usarFerramenta && this.ferramentasLigadas &&
       typeof pedido === 'object' && pedido.fontes === true;
-    // Busca viva: fonte buscada na hora, em texto aberto. Desligada por padrão (custa uma
-    // consulta e cresce o prompt); medida item a item antes de qualquer promoção.
-    var permitirVivo = false;   // ver comentário em _textoLongo: busca viva não qualificada
+    // Busca viva: fonte buscada na hora, no texto aberto da Wikipédia, com portão de casamento
+    // (o artigo precisa ser SOBRE o pedido — ver escolherFonte). Ligada no produto e na medição;
+    // desligada em teste e execução offline.
+    var ambiente = {
+      navegador: typeof window !== 'undefined' && typeof document !== 'undefined',
+      processo: typeof process !== 'undefined' ? process : null
+    };
+    // `this.ferramentasLigadas` desliga tudo que sai para a rede; o modo somente-local da página
+    // bloqueia o próprio fetch (a busca falha e devolve null, sem fonte e sem erro na cara).
+    var permitirVivo = tipoInicial === 'aberto' && !permitirFontes && this.ferramentasLigadas &&
+      fonteVivaLigada(ambiente, typeof pedido === 'object' ? pedido : null) && fonteExternaPermitida(pergunta);
     // Não reutilizar respostas antigas ou sem fontes em um pedido que as utiliza, nem vice-versa.
     var chave = 'q:' + normal(pergunta) + (tipoInicial === 'aberto'
-      ? (permitirVivo ? ':vivo-v1' : (permitirFontes ? ':fontes-v1' : ':sem-fontes')) : '');
+      ? (permitirVivo ? ':vivo-v2' : (permitirFontes ? ':fontes-v1' : ':sem-fontes')) : '');
     this.metricas.perguntas++;
 
     var doCache = this._cacheGet(chave);
@@ -2445,7 +2562,19 @@
       // pedido devolve artigo tangencial ("caminho da água" -> artigo "Caminho"), exatamente o
       // defeito que já custou a rodada 102. Fica exportada para estudo em bench/, sem uso em
       // responder(). Retorno de fonte ao contexto continua sendo só o opt-in `fontes:true`.
-      var fontes = permitirFontes ? selecionarFontesLocais(pergunta, await carregarFontesLocais()) : [];
+      var fontes = [];
+      if (permitirFontes) {
+        fontes = selecionarFontesLocais(pergunta, await carregarFontesLocais());
+      } else if (permitirVivo) {
+        // O custo é uma consulta e um parágrafo a mais de contexto; o prazo é do pedido inteiro.
+        var fonteAgora = await buscarFonteViva(pergunta, prazoAberto);
+        if (fonteAgora) {
+          fontes = [fonteAgora];
+          this.metricas.fonteViva = (this.metricas.fonteViva || 0) + 1;
+        } else {
+          this.metricas.fonteVivaVazia = (this.metricas.fonteVivaVazia || 0) + 1;
+        }
+      }
       var contexto = contextoFontes(fontes);
       var instrucao = SYS_ABERTO + instrucaoFormato(pergunta);
       if (ex.paragrafos) instrucao += ' O pedido exige ' + ex.paragrafos + ' parágrafo(s): entregue exatamente '
@@ -2644,7 +2773,8 @@
                    tokensFonte: tokensFonte, selecionarFontesLocais: selecionarFontesLocais, fonteUrlSegura: fonteUrlSegura,
                    trechoSeguro: trechoSeguro, contextoFontes: contextoFontes,
                    buscarFonteViva: buscarFonteViva, recortarFonte: recortarFonte, radicalTermo: radicalTermo,
-                   termosDeBusca: termosDeBusca, escolherFonte: escolherFonte };
+                   termosDeBusca: termosDeBusca, escolherFonte: escolherFonte,
+                   fonteExternaPermitida: fonteExternaPermitida, fonteVivaLigada: fonteVivaLigada };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   raiz.RoteadorIA = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

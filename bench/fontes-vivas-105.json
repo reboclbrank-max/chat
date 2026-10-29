@@ -1,0 +1,1009 @@
+{
+ "medido": "2026-10-29T20:55:13.955Z",
+ "itens": [
+  {
+   "banco": "original",
+   "id": 1,
+   "q": "Explique em dois parágrafos o que é fotossíntese.",
+   "termos": [
+    "fotossíntese"
+   ],
+   "top5": [
+    "Fotossíntese",
+    "Clorofila",
+    "Plantae",
+    "Fotossíntese anoxigênica",
+    "Terra"
+   ],
+   "aceita": true,
+   "titulo": "Fotossíntese",
+   "temaNoTitulo": 1,
+   "coberturaTitulo": 1,
+   "coberturaEstatica": {
+    "ok": 3,
+    "total": 3
+   },
+   "coberturaViva": {
+    "ok": 3,
+    "total": 3
+   },
+   "auditoria": "pertinente"
+  },
+  {
+   "banco": "original",
+   "id": 2,
+   "q": "Explique em dois parágrafos a diferença entre vírus e bactéria.",
+   "termos": [
+    "diferença",
+    "vírus",
+    "bactéria"
+   ],
+   "top5": [
+    "Bactéria",
+    "Ciclo lisogênico",
+    "Último ancestral comum universal",
+    "Infecção",
+    "Mycoplasma"
+   ],
+   "aceita": true,
+   "titulo": "Bactéria",
+   "temaNoTitulo": 1,
+   "coberturaTitulo": 1,
+   "coberturaEstatica": {
+    "ok": 3,
+    "total": 3
+   },
+   "coberturaViva": {
+    "ok": 2,
+    "total": 3
+   },
+   "auditoria": "pertinente"
+  },
+  {
+   "banco": "original",
+   "id": 3,
+   "q": "Resuma em três parágrafos o que foi a Revolução Industrial.",
+   "termos": [
+    "revolução",
+    "industrial"
+   ],
+   "top5": [
+    "Revolução Industrial",
+    "Quarta Revolução Industrial",
+    "Segunda Revolução Industrial",
+    "Era da Informação",
+    "Indústria"
+   ],
+   "aceita": true,
+   "titulo": "Revolução Industrial",
+   "temaNoTitulo": 2,
+   "coberturaTitulo": 1,
+   "coberturaEstatica": {
+    "ok": 2,
+    "total": 3
+   },
+   "coberturaViva": {
+    "ok": 2,
+    "total": 3
+   },
+   "auditoria": "pertinente"
+  },
+  {
+   "banco": "original",
+   "id": 4,
+   "q": "Escreva um e-mail formal pedindo orçamento de 20 cadeiras para um escritório. Máximo 200 palavras.",
+   "termos": [
+    "mail",
+    "formal",
+    "pedindo",
+    "orçamento"
+   ],
+   "top5": [],
+   "aceita": false,
+   "titulo": null,
+   "temaNoTitulo": 0,
+   "coberturaTitulo": 0,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 3
+   },
+   "coberturaViva": null,
+   "auditoria": "sem-fonte"
+  },
+  {
+   "banco": "original",
+   "id": 5,
+   "q": "Explique em três passos como fazer um bolo simples.",
+   "termos": [
+    "passos",
+    "bolo",
+    "simples"
+   ],
+   "top5": [
+    "Cuca (bolo)",
+    "Pandoro",
+    "Cakewalk",
+    "Bolo chorley",
+    "Pão de banana"
+   ],
+   "aceita": false,
+   "titulo": null,
+   "temaNoTitulo": 0,
+   "coberturaTitulo": 0,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 3
+   },
+   "coberturaViva": null,
+   "auditoria": "sem-fonte"
+  },
+  {
+   "banco": "original",
+   "id": 6,
+   "q": "Escreva um parágrafo argumentando a favor da reciclagem.",
+   "termos": [
+    "argumentando",
+    "reciclagem"
+   ],
+   "top5": [
+    "Nayib Bukele",
+    "Claudia Sheinbaum",
+    "Educação na China",
+    "Irlanda",
+    "Pai-nosso"
+   ],
+   "aceita": false,
+   "titulo": null,
+   "temaNoTitulo": 0,
+   "coberturaTitulo": 0,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 3
+   },
+   "coberturaViva": null,
+   "auditoria": "sem-fonte"
+  },
+  {
+   "banco": "original",
+   "id": 7,
+   "q": "Explique o ciclo da água em dois parágrafos.",
+   "termos": [
+    "ciclo",
+    "água"
+   ],
+   "top5": [
+    "Ciclo hidrológico",
+    "Ciclo da água subterrânea",
+    "Ciclo do nitrogênio",
+    "Água",
+    "Efeitos da mudança climática no ciclo hidrológico"
+   ],
+   "aceita": true,
+   "titulo": "Água",
+   "temaNoTitulo": 1,
+   "coberturaTitulo": 1,
+   "coberturaEstatica": {
+    "ok": 3,
+    "total": 3
+   },
+   "coberturaViva": {
+    "ok": 0,
+    "total": 3
+   },
+   "auditoria": "pertinente"
+  },
+  {
+   "banco": "original",
+   "id": 8,
+   "q": "Explique o que é inflação em dois parágrafos.",
+   "termos": [
+    "inflação"
+   ],
+   "top5": [
+    "Inflação",
+    "Inflação no Brasil",
+    "Inflação cósmica",
+    "Metas de inflação",
+    "Plano Collor"
+   ],
+   "aceita": true,
+   "titulo": "Inflação",
+   "temaNoTitulo": 1,
+   "coberturaTitulo": 1,
+   "coberturaEstatica": {
+    "ok": 2,
+    "total": 2
+   },
+   "coberturaViva": {
+    "ok": 2,
+    "total": 2
+   },
+   "auditoria": "pertinente"
+  },
+  {
+   "banco": "original",
+   "id": 9,
+   "q": "Explique a diferença entre juros simples e juros compostos em dois parágrafos.",
+   "termos": [
+    "diferença",
+    "juros",
+    "simples",
+    "compostos"
+   ],
+   "top5": [
+    "Desconto racional composto",
+    "Desconto comercial simples",
+    "Desconto",
+    "Taxa de juro efetiva",
+    "Macroeconomia"
+   ],
+   "aceita": false,
+   "titulo": null,
+   "temaNoTitulo": 0,
+   "coberturaTitulo": 0,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 3
+   },
+   "coberturaViva": null,
+   "auditoria": "sem-fonte"
+  },
+  {
+   "banco": "original",
+   "id": 10,
+   "q": "Escreva uma lista com 5 dicas práticas para economizar água em casa.",
+   "termos": [
+    "práticas",
+    "economizar",
+    "água"
+   ],
+   "top5": [
+    "Infraestrutura verde",
+    "Arquivos de Epstein",
+    "Governo Jair Bolsonaro",
+    "Guerra de Canudos",
+    "Grand Theft Auto VI"
+   ],
+   "aceita": false,
+   "titulo": null,
+   "temaNoTitulo": 0,
+   "coberturaTitulo": 0,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 2
+   },
+   "coberturaViva": null,
+   "auditoria": "sem-fonte"
+  },
+  {
+   "banco": "original",
+   "id": 11,
+   "q": "Explique por que o céu é azul em dois parágrafos.",
+   "termos": [
+    "azul"
+   ],
+   "top5": [
+    "Azul",
+    "Azul Linhas Aéreas Brasileiras",
+    "Baleia-azul",
+    "Arara-azul-grande",
+    "Azul-celeste"
+   ],
+   "aceita": true,
+   "titulo": "Azul",
+   "temaNoTitulo": 1,
+   "coberturaTitulo": 1,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 3
+   },
+   "coberturaViva": {
+    "ok": 3,
+    "total": 3
+   },
+   "auditoria": "pertinente"
+  },
+  {
+   "banco": "original",
+   "id": 12,
+   "q": "Resuma em três parágrafos a Segunda Guerra Mundial.",
+   "termos": [
+    "segunda",
+    "guerra",
+    "mundial"
+   ],
+   "top5": [
+    "Segunda Guerra Mundial",
+    "Aliados da Segunda Guerra Mundial",
+    "Brasil na Segunda Guerra Mundial",
+    "Japão durante a Segunda Guerra Mundial",
+    "Primeira Guerra Mundial"
+   ],
+   "aceita": true,
+   "titulo": "Segunda Guerra Mundial",
+   "temaNoTitulo": 3,
+   "coberturaTitulo": 1,
+   "coberturaEstatica": {
+    "ok": 2,
+    "total": 3
+   },
+   "coberturaViva": {
+    "ok": 3,
+    "total": 3
+   },
+   "auditoria": "pertinente"
+  },
+  {
+   "banco": "original",
+   "id": 13,
+   "q": "Explique como funciona uma vacina em dois parágrafos.",
+   "termos": [
+    "vacina"
+   ],
+   "top5": [
+    "Vacina",
+    "Vacina contra a COVID-19",
+    "Vacinação contra a COVID-19 no Brasil",
+    "Revolta da Vacina",
+    "Instituto Butantan"
+   ],
+   "aceita": true,
+   "titulo": "Vacina",
+   "temaNoTitulo": 1,
+   "coberturaTitulo": 1,
+   "coberturaEstatica": {
+    "ok": 1,
+    "total": 2
+   },
+   "coberturaViva": {
+    "ok": 1,
+    "total": 2
+   },
+   "auditoria": "pertinente"
+  },
+  {
+   "banco": "original",
+   "id": 14,
+   "q": "Explique o que é uma função em programação para quem nunca programou, em dois parágrafos.",
+   "termos": [
+    "função",
+    "programação",
+    "quem",
+    "nunca"
+   ],
+   "top5": [
+    "C (linguagem de programação)",
+    "Programação funcional",
+    "Linguagem de programação",
+    "Programação defensiva",
+    "Função diferenciável"
+   ],
+   "aceita": false,
+   "titulo": null,
+   "temaNoTitulo": 0,
+   "coberturaTitulo": 0,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 3
+   },
+   "coberturaViva": null,
+   "auditoria": "sem-fonte"
+  },
+  {
+   "banco": "original",
+   "id": 15,
+   "q": "Explique o que é a LGPD em dois parágrafos.",
+   "termos": [
+    "lgpd"
+   ],
+   "top5": [
+    "Lei Geral de Proteção de Dados Pessoais",
+    "Agência Nacional de Proteção de Dados",
+    "Encarregado (DPO)",
+    "Dark Horse (filme de 2026)",
+    "Sem Parar (empresa)"
+   ],
+   "aceita": true,
+   "titulo": "Lei Geral de Proteção de Dados Pessoais",
+   "temaNoTitulo": 0,
+   "coberturaTitulo": 0,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 3
+   },
+   "coberturaViva": {
+    "ok": 3,
+    "total": 3
+   },
+   "auditoria": "pertinente"
+  },
+  {
+   "banco": "original",
+   "id": 16,
+   "q": "Descreva em dois parágrafos o caminho da água da chuva até a torneira de casa.",
+   "termos": [
+    "caminho",
+    "água",
+    "chuva",
+    "torneira"
+   ],
+   "top5": [
+    "Os Trapalhões e o Mágico de Oróz",
+    "Engawa",
+    "Orós",
+    "Feteira (Angra do Heroísmo)",
+    "Água pluvial"
+   ],
+   "aceita": false,
+   "titulo": null,
+   "temaNoTitulo": 0,
+   "coberturaTitulo": 0,
+   "coberturaEstatica": {
+    "ok": 2,
+    "total": 3
+   },
+   "coberturaViva": null,
+   "auditoria": "sem-fonte"
+  },
+  {
+   "banco": "original",
+   "id": 17,
+   "q": "Escreva um texto de dois parágrafos sobre os impactos das redes sociais na vida das pessoas.",
+   "termos": [
+    "impactos",
+    "redes",
+    "sociais",
+    "vida"
+   ],
+   "top5": [
+    "Rede social virtual",
+    "Análise de redes sociais",
+    "Impactos do turismo",
+    "Redes sociais como utilidade pública",
+    "Amor da Minha Vida (telessérie)"
+   ],
+   "aceita": false,
+   "titulo": null,
+   "temaNoTitulo": 0,
+   "coberturaTitulo": 0,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 3
+   },
+   "coberturaViva": null,
+   "auditoria": "sem-fonte"
+  },
+  {
+   "banco": "original",
+   "id": 18,
+   "q": "Dê quatro argumentos contra o desperdício de alimentos.",
+   "termos": [
+    "argumentos",
+    "desperdício",
+    "alimentos"
+   ],
+   "top5": [
+    "Alimento geneticamente modificado",
+    "Deriva continental",
+    "Lista de episódios de Cyberchase",
+    "Fast food",
+    "Economia circular"
+   ],
+   "aceita": false,
+   "titulo": null,
+   "temaNoTitulo": 0,
+   "coberturaTitulo": 0,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 3
+   },
+   "coberturaViva": null,
+   "auditoria": "sem-fonte"
+  },
+  {
+   "banco": "original",
+   "id": 19,
+   "q": "Explique a diferença entre clima e tempo em um parágrafo.",
+   "termos": [
+    "diferença",
+    "clima",
+    "tempo"
+   ],
+   "top5": [
+    "Clima tropical de savana",
+    "Tempo (meteorologia)",
+    "Clima da cidade de São Paulo",
+    "Classificação climática de Köppen-Geiger",
+    "Forza Horizon 2"
+   ],
+   "aceita": false,
+   "titulo": null,
+   "temaNoTitulo": 0,
+   "coberturaTitulo": 0,
+   "coberturaEstatica": {
+    "ok": 3,
+    "total": 3
+   },
+   "coberturaViva": null,
+   "auditoria": "sem-fonte"
+  },
+  {
+   "banco": "original",
+   "id": 20,
+   "q": "Resuma em três parágrafos a teoria da evolução de Darwin.",
+   "termos": [
+    "teoria",
+    "evolução",
+    "darwin"
+   ],
+   "top5": [
+    "Charles Darwin",
+    "Darwinismo",
+    "Evolução",
+    "Seleção natural",
+    "A Origem das Espécies"
+   ],
+   "aceita": true,
+   "titulo": "Darwinismo",
+   "temaNoTitulo": 1,
+   "coberturaTitulo": 1,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 3
+   },
+   "coberturaViva": {
+    "ok": 3,
+    "total": 3
+   },
+   "auditoria": "pertinente"
+  },
+  {
+   "banco": "original",
+   "id": 21,
+   "q": "Escreva uma mensagem curta e educada cobrando um pagamento atrasado de um cliente. Máximo 150 palavras.",
+   "termos": [
+    "mensagem",
+    "curta",
+    "educada",
+    "cobrando"
+   ],
+   "top5": [],
+   "aceita": false,
+   "titulo": null,
+   "temaNoTitulo": 0,
+   "coberturaTitulo": 0,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 3
+   },
+   "coberturaViva": null,
+   "auditoria": "sem-fonte"
+  },
+  {
+   "banco": "original",
+   "id": 22,
+   "q": "Explique em dois parágrafos como funciona a energia solar fotovoltaica.",
+   "termos": [
+    "energia",
+    "solar",
+    "fotovoltaica"
+   ],
+   "top5": [
+    "Energia solar fotovoltaica",
+    "Energia solar",
+    "Painel solar fotovoltaico",
+    "Energia renovável",
+    "Célula solar"
+   ],
+   "aceita": true,
+   "titulo": "Energia solar fotovoltaica",
+   "temaNoTitulo": 3,
+   "coberturaTitulo": 1,
+   "coberturaEstatica": {
+    "ok": 3,
+    "total": 3
+   },
+   "coberturaViva": {
+    "ok": 2,
+    "total": 3
+   },
+   "auditoria": "pertinente"
+  },
+  {
+   "banco": "original",
+   "id": 23,
+   "q": "Explique em dois parágrafos o que é inteligência artificial, sem jargão.",
+   "termos": [
+    "inteligência",
+    "artificial",
+    "jargão"
+   ],
+   "top5": [
+    "Superintelligence: Paths, Dangers, Strategies",
+    "Computação evolucionária",
+    "Língua artificial",
+    "Whisper (reconhecimento automático de fala)",
+    "Blade Runner (franquia)"
+   ],
+   "aceita": false,
+   "titulo": null,
+   "temaNoTitulo": 0,
+   "coberturaTitulo": 0,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 3
+   },
+   "coberturaViva": null,
+   "auditoria": "sem-fonte"
+  },
+  {
+   "banco": "original",
+   "id": 24,
+   "q": "Escreva um parágrafo explicando a importância de dormir bem.",
+   "termos": [
+    "explicando",
+    "importância",
+    "dormir"
+   ],
+   "top5": [
+    "Albus Dumbledore",
+    "Dossiê Steele",
+    "Pessimismo filosófico",
+    "Facectomia",
+    "Movimento Occupy"
+   ],
+   "aceita": false,
+   "titulo": null,
+   "temaNoTitulo": 0,
+   "coberturaTitulo": 0,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 3
+   },
+   "coberturaViva": null,
+   "auditoria": "sem-fonte"
+  },
+  {
+   "banco": "holdout",
+   "id": 101,
+   "q": "Explique em dois parágrafos o que é compostagem e por que ela ajuda uma horta.",
+   "termos": [
+    "compostagem",
+    "ajuda",
+    "horta"
+   ],
+   "top5": [
+    "Compostagem",
+    "Jardim Botânico de Santos",
+    "História da ciência agrícola",
+    "Nascentes do Iquiririm",
+    "Lista de episódios de Cyberchase"
+   ],
+   "aceita": true,
+   "titulo": "Compostagem",
+   "temaNoTitulo": 1,
+   "coberturaTitulo": 1,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 3
+   },
+   "coberturaViva": {
+    "ok": 3,
+    "total": 3
+   },
+   "auditoria": "pertinente"
+  },
+  {
+   "banco": "holdout",
+   "id": 102,
+   "q": "Explique em dois parágrafos como uma geladeira mantém alimentos frios.",
+   "termos": [
+    "geladeira",
+    "mantém",
+    "alimentos",
+    "frios"
+   ],
+   "top5": [
+    "Refrigerador",
+    "Pontofrio",
+    "Paleoclimatologia",
+    "Gaspacho",
+    "Lista de episódios de The Loud House"
+   ],
+   "aceita": false,
+   "titulo": null,
+   "temaNoTitulo": 0,
+   "coberturaTitulo": 0,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 3
+   },
+   "coberturaViva": null,
+   "auditoria": "sem-fonte"
+  },
+  {
+   "banco": "holdout",
+   "id": 103,
+   "q": "Escreva um parágrafo explicando o que é a coleta seletiva de materiais.",
+   "termos": [
+    "explicando",
+    "coleta",
+    "seletiva",
+    "materiais"
+   ],
+   "top5": [
+    "Dossiê Steele",
+    "Law School Admission Test",
+    "Cárie",
+    "Trumpismo",
+    "Evolução sociocultural"
+   ],
+   "aceita": false,
+   "titulo": null,
+   "temaNoTitulo": 0,
+   "coberturaTitulo": 0,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 3
+   },
+   "coberturaViva": null,
+   "auditoria": "sem-fonte"
+  },
+  {
+   "banco": "holdout",
+   "id": 104,
+   "q": "Explique em dois parágrafos como uma biblioteca organiza e empresta livros.",
+   "termos": [
+    "biblioteca",
+    "organiza",
+    "empresta",
+    "livros"
+   ],
+   "top5": [
+    "Aristóteles",
+    "Região Norte do Brasil",
+    "Lista de episódios de Detetives do Prédio Azul",
+    "Alcorão",
+    "Lista de episódios de The Loud House"
+   ],
+   "aceita": false,
+   "titulo": null,
+   "temaNoTitulo": 0,
+   "coberturaTitulo": 0,
+   "coberturaEstatica": {
+    "ok": 2,
+    "total": 3
+   },
+   "coberturaViva": null,
+   "auditoria": "sem-fonte"
+  },
+  {
+   "banco": "holdout",
+   "id": 105,
+   "q": "Em um parágrafo, explique os efeitos da impermeabilização do solo nas cidades durante chuvas fortes.",
+   "termos": [
+    "efeitos",
+    "impermeabilização",
+    "solo",
+    "cidades"
+   ],
+   "top5": [
+    "Jardim de chuva",
+    "Educação na cidade de São Paulo",
+    "Geografia da cidade de São Paulo",
+    "Porto Alegre",
+    "Tatuapé"
+   ],
+   "aceita": false,
+   "titulo": null,
+   "temaNoTitulo": 0,
+   "coberturaTitulo": 0,
+   "coberturaEstatica": {
+    "ok": 2,
+    "total": 3
+   },
+   "coberturaViva": null,
+   "auditoria": "sem-fonte"
+  },
+  {
+   "banco": "holdout",
+   "id": 106,
+   "q": "Escreva dois parágrafos sobre como os oceanos influenciam o clima.",
+   "termos": [
+    "oceanos",
+    "influenciam",
+    "clima"
+   ],
+   "top5": [
+    "Oceano Atlântico",
+    "Oceano",
+    "Corrente oceânica",
+    "El Niño",
+    "Efeitos da mudança climática no ciclo hidrológico"
+   ],
+   "aceita": true,
+   "titulo": "Oceano",
+   "temaNoTitulo": 1,
+   "coberturaTitulo": 1,
+   "coberturaEstatica": {
+    "ok": 3,
+    "total": 3
+   },
+   "coberturaViva": {
+    "ok": 3,
+    "total": 3
+   },
+   "auditoria": "pertinente"
+  },
+  {
+   "banco": "novo",
+   "id": 201,
+   "q": "Explique em dois parágrafos por que a Lua apresenta fases.",
+   "termos": [
+    "apresenta",
+    "fases"
+   ],
+   "top5": [
+    "Super Mario Bros. 35",
+    "Marvel Tokon: Fighting Souls",
+    "Banjo-Tooie",
+    "Fases de Vênus",
+    "Super Mario"
+   ],
+   "aceita": false,
+   "titulo": null,
+   "temaNoTitulo": 0,
+   "coberturaTitulo": 0,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 3
+   },
+   "coberturaViva": null,
+   "auditoria": "sem-fonte"
+  },
+  {
+   "banco": "novo",
+   "id": 202,
+   "q": "Explique em dois parágrafos como o sabão ajuda a limpar as mãos.",
+   "termos": [
+    "sabão",
+    "ajuda",
+    "limpar",
+    "mãos"
+   ],
+   "top5": [
+    "Sabão",
+    "Lavagem das mãos",
+    "Bombril",
+    "Micetoma",
+    "Lista de métodos não comprovados contra a COVID-19"
+   ],
+   "aceita": true,
+   "titulo": "Sabão",
+   "temaNoTitulo": 1,
+   "coberturaTitulo": 1,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 3
+   },
+   "coberturaViva": {
+    "ok": 0,
+    "total": 3
+   },
+   "auditoria": "pertinente"
+  },
+  {
+   "banco": "novo",
+   "id": 203,
+   "q": "Explique em dois parágrafos como uma bússola indica direções.",
+   "termos": [
+    "bússola",
+    "indica",
+    "direções"
+   ],
+   "top5": [
+    "Bússola",
+    "Instrumentos de voo",
+    "Ciência indígena",
+    "Relógio de sol",
+    "Quibla"
+   ],
+   "aceita": true,
+   "titulo": "Bússola",
+   "temaNoTitulo": 1,
+   "coberturaTitulo": 1,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 3
+   },
+   "coberturaViva": {
+    "ok": 3,
+    "total": 3
+   },
+   "auditoria": "pertinente"
+  },
+  {
+   "banco": "novo",
+   "id": 204,
+   "q": "Explique em dois parágrafos por que uma panela de metal esquenta no fogo.",
+   "termos": [
+    "panela",
+    "metal",
+    "esquenta",
+    "fogo"
+   ],
+   "top5": [
+    "Fogão por indução",
+    "Cafeteira moka",
+    "Forno de micro-ondas",
+    "Lista de personagens de Final Destination"
+   ],
+   "aceita": false,
+   "titulo": null,
+   "temaNoTitulo": 0,
+   "coberturaTitulo": 0,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 3
+   },
+   "coberturaViva": null,
+   "auditoria": "sem-fonte"
+  },
+  {
+   "banco": "novo",
+   "id": 205,
+   "q": "Explique em dois parágrafos como o orçamento doméstico ajuda a planejar gastos.",
+   "termos": [
+    "orçamento",
+    "doméstico",
+    "ajuda",
+    "planejar"
+   ],
+   "top5": [
+    "Getúlio Vargas",
+    "Governança ambiental",
+    "Xi Jinping",
+    "Finanças pessoais",
+    "ICasei"
+   ],
+   "aceita": false,
+   "titulo": null,
+   "temaNoTitulo": 0,
+   "coberturaTitulo": 0,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 3
+   },
+   "coberturaViva": null,
+   "auditoria": "sem-fonte"
+  },
+  {
+   "banco": "novo",
+   "id": 206,
+   "q": "Explique em dois parágrafos por que os manguezais são importantes para a costa.",
+   "termos": [
+    "manguezais",
+    "importantes",
+    "costa"
+   ],
+   "top5": [],
+   "aceita": false,
+   "titulo": null,
+   "temaNoTitulo": 0,
+   "coberturaTitulo": 0,
+   "coberturaEstatica": {
+    "ok": 0,
+    "total": 3
+   },
+   "coberturaViva": null,
+   "auditoria": "sem-fonte"
+  }
+ ],
+ "resumo": {
+  "aceitos": 15,
+  "total": 36,
+  "errados": 0,
+  "fatosEstatico": 31,
+  "fatosVivo": 33
+ }
+}

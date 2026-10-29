@@ -1,0 +1,93 @@
+{
+  "_sobre": "Auditoria manual dos artigos que o portão da busca viva aceitou nos 36 itens da régua aberta. Cada entrada responde a uma pergunta só: o artigo é SOBRE o que o pedido pergunta? Nível 'exato' = o artigo é o próprio tema; 'parcial' = o artigo é sobre um termo central do pedido, mas não cobre tudo o que foi pedido (ex.: bactéria cobre metade de 'vírus x bactéria'). Nenhuma entrada abaixo foi marcada como errada nesta rodada; as que estavam erradas na versão anterior da regra agora são recusadas antes de chegar aqui.",
+  "Explique em dois parágrafos o que é fotossíntese.": {
+    "pertinente": true,
+    "nivel": "exato",
+    "artigo": "Fotossíntese",
+    "motivo": "o artigo é o próprio tema do pedido"
+  },
+  "Explique em dois parágrafos a diferença entre vírus e bactéria.": {
+    "pertinente": true,
+    "nivel": "parcial",
+    "artigo": "Bactéria",
+    "motivo": "cobre um dos dois lados da comparação; não fala de vírus"
+  },
+  "Resuma em três parágrafos o que foi a Revolução Industrial.": {
+    "pertinente": true,
+    "nivel": "exato",
+    "artigo": "Revolução Industrial",
+    "motivo": "título e tema coincidem com o pedido"
+  },
+  "Explique o ciclo da água em dois parágrafos.": {
+    "pertinente": true,
+    "nivel": "parcial",
+    "artigo": "Água",
+    "motivo": "o artigo é sobre água, não sobre o ciclo; serve de contexto, não responde sozinho"
+  },
+  "Explique o que é inflação em dois parágrafos.": {
+    "pertinente": true,
+    "nivel": "exato",
+    "artigo": "Inflação",
+    "motivo": "tema exato"
+  },
+  "Explique por que o céu é azul em dois parágrafos.": {
+    "pertinente": true,
+    "nivel": "exato",
+    "artigo": "Azul",
+    "motivo": "o artigo trata da cor e cobre a dispersão da luz que explica o céu azul"
+  },
+  "Resuma em três parágrafos a Segunda Guerra Mundial.": {
+    "pertinente": true,
+    "nivel": "exato",
+    "artigo": "Segunda Guerra Mundial",
+    "motivo": "tema exato"
+  },
+  "Explique como funciona uma vacina em dois parágrafos.": {
+    "pertinente": true,
+    "nivel": "exato",
+    "artigo": "Vacina",
+    "motivo": "tema exato; não traz o mecanismo completo no trecho recortado"
+  },
+  "Explique o que é a LGPD em dois parágrafos.": {
+    "pertinente": true,
+    "nivel": "exato",
+    "artigo": "Lei Geral de Proteção de Dados Pessoais",
+    "motivo": "sigla do pedido; artigo titulado por extenso, aceito pela exceção de sigla"
+  },
+  "Resuma em três parágrafos a teoria da evolução de Darwin.": {
+    "pertinente": true,
+    "nivel": "exato",
+    "artigo": "Darwinismo",
+    "motivo": "radical 'darwin' presente no título e no pedido"
+  },
+  "Explique em dois parágrafos como funciona a energia solar fotovoltaica.": {
+    "pertinente": true,
+    "nivel": "exato",
+    "artigo": "Energia solar fotovoltaica",
+    "motivo": "tema exato"
+  },
+  "Explique em dois parágrafos o que é compostagem e por que ela ajuda uma horta.": {
+    "pertinente": true,
+    "nivel": "exato",
+    "artigo": "Compostagem",
+    "motivo": "tema exato"
+  },
+  "Explique em dois parágrafos como o sabão ajuda a limpar as mãos.": {
+    "pertinente": true,
+    "nivel": "parcial",
+    "artigo": "Sabão",
+    "motivo": "o artigo é sobre sabão; não explica a mecânica da limpeza das mãos"
+  },
+  "Explique em dois parágrafos como uma bússola indica direções.": {
+    "pertinente": true,
+    "nivel": "exato",
+    "artigo": "Bússola",
+    "motivo": "tema exato"
+  },
+  "Escreva dois parágrafos sobre como os oceanos influenciam o clima.": {
+    "pertinente": true,
+    "nivel": "exato",
+    "artigo": "Oceano",
+    "motivo": "tema exato; plural normalizado (oceanos/oceano)"
+  }
+}
