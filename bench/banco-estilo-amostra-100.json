@@ -1,0 +1,17 @@
+[
+  {
+    "id": "microconto",
+    "genero": "ficção curta",
+    "q": "Escreva um microconto de no máximo 120 palavras: dois irmãos perdem o ônibus durante uma chuva e precisam tomar uma decisão. Termine com a decisão, sem explicar a moral da história."
+  },
+  {
+    "id": "poema",
+    "genero": "poesia",
+    "q": "Escreva um poema de quatro versos sobre a volta para casa sob a chuva, sem título e sem rima obrigatória."
+  },
+  {
+    "id": "convite",
+    "genero": "postagem",
+    "q": "Escreva uma postagem de até 80 palavras convidando voluntários para uma biblioteca comunitária, com tom acolhedor e uma chamada para ação. Não invente data, horário nem local."
+  }
+]

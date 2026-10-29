@@ -1076,7 +1076,8 @@
     + 'Se pedirem função, exporte com module.exports.';
   var SYS_ABERTO = 'Responda em português do Brasil, no formato pedido, apenas com o texto final. '
     + 'Sem preâmbulo ("claro", "com certeza"), sem comentar o pedido, sem escrever raciocínio. '
-    + 'Termine todas as frases; não deixe texto pela metade.';
+    + 'Termine todas as frases; não deixe texto pela metade. '
+    + 'Em afirmações factuais, não invente dados, estatísticas ou fontes; se não souber, não invente.';
 
   var NUMERAIS = { um: 1, uma: 1, dois: 2, duas: 2, três: 3, 'três': 3, tres: 3, quatro: 4, cinco: 5,
                   seis: 6, sete: 7, oito: 8, nove: 9, dez: 10 };
@@ -1135,6 +1136,27 @@
       if (bloco) saida.push(bloco);
     }
     return saida.join('\n\n');
+  }
+
+  /* Formato e veracidade são coisas diferentes: comprimento e parágrafos não certificam fatos.
+     O aviso é metadado; não adultera a resposta nem a rubrica de texto. */
+  function anotarRespostaAberta(resposta, ex) {
+    if (!resposta || !resposta.texto) return resposta;
+    var r = Object.assign({}, resposta), faltas = [];
+    var blocos = String(r.texto).split(/\n+/).filter(function (p) { return p.trim().length > 0; }).length;
+    var itens = (String(r.texto).match(/^\s*(?:[-*•]|\d+[.)])\s+\S/gm) || []).length;
+    ex = ex || {};
+    if (ex.paragrafos >= 2 && blocos < ex.paragrafos) faltas.push(blocos + ' de ' + ex.paragrafos + ' parágrafos');
+    if (ex.itens >= 2 && itens < ex.itens) faltas.push(itens + ' de ' + ex.itens + ' itens');
+    r.confianca = 'nao_verificada';
+    r.verificacaoFactual = 'nao_verificada';
+    if (faltas.length) {
+      r.incompleto = true;
+      r.avisoFormato = 'A resposta veio com ' + faltas.join(' e ') + ' solicitados. Confira ou tente novamente.';
+    } else {
+      delete r.incompleto; delete r.avisoFormato;
+    }
+    return r;
   }
 
   /* Provedor grátis trunca no meio da frase. Em vez de entregar "…e a água passa" cortado,
@@ -1644,7 +1666,8 @@
       extra += ' Como o pedido é e-mail/carta, termine com despedida formal ("Atenciosamente,") e uma assinatura genérica.';
     }
     if (/argumente|argumento|a favor|contra|defenda|justifique|opini[ãa]o/.test(t)) {
-      extra += ' Inclua ao menos uma consequência concreta (ambiental, econômica ou social) com dado, número ou exemplo específico.';
+      extra += ' Explique o mecanismo e ao menos uma consequência concreta pertinente ao assunto, ' +
+        'preferindo exemplos claros a números ou fontes não verificados.';
     }
     return extra;
   }
@@ -1685,14 +1708,11 @@
       ? ' Ao longo do parágrafo, use literalmente estes termos do pedido, quando fizer sentido: ' +
         termos.join(', ') + '.'
       : '';
-    // cobertura: texto bem formado que não cita nada concreto falhava na régua por "falta de fato".
-    // Pedir um dado verificável em TODO parágrafo é instrução genérica, não adaptação ao gabarito.
-    exige += ' Inclua obrigatoriamente pelo menos um dado verificável: um nome próprio, uma data, ' +
-      'um número ou um termo técnico específico da área.';
-    // articulação: medido em bench/estilo.js — os textos saíam com 0,5 conectivo por 100 palavras
-    // (frases corretas, soltas, sem ligação). Instrução genérica de coesão, não de conteúdo.
-    exige += ' Articule as frases entre si com conectivos variados (por exemplo: além disso, porém, ' +
-      'portanto, uma vez que, já que, assim), sem repetir sempre o mesmo.';
+    // Não force números: exigir uma data ou estatística por parágrafo induzia dados sem fonte.
+    // Coesão é relação de sentido, não uma contagem mínima artificial de conectivos.
+    exige += ' Desenvolva as ideias de forma clara e coerente, sem repetir informação. ' +
+      'Em afirmações factuais, não invente dados, datas, estatísticas nem fontes; ' +
+      'prefira um exemplo qualitativo se não houver segurança.';
     // TENTATIVA DESCARTADA (medida em 28/10): pedir "cubra definição, funcionamento, exemplo e
     // consequências" alongou o texto e PIOROU a cobertura — o item da fotossíntese passou a não citar
     // oxigênio e levou 102 s. Instrução de cobertura ampla faz o modelo divagar em vez de cobrir.
@@ -1703,21 +1723,23 @@
       'Comece direto no conteúdo.';
   }
 
-  /* Um parágrafo por CHAMADA já resolveu o formato; em SÉRIE custava 84 s de mediana.
-     Agora os parágrafos vão em paralelo, um worker por provedor (nunca duas chamadas no mesmo
-     host, que é o que estoura a cota gratuita). O parágrafo que falhar é refeito numa segunda
-     passada em série — a mesma rede de segurança de antes. */
-  /* Parágrafos: um por chamada (formato exato por construção). A ordem dos hosts é por LATÊNCIA
-     MEDIDA (tools/sonda-latencia-paragrafo.js) e a geração é em SÉRIE no host mais rápido — medido:
-     laguna escreve um parágrafo em 5–9 s e cumpre o tamanho; g4f/pollinations levam 20–25 s e
-     falham com frequência. Esperar o host ruim "em paralelo" custava mais que esperar o bom em
-     série. Paralelo só entra quando o host principal começa a falhar (aí dois workers, em bases
-     diferentes, para não estourar a cota de nenhuma). */
-  /* Texto longo = um parágrafo por CHAMADA (formato exato por construção) e os parágrafos em
-     PARALELO, um worker por provedor — nunca dois no mesmo host, que é o que estoura a cota.
-     A ordem dos hosts é por LATÊNCIA MEDIDA para escrever parágrafo (tools/sonda-latencia-paragrafo.js)
-     e cada worker aprende dentro da execução: quem entrega parágrafo sobe, quem devolve raciocínio,
-     texto curto ou 429 desce. Parágrafo que falha é refeito numa segunda passada, em série. */
+  /* Texto longo: planeja por tópicos sugeridos e gera um parágrafo por chamada, em série.
+     A escolha por base usa latPar; um host que falha não é repetido na mesma tentativa.
+     Medições em janelas distintas não provam que uma arquitetura é sempre melhor que outra. */
+  function extrairPlano(texto) {
+    var saida = [], vistos = {};
+    String(texto || '').split(/\n+/).forEach(function (linha) {
+      var l = linha.replace(/^\s*(?:[-*•]|\d+[.)])\s*/, '').trim().replace(/[.,;:]+$/, '').trim();
+      if (!l || l.length < 3 || l.length > 70 || l.split(/\s+/).length > 6) return;
+      if (CABECALHO_RACIOCINIO.test(l) || PREAMBULO.test(l) ||
+          /\b(ignore|ignorar|system|assistant|prompt|instru[çc][õo]es?|http|www)\b/i.test(l)) return;
+      if (!/^[\wÀ-ÿ\s\-]+$/.test(l)) return;
+      var chave = l.toLowerCase();
+      if (!vistos[chave]) { vistos[chave] = true; saida.push(l); }
+    });
+    return saida.slice(0, 6);
+  }
+
   Roteador.prototype._textoLongo = async function (pergunta, ex) {
     var self = this;
     var n = Math.max(2, ex.paragrafos || 1);
@@ -1740,7 +1762,7 @@
     // latPar alto = medido como NÃO entregador de parágrafo (qwen-397 devolve raciocínio sem conclusão)
     hosts.sort(function (a, b) { return (a.latPar || 30000) - (b.latPar || 30000); });
 
-    var notaPar = {}, cursor = 0;
+    var notaPar = {};
     hosts.forEach(function (h) { notaPar[h.id] = 0; });
 
     // PLANO antes de escrever: uma chamada curta lista os elementos concretos que um texto completo
@@ -1755,43 +1777,41 @@
         'Tema: ' + pergunta + '\n\nListe, em até 6 linhas curtas (2 a 5 palavras cada), os elementos ' +
         'concretos que um texto completo sobre esse tema precisa citar: objetos, processos, agentes, ' +
         'lugares ou consequências. Responda SOMENTE a lista, uma por linha, sem introdução, sem ' +
-        'numeração e sem explicação.', 12000, { maxTokens: 160, longo: false });
+        'numeração e sem explicação.', 12000, { maxTokens: 160, longo: true,
+          sistema: 'Sugira tópicos curtos em português, um por linha. Não escreva raciocínio, números ou fontes inventadas.' });
       if (rPlano.texto) {
-        plano = String(rPlano.texto).split(/\n+/)
-          .map(function (l) { return sanear(String(l)).replace(/^[-*•\d.)\s]+/, '').trim(); })
-          .filter(function (l) { return l && l.split(/\s+/).length <= 6 && l.length >= 3; })
-          .slice(0, 6);
+        plano = extrairPlano(rPlano.texto);
       }
     } catch (e) { plano = []; }
-    function proxima() { return hosts[cursor++ % hosts.length]; }
     function melhorLivre(usados) {
       var melhor = null;
       hosts.forEach(function (h) {
-        if (usados[h.id]) return;
+        if (usados[h.id] || !self.disponivel(h.id)) return;
         if (!melhor || (notaPar[h.id] || 0) > (notaPar[melhor.id] || 0)) melhor = h;
       });
-      return melhor || hosts[0];
+      return melhor;
     }
 
-    async function paragrafo(i, usados) {
+    async function paragrafo(i, usados, prazo) {
       var rota = melhorLivre(usados || {});
+      prazo = prazo || inicio + (n >= 3 ? 115000 : 85000);
       var tentados = {};
       for (var k in (usados || {})) tentados[k] = 1;
       for (var t = 0; t < 4; t++) {
         // 3+ parágrafos custam mais chamadas: prazo maior, senão cai no caminho de reserva
-        if (agora() - inicio > (n >= 3 ? 115000 : 85000)) return null;
+        if (!rota || agora() >= prazo) return null;
         var foco = i === 0
           ? 'Comece definindo o assunto com precisão e dê um exemplo concreto.'
-          : 'Aprofunde um aspecto novo, sem repetir o que já foi dito, e cite um detalhe concreto (nome, número ou processo).';
+          : 'Aprofunde um aspecto novo, sem repetir o que já foi dito, com um exemplo pertinente e sem inventar dados.';
         if (i === n - 1) foco += ' Feche com uma frase de conclusão completa.';
         var ped = instrucaoParagrafo(pergunta, i, n, minPor, foco) + instrucaoFormato(pergunta);
         // distribui o plano entre os parágrafos (cada um cobre uma fatia, todos cobrem o conjunto)
         if (plano.length) {
           var fatia = plano.filter(function (_, k) { return k % n === i; });
           if (!fatia.length) fatia = plano.slice(0, 2);
-          ped += '\n\nUm texto completo sobre o tema precisa citar, entre outros: ' +
-            plano.join('; ') + '. Inclua nesta parte, com naturalidade e sem virar lista, ' +
-            (fatia.length > 1 ? 'estes elementos: ' + fatia.join(' e ') + '.' : 'este elemento: ' + fatia[0] + '.');
+          ped += '\n\nTópicos sugeridos para considerar, se forem pertinentes: ' + plano.join('; ') +
+            '. Nesta parte, priorize ' + fatia.join(' e ') +
+            ', sem tratar a sugestão como fato verificado nem inventar informação.';
         }
         // coesão: se o parágrafo anterior já existe, entra como contexto e proíbe repetição
         if (i > 0 && blocos[i - 1]) {
@@ -1799,7 +1819,9 @@
             '"\nNão repita esse conteúdo; acrescente informação nova.';
         }
         await self._esperarVez(rota);
-        var r = await self._chamar(rota, ped, 35000, { maxTokens: 800, longo: true, sistema: SYS_ABERTO });
+        var restante = prazo - agora();
+        if (restante <= 0) return null;
+        var r = await self._chamar(rota, ped, Math.min(35000, restante), { maxTokens: 800, longo: true, sistema: SYS_ABERTO });
         tentativas++;
         if (r.texto) self._premiar(rota.id, r.ms); else self._castigar(rota.id, r.erro, r.espera);
         if (r.erro === 'rate') await new Promise(function (res) { setTimeout(res, 2500 + Math.random() * 2000); });
@@ -1822,10 +1844,8 @@
     }
 
     var blocos = new Array(n);
-    // SÉRIE no host mais bem colocado, e não paralelo: medido em 28/10 que o laguna entrega 6
-    // parágrafos seguidos em 3,8–9,6 s sem 429, enquanto abrir 2–3 workers em paralelo estoura a
-    // cota dos provedores e faz o item custar 130–200 s. Paralelismo aqui troca qualidade e tempo
-    // por disputa de cota — não compensa.
+    // Série no host disponível melhor colocado. Latência e cota variam por janela;
+    // sondagens em janelas diferentes não isolam a causa de uma diferença.
     for (var i = 0; i < n; i++) blocos[i] = await paragrafo(i, {});
 
     // Cota apertada não pode virar texto quebrado. Se faltou parágrafo, espera a rota mais próxima
@@ -1833,12 +1853,16 @@
     // chamada só e trunca (medido: itens de 2 parágrafos entregues com 41-44 palavras na régua).
     if (blocos.some(function (b) { return !b; })) {
       var t = agora();
-      var proximos = this.catalogo
+      var proximos = hosts
         .filter(function (r) { return !self.saude[r.id].morta && self.saude[r.id].cooldownAte > t; })
         .map(function (r) { return self.saude[r.id].cooldownAte; });
-      var espera = proximos.length ? Math.min(Math.min.apply(null, proximos) - t + 500, 40000) : 5000;
+      var espera = proximos.length ? Math.min(Math.min.apply(null, proximos) - t + 500, 40000) : 0;
       if (espera > 0) await new Promise(function (res) { setTimeout(res, espera); });
-      for (var j = 0; j < n; j++) if (!blocos[j]) blocos[j] = await paragrafo(j, {});
+      // Novo prazo limitado: antes, o prazo inicial já vencido impedia toda a segunda tentativa.
+      var prazoRetry = agora() + 35000;
+      for (var j = 0; j < n && agora() < prazoRetry; j++) {
+        if (!blocos[j]) blocos[j] = await paragrafo(j, {}, prazoRetry);
+      }
     }
     if (blocos.some(function (b) { return !b; })) return null;
     var texto = blocos.join('\n\n');
@@ -1919,7 +1943,14 @@
     this.metricas.perguntas++;
 
     var doCache = this._cacheGet(chave);
-    if (doCache) { this.metricas.cacheAcertos++; return Object.assign({}, doCache, { cache: true }); }
+    if (doCache) {
+      this.metricas.cacheAcertos++;
+      var respostaCache = Object.assign({}, doCache, { cache: true });
+      var tipoCache = (typeof pedido === 'object' && pedido.tipo) || classificarPedido(pergunta);
+      if (tipoCache === 'aberto' && !respostaCache.ferramenta)
+        respostaCache = anotarRespostaAberta(respostaCache, exigenciaDoPedido(pergunta));
+      return respostaCache;
+    }
 
     if (usarFerramenta) {
       var f = await this._ferramenta(pergunta);
@@ -1953,11 +1984,11 @@
       instrucao += ' Escreva entre ' + ex.minPalavras + ' e ' + tetoPalavras + ' palavras; termine o texto por completo.';
       if (ex.itens >= 2) {
         var lista = await this._listaLonga(pergunta, ex);
-        if (lista) { this._cacheSet(chave, lista); this.metricas.sucessos++; return lista; }
+        if (lista) { lista = anotarRespostaAberta(lista, ex); this._cacheSet(chave, lista); this.metricas.sucessos++; return lista; }
       }
       if (ex.paragrafos >= 2) {
         var longo = await this._textoLongo(pergunta, ex);
-        if (longo) { this._cacheSet(chave, longo); this.metricas.sucessos++; return longo; }
+        if (longo) { longo = anotarRespostaAberta(longo, ex); this._cacheSet(chave, longo); this.metricas.sucessos++; return longo; }
       }
       var ga = await this._gerar(pergunta, {
         tentativas: 3,
@@ -1973,7 +2004,7 @@
           return ajustarFechamento(fecharTexto(ajustarParagrafos(t, ex.paragrafos)), pergunta);
         }
       });
-      if (ga) { this._cacheSet(chave, ga); this.metricas.sucessos++; return ga; }
+      if (ga) { ga = anotarRespostaAberta(ga, ex); this._cacheSet(chave, ga); this.metricas.sucessos++; return ga; }
     }
 
     function acabamento(txt) {
@@ -1986,6 +2017,7 @@
         tipo === 'curto' ? null : { longo: true, chamar: { maxTokens: 1200 } });
       if (c) {
         if (tipo !== 'curto') c.texto = acabamento(c.texto);
+        if (tipo === 'aberto') c = anotarRespostaAberta(c, exigenciaDoPedido(pergunta));
         this._cacheSet(chave, c); this.metricas.sucessos++; return c;
       }
     }
@@ -2019,6 +2051,7 @@
           var confianca = rota.classe === 'forte' ? 'alta' : (rota.classe === 'media' ? 'media' : 'baixa');
           var saida = { texto: r.texto, rota: rota.id, rotaNome: rota.nome, classe: rota.classe, confianca: confianca, tentativas: tentativas, ms: r.ms };
           if (tipo !== 'curto') saida.texto = acabamento(saida.texto);
+          if (tipo === 'aberto') saida = anotarRespostaAberta(saida, exigenciaDoPedido(pergunta));
           this._cacheSet(chave, saida);
           return saida;
         }
@@ -2039,7 +2072,7 @@
   };
 
   var api = { Roteador: Roteador, CATALOGO: CATALOGO, normal: normal };
-  api.internos = { sanear: sanear, util: util, extrairConclusao: extrairConclusao, calendarioLocal: calendarioLocal, fragmento: fragmento, instrucaoParagrafo: instrucaoParagrafo, fecharTexto: fecharTexto, termosDoPedido: termosDoPedido, calcular: calcular, instrucaoFormato: instrucaoFormato, ajustarFechamento: ajustarFechamento, numerarLista: numerarLista,
+  api.internos = { sanear: sanear, util: util, extrairConclusao: extrairConclusao, calendarioLocal: calendarioLocal, fragmento: fragmento, instrucaoParagrafo: instrucaoParagrafo, extrairPlano: extrairPlano, fecharTexto: fecharTexto, termosDoPedido: termosDoPedido, calcular: calcular, instrucaoFormato: instrucaoFormato, ajustarFechamento: ajustarFechamento, numerarLista: numerarLista, anotarRespostaAberta: anotarRespostaAberta,
                    classificarPedido: classificarPedido, extrairCodigo: extrairCodigo,
                    codigoInteiro: codigoInteiro, textoCompleto: textoCompleto,
                    exigenciaDoPedido: exigenciaDoPedido, notaTexto: notaTexto, ajustarParagrafos: ajustarParagrafos };

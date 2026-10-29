@@ -1,0 +1,14 @@
+[
+ {"id": 101, "q": "Explique em dois parágrafos o que é compostagem e por que ela ajuda uma horta.", "minPalavras": 70, "paragrafos": 2,
+  "contem": ["org[âa]nic|restos", "decompos|decompor|microrgan|microorgan|fung|bact", "adubo|aduba|nutriente|solo"]},
+ {"id": 102, "q": "Explique em dois parágrafos como uma geladeira mantém alimentos frios.", "minPalavras": 70, "paragrafos": 2,
+  "contem": ["calor|energia t[ée]rmica", "compressor|fluido|refrigerante|serpentina", "temperatura|frio|resfria"]},
+ {"id": 103, "q": "Escreva um parágrafo explicando o que é a coleta seletiva de materiais.", "minPalavras": 55, "paragrafos": 1,
+  "contem": ["res[íi]duo|lixo|materia", "separa|triagem", "recicla|reaproveita"]},
+ {"id": 104, "q": "Explique em dois parágrafos como uma biblioteca organiza e empresta livros.", "minPalavras": 70, "paragrafos": 2,
+  "contem": ["livro", "empr[ée]stim|empresta|devol", "cat[áa]logo|classific|organiza"]},
+ {"id": 105, "q": "Em um parágrafo, explique os efeitos da impermeabilização do solo nas cidades durante chuvas fortes.", "minPalavras": 55, "paragrafos": 1,
+  "contem": ["chuva|[áa]gua", "solo|asfalto|pavimenta", "enchente|alagamento|inunda|escoamento"]},
+ {"id": 106, "q": "Escreva dois parágrafos sobre como os oceanos influenciam o clima.", "minPalavras": 70, "paragrafos": 2,
+  "contem": ["oceano|mar", "calor|temperatura", "circula|corrente|clima"]}
+]

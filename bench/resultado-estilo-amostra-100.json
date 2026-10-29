@@ -1,0 +1,38 @@
+{
+  "meta": {
+    "iniciado": "2026-10-29T07:13:58.560Z",
+    "terminado": "2026-10-29T07:17:27.267Z",
+    "codigoSha256": "eccc2a2dc0f8206c42a3e2e09dd4f45db00fdab4768330948a4f3a08a9c0bf4d",
+    "bancoSha256": "141f0da3eab7bd00b6bb108d1382d0e6a07c0d456cbc913e4360e2c8f93b1a5d",
+    "nota": "Amostra pequena; coletar não equivale a avaliar qualidade."
+  },
+  "res": [
+    {
+      "id": "microconto",
+      "genero": "ficção curta",
+      "q": "Escreva um microconto de no máximo 120 palavras: dois irmãos perdem o ônibus durante uma chuva e precisam tomar uma decisão. Termine com a decisão, sem explicar a moral da história.",
+      "texto": "A chuva batia no asfalto quando os irmãos viram o ônibus partir, molhados e sem guarda‑chuva; o mais velho sugeriu correr até a estação seguinte, o mais novo preferiu esperar o próximo, mas o relógio marcava meia‑hora de atraso e a água subia nos tornozelos; eles olharam um para o outro, respiraram fundo e decidiram pegar a bicicleta enferrujada do pai e pedalar juntos pela tempestade.",
+      "rota": "ultra",
+      "erro": null,
+      "ms": 52848
+    },
+    {
+      "id": "poema",
+      "genero": "poesia",
+      "q": "Escreva um poema de quatro versos sobre a volta para casa sob a chuva, sem título e sem rima obrigatória.",
+      "texto": "O céu se abre em gotas que deslizam como lembranças, e eu caminho, cada passo marcando o compasso da chuva que me acompanha.  \nO cheiro de terra molhada mistura-se ao perfume de café recém-passado, e a porta da casa parece um farol que chama, prometendo calor e silêncio.  \nOs reflexos das luzes da rua se espalham na poça, criando um mosaico de cores que se funde ao meu coração, que pulsa mais forte a cada gota que cai.  \nAo abrir a porta, a chuva se torna um abraço silencioso, e eu me sinto em casa, onde o tempo desacelera e o mundo exterior se dissolve em um suspiro de alívio.",
+      "rota": "polli",
+      "erro": null,
+      "ms": 79775
+    },
+    {
+      "id": "convite",
+      "genero": "postagem",
+      "q": "Escreva uma postagem de até 80 palavras convidando voluntários para uma biblioteca comunitária, com tom acolhedor e uma chamada para ação. Não invente data, horário nem local.",
+      "texto": "Venha fazer parte da nossa biblioteca comunitária: sua paixão por livros e vontade de ajudar transformam histórias em oportunidades — inscreva-se hoje e compartilhe o prazer de ler com a vizinhança!",
+      "rota": "ultra",
+      "erro": null,
+      "ms": 76083
+    }
+  ]
+}

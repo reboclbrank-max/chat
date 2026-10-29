@@ -1,0 +1,27 @@
+✔ # 1  206p 72298ms
+✔ # 2  211p 11903ms
+✔ # 3  259p 24517ms
+✔ # 4   91p 71800ms
+✔ # 5   63p 81144ms
+✘ # 6   91p 24983ms  falta fato #3 (ambient)
+✔ # 7  208p 17174ms
+✔ # 8  251p 22792ms
+✔ # 9  208p 17517ms
+✔ #10   68p 126834ms
+✔ #11  201p 55546ms
+✔ #12  301p 31876ms
+✔ #13  197p 18654ms
+✔ #14  224p 12641ms
+✔ #15  188p 97076ms
+✘ #16  241p 14091ms  falta fato #1 (rio)
+✔ #17  205p 19416ms
+✔ #18   93p 178041ms
+✔ #19   78p 28575ms
+✔ #20  317p 27580ms
+✔ #21   65p 61280ms
+✘ #22  232p 21646ms  falta fato #1 (painel)
+✔ #23  240p 23398ms
+✔ #24   99p 38221ms
+
+{"modo":"depois","total":24,"passaram":21,"pct":87.5,"medianaPalavras":206,"cortados":0,"curtos":0,"faltouFato":3,"medianaMs":27580}
+salvo em /home/user/chat-v2/bench/resultado-aberto-100-original.json

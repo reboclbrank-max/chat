@@ -1,0 +1,136 @@
+{
+ "sum": {
+  "modo": "visao",
+  "total": 11,
+  "acertos": 11,
+  "pct": 100,
+  "semResposta": 0,
+  "duracaoS": 260,
+  "latenciaMedianaMs": 2602
+ },
+ "res": [
+  {
+   "id": 1,
+   "arq": "n7.png",
+   "gab": [
+    "7"
+   ],
+   "resp": "7",
+   "ok": true,
+   "rota": "ovhvl",
+   "ms": 1708
+  },
+  {
+   "id": 2,
+   "arq": "nove.png",
+   "gab": [
+    "9"
+   ],
+   "resp": "9",
+   "ok": true,
+   "rota": "ovhvl",
+   "ms": 2042
+  },
+  {
+   "id": 3,
+   "arq": "n123.png",
+   "gab": [
+    "123"
+   ],
+   "resp": "123",
+   "ok": true,
+   "rota": "ovhvl",
+   "ms": 2910
+  },
+  {
+   "id": 4,
+   "arq": "q.png",
+   "gab": [
+    "q"
+   ],
+   "resp": "Q",
+   "ok": true,
+   "rota": "ovhvl",
+   "ms": 2567
+  },
+  {
+   "id": 5,
+   "arq": "azul.png",
+   "gab": [
+    "azul"
+   ],
+   "resp": "AZUL",
+   "ok": true,
+   "rota": "ovhvl",
+   "ms": 2748
+  },
+  {
+   "id": 6,
+   "arq": "casa.png",
+   "gab": [
+    "casa"
+   ],
+   "resp": "CASA",
+   "ok": true,
+   "rota": "ovhvl",
+   "ms": 2607
+  },
+  {
+   "id": 7,
+   "arq": "tres.png",
+   "gab": [
+    "3",
+    "três"
+   ],
+   "resp": "3",
+   "ok": true,
+   "rota": "ovhvl",
+   "ms": 2602
+  },
+  {
+   "id": 8,
+   "arq": "doisquad.png",
+   "gab": [
+    "2",
+    "dois"
+   ],
+   "resp": "2",
+   "ok": true,
+   "rota": "ovhvl",
+   "ms": 1342
+  },
+  {
+   "id": 9,
+   "arq": "quad42.png",
+   "gab": [
+    "42"
+   ],
+   "resp": "42",
+   "ok": true,
+   "rota": "ovhvl",
+   "ms": 2430
+  },
+  {
+   "id": 10,
+   "arq": "seta.png",
+   "gab": [
+    "esquerda"
+   ],
+   "resp": "esquerda",
+   "ok": true,
+   "rota": "ovhvl",
+   "ms": 4293
+  },
+  {
+   "id": 11,
+   "arq": "seta_dir.png",
+   "gab": [
+    "direita"
+   ],
+   "resp": "direita",
+   "ok": true,
+   "rota": "ovhvl",
+   "ms": 4816
+  }
+ ]
+}

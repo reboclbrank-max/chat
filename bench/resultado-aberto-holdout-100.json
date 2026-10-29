@@ -1,0 +1,112 @@
+{
+ "sum": {
+  "modo": "depois",
+  "total": 6,
+  "passaram": 5,
+  "pct": 83.3,
+  "medianaPalavras": 167,
+  "cortados": 0,
+  "curtos": 1,
+  "faltouFato": 0,
+  "medianaMs": 68488
+ },
+ "res": [
+  {
+   "id": 101,
+   "q": "Explique em dois parágrafos o que é compostagem e por que ela ajuda uma horta.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 212,
+   "paragrafos": 2,
+   "itens": 0,
+   "erro": null,
+   "ms": 19022,
+   "texto": "A compostagem é o processo de transformar resíduos orgânicos, como cascas de frutas, restos de podas e borra de café, em um substrato escuro e úmido chamado composto. Esse material resulta da ação de microorganismos decompositores, que desmontam a matéria orgânica em nutrientes que o solo pode absorver. Quando aplicado ao solo de uma horta, o composto melhora sua estrutura, aumentando a retenção de água e a drenagem. Assim, a compostagem ajuda a horta ao proporcionar um solo fértil, onde as plantas crescem mais fortes e produzem melhor.\n\nAlém de enriquecer o solo, a compostagem favorece a horta sustentável ao reduzir a quantidade de resíduos orgânicos enviados ao lixo, diminuindo a necessidade de compra de adubos externos. Os microorganismos decompositores presentes no composto, como bactérias e fungos benéficos, continuam atuando no solo, promovendo um equilíbrio ecológico que estimula o crescimento de plantas saudáveis e resistentes a doenças. Por exemplo, ao aplicar composto caseiro em uma horta de alface, observa-se que as plantas desenvolvem folhas mais firmes e apresentam menor incidência de mofos, indicando que o uso contínuo de compostagem cria um ambiente propício para a atividade biológica do solo. Portanto, a compostagem ajuda a horta não apenas a nutrir as plantas, mas também a construir um sistema agrícola mais equilibrado e duradouro.",
+   "trecho": "A compostagem é o processo de transformar resíduos orgânicos, como cascas de frutas, restos de podas e borra de café, em um substrato escuro e úmido chamado composto. Esse material resulta da ação de ",
+   "fim": "lantas, mas também a construir um sistema agrícola mais equilibrado e duradouro."
+  },
+  {
+   "id": 102,
+   "q": "Explique em dois parágrafos como uma geladeira mantém alimentos frios.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 209,
+   "paragrafos": 2,
+   "itens": 0,
+   "erro": null,
+   "ms": 68488,
+   "texto": "Uma geladeira mantém alimentos frios por meio de um sistema de refrigeração mecânico que remove o calor do interior. O compressor, um dos componentes centrais, comprime o refrigerante, aumentando sua pressão e temperatura, e encaminha-o ao condensador, onde libera o calor para o ambiente. Em seguida, o refrigerante passa por uma válvula de expansão e chega ao coil de evaporador, onde absorve o calor restante, resfriando o compartimento. A geladeira também conta com portas herméticas e isolamento térmico nas paredes, que reduzem a entrada de calor externo, mantendo a temperatura interna estável. Por exemplo, ao fechar bem a porta após colocar uma cerveja gelada, o ambiente interno retém o frio por mais tempo, evitando que o compressor precise trabalhar excessivamente para manter os alimentos frios.\n\nQuando o refrigerante sai do condensador, ele entra no coil de evaporador, onde se expande e absorve calor do interior, transformando‑se em gás frio. Esse gás, agora mais leve, é conduzido pelo ventilador interno que circula o ar ao redor dos alimentos, garantindo que cada item receba a mesma temperatura. Por exemplo, ao colocar uma salada na prateleira superior, o ventilador distribui o ar frio uniformemente, mantendo os vegetais frescos e crocantes. Dessa forma, a geladeira mantém alimentos frios de maneira eficiente e constante.",
+   "trecho": "Uma geladeira mantém alimentos frios por meio de um sistema de refrigeração mecânico que remove o calor do interior. O compressor, um dos componentes centrais, comprime o refrigerante, aumentando sua ",
+   "fim": "essa forma, a geladeira mantém alimentos frios de maneira eficiente e constante."
+  },
+  {
+   "id": 103,
+   "q": "Escreva um parágrafo explicando o que é a coleta seletiva de materiais.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 102,
+   "paragrafos": 1,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 27174,
+   "texto": "A coleta seletiva de materiais é o processo de separar, na fonte, os resíduos gerados em residências, comércios e indústrias de acordo com sua composição, como papel, plástico, vidro, metal e orgânicos, para que cada fração possa ser encaminhada a destinos adequados de reciclagem, compostagem ou disposição final. Essa prática reduz a quantidade de lixo enviado a aterros, diminui a extração de matérias-primas virgens e contribui para a economia circular ao transformar resíduos em novos produtos. A participação da população, a existência de pontos de entrega voluntária e a logística de transporte são essenciais para que o sistema funcione de forma eficiente.",
+   "trecho": "A coleta seletiva de materiais é o processo de separar, na fonte, os resíduos gerados em residências, comércios e indústrias de acordo com sua composição, como papel, plástico, vidro, metal e orgânico",
+   "fim": "ica de transporte são essenciais para que o sistema funcione de forma eficiente."
+  },
+  {
+   "id": 104,
+   "q": "Explique em dois parágrafos como uma biblioteca organiza e empresta livros.",
+   "ok": false,
+   "falhas": [
+    "curto (69<70)",
+    "parágrafos (1<2)"
+   ],
+   "palavras": 69,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 235523,
+   "texto": "Uma biblioteca organiza seus livros por sistemas de classificação (como Dewey ou Biblioteca do Congresso), etiquetando cada volume com códigos que indicam assunto, autor e localização física, e mantém um catálogo digital para facilitar a busca; ao emprestar, registra a data de devolução, aplica multas por atraso e oferece opções de reserva e renovação, garantindo que os usuários possam acessar e devolver os materiais de forma ordenada e controlada.",
+   "trecho": "Uma biblioteca organiza seus livros por sistemas de classificação (como Dewey ou Biblioteca do Congresso), etiquetando cada volume com códigos que indicam assunto, autor e localização física, e mantém",
+   "fim": " usuários possam acessar e devolver os materiais de forma ordenada e controlada."
+  },
+  {
+   "id": 105,
+   "q": "Em um parágrafo, explique os efeitos da impermeabilização do solo nas cidades durante chuvas fortes.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 85,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 55987,
+   "texto": "A impermeabilização do solo nas cidades impede a infiltração natural da água da chuva, aumentando drasticamente o volume e a velocidade do escoamento superficial, o que sobrecarrega os sistemas de drenagem e eleva o risco de enchentes repentinas e alagamentos; além disso, reduz a recarga dos lençóis freáticos, agrava a erosão das margens dos rios urbanos, transporta maior carga de poluentes para os corpos d'água e contribui para a formação de ilhas de calor, intensificando os impactos ambientais e socioeconômicos durante eventos de precipitação intensa.",
+   "trecho": "A impermeabilização do solo nas cidades impede a infiltração natural da água da chuva, aumentando drasticamente o volume e a velocidade do escoamento superficial, o que sobrecarrega os sistemas de dre",
+   "fim": "s impactos ambientais e socioeconômicos durante eventos de precipitação intensa."
+  },
+  {
+   "id": 106,
+   "q": "Escreva dois parágrafos sobre como os oceanos influenciam o clima.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 167,
+   "paragrafos": 2,
+   "itens": 0,
+   "erro": null,
+   "ms": 114177,
+   "texto": "Os oceanos desempenham papel fundamental na regulação do clima terrestre, pois absorvem grande quantidade de calor e dióxido de carbono. Por exemplo, a corrente do Golfo transporta águas quentes do Atlântico Norte para a Europa, elevando as temperaturas e suavizando invernos rigorosos. Assim, os oceanos influenciam a formação de sistemas de pressão e ventos que moldam padrões climáticos globais. Esse efeito térmico ajuda a manter a estabilidade térmica do planeta, demonstrando a interdependência entre mar e atmosfera.\n\nAlém disso, os oceanos atuam como gigantescos reservatórios de vapor d'água, que, ao evaporar, alimentam nuvens e precipitações em regiões distantes. Esse processo, chamado de ciclo hidrológico, pode transformar áreas secas em zonas de chuvas intensas, como ocorreu na Amazônia quando a evaporação do Atlântico Norte contribuiu para a formação de tempestades que aliviou a seca. Assim, os oceanos influenciam o clima ao redistribuir a umidade global, criando condições favoráveis para a agricultura e a biodiversidade. Em suma, a interação entre mar e atmosfera sustenta a vida em nosso planeta.",
+   "trecho": "Os oceanos desempenham papel fundamental na regulação do clima terrestre, pois absorvem grande quantidade de calor e dióxido de carbono. Por exemplo, a corrente do Golfo transporta águas quentes do At",
+   "fim": "de. Em suma, a interação entre mar e atmosfera sustenta a vida em nosso planeta."
+  }
+ ],
+ "meta": {
+  "iniciado": "2026-10-29T07:05:12.442Z",
+  "terminado": "2026-10-29T07:13:52.814Z",
+  "banco": "banco-aberto-holdout-100.json",
+  "bancoSha256": "8305995395f3406cb4ecba02d4b7f494ad3dcfe96ed39b1ef8aaba81b25ef4ce",
+  "codigoSha256": "eccc2a2dc0f8206c42a3e2e09dd4f45db00fdab4768330948a4f3a08a9c0bf4d",
+  "rubricaSha256": "f3ff579d3ca2a56b735b1c414791eab1050eb58e0367d5ec2c1bbad8ba25665e",
+  "concorrencia": 1
+ }
+}

@@ -1,0 +1,13 @@
+✔ # 1    2238ms  n7.png       gab=7          resp="7"
+✔ # 2    6766ms  nove.png     gab=9          resp="9"
+✔ # 3    2841ms  n123.png     gab=123        resp="123"
+✔ # 4    3792ms  q.png        gab=q          resp="Q"
+✔ # 5    2300ms  azul.png     gab=azul       resp="AZUL"
+✔ # 6    5549ms  casa.png     gab=casa       resp="CASA"
+✔ # 7    5330ms  tres.png     gab=3|três     resp="3"
+✔ # 8    4790ms  doisquad.png gab=2|dois     resp="2"
+✔ # 9    8282ms  quad42.png   gab=42         resp="42"
+✔ #10    1911ms  seta.png     gab=esquerda   resp="esquerda"
+✔ #11    1811ms  seta_dir.png gab=direita    resp="direita"
+{"modo":"visao","total":11,"acertos":11,"pct":100,"semResposta":0,"duracaoS":260,"latenciaMedianaMs":3792,"latenciaParedeMedianaMs":9492}
+salvo em /home/user/chat-v2/bench/resultado-visao-100.json

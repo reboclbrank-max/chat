@@ -1,0 +1,27 @@
+✔ # 1  218p 17087ms
+✔ # 2  181p 16478ms
+✔ # 3  273p 37146ms
+✔ # 4  104p 98868ms
+✔ # 5   82p 102676ms
+✘ # 6  103p 19600ms  falta fato #2 (res[íi]duo)
+✔ # 7  216p 15784ms
+✔ # 8  230p 24006ms
+✔ # 9  254p 28399ms
+✔ #10  116p 120865ms
+✘ #11  309p 18010ms  falta fato #1 (dispers)
+✔ #12  341p 30425ms
+✔ #13  238p 17863ms
+✔ #14  211p 11396ms
+✔ #15  247p 22869ms
+✔ #16  262p 24728ms
+✔ #17  256p 25749ms
+✔ #18   89p 139761ms
+✔ #19   71p  9301ms
+✔ #20  344p 122520ms
+✔ #21   81p 94464ms
+✔ #22  223p 18178ms
+✔ #23  256p 13097ms
+✔ #24   82p 11151ms
+
+{"modo":"depois","total":24,"passaram":22,"pct":91.7,"medianaPalavras":223,"cortados":0,"curtos":0,"faltouFato":2,"medianaMs":24006}
+salvo em /home/user/chat-v2/bench/resultado-aberto-depois.json

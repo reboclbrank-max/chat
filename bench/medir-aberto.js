@@ -7,33 +7,17 @@
 //   MODO=antes node medir-aberto.js gratis # como era antes (consenso de 3, 400 tokens)
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
+const { avaliar } = require('./avaliar-aberto.js');
 const { Roteador, internos } = require(path.resolve(__dirname, '..', 'roteador-ia.js'));
 
 const MODO = process.env.MODO === 'antes' ? 'antes' : 'depois';
 const CONC = Number(process.env.CONC || 2);
-const banco = require('./banco-aberto.json');
-
-function avaliar(texto, it) {
-  const t = String(texto || '');
-  const falhas = [];
-  const palavras = t.split(/\s+/).filter(Boolean).length;
-  const paragrafos = t.split(/\n+/).filter((p) => p.trim().length > 0).length;
-  const itens = (t.match(/^\s*(?:[-*•]|\d+[.)])\s+\S/gm) || []).length;
-
-  if (!t.trim()) return { ok: false, falhas: ['vazio'], palavras: 0, paragrafos: 0, itens: 0 };
-  if (it.minPalavras && palavras < it.minPalavras) falhas.push('curto (' + palavras + '<' + it.minPalavras + ')');
-  if (it.maxPalavras && palavras > it.maxPalavras) falhas.push('longo (' + palavras + '>' + it.maxPalavras + ')');
-  if (it.paragrafos && paragrafos < it.paragrafos) falhas.push('parágrafos (' + paragrafos + '<' + it.paragrafos + ')');
-  if (it.itens && itens < it.itens) falhas.push('itens (' + itens + '<' + it.itens + ')');
-  (it.contem || []).forEach((padrao, i) => {
-    if (!new RegExp(padrao, 'i').test(t)) falhas.push('falta fato #' + (i + 1) + ' (' + padrao.split('|')[0] + ')');
-  });
-  if (/como (um )?modelo de linguagem|n[ãa]o posso (te )?ajudar|desculpe, mas/i.test(t)) falhas.push('meta-resposta');
-  if (/^\s*(claro|certamente|com certeza|aqui est[áa]|segue)/i.test(t)) falhas.push('preâmbulo');
-  // fechou o texto? terminou em pontuação de fim (aceita aspas/fecha-parênteses depois)
-  if (!/[.!?…"”)]\s*$/.test(t.trim())) falhas.push('não terminou a frase (provável corte por limite de tokens)');
-  return { ok: falhas.length === 0, falhas, palavras, paragrafos, itens };
-}
+const caminhoBanco = path.resolve(__dirname, process.env.BANCO_ABERTO || 'banco-aberto.json');
+const banco = JSON.parse(fs.readFileSync(caminhoBanco, 'utf8'));
+if (!Array.isArray(banco) || !banco.length) throw new Error('banco aberto vazio ou inválido');
+const startedAt = new Date().toISOString();
+function sha(caminho) { return crypto.createHash('sha256').update(fs.readFileSync(caminho)).digest('hex'); }
 
 (async () => {
   const r = new Roteador();
@@ -66,8 +50,11 @@ function avaliar(texto, it) {
     faltouFato: res.filter((x) => x.falhas.some((f) => f.startsWith('falta fato'))).length,
     medianaMs: res.map((x) => x.ms).sort((a, b) => a - b)[Math.floor(res.length / 2)]
   };
-  const arquivo = path.join(__dirname, 'resultado-aberto-' + MODO + '.json');
-  fs.writeFileSync(arquivo, JSON.stringify({ sum, res }, null, 1));
+  const arquivo = path.resolve(__dirname, process.env.SAIDA_ABERTO || ('resultado-aberto-' + MODO + '.json'));
+  const meta = { iniciado: startedAt, terminado: new Date().toISOString(), banco: path.basename(caminhoBanco),
+    bancoSha256: sha(caminhoBanco), codigoSha256: sha(path.resolve(__dirname, '..', 'roteador-ia.js')),
+    rubricaSha256: sha(path.resolve(__dirname, 'avaliar-aberto.js')), concorrencia: CONC };
+  fs.writeFileSync(arquivo, JSON.stringify({ sum, res, meta }, null, 1));
   console.log('\n' + JSON.stringify(sum));
   console.log('salvo em ' + arquivo);
 })();

@@ -1,3 +1,7 @@
+⚠️ ARQUIVO HISTÓRICO — MÉTODO V1 INVÁLIDO PARA JULGAR QUALIDADE.
+A contagem de conectivos não normalizava acentos, ignorava pontuação e confundia tipos com ocorrências.
+Mantido para auditoria, não compare estes números com os arquivos *-v2.json.
+
 item  palavras  fraseMed  longas%  repetição%  conectivos/100  variedade%
    1       219        23        0          25             0.5          75  ⚠️
    2       184        17        0          20             0.5          80  ⚠️
