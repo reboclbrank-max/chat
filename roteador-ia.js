@@ -680,12 +680,17 @@
       var fator = s.falhasSeguidas >= 2 && s.ultimoErro === 'timeout' ? 1.6 : 2.5;
       limite = Math.min(limite, Math.round(s.latMedia * fator));
     }
-    if (s.timeoutsSeguidos) {
-      // Rota que só estourou o relógio não tem latência de sucesso para servir de referência —
-      // o defeito da rodada 103 era justamente esse: quem nunca respondia continuava recebendo
-      // a janela cheia de 25 s, para sempre. Cada estouro corta a janela pela metade (até 3).
+    if (s.timeoutsSeguidos && !s.latAmostras) {
+      // Só a rota que NUNCA respondeu nesta sessão tem a janela cortada pela metade por estouro.
+      // A regra anterior cortava também quem já respondia — e a rodada 104 mostrou o preço:
+      // "lagunas", a melhor rota, passou a ser abortada em 6 s e quatro respostas ficaram vazias
+      // (A 40/44 × B 33/44). Rota lenta não é rota morta; cortar a primeira mata a segunda.
       var cortes = Math.min(3, s.timeoutsSeguidos);
       limite = Math.min(limite, Math.round(pedido / Math.pow(2, cortes)));
+    } else if (s.latAmostras) {
+      // Com histórico de sucesso, a janela nunca fica abaixo de 1,5× o que a rota já levou:
+      // ela precisa de tempo para repetir o próprio desempenho.
+      limite = Math.max(limite, Math.round(s.latMedia * 1.5));
     }
     return Math.max(this.timeoutMinimo, limite);
   };
@@ -1686,8 +1691,11 @@
     this.metricas.porRota[id].falhas++;
     // Disjuntor: 4 falhas seguidas põem a rota em descanso curto. Não é morte —
     // ela volta sozinha — mas para de consumir um slot por pergunta enquanto está quebrada.
-    if (tipo !== 'rate' && s.falhasSeguidas >= 4) {
-      s.cooldownAte = Math.max(s.cooldownAte || 0, agora() + 60000);
+    // Disjuntor só para rota sem nenhuma resposta nesta sessão E com 6 falhas seguidas.
+    // A versão anterior (4 falhas, 60 s, qualquer rota) tirou do ar rotas boas que estavam
+    // apenas lentas e ajudou a produzir respostas vazias na rodada 104.
+    if (tipo !== 'rate' && !s.latAmostras && s.falhasSeguidas >= 6) {
+      s.cooldownAte = Math.max(s.cooldownAte || 0, agora() + 30000);
     }
     if (tipo === 'rate') {
       // Retry-After não é encurtado para caber no orçamento do usuário: paramos antes.

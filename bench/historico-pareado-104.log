@@ -35,3 +35,130 @@
 ✔ holdout #103 r0 A 167p 9777ms  [35/88]
 ✔ holdout #103 r0 B 144p 8508ms  [36/88]
 ✔ novo #201 r0 A 172p 15184ms  [37/88]
+✔ novo #201 r0 B 190p 9792ms  [38/88]
+✔ original #7 r0 B 185p 7921ms  [39/88]
+✔ original #7 r0 A 166p 11387ms  [40/88]
+✘ original #24 r0 A 124p 7081ms falta fato #3 (sa[úu]de) [41/88]
+✔ original #24 r0 B 158p 10795ms  [42/88]
+✔ original #6 r0 A 191p 9609ms  [43/88]
+✔ original #6 r0 B 145p 11172ms  [44/88]
+✔ novo #206 r0 A 183p 13190ms  [45/88]
+✔ novo #206 r0 B 145p 7806ms  [46/88]
+✔ holdout #102 r0 A 183p 9329ms  [47/88]
+✔ holdout #102 r0 B 214p 9890ms  [48/88]
+✔ original #14 r0 B 179p 8847ms  [49/88]
+✔ original #14 r0 A 178p 9350ms  [50/88]
+✔ original #18 r0 B 124p 9864ms  [51/88]
+✔ original #18 r0 A 130p 11280ms  [52/88]
+✔ holdout #104 r0 B 190p 14001ms  [53/88]
+✔ holdout #104 r0 A 181p 9949ms  [54/88]
+✔ original #3 r0 B 236p 12847ms  [55/88]
+✔ original #3 r0 A 250p 11304ms  [56/88]
+✔ original #19 r0 A 133p 6399ms  [57/88]
+✔ original #19 r0 B 139p 6132ms  [58/88]
+✔ original #23 r0 B 172p 10418ms  [59/88]
+✔ original #23 r0 A 170p 8925ms  [60/88]
+✔ original #17 r0 B 175p 8846ms  [61/88]
+✔ original #17 r0 A 191p 11875ms  [62/88]
+✘ original #22 r0 B 0p 115673ms vazio [63/88]
+✔ original #22 r0 A 165p 14207ms  [64/88]
+✔ novo #204 r0 A 158p 13798ms  [65/88]
+✘ novo #204 r0 B 0p 100950ms vazio [66/88]
+✔ original #15 r0 B 168p 84075ms  [67/88]
+✔ original #15 r0 A 192p 13316ms  [68/88]
+✘ novo #205 r0 B 0p 49364ms vazio [69/88]
+✔ novo #205 r0 A 155p 13931ms  [70/88]
+✔ original #8 r0 A 213p 16774ms  [71/88]
+✘ original #8 r0 B 0p 79365ms vazio [72/88]
+✔ original #3 r2 A 259p 15952ms  [73/88]
+✘ original #3 r2 B 198p 115265ms parágrafos (2<3) [74/88]
+✘ original #3 r1 B 89p 110002ms curto (89<90) · parágrafos (1<3) · falta fato #3 (urbaniza) [75/88]
+✘ original #3 r1 A 89p 110001ms curto (89<90) · parágrafos (1<3) · falta fato #3 (urbaniza) [76/88]
+✔ holdout #104 r2 B 169p 24448ms  [77/88]
+✔ holdout #104 r2 A 169p 66700ms  [78/88]
+✘ original #22 r1 A 79p 110001ms parágrafos (1<2) [79/88]
+✘ original #22 r1 B 79p 76070ms parágrafos (1<2) [80/88]
+✘ original #22 r2 B 79p 28946ms parágrafos (1<2) [81/88]
+✘ original #22 r2 A 83p 110002ms parágrafos (1<2) [82/88]
+✔ original #16 r1 A 185p 63761ms  [83/88]
+✔ original #16 r1 B 110p 22100ms  [84/88]
+✔ holdout #104 r1 A 169p 26280ms  [85/88]
+✔ holdout #104 r1 B 122p 15459ms  [86/88]
+✘ original #16 r2 B 176p 38166ms falta fato #1 (rio) · falta fato #2 (tratamento) [87/88]
+✔ original #16 r2 A 120p 24446ms  [88/88]
+
+{
+  "original": {
+    "A": {
+      "total": 24,
+      "previsto": 24,
+      "completo": true,
+      "passaram": 23,
+      "pct": 95.8,
+      "medianaMs": 9634
+    },
+    "B": {
+      "total": 24,
+      "previsto": 24,
+      "completo": true,
+      "passaram": 20,
+      "pct": 83.3,
+      "medianaMs": 10397
+    }
+  },
+  "holdout": {
+    "A": {
+      "total": 6,
+      "previsto": 6,
+      "completo": true,
+      "passaram": 6,
+      "pct": 100,
+      "medianaMs": 9863
+    },
+    "B": {
+      "total": 6,
+      "previsto": 6,
+      "completo": true,
+      "passaram": 6,
+      "pct": 100,
+      "medianaMs": 9199
+    }
+  },
+  "novo": {
+    "A": {
+      "total": 6,
+      "previsto": 6,
+      "completo": true,
+      "passaram": 6,
+      "pct": 100,
+      "medianaMs": 13494
+    },
+    "B": {
+      "total": 6,
+      "previsto": 6,
+      "completo": true,
+      "passaram": 4,
+      "pct": 66.7,
+      "medianaMs": 10275.5
+    }
+  },
+  "repeticoes": {
+    "A": {
+      "total": 8,
+      "previsto": 8,
+      "completo": true,
+      "passaram": 5,
+      "pct": 62.5,
+      "medianaMs": 65230.5
+    },
+    "B": {
+      "total": 8,
+      "previsto": 8,
+      "completo": true,
+      "passaram": 3,
+      "pct": 37.5,
+      "medianaMs": 33556
+    }
+  }
+}
+Arquivo: /home/user/chat-104/bench/resultado-pareado-104.json
