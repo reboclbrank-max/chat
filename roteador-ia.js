@@ -1283,7 +1283,11 @@
     if (typeof pedido === 'object' && pedido && pedido.fontes === false) return false;
     if (typeof ambiente === 'object' && ambiente && ambiente.processo && ambiente.processo.env &&
         ambiente.processo.env.CHAT_FONTE_VIVA === '1') return true;
-    return typeof ambiente === 'object' && ambiente && ambiente.navegador === true;
+    // NÃO ligada por padrão no navegador. Medido na janela 106 (pareado, mesma régua, 44 itens):
+    // A 39/44 sem fonte x B 40/44 com fonte — +1, dentro do ruído de 3 pontos, com +37% de
+    // latência e duas derrotas no mesmo item (#16). Fica como opt-in explícito (`fontes:'vivo'`),
+    // do mesmo jeito que a base estática. Ligar de novo exige nova janela que mostre ganho.
+    return false;
   }
 
   function recortarFonte(texto, teto) {
