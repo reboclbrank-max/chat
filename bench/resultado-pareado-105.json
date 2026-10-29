@@ -1,0 +1,4159 @@
+{
+  "meta": {
+    "iniciado": "2026-10-29T18:16:52.369Z",
+    "terminado": "2026-10-29T18:48:32.243Z",
+    "seed": "comparacao-102-20261029",
+    "hashes": {
+      "controle": "5ff3587204e2b1394bcbb7f64b4705cc605a83bdf59c4b159e419192f4f48e27",
+      "candidato": "75c37f7cd29c210327d214c042e8e96067ca3ba68d8e4661a00d45831eb3e0b8",
+      "fontes": "d052742a8bc4ecd71ab1f21c990278c61bbd5e94b0061857fa1661e826db5c8f",
+      "original": "f00a1ed677974487bc70024ddb4e083e3fd11fe41e139c5a1270f7c6d68558e2",
+      "holdout": "8305995395f3406cb4ecba02d4b7f494ad3dcfe96ed39b1ef8aaba81b25ef4ce",
+      "novo": "826f2c09165f9891d2a9c3d86ae11e845f2577de5a3a5478da3fea4f6b7f3417",
+      "rubrica": "84994993f185630095ffb3f5111f0ad49837a6f29565da75df55f1f767579f90",
+      "medidor": "3b3ef48257a4246fa626ef0b0b055d39a9b632eda6c60be6800800af4a18cad6"
+    },
+    "versoes": {
+      "A": "controle 101",
+      "B": "candidato 102"
+    },
+    "ordem": "pareada e contrabalanceada por grupo; sequencial; duas repetições adicionais para IDs conhecidos",
+    "node": "v22.23.4",
+    "cache": "desligado para obter geração nova; saúde e cooldown compartilhado entre versões",
+    "retomadas": 0,
+    "janelas": [
+      {
+        "iniciado": "2026-10-29T18:16:52.369Z",
+        "terminado": "2026-10-29T18:48:32.243Z"
+      }
+    ]
+  },
+  "agenda": [
+    {
+      "grupo": "original",
+      "id": 4,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 4,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 11,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 11,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "holdout",
+      "id": 101,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "holdout",
+      "id": 101,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 20,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 20,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 16,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 16,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "novo",
+      "id": 203,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "novo",
+      "id": 203,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "holdout",
+      "id": 106,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "holdout",
+      "id": 106,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 9,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 9,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 2,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 2,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 10,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 10,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 21,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 21,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 12,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 12,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "novo",
+      "id": 202,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "novo",
+      "id": 202,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 1,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 1,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 13,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 13,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "holdout",
+      "id": 105,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "holdout",
+      "id": 105,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 5,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 5,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "holdout",
+      "id": 103,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "holdout",
+      "id": 103,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "novo",
+      "id": 201,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "novo",
+      "id": 201,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 7,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 7,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 24,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 24,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 6,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 6,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "novo",
+      "id": 206,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "novo",
+      "id": 206,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "holdout",
+      "id": 102,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "holdout",
+      "id": 102,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 14,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 14,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 18,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 18,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "holdout",
+      "id": 104,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "holdout",
+      "id": 104,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 3,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 3,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 19,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 19,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 23,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 23,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 17,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 17,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 22,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 22,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "novo",
+      "id": 204,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "novo",
+      "id": 204,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 15,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 15,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "novo",
+      "id": 205,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "novo",
+      "id": 205,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 8,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 8,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 3,
+      "repeticao": 2,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 3,
+      "repeticao": 2,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 3,
+      "repeticao": 1,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 3,
+      "repeticao": 1,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "holdout",
+      "id": 104,
+      "repeticao": 2,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "holdout",
+      "id": 104,
+      "repeticao": 2,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 22,
+      "repeticao": 1,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 22,
+      "repeticao": 1,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 22,
+      "repeticao": 2,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 22,
+      "repeticao": 2,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 16,
+      "repeticao": 1,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 16,
+      "repeticao": 1,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "holdout",
+      "id": 104,
+      "repeticao": 1,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "holdout",
+      "id": 104,
+      "repeticao": 1,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 16,
+      "repeticao": 2,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 16,
+      "repeticao": 2,
+      "primeiro": "B",
+      "versao": "A"
+    }
+  ],
+  "res": [
+    {
+      "grupo": "original",
+      "id": 4,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Escreva um e-mail formal pedindo orçamento de 20 cadeiras para um escritório. Máximo 200 palavras.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 100,
+      "paragrafos": 10,
+      "itens": 5,
+      "ms": 40470,
+      "rota": "ovhoss20",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:16:52.393Z",
+          "ms": 275,
+          "resultado": "rate",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:16:52.668Z",
+          "ms": 4280,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:16:56.950Z",
+          "ms": 22793,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T18:17:19.743Z",
+          "ms": 13109,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Prezado(a) Senhor(a),\n\nVenho, por meio deste, solicitar orçamento para a aquisição de 20 cadeiras de escritório, de acordo com as especificações técnicas que seguem:\n\n- Material: estrutura metálica com revestimento em tecido ou couro sintético;\n- Altura ajustável;\n- Apoio lombar;\n- Rodízios com travas;\n- Garantia mínima de 12 meses.\n\nSolicito que o orçamento inclua valores unitário e total, prazo de entrega, condições de pagamento e eventuais descontos por volume. Caso haja opções de modelos alternativos, peço que sejam detalhadas junto ao preço.\n\nAgradeço antecipadamente pela atenção e aguardo retorno até o dia 15 de outubro de 2026.\n\nAtenciosamente."
+    },
+    {
+      "grupo": "original",
+      "id": 4,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Escreva um e-mail formal pedindo orçamento de 20 cadeiras para um escritório. Máximo 200 palavras.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 78,
+      "paragrafos": 5,
+      "itens": 0,
+      "ms": 14757,
+      "rota": "ovhoss20",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:17:32.861Z",
+          "ms": 14750,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Prezado(a) Senhor(a),\n\nVenho, por meio deste, solicitar orçamento para a aquisição de 20 cadeiras ergonômicas destinadas ao nosso escritório. Gostaríamos de conhecer as opções disponíveis, incluindo modelos com apoio lombar, ajuste de altura e material de acabamento. \n\nSolicitamos que o orçamento inclua: preço unitário, custo total, prazo de entrega, condições de pagamento e garantia. Caso haja possibilidade de desconto por volume, favor indicar. \n\nAgradecemos a atenção e aguardamos retorno até o dia 15 de outubro de 2026.\n\nAtenciosamente."
+    },
+    {
+      "grupo": "original",
+      "id": 11,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Explique por que o céu é azul em dois parágrafos.",
+      "ok": false,
+      "falhas": [
+        "parágrafos (1<2)"
+      ],
+      "palavras": 82,
+      "paragrafos": 1,
+      "itens": 0,
+      "ms": 110003,
+      "rota": "texto-longo",
+      "erro": null,
+      "incompleto": true,
+      "avisoFormato": "Restrições de formato não atendidas: 1 de 2 parágrafos. Confira ou tente novamente.",
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:17:47.614Z",
+          "ms": 25002,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:18:12.617Z",
+          "ms": 150,
+          "resultado": "rate",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:18:12.767Z",
+          "ms": 12707,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:18:25.474Z",
+          "ms": 25090,
+          "resultado": "servidor",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhq",
+          "inicio": "2026-10-29T18:18:50.564Z",
+          "ms": 20297,
+          "resultado": "degenerada",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T18:19:10.861Z",
+          "ms": 26754,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        }
+      ],
+      "texto": "A cor azul do céu resulta da dispersão da luz solar pelas moléculas de gases que compõem a atmosfera. Esse fenômeno, conhecido como dispersão de Rayleigh, afeta preferencialmente os comprimentos de onda mais curtos, como o azul e o violeta. Como o olho humano é mais sensível ao azul do que ao violeta, percebemos o céu predominantemente azul durante o dia. Um exemplo cotidiano é observar o céu ao meio-dia em uma cidade sem nuvens, onde a tonalidade azul intensa se destaca."
+    },
+    {
+      "grupo": "original",
+      "id": 11,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Explique por que o céu é azul em dois parágrafos.",
+      "ok": false,
+      "falhas": [
+        "parágrafos (1<2)"
+      ],
+      "palavras": 75,
+      "paragrafos": 1,
+      "itens": 0,
+      "ms": 116479,
+      "rota": "texto-longo",
+      "erro": null,
+      "incompleto": true,
+      "avisoFormato": "Restrições de formato não atendidas: 1 de 2 parágrafos. Confira ou tente novamente.",
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:19:37.617Z",
+          "ms": 424,
+          "resultado": "rate",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:19:38.042Z",
+          "ms": 6078,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        },
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:19:44.120Z",
+          "ms": 10483,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:19:54.603Z",
+          "ms": 18036,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "length"
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T18:20:12.639Z",
+          "ms": 15084,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:20:38.549Z",
+          "ms": 285,
+          "resultado": "rate",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:20:38.834Z",
+          "ms": 10481,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:20:49.316Z",
+          "ms": 17611,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "length"
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T18:21:06.927Z",
+          "ms": 281,
+          "resultado": "servidor",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:21:07.209Z",
+          "ms": 6709,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:21:13.918Z",
+          "ms": 20178,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        }
+      ],
+      "texto": "Quando a luz solar entra na atmosfera, ela encontra moléculas de ar e pequenas partículas que espalham a luz em todas as direções. Esse fenômeno, chamado espalhamento Rayleigh, é mais eficaz para comprimentos de onda curtos, como o azul e o violeta. Como o azul tem mais energia, ele é dispersado em maior quantidade, preenchendo o céu que vemos. Assim, a predominância do azul na luz espalhada faz o céu parecer azul durante o dia."
+    },
+    {
+      "grupo": "holdout",
+      "id": 101,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Explique em dois parágrafos o que é compostagem e por que ela ajuda uma horta.",
+      "ok": false,
+      "falhas": [
+        "parágrafos (1<2)"
+      ],
+      "palavras": 82,
+      "paragrafos": 1,
+      "itens": 0,
+      "ms": 99745,
+      "rota": "texto-longo",
+      "erro": null,
+      "incompleto": true,
+      "avisoFormato": "Restrições de formato não atendidas: 1 de 2 parágrafos. Confira ou tente novamente.",
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:21:34.098Z",
+          "ms": 6710,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:21:40.809Z",
+          "ms": 170,
+          "resultado": "rate",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "glm",
+          "inicio": "2026-10-29T18:21:40.979Z",
+          "ms": 95,
+          "resultado": "morto",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhq",
+          "inicio": "2026-10-29T18:21:41.074Z",
+          "ms": 12601,
+          "resultado": "degenerada",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T18:21:53.675Z",
+          "ms": 441,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T18:21:54.117Z",
+          "ms": 10889,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhq",
+          "inicio": "2026-10-29T18:22:05.006Z",
+          "ms": 30001,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T18:22:41.482Z",
+          "ms": 268,
+          "resultado": "servidor",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:22:41.750Z",
+          "ms": 158,
+          "resultado": "rate",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:22:41.909Z",
+          "ms": 6708,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:22:48.617Z",
+          "ms": 25226,
+          "resultado": "servidor",
+          "retryAfterSegundos": null,
+          "fim": null
+        }
+      ],
+      "texto": "Compostagem é o processo natural de decomposição de resíduos orgânicos, transformando restos de cozinha e folhas em um solo rico em nutrientes. Quando se aplica esse material à horta, ele ajuda a melhorar a estrutura do solo, aumentando a retenção de água e aeração. Além disso, a compostagem reduz a necessidade de fertilizantes químicos, pois fornece micronutrientes essenciais para o crescimento das plantas. Assim, a prática não só recicla resíduos, mas também cria um ambiente mais saudável para a produção de alimentos."
+    },
+    {
+      "grupo": "holdout",
+      "id": 101,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Explique em dois parágrafos o que é compostagem e por que ela ajuda uma horta.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 155,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 82175,
+      "rota": "texto-longo",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:23:13.845Z",
+          "ms": 25002,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:23:38.847Z",
+          "ms": 21924,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "length"
+        },
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:24:00.771Z",
+          "ms": 156,
+          "resultado": "rate",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhq",
+          "inicio": "2026-10-29T18:24:00.927Z",
+          "ms": 11241,
+          "resultado": "degenerada",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T18:24:12.169Z",
+          "ms": 430,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T18:24:12.599Z",
+          "ms": 274,
+          "resultado": "servidor",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:24:12.873Z",
+          "ms": 23146,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Compostagem é o processo natural de decomposição de resíduos orgânicos, transformando restos de cozinha e folhas em um solo rico em nutrientes. Quando se aplica esse material à horta, ele ajuda a melhorar a estrutura do solo, aumentando a retenção de água e aeração. Além disso, a compostagem reduz a necessidade de fertilizantes químicos, pois fornece micronutrientes essenciais para o crescimento das plantas. Assim, a prática não só recicla resíduos, mas também cria um ambiente mais saudável para a produção de alimentos.\n\nA compostagem também favorece a atividade microbiana, criando um ecossistema vivo que protege as raízes contra patógenos. Esse equilíbrio biológico ajuda a horta a resistir a pragas sem recorrer a pesticidas agressivos. Além disso, o húmus resultante melhora a capacidade de troca de cátions, garantindo que nutrientes fiquem disponíveis por mais tempo. Com o manejo adequado, a compostagem se torna um ciclo contínuo que sustenta a produtividade da horta ao longo das estações."
+    },
+    {
+      "grupo": "original",
+      "id": 20,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Resuma em três parágrafos a teoria da evolução de Darwin.",
+      "ok": false,
+      "falhas": [
+        "vazio"
+      ],
+      "palavras": 0,
+      "paragrafos": 0,
+      "itens": 0,
+      "ms": 110001,
+      "rota": null,
+      "erro": "sem resposta das rotas gratuitas dentro do prazo",
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": null,
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:24:36.022Z",
+          "ms": 25001,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:25:01.023Z",
+          "ms": 156,
+          "resultado": "rate",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:25:01.180Z",
+          "ms": 19775,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "length"
+        },
+        {
+          "rota": "ovhq",
+          "inicio": "2026-10-29T18:25:20.955Z",
+          "ms": 17831,
+          "resultado": "degenerada",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T18:25:38.786Z",
+          "ms": 35001,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:26:13.787Z",
+          "ms": 175,
+          "resultado": "rate",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:26:13.963Z",
+          "ms": 12058,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        }
+      ],
+      "texto": ""
+    },
+    {
+      "grupo": "original",
+      "id": 20,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Resuma em três parágrafos a teoria da evolução de Darwin.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 153,
+      "paragrafos": 3,
+      "itens": 0,
+      "ms": 128140,
+      "rota": "ultra",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:26:26.024Z",
+          "ms": 6710,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:26:32.734Z",
+          "ms": 16734,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "length"
+        },
+        {
+          "rota": "ovhq",
+          "inicio": "2026-10-29T18:26:49.469Z",
+          "ms": 15002,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T18:27:04.471Z",
+          "ms": 10890,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:27:15.361Z",
+          "ms": 174,
+          "resultado": "rate",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:27:16.973Z",
+          "ms": 22745,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:27:39.718Z",
+          "ms": 16157,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "length"
+        },
+        {
+          "rota": "ovhq",
+          "inicio": "2026-10-29T18:27:55.875Z",
+          "ms": 6001,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T18:28:01.876Z",
+          "ms": 6535,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:28:08.411Z",
+          "ms": 6710,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:28:15.121Z",
+          "ms": 19042,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A teoria da evolução de Charles Darwin, apresentada em \"A Origem das Espécies\" (1859), propõe que as espécies mudam ao longo do tempo por meio de um processo natural chamado seleção natural. Indivíduos com características que conferem maior sobrevivência e reprodução tendem a deixar mais descendentes, fazendo com que essas características se tornem mais comuns na população.\n\nA variação hereditária entre os indivíduos fornece a matéria-prima para a seleção. Mutações, recombinação genética e outras fontes criam diferenças sutis; aquelas que melhor se ajustam ao ambiente aumentam a probabilidade de reprodução. Ao longo de muitas gerações, o acúmulo dessas pequenas mudanças pode gerar novas espécies, um processo denominado especiação.\n\nDarwin também enfatizou a importância do tempo geológico e da evidência fóssil, que mostram transições graduais entre formas antigas e modernas. A teoria unifica a diversidade da vida sob um único mecanismo explicativo, fundamentando a biologia moderna e orientando pesquisas em genética, ecologia e paleontologia."
+    },
+    {
+      "grupo": "original",
+      "id": 16,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Descreva em dois parágrafos o caminho da água da chuva até a torneira de casa.",
+      "ok": false,
+      "falhas": [
+        "falta fato #1 (rio)",
+        "falta fato #2 (tratamento)"
+      ],
+      "palavras": 176,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 26947,
+      "rota": "texto-longo",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:28:34.167Z",
+          "ms": 147,
+          "resultado": "rate",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:28:34.314Z",
+          "ms": 6709,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:28:41.024Z",
+          "ms": 19362,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "length"
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T18:29:00.386Z",
+          "ms": 285,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T18:29:00.687Z",
+          "ms": 426,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Quando a chuva cai sobre a superfície terrestre, a água começa seu caminho pelo solo, infiltrando‑se nas camadas de areia e rochas porosas. Parte dessa água se acumula em aquíferos subterrâneos, enquanto outra escorre pela superfície, formando pequenos riachos que se unem em córregos maiores. Esses corpos d'água são capturados por sistemas de captação, onde a água passa por filtros e processos de purificação antes de ser direcionada para a rede pública. Finalmente, ela chega à torneira de casa, pronta para ser usada no dia a dia.\n\nDepois de purificada, a água segue seu caminho pelas tubulações subterrâneas, atravessando estações de bombeamento que mantêm a pressão necessária para que ela alcance residências distantes. À medida que percorre esses canos, a água pode passar por filtros adicionais, como carvão ativado, para remover odores e sabores residuais. Quando chega ao hidrômetro, o consumo é registrado, e a água continua seu trajeto até a torneira, onde se transforma em recurso imediato para higiene, cozinha e limpeza. Assim, o ciclo da chuva se completa, entregando água potável diretamente ao lar."
+    },
+    {
+      "grupo": "original",
+      "id": 16,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Descreva em dois parágrafos o caminho da água da chuva até a torneira de casa.",
+      "ok": false,
+      "falhas": [
+        "falta fato #1 (rio)",
+        "falta fato #2 (tratamento)"
+      ],
+      "palavras": 176,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 67189,
+      "rota": "texto-longo",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:29:01.116Z",
+          "ms": 25001,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:29:26.118Z",
+          "ms": 13866,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "length"
+        },
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:29:39.984Z",
+          "ms": 132,
+          "resultado": "rate",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhq",
+          "inicio": "2026-10-29T18:29:40.116Z",
+          "ms": 27614,
+          "resultado": "degenerada",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T18:30:07.730Z",
+          "ms": 301,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T18:30:08.031Z",
+          "ms": 273,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Quando a chuva cai sobre a superfície terrestre, a água começa seu caminho pelo solo, infiltrando‑se nas camadas de areia e rochas porosas. Parte dessa água se acumula em aquíferos subterrâneos, enquanto outra escorre pela superfície, formando pequenos riachos que se unem em córregos maiores. Esses corpos d'água são capturados por sistemas de captação, onde a água passa por filtros e processos de purificação antes de ser direcionada para a rede pública. Finalmente, ela chega à torneira de casa, pronta para ser usada no dia a dia.\n\nDepois de purificada, a água segue seu caminho pelas tubulações subterrâneas, atravessando estações de bombeamento que mantêm a pressão necessária para que ela alcance residências distantes. À medida que percorre esses canos, a água pode passar por filtros adicionais, como carvão ativado, para remover odores e sabores residuais. Quando chega ao hidrômetro, o consumo é registrado, e a água continua seu trajeto até a torneira, onde se transforma em recurso imediato para higiene, cozinha e limpeza. Assim, o ciclo da chuva se completa, entregando água potável diretamente ao lar."
+    },
+    {
+      "grupo": "novo",
+      "id": 203,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Explique em dois parágrafos como uma bússola indica direções.",
+      "ok": false,
+      "falhas": [
+        "vazio"
+      ],
+      "palavras": 0,
+      "paragrafos": 0,
+      "itens": 0,
+      "ms": 103207,
+      "rota": null,
+      "erro": "sem resposta das rotas gratuitas dentro do prazo",
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": null,
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:30:08.308Z",
+          "ms": 6708,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:30:15.017Z",
+          "ms": 19134,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "length"
+        },
+        {
+          "rota": "ovhoss",
+          "inicio": "2026-10-29T18:30:34.151Z",
+          "ms": 30001,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:31:04.152Z",
+          "ms": 177,
+          "resultado": "rate",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T18:31:04.329Z",
+          "ms": 314,
+          "resultado": "servidor",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:31:13.147Z",
+          "ms": 25163,
+          "resultado": "servidor",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhoss",
+          "inicio": "2026-10-29T18:31:38.310Z",
+          "ms": 6000,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T18:31:44.310Z",
+          "ms": 290,
+          "resultado": "servidor",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:31:44.600Z",
+          "ms": 6709,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "g4super",
+          "inicio": "2026-10-29T18:31:51.309Z",
+          "ms": 205,
+          "resultado": "servidor",
+          "retryAfterSegundos": null,
+          "fim": null
+        }
+      ],
+      "texto": ""
+    },
+    {
+      "grupo": "novo",
+      "id": 203,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Explique em dois parágrafos como uma bússola indica direções.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 170,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 16894,
+      "rota": "ovhoss20",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:31:51.516Z",
+          "ms": 16893,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Uma bússola funciona graças à interação entre a agulha magnética e o campo magnético da Terra. A agulha, feita de material ferromagnético, gira livremente sobre um eixo quase vertical, alinhando‑se com as linhas de campo que vão do polo sul magnético ao polo norte magnético do planeta. Assim, a ponta da agulha aponta sempre para o norte magnético, que difere ligeiramente do norte geográfico. Esse alinhamento permite que a bússola indique a direção relativa ao norte, servindo como referência para navegação terrestre, marítima e aérea.  \n\nPara usar a bússola, primeiro alinhe a agulha com a direção desejada, observando a marca de norte na escala. Em seguida, gire o corpo da bússola até que a linha de referência coincida com a agulha, indicando o rumo em graus. Se o mapa possuir declinação magnética, ajuste a leitura subtraindo ou somando o valor correspondente. Por fim, combine a leitura com a orientação do terreno ou do horizonte para determinar a rota correta, garantindo que a bússola permaneça nivelada e livre de interferências magnéticas."
+    },
+    {
+      "grupo": "holdout",
+      "id": 106,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Escreva dois parágrafos sobre como os oceanos influenciam o clima.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 172,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 78680,
+      "rota": "texto-longo",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:32:08.413Z",
+          "ms": 166,
+          "resultado": "rate",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:32:08.580Z",
+          "ms": 6709,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:32:15.289Z",
+          "ms": 25153,
+          "resultado": "servidor",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T18:32:40.442Z",
+          "ms": 262,
+          "resultado": "servidor",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:32:48.947Z",
+          "ms": 6710,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:32:55.657Z",
+          "ms": 19505,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "length"
+        },
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:33:15.162Z",
+          "ms": 6620,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        },
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:33:21.783Z",
+          "ms": 5309,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Os oceanos influenciam profundamente o clima da Terra, regulando a temperatura e a umidade através da circulação de suas águas e da evaporação. Grandes massas de água quente, como as correntes do Golfo, transportam calor do equador para regiões mais frias, suavizando invernos em áreas como a Europa. Além disso, a alta capacidade térmica dos oceanos amortece variações de temperatura, evitando picos extremos. Essa interação entre oceanos e clima também modula padrões de precipitação, afetando sistemas meteorológicos em escala global.\n\nAlém disso, os oceanos influenciam o clima também por meio da absorção de dióxido de carbono, regulando o equilíbrio do sistema terrestre. Essa capacidade de sequestro de carbono ajuda a mitigar os efeitos das mudanças climáticas, embora o aumento de temperatura esteja reduzindo a eficiência dessa absorção ao longo do tempo. O aquecimento global, por sua vez, intensifica fenômenos como o El Niño e a La Niña, que alteram padrões climáticos em diferentes regiões do planeta. Essas variações demonstram como a dinâmica dos oceanos está diretamente ligada à estabilidade do clima global."
+    },
+    {
+      "grupo": "holdout",
+      "id": 106,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Escreva dois parágrafos sobre como os oceanos influenciam o clima.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 211,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 11978,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:33:27.095Z",
+          "ms": 11977,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Os oceanos exercem um papel fundamental no regulação do clima global devido à sua alta capacidade térmica. A água armazena e transporta calor com muito mais eficiência que a atmosfera, o que permite que as áreas oceânicas aquecam e esfrieiem mais lentamente do que as terras. Essa característica atenua as variações de temperatura em regiões próximas ao mar, criando climas mais suaves e previsíveis. Além disso, as correntes marítimas transportam massas de água morna ou fria por longas distâncias, redistribuindo calor entre os equadores e os polos. Por exemplo, a Corrente do Golfo traz calor do Caribe até a Europa, mantendo temperaturas mais amenas do que seriam esperadas para aquela latitude.\n\nOutro mecanismo importante é a evaporação da superfície oceânica, que libera vapor d'água na atmosfera. Esse vapor forma nuvens e, posteriormente, precipita como chuva, influenciando padrões de umidade e temperatura no interior do continente. A transpiração oceânica também atua como um mecanismo de resfriamento, absorvendo energia térmica durante o processo de evaporação. Quando o ar quente e úmido encontra regiões mais frias, ocorre a condensação, liberando calor latente que pode modular sistemas climáticos como monções e tempestades tropicais. Assim, os oceanos não apenas regulam a temperatura, mas também controlam a distribuição de umidade, essencial para a dinâmica climática do planeta."
+    },
+    {
+      "grupo": "original",
+      "id": 9,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Explique a diferença entre juros simples e juros compostos em dois parágrafos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 170,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 7365,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:33:39.076Z",
+          "ms": 7362,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Juros simples é um tipo de incidência financeira em que o rendimento ou o desconto é calculado apenas sobre o valor inicial aplicado, sem considerar os juros acumulados em períodos anteriores. Assim, o montante cresce de forma linear ao longo do tempo, pois a mesma quantia é adicionada a cada período. Essa modalidade costuma ser utilizada em empréstimos de curto prazo, como cheque especial e alguns tipos de financiamentos simples, onde a previsibilidade do valor a ser pago facilita o planejamento.\n\nJá os juros compostos são calculados sobre o saldo inicial mais os juros acumulados das aplicações anteriores, resultando em um crescimento exponencial ao longo do tempo. Cada período gera novos juros não apenas sobre o capital original, mas também sobre os juros que já foram incorporados ao montante. Essa forma de incidência é comum em investimentos de longo prazo, como poupança e Tesouro Direto, e é fundamental para o cálculo de prestações de empréstimos e financiamentos, pois amplia significativamente o valor total pago ou recebido ao longo do tempo."
+    },
+    {
+      "grupo": "original",
+      "id": 9,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Explique a diferença entre juros simples e juros compostos em dois parágrafos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 129,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 7953,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:33:46.442Z",
+          "ms": 7953,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Juros simples é um tipo de remuneração calculada apenas sobre o valor inicial aplicado, chamado capital. A fórmula é I = P x r x t, onde P é o principal, r a taxa e t o tempo. O valor acumulado é P + I. Esse modelo é comum em empréstimos de curto prazo, como pequenos empréstimos ou financiamentos simples.\n\nJuros compostos, ao contrário, incidem sobre o capital e sobre os juros acumulados em períodos anteriores. A fórmula é M = P x (1 + r)^t, onde M é o montante final. Esse mecanismo favorece aplicações de longo prazo, como poupança e investimentos, pois o dinheiro cresce exponencialmente. A principal diferença é que os juros simples geram rendimento linear, enquanto os compostos proporcionam crescimento acelerado ao longo do tempo."
+    },
+    {
+      "grupo": "original",
+      "id": 2,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Explique em dois parágrafos a diferença entre vírus e bactéria.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 199,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 12148,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:33:54.398Z",
+          "ms": 12146,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Vírus e bactérias são agentes infecciosos, mas possuem estruturas e formas de vida distintas. Os vírus são partículas muito pequenas, compostas apenas de material genético (DNA ou RNA) envolto por uma cápside proteica, podendo ainda ter uma membrana lipídica. Eles não possuem estruturas celulares, não se reproduzem por conta própria e dependem de uma célula hospedeira para se replicar. Por isso, são considerados organismos não vivos ou de vida questionável. Já as bactérias são células procarióticas completas, com membrana plasmática, citoplasma, ribossomos e material genético em um único cromossomo circular. Elas se reproduzem por divisão binária e muitas são benéficas, como as que habitam o intestino humano.\n\nA principal diferença está na resposta a tratamentos. Infecções causadas por bactérias podem ser tratadas com antibióticos, que atacam estruturas específicas bacterianas sem afetar as células humanas. Já infecções virais não respondem a antibióticos, exigindo medicamentos antivirais ou o fortalecimento do sistema imunológico. Além disante, vírus são muito menores que bactérias e só podem ser visualizados com microscópios eletrônicos, enquanto bactérias podem ser vistos com microscópios ópticos convencionais. Outro ponto importante: as bactérias podem sobreviver em ambientes diversos, incluindo superfícies secas, enquanto os vírus geralmente precisam de condições específicas para permanecerem infecciosos."
+    },
+    {
+      "grupo": "original",
+      "id": 2,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Explique em dois parágrafos a diferença entre vírus e bactéria.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 149,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 11748,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:34:06.549Z",
+          "ms": 11746,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Vírus e bactérias são agentes infecciosos, mas possuem estruturas e formas de vida distintas. Os vírus são partículas muito pequenas, compostas apenas de material genético (DNA ou RNA) envolto por uma cápside proteica, e não possuem estrutura celular. Eles não conseguem se reproduzir por conta própria e precisam invadir uma célula hospedeira para isso, utilizando o mecanismo celular da célula infectada para replicar seu material genético e produzir novas partículas virais. Por isso, são considerados organismos obligatórios intracelulares.\n\nJá as bactérias são micro-organismos unicelulares completos, com estrutura celular definida, membrana plasmática, citoplasma e material genético organizado em cromossomos. Muitas bactérias são benéficas, como as que habitam o intestino humano, mas algumas podem causar doenças. Diferentemente dos vírus, as bactérias conseguem se reproduzir independentemente, crescendo e dividindo por binary fission. Além disso, enquanto vírus são tratados com medicamentos antivirais ou prevenidos por vacinas, as infecções bacterianas geralmente respondem a antibióticos."
+    },
+    {
+      "grupo": "original",
+      "id": 10,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Escreva uma lista com 5 dicas práticas para economizar água em casa.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 87,
+      "paragrafos": 5,
+      "itens": 5,
+      "ms": 7441,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:34:18.299Z",
+          "ms": 7440,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "1. Instale torneiras e chuveiros de baixa vazão para reduzir o consumo sem perder pressão.\n2. Reaproveite a água da torneira para regar plantas ou limpar superfícies, em vez de deixá-la correr.\n3. Lave roupas e louças apenas quando a máquina estiver cheia, evitando ciclos incompletos.\n4. Desligue a torneira enquanto escova os dentes, faz a barba ou lava os alimentos, interrompendo o fluxo desnecessário.\n5. Instale um sistema de reaproveitamento de água da chuva em tanques para uso na irrigação do jardim ou descarga de sanitários."
+    },
+    {
+      "grupo": "original",
+      "id": 10,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Escreva uma lista com 5 dicas práticas para economizar água em casa.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 87,
+      "paragrafos": 5,
+      "itens": 5,
+      "ms": 5347,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:34:25.742Z",
+          "ms": 5346,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "1. Instale torneiras e chuveiros de baixa vazão para reduzir o consumo sem perder pressão.\n2. Reaproveite a água da lavagem de vegetais e legumes para regar plantas ou limpar superfícies.\n3. Lave roupas e louças apenas quando a máquina estiver cheia, evitando ciclos incompletos.\n4. Desligue a torneira enquanto escova os dentes, lavando a barba ou saboreando, economizando litros por dia.\n5. Instale um sistema de coleta de água da chuva em baldes ou cisternas para usar na rega do jardim e lavagem de pisos externos."
+    },
+    {
+      "grupo": "original",
+      "id": 21,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Escreva uma mensagem curta e educada cobrando um pagamento atrasado de um cliente. Máximo 150 palavras.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 84,
+      "paragrafos": 5,
+      "itens": 0,
+      "ms": 5024,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:34:31.092Z",
+          "ms": 5022,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Prezado(a) [Nome do Cliente],\n\nEspero que esta mensagem o(a) encontre bem. Gostaríamos de informar que ainda não recebemos o pagamento referente ao(a) [serviço/produto], cujo vencimento foi em [data]. Atualmente, a conta encontra-se em atraso há [número] dias.\n\nSolicitamos gentilmente que regularize a dívida o quanto antes, preferencialmente até [data limite], para evitar interrupção dos serviços e possíveis encargos. Caso já tenha realizado o pagamento, agradecemos e rogamos confirmar o recebimento por meio dessa conversa.\n\nFicamos à disposição para quaisquer esclarecimentos ou ajustes necessários.\n\nAtenciosamente."
+    },
+    {
+      "grupo": "original",
+      "id": 21,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Escreva uma mensagem curta e educada cobrando um pagamento atrasado de um cliente. Máximo 150 palavras.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 83,
+      "paragrafos": 5,
+      "itens": 0,
+      "ms": 4870,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:34:36.118Z",
+          "ms": 4870,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Prezado(a) [Nome do Cliente],\n\nEspero que esteja tudo bem. Gostaríamos de informar que ainda não recebemos o pagamento referente ao [serviço/produto] com vencimento em [data]. Atualmente, a conta está [X] dias em atraso.\n\nSolicitamos gentilmente que regularize sua situação o quanto antes, evitando possíveis interrupções nos serviços fornecidos. Caso já tenha realizado o pagamento, agradecemos e pedimos a gentileza de nos enviar o comprovante para atualização em nosso sistema.\n\nFicamos à disposição para quaisquer esclarecimentos necessários pelo telefone [número] ou e-mail [endereço].\n\nAtenciosamente."
+    },
+    {
+      "grupo": "original",
+      "id": 12,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Resuma em três parágrafos a Segunda Guerra Mundial.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 306,
+      "paragrafos": 3,
+      "itens": 0,
+      "ms": 14021,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:34:40.991Z",
+          "ms": 14020,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A Segunda Guerra Mundial (1939-1945) começou quando a Alemanha nazista, liderada por Adolf Hitler, invadiu a Polônia em 1º de setembro de 1939. Em resposta, a Grã-Bretanha e a França declararam guerra à Alemanha, mas não conseguiram conter a ofensiva alemã, que rapidamente se espalhou pela Europa. Entre 1940 e 1941, a Alemanha conquistou a França, Holanda, Bélgica e outros países, enquanto a Itália, aliada da Alemanha, expandia sua influência na África e no Oriente Médio. Em junho de 1941, Hitler rompeu o pacto com a União Soviética e lançou uma invasão massiva, mas as forças soviéticas resistiram com força, especialmente durante o inverno rigoroso de 1941-1942.\n\nNo Pacífico, o Japão, após anos de expansão na Ásia, atacou a base norte-americana de Pearl Harbor em 7 de dezembro de 1941, arrastando os Estados Unidos para a guerra. A Marinha japonesa então avançou por territórios como Hong Kong, Malaya e várias ilhas do Pacífico, mas a ofensiva foi gradualmente reprimida pelos EUA em batalhas decisivas como Midway (1942) e Guadalcanal (1942-1943). Enquanto isso, os Aliados no Atlântico enfrentavam os ataques alemães a navios mercantes, e em 1944 a Normandia foi desembarcada em uma operação de desembarque histórica, abrindo uma frente ocidental na Europa.\n\nEm 8 de maio de 1945, a Alemanha rendeu-se incondicionalmente, após a captura de Berlim pelas forças soviéticas e a morte de Hitler. No Pacífico, os EUA lançaram bombas atômicas nas cidades japonesas de Hiroshima e Nagasaki em agosto de 1945, forçando a rendição do Japão em 15 de agosto. A guerra resultou em cerca de 70 a 85 milhões de mortes, incluindo o Holocausto, em que seis milhões de judeus foram assassinados. O conflito redesenhou as fronteiras globais, deu início à Guerra Fria entre EUA e União Soviética, e estabeleceu a ONU como principal organismo internacional para promover a paz e a cooperação."
+    },
+    {
+      "grupo": "original",
+      "id": 12,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Resuma em três parágrafos a Segunda Guerra Mundial.",
+      "ok": false,
+      "falhas": [
+        "vazio"
+      ],
+      "palavras": 0,
+      "paragrafos": 0,
+      "itens": 0,
+      "ms": 113569,
+      "rota": null,
+      "erro": "sem resposta das rotas gratuitas dentro do prazo",
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": null,
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:34:55.016Z",
+          "ms": 15497,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:35:10.514Z",
+          "ms": 6709,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "gigante2",
+          "inicio": "2026-10-29T18:35:17.223Z",
+          "ms": 30002,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:35:47.225Z",
+          "ms": 12810,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "length"
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T18:36:00.035Z",
+          "ms": 6002,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:36:18.545Z",
+          "ms": 6290,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "gigante2",
+          "inicio": "2026-10-29T18:36:24.835Z",
+          "ms": 6002,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:36:30.837Z",
+          "ms": 17748,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "length"
+        }
+      ],
+      "texto": ""
+    },
+    {
+      "grupo": "novo",
+      "id": 202,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Explique em dois parágrafos como o sabão ajuda a limpar as mãos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 177,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 8721,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:36:48.589Z",
+          "ms": 8718,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "O sabão ajuda a limpar as mãos porque sua estrutura química possui moléculas anfifílicas, ou seja, uma parte hidrofílica que atrai a água e uma parte hidrofóbica que se liga à gordura. Quando as mãos são lavadas com sabão e água, essas moléculas atuam na sujeira, em microbiolgos e em óleos que normalmente não se dissolvem em água, formando micelas que envolvem as partículas sujas e permitem que sejam removidas com a água. Esse processo físico e químico rompe a película de gordura onde vírus e bactérias podem se esconder, reduzindo significativamente a carga microbiana nas mãos.\n\nAlém disso, o ato de lavar as mãos com sabão envolve movimentos mecânicos que ajudam a escorregar as partículas soltas da pele. A água morna facilita a ação do sabão, tornando a limpeza mais eficaz. É importante usar o sabão por pelo menos 20 segundos e enxaguar bem, evitando deixar resíduos que possam atrair mais sujeira. Diferentemente de álcool ou água morna sozinhas, o sabão é capaz de remover sujeiras oleosas e visíveis que outros métodos não conseguem eliminar completamente."
+    },
+    {
+      "grupo": "novo",
+      "id": 202,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Explique em dois parágrafos como o sabão ajuda a limpar as mãos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 134,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 5378,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:36:57.312Z",
+          "ms": 5377,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "O sabão ajuda a limpar as mãos porque sua molécula possui uma extremidade hidrofílica, que atrai a água, e outra hidrofóbica, que se liga às substâncias gorosas. Quando as mãos são lavadas, o sabão se mistura à sujeira e aos micróbios, formando micelas que envolvem as partículas de gordura e óleo, permitindo que sejam removidas pela água. Esse processo físico e químico rompe a camada lipídica de vírus e bactérias, reduzindo significativamente a carga microbiana.\n\nAlém disso, a ação mecânica da lavagem, combinada com o tempo de permanência do sabão sobre a pele, aumenta a eficácia da limpeza. O uso de água morna favorece a formação de espuma, que auxilia na dispersão da sujeira. Após a lavagem, o sabão é facilmente removido com água, deixando as mãos limpas e menos propensas a transmitir doenças."
+    },
+    {
+      "grupo": "original",
+      "id": 1,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Explique em dois parágrafos o que é fotossíntese.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 210,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 9166,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:37:02.693Z",
+          "ms": 9163,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A fotossíntese é o processo biológico pelo qual plantas, algas e algumas bactérias convertem energia luminosa em energia química armazenável. Esse mecanismo ocorre principalmente nas folhas, dentro dos cloroplastos, organelas que contêm a clorofila, pigmento responsável por captar a luz solar. A fotossíntese depende de duas etapas principais: a fase luminosa, onde a energia da luz é transformada em ATP e NADPH, e a fase escura ou ciclo de Calvin, onde o dióxido de carbono do ar é fixado para produzir glicose. Ocorre em ambientes com luz, água e dióxido de carbono, sendo essenciais para a vida na Terra, pois fornece oxigênio e serve de base da cadeia alimentar.\n\nO processo da fotossíntese pode ser resumido pela equação química: seis moléculas de dióxido de carbono mais seis de água, na presença de luz solar, produzem uma molécula de glicose e seis de oxigênio. A glicose gerada é utilizada pelas plantas para crescimento e respiração celular, enquanto o oxigênio é liberado para a atmosfera. A fotossíntese é influenciada por fatores como intensidade luminosa, concentração de dióxido de carbono e temperatura. É um processo fundamental para o equilíbrio do ecossistema, regulando o clima e mantendo os ciclos do carbono e do oxigênio. Sem ela, a vida na Terra não existiria como conhecemos."
+    },
+    {
+      "grupo": "original",
+      "id": 1,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Explique em dois parágrafos o que é fotossíntese.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 191,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 8482,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:37:11.862Z",
+          "ms": 8482,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A fotossíntese é o processo biológico pelo qual plantas, algas e algumas bactérias convertem energia luminosa em energia química armazenável. Ocorre principalmente nas folhas, dentro dos cloroplastos, organelas que contêm a clorofila. A clorofila absorve a luz solar, especialmente na faixa azul e vermelha do espectro, e utiliza essa energia para quebrar a água absorvida pelas raízes, liberando oxigênio como subproduto. O processo se divide em duas etapas principais: a fase luminosa, que depende da luz e produz ATP e NADPH, e a fase escura ou ciclo de Calvin, que não requer luz e fixa o dióxido de carbono do ar para sintetizar glicose.\n\nA fórmula geral da fotossíntese é: seis moléculas de dióxido de carbono mais seis moléculas de água, na presença de luz solar, produzem uma molécula de glicose e seis moléculas de oxigênio. Essa reação é fundamental para a vida na Terra, pois gera o oxigênio atmosférico e forma a base da cadeia alimentar, ao transformar energia solar em compostos orgânicos que servem de alimento aos organismos heterotróficos. A fotossíntese também ajuda a regular o clima, absorvendo dióxido de carbono, um gás estufa, e mitigando o efeito estufa."
+    },
+    {
+      "grupo": "original",
+      "id": 13,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Explique como funciona uma vacina em dois parágrafos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 198,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 10371,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:37:20.348Z",
+          "ms": 10370,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Uma vacina funciona introduzindo no organismo uma forma atenuada, inativada ou parcial do patógeno que causa uma doença, sem provocar a infecção completa. Isso pode incluir proteínas puras, como é o caso das vacinas contra a gripe, ou partículas vírus inteiro, como na vacina contra a poliomielite. O material vacinal é reconhecido pelo sistema imunológico como um antígeno estranho, desencadeando uma resposta imune que envolve a produção de anticorpos e a ativação de células T e B. Essa reação não elimina o patógeno imediatamente, mas cria uma memória imunológica, permitindo que o corpo identifique e combata rapidamente o agente real caso ele apareça no futuro.\n\nA memória imunológica é o mecanismo central da eficácia das vacinas. Quando o sistema imunológico encontra o patógeno novamente, células B e T de memória se ativam de forma acelerada, produzindo anticorpos específicos e neutralizando o invasor antes que ele possa causar sintomas. Algumas vacinas exigem reforços, doses adicionais aplicadas ao longo do tempo, para fortalecer essa memória e garantir proteção duradoura. O desenvolvimento de uma vacina envolve testes rigorosos em laboratório, animais e humanos, com três fases clínicas que avaliam segurança, imunogenicidade e eficácia, antes da aprovação regulatória e distribuição em massa."
+    },
+    {
+      "grupo": "original",
+      "id": 13,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Explique como funciona uma vacina em dois parágrafos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 171,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 7881,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:37:30.723Z",
+          "ms": 7880,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Uma vacina funciona introduzindo no organismo uma forma inofofensiva do agente causador de uma doença, como vírus ou bactérias mortos, atenuados ou apenas parte de sua estrutura. Isso permite que o sistema imunológico reconheça o invasor sem que haja risco de desenvolver a doença. As células do sistema imunológico, como macrófagos e linfócitos, identificam o antígeno presente na vacina e iniciam uma resposta imune, produzindo anticorpos específicos e ativando células T e B. Esse processo ocorre principalmente na fase de ativação inicial, em que o corpo \"aprende\" a reconhecer o patógeno.\n\nApós a imunidade primária, o sistema imunológico mantém memória por meio de células B e T de memória. Caso o indivíduo seja exposto ao patógeno real no futuro, essas células atuam rapidamente, produzindo anticorpos em grande quantidade e neutralizando o invasor antes que ele cause sintomas. Essa resposta anamnésica é mais eficiente e rápida do que a primeira reação. Por isso, vacinas garantem proteção duradoura, reduzindo a transmissão e a gravidade de doenças, e são fundamentais para a saúde pública."
+    },
+    {
+      "grupo": "holdout",
+      "id": 105,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Em um parágrafo, explique os efeitos da impermeabilização do solo nas cidades durante chuvas fortes.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 173,
+      "paragrafos": 1,
+      "itens": 0,
+      "ms": 13639,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:37:38.607Z",
+          "ms": 13638,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A impermeabilização do solo nas cidades, causada pela substituição de superfícies naturais por asfalto, calçadas e edifícios, intensifica significativamente os efeitos das chuvas fortes. Quando a água da chuva não consegue infiltrar no solo, todo o escoamento superficial é desviado para a rede de drenagem urbana, que frequentemente fica sobrecarregada, resultando em alagamentos em ruas, calçadas e áreas baixas. Esse escoamento rápido também transporta óleos, metais pesados, resíduos e partículas finas acumulados nas superfícies impermeáveis, poluindo rios, córregos e lagos adjacentes com sedimentos e poluentes químicos. Além disso, a perda de infiltração reduz a recarga dos aquíferos, comprometendo o abastecimento de água subterrânea. O aumento do calor urbano também se agrava, pois a ausência de vegetação e solo permeável impede a evapotranspiração, elevando as temperaturas locais. Para mitigar esses impactos, cidades têm adotado soluções como telhados verdes, sistemas de bio-retênção, permeabilização de calçadas e parques com vegetação nativa, que permitem a infiltração da água e reduzem o volume de escoamento, aliviando a pressão sobre as infraestruturas de drenagem e protegendo o meio ambiente."
+    },
+    {
+      "grupo": "holdout",
+      "id": 105,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Em um parágrafo, explique os efeitos da impermeabilização do solo nas cidades durante chuvas fortes.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 90,
+      "paragrafos": 1,
+      "itens": 0,
+      "ms": 59552,
+      "rota": "ultra",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:37:52.250Z",
+          "ms": 19239,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T18:38:11.489Z",
+          "ms": 6710,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "gigante2",
+          "inicio": "2026-10-29T18:38:18.199Z",
+          "ms": 11252,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T18:38:29.451Z",
+          "ms": 22350,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A impermeabilização do solo nas cidades impede a infiltração natural da água da chuva, fazendo com que o volume de escoamento superficial aumente drasticamente durante eventos intensos; isso sobrecarrega os sistemas de drenagem, provoca alagamentos rápidos em ruas e áreas baixas, eleva o risco de deslizamentos em encostas instáveis e reduz a recarga dos aquíferos, comprometendo o abastecimento de água a longo prazo; além disso, o escoamento rápido carrega poluentes, sedimentos e lixo para corpos d’água, degradando a qualidade ambiental e aumentando custos de saneamento e recuperação de áreas afetadas."
+    },
+    {
+      "grupo": "original",
+      "id": 5,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Explique em três passos como fazer um bolo simples.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 120,
+      "paragrafos": 3,
+      "itens": 3,
+      "ms": 10530,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:38:51.804Z",
+          "ms": 10529,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "1. Prepara a massa: em uma tigela, misture 2 xícaropes (chá) de farinha de trigo, 2 xícaropes (chá) de açúcar, 3 ovos, 1 xícarope (chá) de óleo e 1 xícarope (chá) de fermento em pó; bata bem até obter uma massa homogênea e sem grumos.\n2. Asa para assar: unte uma forma redonda com manteiga e farinha, despeje a massa distribuindo uniformemente e leve ao forno pré-aquecido a 180 °C por cerca de 30 a 35 minutos, ou até que ao inserir um palito este saia limpo.\n3. Finalização: deixe o bolo esfriar na forma por 10 minutos, desenforme em uma gradinha e, se desejar, polvilhe açúcar de confeiteiro ou cubra com um simples glacê de leite condensado e chocolate."
+    },
+    {
+      "grupo": "original",
+      "id": 5,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Explique em três passos como fazer um bolo simples.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 113,
+      "paragrafos": 3,
+      "itens": 3,
+      "ms": 6200,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:39:02.337Z",
+          "ms": 6199,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "1. Prepara a massa: em uma tigela, misture 2 xícares de farinha de trigo, 2 ovos, 1 xícara de leite, 1/2 xícara de óleo e 1 colher de sopa de fermento em pó até obter uma massa homogênea.\n2. Asa o bolo: despeje a massa em uma forma untada e enfarinhada, nívelando com uma espátula, e leve ao forno pré-aquecido a 180 °C por cerca de 35 a 40 minutos, até que ao inserir um palito ele saia limpo.\n3. Finaliza e sirve: deixe o bolo esfriar na forma por 10 minutos, desenforme em uma grade e, se desejar, cubra com chantilly ou calda de chocolate antes de servir fatias em pratos individuais."
+    },
+    {
+      "grupo": "holdout",
+      "id": 103,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Escreva um parágrafo explicando o que é a coleta seletiva de materiais.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 168,
+      "paragrafos": 1,
+      "itens": 0,
+      "ms": 13609,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:39:08.540Z",
+          "ms": 13607,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A coleta seletiva de materiais é um processo de gestão de resíduos sólidos que consiste em separar, na fonte (como residências, comércios ou indústrias), os resíduos em categorias específicas, como papel, plástico, vidro, metal, orgânico e, em alguns casos, resíduos perigosos. Essa separação é realizada por meio de recipientes ou containers distintos, permitindo que cada tipo de material seja direcionado para a reciclagem ou tratamento adequado. O objetivo principal é reduzir a quantidade de resíduos enviados a aterros sanitários, promovendo a conservação de recursos naturais, a diminuição da poluição e a economia de energia, já que a reciclagem de materiais como papel, plástico e metal consome menos energia do que a produção a partir de matérias-primas virgens. Além disante, a coleta seletiva facilita a recuperação de materiais valiosos, como alumínio e papel, e contribui para a redução de impactos ambientais negativos, como a contaminação do solo e da água. Para ser eficaz, exige conscientização da população e infraestrutura adequada, como sistemas de coleta diferenciada e centros de triagem."
+    },
+    {
+      "grupo": "holdout",
+      "id": 103,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Escreva um parágrafo explicando o que é a coleta seletiva de materiais.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 179,
+      "paragrafos": 1,
+      "itens": 0,
+      "ms": 8852,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:39:22.151Z",
+          "ms": 8850,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A coleta seletiva de materiais é o processo de separação dos resíduos sólidos em fonte, ou seja, no momento em que são gerados, de acordo com a natureza de cada tipo de material, como papel, plástico, vidro, metal e orgânico. Essa prática visa promover a reutilização e o reciclagem dos materiais, reduzindo a quantidade de resíduos enviados aos aterros sanitários e diminuindo o impacto ambiental causado pelo descarte inadequado. Para que a coleta seletiva seja eficaz, é necessário que os cidadãos separem os resíduos em casa ou no local de geração, utilizando recipientes coloridos ou identificados para cada categoria de material. Em seguida, os materiais recicláveis são coletados por empresas ou cooperativas de reciclagem, que os levam a centros de triagem e, posteriormente, a usinas recicladoras, onde passam por processos mecânicos e químicos para serem transformados em novos produtos. Além de preservar os recursos naturais e diminuir o consumo de energia, a coleta seletiva também gera empregos e renda, especialmente por meio da atuação de catadores e cooperativas de reciclagem, contribuindo para a sustentabilidade ambiental e social das comunidades."
+    },
+    {
+      "grupo": "novo",
+      "id": 201,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Explique em dois parágrafos por que a Lua apresenta fases.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 220,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 9320,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:39:31.005Z",
+          "ms": 9320,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A Lua apresenta fases porque sua iluminação depende da posição relativa entre a Terra, o Sol e a Lua. O Sol ilumina sempre a metade da Lua que está voltada para ele, mas a parte que vemos da superfície terrestre varia conforme a Lua se move em sua órbita. Quando a Lua está entre a Terra e o Sol, a face iluminada está voltada para o espaço e a face visível para nós aparece escura, resultando na lua nova. À medida que a Lua avança em sua órbita, gradualmente mais da porção iluminada torna-se visível da Terra, passando por fases crescentes até a lua cheia, quando toda a face voltada para a Terra está iluminada.\n\nAs fases continuam mudando à medida que a Lua completa sua órbita em torno da Terra, retornando à lua nova após cerca de 29,5 dias, um período conhecido como mês lunar. Durante a fase crescente, a porção iluminada aumenta dia a dia, enquanto na fase minguante, diminui gradualmente. Essas variações são perceptíveis porque a órbita lunar está inclinada em relação ao plano da eclíptica, fazendo com que a Lua nunca esteja totalmente sombreada por completo durante uma lua cheia perfeita, exceto em eclipses. A combinação da posição orbital e da direção da luz solar explica todas as fases observáveis da Lua ao longo do mês."
+    },
+    {
+      "grupo": "novo",
+      "id": 201,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Explique em dois parágrafos por que a Lua apresenta fases.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 217,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 8572,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:39:40.328Z",
+          "ms": 8571,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A Lua apresenta fases porque sua iluminação depende da posição relativa entre a Terra, o Sol e a Lua. O Sol ilumina sempre metade da Lua, mas, da perspectiva da Terra, vemos apenas a porção dessa metade que está voltada para nós. À medida que a Lua completa sua órbita em torno da Terra a cada cerca de 29,5 dias, a quantidade de sua superfície iluminada que observamos muda continuamente. Quando a Lua está entre a Terra e o Sol, a face iluminada está voltada para o Sol e a face oposta para a Terra, resultando na lua nova. Quando a Terra se encontra entre a Lua e o Sol, a face iluminada da Lua está voltada para a Terra, produzindo a lua cheia.\n\nAs demais fases intermediárias, como quarto crescente, quarto minguante, gibosa e côncava, ocorrem à medida que a Lua avança em diferentes pontos de sua órbita. Essas variações são perceptíveis porque a Lua não produz luz própria; toda a luz que vemos vem da reflexão solar. Além disso, a inclinação da órbita lunar em relação ao plano da eclíptica também influencia levemente a aparência das fases, mas o ciclo principal é determinado pela geometria dos três corpos. O período entre duas luas novas consecutivas é chamado de mês sinódico, que dura aproximadamente 29.5 dias."
+    },
+    {
+      "grupo": "original",
+      "id": 7,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Explique o ciclo da água em dois parágrafos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 163,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 7999,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:39:48.903Z",
+          "ms": 7998,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "O ciclo da água, também chamado de hidrolise, é um processo contínuo que move a água entre a superfície da Terra e a atmosfera. Ele começa com a evaporação, quando o calor do sol transforma a água dos oceanos, rios e lagos em vapor d'água que sobe para a atmosfera. Durante o transporte, parte do vapor condensa formando nuvens, enquanto o restante continua subindo e se espalhando. A transpiração das plantas também contribui, liberando vapor pelas folhas. Assim, a umidade se distribui pela atmosfera, preparando-se para a próxima etapa.\n\nO segundo estágio ocorre com a precipitação, quando a água retorna à superfície na forma de chuva, neve, granizo ou orvalho. Parte do escoamento superficial segue para rios e oceanos, completando o ciclo, enquanto o restante infiltra-se no solo, recarregando lençóis freáticos e alimentando plantas. Esse equilíbrio permite a renovação da água doce e a distribuição de nutrientes, sustentando a vida em todos os ambientes. O ciclo nunca para, garantindo a continuidade dos ecossistemas."
+    },
+    {
+      "grupo": "original",
+      "id": 7,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Explique o ciclo da água em dois parágrafos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 161,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 11102,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:39:56.905Z",
+          "ms": 11101,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "O ciclo da água, também chamado de hidrolise, é um processo contínuo que move a água entre a superfície da Terra e a atmosfera. Ele começa com a evaporação, quando o calor do sol transforma a água dos oceanos, rios e lagos em vapor que sobe para a atmosfera. Em seguida, parte desse vapor condensa formando nuvens, enquanto a transpiração das plantas também libera vapor d'água. A precipitação ocorre quando as gotas se unem e tornam-se pesadas o suficiente para cair como chuva, neve ou granizo, retornando a água ao solo e aos corpos d'água.\n\nDepois da precipitação, a água pode seguir diferentes caminhos. Parte infiltra o solo, alimentando lençóis freáticos e rios subterrâneos, enquanto o excesso escorre superficialmente como escoamento superficial, levando nutrientes e sedimentos para rios e lagos. Quando a água retorna aos oceanos, o ciclo se repete. Esse processo é essencial para distribuir água doce pelo planeta, regulamentar o clima e sustentar a vida em todos os ambientes."
+    },
+    {
+      "grupo": "original",
+      "id": 24,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Escreva um parágrafo explicando a importância de dormir bem.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 148,
+      "paragrafos": 1,
+      "itens": 0,
+      "ms": 9910,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:40:08.010Z",
+          "ms": 9909,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Dormir bem é essencial para o funcionamento adequado do corpo e da mente, pois durante o sono ocorrem processos vitais, como a reparação de tecidos, a regulação hormonal e a consolidação da memória. Uma noite de sono de qualidade ajuda a fortalecer o sistema imunológico, reduzindo a vulnerabilidade a infecções e doenças, além de melhorar o humor, a concentração e o desempenho cognitivo. O sono insuficiente ou fragmentado pode levar à fadiga crônica, aumentar o risco de condições como diabetes, hipertensão e depressão, e prejudicar a capacidade de reagir em situações cotidianas. Manter uma rotina de sono regular, evitando estimulantes como cafeína e telas antes de dormir, contribui para um descanso mais profundo e reparador. Priorizar o sono é, portanto, uma forma de cuidar da saúde integral, permitindo que o corpo se recupere e se prepare para enfrentar os desafios do dia seguinte com mais energia e equilíbrio."
+    },
+    {
+      "grupo": "original",
+      "id": 24,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Escreva um parágrafo explicando a importância de dormir bem.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 164,
+      "paragrafos": 1,
+      "itens": 0,
+      "ms": 9135,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:40:17.925Z",
+          "ms": 9133,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Dormir bem é essencial para o funcionamento adequado do corpo e da mente, pois durante os estágios do sono ocorrem processos vitais, como a reparação de tecidos, a regulação hormonal e a consolidação da memória. Uma noite de sono de qualidade fortalece o sistema imunológico, reduzindo a vulnerabilidade a infecções e doenças, além de melhorar o humor, a concentração e o desempenho cognitivo do indivíduo. O sono insuficiente ou fragmentado está associado a riscos maiores de desenvolver condições como diabetes, hipertensão, obesidade e transtornos psicológicos. Além disso, a falta de descanso adequado prejudica a reação dos reflexos, aumentando o acidente no trabalho e nas atividades cotidianas. Para garantir uma sono saudável, recomenda-se estabelecer uma rotina constante, evitar estimulantes como cafeína e telas antes de deitar, manter o ambiente escuro e fresco, e praticar técnicas de relaxamento. Assim, investir em um sono de qualidade não é apenas um ato de autocuidado, mas uma base fundamental para a saúde física, mental e emocional de cada pessoa."
+    },
+    {
+      "grupo": "original",
+      "id": 6,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Escreva um parágrafo argumentando a favor da reciclagem.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 177,
+      "paragrafos": 1,
+      "itens": 0,
+      "ms": 7868,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:40:27.062Z",
+          "ms": 7868,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A reciclagem é uma prática essencial para a sustentabilidade ambiental, pois reduz significativamente a quantidade de resíduos enviados a aterros e ao lixo orgânico, diminuindo a poluição do solo e da água. Ao separar materiais como papel, plástico, vidro e metal, permite-se a recuperação de recursos que podem ser transformados em novos produtos, economizando matéria-prima natural e reduzindo a necessidade de extração de recursos virgens, como a desmatamento para a produção de papel. Além disso, a reciclagem contribui para a diminuição da emissão de gases poluentes, já que a produção a partir de materiais reciclados geralmente consome menos energia do que a produção a partir de matérias-primas originais. Um exemplo concreto é o fato de reciclar uma tonelada de papel evitar a cutura de aproximadamente 17 árvores, além de reduzir o consumo de energia em até 60% em comparação com a produção de papel virgem. Portanto, adotar hábitos de recicagem no dia a dia não apenas ajuda a preservar os ecossistemas, mas também promove uma economia mais circular e responsável, garantindo benefícios concretos para as futuras gerações."
+    },
+    {
+      "grupo": "original",
+      "id": 6,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Escreva um parágrafo argumentando a favor da reciclagem.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 166,
+      "paragrafos": 1,
+      "itens": 0,
+      "ms": 8919,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:40:34.934Z",
+          "ms": 8917,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A reciclagem é essencial para a sustentabilidade ambiental, pois reduz significativamente a quantidade de resíduos enviados a aterros e incineração, diminuindo a poluição do solo, da água e do ar. Quando materiais como papel, plástico, vidro e metal são coletados separadamente e submetidos ao processo de reciclagem, evita-se a extração de novas matérias-primas, o que preserva recursos naturais e reduz o consumo de energia, já que fabricar produtos a partir de materiais reciclados geralmente exige menos energia do que a produção a partir de matérias-primas virgens. Além disso, a reciclagem gera empregos em setores verdes, como a coleta seletiva e a indústria de reciclagem, fortalecendo a economia local. Um exemplo concreto é o fato de que reciclar uma tonelada de papel pode poupar cerca de 17 árvores, 7 mil litros de água e 4 mil quilowatt-hora de energia. Portanto, adotar práticas de reciclagem no dia a dia contribui diretamente para a redução do impacto ambiental e para a construção de uma sociedade mais responsável e sustentável."
+    },
+    {
+      "grupo": "novo",
+      "id": 206,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Explique em dois parágrafos por que os manguezais são importantes para a costa.",
+      "ok": false,
+      "falhas": [
+        "falta fato #2 (costa)"
+      ],
+      "palavras": 137,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 6144,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:40:43.855Z",
+          "ms": 6144,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Os manguezais são ecossistemas costeiros que abrigam diversas espécies de plantas e animais em suas raízes submersas, como caranguejos, camarões e peixes. Eles atuam como berçários naturais, protegendo jovens organismos até que atinjam maturidade, o que garante a reprodução de muitas espécies marinhas. Além disso, suas raízes ajudam a estabilizar o solo, reduzindo a erosão costeira e protegendo comunidades costeiras de ondas e tempestades.\n\nOutro papel importante dos manguezais é a regulação do clima, pois armazenam grandes quantidades de carbono, contribuindo para a mitigação das mudanças climáticas. Eles também filtram poluentes e sedimentos da água, melhorando a qualidade dos ecossistemas adjacentes, como recifes de coral e pastos marinhos. Para as populações humanas, os manguezais proporcionam recursos alimentares e econômicos, além de turismo sustentável. Sua preservação é essencial para manter a biodiversidade e a saúde dos ambientes costeiros."
+    },
+    {
+      "grupo": "novo",
+      "id": 206,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Explique em dois parágrafos por que os manguezais são importantes para a costa.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 178,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 14079,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:40:50.002Z",
+          "ms": 14079,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Os manguezais são ecossistemas costeiros que abrigam uma grande diversidade de espécies, servindo como berçário e refúgio para peixes, crustáceos e moluscos, o que sustenta a pesca e a segurança alimentar das comunidades locais. Suas raízes ajudam a estabilizar o solo, reduzindo a erosão costeira e protegendo as praias contra ondas e tempestades, enquanto também atuam como barreira natural contra a aviação do mar. Além disso, os manguezais armazenam grandes quantidades de carbono na biomassa e no sedimento, contribuindo para o combate às mudanças climáticas e para a mitigação dos efeitos das emissões.\n\nOutro papel essencial dos manguezais é a filtração de nutrientes e poluentes trazidos pelos rios, melhorando a qualidade da água que chega ao oceano e protegendo recifes de corais e áreas marinhas adjacentes. A preservação desses ambientes garante serviços ecossistêmicos que beneficiam tanto a biodiversidade marinha quanto as populações humanas que dependem da costa para subsistência e turismo. No entanto, os manguezais estão ameaçados pelo desmatamento, urbanização e aquacultura, o que exige políticas de conservação e gestão sustentável para assegurar seus valores ambientais e sociais."
+    },
+    {
+      "grupo": "holdout",
+      "id": 102,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Explique em dois parágrafos como uma geladeira mantém alimentos frios.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 225,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 9187,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:41:04.085Z",
+          "ms": 9187,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Uma geladeira mantém os alimentos frios por meio de um ciclo de refrigeração que começa com um compressor. O compressor comprime um fluido refrigerante, aumentando sua temperatura e pressão. Esse gás quente é então direcionado ao condensador, localizado na parte de trás ou inferior do aparelho, onde libera calor para o ambiente e se condensa em um líquido. O líquido passa por um expansor ou válvula de expansão, que reduz sua pressão bruscamente, causando uma queda drástica de temperatura. O fluido agora frio entra no evaporador, um conjunto de tubos dentro da câmara fria, onde absorve o calor do interior da geladeira ao passar de fase. O ciclo se repete continuamente enquanto o termostato detecta que a temperatura subiu acima do valor estabelecido.\n\nO evaporador conta com aletas ou um ventilador que distribui o ar frio uniformemente dentro da câmara. O termostato monitora a temperatura constantemente e desliga o compressor quando o ambiente atinge o ponto desejado, evitando desperdício de energia. Além disso, a isolamento térmico nas paredes da geladeira reduz a entrada de calor externo, mantendo a eficiência do sistema. A umidade também é controlada em alguns modelos, prevenindo a secagem excessiva dos alimentos. Esse funcionamento baseado na transferência de calor e controle automático garante que os alimentos permaneçam em temperaturas seguras, retardando a proliferação de bactérias e conservando sua qualidade por mais tempo."
+    },
+    {
+      "grupo": "holdout",
+      "id": 102,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Explique em dois parágrafos como uma geladeira mantém alimentos frios.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 171,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 9334,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:41:13.276Z",
+          "ms": 9333,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Uma geladeira mantém os alimentos frios por meio de um ciclo de refrigeração que começa com a compressão de um gás refrigerante, conhecido como refrigerante, em um compressor. Esse gás, ao ser comprimido, aquece e é direcionado para um condensador, onde libera calor para o ambiente e se condensa em líquido. O líquido então passa por uma válvula de expansão, onde sofre uma queda de pressão brusca, tornando-se frio e entrando no evaporador. No evaporador, o líquido frio absorve o calor do interior da geladeira, evaporando novamente em gás e reduzindo a temperatura interna.\n\nO ciclo se repete continuamente, controlado por um termostato que monitora a temperatura e desliga ou liga o compressor conforme necessário. Além disso, a isolamento térmico das paredes da geladeira, geralmente feito de materiais como espuma de poliuretano, reduz a entrada de calor externo, mantendo o frio por mais tempo. A verificação de vedamentos e a limpeza periódica do condensador também são essenciais para garantir o funcionamento eficiente do sistema, evitando superaquecimento e consumo excessivo de energia."
+    },
+    {
+      "grupo": "original",
+      "id": 14,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Explique o que é uma função em programação para quem nunca programou, em dois parágrafos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 177,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 7132,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:41:22.614Z",
+          "ms": 7131,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Uma função em programação é um bloco de instruções que realiza uma tarefa específica e pode ser usado várias vezes ao longo de um programa. Imagine que é como uma receita de culinária: você segue os passos listados, coloca os ingredientes certos e obtém um resultado. Em vez de escrever o mesmo passo repetidamente, você define a função uma vez e, sempre que precisa daquela ação, apenas a chama pelo nome. Por exemplo, uma função chamada \"calcular_media\" pode receber números, fazer a conta e devolver o resultado, pronta para ser usada sempre que precisar.\n\nAs funções recebem entradas chamadas parâmetros ou argumentos, que são os dados que a função processa. Elas podem retornar um valor de volta ao programa, como o resultado de um cálculo, ou simplesmente executar uma ação, como exibir uma mensagem na tela. Usar funções deixa o código mais organizado, mais fácil de entender e de corrigir, além de evitar repetições desnecessárias. É uma forma de dividir um problema grande em partes menores e gerenciáveis, facilitando a construção e a manutenção de programas complexos."
+    },
+    {
+      "grupo": "original",
+      "id": 14,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Explique o que é uma função em programação para quem nunca programou, em dois parágrafos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 191,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 9105,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:41:29.749Z",
+          "ms": 9105,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Uma função em programação é um bloco de instruções que realiza uma tarefa específica e pode ser usado várias vezes ao longo de um programa. Imagine que você está organizando uma festa e precisa servir refrigerante para os convidados. Em vez de repetir todos os passos (pegar o copo, abrir a geladeira, servir o refrigerante, fechar a geladeira) toda vez que alguém pede um copo, você cria uma \"receita\" chamada \"servir refrigerante\" e, sempre que alguém pedir, basta seguir essa receita. Na programação, essa \"receita\" é a função: ela agrupa comandos para resolver um problema ou executar uma ação, deixando o código mais organizado e evitando repetições desnecessárias.\n\nAlém diso, as funções geralmente recebem informações para trabalhar, chamadas parâmetros, e podem devolver um resultado ao final. Continuando o exemplo da festa, a função \"servir refrigerante\" pode receber como parâmetro o tipo de bebida (refrigerante, água ou suco) e devolver o copo já preenchido. Isso permite que a mesma função sirva diferentes bebidas sem reescrever o processo. Em resumo, funções ajudam a dividir problemas grandes em partes menores e reutilizáveis, tornando a programação mais eficiente e compreensível, mesmo para quem está começando."
+    },
+    {
+      "grupo": "original",
+      "id": 18,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Dê quatro argumentos contra o desperdício de alimentos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 147,
+      "paragrafos": 4,
+      "itens": 4,
+      "ms": 12170,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:41:38.858Z",
+          "ms": 12169,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "1. O desperdício de alimentos aumenta as emissões de gases de efeito estufa, pois a decomposição em aterros gera metano, um poluente 25 vezes mais potente que o dióxido de carbono; reduzir o desperdício diminui a pegada ambiental individual e coletiva.\n2. Economicamente, o desperdício representa perda de recursos financeiros para famílias e empresas, além de desperdício de água, terra e energia usados na produção, como o caso de 1 kg de carne, que exige 15 mil litros de água para ser produzido.\n3. Socialmente, redistribuir alimentos não desperdiçados para instituições de caridade reduz a fome e a desigualdade, como ocorre em campanhas que resgatam alimentos de supermercados para bancos de alimentos.\n4. Éticamente, desperdiçar alimentos quando milhões de pessoas no mundo sofrem de fome é uma contradição moral, já que o excesso de comida em um país pode ser redirecionado para atender necessidades básicas de outros."
+    },
+    {
+      "grupo": "original",
+      "id": 18,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Dê quatro argumentos contra o desperdício de alimentos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 136,
+      "paragrafos": 4,
+      "itens": 4,
+      "ms": 14002,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:41:51.030Z",
+          "ms": 14002,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "1. O desperdício de alimentos contribui significativamente para as emissões de gases de efeito estufa, pois, ao decompor-se em aterros sanitários, libera metano, um gás 25 vezes mais potente que o dióxido de carbono em termos de aquecimento global.\n2. Recursos como água, terra, energia e mão de obra são desperdiçados na produção de alimentos que não são consumidos, aumentando custos para sistemas agrícolas e ameaçando a segurança alimentar futura.\n3. Enquanto milhões de pessoas no mundo sofrem de fome, o descarte de alimentos em bom estado representa uma injustiça social, podendo ser redirecionado para bancos de alimentos ou comunidades carentes.\n4. A cultura do consumo excessivo e a perda de valor nutricional em alimentos descartados refletem uma relação insustentável com os recursos naturais, incentivando práticas que agravam a degradação ambiental e a escassez de alimentos."
+    },
+    {
+      "grupo": "holdout",
+      "id": 104,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Explique em dois parágrafos como uma biblioteca organiza e empresta livros.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 208,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 19401,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:42:05.036Z",
+          "ms": 19399,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Uma biblioteca organiza seus livros principalmente pelo Sistema de Classificação Decimal de Dewey (CDD) ou pela Classificação NLM, atribuindo a cada obra um número que reflete seu tema. Cada título recebe também um selo com o número de registro, o código de barras e o local de estante, permitindo localização rápida. Os livros são agrupados por áreas (por exemplo, ciência, literatura, história) e, dentro de cada área, ordenados numericamente. Paralelamente, o acervo é registrado em um sistema de gestão bibliotecária, onde se cadastram dados como autor, título, editora, ano e situação (disponível, emprestado ou em manutenção). Essa base de dados permite buscas por palavras-chave, autores ou assuntos, facilitando o acesso tanto ao público quanto ao corpo técnico.\n\nPara emprestar livros, o usuário primeiro se cadastra ou apresenta seu documento de identificação, gerando um registro no sistema. Em seguida, o bibliotecário localiza o exemplar desejado, verifica sua disponibilidade e registra o empréstimo, informando a data de devolução prevista. O livro é então entregue ao usuário, que deve respeitar o prazo estipulado. Ao retornar, o exemplar é conferido, a data de devolução é registrada e o sistema atualiza a situação do item para disponível. Caso haja atraso, a biblioteca pode aplicar multas ou suspensões de empréstimos, conforme as normas estabelecidas."
+    },
+    {
+      "grupo": "holdout",
+      "id": 104,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Explique em dois parágrafos como uma biblioteca organiza e empresta livros.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 194,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 9268,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:42:24.439Z",
+          "ms": 9267,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Uma biblioteca organiza seus livros principalmente pelo Sistema de Classificação Decimal de Dewey (CDD) ou pela Classificação Decimal de Universal (CDU), que atribui um número único a cada obra conforme seu tema. Cada livro recebe uma etiqueta com esse número, além de informações como título e autor, e é posicionado na prateleha de acordo com a ordem numérica. Os livros são agrupados por seções temáticas — como ciências exatas, artes, história — e dentro de cada seção, seguem a sequência crescente dos números de classificação. Isso permite que os usuários localizem obras por assunto de forma rápida e intuitiva.\n\nPara o empréstimo, o usuário apresenta o documento de identificação na recepção, onde o bibliotecário registra o retirada no sistema, associando o livro ao seu cadastro. Cada livro contém uma etiqueta de código de barras que é lido por um scanner, garantindo controle preciso. O prazo de devolução varia conforme o tipo de usuário e a política da instituição, geralmente entre sete e trinta dias. Ao retornar, o livro é conferido, e o sistema atualiza sua disponibilidade. Caso haja atraso, podem ser cobradas multas, incentivando o cumprimento do prazo e a rotação saudável do acervo."
+    },
+    {
+      "grupo": "original",
+      "id": 3,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Resuma em três parágrafos o que foi a Revolução Industrial.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 244,
+      "paragrafos": 3,
+      "itens": 0,
+      "ms": 12263,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:42:33.711Z",
+          "ms": 12262,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A Revolução Industrial foi um período de transformações econômicas, sociais e tecnológicas que começou na Grã-Bretanha por volta de 1760 e se espalhou pelo restante da Europa e do mundo ao longo do século XIX. Esse processo marcou a transição da economia agrária e artesanal para uma economia baseada na indústria e na produção em larga escala, impulsionada por inovações como a máquina térmica a vapor, desenvolvida por James Watt, e pela mecanização do setor têxtil.\n\nCom a industrialização, as fábricas se tornaram o centro da produção, substituindo a divisão do trabalho em domicílio. A urbanização acelerou, atraindo milhares de pessoas das zonas rurais para as cidades em busca de emprego. Apesar do aumento da produção e do crescimento econômico, as condições de trabalho eram ásperas, com longas jornadas, baixos salários e riscos à saúde. A exploração de mão de obra, incluindo crianças, gerou grandes desigualdades sociais e deu origem a movimentos de resistência e luta pelos direitos dos trabalhadores.\n\nA Revolução Industrial também teve impactos profundos no meio ambiente e na organização social. O aumento do consumo de carvão e a poluição das cidades foram consequências diretas da industrialização. Ao mesmo tempo, novas classes sociais surgiram, como a burguesia industrial e a proletariedade, moldando novas relações de classe e influenciando ideologias políticas como o socialismo e o capitalismo. Esse período lançou as bases para o mundo moderno, conectando inovação tecnológica ao crescimento econômico, mas também revelando os custos humanos e ambientais da industrialização."
+    },
+    {
+      "grupo": "original",
+      "id": 3,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Resuma em três parágrafos o que foi a Revolução Industrial.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 243,
+      "paragrafos": 3,
+      "itens": 0,
+      "ms": 16450,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:42:45.978Z",
+          "ms": 16449,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A Revolução Industrial foi um período de transformações econômicas e sociais que começou na Grã-Bretanha por volta de 1760 e se espalhou pelo resto da Europa e do mundo nos séculos XIX e XX. Antes desse processo, a maior parte da população vivia no campo, trabalhando em pequenas propriedades rurais ou ofícios artesanais. Com as inovações tecnológicas, como a máquina a vapor de James Watt e os tear mecânicos, a produção passou a se concentrar em fábricas, atraindo milhares de pessoas para as cidades em busca de emprego.\n\nO avanço industrial exigiu grandes quantidades de matéria-prima e energia, o que impulsionou a exploração de recursos naturais e a expansão colonial. Novas máquinas, como o motor de combustão interna e os processos de siderurgia, permitiram a produção em larga escala de bens, reduzindo custos e aumentando a eficiência. Setores como o têxtil, a metalurgia e o transporte foram os primeiros a se modernizar, criando uma demanda crescente por capital e mão de obra, inclusive infantil, em condições precárias.\n\nA Revolução Industrial também trouxe mudanças profundas na organização social e no modo de vida. A classe operária urbana emergiu como nova força social, enfrentando longas jornadas, baixos salários e ambientes de trabalho perigosos. Ao mesmo tempo, a classe capitalista industrial acumulou riqueza e influência, desencadeando debates sobre justiça social e direitos trabalhistas. As transformações desencadearam movimentos de reforma, grehas e, mais tarde, ideologias como o socialismo e o comunismo, buscando equilibrar os desafios da industrialização."
+    },
+    {
+      "grupo": "original",
+      "id": 19,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Explique a diferença entre clima e tempo em um parágrafo.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 108,
+      "paragrafos": 1,
+      "itens": 0,
+      "ms": 4560,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:43:02.432Z",
+          "ms": 4559,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Clima e tempo são conceitos relacionados à atmosfera, mas diferem em escala e características. Tempo refere-se às condições atmosféricas em um momento específico, como temperatura, umidade, vento, precipitação e visibilidade, variando de minutos a semanas. Já o clima é a média estatística desses elementos ao longo de anos, descrevendo padrões regionais. Por exemplo, uma tempestade é um evento de tempo, enquanto a seca anual de uma região define seu clima. O tempo é dinâmico e imprevisível, enquanto o clima é mais estável, embora influenciado por mudanças globais. Entender essa distinção ajuda a interpretar fenômenos naturais e planejar atividades, como agricultura ou turismo, que dependem de condições atmosféricas esperadas."
+    },
+    {
+      "grupo": "original",
+      "id": 19,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Explique a diferença entre clima e tempo em um parágrafo.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 143,
+      "paragrafos": 1,
+      "itens": 0,
+      "ms": 9024,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:43:06.996Z",
+          "ms": 9024,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Clima e tempo são conceitos relacionados à atmosfera, mas diferem em escala e características. Tempo refere-se às condições atmosféricas em um momento específico, como temperatura, umidade, vento, precipitação e visibilidade, variando de minutos a dias. Já clima é o conjunto de condições atmosféricas que ocorrem em uma região ao longo de um período prolongado, geralmente 30 anos, segundo definição da Organização Meteorológica Mundial. O tempo é transitório e imprevisível em curto prazo, enquanto o clima representa padrões médios e tendências estatísticas. Por exemplo, uma tempestade intensa é um evento de tempo, mas a frequência anual de tempestades em uma área reflete seu clima. O clima influencia vegetação, atividades humanas e distribuição de recursos hídricos, enquanto o tempo afeta planos diários, como viagens ou agricultura. Em resumo, tempo é o que acontece agora; clima é o que se espera repetidamente ao longo dos anos."
+    },
+    {
+      "grupo": "original",
+      "id": 23,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Explique em dois parágrafos o que é inteligência artificial, sem jargão.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 139,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 6763,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:43:16.025Z",
+          "ms": 6762,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Inteligência artificial é a capacidade de máquinas de aprenderem padrões a partir de dados e tomar decisões baseadas nesses aprendizados, sem precisar de instruções detas para cada tarefa. Funciona como um programa de computador que, ao receber muitos exemplos, identifica relações e usa essas relações para reconhecer imagens, responder perguntas ou prever resultados, de forma semelhante ao jeito que as pessoas aprendem com a experiência.\n\nO funcionamento depende de algoritmos que processam grandes volumes de informações, ajustando seus próprios parâmetros para melhorar o desempenho ao longo do tempo. Aplicações comuns incluem assistentes virtuais que entendem voz, filtros de spam em e-mails e sistemas de recomendação em plataformas de streaming. Apesar do avanço, a tecnologia ainda tem limitações, como a necessidade de dados de qualidade e a dificuldade de generalizar conhecimento para situações muito diferentes das aprendidas durante o treinamento."
+    },
+    {
+      "grupo": "original",
+      "id": 23,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Explique em dois parágrafos o que é inteligência artificial, sem jargão.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 126,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 7575,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:43:22.791Z",
+          "ms": 7575,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Inteligência artificial é a capacidade de máquinas de aprenderem e resolverem problemas como os seres humanos fazem. Em vez de seguir apenas instruções rígidas, esses sistemas analisam dados, reconhecem padrões e ajustam suas respostas com base nisso. Por exemplo, quando um programa identifica fotos de gatos ou recomenda músicas que você pode gostar, ele está usando regras aprendidas a partir de milhares de exemplos anteriores.\n\nO funcionamento básico envolve algoritmos que processam informações em etapas. Primeiro, os dados são coletados e organizados. Depois, o sistema treina-se com esses dados, ajustando internamente para reduzir erros. Por fim, ele aplica o que aprendeu a novas situações. Assim, máquinas podem traduzir textos, diagnosticar doenças ou até dirigir carros, imitando a forma como nosso cérebro conecta experiências para tomar decisões."
+    },
+    {
+      "grupo": "original",
+      "id": 17,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Escreva um texto de dois parágrafos sobre os impactos das redes sociais na vida das pessoas.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 153,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 13411,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:43:30.370Z",
+          "ms": 13410,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "As redes sociais transformaram a forma como as pessoas se comunicam e mantêm relações, ampliando a conectividade global e permitindo o compartilhamento instantâneo de informações. Plataformas como Instagram, Facebook e TikTok criaram espaços para expressão pessoal, divulgação de causas sociais e fortalecimento de comunidades com interesses comuns. No entanto, esse uso constante também traz desafios, como a dependência de validações por meio de curtidas e comentários, o que pode impactar a autoestima e o bem-estar emocional, especialmente entre jovens.\n\nAlém disso, as redes sociais influenciam hábitos de consumo, comportamentos políticos e até padrões de pensamento, muitas vezes por meio de algoritmos que reforçam crenças já existentes. A exposição a conteúdos filtrados ou exagerados pode distorcer a percepção da realidade, contribuindo para comparações sociais prejudiciais e ansiedade. Por outro lado, quando usadas com intencionalidade, essas plataformas podem promover aprendizado, inclusão e mobilização coletiva, demonstrando que seu impacto depende diretamente da forma como são utilizadas."
+    },
+    {
+      "grupo": "original",
+      "id": 17,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Escreva um texto de dois parágrafos sobre os impactos das redes sociais na vida das pessoas.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 186,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 12093,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:43:43.786Z",
+          "ms": 12093,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "As redes sociais transformaram a forma como as pessoas se comunicam e mantêm relações, ampliando a conectividade global e permitindo o compartilhamento instantâneo de informações. No entanto, esse avanço trouxe consequências complexas, como a dependência por validações externas, aumento de comparações sociais e, em alguns casos, isolamento apesar da hiperconexão. A exposição constante a conteúdos idealizados pode impactar a autoestima, especialmente entre jovos, enquanto a disseminação de desinformação exige maior senso crítico. Além disso, o uso excessivo pode reduzir o tempo dedicado a interações presenciais, alterando padrões de comportamento e atenção.\n\nParalelamente, as redes sociais se tornaram ferramentas essenciais para o acesso a informações, educação e mobilização coletiva, ampliando oportunidades de aprendizado e engajamento cidadão. Plataformas digitais permitem que pequenos empreendedores alcancem novos mercados e que movimentos sociais ganhem visibilidade rapidamente. Contudo, a pressão por produtividade e a cultura do \"sempre disponível\" podem gerar estresse e desgaste mental. O equilíbrio entre o uso consciente e a proteção dos direitos digitais emerge como um desafio para garantir que as redes sociais potencializem o bem-estar individual e coletivo, sem comprometer a saúde emocional ou a privacidade dos usuários."
+    },
+    {
+      "grupo": "original",
+      "id": 22,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Explique em dois parágrafos como funciona a energia solar fotovoltaica.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 160,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 7748,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:43:55.884Z",
+          "ms": 7746,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A energia solar fotovoltaica converte a luz do Sol diretamente em eletricidade por meio de células solares, geralmente feitas de silício. Quando os fótons atingem a superfície da célula, eles excitem os elétrons do material semicondutor, liberando-os para mover-se, criando assim uma corrente elétrica contínua. Cada célula produz poucos volts, por isso elas são agrupadas em módulos e conectados em série e paralelo para aumentar a tensão e a corrente, formando os painéis solares conhecidos.\n\nEsses painéis são instalados em telhados ou no solo, orientados para captar a máxima radiação solar durante o dia. A corrente contínua gerada é enviada a um inversor, que converte-a em corrente alternada para uso nas instalações ou para injeção na rede elétrica. Quando há excedente de energia, ela pode ser armazenada em baterias ou compensada pela rede. O sistema não possui partes móveis, o que reduz a necessidade de manutenção, e sua eficiência depende da incidência solar, da temperatura e da qualidade dos componentes."
+    },
+    {
+      "grupo": "original",
+      "id": 22,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Explique em dois parágrafos como funciona a energia solar fotovoltaica.",
+      "ok": false,
+      "falhas": [
+        "falta fato #1 (painel)"
+      ],
+      "palavras": 161,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 8102,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:44:03.636Z",
+          "ms": 8101,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A energia solar fotovoltaica converte a luz do Sol diretamente em eletricidade por meio de células solares, geralmente feitas de silício. Quando os fótons atingem a superfície da célula, eles excitem os elétrons do material semicondutor, liberando-os para mover-se e criar uma corrente elétrica contínua. Cada célula produz uma pequena quantidade de energia, por isso elas são agrupadas em módulos e, posteriormente, em strings para aumentar a potência e adaptar a tensão ao sistema.\n\nO sistema completo inclui um inversor, que transforma a corrente contínua gerada pelas células em corrente alternada, compatível com a rede elétrica ou com os equipamentos da instalação. Também há componentes de proteção, como disjuntores e um sistema de monitoramento que registra a produção em tempo real. A energia excedente pode ser armazenada em baterias ou injetada à rede, dependendo da configuração. Assim, a geração solar fotovoltaica oferece uma fonte renovável e limpa, reduzindo a dependência de combustíveis fósseis e as emissões de gases de efeito estufa."
+    },
+    {
+      "grupo": "novo",
+      "id": 204,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Explique em dois parágrafos por que uma panela de metal esquenta no fogo.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 172,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 6899,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:44:11.743Z",
+          "ms": 6897,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Quando uma panela de metal é colocada no fogo, a chama ou a fonte de calor transfere energia térmica para o material por meio da condução. O metal é um bom condutor de calor, então as partículas que compõem a estrutura recebem energia e começam a vibrar com maior intensidade. Essas vibrações se propagam rapidamente de um ponto para outro, distribuindo o calor ao longo de toda a superfície da panela. O contato direto entre a chama e o fundo da panela é o ponto inicial desse processo de transferência de energia.\n\nAlém disso, a capacidade térmica do metal determina quanta energia é necessária para elevar sua temperatura. Como o aço e outros metais têm baixa capacidade térmica em comparação com outros materiais, aquele aquecem de forma rápida e eficiente. O calor também é distribuído pelo interior da panela, permitindo que o alimento cozinhe de maneira uniforme. Assim, a combinação entre boa condutividade térmica e baixa capacidade térmica explica por que a panela esquenta tão logo entra em contato com o fogo."
+    },
+    {
+      "grupo": "novo",
+      "id": 204,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Explique em dois parágrafos por que uma panela de metal esquenta no fogo.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 165,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 7754,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:44:18.646Z",
+          "ms": 7752,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Uma panela de metal esquenta no fogo porque o metal conduz bem o calor. Quando a panela é colocada sobre a chama, as chamas ou o calor do fogo transferem energia térmica para o material metálico por meio da condução. O metal, especialmente ligas como o aço inoxidável ou o alumínio, possui átomos com elétrons que se movem livremente, permitindo que a energia térmica se propague rapidamente por toda a superfície da panela. Isso faz com que o metal atinja rapidamente a temperatura do fogo ou algo próximo a ela.\n\nAlém disante, a forma como o calor é distribuído influencia o aquecimento. A base da panela, em contato direto com a fonte de calor, absorve mais energia e transfere para o interior do alimento. O calor também é dissipado para o ambiente ao redor, mas o metal retém parte da energia por sua alta capacidade térmica. Assim, a panela não apenas aquece, mas também mantém a temperatura necessária para cozinhar os alimentos de forma eficiente."
+    },
+    {
+      "grupo": "original",
+      "id": 15,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Explique o que é a LGPD em dois parágrafos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 178,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 9316,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:44:26.403Z",
+          "ms": 9314,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A Lei Geral de Proteção de Dados (LGPD) é uma legislação brasileira sancionada em 2018, entrando em vigor em setembro de 2020. Ela estabelece regras para o tratamento de dados pessoais, aplicando-se a qualquer pessoa física ou jurídica que processe informações de identificação ou contato de indivíduos. O objetivo principal é proteger os direitos fundamentais de privacidade e liberdade, garantindo que os dados sejam coletados, armazenados e utilizados de forma transparente e segura. A lei também cria a Autoridade Nacional de Proteção de Dados (ANPD), responsável por fiscalizar e aplicar sanções em casos de descumprimento.\n\nA LGPD define dez princípios para o tratamento de dados, como necessidade, transparência e responsabilidade, exigindo que os controladores e encarregados adotem medidas técnicas e organizacionais adequadas. Ela prevê direitos dos titulares, incluindo acesso, retificação e eliminação de dados, além de penalidades que podem chegar a multas de até 2% do faturamento da empresa, limitadas a R$ 50 milhões por infração. O cumprimento da LGPD é obrigatório tanto para empresas brasileiras quanto para organizações estrangeiras que processam dados de pessoas localizadas no Brasil."
+    },
+    {
+      "grupo": "original",
+      "id": 15,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Explique o que é a LGPD em dois parágrafos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 230,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 12222,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:44:35.723Z",
+          "ms": 12222,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A Lei Geral de Proteção de Dados (LGPD) é uma legislação brasileira sancionada em 2018 e promulgada em 2020, que estabelece regras para o tratamento de dados pessoais de indivíduos no Brasil. Sua finalidade é proteger a privacidade e os direitos dos cidadãos, regulando como empresas, órgãos públicos e organizações devem coletar, armazenar, processar e compartilhar informações pessoais. A LGPD aplica-se a qualquer operação de tratamento de dados, seja por meio manual ou automatizado, e exige que os responsáveis pelo tratamento obtenham o consentimento explícito do titular dos dados, exceto em situações legalmente previstas. O texto legal é composto por dez capítulos e 46 artigos, abordando temas como definição de conceitos, princípios, direitos dos titulares e sanções.\n\nA LGPD prevê direitos fundamentais para os titulares dos dados, como o acesso, a retificação, a eliminação, a portabilidade e a revogação do consentimento. As organizações que descumprirem as normas podem ser multadas, com penalidades que variam de 2% a 50% do faturamento da empresa no Brasil, limitadas a R$ 50 milhões por infração. Para garantir o cumprimento, foi criada a Autoridade Nacional de Proteção de Dados (ANPD), órgão vinculado à Presidência da República responsável por fiscalizar e aplicar as regras. A lei entrou em vigor em 1º de setembro de 2021, exigindo que instituições ajustassem seus sistemas, políticas e processos para evitar violações e assegurar a transparência no uso das informações pessoais."
+    },
+    {
+      "grupo": "novo",
+      "id": 205,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Explique em dois parágrafos como o orçamento doméstico ajuda a planejar gastos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 173,
+      "paragrafos": 3,
+      "itens": 0,
+      "ms": 11266,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:44:47.950Z",
+          "ms": 11265,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Um orçamento doméstico é um planejamento que lista todas as receitas e despesas previstas para um período, permitindo visualizar quanto está entrando e quanto está saindo da renda familiar. Ao anotar os valores de água, luz, aluguel, alimentação e outras contas, é possível identificar quais gastos são fixos e quais variam, facilitando a separação entre necessidades e desejos. Essa organização ajuda a evitar surpresas desagradáveis no final do mês e a direcionar a renda para prioridades, como pagamento de dívidas ou poupança para emergências.\n\nCom o orçamento em mãos, é possível estabelecer limites para cada categoria de gasto e ajustar o comportamento conforme a realidade. Por exemplo, se a renda não cobre todos os itens desejados, é preciso reavaliar o orçamento e cortar despesas não essenciais. Ferramentas como planilhas ou aplicativos simplificam o acompanhamento, permitindo registrar as transações e comparar o planejado com o real. Revisar o orçamento regularmente também ajuda a corrigir desvios e a construir o hábito de poupar uma parte da renda, garantindo maior controle financeiro e tranquilidade familiar.\n\nAtenciosamente."
+    },
+    {
+      "grupo": "novo",
+      "id": 205,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Explique em dois parágrafos como o orçamento doméstico ajuda a planejar gastos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 161,
+      "paragrafos": 3,
+      "itens": 0,
+      "ms": 10143,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:44:59.220Z",
+          "ms": 10141,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Um orçamento doméstico é um planejamento que lista todas as receitas e despesas previstas para um período, geralmente um mês. Ao anotar quanto entra e quanto sai, fica claro quanto dinheiro está disponível para cada finalidade, evitando o desperdício e o excesso de gastos. Primeiro, registre a receita líquida; depois, classifique as despesas fixas, como aluguel e contas, e as variáveis, como alimentação e lazer. Comparando esses valores, é possível ajustar hábitos e direcionar recursos para prioridades, como pagamento de dívidas ou poupança.\n\nCom o orçamento em mãos, é mais fácil antecipar imprevistos e alocar fundos para objetivos específicos, como uma viagem ou uma reserva de emergência. Recomenda-se revisar o planejamento a cada mês, atualizando valores reais e corrigindo desvios. Ferramentas simples, como planilhas ou aplicativos, ajudam a automatizar o controle e a visualizar o progresso. Assim, o orçamento deixa de ser apenas uma lista de números e passa a ser um guia que promove disciplina financeira e tranquilidade familiar.\n\nAtenciosamente."
+    },
+    {
+      "grupo": "original",
+      "id": 8,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Explique o que é inflação em dois parágrafos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 176,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 8138,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:45:09.367Z",
+          "ms": 8136,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Inflação é o aumento generalizado e contínuo dos preços de bens e serviços em uma economia ao longo do tempo, o que reduz o poder de compra da moeda local. Quando a inflação ocorre, cada unidade monetária compra menos do que comprava anteriormente, significando que o valor real do dinheiro decresce. Essa elevação de preços pode ser causada por diversos fatores, como aumento da demanda por produtos, escassez de oferta, elevação de custos de produção, políticas fiscais ou monetárias inadequadas, ou até mesmo crises internacionais que afetam a economia.\n\nOs efeitos da inflação variam conforme sua intensidade e duração. Em níveis moderados, a inflação pode ser saudável, incentivando o consumo e o investimento, além de permitir que governos e bancos ajustem políticas econômicas. No entanto, inflação alta ou hiperinflação gera incerteza econômica, desvaloriza a moeda, prejudica a poupança e pode levar à crise financeira. Para controlá-la, os bancos centrais utilizam ferramentas como ajuste de taxas de juros, intervenção no mercado e regulamentação de crédito, buscando manter a estabilidade de preços e promover um ambiente econômico previsível."
+    },
+    {
+      "grupo": "original",
+      "id": 8,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Explique o que é inflação em dois parágrafos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 175,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 12284,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:45:17.509Z",
+          "ms": 12283,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Inflação é o aumento generalizado e contínuo dos preços de bens e serviços em uma economia ao longo do tempo, o que reduz o valor do dinheiro, já que cada unidade monetária compra menos do que antes. Quando a inflação ocorre, o poder de compra das pessoas diminui, e é comum que salários e preços precisem ser reajustados para acompanhar esse novo cenário. A inflação pode ser causada por diversos fatores, como aumento da demanda por produtos, escassez de oferta, elevação de custos de produção ou políticas monetárias agressivas.\n\nOs principais tipos de inflação incluem a demanda excessiva, que surge quando a procura supera a oferta; a inflação de custos, ligada ao aumento de preços de matérias-primas e salários; e a inflação monetária, resultado da emissão excessiva de dinheiro pela autoridade monetária. Para controlá-la, bancos centrais utilizam ferramentas como ajuste de taxas de juros, redução da liquidez e intervenções no mercado. Uma inflação moderada é considerada saudável para a economia, estimulando consumo e investimento, mas altos índices podem gerar instabilidade, afetando especialmente os mais vulneráveis."
+    },
+    {
+      "grupo": "original",
+      "id": 3,
+      "repeticao": 2,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Resuma em três parágrafos o que foi a Revolução Industrial.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 219,
+      "paragrafos": 3,
+      "itens": 0,
+      "ms": 11917,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:45:29.796Z",
+          "ms": 11917,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A Revolução Industrial foi um período de transformações econômicas e sociais que começou na Grã-Bretanha por volta de 1760 e se espalhou para o continente europeu e outras regiões no século XIX. Esse processo marcou a transição da economia agrária e artesanal para uma economia baseada na indústria e na produção em larga escala, impulsionada pelo uso de máquinas e pela exploração de fontes energéticas como o carvão.\n\nO avanço tecnológico foi um dos pilares da Revolução Industrial, com invenções como o tear mecânico de Jaca, a máquina a vapor de James Watt e o desenvolvimento do ferro fundido. Essas inovações permitiram a mecanização da produção têxtil, a construção de ferrovias e a navegação marítima mais eficiente, reduzindo custos e aumentando a capacidade produtiva. A urbanização também cresceu rapidamente, com o aumento da migração do campo para as cidades em busca de emprego nas fábricas.\n\nAs mudanças trazidas pela Revolução Industrial tiveram impactos profundos na sociedade, gerando novas classes sociais, como a burguesia industrial e a classe operária trabalhadora. As condições de trabalho eram duras, com longas jornadas e riscos elevados, o que deu origem a movimentos sindicais e lutas pela reforma social. Além disso, a dependência de recursos naturais e o aumento das emissões de poluentes começaram a gerar preocupações ambientais, muitas vezes ignoradas na corrida pela produtividade."
+    },
+    {
+      "grupo": "original",
+      "id": 3,
+      "repeticao": 2,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Resuma em três parágrafos o que foi a Revolução Industrial.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 211,
+      "paragrafos": 3,
+      "itens": 0,
+      "ms": 11986,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:45:41.718Z",
+          "ms": 11985,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A Revolução Industrial foi um período de transformações econômicas e sociais que começou na Grã-Bretanha por volta de 1760 e se espalhou pelo resto da Europa e do mundo nos séculos XIX e início do XX. Ela marcou a transição da economia agrária e artesanal para uma economia baseada na indústria e na produção em larga escala, impulsionada por avanços tecnológicos como a máquina a vapor e a mecanização do tecido.\n\nO desenvolvimento de invenções como o motor a vapor de James Watt, a fiação mecânica e a expansão das fábricas revolucionaram a produção, aumentando a eficiência e reduzindo custos. Setores como o têxtil, a siderurgia e o transporte foram especialmente impactados, com a construção de ferrovias e navios a vapor facilitando o deslocamento de mercadorias e pessoas. Essas mudanças geraram o crescimento das cidades e a formação de uma nova classe operária urbana.\n\nA Revolução Industrial trouxe consequências profundas para a sociedade, incluindo a urbanização acelerada, a exploração de trabalhadores, especialmente crianças, e a ampliação das desigualdades sociais. Ao mesmo tempo, criou novas oportunidades econômicas e levou ao desenvolvimento de ideologias como o socialismo e o capitalismo industrial. Seu legado moldou a organização do trabalho, a produção em massa e a estrutura das sociedades modernas, influenciando diretamente o mundo contemporâneo."
+    },
+    {
+      "grupo": "original",
+      "id": 3,
+      "repeticao": 1,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Resuma em três parágrafos o que foi a Revolução Industrial.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 289,
+      "paragrafos": 3,
+      "itens": 0,
+      "ms": 12610,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:45:53.708Z",
+          "ms": 12609,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A Revolução Industrial foi um período de transformações econômicas e sociais que começou na Grã-Bretanha por volta de 1760 e se espalhou para o continente europeu e o restante do mundo ao longo do século XIX. Antes desse movimento, a maior parte da população vivia em zonas rurais e trabalhava na agricultura usando métodos manuais e artesanais. Com a introdução de novas técnicas agrícolas e a mecanização da produção, milhares de pessoas migraram para as cidades em busca de emprego nas fábricas recém-nascidas. Esse deslocamento gerou o crescimento acelerado de centros urbanos e a necessidade de infraestrutura adequada para abrigar a nova classe trabalhadora.\n\nO avanço tecnológico foi o motor principal da Revolução Industrial. A máquina a vapor, desenvolvida por James Watt, revolucionou o transporte com o trem e a navegação marítima, enquanto o tear mecânico transformou a produção têxtil, aumentando a eficiência e reduzindo custos. Outras invenções, como o motor de combustão interna e o uso do aço, ampliaram a capacidade produtiva em setores como a mineração e a construção civil. Essas inovações permitiram que empresas produzissem bens em escala maior e mais barata, impulsionando o comércio internacional e a acumulação de capital pelas novas classes econômicas.\n\nA Revolução Industrial trouxe consequências profundas para a sociedade. A classe operária, composta por trabalhadores assalariados, passou a viver em condições precárias, com longas jornadas e baixos salários, o que deu origem a movimentos sindicais e lutas pela reforma social. Ao mesmo tempo, a burguesia industrial enriquecia-se rapidamente, ampliando a desigualdade entre as camadas sociais. O aumento da produção também intensificou a exploração de recursos naturais, iniciando padrões de consumo e poluição que persistem até hoje. Essas mudanças moldaram o mundo moderno, estabelecendo as bases do capitalismo e da economia globalizada."
+    },
+    {
+      "grupo": "original",
+      "id": 3,
+      "repeticao": 1,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Resuma em três parágrafos o que foi a Revolução Industrial.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 230,
+      "paragrafos": 3,
+      "itens": 0,
+      "ms": 15187,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:46:06.322Z",
+          "ms": 15186,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A Revolução Industrial foi um período de transformações econômicas e sociais que começou na Grã-Bretanha por volta de 1760 e se espalhou por outros países europeus e norte-americanos ao longo do século XIX. Antes desse movimento, a maior parte da população vivia em zonas rurais e trabalhava em pequenas oficas ou na agricultura. Com a mecanização, especialmente no setor têxtil, a produção passou a se concentrar em fábricas, atraindo milhares de pessoas para as cidades em busca de emprego.\n\nO avanço tecnológico foi um dos motores principais da Revolução Industrial. Máquinas têcidas a vapor, a fornalha a lenha e depois a fornalha Siemens revolucionaram a produção têxtil, a siderurgia e a metalurgia. A construção de ferrovias e a navegação a vapor facilitaram o transporte de matérias-primas e produtos finalizados, integrando mercados regionais e ampliando o comérccio internacional. Essas inovações reduzaram custos e aumentaram a escala da produção, tornando os bens mais acessíveis.\n\nA Revolução Industrial também trouxe profundas mudanças sociais e ambientais. O trabalho em fábricas exigia longas jornadas, baixos salários e condições precárias, gerando movimentos de resistência e a formação de sindicatos. A poluição cresceu com o uso intensivo de carvão e a expansão urbana desordenada. Ao mesmo tempo, a nova ordem econômica favoreceu a classe média industrial e ampliou a produção de bens de consumo, redefinindo padrões de vida e contribuindo para o crescimento populacional e a urbanização."
+    },
+    {
+      "grupo": "holdout",
+      "id": 104,
+      "repeticao": 2,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Explique em dois parágrafos como uma biblioteca organiza e empresta livros.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 190,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 12682,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:46:21.513Z",
+          "ms": 12682,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Uma biblioteca organiza seus livros principalmente pelo Sistema de Classificação Decimal de Dewey (CDD) ou pela Classificação NLM, atribuindo a cada obra um número que reflete seu tema. Em seguida, os títulos são ordenados alfabeticamente pelo autor ou pela primeira palavra do título dentro de cada categoria, formando prateleiras temáticas. Cada exemplar recebe etiquetas com o código de barras, o número de classificação e o local de estante, facilitando a localização física. O acervo também é registrado em um sistema de gestão bibliotecária, onde informações como disponibilidade, localização e histórico de empréstimos são mantidas atualizadas.\n\nPara emprestar livros, o usuário primeiro se cadastra ou apresenta seu cartão de leitor, permitindo que o sistema registre seu vínculo com a instituição. Os itens são então separados pelos atendentes, passando pelo leitor de códigos de barras que confirma a disponibilidade e atualiza o status do exemplar para \"emprestado\". O usuário recebe um comprovante contendo a data de devolução, que segue a política definida pela biblioteca, geralmente entre sete e trinta dias. Ao retornar, os livros são novamente lidos, o sistema marca a devolução e o exemplar volta a ficar disponível para outro leitor."
+    },
+    {
+      "grupo": "holdout",
+      "id": 104,
+      "repeticao": 2,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Explique em dois parágrafos como uma biblioteca organiza e empresta livros.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 212,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 13956,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:46:34.199Z",
+          "ms": 13956,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Uma biblioteca organiza seus livros principalmente pelo Sistema de Classificação Decimal de Dewey (CDD) ou pela Classificação NLM, em que cada obra recebe um número que reflete seu tema. Os livros são então ordenados fisicamente nesse número, com prateleiras sinalizadas por faixas temáticas, como 000 para ciência da computação, 800 para literatura e 900 para história. Cada exemplar também recebe uma etiqueta com código de barras e localização, facilitando a localização e o controle de estoque. O acervo é dividido entre seções como livros de referência, periódicos, mídia digital e acervo de acervo, mantendo um registro atualizado no sistema de gestão, que pode ser manual ou digital.\n\nPara o empréstimo, o usuário apresenta documento de identificação e o cartão de bibliotecário, que é registrado no sistema ao retirar o item. O funcionário verifica a disponibilidade do exemplar, confere o código de barras e registra a data de devolução, que varia conforme o tipo de material e o perfil do usuário. Multas são cobradas por atraso, calculadas diariamente, e o empréstimo pode ser renovado online ou presencialmente, desde que não haja reservas. O processo termina com a devolução do livro em balcão ou em caixas automáticos, onde a leitura de código de barras confirma a devolução e libera o exemplar para nova locação."
+    },
+    {
+      "grupo": "original",
+      "id": 22,
+      "repeticao": 1,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Explique em dois parágrafos como funciona a energia solar fotovoltaica.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 181,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 8725,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:46:48.160Z",
+          "ms": 8724,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A energia solar fotovoltaica converte a luz do Sol diretamente em eletricidade por meio de células solares, geralmente feitas de silício. Quando os fótons atingem a superfície da célula, eles transferem energia aos elétrons do material semicondutor, liberando-os de seus átomos. Esses elétrons livres são então direcionados por um campo elétrico interno, criado pela junção entre camadas de silício dopado, gerando uma corrente elétrica contínua. Cada célula produz uma pequena quantidade de energia, por isso elas são agrupadas em módulos ou placas para aumentar a potência.\n\nO sistema completo inclui inversores, que convertem a corrente contínua em corrente alternada, compatível com a rede elétrica e os eletrodomésticos. Quando há excedente de energia, ele pode ser armazenado em baterias ou injetado na rede. Instalações residenciais ou comerciais são conectadas à rede elétrica local, permitindo o uso de energia gerada durante o dia e a compensação de consumo noturno. A eficiência do sistema depende da incidência solar, da inclinação e orientação das placas, e de condições climáticas. É uma fonte renovável, limpa e com baixo impacto ambiental, reduzindo a dependência de combustíveis fósseis."
+    },
+    {
+      "grupo": "original",
+      "id": 22,
+      "repeticao": 1,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Explique em dois parágrafos como funciona a energia solar fotovoltaica.",
+      "ok": false,
+      "falhas": [
+        "falta fato #1 (painel)"
+      ],
+      "palavras": 140,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 10038,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:46:56.889Z",
+          "ms": 10038,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A energia solar fotovoltaica converte a luz do Sol diretamente em eletricidade por meio de células solares, geralmente feitas de silício. Quando a luz atinge a célula, os fótons liberam elétrons do material semicondutor, criando uma corrente elétrica contínua. Essas células são organizadas em módulos, que são conectadas a um inversor para transformar a corrente contínua em alternada, compatível com a rede elétrica e os eletrodomésticos.\n\nO sistema também inclui um sistema de estrutura para posicionar os módulos com a melhor incidência solar e, em instalações com baterias, um controlador de carga para gerenciar a energia armazenada. A eficiência depende da qualidade das células, da incidência de luz e das condições climáticas. Após a instalação, o sistema opera com baixa manutenção, aproveitando a radiação solar durante o dia e reduzindo a dependência de fontes convencionicas, contribuindo para a sustentabilidade energética."
+    },
+    {
+      "grupo": "original",
+      "id": 22,
+      "repeticao": 2,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Explique em dois parágrafos como funciona a energia solar fotovoltaica.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 163,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 8755,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:47:06.932Z",
+          "ms": 8754,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A energia solar fotovoltaica converte a luz do Sol diretamente em eletricidade por meio de células solares, geralmente feitas de silício. Quando a luz atinge a célula, os fótons excitem os elétrons do material semicondutor, liberando-os e criando uma corrente elétrica contínua. Cada célula produz poucos volts, por isso várias são conectadas em módulos ou painéis, que podem ser agrupados em strings para aumentar a potência. Um inversor converte a corrente contínua em alternada, compatível com a rede elétrica ou com a instalação local.\n\nO sistema também inclui um medidor para registrar a energia gerada e, quando necessário, baterias para armazenar excessos. A eficiência depende da incidência solar, da sombra, da temperatura e da qualidade dos componentes. Após a instalação, o sistema opera com pouca manutenção, já que não possui partes móveis. A energia produzida pode ser consumida na hora, injetada à rede ou usada para carregar veículos elétricos, reduzindo a dependência de fontes fósseis e as emissões de gases de efeito estufa."
+    },
+    {
+      "grupo": "original",
+      "id": 22,
+      "repeticao": 2,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Explique em dois parágrafos como funciona a energia solar fotovoltaica.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 189,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 10857,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:47:15.691Z",
+          "ms": 10856,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A energia solar fotovoltaica converte a luz do Sol diretamente em eletricidade por meio de células solares, geralmente feitas de silício. Quando a luz atinge a célula, os fótons excitem os elétrons do material semicondutor, liberando-os para mover-se, criando uma corrente elétrica contínua. Essas células são organizadas em módulos, que são conectadas em série e paralelo para aumentar a tensão e a corrente, formando os painéis solares conhecidos. O sistema também inclui um inversor, que transforma a corrente contínua gerada em corrente alternada, compatível com a rede elétrica e os eletrodomésticos.\n\nO funcionamento depende de uma estrutura de camadas do semicondutor, com uma face dopada positivamente e outra negativamente, criando um campo elétrico que direciona o movimento dos elétrons. Quando os elétrons livres alcançam os contatos metálicos da célula, fluem pela circuito externo, gerando energia elétrica útil. Sistemas residenciais podem armazenar o excesso em baterias ou injetar à rede, enquanto usinas comerciais operam em escala maior. A eficiência varia conforme a qualidade do material, a incidência solar e as condições climáticas, mas o processo não envolve partes móveis, o que reduz manutenção e torna a tecnologia sustentável e silenciosa."
+    },
+    {
+      "grupo": "original",
+      "id": 16,
+      "repeticao": 1,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Descreva em dois parágrafos o caminho da água da chuva até a torneira de casa.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 183,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 8358,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:47:26.553Z",
+          "ms": 8358,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A água da chuva começa sua jornada quando as gotas caem sobre o telhado da casa e escorrem pelos canaletos, descendo por canos inclinados até as bocas de lobo ou sumidouros. Essas estruturas conduzem a água para a rede de drenagem urbana, onde ela é levada a estações de tratamento ou, em alguns casos, diretamente para rios e córregos, dependendo da infraestrutura local. Antes de chegar à torneira, a água passa por uma série de processos de tratamento, incluindo coagulação, floculação, sedimentação, filtração e desinfecção, garantindo que seja potável e segura para o consumo.\n\nApós o tratamento, a água é armazenada em represas ou reservatórios, de onde é bombeada para a rede de distribuição urbana. Os canos principais levam a água até os hidrômetros das residências, que medem o consumo. Ao abrir a torneira, a água percorre os tubos internos da casa, finalmente chegando ao ponto de uso. Esse ciclo, que pode incluir etapas de reuso ou reciclagem em algumas cidades, garante que a água da chuva, mesmo inicialmente limpa, seja transformada em água potável de acordo com as normas de saúde pública."
+    },
+    {
+      "grupo": "original",
+      "id": 16,
+      "repeticao": 1,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Descreva em dois parágrafos o caminho da água da chuva até a torneira de casa.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 167,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 11610,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:47:34.916Z",
+          "ms": 11610,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A água da chuva começa seu percurso quando as gotas caem sobre o telhado da casa. Elas escorrem pelas canaletas e calhas, desviando para os ralos que levam ao solo. Nesse momento, o primeiro passo do sistema de coleta é separar a água de folhas, poeira e outros resíduos que podem ter caído junto com a precipitação. A água então é direcionada para um reservatório ou caixa d'água, onde pode ser filtrada e armazenada até o momento de uso.\n\nDo reservatório, a água segue por tubulações até chegar à bomba ou à rede de distribuição interna. Se o sistema for acelerado por energia solar ou elétrica, a bomba impulsiona o fluido até os pontos de consumo, como a torneira. Antes de sair, a água passa por filtros finos e, em muitos casos, por um tratamento químico ou UV para garantir a potabilidade. Assim, a água que caiu do céu como chuva chega à torneira pronta para o consumo, após todo esse percurso de coleta, tratamento e distribuição."
+    },
+    {
+      "grupo": "holdout",
+      "id": 104,
+      "repeticao": 1,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Explique em dois parágrafos como uma biblioteca organiza e empresta livros.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 196,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 11170,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:47:46.531Z",
+          "ms": 11168,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Uma biblioteca organiza seus livros principalmente pelo Sistema de Classificação Decimal de Dewey (CDD) ou pela Classificação NLM, em que cada obra recebe um número conforme seu tema. Depois, os títulos são ordenados alfabeticamente pelo autor ou pela editora, e cada exemplar ganha um código de barras e uma etiqueta com a classificação, o número de registro e o local de estante. O acervo é dividido em seções: livros de referência, periódicos, mídia digital e obras de ficção, cada uma com sua própria sequência de prateleiras. O controle de inventário é feito por meio de um sistema integrado, que registra entrada, saída e conservação dos itens.\n\nPara o empréstimo, o usuário apresenta documento de identificação e o cartão de leitor, que é cadastrado no sistema. O funcionário escaneia o código de barras do livro e do cartão, registrando a data de retirada e a data prevista de devolução, que costuma variar de sete a trinta dias, dependendo do tipo de material. Se o prazo for ultrapassado, a biblioteca aplica multa diária proporcional ao valor do item. Ao retornar, o livro é conferido, seu estado verificado e o sistema atualizado, liberando novamente o exemplar para outro leitor."
+    },
+    {
+      "grupo": "holdout",
+      "id": 104,
+      "repeticao": 1,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Explique em dois parágrafos como uma biblioteca organiza e empresta livros.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 209,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 12999,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:47:57.705Z",
+          "ms": 12999,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Uma biblioteca organiza seus livros principalmente pelo Sistema de Classificação Decimal de Dewey (CDD) ou pela Classificação NLM, atribuindo a cada obra um número que reflete seu tema. Os itens são etiquetados com códigos de barras e localizados em prateleiras segundo a ordem numérica, facilitando a localização. Paralelamente, mantém-se um catálogo online (OPAC) com registros bibliográficos completos, incluindo título, autor, editora, ano e situação de disponibilidade. O acervo também é dividido em seções específicas, como livros de referência, periódicos, mídia digital e acervos especiais, cada uma com normas próprias de conservação e acesso. O controle de entrada e saída é feito mediante registro do usuário e do item, garantindo rastreabilidade.\n\nO empréstimo de livros segue regras definidas pela instituição, como período máximo de 7 a 28 dias, renováveis salvo contrária indicação. O usuário apresenta documento de identificação e, às vezes, o cartão de leitor, que é registrado no sistema ao retirar o exemplar. A data de devolução é anotada eletronicamente, e multas são cobradas proporcionalmente a atrasos. Livros de referência, periódicos e mídias restritas geralmente não são emprestáveis. Ao retornar, os itens são conferidos, higienizados se necessário e recolocados na estante conforme sua classificação, tornando-se disponíveis para nova consulta. O ciclo completo garante eficiência e preservação do patrimônio intelectual."
+    },
+    {
+      "grupo": "original",
+      "id": 16,
+      "repeticao": 2,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Descreva em dois parágrafos o caminho da água da chuva até a torneira de casa.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 182,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 9908,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:48:10.710Z",
+          "ms": 9907,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A água da chuva começa seu percurso quando as gotas caem sobre o telhado da casa e são coletadas por canaletas e raias que a conduzem para os ralos de drenagem. A partir daí, o primeiro passo é separar a água de água da chuva da rede de esgoto, evitando contaminação. A água coletada flui por tubulações enterradas até um reservatório ou cisterna, onde é armazenada para uso posterior. Nesse armazenamento, ela pode passar por uma pré-filtragem para remover folhas, poeira e outros detritos maiores que caíram junto com a chuva.\n\nDo reservatório, a água segue por uma bomba ou por gravidade até o sistema de tratamento caseiro, que pode incluir filtros de area, carvão ativado e pastilhas cloradas, dependendo da intensidade do uso. Após a filtragem e a desinfecção, a água entra na rede de distribuição interna da casa, percorrendo tubos de cano de cobre ou PVC até chegar às torneiras, chuveiros e válvulas de piaus. Nesse ponto, ela está pronta para o consumo, sendo potável se todos os estágios de tratamento foram respeitados e os filtros estão em bom estado."
+    },
+    {
+      "grupo": "original",
+      "id": 16,
+      "repeticao": 2,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Descreva em dois parágrafos o caminho da água da chuva até a torneira de casa.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 177,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 11616,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T18:48:20.622Z",
+          "ms": 11615,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A água da chuva começa sua jornada quando precipita sobre o telhado da casa, escoando pelos canaletos e ralos de drenagem. Essa água é coletada em sistemas de calhas que a direcionam para tanques ou cisternas, onde é armazenada para uso posterior. Em alguns casos, especialmente em áreas urbanas, a água da chuva é desviada para a rede de esgoto ou drenagem pluvial, evitando inundações. Antes de chegar ao consumo, ela passa por filtros e tratamento para remover partículas, folhas e impurezas, garantindo qualidade para uso doméstico.\n\nApós o armazenamento, a água tratada é bombeada para a rede de distribuição da casa. Ela percorre tubulações subterrâneas ou aéreas, alimentando o sistema de encanamento interno. Quando o morador abre a torneira, a água flui por canos de cobre, PVC ou outros materiais até o ponto de consumo. Dependendo do sistema, pode haver pressão regulada por hidrômetros ou válvulas. Assim, a água que caiu do céu como chuva chega finalmente à torneira, pronta para uso em bebidas, cozinha ou higiene, completando um ciclo que envolve coleta, tratamento e distribuição."
+    }
+  ],
+  "sum": {
+    "original": {
+      "A": {
+        "total": 24,
+        "previsto": 24,
+        "completo": true,
+        "passaram": 20,
+        "pct": 83.3,
+        "medianaMs": 10140.5
+      },
+      "B": {
+        "total": 24,
+        "previsto": 24,
+        "completo": true,
+        "passaram": 21,
+        "pct": 87.5,
+        "medianaMs": 9241
+      }
+    },
+    "holdout": {
+      "A": {
+        "total": 6,
+        "previsto": 6,
+        "completo": true,
+        "passaram": 6,
+        "pct": 100,
+        "medianaMs": 12793.5
+      },
+      "B": {
+        "total": 6,
+        "previsto": 6,
+        "completo": true,
+        "passaram": 5,
+        "pct": 83.3,
+        "medianaMs": 39476.5
+      }
+    },
+    "novo": {
+      "A": {
+        "total": 6,
+        "previsto": 6,
+        "completo": true,
+        "passaram": 5,
+        "pct": 83.3,
+        "medianaMs": 8109.5
+      },
+      "B": {
+        "total": 6,
+        "previsto": 6,
+        "completo": true,
+        "passaram": 5,
+        "pct": 83.3,
+        "medianaMs": 9993.5
+      }
+    },
+    "repeticoes": {
+      "A": {
+        "total": 8,
+        "previsto": 8,
+        "completo": true,
+        "passaram": 8,
+        "pct": 100,
+        "medianaMs": 11393
+      },
+      "B": {
+        "total": 8,
+        "previsto": 8,
+        "completo": true,
+        "passaram": 7,
+        "pct": 87.5,
+        "medianaMs": 11798
+      }
+    }
+  },
+  "completo": true,
+  "invalido": false
+}

@@ -1488,3 +1488,13 @@ O roteador de texto aberto ganhou recuperação aproximada de trechos públicos 
 - Comparação pareada 103 (88 respostas, 50 min): **A 38/44 × B 38/44 — empate**. Custo médio de timeout caiu 24,8 s → 17,8 s (−28%), mas a janela teve 63 timeouts e 51,2% do tempo perdido.
 - Barreira: 107/107 com 3 ignorados. Publicado em `chat@7679c10` (PR #43). Base privada em `8ce5749`.
 - Aberto: 5 falhas de fato (#16 rio, #13 antígeno, #6, #14, #17), truncamento no teto de 110 s e a rota Groq sem chave.
+
+## Rodada 104/105 — correção de timeout, erro admitido e ruído da régua
+
+- Defeito da 103: `_limiteRota` só usava latência de sucesso; rota que nunca respondia seguia com 25 s cheios.
+- Correção da 104 (cortar pela metade por estouro + disjuntor de 4 falhas) **piorou o produto em 7 pontos** (A 40/44 × B 33/44), com 5 respostas vazias: `lagunas`, a melhor rota, passou a ser abortada em 6 s. Erro meu, medido e publicado.
+- Regra corrigida na 105: corte só para rota que nunca respondeu; piso de 1,5× a latência observada para quem já entregou; disjuntor só com 6 falhas e sem nenhum sucesso. Dois contratos de regressão novos (16 no total).
+- Medição 105: **A 39/44 × B 38/44 — diferença de 1 ponto = empate**.
+- **Ruído do instrumento medido**: o controle é o mesmo código nas quatro janelas e marcou 37, 38, 40 e 39 → amplitude de 3 pontos. Diferenças de 1–3 pontos não são conclusivas, incluindo o −3 da rodada 102 (fontes): rebaixar de "perdeu" para "não demonstrou ganho".
+- Eficiência melhorou de forma consistente: chamadas/resposta 2,36–2,99 → **1,97**; desperdício 42–54% → **37,6%**; timeout médio 24,8 s → **13,7 s** (−45%).
+- `!chave` agora testa a chave ao salvar (válida/401/429), lista, mascara e apaga. Barreira 108/108 com 3 ignorados.
