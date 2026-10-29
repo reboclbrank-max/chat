@@ -78,6 +78,46 @@ function respostaFalsa(texto) {
     assert(r._limiteRota(catalogoMinimo()[0], 25000) < normal._limiteRota(catalogoMinimo()[0], 25000));
   });
 
+  // ---------- 3b: falha também é evidência (defeito encontrado na rodada 104) ----------
+  ok('rota que só estoura o relógio tem a janela cortada pela metade a cada estouro', () => {
+    const r = new Roteador({ catalogo: catalogoMinimo() });
+    const rota = catalogoMinimo()[0];
+    assert.equal(r._limiteRota(rota, 25000), 25000, 'sem evidência: pedido intacto');
+    r._castigar('comChave', 'timeout');
+    assert.equal(r._limiteRota(rota, 25000), 12500, '1 estouro: metade');
+    r._castigar('comChave', 'timeout');
+    assert.equal(r._limiteRota(rota, 25000), 6250, '2 estouros: um quarto');
+    r._castigar('comChave', 'timeout');
+    assert.equal(r._limiteRota(rota, 25000), 6000, '3 estouros: piso de 6 s');
+    r._castigar('comChave', 'timeout');
+    assert.equal(r._limiteRota(rota, 25000), 6000, 'não desce abaixo do piso');
+  });
+  ok('um sucesso depois dos estouros devolve folga à janela', () => {
+    const r = new Roteador({ catalogo: catalogoMinimo() });
+    const rota = catalogoMinimo()[0];
+    r._castigar('comChave', 'timeout'); r._castigar('comChave', 'timeout');
+    assert.equal(r._limiteRota(rota, 25000), 6250);
+    r._premiar('comChave', 1500);
+    assert.equal(r.saude.comChave.timeoutsSeguidos, 0, 'sucesso zera timeouts seguidos');
+    assert(r._limiteRota(rota, 25000) > 6250, 'janela volta a crescer com evidência de sucesso');
+  });
+  ok('disjuntor: 4 falhas seguidas põem a rota em descanso curto, sem matá-la', () => {
+    const cat = [{ id: 'z', nome: 'Z', base: 'https://z.invalid/v1', modelo: 'z', classe: 'forte', peso: 100 }];
+    const r = new Roteador({ catalogo: cat });
+    for (let i = 0; i < 4; i++) r._castigar('z', 'servidor');
+    assert.equal(r.disponivel('z'), false, 'em descanso');
+    assert.equal(r.saude.z.morta, false, 'não foi morta');
+    assert(r.saude.z.cooldownAte > Date.now() + 30000, 'descanso de ~60 s');
+  });
+  ok('cota (rate) não é tratada como falha de saúde para o disjuntor', () => {
+    const cat = [{ id: 'z', nome: 'Z', base: 'https://z.invalid/v1', modelo: 'z', classe: 'forte', peso: 100 }];
+    const r = new Roteador({ catalogo: cat });
+    for (let i = 0; i < 5; i++) r._castigar('z', 'rate', 1);
+    assert.equal(r.saude.z.falhasSeguidas, 5);
+    assert.equal(r.saude.z.morta, false);
+    assert(r.saude.z.cooldownAte > 0, 'rate aplica o próprio cooldown, não o disjuntor');
+  });
+
   // ---------- 4 e 5: fila por evidência ----------
   ok('três falhas seguidas mandam a rota para o fim da própria classe', () => {
     const cat = [

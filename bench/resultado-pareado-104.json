@@ -1,0 +1,1114 @@
+{
+  "meta": {
+    "iniciado": "2026-10-29T17:32:53.752Z",
+    "terminado": null,
+    "seed": "comparacao-102-20261029",
+    "hashes": {
+      "controle": "5ff3587204e2b1394bcbb7f64b4705cc605a83bdf59c4b159e419192f4f48e27",
+      "candidato": "f52ac0c402f50abeb88c3d350fa3c84a6bb2413f2c42992687512288e6ed6491",
+      "fontes": "d052742a8bc4ecd71ab1f21c990278c61bbd5e94b0061857fa1661e826db5c8f",
+      "original": "f00a1ed677974487bc70024ddb4e083e3fd11fe41e139c5a1270f7c6d68558e2",
+      "holdout": "8305995395f3406cb4ecba02d4b7f494ad3dcfe96ed39b1ef8aaba81b25ef4ce",
+      "novo": "826f2c09165f9891d2a9c3d86ae11e845f2577de5a3a5478da3fea4f6b7f3417",
+      "rubrica": "84994993f185630095ffb3f5111f0ad49837a6f29565da75df55f1f767579f90",
+      "medidor": "3b3ef48257a4246fa626ef0b0b055d39a9b632eda6c60be6800800af4a18cad6"
+    },
+    "versoes": {
+      "A": "controle 101",
+      "B": "candidato 102"
+    },
+    "ordem": "pareada e contrabalanceada por grupo; sequencial; duas repetições adicionais para IDs conhecidos",
+    "node": "v22.23.4",
+    "cache": "desligado para obter geração nova; saúde e cooldown compartilhado entre versões",
+    "retomadas": 0,
+    "janelas": [
+      {
+        "iniciado": "2026-10-29T17:32:53.752Z",
+        "terminado": null
+      }
+    ]
+  },
+  "agenda": [
+    {
+      "grupo": "original",
+      "id": 4,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 4,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 11,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 11,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "holdout",
+      "id": 101,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "holdout",
+      "id": 101,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 20,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 20,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 16,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 16,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "novo",
+      "id": 203,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "novo",
+      "id": 203,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "holdout",
+      "id": 106,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "holdout",
+      "id": 106,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 9,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 9,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 2,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 2,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 10,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 10,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 21,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 21,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 12,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 12,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "novo",
+      "id": 202,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "novo",
+      "id": 202,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 1,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 1,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 13,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 13,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "holdout",
+      "id": 105,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "holdout",
+      "id": 105,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 5,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 5,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "holdout",
+      "id": 103,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "holdout",
+      "id": 103,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "novo",
+      "id": 201,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "novo",
+      "id": 201,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 7,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 7,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 24,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 24,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 6,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 6,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "novo",
+      "id": 206,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "novo",
+      "id": 206,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "holdout",
+      "id": 102,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "holdout",
+      "id": 102,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 14,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 14,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 18,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 18,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "holdout",
+      "id": 104,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "holdout",
+      "id": 104,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 3,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 3,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 19,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 19,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 23,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 23,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 17,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 17,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 22,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 22,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "novo",
+      "id": 204,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "novo",
+      "id": 204,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 15,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 15,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "novo",
+      "id": 205,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "novo",
+      "id": 205,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 8,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 8,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 3,
+      "repeticao": 2,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 3,
+      "repeticao": 2,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 3,
+      "repeticao": 1,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 3,
+      "repeticao": 1,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "holdout",
+      "id": 104,
+      "repeticao": 2,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "holdout",
+      "id": 104,
+      "repeticao": 2,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 22,
+      "repeticao": 1,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 22,
+      "repeticao": 1,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 22,
+      "repeticao": 2,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 22,
+      "repeticao": 2,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 16,
+      "repeticao": 1,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "original",
+      "id": 16,
+      "repeticao": 1,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "holdout",
+      "id": 104,
+      "repeticao": 1,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "grupo": "holdout",
+      "id": 104,
+      "repeticao": 1,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 16,
+      "repeticao": 2,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "grupo": "original",
+      "id": 16,
+      "repeticao": 2,
+      "primeiro": "B",
+      "versao": "A"
+    }
+  ],
+  "res": [
+    {
+      "grupo": "original",
+      "id": 4,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Escreva um e-mail formal pedindo orçamento de 20 cadeiras para um escritório. Máximo 200 palavras.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 51,
+      "paragrafos": 10,
+      "itens": 4,
+      "ms": 4136,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:32:53.773Z",
+          "ms": 4124,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Assunto: Solicitação de orçamento para 20 cadeiras\n\nPrezado(a) Senhor(a),\n\nVenho por meio desta solicitar orçamento para aquisição de 20 cadeiras para nosso escritório.\n\nGostaríamos de informações sobre:\n- Modelos disponíveis\n- Preços unitários e totais\n- Prazo de entrega\n- Condições de pagamento\n\nRogo enviar proposta detalhada com especificações técnicas.\n\nAtenciosamente."
+    },
+    {
+      "grupo": "original",
+      "id": 4,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Escreva um e-mail formal pedindo orçamento de 20 cadeiras para um escritório. Máximo 200 palavras.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 93,
+      "paragrafos": 21,
+      "itens": 11,
+      "ms": 7193,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:32:57.907Z",
+          "ms": 7187,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Senhores,\n\nVenho por meio desta solicitar orçamento para aquisição de 20 cadeiras destinadas a um escritório corporativo.\n\nEspecificações necessárias:\n- Cadeiras ergonômicas com ajuste de altura\n- Encosto alto com suporte lombar\n- Peso suportado mínimo 120kg\n- Rodízios de movimento 360°\n- Pés de apoio ajustáveis\n- Tecido ou couro sintético\n- Garantia mínima de 5 anos\n\nSolicito:\n1. Valor unitário e total\n2. Prazo de entrega\n3. Condições de pagamento\n4. Garantia estendida\n\nRogo enviar proposta comercial detalhada até 15 dias úteis.\n\nAtenciosamente,\nCarlos Mendes\nGerente Administrativo\nTech Solutions Ltda.\ncarlos.mendes@techsolutions.com."
+    },
+    {
+      "grupo": "original",
+      "id": 11,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Explique por que o céu é azul em dois parágrafos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 175,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 6501,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:33:05.097Z",
+          "ms": 6500,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "O céu aparece azul devido à dispersão da luz solar pela atmosfera terrestre. A luz do Sol contém todas as cores do espectro visível, mas quando atravessa a atmosfera, colide com moléculas de ar, poeira e outras partículas. Essas partículas dispersam mais eficientemente a luz de comprimentos de onda curtos, como a azul e o violeta, em um fenômeno conhecido como dispersão de Rayleigh. Como o olho humano é mais sensível ao azul do que ao violeta, percebemos o céu dominado por essa cor durante o dia.\n\nDurante o entardecer, o céu muda para tons vermelhos e laranjas porque a luz percorre uma camada atmosférica mais espessa. Nesse caminho maior, a maior parte da luz azul já foi dispersa antes de chegar ao observador, restando predominantes os comprimentos de onda mais longos, como o vermelho e o laranja. A presença de partículas maiores, como poluição ou gotículas de água, pode intensificar essa dispersão, tornando os pôr- do-sol mais vibrantes. Assim, a cor do céu varia conforme a posição do Sol e a composição da atmosfera."
+    },
+    {
+      "grupo": "original",
+      "id": 11,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Explique por que o céu é azul em dois parágrafos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 202,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 25854,
+      "rota": "texto-longo",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:33:11.600Z",
+          "ms": 8344,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T17:33:19.946Z",
+          "ms": 7176,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        },
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T17:33:27.122Z",
+          "ms": 10330,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Quando a luz solar entra na atmosfera, ela encontra moléculas de ar e pequenas partículas que espalham a luz em todas as direções. Esse espalhamento, chamado de espalhamento Rayleigh, é mais eficaz para comprimentos de onda curtos, como o azul e o violeta. Como o azul tem mais energia, ele é dispersado em maior quantidade, preenchendo o céu com essa cor. Por isso, ao olhar para o horizonte em um dia claro, vemos predominantemente tons de azul, enquanto o vermelho e o amarelo permanecem mais concentrados perto do sol.\n\nEmbora o espalhamento Rayleigh favoreça tanto o azul quanto o violeta, a luz violeta é quase totalmente absorvida pela camada superior da atmosfera e pela sensibilidade reduzida dos cones sensíveis a essa faixa, fazendo com que o céu pareça predominantemente azul. Além disso, a atmosfera contém pequenas partículas que favorecem o espalhamento de comprimentos de onda mais longos, suavizando a transição entre azul e verde. Quando o sol está baixo, a luz percorre um caminho mais longo, aumentando o espalhamento de comprimentos de onda mais longos e transformando o céu em tons de laranja e vermelho. Assim, a combinação de dispersão, absorção e percepção humana determina a cor do céu durante o dia."
+    },
+    {
+      "grupo": "holdout",
+      "id": 101,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Explique em dois parágrafos o que é compostagem e por que ela ajuda uma horta.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 177,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 7807,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:33:37.455Z",
+          "ms": 7805,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Compostagem é o processo de decomposição controlada de resíduos orgânicos, como restos de alimentos, folhas, cascas de frutas e esterco de animais, transformando-os em um solo escuro, rico e fértil chamado composto. Esse processo depende da ação de microrganismos, fungos e invertebrados do solo, que quebram os materiais orgânicos em nutrientes simples, liberando calor, água e ar. Para que a compostagem seja eficiente, é necessário manter uma proporção equilibrada entre material verde (rico em nitrogênio) e material marrom (rico em carbono), além de umidade adequada e oxigenação.\n\nA compostagem ajuda uma horta ao melhorar a estrutura do solo, facilitando a drenagem e a retenção de água, além de fornecer nutrientes essenciais às plantas de forma natural e lenta. O composto também estimula a atividade de bactérias e outros organismos benéficos, promovendo um ecossistema saudável no solo. Com isso, as plantas crescem mais fortes, com melhor resistência a doenças e maior produtividade, reduzindo a necessidade de fertilizantes químicos. Além disso, a compostagem contribui para o descarte ecológico de resíduos orgânicos, diminuindo o volume de lixo enviado aos aterros."
+    },
+    {
+      "grupo": "holdout",
+      "id": 101,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Explique em dois parágrafos o que é compostagem e por que ela ajuda uma horta.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 193,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 8107,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:33:45.263Z",
+          "ms": 8106,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Compostagem é o processo de decomposição controlada de resíduos orgânicos, como restos de alimentos, folhas, cascas de frutas e esterco animal, transformando-os em um material escuro, úmido e rico em nutrientes chamado composto. Esse processo depende da ação de microrganismos, fungos, bactérias e pequenos invertebrados, que quebram as substâncias orgânicas em substâncias mais simples, liberando nutrientes essenciais como nitrogênio, fósforo e potássio. Para que a compostagem ocorra de forma eficiente, é necessário manter uma proporção equilibrada entre material verde (rico em nitrogênio) e material marrom (rico em carbono), além de umidade adequada e oxigenação.\n\nO composto produzido melhora significativamente a qualidade do solo da horta, aumentando sua fertilidade natural e promovendo a retenção de água. Ao incorporar o composto à terra, a estrutura do solo se torna mais solta, facilitando a penetração de raízes e o escoamento de água, reduzindo o risco de erosão. Além disso, o composto fornece nutrientes de liberação lenta, alimentando as plantas de forma contínua e diminuindo a necessidade de fertilizantes químicos. Essa prática também contribui para o ciclo fechado de nutrientes, diminuindo o volume de resíduos orgânicos enviados ao lixo e promovendo um manejo mais sustentável da horta."
+    },
+    {
+      "grupo": "original",
+      "id": 20,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Resuma em três parágrafos a teoria da evolução de Darwin.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 260,
+      "paragrafos": 3,
+      "itens": 0,
+      "ms": 9455,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:33:53.373Z",
+          "ms": 9452,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A teoria da evolução, proposta por Charles Darwin no século XIX, apresenta a noção de que as espécies vivas mudam ao longo do tempo por meio de processos naturais. Darwin desenvolveu suas ideias após uma viagem de observação científica a bordo do HMS Beagle, durante a qual estudou fósseis, geologia e diferentes espécies em várias regiões do mundo. Ele notou que criaturas semelhantes habitavam locais com condições ambientais semelhantes, o que o levou a questionar a existência de uma origem fixa e imutável das espécies, como defendido por biólogos de sua época.\n\nO mecanismo central da teoria darwiniana é a seleção natural, que explica como características vantajosas para a sobrevivência em um determinado ambiente tendem a se tornar mais comuns nas gerações futuras. Indivíduos com variações genéticas que lhes conferem maior capacidade de obter recursos, evitar predadores ou se reproduzir deixam mais descendentes, passando essas características para a prole. Esse processo constante de adaptação e seleção leva à acumulação de mudanças graduais ao long do tempo, resultando na formação de novas espécies a partir de populações ancestrais.\n\nA teoria da evolução revolucionou a biologia e influenciou campos como genética, ecologia e antropologia. Ela fornece uma explicação coerente para a diversidade da vida e a adaptação dos organismos ao seu ambiente. Apesar de críticas iniciais, especialmente por motivos religiosos, a teoria darwiniana foi reforçada por descobertas científicas posteriores, como a genética mendeliana, que explicaram como as variações são transmitidas. Hoje, a teoria da evolução é amplamente aceita pela comunidade científica como a base para entender a história da vida na Terra."
+    },
+    {
+      "grupo": "original",
+      "id": 20,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Resuma em três parágrafos a teoria da evolução de Darwin.",
+      "ok": false,
+      "falhas": [
+        "curto (73<90)",
+        "parágrafos (1<3)"
+      ],
+      "palavras": 73,
+      "paragrafos": 1,
+      "itens": 0,
+      "ms": 115007,
+      "rota": "texto-longo",
+      "erro": null,
+      "incompleto": true,
+      "avisoFormato": "Restrições de formato não atendidas: 1 de 3 parágrafos. Confira ou tente novamente.",
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:34:02.828Z",
+          "ms": 11695,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T17:34:14.523Z",
+          "ms": 15192,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "gigante2",
+          "inicio": "2026-10-29T17:34:29.715Z",
+          "ms": 30002,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T17:34:59.717Z",
+          "ms": 22112,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T17:35:21.829Z",
+          "ms": 19000,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T17:35:40.830Z",
+          "ms": 5000,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T17:35:45.830Z",
+          "ms": 6002,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "gigante2",
+          "inicio": "2026-10-29T17:35:51.832Z",
+          "ms": 6002,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        }
+      ],
+      "texto": "Para resuma a teoria da evolução de darwin, observa-se que as populações variam naturalmente e que os indivíduos mais adaptados ao ambiente tendem a deixar mais descendentes. Um exemplo clássico são os tentilhões das ilhas Galápagos, cujos bicos diferem conforme a disponibilidade de sementes. Esse processo de seleção natural explica como novas espécies surgem ao longo de gerações sucessivas. A ideia central é que a mudança gradual e cumulativa molda a diversidade biológica."
+    },
+    {
+      "grupo": "original",
+      "id": 16,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Descreva em dois parágrafos o caminho da água da chuva até a torneira de casa.",
+      "ok": false,
+      "falhas": [
+        "falta fato #1 (rio)"
+      ],
+      "palavras": 162,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 8730,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:35:57.836Z",
+          "ms": 8729,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A água da chuva começa seu percurso quando as gotas caem sobre o telhado e escorrem pelas canaletas, levando a folhas, poeira e outros detritos. Essa água é direcionada para as sarjetas, que a conduzem até os ralos de drenagem das ruas, onde se mistura ao esgoto urbano. A rede de drenagem canaliza tudo para estações de tratamento, onde passa por etapas como a remoção de sólidos, a coagulação e floculação para aglutinar partículas, a filtração em areia e a desinfecção com cloro ou ozônio, tornando-a segura para o consumo.\n\nApós o tratamento, a água potável é bombeada para a rede de distribuição, composta por grandes tubulações subterrâneas que percorrem a cidade. Essas tubulações levam a água até os hidrômetros individuais de cada imóvel, onde é registrada o consumo. Ao abrir a torneira, a água tratada e monitorada finalmente chega ao ponto de uso, pronta para ser consumida, cozida ou utilizada em atividades domésticas, completando assim o ciclo iniciado com a chuva."
+    },
+    {
+      "grupo": "original",
+      "id": 16,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Descreva em dois parágrafos o caminho da água da chuva até a torneira de casa.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 166,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 9659,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:36:06.568Z",
+          "ms": 9658,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A água da chuva começa sua jornada quando precipita sobre o telhado da casa, escoando por canaletas e raias que a direcionam para as bocas de lobo. Esses canais levam a água para os sistemas de drenagem urbanos ou, em propriedades com infraestrutura adequada, para tanques de cisternas que armazenam a água para uso posterior. Em muitas cidades, o sistema de esgoto e drenagem separa ou trata parcialmente essa água superficial, enquanto a água pluvial que não é capturada escorre para rios e lençóis freáticos, completando o ciclo natural da água.\n\nPosteriormente, a água que chega à rede de distribuição passa por usinas de tratamento, onde é filtrada, desinfetada e monitorada para atender aos padrões de potabilidade. Após o tratamento, o fluido é bombeado para a rede de distribuição subterrânea, percorrendo tubulações até chegar às torneiras domésticas. Nesse ponto, a água está pronta para consumo, tendo passado por um longo percurso que envolve captação, tratamento e distribuição, garantindo sua segurança e qualidade para o consumo humano."
+    }
+  ],
+  "sum": {
+    "original": {
+      "A": {
+        "total": 4,
+        "previsto": 24,
+        "completo": false,
+        "passaram": 4,
+        "pct": null,
+        "medianaMs": 8324
+      },
+      "B": {
+        "total": 4,
+        "previsto": 24,
+        "completo": false,
+        "passaram": 2,
+        "pct": null,
+        "medianaMs": 17292
+      }
+    },
+    "holdout": {
+      "A": {
+        "total": 1,
+        "previsto": 6,
+        "completo": false,
+        "passaram": 1,
+        "pct": null,
+        "medianaMs": 8107
+      },
+      "B": {
+        "total": 1,
+        "previsto": 6,
+        "completo": false,
+        "passaram": 1,
+        "pct": null,
+        "medianaMs": 7807
+      }
+    },
+    "novo": {
+      "A": {
+        "total": 0,
+        "previsto": 6,
+        "completo": false,
+        "passaram": 0,
+        "pct": null,
+        "medianaMs": null
+      },
+      "B": {
+        "total": 0,
+        "previsto": 6,
+        "completo": false,
+        "passaram": 0,
+        "pct": null,
+        "medianaMs": null
+      }
+    },
+    "repeticoes": {
+      "A": {
+        "total": 0,
+        "previsto": 8,
+        "completo": false,
+        "passaram": 0,
+        "pct": null,
+        "medianaMs": null
+      },
+      "B": {
+        "total": 0,
+        "previsto": 8,
+        "completo": false,
+        "passaram": 0,
+        "pct": null,
+        "medianaMs": null
+      }
+    }
+  },
+  "completo": false,
+  "invalido": false
+}

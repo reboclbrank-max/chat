@@ -621,7 +621,7 @@
     this.metricas = { perguntas: 0, tentativas: 0, sucessos: 0, falhas: 0, cacheAcertos: 0, ferramenta: 0, consenso: 0, consensoDivergente: 0, porRota: {} };
     var self = this;
     this.catalogo.forEach(function (r) {
-      self.saude[r.id] = { ok: 0, falhas: 0, falhasSeguidas: 0, cooldownAte: 0, latMedia: 3000, latAmostras: 0, ultimoErro: null, morta: false };
+      self.saude[r.id] = { ok: 0, falhas: 0, falhasSeguidas: 0, timeoutsSeguidos: 0, cooldownAte: 0, latMedia: 3000, latAmostras: 0, ultimoErro: null, morta: false };
       self.metricas.porRota[r.id] = { ok: 0, falhas: 0 };
     });
   }
@@ -671,10 +671,23 @@
   Roteador.prototype._limiteRota = function (rota, tetoPedido) {
     var s = this.saude[rota.id];
     var pedido = tetoPedido || this.timeoutRota;
-    if (!s || !s.latAmostras) return pedido;   // sem amostra: comportamento antigo, intacto
-    var fator = s.falhasSeguidas >= 2 && s.ultimoErro === 'timeout' ? 1.6 : 2.5;
-    var estimado = Math.round(s.latMedia * fator);
-    return Math.max(this.timeoutMinimo, Math.min(pedido, estimado));
+    if (!s) return pedido;
+    if (!s.latAmostras && !s.timeoutsSeguidos) return pedido;   // sem nenhuma evidência: intacto
+
+    var limite = pedido;
+    if (s.latAmostras) {
+      // Rota que já respondeu: janela derivada do que ela mesma levou.
+      var fator = s.falhasSeguidas >= 2 && s.ultimoErro === 'timeout' ? 1.6 : 2.5;
+      limite = Math.min(limite, Math.round(s.latMedia * fator));
+    }
+    if (s.timeoutsSeguidos) {
+      // Rota que só estourou o relógio não tem latência de sucesso para servir de referência —
+      // o defeito da rodada 103 era justamente esse: quem nunca respondia continuava recebendo
+      // a janela cheia de 25 s, para sempre. Cada estouro corta a janela pela metade (até 3).
+      var cortes = Math.min(3, s.timeoutsSeguidos);
+      limite = Math.min(limite, Math.round(pedido / Math.pow(2, cortes)));
+    }
+    return Math.max(this.timeoutMinimo, limite);
   };
 
 
@@ -1669,7 +1682,13 @@
   Roteador.prototype._castigar = function (id, tipo, espera) {
     var s = this.saude[id], rota = this.catalogo.find(function (r) { return r.id === id; });
     s.falhas++; s.falhasSeguidas = (s.falhasSeguidas || 0) + 1; s.ultimoErro = tipo;
+    s.timeoutsSeguidos = tipo === 'timeout' ? (s.timeoutsSeguidos || 0) + 1 : 0;
     this.metricas.porRota[id].falhas++;
+    // Disjuntor: 4 falhas seguidas põem a rota em descanso curto. Não é morte —
+    // ela volta sozinha — mas para de consumir um slot por pergunta enquanto está quebrada.
+    if (tipo !== 'rate' && s.falhasSeguidas >= 4) {
+      s.cooldownAte = Math.max(s.cooldownAte || 0, agora() + 60000);
+    }
     if (tipo === 'rate') {
       // Retry-After não é encurtado para caber no orçamento do usuário: paramos antes.
       var atraso = espera != null ? Math.max(espera * 1000, 5000) :
@@ -1691,6 +1710,7 @@
     var s = this.saude[id];
     s.ok++;
     s.falhasSeguidas = 0;
+    s.timeoutsSeguidos = 0;
     // Uma resposta em voo não cancela um 429 mais recente da mesma rota.
     if (s.cooldownAte <= agora()) s.cooldownAte = 0;
     s.latMedia = s.latMedia * 0.7 + (ms || 0) * 0.3;
