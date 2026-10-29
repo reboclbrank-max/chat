@@ -2,6 +2,8 @@
 
 Data: 29/10/2026. Este registro separa os resultados medidos das hipóteses e preserva as falhas.
 
+> **Retificação da rodada 101:** os valores de tempo abaixo, publicados pelo medidor antigo como “mediana”, eram o valor central **superior** nas amostras pares. A mediana convencional, recalculada sobre os mesmos tempos completos, é **23,4375 s** (99-A), **76,1385 s** (99-B), **26,2815 s** (100 original) e **62,2375 s** (holdout 100). Os JSONs históricos permanecem intactos; isso não altera os acertos nem é uma nova execução. A rotina foi corrigida e ganhou testes para tamanhos pares e ímpares.
+
 ## Resumo da auditoria
 
 - A rubrica antiga rejeitou **“espalhamento de Rayleigh”** (#11) e **“painéis”** (#22). Também foram acrescentadas alternativas verificáveis e restritas para **reciclagem de material e preservar ecossistemas** (#6) e **cisterna** (#16). Os demais 20 itens não foram alterados. Os negativos e as alternativas originais são testados em `tools/testes/avaliacao-aberto.js`.
@@ -14,9 +16,9 @@ Data: 29/10/2026. Este registro separa os resultados medidos das hipóteses e pr
 
 | Medida | Resultado | Ressalva |
 |---|---|---|
-| 99-A, rubrica original | 22/24, mediana 24,0 s | Dados históricos; código `5e6d626` |
-| 99-B, rubrica original | 20/24, mediana 82,9 s | Mesmo código; janela diferente |
-| 100, rubrica original | 21/24, mediana 27,6 s | Código `eccc2a2d…`, antes da adição dos avisos; uma execução |
+| 99-A, rubrica original | 22/24, central superior 24,0 s | Dados históricos; código `5e6d626`; mediana convencional corrigida acima |
+| 99-B, rubrica original | 20/24, central superior 82,9 s | Mesmo código; janela diferente; mediana convencional corrigida acima |
+| 100, rubrica original | 21/24, central superior 27,6 s | Código `eccc2a2d…`, antes da adição dos avisos; mediana convencional corrigida acima |
 | 100, mesmos textos com gabarito corrigido | 23/24 | Correção de #6 e #22; **não é uma nova execução** |
 | Holdout aberto | 5/6 | Uma execução, seis questões públicas; #104 veio com um parágrafo e 69 palavras após 235,5 s |
 | Visão, código final | 11/11, zero sem-resposta | 11 imagens sintéticas simples; mediana de **9,49 s de parede**, 3,79 s da última chamada, total 260 s |

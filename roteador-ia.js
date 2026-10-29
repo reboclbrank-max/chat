@@ -18,7 +18,7 @@
     { id: 'kilolight', nome: 'Nemotron-3.5-Lightning (Kilo)', base: 'https://api.kilo.ai/api/gateway',                          modelo: 'nvidia/nemotron-3.5-lightning:free',                classe: 'forte' , peso: 90, latPar: 60000 },
     { id: 'lagunas',   nome: 'Laguna-S-2.1 (Kilo)',           base: 'https://api.kilo.ai/api/gateway',                          modelo: 'poolside/laguna-s-2.1:free',                        classe: 'forte' , peso: 73, latPar: 9200 },
     { id: 'vlqwen',    nome: 'Qwen2.5-VL-72B (OVH)',          base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Qwen2.5-VL-72B-Instruct',                           classe: 'leve' , peso: 3 },
-    { id: 'ovhoss20',  nome: 'gpt-oss-20b (OVH)',             base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'gpt-oss-20b',                                       classe: 'leve' , peso: 7 },
+    { id: 'ovhoss20',  nome: 'gpt-oss-20b (OVH)',             base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'gpt-oss-20b',                                       classe: 'leve' , peso: 7, latPar: 20000 }, // prioridade conservadora, não promessa de latência
     { id: 'ovhq9',     nome: 'Qwen3.5-9B (OVH)',              base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Qwen3.5-9B',                                        classe: 'leve' , peso: 7 },
     { id: 'ovhl',      nome: 'Llama-3.3-70B (OVH)',           base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Meta-Llama-3_3-70B-Instruct',                       classe: 'leve' , peso: 7 },
     { id: 'ovhnemo',   nome: 'Mistral-Nemo (OVH)',            base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'Mistral-Nemo-Instruct-2407',                        classe: 'leve' , peso: 7 },
@@ -590,6 +590,10 @@
     opcoes = opcoes || {};
     this.catalogo = opcoes.catalogo || CATALOGO;
     this.saude = {};
+    // A cota anônima do Kilo é compartilhada por IP entre modelos; as demais rotas
+    // continuam por modelo. Este estado é por instância, não coordena outros navegadores.
+    this.cooldownsRate = {};
+    this.proximaChamada = {};
     this.cache = new Map();
     this._lerDisco();
     this.cacheMax = opcoes.cacheMax || 400;
@@ -607,19 +611,37 @@
     });
   }
 
-  /* intervalo mínimo entre chamadas da mesma rota: rajada é o que queima a cota gratuita */
-  Roteador.prototype._esperarVez = async function (rota) {
+  // Kilo documenta cota anônima compartilhada por IP; OVH documenta cota por modelo.
+  // As fontes estão no relatório da rodada, sem adicionar hosts à CSP da página.
+  function escopoRate(rota) {
+    return /^https:\/\/api\.kilo\.ai\/api\/gateway\/?$/i.test(rota.base)
+      ? 'base:' + rota.base.replace(/\/$/, '') : 'rota:' + rota.id;
+  }
+
+  Roteador.prototype._ateDisponivel = function (rota) {
     var s = this.saude[rota.id];
-    var intervalo = (rota.peso || 0) >= 70 ? 1200 : 300;
-    var falta = (s.ultimaChamada || 0) + intervalo - agora();
-    if (falta > 0) await new Promise(function (r) { setTimeout(r, falta); });
+    return Math.max((s && s.cooldownAte) || 0, this.cooldownsRate[escopoRate(rota)] || 0);
+  };
+
+  /* Reserva de horário síncrona: duas chamadas concorrentes não ocupam o mesmo intervalo.
+     O prazo limita a espera, e uma reserva não autoriza ignorar cooldown posterior. */
+  Roteador.prototype._esperarVez = async function (rota, prazo) {
+    var s = this.saude[rota.id];
+    if (!s) return false;
+    var grupo = escopoRate(rota), intervalo = (rota.peso || 0) >= 70 ? 1200 : 300;
+    var t = agora(), vez = Math.max(t, this.proximaChamada[grupo] || 0);
+    if (prazo && vez >= prazo) return false;
+    this.proximaChamada[grupo] = vez + intervalo;
+    if (vez > t) await new Promise(function (r) { setTimeout(r, vez - t); });
     s.ultimaChamada = agora();
+    return !prazo || agora() < prazo;
   };
 
   Roteador.prototype.disponivel = function (id) {
     var s = this.saude[id];
     if (!s || s.morta) return false;
-    return agora() >= s.cooldownAte;
+    var rota = this.catalogo.find(function (r) { return r.id === id; });
+    return !!rota && agora() >= this._ateDisponivel(rota);
   };
 
   /* ============ CONSULTAS EXATAS (R$ 0, sem LLM) ============ */
@@ -1077,6 +1099,8 @@
   var SYS_ABERTO = 'Responda em português do Brasil, no formato pedido, apenas com o texto final. '
     + 'Sem preâmbulo ("claro", "com certeza"), sem comentar o pedido, sem escrever raciocínio. '
     + 'Termine todas as frases; não deixe texto pela metade. '
+    + 'Se explicar um processo ou percurso, cubra as etapas essenciais em ordem, do início ao fim; '
+    + 'não misture percursos alternativos nem garanta segurança sem verificação. '
     + 'Em afirmações factuais, não invente dados, estatísticas ou fontes; se não souber, não invente.';
 
   var NUMERAIS = { um: 1, uma: 1, dois: 2, duas: 2, três: 3, 'três': 3, tres: 3, quatro: 4, cinco: 5,
@@ -1092,7 +1116,15 @@
       || /(\d+|um|uma|dois|duas|tr[eê]s|quatro|cinco|seis|sete|oito|nove|dez)\s+(?:dicas|argumentos|itens|passos|exemplos)/i.exec(t);
     if (mi) ex.itens = /^\d+$/.test(mi[1]) ? parseInt(mi[1], 10) : (NUMERAIS[mi[1].toLowerCase()] || 0);
     if (/em\s+tr[eê]s\s+passos|ponto a ponto/i.test(t) && !ex.itens) ex.itens = 3;
-    ex.minPalavras = ex.paragrafos ? 45 * ex.paragrafos : (ex.itens ? 12 * ex.itens : 60);
+    // A meta implícita é apenas uma heurística; só um mínimo explícito é informado
+    // ao usuário como exigência dele. Um máximo explícito prevalece sobre a heurística.
+    var minimo = /(?:no\s+m[íi]nimo|m[íi]nimo|pelo\s+menos|ao\s+menos)\s+(\d+)\s+palavras/i.exec(t);
+    var maximo = /(?:no\s+m[áa]ximo|m[áa]ximo|at[ée]|limite\s+de)\s+(\d+)\s+palavras/i.exec(t);
+    ex.minimoExplicito = minimo ? parseInt(minimo[1], 10) : 0;
+    ex.maximoExplicito = maximo ? parseInt(maximo[1], 10) : 0;
+    ex.minPalavras = ex.minimoExplicito || (ex.paragrafos ? 45 * ex.paragrafos : (ex.itens ? 12 * ex.itens : 60));
+    if (ex.maximoExplicito && !ex.minimoExplicito)
+      ex.minPalavras = Math.min(ex.minPalavras, Math.max(1, Math.floor(ex.maximoExplicito * 0.7)));
     return ex;
   }
 
@@ -1145,18 +1177,54 @@
     var r = Object.assign({}, resposta), faltas = [];
     var blocos = String(r.texto).split(/\n+/).filter(function (p) { return p.trim().length > 0; }).length;
     var itens = (String(r.texto).match(/^\s*(?:[-*•]|\d+[.)])\s+\S/gm) || []).length;
+    var palavras = String(r.texto).trim().split(/\s+/).filter(Boolean).length;
     ex = ex || {};
     if (ex.paragrafos >= 2 && blocos < ex.paragrafos) faltas.push(blocos + ' de ' + ex.paragrafos + ' parágrafos');
     if (ex.itens >= 2 && itens < ex.itens) faltas.push(itens + ' de ' + ex.itens + ' itens');
+    if (ex.minimoExplicito && palavras < ex.minimoExplicito)
+      faltas.push(palavras + ' palavras, mínimo pedido ' + ex.minimoExplicito);
+    if (ex.maximoExplicito && palavras > ex.maximoExplicito)
+      faltas.push(palavras + ' palavras, máximo pedido ' + ex.maximoExplicito);
     r.confianca = 'nao_verificada';
     r.verificacaoFactual = 'nao_verificada';
     if (faltas.length) {
       r.incompleto = true;
-      r.avisoFormato = 'A resposta veio com ' + faltas.join(' e ') + ' solicitados. Confira ou tente novamente.';
+      r.avisoFormato = 'Restrições de formato não atendidas: ' + faltas.join('; ') + '. Confira ou tente novamente.';
     } else {
       delete r.incompleto; delete r.avisoFormato;
     }
     return r;
+  }
+
+  // Avalia somente estrutura e fechamento, não veracidade ou qualidade literária.
+  function candidatoAbertoCompleto(resposta, ex) {
+    if (!resposta || !resposta.texto || resposta.cortado || resposta.parcial) return false;
+    var texto = String(resposta.texto).trim(), av = anotarRespostaAberta(resposta, ex);
+    if (av.incompleto || !/[.!?…]["”)]?\s*$/.test(texto)) return false;
+    if (/^\s*(claro|certamente|com certeza|aqui est[áa]|segue)\b/i.test(texto)) return false;
+    var palavras = texto.split(/\s+/).filter(Boolean).length;
+    return ex.paragrafos < 2 || palavras >= Math.floor((ex.minPalavras || 0) * 0.9);
+  }
+
+  function blocosAproveitaveis(resposta, ex) {
+    if (!resposta || !resposta.texto || ex.paragrafos < 2) return [];
+    var partes = String(resposta.texto).split(/\n+/).map(function (p) { return p.trim(); }).filter(Boolean);
+    if (!partes.length || partes.length >= ex.paragrafos) return [];
+    // Não dividir uma frase para fingir parágrafos; somente reaproveitar blocos já fechados.
+    return partes.every(function (p) {
+      return p.split(/\s+/).filter(Boolean).length >= 20 && /[.!?…]["”)]?\s*$/.test(p) &&
+        !/^\s*(claro|certamente|com certeza|aqui est[áa]|segue)\b/i.test(p);
+    }) ? partes : [];
+  }
+
+  function itensAproveitaveis(resposta, ex) {
+    if (!resposta || !resposta.texto || ex.itens < 2) return [];
+    var linhas = String(resposta.texto).split(/\n+/).map(function (p) { return p.trim(); }).filter(Boolean);
+    if (!linhas.length || linhas.length >= ex.itens) return [];
+    return linhas.every(function (linha, i) {
+      var m = /^(\d+)[.)]\s+(\S[\s\S]*)$/.exec(linha);
+      return !!m && Number(m[1]) === i + 1 && /[.!?…]["”)]?\s*$/.test(m[2]);
+    }) ? linhas : [];
   }
 
   /* Provedor grátis trunca no meio da frase. Em vez de entregar "…e a água passa" cortado,
@@ -1432,22 +1500,46 @@
   };
 
   Roteador.prototype._castigar = function (id, tipo, espera) {
-    var s = this.saude[id];
+    var s = this.saude[id], rota = this.catalogo.find(function (r) { return r.id === id; });
     s.falhas++; s.ultimoErro = tipo;
-    if (tipo === 'rate' && espera) { s.cooldownAte = agora() + Math.max(espera * 1000, 5000); return; }
-    s.cooldownAte = agora() + (tipo === 'rate' ? 20000 + Math.random() * 15000
-      : tipo === 'morto' ? 30 * 60 * 1000
-      : tipo === 'timeout' ? 12000 : 8000);
-    if (tipo === 'morto') s.morta = true;
     this.metricas.porRota[id].falhas++;
+    if (tipo === 'rate') {
+      // Retry-After não é encurtado para caber no orçamento do usuário: paramos antes.
+      var atraso = espera != null ? Math.max(espera * 1000, 5000) :
+        (rota && escopoRate(rota).indexOf('base:') === 0 ? 60000 : 30000);
+      var ate = agora() + atraso;
+      s.cooldownAte = Math.max(s.cooldownAte || 0, ate);
+      if (rota) {
+        var grupo = escopoRate(rota);
+        this.cooldownsRate[grupo] = Math.max(this.cooldownsRate[grupo] || 0, ate);
+      }
+      return;
+    }
+    s.cooldownAte = Math.max(s.cooldownAte || 0, agora() + (tipo === 'morto' ? 30 * 60 * 1000
+      : tipo === 'timeout' ? 12000 : 8000));
+    if (tipo === 'morto') s.morta = true;
   };
 
   Roteador.prototype._premiar = function (id, ms) {
     var s = this.saude[id];
-    s.ok++; s.cooldownAte = 0;
-    s.latMedia = s.latMedia * 0.7 + ms * 0.3;
+    s.ok++;
+    // Uma resposta em voo não cancela um 429 mais recente da mesma rota.
+    if (s.cooldownAte <= agora()) s.cooldownAte = 0;
+    s.latMedia = s.latMedia * 0.7 + (ms || 0) * 0.3;
     this.metricas.porRota[id].ok++;
   };
+
+  // RFC 9110: Retry-After pode ser segundos inteiros ou uma data HTTP.
+  function segundosRetryAfter(valor, instante) {
+    var s = String(valor == null ? '' : valor).trim();
+    if (!s) return null;
+    if (/^\d+$/.test(s)) {
+      var segundos = Number(s);
+      return Number.isFinite(segundos) && segundos <= Number.MAX_SAFE_INTEGER / 1000 ? segundos : null;
+    }
+    var data = Date.parse(s);
+    return Number.isFinite(data) ? Math.max(0, Math.ceil((data - instante) / 1000)) : null;
+  }
 
   /* resposta com conteúdo real: pelo menos um caractere alfanumérico depois de tirar marcação */
   function util(t) {
@@ -1472,11 +1564,11 @@
           messages: [{ role: 'system', content: opc.sistema || SYS }, { role: 'user', content: pergunta }]
         })
       });
-      clearTimeout(t);
+      // O corpo também está sob o timeout; cabeçalhos recebidos não significam resposta lida.
       var bruto = await r.text();
       if (r.status === 429) {
-        var ra = parseInt(r.headers.get('retry-after') || '0', 10);
-        return { erro: 'rate', espera: ra > 0 ? ra : null, ms: agora() - t0 };
+        var ra = segundosRetryAfter(r.headers.get('retry-after'), agora());
+        return { erro: 'rate', espera: ra, ms: agora() - t0 };
       }
       if (r.status === 401 || r.status === 403 || r.status === 404 || r.status === 400) return { erro: 'morto', ms: agora() - t0 };
       if (!r.ok) return { erro: 'servidor', ms: agora() - t0 };
@@ -1494,8 +1586,9 @@
       if (!texto) return { erro: 'degenerada', ms: agora() - t0 };
       return { texto: texto, ms: agora() - t0, bruto: d.choices[0].finish_reason || null };
     } catch (e) {
-      clearTimeout(t);
       return { erro: e && e.name === 'AbortError' ? 'timeout' : 'rede', ms: agora() - t0 };
+    } finally {
+      clearTimeout(t);
     }
   };
 
@@ -1517,7 +1610,7 @@
 
     var respostas = await Promise.all(escolhidos.map(function (rota) {
       return self._chamar(rota, pergunta, opc.longo ? 45000 : 22000, opc.chamar).then(function (r) {
-        if (r.texto) self._premiar(rota.id, r.ms); else self._castigar(rota.id, r.erro);
+        if (r.texto) self._premiar(rota.id, r.ms); else self._castigar(rota.id, r.erro, r.espera);
         return { rota: rota, texto: r.texto || null, erro: r.erro || null, ms: r.ms };
       });
     }));
@@ -1563,71 +1656,72 @@
      e o parágrafo que sai curto é refeito sozinho (não se joga fora o texto inteiro). */
   /* Lista com N itens: um item por chamada. Pedir "5 itens" numa chamada só devolvia 1
      (medido: régua aberta #10, 56 palavras, 1 item de 5). */
-  Roteador.prototype._listaLonga = async function (pergunta, ex) {
-    var self = this;
+  Roteador.prototype._listaLonga = async function (pergunta, ex, opcoes) {
+    var self = this, opc = opcoes || {};
     var n = Math.max(2, ex.itens || 1);
+    if (n > 10) return null;
     var minTotal = ex.minPalavras || 60;
-    // "três passos, mínimo 60 palavras" = 20 por item. Pedir 12–30 fixos entregava 57 no total.
-    var minPorItem = Math.max(12, Math.ceil((minTotal / n) * 1.15));   // 15% de folga: modelo entrega menos
-    var inicio = agora();
+    var minPorItem = Math.max(12, Math.ceil((minTotal / n) * 1.15));
+    var inicio = agora(), prazo = Math.min(opc.prazo || Infinity, inicio + 110000);
     var vistas = {}, rotas = [];
     ['forte', 'media', 'leve'].forEach(function (cl) {
       self._candidatos(cl).forEach(function (r) {
-        if (vistas[r.id] || !self.disponivel(r.id)) return;
+        if (vistas[r.id] || self.saude[r.id].morta) return;
         vistas[r.id] = 1; rotas.push(r);
       });
     });
-    if (!rotas.length) return null;
-    var idx = 0, linhas = [], tentativas = 0;
-    for (var i = 0; i < n; i++) {
-      var feito = null;
-      for (var t = 0; t < 4 && !feito; t++) {
-        if (agora() - inicio > 110000) break;
-        var rota = rotas[idx++ % rotas.length];
-        var ped = 'Tema: ' + pergunta + '\n\nEscreva SOMENTE o item ' + (i + 1) + ' de ' + n +
-          ', em português do Brasil, em uma única linha, com ' + (minPorItem + 5) + ' a ' + (minPorItem + 25) +
-          ' palavras, começando por "' + (i + 1) + '. ".' +
-          ' Não repita os itens anteriores, não escreva título nem introdução, e termine a frase.';
-        await this._esperarVez(rota);
-        var r = await this._chamar(rota, ped, 25000, { maxTokens: 300, longo: true, sistema: SYS_ABERTO });
+    rotas.sort(function (a, b) { return (a.latPar || 30000) - (b.latPar || 30000); });
+    var idx = 0, linhas = (opc.itensIniciais || []).slice(0, n - 1), tentativas = 0;
+    for (var i = linhas.length; i < n && agora() < prazo; i++) {
+      var feito = null, jaTentadas = {};
+      var ped = 'Tema: ' + pergunta + '\n\nEscreva SOMENTE o item ' + (i + 1) + ' de ' + n +
+        ', em português do Brasil, em uma única linha, com ' + (minPorItem + 5) + ' a ' + (minPorItem + 25) +
+        ' palavras, começando por "' + (i + 1) + '. ".' +
+        ' Não repita os itens anteriores, não escreva título nem introdução, e termine a frase.';
+      if (linhas.length) ped += '\n\nItens anteriores, já escritos:\n' + linhas.join('\n').slice(0, 1000);
+      for (var tentativa = 0; tentativa < 7 && !feito && agora() < prazo; tentativa++) {
+        var rota = null;
+        for (var busca = 0; busca < rotas.length; busca++) {
+          var cand = rotas[idx++ % rotas.length];
+          if (!jaTentadas[cand.id] && self.disponivel(cand.id)) { rota = cand; break; }
+        }
+        if (!rota) {
+          // Só aguardar um cooldown real, nunca chamar antes de Retry-After. Se o
+          // prazo não permite outra tentativa, preserva os itens que já saíram.
+          var t = agora(), proximos = rotas.filter(function (r) {
+            return !self.saude[r.id].morta && self._ateDisponivel(r) > t;
+          }).map(function (r) { return self._ateDisponivel(r); });
+          if (!proximos.length) break;
+          var espera = Math.min.apply(null, proximos) - t + 10;
+          if (espera + 1000 >= prazo - t) break;
+          await new Promise(function (res) { setTimeout(res, espera); });
+          jaTentadas = {};
+          continue;
+        }
+        jaTentadas[rota.id] = true;
+        if (await self._esperarVez(rota, prazo) === false) break;
+        if (!self.disponivel(rota.id) || agora() >= prazo) continue;
+        var r = await self._chamar(rota, ped, Math.min(25000, prazo - agora()),
+          { maxTokens: 300, longo: true, sistema: SYS_ABERTO });
         tentativas++;
-        if (r.texto) this._premiar(rota.id, r.ms); else this._castigar(rota.id, r.erro, r.espera);
-        if (r.erro === 'rate') await new Promise(function (res) { setTimeout(res, 3000 + Math.random() * 3000); });
+        if (r.texto) self._premiar(rota.id, r.ms); else self._castigar(rota.id, r.erro, r.espera);
         var txt = sanear(String(r.texto || '').trim()).replace(/\s*\n+\s*/g, ' ');
         var palavras = txt.split(/\s+/).filter(Boolean).length;
-        if (txt && palavras >= Math.max(10, minPorItem) && /[.!?…]["”)]?$/.test(txt)) feito = String(i + 1) + '. ' + txt.replace(/^\d+[.)]\s*/, '');
-      }
-      if (!feito) {
-        // mesma política do texto longo: espera a rota mais próxima livre e refaz o item. Antes,
-        // um item sem resposta derrubava a lista inteira e o caminho de reserva entregava texto curto
-        // (medido: pedido de 3 passos/60 palavras entregue com 36).
-        var t = agora();
-        var prox = this.catalogo
-          .filter(function (r) { return !self.saude[r.id].morta && self.saude[r.id].cooldownAte > t; })
-          .map(function (r) { return self.saude[r.id].cooldownAte; });
-        var esp = prox.length ? Math.min(Math.min.apply(null, prox) - t + 500, 30000) : 4000;
-        if (esp > 0) await new Promise(function (res) { setTimeout(res, esp); });
-        for (var t2 = 0; t2 < 3 && !feito; t2++) {
-          var rota2 = rotas[idx++ % rotas.length];
-          await this._esperarVez(rota2);
-          var r2 = await this._chamar(rota2, ped, 25000, { maxTokens: 300, longo: true, sistema: SYS_ABERTO });
-          tentativas++;
-          if (r2.texto) this._premiar(rota2.id, r2.ms); else this._castigar(rota2.id, r2.erro, r2.espera);
-          var t3 = sanear(String(r2.texto || '').trim()).replace(/\s*\n+\s*/g, ' ');
-          if (t3 && t3.split(/\s+/).filter(Boolean).length >= Math.max(10, Math.floor(minPorItem * 0.7)) &&
-              /[.!?…]["”)]?$/.test(t3)) {
-            feito = String(i + 1) + '. ' + t3.replace(/^\d+[.)]\s*/, '');
-          }
+        var piso = tentativa < 4 ? minPorItem : Math.floor(minPorItem * 0.7);
+        if (txt && palavras >= Math.max(10, piso) && /[.!?…]["”)]?$/.test(txt)) {
+          feito = String(i + 1) + '. ' + txt.replace(/^\d+[.)]\s*/, '');
+          idx = rotas.indexOf(rota); // a próxima etapa começa pela rota que acabou de responder
         }
       }
-      if (!feito) return null;
+      if (!feito) break;
       linhas.push(feito);
     }
+    if (!linhas.length) return null;
     var texto = linhas.join('\n');
-    if (!textoCompleto(texto, ex.minPalavras || 60)) return null;
+    var parcial = linhas.length < n || !textoCompleto(texto, minTotal);
     return {
-      texto: texto, rota: 'lista-longa', rotaNome: 'geração item a item',
-      classe: 'forte', confianca: 'alta', tentativas: tentativas, ms: agora() - inicio,
+      texto: texto, rota: 'lista-longa', rotaNome: parcial ? 'geração parcial de lista' : 'geração item a item',
+      classe: 'forte', confianca: 'alta', parcial: parcial, tentativas: tentativas, ms: agora() - inicio,
       candidatos: linhas.map(function (l) { return { palavras: l.split(/\s+/).filter(Boolean).length }; })
     };
   };
@@ -1740,21 +1834,31 @@
     return saida.slice(0, 6);
   }
 
-  Roteador.prototype._textoLongo = async function (pergunta, ex) {
-    var self = this;
+  Roteador.prototype._textoLongo = async function (pergunta, ex, opcoes) {
+    var self = this, opc = opcoes || {};
     var n = Math.max(2, ex.paragrafos || 1);
+    // Não cria milhares de chamadas/slots para um pedido hostil ou impraticável.
+    if (n > 10 || (ex.maximoExplicito && ex.maximoExplicito < n * 50)) return null;
     var minTotal = ex.minPalavras || 70;
     var minPor = Math.max(26, Math.ceil(minTotal / n) + 12);
-    var inicio = agora();
+    var inicio = agora(), prazoGlobal = opc.prazo || Infinity;
+    // Um rascunho de uma chamada pode ser aproveitado; só blocos já fechados e
+    // aceitos pelo chamador entram aqui. Nunca duplicar um bloco nem inventar outro.
+    var blocos = new Array(n).fill(null);
+    (opc.blocosIniciais || []).slice(0, n - 1).forEach(function (b, i) { blocos[i] = b; });
     // um host por BASE (provedor), e o representante da base é o MAIS RÁPIDO para escrever
     // parágrafo. Antes o dedupe pegava o primeiro da lista (peso 100 = gigante2, 35 s de timeout)
     // e descartava o laguna, que é da mesma base e entrega em 4–9 s — foi o que fez item custar 200 s.
     var porBase = {}, hosts = [], tentativas = 0;
     ['forte', 'media', 'leve'].forEach(function (cl) {
       self._candidatos(cl).forEach(function (r) {
-        if (!self.disponivel(r.id)) return;
+        // Incluir rotas temporariamente em cooldown: podem voltar dentro do prazo.
+        // A chamada em si sempre confere disponivel() e respeita Retry-After.
+        if (!self.saude[r.id] || self.saude[r.id].morta) return;
         var atual = porBase[r.base];
-        if (!atual || (r.latPar || 30000) < (atual.latPar || 30000)) porBase[r.base] = r;
+        var livre = self.disponivel(r.id), livreAtual = atual && self.disponivel(atual.id);
+        if (!atual || (livre && !livreAtual) || (livre === livreAtual && (r.latPar || 30000) < (atual.latPar || 30000)))
+          porBase[r.base] = r;
       });
     });
     Object.keys(porBase).forEach(function (b) { hosts.push(porBase[b]); });
@@ -1772,15 +1876,21 @@
     var plano = [];
     try {
       var hostPlano = hosts[0];
-      await this._esperarVez(hostPlano);
-      var rPlano = await this._chamar(hostPlano,
-        'Tema: ' + pergunta + '\n\nListe, em até 6 linhas curtas (2 a 5 palavras cada), os elementos ' +
-        'concretos que um texto completo sobre esse tema precisa citar: objetos, processos, agentes, ' +
-        'lugares ou consequências. Responda SOMENTE a lista, uma por linha, sem introdução, sem ' +
-        'numeração e sem explicação.', 12000, { maxTokens: 160, longo: true,
-          sistema: 'Sugira tópicos curtos em português, um por linha. Não escreva raciocínio, números ou fontes inventadas.' });
-      if (rPlano.texto) {
-        plano = extrairPlano(rPlano.texto);
+      // Se já existe rascunho útil, não gastar uma chamada extra para planejá-lo.
+      if (!opc.semPlano && !blocos.some(Boolean) && this.disponivel(hostPlano.id) && agora() < prazoGlobal &&
+          await this._esperarVez(hostPlano, prazoGlobal) !== false && this.disponivel(hostPlano.id)) {
+        var limitePlano = Math.min(12000, prazoGlobal - agora());
+        if (limitePlano > 0) {
+          var rPlano = await this._chamar(hostPlano,
+            'Tema: ' + pergunta + '\n\nListe, em até 6 linhas curtas (2 a 5 palavras cada), os elementos ' +
+            'concretos que um texto completo sobre esse tema precisa citar: objetos, processos, agentes, ' +
+            'lugares ou consequências. Se for um processo ou percurso, ordene as etapas do início ao fim. ' +
+            'Escolha um percurso coerente, sem misturar alternativas. Responda SOMENTE a lista, uma por linha, ' +
+            'sem introdução, sem numeração e sem explicação.', limitePlano, { maxTokens: 160, longo: true,
+              sistema: 'Sugira tópicos curtos em português, um por linha. Não escreva raciocínio, números ou fontes inventadas.' });
+          if (rPlano.texto) { this._premiar(hostPlano.id, rPlano.ms); plano = extrairPlano(rPlano.texto); }
+          else this._castigar(hostPlano.id, rPlano.erro, rPlano.espera);
+        }
       }
     } catch (e) { plano = []; }
     function melhorLivre(usados) {
@@ -1794,20 +1904,21 @@
 
     async function paragrafo(i, usados, prazo) {
       var rota = melhorLivre(usados || {});
-      prazo = prazo || inicio + (n >= 3 ? 115000 : 85000);
+      prazo = Math.min(prazo || inicio + (n >= 3 ? 115000 : 85000), prazoGlobal);
       var tentados = {};
       for (var k in (usados || {})) tentados[k] = 1;
       for (var t = 0; t < 4; t++) {
         // 3+ parágrafos custam mais chamadas: prazo maior, senão cai no caminho de reserva
         if (!rota || agora() >= prazo) return null;
         var foco = i === 0
-          ? 'Comece definindo o assunto com precisão e dê um exemplo concreto.'
-          : 'Aprofunde um aspecto novo, sem repetir o que já foi dito, com um exemplo pertinente e sem inventar dados.';
-        if (i === n - 1) foco += ' Feche com uma frase de conclusão completa.';
+          ? 'Comece pelo início do assunto ou da sequência solicitada, com precisão e um exemplo pertinente.'
+          : 'Continue a partir do texto anterior e responda ao que ainda falta, sem repetir ou mudar de assunto.';
+        if (i === n - 1) foco += ' Se houver um percurso ou processo, complete suas etapas até o destino. Feche a frase.';
         var ped = instrucaoParagrafo(pergunta, i, n, minPor, foco) + instrucaoFormato(pergunta);
-        // distribui o plano entre os parágrafos (cada um cobre uma fatia, todos cobrem o conjunto)
+        // Fatias contíguas preservam a ordem sugerida; distribuição alternada misturava
+        // início e fim de processos. O plano é sugestão, não verificação factual.
         if (plano.length) {
-          var fatia = plano.filter(function (_, k) { return k % n === i; });
+          var fatia = plano.filter(function (_, k) { return Math.floor(k * n / plano.length) === i; });
           if (!fatia.length) fatia = plano.slice(0, 2);
           ped += '\n\nTópicos sugeridos para considerar, se forem pertinentes: ' + plano.join('; ') +
             '. Nesta parte, priorize ' + fatia.join(' e ') +
@@ -1818,13 +1929,14 @@
           ped += '\n\nO parágrafo anterior, já escrito, foi: "' + String(blocos[i - 1]).slice(0, 700) +
             '"\nNão repita esse conteúdo; acrescente informação nova.';
         }
-        await self._esperarVez(rota);
+        if (await self._esperarVez(rota, prazo) === false) return null;
         var restante = prazo - agora();
         if (restante <= 0) return null;
+        // Outra chamada pode ter recebido 429 enquanto aguardávamos a vez.
+        if (!self.disponivel(rota.id)) { tentados[rota.id] = 1; rota = melhorLivre(tentados); continue; }
         var r = await self._chamar(rota, ped, Math.min(35000, restante), { maxTokens: 800, longo: true, sistema: SYS_ABERTO });
         tentativas++;
         if (r.texto) self._premiar(rota.id, r.ms); else self._castigar(rota.id, r.erro, r.espera);
-        if (r.erro === 'rate') await new Promise(function (res) { setTimeout(res, 2500 + Math.random() * 2000); });
         // um parágrafo é UM bloco: se o modelo abriu linhas em branco, o texto saía com mais
         // parágrafos do que o pedido (medido: pedido de 2, entrega de 3)
         var txt = sanear(String(r.texto || '').trim()).replace(/\s*\n+\s*/g, ' ');
@@ -1843,38 +1955,43 @@
       return null;
     }
 
-    var blocos = new Array(n);
-    // Série no host disponível melhor colocado. Latência e cota variam por janela;
-    // sondagens em janelas diferentes não isolam a causa de uma diferença.
-    for (var i = 0; i < n; i++) blocos[i] = await paragrafo(i, {});
+    // Série no host disponível melhor colocado; mantém blocos válidos do rascunho.
+    for (var i = 0; i < n && agora() < prazoGlobal; i++) {
+      if (!blocos[i]) blocos[i] = await paragrafo(i, {});
+      // Não escreva a segunda metade antes de saber o que diz a primeira.
+      if (!blocos[i]) break;
+    }
 
     // Cota apertada não pode virar texto quebrado. Se faltou parágrafo, espera a rota mais próxima
     // de sair do cooldown e tenta de novo — em vez de cair no caminho de reserva, que devolve uma
     // chamada só e trunca (medido: itens de 2 parágrafos entregues com 41-44 palavras na régua).
-    if (blocos.some(function (b) { return !b; })) {
+    if (blocos.some(function (b) { return !b; }) && agora() < prazoGlobal) {
       var t = agora();
       var proximos = hosts
-        .filter(function (r) { return !self.saude[r.id].morta && self.saude[r.id].cooldownAte > t; })
-        .map(function (r) { return self.saude[r.id].cooldownAte; });
-      var espera = proximos.length ? Math.min(Math.min.apply(null, proximos) - t + 500, 40000) : 0;
+        .filter(function (r) { return !self.saude[r.id].morta && self._ateDisponivel(r) > t; })
+        .map(function (r) { return self._ateDisponivel(r); });
+      var espera = proximos.length ? Math.min.apply(null, proximos) - t + 500 : 0;
+      // Só espera se a rota puder voltar com tempo para outra chamada. Não
+      // encurta Retry-After e não perde uma volta válida por um teto fixo de 40s.
+      if (espera + 1000 >= Math.min(prazoGlobal - t, 110000)) espera = 0;
       if (espera > 0) await new Promise(function (res) { setTimeout(res, espera); });
-      // Novo prazo limitado: antes, o prazo inicial já vencido impedia toda a segunda tentativa.
-      var prazoRetry = agora() + 35000;
+      var prazoRetry = Math.min(agora() + 70000, prazoGlobal);
       for (var j = 0; j < n && agora() < prazoRetry; j++) {
         if (!blocos[j]) blocos[j] = await paragrafo(j, {}, prazoRetry);
+        if (!blocos[j]) break;
       }
     }
-    if (blocos.some(function (b) { return !b; })) return null;
-    var texto = blocos.join('\n\n');
-    // 90% do mínimo: texto curto passa em textoCompleto (que só dá nota), mas não cumpre o pedido
-    // (medido: item de 60 palavras entregue com 45 e aceito)
+    var partes = blocos.filter(Boolean);
+    if (!partes.length) return null;
+    var texto = partes.join('\n\n');
     var totalPalavras = texto.split(/\s+/).filter(Boolean).length;
-    if (totalPalavras < Math.floor(minTotal * 0.9)) return null;
-    if (!textoCompleto(texto, minTotal)) return null;
+    // Não descarte os blocos bons se outra rota falhar: o chamador pode tentar
+    // uma alternativa ou devolver o texto parcial com aviso, sem salvá-lo no cache.
+    var parcial = partes.length < n || totalPalavras < Math.floor(minTotal * 0.9) || !textoCompleto(texto, minTotal);
     return {
-      texto: texto, rota: 'texto-longo', rotaNome: 'geração por parágrafo',
-      classe: 'forte', confianca: 'alta', tentativas: tentativas, ms: agora() - inicio,
-      candidatos: blocos.map(function (b) { return { palavras: b.split(/\s+/).filter(Boolean).length }; })
+      texto: texto, rota: 'texto-longo', rotaNome: parcial ? 'geração parcial por parágrafo' : 'geração por parágrafo',
+      classe: 'forte', confianca: 'alta', parcial: parcial, tentativas: tentativas, ms: agora() - inicio,
+      candidatos: partes.map(function (b) { return { palavras: b.split(/\s+/).filter(Boolean).length }; })
     };
   };
 
@@ -1883,6 +2000,7 @@
     var opc = opcoes || {};
     var tentativas = opc.tentativas || 2;
     var cands = this._candidatos(opc.dificuldade || 'media').filter(function (r) { return self.disponivel(r.id); });
+    if (opc.priorizarLatencia) cands.sort(function (a, b) { return (a.latPar || 30000) - (b.latPar || 30000); });
     var escolhidos = [], bases = {};
     for (var i = 0; i < cands.length && escolhidos.length < tentativas; i++) {
       if (bases[cands[i].base]) continue;
@@ -1892,14 +2010,16 @@
 
     var pedido = Object.assign({ maxTokens: 1200, longo: true, segmento: 45000 }, opc.chamar || {});
     var respostas = [];
-    var inicio = agora();
+    var inicio = agora(), prazo = Math.min(opc.prazo || Infinity, inicio + (opc.orcamento || 90000));
     for (var k = 0; k < escolhidos.length; k++) {
       var rotaK = escolhidos[k];
-      if (k > 0 && agora() - inicio > (opc.orcamento || 90000)) break;
-      await this._esperarVez(rotaK);
-      var r = await this._chamar(rotaK, pergunta, pedido.segmento, pedido);
-      // 429: espera curta e vai para a próxima, em vez de disparar tudo junto e perder a cota
-      if (r.erro === 'rate') await new Promise(function (res) { setTimeout(res, 2500 + Math.random() * 2500); });
+      if (agora() >= prazo) break;
+      if (await this._esperarVez(rotaK, prazo) === false) break;
+      if (!this.disponivel(rotaK.id)) continue;
+      var restante = prazo - agora();
+      if (restante <= 0) break;
+      var r = await this._chamar(rotaK, pergunta, Math.min(pedido.segmento, restante), pedido);
+      if (r.texto && opc.validar && !opc.validar(r.texto)) r = { erro: 'degenerada', ms: r.ms };
       if (r.texto) this._premiar(rotaK.id, r.ms); else this._castigar(rotaK.id, r.erro, r.espera);
       respostas.push({ rota: rotaK, texto: r.texto || null, erro: r.erro || null, ms: r.ms, bruto: r.bruto || null });
       if (r.texto && opc.nota && opc.nota(r.texto) >= 6) break;   // resposta boa: para de gastar cota
@@ -1920,13 +2040,14 @@
       texto: opc.transformar ? opc.transformar(melhor.texto) : fecharTexto(melhor.texto),
       rota: melhor.rota.id, rotaNome: melhor.rota.nome, classe: melhor.rota.classe,
       confianca: melhor.nota >= 5 ? 'alta' : (melhor.nota >= 3 ? 'media' : 'baixa'),
-      nota: melhor.nota, tentativas: respostas.length, ms: melhor.ms,
+      nota: melhor.nota, tentativas: respostas.length, ms: melhor.ms, cortado: melhor.bruto === 'length',
       candidatos: validas.map(function (x) { return { rota: x.rota.id, nota: nota(x.texto), palavras: String(x.texto).split(/\s+/).length }; })
     };
   };
 
   /* ============ API PRINCIPAL ============ */
   Roteador.prototype.responder = async function (pedido) {
+    var inicioPedido = agora();
     var pergunta = typeof pedido === 'string' ? pedido : pedido.pergunta;
     var dificuldade = (typeof pedido === 'object' && pedido.dificuldade) || 'media';
     var usarFerramenta = !(typeof pedido === 'object' && pedido.semFerramenta);
@@ -1944,12 +2065,15 @@
 
     var doCache = this._cacheGet(chave);
     if (doCache) {
-      this.metricas.cacheAcertos++;
       var respostaCache = Object.assign({}, doCache, { cache: true });
       var tipoCache = (typeof pedido === 'object' && pedido.tipo) || classificarPedido(pergunta);
-      if (tipoCache === 'aberto' && !respostaCache.ferramenta)
+      if (tipoCache === 'aberto' && !respostaCache.ferramenta) {
         respostaCache = anotarRespostaAberta(respostaCache, exigenciaDoPedido(pergunta));
-      return respostaCache;
+        // Um retry não pode ficar preso no mesmo texto incompleto, inclusive cache antigo.
+        if (respostaCache.incompleto || respostaCache.parcial || respostaCache.cortado) {
+          this.cache.delete(chave);
+        } else { this.metricas.cacheAcertos++; return respostaCache; }
+      } else { this.metricas.cacheAcertos++; return respostaCache; }
     }
 
     if (usarFerramenta) {
@@ -1976,35 +2100,88 @@
     }
     if (tipo === 'aberto') {
       var ex = exigenciaDoPedido(pergunta);
+      // Todas as etapas de geração compartilham um único prazo. Ferramentas locais ou
+      // consultas anteriores podem gastar parte dele; não há cascata extra de minutos.
+      var prazoAberto = inicioPedido + this.orcamento;
       var instrucao = SYS_ABERTO + instrucaoFormato(pergunta);
       if (ex.paragrafos) instrucao += ' O pedido exige ' + ex.paragrafos + ' parágrafo(s): entregue exatamente '
-        + ex.paragrafos + ' bloco(s) separados por uma linha em branco, cada um com pelo menos 3 frases completas.';
+        + ex.paragrafos + ' bloco(s) separados por uma linha em branco.';
       if (ex.itens) instrucao += ' O pedido exige uma lista com ' + ex.itens + ' itens numerados, um por linha.';
-      var tetoPalavras = Math.max(200, Math.round(ex.minPalavras * 2.2));
-      instrucao += ' Escreva entre ' + ex.minPalavras + ' e ' + tetoPalavras + ' palavras; termine o texto por completo.';
-      if (ex.itens >= 2) {
-        var lista = await this._listaLonga(pergunta, ex);
-        if (lista) { lista = anotarRespostaAberta(lista, ex); this._cacheSet(chave, lista); this.metricas.sucessos++; return lista; }
+      var tetoPalavras = ex.maximoExplicito || Math.max(200, Math.round(ex.minPalavras * 2.2));
+      if (ex.minimoExplicito && ex.maximoExplicito && ex.minimoExplicito > ex.maximoExplicito)
+        instrucao += ' As restrições de tamanho do pedido são conflitantes; não invente que ambas foram cumpridas.';
+      else instrucao += ' Escreva entre ' + ex.minPalavras + ' e ' + tetoPalavras + ' palavras; termine o texto por completo.';
+      var melhorAberto = null, pontosMelhor = -Infinity, euAberto = this;
+      function guardarAberto(cand) {
+        if (!cand || !cand.texto) return;
+        var a = anotarRespostaAberta(cand, ex);
+        var pontos = notaTexto(a.texto, ex) + (a.incompleto ? 0 : 6) - (a.cortado ? 4 : 0);
+        if (!melhorAberto || pontos > pontosMelhor) { melhorAberto = a; pontosMelhor = pontos; }
       }
-      if (ex.paragrafos >= 2) {
-        var longo = await this._textoLongo(pergunta, ex);
-        if (longo) { longo = anotarRespostaAberta(longo, ex); this._cacheSet(chave, longo); this.metricas.sucessos++; return longo; }
+      function devolverAberto(cand) {
+        var a = anotarRespostaAberta(cand, ex);
+        a.msParede = agora() - inicioPedido;
+        if (candidatoAbertoCompleto(a, ex)) euAberto._cacheSet(chave, a);
+        euAberto.metricas.sucessos++;
+        return a;
       }
-      var ga = await this._gerar(pergunta, {
-        tentativas: 3,
-        chamar: { maxTokens: 1800, sistema: instrucao },
-        minPalavras: ex.minPalavras,
-        nota: function (t) { return notaTexto(ajustarParagrafos(t, ex.paragrafos), ex); },
-        transformar: function (t) {
-          if (ex.itens >= 2) {
-            // lista vinda de uma chamada só costuma voltar com menos itens e menos palavras do que o
-            // pedido: numera o que existe e, se faltar item, o texto é recusado (numeroLista abaixo)
-            return ajustarFechamento(fecharTexto(numerarLista(t, ex.itens)), pergunta);
+      // Uma resposta inteira pode evitar várias chamadas em parágrafos, listas e
+      // textos curtos. Se faltar estrutura, conservar partes já terminadas.
+      var rapido = null;
+      if (agora() < prazoAberto) {
+        rapido = await this._gerar(pergunta, {
+          tentativas: 1, priorizarLatencia: true, prazo: prazoAberto, orcamento: 25000,
+          chamar: { maxTokens: 1800, segmento: 25000, sistema: instrucao },
+          minPalavras: ex.minPalavras,
+          validar: function (t) { return !!sanear(t); },
+          nota: function (t) { return notaTexto(t, ex); },
+          transformar: function (t) {
+            var limpo = sanear(t);
+            var linhas = limpo.split(/\n+/).map(function (l) { return l.trim(); }).filter(Boolean);
+            // Só normalizar marcadores se isso não apagar linhas de continuação.
+            if (ex.itens >= 2 && linhas.every(function (l) { return /^(?:[-*•]|\d+[.)])\s+/.test(l); }))
+              limpo = numerarLista(limpo, ex.itens);
+            return ajustarFechamento(fecharTexto(limpo), pergunta);
           }
-          return ajustarFechamento(fecharTexto(ajustarParagrafos(t, ex.paragrafos)), pergunta);
-        }
-      });
-      if (ga) { ga = anotarRespostaAberta(ga, ex); this._cacheSet(chave, ga); this.metricas.sucessos++; return ga; }
+        });
+        guardarAberto(rapido);
+        if (candidatoAbertoCompleto(rapido, ex)) return devolverAberto(rapido);
+      }
+      if (ex.paragrafos >= 2 && agora() < prazoAberto) {
+        var longo = await this._textoLongo(pergunta, ex,
+          { prazo: prazoAberto, blocosIniciais: blocosAproveitaveis(rapido, ex), semPlano: !rapido });
+        guardarAberto(longo);
+        if (candidatoAbertoCompleto(longo, ex)) return devolverAberto(longo);
+      } else if (ex.itens >= 2 && agora() < prazoAberto) {
+        var lista = await this._listaLonga(pergunta, ex,
+          { prazo: prazoAberto, itensIniciais: itensAproveitaveis(rapido, ex) });
+        guardarAberto(lista);
+        if (candidatoAbertoCompleto(lista, ex)) return devolverAberto(lista);
+      }
+      if (agora() < prazoAberto) {
+        var ga = await this._gerar(pergunta, {
+          tentativas: 3, priorizarLatencia: true, prazo: prazoAberto,
+          chamar: { maxTokens: 1800, sistema: instrucao },
+          minPalavras: ex.minPalavras,
+          validar: function (t) { return !!sanear(t); },
+          nota: function (t) { return notaTexto(ajustarParagrafos(t, ex.paragrafos), ex); },
+          transformar: function (t) {
+            var limpo = sanear(t);
+            if (ex.itens >= 2) {
+              var linhas = limpo.split(/\n+/).map(function (l) { return l.trim(); }).filter(Boolean);
+              if (linhas.every(function (l) { return /^(?:[-*•]|\d+[.)])\s+/.test(l); }))
+                limpo = numerarLista(limpo, ex.itens);
+              return ajustarFechamento(fecharTexto(limpo), pergunta);
+            }
+            return ajustarFechamento(fecharTexto(ajustarParagrafos(limpo, ex.paragrafos)), pergunta);
+          }
+        });
+        guardarAberto(ga);
+        if (candidatoAbertoCompleto(ga, ex)) return devolverAberto(ga);
+      }
+      if (melhorAberto) return devolverAberto(melhorAberto);
+      this.metricas.falhas++;
+      return { texto: null, erro: 'sem resposta das rotas gratuitas dentro do prazo', ms: agora() - inicioPedido };
     }
 
     function acabamento(txt) {
@@ -2055,7 +2232,7 @@
           this._cacheSet(chave, saida);
           return saida;
         }
-        this._castigar(rota.id, r.erro);
+        this._castigar(rota.id, r.erro, r.espera);
         erroFinal = r.erro;
       }
       var base = 400 * Math.pow(2, volta) + Math.random() * 400;
@@ -2075,6 +2252,8 @@
   api.internos = { sanear: sanear, util: util, extrairConclusao: extrairConclusao, calendarioLocal: calendarioLocal, fragmento: fragmento, instrucaoParagrafo: instrucaoParagrafo, extrairPlano: extrairPlano, fecharTexto: fecharTexto, termosDoPedido: termosDoPedido, calcular: calcular, instrucaoFormato: instrucaoFormato, ajustarFechamento: ajustarFechamento, numerarLista: numerarLista, anotarRespostaAberta: anotarRespostaAberta,
                    classificarPedido: classificarPedido, extrairCodigo: extrairCodigo,
                    codigoInteiro: codigoInteiro, textoCompleto: textoCompleto,
+                   segundosRetryAfter: segundosRetryAfter, escopoRate: escopoRate,
+                   candidatoAbertoCompleto: candidatoAbertoCompleto, blocosAproveitaveis: blocosAproveitaveis,
                    exigenciaDoPedido: exigenciaDoPedido, notaTexto: notaTexto, ajustarParagrafos: ajustarParagrafos };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   raiz.RoteadorIA = api;

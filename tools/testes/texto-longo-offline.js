@@ -92,13 +92,23 @@ function paragrafoBom(n, i) {
     // quem devolve raciocínio não é "erro de transporte" (não vira falha de rede), mas tem de sair
     // da frente: o teste é que ele não é chamado de novo para o resto do texto
     const chamadasA = chamadas.filter((c) => c.url.indexOf('host-a') >= 0).length;
-    // 1 chamada é o PLANO (legítima); o que não pode é ele ser escolhido para os parágrafos
+    // A tentativa de texto inteiro falha: não é necessário gastar um plano adicional.
     ok('host que devolve raciocínio sai da frente', chamadasA <= 2, 'chamado ' + chamadasA + 'x');
-    ok('houve uma chamada de planejamento antes de escrever',
-       chamadas.length > 2 && /elementos concretos que um texto completo/.test(JSON.stringify(chamadas)));
+    ok('tentativa completa falha antes da recuperação por blocos',
+       chamadas[0].pergunta === 'Explique em dois parágrafos o que é fotossíntese.');
+    ok('falha da tentativa completa não gasta planejamento redundante',
+       !chamadas.some((c) => /elementos concretos que um texto completo/.test(c.pergunta)));
     ok('host bom foi usado', /Parágrafo [12] do teste/.test(o.texto));
     const porHost = chamadas.reduce((acc, c) => { const k = c.url.replace('https://', '').split('/')[0]; acc[k] = (acc[k] || 0) + 1; return acc; }, {});
     ok('houve troca de host (não insistiu só no primeiro)', Object.keys(porHost).length >= 2, JSON.stringify(porHost));
+
+    // O caminho explícito de planejamento continua disponível e testado isoladamente.
+    const inicioPlano = chamadas.length;
+    const rPlano = new api.Roteador({ catalogo: r.catalogo });
+    await rPlano._textoLongo('Explique o tema em dois parágrafos.', { paragrafos: 2, minPalavras: 70 });
+    const chamadasPlano = chamadas.slice(inicioPlano);
+    ok('planejamento explícito continua disponível antes dos blocos',
+       chamadasPlano.length > 0 && /elementos concretos que um texto completo/.test(chamadasPlano[0].pergunta));
   } finally {
     globalThis.fetch = original;
   }
