@@ -1,0 +1,44 @@
+[
+  {
+    "id": 201,
+    "q": "Explique em dois parágrafos por que a Lua apresenta fases.",
+    "minPalavras": 70,
+    "paragrafos": 2,
+    "contem": ["lua", "sol|luz solar", "terra|[óo]rbita|orbital"]
+  },
+  {
+    "id": 202,
+    "q": "Explique em dois parágrafos como o sabão ajuda a limpar as mãos.",
+    "minPalavras": 70,
+    "paragrafos": 2,
+    "contem": ["sab[ãa]o|detergente", "gordura|[óo]leo", "[áa]gua|enx[áa]gue"]
+  },
+  {
+    "id": 203,
+    "q": "Explique em dois parágrafos como uma bússola indica direções.",
+    "minPalavras": 70,
+    "paragrafos": 2,
+    "contem": ["b[úu]ssola|agulha", "norte|sul", "magn[eé]t|campo"]
+  },
+  {
+    "id": 204,
+    "q": "Explique em dois parágrafos por que uma panela de metal esquenta no fogo.",
+    "minPalavras": 70,
+    "paragrafos": 2,
+    "contem": ["calor|energia t[ée]rmica", "metal|panela", "condu[çc]|transfer|aquece"]
+  },
+  {
+    "id": 205,
+    "q": "Explique em dois parágrafos como o orçamento doméstico ajuda a planejar gastos.",
+    "minPalavras": 70,
+    "paragrafos": 2,
+    "contem": ["receita|renda|entrada", "despesa|gasto|sa[íi]da", "planej|or[çc]amento"]
+  },
+  {
+    "id": 206,
+    "q": "Explique em dois parágrafos por que os manguezais são importantes para a costa.",
+    "minPalavras": 70,
+    "paragrafos": 2,
+    "contem": ["mangue", "costa|litoral|margem|mar[ée]", "prote[çg]|ber[çc][áa]rio|esp[ée]cies|habitat"]
+  }
+]

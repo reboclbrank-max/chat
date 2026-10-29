@@ -38,7 +38,7 @@ ok('gabarito reconhece formulação semântica prevista', () => {
 });
 ok('bateria cobre as quatro rotas de texto do canal real', () => {
   const rotas = rotasTexto('pergunta pública');
-  assert.deepEqual(rotas.map(r => r[0]), ['frota', 'reserva', 'llm7', 'omni']);
+  assert.deepEqual(rotas.map(r => r[0]), ['frota', 'reserva', 'ovhoss20', 'omni']);
   assert(rotas.every(r => /^https:\/\//.test(r[1])));
 });
 ok('fato geográfico auditado não aceita estado incorreto no gabarito', () => {
