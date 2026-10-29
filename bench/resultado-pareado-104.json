@@ -1033,61 +1033,1154 @@
         }
       ],
       "texto": "A água da chuva começa sua jornada quando precipita sobre o telhado da casa, escoando por canaletas e raias que a direcionam para as bocas de lobo. Esses canais levam a água para os sistemas de drenagem urbanos ou, em propriedades com infraestrutura adequada, para tanques de cisternas que armazenam a água para uso posterior. Em muitas cidades, o sistema de esgoto e drenagem separa ou trata parcialmente essa água superficial, enquanto a água pluvial que não é capturada escorre para rios e lençóis freáticos, completando o ciclo natural da água.\n\nPosteriormente, a água que chega à rede de distribuição passa por usinas de tratamento, onde é filtrada, desinfetada e monitorada para atender aos padrões de potabilidade. Após o tratamento, o fluido é bombeado para a rede de distribuição subterrânea, percorrendo tubulações até chegar às torneiras domésticas. Nesse ponto, a água está pronta para consumo, tendo passado por um longo percurso que envolve captação, tratamento e distribuição, garantindo sua segurança e qualidade para o consumo humano."
+    },
+    {
+      "grupo": "novo",
+      "id": 203,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Explique em dois parágrafos como uma bússola indica direções.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 183,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 10759,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:36:16.228Z",
+          "ms": 10757,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Uma bússola é um instrumento que indica direções baseando-se no campo magnético terrestre. Ela contém uma agulha magnética, geralmente feita de aço, que é livremente suspensa para girar livremente. Essa agulha aponta para o polo magnético sul da Terra, devido à interação entre o campo magnético terrestre e o material magnético da agulha. O polo norte da agulha, por convenção, é marcado para identificar a direção norte. A bússola é composta por uma caixa ou disco com marcações que indicam as quatro direções cardinais: norte, sul, leste e oeste. O usuário deve manter a bússola nivelada e afastada de objetos magnéticos para obter uma leitura precisa.\n\nPara utilizá-la, basta observar a posição da agulha em relação às marcações na bússola. O norte indicado pela agulha corresponde ao norte magnético, que pode diferir ligeiramente do norte geográfico devido à declinação magnética. Com a direção do norte estabelecida, é possível traçar rotas e seguir caminhos em qualquer direção. Em ambientes externos, a bússola é essencial para navegação, especialmente em áreas sem referências visuais claras. Sua precisão depende de fatores como calibração, altitude e interferências locais."
+    },
+    {
+      "grupo": "novo",
+      "id": 203,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Explique em dois parágrafos como uma bússola indica direções.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 184,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 11126,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:36:26.989Z",
+          "ms": 11124,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Uma bússola indica direções graças à interação entre a agulha magnética e o campo magnético terrestre. A agulha, geralmente feita de um material ferro magnético, é livremente suspensa para girar livremente. Ela se alinha naturalmente com o campo magnético da Terra, apontando para o polo magnético ao norte e, por convenção, o oposto indica o sul. Esse alinhamento ocorre porque a Terra age como um imã gigante, gerando um campo que exerce forças sobre a agulha. Assim, independentemente da rotação do usuário, a ponta norte da bússola sempre se orienta em direção ao polo magnético.\n\nPara usar uma bússola, basta segurá-la plana e observar a posição da agulha. O usuário deve identificar a ponta marcada como norte (geralmente pintada ou sinalizada) e girar o corpo ou o mapa até que essa ponta aponte para o norte real. Com a direção estabelecida, é possível traçar rotas, medir ângulos ou seguir caminhos específicos. Em ambientes com interferências magnéticas, como próximos a objetos metálicos, a precisão pode ser comprometida, exigindo ajustes ou recalibração. A bússola, portanto, é uma ferramenta simples, mas eficaz, para navegação em terrenos desconhecidos."
+    },
+    {
+      "grupo": "holdout",
+      "id": 106,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Escreva dois parágrafos sobre como os oceanos influenciam o clima.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 175,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 7342,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:36:38.116Z",
+          "ms": 7341,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Os oceanos exercem um papel fundamental no regulamento do clima global, absorvendo energia solar e distribuindo calor por meio das correntes marítimas. A alta capacidade térmica da água permite que os oceanos armazenem grandes volumes de calor durante os períodos de maior incidência solar, liberando-o gradualmente nas estações mais frias. Esse processo atenua as variações de temperatura em regiões próximas ao mar, criando climas mais suaves e previsíveis. Além disso, a evaporação da superfície oceânica injeta vapor d'água na atmosfera, alimentando a umidade que alimenta sistemas frontais e fenômenos como a chuva tropical.\n\nA interação entre oceanos e atmosfera também gera padrões climáticos recurrentes, como o El Niño e a La Niña, que alteram as temperaturas superficiais do Pacífico e impactam o clima em escala global. Esses fenômenos influenciam a frequência de secas, enchentes e tempestades em diversas regiões do planeta. Os oceanos também atuam como sumidouros de dióxido de carbono, regulando a concentração de gases de efeito estufo na atmosfera. Assim, a saúde dos ecossistemas marinhos está diretamente ligada à estabilidade do clima terrestre."
+    },
+    {
+      "grupo": "holdout",
+      "id": 106,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Escreva dois parágrafos sobre como os oceanos influenciam o clima.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 245,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 11470,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:36:45.461Z",
+          "ms": 11468,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Os oceanos exercem um papel fundamental no regulação do clima global, agindo como grandes armazenadores de calor. A água possui uma alta capacidade térmica, o que significa que absorve e retém grandes quantidades de energia térmica sem sofrer variações bruscas de temperatura. Durante o dia, as águas superficiais aquecem-se ao receberem radiação solar, enquanto de noite liberam esse calor lentamente, suavizando as variações de temperatura entre o dia e a noite. Esse processo também influencia as estações do ano, pois regiões com oceanos próximos tendem a ter invernos menos rigorosos e verões mais suaves do que áreas interiores. Além disso, as correntes marítimas transportam massas de água morna ou fria por longas distâncias, redistribuindo calor entre os equadores e os polos, o que modula os padrões climáticos em diferentes latitudes.\n\nOutro mecanismo importante é a evaporação da água do mar, que libera vapor d'água na atmosfera. Esse vapor forma nuvens e contribui para a precipitação, influenciando diretamente os sistemas de chuvas e a distribuição de umidade no planeta. A transpiração vegetal, combinada com a evaporação oceânica, forma o ciclo da água, que regula a umidade do ar e a quantidade de radiação solar que chega à superfície terrestre. Além disso, os oceanos absorvem cerca de um terço do dióxido de carbono emitido pela atividade humana, ajudando a mitigar o efeito estufa, embora esse processo esteja causando acidificação dos mares. Assim, a interação entre oceanos e atmosfera é essencial para manter o equilíbrio climático da Terra."
+    },
+    {
+      "grupo": "original",
+      "id": 9,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Explique a diferença entre juros simples e juros compostos em dois parágrafos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 149,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 13611,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:36:56.933Z",
+          "ms": 13610,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Juros simples é um sistema em que o rendimento ou custo é calculado apenas sobre o valor principal inicial, sem considerar os juros acumulados em períodos anteriores. A fórmula básica é J = P × i × t, onde P é o principal, i a taxa e t o tempo. Esse modelo é comum em empréstimos de curto prazo e alguns tipos de investimentos, pois oferece previsibilidade, mas geralmente gera menor retorno ao longo do tempo.\n\nJá os juros compostos aplicam-se sobre o saldo anterior, incluindo os juros que já foram acumulados, de modo que o capital cresce de forma exponencial. A fórmula é FV = P × (1 + i)^t, considerando a taxa por período. Esse mecanismo é usado em poupança, Tesouro Direto e aplicações financeiras de médio a longo prazo, pois amplia o efeito dos juros sobre juros, tornando o rendimento mais significativo ao longo dos anos."
+    },
+    {
+      "grupo": "original",
+      "id": 9,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Explique a diferença entre juros simples e juros compostos em dois parágrafos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 208,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 10376,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:37:10.545Z",
+          "ms": 10375,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Juros simples é um tipo de cobrança em que o valor dos juros é calculado apenas sobre o capital inicial, sem considerar os juros acumulados em períodos anteriores. Assim, o rendimento ou o desconto permanece constante ao longo do tempo, o que torna o cálculo linear e previsível. A fórmula básica é J = C × i × t, onde J representa os juros, C o capital, i a taxa e t o tempo. Esse modelo costuma ser usado em empréstimos de curto prazo ou em alguns tipos de investimentos fixos, onde a simplicidade do cálculo é mais relevante que a maximização dos retornos.\n\nJuros compostos, por outro lado, são calculados sobre o capital inicial mais os juros já acumulados, gerando um efeito de redimento crescente ao longo do tempo. Cada período, os juros são reinvestidos, o que significa que o próximo cálculo incide sobre um valor maior do que o período anterior. A fórmula geral é M = C × (1 + i)^t, onde M é o montante final. Esse mecanismo é amplamente utilizado em aplicações financeiras de longo prazo, como poupança, investimentos e empréstimos bancários, pois permite que o dinheiro cresça de forma exponencial, favorecendo quem aplica ou penalizando quem deve, dependendo do ponto de vista."
+    },
+    {
+      "grupo": "original",
+      "id": 2,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Explique em dois parágrafos a diferença entre vírus e bactéria.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 197,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 8845,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:37:20.924Z",
+          "ms": 8843,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Vírus e bactérias são agentes infecciosos, mas possuem estruturas e formas de vida distintas. Os vírus são partículas muito pequenas, compostas de material genético (DNA ou RNA) envolto por uma cápside proteica, e, em alguns casos, uma membrana lipídica. Eles não possuem metabolismo próprio e só conseguem se replicar dentro de células hospedeiras, invadindo-as e utilizando sua maquinaria celular. Por isso, são considerados organismos obligatórios parasitas. Já as bactérias são células unicelulares completas, com membrana plasmática, citoplasma, ribossomos e, em geral, um único cromossomo circular. Elas possuem metabolismo próprio e podem se reproduzir independentemente, tanto em ambientes externos quanto dentro do organismo.\n\nA principal diferença clínica está no tratamento: infecções causadas por bactérias podem ser tratadas com antibióticos, que atacam estruturas específicas das bactérias sem prejudicar as células humanas. Já infecções virais não respondem a antibióticos, pois os vírus utilizam as células do hospedeiro para se replicar, tornando difícil eliminá-los sem danificar as células saudáveis. Além disso, algumas bactérias são benéficas, como as que habitam o intestino humano, enquanto a maioria dos vírus é patogênica. Vacinas e terapias antivirais são usadas para prevenir ou combater doenças virais, enquanto prevenção e higiene adequada ajudam a evitar infecções bacterianas."
+    },
+    {
+      "grupo": "original",
+      "id": 2,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Explique em dois parágrafos a diferença entre vírus e bactéria.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 151,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 8464,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:37:29.770Z",
+          "ms": 8464,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Vírus e bactérias são agentes infecciosos distintos em estrutura e forma de agir. Os vírus são partículas muito pequenas, compostas apenas de material genético (DNA ou RNA) envolto por uma cápside proteica, e, em alguns casos, uma membrana lipídica. Eles não possuem estrutura celular, não têm metabolismo próprio e não conseguem se reproduzir sozinhos, dependendo de uma célula hospedeira para invadir e replicar seu material genético. Por isso, os vírus só causam infecções dentro de organismos vivos e desaparecem rapidamente fora deles.\n\nJá as bactérias são micro-organismos unicelulares completos, com célula procarionte, membrana plasmática, ribossomos e material genético (DNA circular). Elas possuem metabolismo próprio, podem se reproduzir independentemente e sobreviver em diversos ambientes, incluindo superfícies, solo e até dentro do corpo humano. Enquanto algumas bactérias são benéficas, outras causam doenças tratáveis com antibióticos. Assim, a principal diferença está na complexidade celular e na necessidade de um hospedeiro para o vírus replicar-se."
+    },
+    {
+      "grupo": "original",
+      "id": 10,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Escreva uma lista com 5 dicas práticas para economizar água em casa.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 84,
+      "paragrafos": 5,
+      "itens": 5,
+      "ms": 6231,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:37:38.237Z",
+          "ms": 6229,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "1. Instale torneiras e chuveiros de baixa vazão para reduzir o consumo sem perder pressão.\n2. Reaproveite a água da lavagem de vegetais e legumes para regar plantas ou limpar superfícies.\n3. Lave a louça e roupas apenas quando a máquina estiver cheia, evitando ciclos incompletos.\n4. Desligue a torneira enquanto escova os dentes, lava as mãos ou cozinha, evitando o desperdício contínuo.\n5. Instale um sistema de coleta de água da chuva para usar na rega do jardim ou na limpeza do pátio."
+    },
+    {
+      "grupo": "original",
+      "id": 10,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Escreva uma lista com 5 dicas práticas para economizar água em casa.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 74,
+      "paragrafos": 5,
+      "itens": 5,
+      "ms": 75691,
+      "rota": "ovhoss20",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:37:44.469Z",
+          "ms": 435,
+          "resultado": "rate",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T17:37:44.904Z",
+          "ms": 6252,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T17:37:51.156Z",
+          "ms": 7125,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "length"
+        },
+        {
+          "rota": "ovhq",
+          "inicio": "2026-10-29T17:37:58.281Z",
+          "ms": 4346,
+          "resultado": "degenerada",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhoss",
+          "inicio": "2026-10-29T17:38:02.627Z",
+          "ms": 8490,
+          "resultado": "degenerada",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhq38",
+          "inicio": "2026-10-29T17:38:11.117Z",
+          "ms": 15748,
+          "resultado": "degenerada",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhq9",
+          "inicio": "2026-10-29T17:38:26.865Z",
+          "ms": 8590,
+          "resultado": "degenerada",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhl",
+          "inicio": "2026-10-29T17:38:35.455Z",
+          "ms": 2495,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        },
+        {
+          "rota": "ovhl",
+          "inicio": "2026-10-29T17:38:37.950Z",
+          "ms": 3324,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        },
+        {
+          "rota": "ovhl",
+          "inicio": "2026-10-29T17:38:41.274Z",
+          "ms": 155,
+          "resultado": "rate",
+          "retryAfterSegundos": 19,
+          "fim": null
+        },
+        {
+          "rota": "ovhnemo",
+          "inicio": "2026-10-29T17:38:41.429Z",
+          "ms": 1493,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T17:38:42.923Z",
+          "ms": 319,
+          "resultado": "servidor",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "vlqwen",
+          "inicio": "2026-10-29T17:38:43.242Z",
+          "ms": 1797,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        },
+        {
+          "rota": "vlqwen",
+          "inicio": "2026-10-29T17:38:45.039Z",
+          "ms": 1556,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        },
+        {
+          "rota": "vlqwen",
+          "inicio": "2026-10-29T17:38:46.595Z",
+          "ms": 154,
+          "resultado": "rate",
+          "retryAfterSegundos": 14,
+          "fim": null
+        },
+        {
+          "rota": "glm",
+          "inicio": "2026-10-29T17:38:46.749Z",
+          "ms": 112,
+          "resultado": "morto",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "g4super",
+          "inicio": "2026-10-29T17:38:46.861Z",
+          "ms": 127,
+          "resultado": "servidor",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "coherecode",
+          "inicio": "2026-10-29T17:38:46.988Z",
+          "ms": 2042,
+          "resultado": "degenerada",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "kilolight",
+          "inicio": "2026-10-29T17:38:49.030Z",
+          "ms": 2865,
+          "resultado": "degenerada",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhq397",
+          "inicio": "2026-10-29T17:38:51.895Z",
+          "ms": 3083,
+          "resultado": "degenerada",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:38:54.978Z",
+          "ms": 493,
+          "resultado": "rate",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T17:38:55.471Z",
+          "ms": 4688,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "1. Instale torneiras com aeradores para reduzir o fluxo sem perder pressão.\n2. Conserte vazamentos imediatamente, pois um gotejamento pode desperdiçar litros por dia.\n3. Tome banhos mais curtos, limitando a duração a 5 minutos e usando a água apenas quando necessário.\n4. Reutilize a água da lavagem de roupas para regar plantas ou limpar o quintal.\n5. Utilize a água da chuva, coletando em calhas e reservatórios para uso em descargas e irrigação."
+    },
+    {
+      "grupo": "original",
+      "id": 21,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Escreva uma mensagem curta e educada cobrando um pagamento atrasado de um cliente. Máximo 150 palavras.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 72,
+      "paragrafos": 4,
+      "itens": 0,
+      "ms": 6579,
+      "rota": "ovhoss20",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T17:39:00.162Z",
+          "ms": 6578,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Prezado(a) [Nome do Cliente],\n\nEspero que esteja bem. Gostaria de lembrar que o pagamento referente à fatura nº [Número] venceu em [Data] e ainda não foi registrado em nosso sistema. Entendemos que imprevistos acontecem e estamos à disposição para esclarecer qualquer dúvida ou ajustar a forma de pagamento, se necessário.\n\nAgradecemos a atenção e aguardamos a regularização até o dia [Nova Data], para que possamos continuar oferecendo nossos serviços sem interrupções.\n\nAtenciosamente."
+    },
+    {
+      "grupo": "original",
+      "id": 21,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Escreva uma mensagem curta e educada cobrando um pagamento atrasado de um cliente. Máximo 150 palavras.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 88,
+      "paragrafos": 4,
+      "itens": 0,
+      "ms": 4092,
+      "rota": "ovhoss20",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T17:39:06.744Z",
+          "ms": 4091,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Prezado(a) [Nome do Cliente],\n\nEspero que esteja bem. Gostaria de lembrar que o pagamento referente à fatura nº [Número] venceu em [Data de Vencimento] e ainda não foi registrado em nosso sistema. Entendemos que imprevistos acontecem e estamos à disposição para esclarecer qualquer dúvida ou ajustar a forma de pagamento, se necessário.\n\nAgradecemos a atenção e pedimos que, por gentileza, regularize o valor até o dia [Nova Data] para evitar interrupções nos serviços. Caso já tenha efetuado o pagamento, desconsidere esta mensagem e nos informe o comprovante.\n\nAtenciosamente."
+    },
+    {
+      "grupo": "original",
+      "id": 12,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Resuma em três parágrafos a Segunda Guerra Mundial.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 303,
+      "paragrafos": 3,
+      "itens": 0,
+      "ms": 77019,
+      "rota": "texto-longo",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T17:39:10.838Z",
+          "ms": 443,
+          "resultado": "rate",
+          "retryAfterSegundos": 49,
+          "fim": null
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T17:39:11.283Z",
+          "ms": 25157,
+          "resultado": "servidor",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhq",
+          "inicio": "2026-10-29T17:39:36.440Z",
+          "ms": 35001,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:40:11.441Z",
+          "ms": 4976,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        },
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:40:16.417Z",
+          "ms": 4783,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        },
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:40:21.200Z",
+          "ms": 6655,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Para resumir a Segunda Guerra, é preciso entender que ela foi a guerra mais destrutiva da história, envolvendo mais de 30 países e resultando em dezenas de milhões de mortos. A Segunda Guerra Mundial começou em 1939, quando a Alemanha nazista, liderada por Adolf Hitler, invadiu a Polônia, levando a Grã-Bretanha e a França a declarar guerra à Alemanha. Um exemplo emblemático foi a Batalha da Grã-Bretanha, em 1940, quando a Força Aérea Real Britânica resistiu aos ataques aéreos alemães, evitando uma invasão terrestre. O conflito abrangiu continentes, com batalhas em Europa, Ásia e África, marcadas por avanços tecnológicos e estratégias militares inovadoras.\n\nPara resumir a segunda guerra mundial, é essencial destacar o papel decisivo das forças aliadas no avanço sobre o eixo. A entrada dos Estados Unidos após o ataque a Pearl Harbor, em 1941, ampliou drasticamente os recursos disponíveis, permitindo avanços em frentes como a Itália e o Pacífico. Um exemplo qualitativo foi a libertação de campos de concentração pelos soldados americanos, revelando as tragédias do Holocausto. Paralelamente, a União Soviética resistiu com força à ofensiva alemã em Stalingrado, marco que mudou o rumo da guerra na Europa. Esses eventos mostram como a segunda guerra mundial foi moldada por alianças e decisões que redefiniriam o mapa global.\n\nPara resumir a segunda guerra mundial, é preciso reconhecer que seu desfecho trouxe transformações profundas no cenário internacional. A rendição incondicional da Alemanha nazista, em maio de 1945, pôs fim aos combates na Europa, enquanto os Estados Unidos lançaram bombas atômicas sobre Hiroshima e Nagasaki, em agosto de 1945, levando à rendição do Japão. Esses eventos marcaram o fim da guerra mundial e abriu caminho para a formação da ONU e para a divisão entre blocos capitalista e socialista. O conflito, assim, não apenas redefiniu fronteiras, mas também estabeleceu as bases do conflito frio."
+    },
+    {
+      "grupo": "original",
+      "id": 12,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Resuma em três parágrafos a Segunda Guerra Mundial.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 272,
+      "paragrafos": 3,
+      "itens": 0,
+      "ms": 13459,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:40:27.859Z",
+          "ms": 13457,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A Segunda Guerra Mundial (1939-1945) começou com a invasão alemã da Polônia em 1º de setembro de 1939, levando a Grã-Bretanha e a França a declararem guerra à Alemanha nazista. Em 1940, a Alemanha expandiu sua ofensiva pela Europa, ocupando a França e forçando o exílio do governo francês para Vichy, enquanto a Grã-Bretanha resistiu sozinha após a Batalha da Grã-Bretanha. Paralelamente, o conflito se intensificou na Ásia com a entrada do Japão na guerra, culminando no ataque a Pearl Harbor em 7 de dezembro de 1941, que levou os Estados Unidos a se alinhar aos Aliados.\n\nNo frente europeu, a ofensiva soviética de Stalingrado (1942-1943) marcou a virada estratégica, com a derrota alemã e o avanço das forças vermelhas em direção a Berlim. Em 8 de maio de 1945, a Alemanha se rendeu incondicionalmente após a captura da capital nazista. No Pacífico, os EUA avançaram de ilha em ilha, com batalhas decisivas como Midway (1942) e Iwo Jima (1945), enfrentando fortes resistências japonesas. O conflito terminou com os Estados Unidos lançarem bombas atômicas em Hiroshima e Nagasaki em agosto de 1945, levando à rendição do Japão em 2 de setembro de 1945.\n\nO conflito resultou em aproximadamente 70 a 85 milhões de mortes, incluindo o Holocausto, que levou à perda de seis milhões de judeus e milhões de outras vítimas. A guerra redesenhou as fronteiras globais, com a Europa dividida entre blocos capitalista e comunista, semeando as bases da Guerra Fria. A criação das Nações Unidas em 1945 buscou garantir a paz internacional, enquanto a descolonização acelerou em Ásia, África e América Latina, transformando o mapa político mundial nas décadas seguintes."
+    },
+    {
+      "grupo": "novo",
+      "id": 202,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Explique em dois parágrafos como o sabão ajuda a limpar as mãos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 170,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 9313,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:40:41.319Z",
+          "ms": 9312,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "O sabão ajuda a limpar as mãos porque sua molécula possui duas partes distintas: uma hidrofílica, que atrai a água, e outra hidrofóbica, que se liga às substâncias gorosas. Quando você se lava as mãos com sabão e água, a parte hidrofóbica se une às sujeiras, óleos e micróbios presentes na pele, enquanto a parte hidrofílica permite que essa mistura seja removida pela água. Esse processo fisico, chamado emulsificação, separa as partículas de sujeira da pele e as mantém suspensas na água, evitando que permaneçam na superficie das mãos.\n\nAlém disante, o ato de escovar as mãos com sabão aumenta a eficacia da limpeza, pois o movimento mecanico ajuda a desprender as particulas adesivas da pele. O sabao tambem reduz a tensao superficial da agua, permitindo que ela penetre melhor entre as sujeiras e espalhe-se com mais facilidade. Assim, a combinacao de sabao, agua e movimento fisico elimina eficientemente bacterias, virus e residuos, tornando a lavagem das maos uma das formas mais simples e eficazes de se proteger de doencas."
+    },
+    {
+      "grupo": "novo",
+      "id": 202,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Explique em dois parágrafos como o sabão ajuda a limpar as mãos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 153,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 8843,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:40:50.635Z",
+          "ms": 8842,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "O sabão ajuda a limpar as mãos porque sua molécula possui uma estrutura anfifílica: uma cabeça hidrofílica que atrai a água e uma cauda lipofílica que se liga às gorduras. Quando as mãos são lavadas com água e sabão, a cauda do sabão se une às partículas de sujeira oleosa e aos micróbios, enquanto a cabeça permanece atraída pela água. Esse processo forma pequenas bolhas chamadas micelas, que envolvem as partículas sujas e as mantêm suspensas na água, facilitando sua remoção mecânica ao lavar as mãos.\n\nAlém dessa ação química, a fricção física durante a lavagem ajuda a desprender micróbios e partículas da pele. O sabão também reduz a tensão superficial da água, permitindo que ela espalhe-se melhor sobre a superfície das mãos. Assim, o sabão não apenas emulsifica a sujeira, mas também potencializa a eficácia da lavagem, removendo bactérias, vírus e partículas visíveis de forma mais completa do que apenas água corrente."
+    },
+    {
+      "grupo": "original",
+      "id": 1,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Explique em dois parágrafos o que é fotossíntese.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 158,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 9188,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:40:59.481Z",
+          "ms": 9187,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A fotossíntese é o processo biológico pelo qual plantas, algas e algumas bactérias convertem energia luminosa em energia química, utilizando dióxido de carbono e água como matérias-primas. Ocorre principalmente nas folhas, dentro dos cloroplastos, onde a clorofila capta a comprimento de onda adequado da luz solar. O processo se divide em duas etapas: a fase luminosa, que gera ATP e NADPH enquanto libera oxigênio, e a fase escura (ciclo de Calvin), que fixa o dióxido de carbono em moléculas orgânicas.\n\nEsse mecanismo é essencial para a vida na Terra, pois produz o oxigênio atmosférico e remove o dióxido de carbono, regulando o clima global. A eficiência da fotossíntese depende de fatores como intensidade luminosa, temperatura e disponibilidade de nutrientes. Estudos mostram que cerca de 115 milhões de toneladas de carbono são fixadas anualmente por essa via, servindo de base para a cadeia alimentar. Pesquisas contínuas buscam melhorar a produtividade fotossintética em culturas agrícolas para aumentar os rendimentos alimentares."
+    },
+    {
+      "grupo": "original",
+      "id": 1,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Explique em dois parágrafos o que é fotossíntese.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 194,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 17225,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:41:08.672Z",
+          "ms": 17224,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A fotossíntese é o processo biológico pelo qual plantas, algas e algumas bactérias convertem energia luminosa em energia química armazenável. Esse mecanismo ocorre principalmente nas folhas, dentro dos cloroplastos, organelas que contêm a clorofila, pigmento responsável por captar a luz solar. A fotossíntese depende de duas etapas principais: a fase luminosa, que acontece nas membranas tilacoides e gera ATP e NADPH a partir da água e da luz, e a fase escura ou ciclo de Calvin, que ocorre no estroma e utiliza esses compostos para fixar o dióxido de carbono do ar, produzindo glicose.\n\nEsse processo é essencial para a vida na Terra, pois é a principal fonte de oxigênio atmosférico e a base da cadeia alimentar. A fórmula geral da fotossíntese é: seis moléculas de dióxido de carbono mais seis moléculas de água, transformadas em glicose e seis moléculas de oxigênio, com a ajuda da energia solar. A eficiência desse processo varia conforme a espécie vegetal, a intensidade luminosa, a temperatura e a disponibilidade de nutrientes. Além de sustentar a produção de biomassa, a fotossíntese também atua regulando o clima, ao absorver dióxido de carbono, um dos gases estufa responsáveis pelo aquecimento global."
+    },
+    {
+      "grupo": "original",
+      "id": 13,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Explique como funciona uma vacina em dois parágrafos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 235,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 11119,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:41:25.899Z",
+          "ms": 11118,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Uma vacina funciona introduzindo no organismo uma substância que imita o patógeno que causa uma doença, mas sem provocar a doença em si. Essa substância pode ser o agente morto, o atenuado, apenas uma proteína específica (como a proteína Spike da gripe ou do coronavírus) ou, em alguns casos, o material genético (RNA ou DNA) que codifica essa proteína. Ao ser injetada, o sistema imunológico reconhece o antígeno estranho e, para se proteger, ativa os linfócitos B e T, que produzem anticorpos e criam células de memória. Esse processo ocorre em estágios: primeiro a ativação do sistema imunológico inato, depois a resposta adaptativa específica e, por fim, a formação de células de memória que permanecem no corpo por anos, prontas para reagir rapidamente caso o verdadeiro patógeno apareça no futuro.\n\nO funcionamento das vacinas baseia-se na capacidade do sistema imunológico de \"lembrar\" do patógeno. Quando o corpo é exposto à vacina, os macrófagos e células dendríticas capturam o antígeno e o apresentam às célas T helper, que liberam citocinas ativando os linfócitos B. Esses diferem em plasmócitos, que secretam anticorpos neutralizantes, e em células de memória B e T. Na próxima infecção real, essas células atuam rapidamente, produzindo anticorpos em horas e eliminando o patógeno antes que ele cause sintomas. Por isso, as vacinas reduzem a incidência de doenças, hospitalizações e óbitos, e algumas exigem reforços periódicos para manter a imunidade ao longo do tempo."
+    },
+    {
+      "grupo": "original",
+      "id": 13,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Explique como funciona uma vacina em dois parágrafos.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 198,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 77121,
+      "rota": "texto-longo",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:41:37.021Z",
+          "ms": 364,
+          "resultado": "rate",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T17:41:37.385Z",
+          "ms": 12864,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "length"
+        },
+        {
+          "rota": "ultra",
+          "inicio": "2026-10-29T17:41:50.250Z",
+          "ms": 20628,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "polli",
+          "inicio": "2026-10-29T17:42:10.878Z",
+          "ms": 507,
+          "resultado": "servidor",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "ovhoss20",
+          "inicio": "2026-10-29T17:42:19.891Z",
+          "ms": 18731,
+          "resultado": "timeout",
+          "retryAfterSegundos": null,
+          "fim": null
+        },
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:42:38.623Z",
+          "ms": 7451,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        },
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:42:46.074Z",
+          "ms": 8065,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "Uma vacina funciona introduzindo no organismo uma forma inofensiva do patógeno, como proteínas ou partículas virais inativadas, para que o sistema imunológico aprenda a reconhecê-lo. Ao detectar esse antígeno, os linfócitos produzem anticorpos e memória imunológica, de modo que, na próxima exposição ao agente real, a resposta seja mais rápida e eficaz. Por exemplo, a vacina contra a gripe contém proteínas do vírus que, mesmo sem causar a doença, preparam o corpo para combatê-lo. Assim, a vacina reduz o risco de infecção e complicações graves.\n\nEssa proteção, no entanto, não é imediata, pois o sistema imunológico precisa de alguns dias para produzir os anticorpos necessários após a aplicação da vacina. Além diso, a eficácia de uma vacina pode variar de acordo com fatores como idade, estado imunológico e tempo entre as doses, especialmente em esquemas que exigem reforço. Por isso, é importante seguir a programação vacinal recomendada para garantir que a imunidade seja adequadamente estabelecida. Quando bem aplicada, a vacina contribui não apenas para o indivíduo, mas também para a população como um todo, ao reduzir a transmissão do patógeno. Dessa forma, a vacina funciona como uma das estratégias mais seguras e eficazes de prevenção às doenças infecciosas."
+    },
+    {
+      "grupo": "holdout",
+      "id": 105,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Em um parágrafo, explique os efeitos da impermeabilização do solo nas cidades durante chuvas fortes.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 177,
+      "paragrafos": 1,
+      "itens": 0,
+      "ms": 21024,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:42:54.144Z",
+          "ms": 21023,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A impermeabilização do solo em cidades, causada pela substituição de áreas verdes e solos naturais por pavimentações, edifícios e asfalto, intensifica os efeitos das chuvas fortes, aumentando significativamente o escoamento superficial. Quando a água da chuva não consegue infiltrar-se no solo, acumula-se rapidamente nas vias e áreas baixas, gerando inundações frequentes, especialmente em regiões com drenos insuficientes ou obsoletos. Esse excesso de água também transporta poluentes como óleo, plásticos e resíduos urbanos, contaminando corpos d'água próximos e comprometendo a qualidade da água. Além disso, a redução da infiltração prejudica a recarga de lençóis freáticos, agravando a escassez de água subterrânea em longo prazo. A pressão sobre a infraestrutura urbana aumenta, com riscos de deslizamentos em encostas e danos a edifícios e vias, enquanto a falta de vegetação natural reduz a capacidade de absorção de impactos da chuva. Esses fatores combinam-se para criar um ciclo de vulnerabilidade, onde a cidade se torna menos resistente a eventos climáticos extremos, exigindo soluções como sistemas de drenagem sustentáveis, parques pluviais e políticas de preservação de áreas verdes para mitigar os impactos."
+    },
+    {
+      "grupo": "holdout",
+      "id": 105,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Em um parágrafo, explique os efeitos da impermeabilização do solo nas cidades durante chuvas fortes.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 145,
+      "paragrafos": 1,
+      "itens": 0,
+      "ms": 11200,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:43:15.170Z",
+          "ms": 11199,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A impermeabilização do solo nas cidades, caracterizada pela substituição de superfícies naturais por asfalto, calçadas e edifícios, intensifica significativamente os efeitos das chuvas fortes. Quando a água da chuva não consegue infiltrar no solo, o escoamento superficial aumenta drasticamente, levando ao rápido enchente de ruas, calçadas e canais de drenagem. Esse excesso de água sobrecarrega as redes de esgoto e drenos, podendo causar transbordamentos e inundações em áreas baixas, com risco de danos a imóveis, comércios e deslocamento de pessoas. Além disso, a ausência de infiltração reduz a recarga dos aquíferos, comprometendo o abastecimento de água subterrânea. O escoamento também transporta poluentes, óleos, detergentes e resíduos urbanos, contaminando corpos d'água próximos. Em dias de chuva intensa, a combinação de solo impermeável e infraestrutura insuficiente transforma eventos climáticos normais em situações de emergência urbana, exigindo planos de drenagem adequados e políticas de gestão de águas pluviais."
+    },
+    {
+      "grupo": "original",
+      "id": 5,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Explique em três passos como fazer um bolo simples.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 109,
+      "paragrafos": 3,
+      "itens": 3,
+      "ms": 8692,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:43:26.372Z",
+          "ms": 8691,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "1. Prepara a massa: em uma tigela, misture 2 xícaros de farinha de trigo, 2 ovos, 1 xícara de leite, 1/2 xícara de óleo e 1 colher de sopa de fermento em pó até obter uma massa homogênea.\n2. Asa o bolo: despeje a massa em uma forma untada e enfarinhada, nívelando com uma espátula, e leve ao forno pré-aquecido a 180 °C por cerca de 35 minutos, ou até que um palito inserido no centro saia limpo.\n3. Sirva: deixe o bolo esfriar na forma por 10 minutos, desenforme-o em uma grade e sirva cortado em fatias, acompanhado de calda, chantilly ou simplesmente polvilhado com açúcar de confeiteiro."
+    },
+    {
+      "grupo": "original",
+      "id": 5,
+      "repeticao": 0,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Explique em três passos como fazer um bolo simples.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 109,
+      "paragrafos": 3,
+      "itens": 3,
+      "ms": 5495,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:43:35.068Z",
+          "ms": 5494,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "1. Prepara a massa: em uma tigela, misture 2 xícares de farinha de trigo, 2 ovos, 1 xícara de leite, 1/2 xícara de óleo e 1 colher de sopa de fermento em pó até obter uma massa homogênea.\n2. Asa o bolo: despeje a massa em uma forma untada e enfarinhada, nívelando com uma espátula, e leve ao forno pré-aquecido a 180 °C por cerca de 35 minutos, ou até que ao inserir um palito ele saia limpo.\n3. Finaliza e sirve: deixe o bolo esfriar na forma por 10 minutos, desenforme em uma grade e, se desejar, cubra com chantilly ou calda de chocolate antes de servir fatiado."
+    },
+    {
+      "grupo": "holdout",
+      "id": 103,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Escreva um parágrafo explicando o que é a coleta seletiva de materiais.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 167,
+      "paragrafos": 1,
+      "itens": 0,
+      "ms": 9777,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:43:40.566Z",
+          "ms": 9775,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A coleta seletiva de materiais é um processo que consiste em separar, em fonte, os resíduos sólidos orgânicos e recicláveis, como papel, plástico, vidro, metal e eletrônicos, com o objetivo de promover a reutilização e a reciclagem desses materiais, reduzindo a quantidade de lixo enviada aos aterros sanitários e diminuindo o impacto ambiental. Essa prática pode ser realizada tanto por meio de programas municipais de coleta seletiva, que percorrem os bairros em dias determinados, quanto por iniciativas individuais ou coletivas, como a separação em casa e a entrega em pontos de entrega voluntária (PEVs). Para que a coleta seletiva seja eficaz, é fundamental que os cidadãos estejam informados sobre quais materiais podem ser recicláveis, como limpar e secar os resíduos antes de descartá-los e evitar a contaminação cruzada entre diferentes tipos de materiais. Além diso, a participação da população é essencial para que os materiais coletados cheguem à indústria de reciclagem em bom estado, garantindo a qualidade do produto reciclado e fechando o ciclo da economia circular."
+    },
+    {
+      "grupo": "holdout",
+      "id": 103,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Escreva um parágrafo explicando o que é a coleta seletiva de materiais.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 144,
+      "paragrafos": 1,
+      "itens": 0,
+      "ms": 8508,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:43:50.346Z",
+          "ms": 8507,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A coleta seletiva de materiais é o processo de separar, em fonte, os resíduos orgânicos e recicláveis, como papel, plástico, vidro, metal e eletrônicos, direcionando-os a fluxos específicos para reaproveitamento, em vez de enviá-los ao lixo comum. Essa prática pode ocorrer em escala doméstica, comunitária ou urbana, envolvendo a população, cooperativas de reciclagem e serviços públicos de limpeza. O objetivo principal é reduzir o volume de resíduos enviados a aterros sanitários e incineração, conservar recursos naturais, diminuir o consumo de energia e evitar a poluição do solo, água e ar. Para ser eficaz, a coleta seletiva exige educação ambiental, sinalização adequada, logística reversa e infraestrutura para triagem, armazenamento e transporte dos materiais. Quando bem implementada, ela também gera empregos e renda para catadores e fortalece a economia circular, transformando resíduos em novos produtos e incentivando a redução, reutilização e reciclagem como pilares da sustentabilidade."
+    },
+    {
+      "grupo": "novo",
+      "id": 201,
+      "repeticao": 0,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Explique em dois parágrafos por que a Lua apresenta fases.",
+      "ok": true,
+      "falhas": [],
+      "palavras": 172,
+      "paragrafos": 2,
+      "itens": 0,
+      "ms": 15184,
+      "rota": "lagunas",
+      "erro": null,
+      "incompleto": false,
+      "avisoFormato": null,
+      "verificacaoFactual": "nao_verificada",
+      "fontesConsultadas": [],
+      "chamadas": [
+        {
+          "rota": "lagunas",
+          "inicio": "2026-10-29T17:43:58.857Z",
+          "ms": 15181,
+          "resultado": "texto",
+          "retryAfterSegundos": null,
+          "fim": "stop"
+        }
+      ],
+      "texto": "A Lua apresenta fases porque sua iluminação depende da posição relativa entre a Terra, a Lua e o Sol. À medida que a Lua orbita a a Terra, a porção iluminada por ela muda conforme o ângulo em que recebemos a luz solar. Quando o Lua está entre a Terra e o Sol, a face voltada para a Terra está no escuro, resultando na lua nova. Quando a Terra se encontra entre o Sol e a Lua, a face oposta do satélite está iluminada, produzindo a lua cheia. As demais posições geram fases intermediárias, como quartos crescente e minguante.\n\nEssas fases ocorrem em um ciclo de aproximadamente 29,5 dias, conhecido como lunação. Durante esse período, a Lua completa uma órbita completa em torno da Terra, e a quantidade de sua superfície visível da Terra varia continuamente. A combinação da rotação do Lua e de sua órbita garante que sempre veamos a mesma face do satélite, mas a porção iluminada dessa face muda constantemente, criando as fases lunares que observamos no céu noturno."
     }
   ],
   "sum": {
     "original": {
       "A": {
-        "total": 4,
+        "total": 12,
         "previsto": 24,
         "completo": false,
-        "passaram": 4,
+        "passaram": 12,
         "pct": null,
-        "medianaMs": 8324
+        "medianaMs": 9150
       },
       "B": {
-        "total": 4,
+        "total": 12,
         "previsto": 24,
         "completo": false,
-        "passaram": 2,
+        "passaram": 10,
         "pct": null,
-        "medianaMs": 17292
+        "medianaMs": 9782
       }
     },
     "holdout": {
       "A": {
-        "total": 1,
+        "total": 4,
         "previsto": 6,
         "completo": false,
-        "passaram": 1,
+        "passaram": 4,
         "pct": null,
-        "medianaMs": 8107
+        "medianaMs": 10623.5
       },
       "B": {
-        "total": 1,
+        "total": 4,
         "previsto": 6,
         "completo": false,
-        "passaram": 1,
+        "passaram": 4,
         "pct": null,
-        "medianaMs": 7807
+        "medianaMs": 8157.5
       }
     },
     "novo": {
       "A": {
-        "total": 0,
+        "total": 3,
         "previsto": 6,
         "completo": false,
-        "passaram": 0,
+        "passaram": 3,
         "pct": null,
-        "medianaMs": null
+        "medianaMs": 11126
       },
       "B": {
-        "total": 0,
+        "total": 2,
         "previsto": 6,
         "completo": false,
-        "passaram": 0,
+        "passaram": 2,
         "pct": null,
-        "medianaMs": null
+        "medianaMs": 10036
       }
     },
     "repeticoes": {
