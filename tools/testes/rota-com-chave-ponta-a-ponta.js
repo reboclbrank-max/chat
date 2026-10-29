@@ -139,5 +139,99 @@ const catalogo = (porta) => ([
     srv.close();
   }
 
+  // ---------- 6: busca viva ponta a ponta, sem tocar na rede externa ----------
+  // Prova que, quando a fonte viva é pedida, o trecho do artigo entra no prompt e sai citado na
+  // resposta — e que a busca é recusada quando o artigo não é sobre o pedido.
+  {
+    const bloco = 'Os painéis solares são formados por células de material semicondutor que ' +
+      'convertem a luz do sol em corrente elétrica contínua por efeito fotovoltaico. Um inversor ' +
+      'transforma essa corrente contínua em corrente alternada, que é a forma usada pelos aparelhos ' +
+      'da casa. A geração varia ao longo do dia conforme a incidência de luz, e o excedente pode ser ' +
+      'enviado à rede elétrica ou armazenado em baterias para uso noturno. O sistema também inclui ' +
+      'estrutura de fixação, cabeamento, proteções elétricas e um medidor que registra o que é ' +
+      'injetado na rede, e a limpeza periódica dos módulos mantém a produção próxima do previsto.';
+    const { srv, estado, porta } = await servidorFalso(200, bloco);
+    const fetchOriginal = global.fetch;
+    const consultas = [];
+    global.fetch = async (url, opcoes) => {
+      const u = String(url);
+      // Só a Wikipédia é falsificada; o provedor local (127.0.0.1) segue pelo fetch de verdade.
+      if (!u.includes('wikipedia')) return fetchOriginal(url, opcoes);
+      consultas.push(u);
+      if (u.includes('list=search')) {
+        return { ok: true, status: 200, json: async () => ({ query: { search: [
+          { title: 'Energia solar fotovoltaica', snippet: 'painéis convertem luz solar em eletricidade' },
+          { title: 'Caminho', snippet: 'via, trajecto, percurso' }
+        ] } }) };
+      }
+      return { ok: true, status: 200, json: async () => ({ query: { pages: { 1: {
+        title: 'Energia solar fotovoltaica',
+        extract: 'A célula fotovoltaica converte luz solar em eletricidade por meio do efeito ' +
+          'fotovoltaico em materiais semicondutores. Os painéis agrupam essas células e geram ' +
+          'corrente contínua, convertida por inversores na corrente alternada usada nas casas.'
+      } } } }) };
+    };
+    try {
+      const r = new Roteador({ catalogo: catalogo(porta), lerChave: () => CHAVE_FALSA, votos: 1 });
+      const resp = await r.responder({
+        pergunta: 'Explique em dois parágrafos como funciona a energia solar fotovoltaica.',
+        tipo: 'aberto', fontes: 'vivo'
+      });
+      ok('com fonte viva pedida, a busca acontece e a fonte escolhida é a que tem o tema no título', () => {
+        assert(consultas.some((u) => u.includes('list=search')), 'não consultou a busca');
+        assert(resp.fontesConsultadas && resp.fontesConsultadas.length, 'resposta sem fonte citada');
+        assert.strictEqual(resp.fontesConsultadas[0].titulo, 'Energia solar fotovoltaica');
+        assert(!/titles=Caminho/.test(consultas.join(' ')), 'abriu o artigo tangencial');
+      });
+      ok('o trecho do artigo entra no prompt enviado ao provedor', () => {
+        const corpo = JSON.stringify(estado.pedidos[0] && estado.pedidos[0].corpo || {});
+        assert(corpo.includes('fotovoltaico') || corpo.includes('semicondutores'), 'o trecho não chegou ao provedor');
+        assert(corpo.includes('TRECHO 1'), 'o trecho não foi rotulado como dado, não instrução');
+      });
+      ok('a resposta não vira cópia do trecho: o texto entregue é o gerado', () => {
+        assert(String(resp.texto).includes('casa'), 'resposta não conversa com o pedido');
+        assert(!/^\s*A célula fotovoltaica converte luz solar/.test(String(resp.texto)), 'resposta colou o trecho');
+      });
+    } finally { global.fetch = fetchOriginal; srv.close(); }
+  }
+
+  // ---------- 7: sem fonte viva pedida, nenhuma consulta externa ----------
+  {
+    const { srv, estado, porta } = await servidorFalso(200, 'Explicação curta e completa sobre o tema pedido, com frase final.');
+    const fetchOriginal = global.fetch;
+    let consultas = 0;
+    global.fetch = async (url, opcoes) => {
+      if (String(url).includes('wikipedia')) { consultas++; throw new Error('não devia consultar'); }
+      return fetchOriginal(url, opcoes);
+    };
+    try {
+      const r = new Roteador({ catalogo: catalogo(porta), lerChave: () => CHAVE_FALSA, votos: 1 });
+      await r.responder({ pergunta: 'Explique em uma frase o que é fotossíntese.', semFerramenta: true, semConsenso: true, dificuldade: 'leve' });
+      ok('sem fonte viva pedida e fora do navegador, o teste não consulta a Wikipédia', () => {
+        assert.equal(consultas, 0, 'consultas externas em teste: ' + consultas);
+        assert(estado.pedidos.length >= 1, 'o provedor local deveria ter sido chamado');
+      });
+    } finally { global.fetch = fetchOriginal; srv.close(); }
+  }
+
+  // ---------- 8: com as ferramentas desligadas, a fonte viva não consulta nada ----------
+  {
+    const { srv, estado, porta } = await servidorFalso(200, 'Resposta curta e completa sobre o tema, com frase final.');
+    const fetchOriginal = global.fetch;
+    let consultas = 0;
+    global.fetch = async (url, opcoes) => {
+      if (String(url).includes('wikipedia')) { consultas++; throw new Error('não devia consultar'); }
+      return fetchOriginal(url, opcoes);
+    };
+    try {
+      const r = new Roteador({ catalogo: catalogo(porta), lerChave: () => CHAVE_FALSA, votos: 1, ferramentas: false });
+      await r.responder({ pergunta: 'Explique como funciona a energia solar fotovoltaica.', tipo: 'aberto', fontes: 'vivo' });
+      ok('ferramentas desligadas vencem até o pedido explícito de fonte viva', () => {
+        assert.equal(consultas, 0, 'consultou a Wikipédia com ferramentas desligadas');
+        assert(estado.pedidos.length >= 1, 'o provedor local deveria ter sido chamado');
+      });
+    } finally { global.fetch = fetchOriginal; srv.close(); }
+  }
+
   console.log('\n' + n + ' contratos ponta a ponta da rota com chave passaram');
 })().catch((e) => { console.error('✘ ' + e.message); process.exit(1); });
