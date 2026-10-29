@@ -1575,6 +1575,29 @@
         var palavras = txt.split(/\s+/).filter(Boolean).length;
         if (txt && palavras >= Math.max(10, minPorItem) && /[.!?…]["”)]?$/.test(txt)) feito = String(i + 1) + '. ' + txt.replace(/^\d+[.)]\s*/, '');
       }
+      if (!feito) {
+        // mesma política do texto longo: espera a rota mais próxima livre e refaz o item. Antes,
+        // um item sem resposta derrubava a lista inteira e o caminho de reserva entregava texto curto
+        // (medido: pedido de 3 passos/60 palavras entregue com 36).
+        var t = agora();
+        var prox = this.catalogo
+          .filter(function (r) { return !self.saude[r.id].morta && self.saude[r.id].cooldownAte > t; })
+          .map(function (r) { return self.saude[r.id].cooldownAte; });
+        var esp = prox.length ? Math.min(Math.min.apply(null, prox) - t + 500, 30000) : 4000;
+        if (esp > 0) await new Promise(function (res) { setTimeout(res, esp); });
+        for (var t2 = 0; t2 < 3 && !feito; t2++) {
+          var rota2 = rotas[idx++ % rotas.length];
+          await this._esperarVez(rota2);
+          var r2 = await this._chamar(rota2, ped, 25000, { maxTokens: 300, longo: true, sistema: SYS_ABERTO });
+          tentativas++;
+          if (r2.texto) this._premiar(rota2.id, r2.ms); else this._castigar(rota2.id, r2.erro, r2.espera);
+          var t3 = sanear(String(r2.texto || '').trim()).replace(/\s*\n+\s*/g, ' ');
+          if (t3 && t3.split(/\s+/).filter(Boolean).length >= Math.max(10, Math.floor(minPorItem * 0.7)) &&
+              /[.!?…]["”)]?$/.test(t3)) {
+            feito = String(i + 1) + '. ' + t3.replace(/^\d+[.)]\s*/, '');
+          }
+        }
+      }
       if (!feito) return null;
       linhas.push(feito);
     }
