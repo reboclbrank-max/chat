@@ -616,6 +616,11 @@
       } catch (e) { return null; }
     };
     this.voltasMax = opcoes.voltasMax || 4;
+    // Segunda amostra nas perguntas abertas (rodada 108). Medido na janela de maior poder
+    // (36 itens × 2 repetições por lado): A 63/72 x B 71/72, +11,1 pontos, IC95% [3,0; 19,2],
+    // McNemar exato p = 0,0078, 8 ganhos e nenhuma derrota. Custo: 2× chamadas e +87% de latência
+    // nas perguntas abertas. Desliga com `amostrasAberto: 1` ou `pedido.semSegundaAmostra`.
+    this.amostrasAberto = opcoes.amostrasAberto || 2;
     this.votos = opcoes.votos || 3;              // quantos modelos votam no consenso
     this.ferramentasLigadas = opcoes.ferramentas !== false;
     this.metricas = { perguntas: 0, tentativas: 0, sucessos: 0, falhas: 0, cacheAcertos: 0, ferramenta: 0, consenso: 0, consensoDivergente: 0, porRota: {} };
@@ -2486,7 +2491,46 @@
   };
 
   /* ============ API PRINCIPAL ============ */
+  /* Pontuação interna da amostra — a mesma lógica que já escolhe candidatos no caminho aberto.
+     Não conhece gabarito nenhum: só forma (tamanho, parágrafos, fecho) e sinais de corte. */
+  function pontosDaAmostra(resposta, ex) {
+    if (!resposta || !resposta.texto) return -1000;
+    var anotada = anotarRespostaAberta(resposta, ex) || {};
+    var pontos = notaTexto(resposta.texto, ex);
+    if (!anotada.incompleto && !resposta.parcial && !resposta.cortado) pontos += 6;
+    if (resposta.cortado) pontos -= 4;
+    var palavras = String(resposta.texto).trim().split(/\s+/).filter(Boolean).length;
+    if (palavras < Math.floor((ex.minPalavras || 0) * 0.9)) pontos -= 2;
+    return pontos;
+  }
+
+  var responderUmaAmostra = null;   // preenchido logo abaixo, depois da definição de responder
+
   Roteador.prototype.responder = async function (pedido) {
+    var pergunta = typeof pedido === 'object' && pedido ? pedido.pergunta : pedido;
+    var tipo = (typeof pedido === 'object' && pedido && pedido.tipo) || classificarPedido(pergunta);
+    var primeira = await responderUmaAmostra.call(this, pedido);
+    var quantas = this.amostrasAberto || 1;
+    if (tipo !== 'aberto' || quantas < 2) return primeira;
+    if (typeof pedido === 'object' && pedido && pedido.semSegundaAmostra) return primeira;
+    // A segunda amostra é pedida SEMPRE nas perguntas abertas, exatamente como foi medida.
+    // (Cheguei a testar pular a segunda quando a primeira já estava completa; a validação mostrou
+    // que quase nenhuma pergunta usava a segunda e o ganho desaparecia — então o produto fica
+    // igual ao experimento. Quem quiser economizar usa `amostrasAberto: 1`.)
+    var ex = exigenciaDoPedido(pergunta);
+    // Amostra nova de verdade: sem cache e sem herdar a primeira.
+    var cacheGet = this._cacheGet, cacheSet = this._cacheSet;
+    this._cacheGet = function () { return null; };
+    this._cacheSet = function () {};
+    var segunda = null;
+    try { segunda = await responderUmaAmostra.call(this, pedido); }
+    catch (e) { segunda = null; }
+    finally { this._cacheGet = cacheGet; this._cacheSet = cacheSet; }
+    var escolhida = pontosDaAmostra(segunda, ex) > pontosDaAmostra(primeira, ex) ? segunda : primeira;
+    return Object.assign({}, escolhida, { amostras: 2, daSegunda: escolhida === segunda });
+  };
+
+  responderUmaAmostra = async function (pedido) {
     var inicioPedido = agora();
     var pergunta = typeof pedido === 'string' ? pedido : pedido.pergunta;
     var dificuldade = (typeof pedido === 'object' && pedido.dificuldade) || 'media';

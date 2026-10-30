@@ -120,9 +120,11 @@ const catalogo = (porta) => ([
       'torneira entrega a mesma água que saiu da estação de tratamento.';
     const { srv, estado, porta } = await servidorFalso(200, bloco);
     const r = new Roteador({ catalogo: catalogo(porta), lerChave: () => CHAVE_FALSA, votos: 1 });
+    // `semSegundaAmostra`: o contrato abaixo conta chamadas para provar que o formato é resolvido
+    // de uma vez; a segunda amostra (padrão ligado nas abertas) tem contrato em duas-amostras.js.
     const resp = await r.responder({
       pergunta: 'Descreva em três parágrafos o caminho da água da chuva até a torneira de casa.',
-      tipo: 'aberto'
+      tipo: 'aberto', semSegundaAmostra: true
     });
     const blocos = String(resp.texto || '').split(/\n+/).filter((x) => x.trim());
     const normaliza = (t) => String(t || '').replace(/\s+/g, ' ').trim();
