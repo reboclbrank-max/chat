@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-10-30T21:10:12.105Z",
+ "verificado_em": "2026-10-30T21:22:16.276Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -20,9 +20,10 @@
    "evidencia": "postagem-agendada-recente"
   },
   "Chat por e-mail (24h)": {
-   "ok": false,
-   "falhas": 1,
-   "causa": "turno-ausente"
+   "ok": true,
+   "falhas": 0,
+   "causa": "saudavel",
+   "evidencia": "turno-ativo"
   },
   "Bateria do cérebro": {
    "ok": true,
@@ -47,11 +48,6 @@
    "falhas": 0,
    "causa": "saudavel",
    "evidencia": "caixa-sem-pendencia"
-  }
- },
- "recuperacoes": {
-  "email": {
-   "ultima_tentativa_em": "2026-10-30T21:10:12.105Z"
   }
  }
 }
