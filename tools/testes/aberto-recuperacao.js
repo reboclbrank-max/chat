@@ -9,7 +9,10 @@ const rota = (id, base, latPar = 100) => ({ id, nome: id, base, modelo: id,
 const a = 'O primeiro trecho apresenta o assunto com clareza e desenvolve suas ideias em frases completas. '.repeat(5);
 const b = 'O segundo trecho acrescenta uma explicação pertinente, sem repetir o conteúdo já apresentado. '.repeat(5);
 const pergunta = 'Explique em dois parágrafos como uma biblioteca organiza e empresta livros.';
-const pedido = { pergunta, tipo: 'aberto', semFerramenta: true };
+// `semSegundaAmostra`: estes contratos medem o ENSAIO interno (rascunho, blocos, prazos) e
+// contam chamadas; a segunda amostra das perguntas abertas tem contrato próprio em
+// `duas-amostras.js`, onde o padrão ligado é verificado.
+const pedido = { pergunta, tipo: 'aberto', semFerramenta: true, semSegundaAmostra: true };
 
 async function comRelogioFalso(fn) {
   const antigoAgora = Date.now, antigoTimer = global.setTimeout;
@@ -61,7 +64,7 @@ async function comRelogioFalso(fn) {
     assert(q.includes('Itens anteriores, já escritos:'), 'o modelo recebe os itens anteriores');
     return { texto: 'Uma terceira explicação relevante, que acrescenta informação nova e completa o conjunto sem repetir o anterior.', ms: 1, bruto: 'stop' };
   };
-  const listaRecuperada = await listaRapida.responder({ pergunta: perguntaLista, tipo: 'aberto', semFerramenta: true });
+  const listaRecuperada = await listaRapida.responder({ pergunta: perguntaLista, tipo: 'aberto', semFerramenta: true, semSegundaAmostra: true });
   assert.strictEqual(chamadasLista.length, 2);
   assert.match(listaRecuperada.texto, /^1\. /);
   assert.match(listaRecuperada.texto, /\n2\. /);
@@ -75,7 +78,7 @@ async function comRelogioFalso(fn) {
   const comContinuacao = '1. ' + a.trim() + '\nContinuação que não pode ser apagada.\n2. ' + b.trim() +
     '\n3. Uma orientação final suficiente para concluir a lista de modo adequado e seguro.';
   listaContinua._chamar = async () => { chamadasContinua++; return { texto: comContinuacao, ms: 1, bruto: 'stop' }; };
-  const listaPreservada = await listaContinua.responder({ pergunta: perguntaLista, tipo: 'aberto', semFerramenta: true });
+  const listaPreservada = await listaContinua.responder({ pergunta: perguntaLista, tipo: 'aberto', semFerramenta: true, semSegundaAmostra: true });
   assert.strictEqual(chamadasContinua, 1, 'lista completa não precisa de plano ou recuperação');
   assert(listaPreservada.texto.includes('Continuação que não pode ser apagada.'), 'não eliminar linhas de continuação');
   assert.strictEqual(listaPreservada.incompleto, undefined);
@@ -86,7 +89,7 @@ async function comRelogioFalso(fn) {
   simples._esperarVez = async () => true;
   let usada = null;
   simples._chamar = async (r) => { usada = r.id; return { texto: a.trim(), ms: 1, bruto: 'stop' }; };
-  await simples.responder({ pergunta: 'Escreva um parágrafo sobre o tema.', tipo: 'aberto', semFerramenta: true });
+  await simples.responder({ pergunta: 'Escreva um parágrafo sobre o tema.', tipo: 'aberto', semFerramenta: true, semSegundaAmostra: true });
   assert.strictEqual(usada, 'rapida', 'a resposta direta também prioriza latência em parágrafo único');
   console.log('✔ texto de um parágrafo começa pelo modelo mais rápido medido');
 
@@ -135,7 +138,7 @@ async function comRelogioFalso(fn) {
       if (total === 1) return { erro: 'rate', espera: 60, ms: 1 };
       return { texto: 'Uma sugestão útil com detalhes relevantes, apresentada claramente e sem depender de informações privadas ou não verificadas.', ms: 1, bruto: 'stop' };
     };
-    const lista = await r.responder({ pergunta: perguntaLista, tipo: 'aberto', semFerramenta: true });
+    const lista = await r.responder({ pergunta: perguntaLista, tipo: 'aberto', semFerramenta: true, semSegundaAmostra: true });
     assert.strictEqual(total, 4, 'aguarda e recupera os três itens');
     assert(instantes[1] - inicio >= 60000, 'não chama antes do Retry-After');
     assert(agora() - inicio <= 110000);
@@ -184,7 +187,7 @@ async function comRelogioFalso(fn) {
       total++;
       return total === 1 ? { texto: '1. Primeiro item: ' + a.trim(), ms: 1 } : { erro: 'rate', espera: 600, ms: 1 };
     };
-    const parcial = await r.responder({ pergunta: 'Escreva uma lista com 3 dicas práticas.', tipo: 'aberto', semFerramenta: true });
+    const parcial = await r.responder({ pergunta: 'Escreva uma lista com 3 dicas práticas.', tipo: 'aberto', semFerramenta: true, semSegundaAmostra: true });
     assert.match(parcial.texto, /^1\. /);
     assert.strictEqual(parcial.incompleto, true);
     assert.match(parcial.avisoFormato, /1 de 3 itens/);
