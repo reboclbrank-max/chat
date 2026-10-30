@@ -57,6 +57,9 @@ amostras nunca piorou uma resposta que já estava certa.
 - Wrapper de `Roteador.prototype.responder`: só re-amostra **perguntas abertas**, desliga cache na
   segunda amostra (amostra nova de verdade) e entrega `{ amostras: 2, daSegunda: true|false }`.
 - Escapatória por pedido: `pedido.semSegundaAmostra: true`.
+- **Visível no produto:** o rodapé do `!melhor` e a etiqueta do motor passam a dizer
+  `2 amostras, a melhor entregue` / `· 2 amostras` quando a resposta veio do novo caminho —
+  o custo (e o motivo da espera maior) fica na cara, não escondido no código.
 
 **Tentativa descartada (e por quê):** a primeira versão pulava a segunda amostra quando a primeira
 já vinha completa e bem pontuada — economizava latência, mas `bench/validar-duas-amostras-108.js`
