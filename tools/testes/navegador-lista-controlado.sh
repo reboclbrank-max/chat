@@ -291,6 +291,22 @@ teste_lista = """<script>
     throw new Error('Workspace não concluiu a transação local controlada: ' + (rotulo || 'etapa sem nome')
       + ' | estado: ' + diagnosticoWorkspace());
   };
+  // Um clique pode se perder no meio de um re-render da lista (medido em 27/10/2026: o mesmo
+  // commit passou na PR e falhou em main em "criar arquivo para renomeação concorrente").
+  // Aumentar a espera não resolve clique perdido; repetir a ação resolve — como faria uma pessoa.
+  // Cada volta cede tempo REAL ao IndexedDB (rota /__espera da fixture) e depois dá o salto
+  // virtual: sem o tempo real, a transação de armazenamento não termina e a espera é inútil.
+  const comRepeticaoDaAcao = async (acao, predicado, rotulo, tentativas = 90) => {
+    for (let tentativa = 0; tentativa < tentativas; tentativa++) {
+      if (predicado()) return;
+      if (tentativa % 5 === 0) acao();
+      await cederTempoReal(30);
+      await new Promise(resolve => setTimeout(resolve, 60000));
+    }
+    if (predicado()) return;
+    throw new Error('Workspace não concluiu a transação local controlada: ' + (rotulo || 'etapa sem nome')
+      + ' | estado: ' + diagnosticoWorkspace());
+  };
   const esperarOrganizacao = async (predicado, rotulo, tentativas = 60) => {
     for (let tentativa = 0; tentativa < tentativas; tentativa++) {
       if (predicado()) return;
@@ -345,10 +361,12 @@ teste_lista = """<script>
     document.getElementById('btn-workspace-criar-projeto').click();
     await esperarWorkspace(() => porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjeto), 'criar projeto');
 
-    document.getElementById('btn-workspace-novo-arquivo').click();
     const nome = document.getElementById('workspace-nome-arquivo');
     const editor = document.getElementById('workspace-editor');
-    await esperarWorkspace(() => !nome.disabled && !editor.disabled, 'criar arquivo');
+    await comRepeticaoDaAcao(
+      () => document.getElementById('btn-workspace-novo-arquivo').click(),
+      () => !nome.disabled && !editor.disabled,
+      'criar arquivo');
     nome.value = nomeArquivo;
     nome.dispatchEvent(new Event('input', { bubbles: true }));
     editor.value = conteudoInicial;
@@ -381,8 +399,10 @@ teste_lista = """<script>
     await esperarWorkspace(() => porTexto(document, '#workspace-lista-arquivos .workspace-arquivo', nomeArquivo), 'arquivo após restaurar projeto');
 
     const nomeArquivoLixeira = 'apagado-fixture.md';
-    document.getElementById('btn-workspace-novo-arquivo').click();
-    await esperarWorkspace(() => !nome.disabled && !editor.disabled, 'criar arquivo para lixeira do arquivo completo');
+    await comRepeticaoDaAcao(
+      () => document.getElementById('btn-workspace-novo-arquivo').click(),
+      () => !nome.disabled && !editor.disabled,
+      'criar arquivo para lixeira do arquivo completo');
     nome.value = nomeArquivoLixeira;
     nome.dispatchEvent(new Event('input', { bubbles: true }));
     editor.value = 'conteúdo sintético recuperável';
@@ -398,8 +418,10 @@ teste_lista = """<script>
     novoProjeto.value = nomeProjetoBuscaGlobal;
     document.getElementById('btn-workspace-criar-projeto').click();
     await esperarWorkspace(() => porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjetoBuscaGlobal), 'criar projeto para busca global');
-    document.getElementById('btn-workspace-novo-arquivo').click();
-    await esperarWorkspace(() => !nome.disabled && !editor.disabled, 'criar arquivo para busca global');
+    await comRepeticaoDaAcao(
+      () => document.getElementById('btn-workspace-novo-arquivo').click(),
+      () => !nome.disabled && !editor.disabled,
+      'criar arquivo para busca global');
     nome.value = nomeArquivoBuscaGlobal;
     nome.dispatchEvent(new Event('input', { bubbles: true }));
     editor.value = conteudoBuscaGlobal;
@@ -453,8 +475,10 @@ teste_lista = """<script>
     novoProjeto.value = nomeProjetoRenomeacaoArquivo;
     document.getElementById('btn-workspace-criar-projeto').click();
     await esperarWorkspace(() => porTexto(document, '#workspace-lista-projetos .workspace-projeto', nomeProjetoRenomeacaoArquivo), 'criar projeto para renomeação de arquivo concorrente');
-    document.getElementById('btn-workspace-novo-arquivo').click();
-    await esperarWorkspace(() => !nome.disabled && !editor.disabled, 'criar arquivo para renomeação concorrente');
+    await comRepeticaoDaAcao(
+      () => document.getElementById('btn-workspace-novo-arquivo').click(),
+      () => !nome.disabled && !editor.disabled,
+      'criar arquivo para renomeação concorrente');
     nome.value = nomeBaseRenomeacaoArquivo;
     nome.dispatchEvent(new Event('input', { bubbles: true }));
     editor.value = 'conteúdo sintético para renomeação concorrente';
