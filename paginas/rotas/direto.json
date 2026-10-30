@@ -1,54 +1,54 @@
 {
-  "rota": "direto",
-  "base": "index",
-  "regras": [
-    {
-      "faixa": [
-        1076,
-        1077
-      ],
-      "esperado": "  try { localStorage.setItem('rebocl_conv', String(numero)); } catch (e) {}",
-      "novo": ""
-    },
-    {
-      "faixa": [
-        1080,
-        1081
-      ],
-      "esperado": "  try { localStorage.setItem('rebocl_conv_titulo', titulo || ('Conversa #' + numero)); } catch (e) {}",
-      "novo": ""
-    },
-    {
-      "faixa": [
-        1363,
-        1364
-      ],
-      "esperado": "  if (!texto) return;",
-      "novo": "  if (!texto || !conversa) return;"
-    },
-    {
-      "faixa": [
-        1402,
-        1436
-      ],
-      "esperado": "  if (!conversa) {\n    caixa.value = ''; caixa.style.height = 'auto';\n    atualizarContador();\n    bolha('user', texto, new Date().toISOString()); rolarFim();\n    if (!token) {\n      pensando(true);\n      pensarStream([{ role: 'user', content: texto }], function () {}).then(function (r) {\n        pensando(false);\n        const t = (r && r.texto) || '';\n        bolha('bot', t || 'travei agora — manda de novo que eu respondo.', new Date().toISOString(), '⚡ direto'); rolarFim();\n        try { const h = JSON.parse(localStorage.getItem('rebocl_direto_h') || '[]'); h.push({ q: 'u', t: texto }); if (t) h.push({ q: 'b', t: t }); localStorage.setItem('rebocl_direto_h', JSON.stringify(h.slice(-60))); } catch (e) {}\n      }).catch(function () { pensando(false); bolha('bot', 'a fiação piscou — manda de novo.', new Date().toISOString(), '⚡'); rolarFim(); });\n      return;\n    }\n    $('btn-enviar').disabled = true;\n    atualizarEstadoEntrega('criando-conversa');\n    try {\n      const inicio = Date.now();\n      const nova = await api('/repos/' + REPO + '/issues', { method: 'POST', body: JSON.stringify({ title: texto.trim().split('\\n')[0].slice(0, 70), body: texto.trim() }) });\n      limparRascunhoPorChave('nova', texto);\n      limparPreviaArquivoTexto();\n      ultimoId = 0;\n      atualizarEstadoEntrega('conversa-criada');\n      await abrir(nova.number, nova.title, TURBO ? null : { inicio, evento: 'issues' });\n      if (TURBO) {\n        atualizarEstadoEntrega('resposta-local-solicitada');\n        emergenciaResponder(nova.number);\n      }\n    } catch (e) {\n      encerrarEstadoEntrega(estadoEntregaParaErro(e), '⚠️ entrega', mensagemErroSeguro(e));\n      avisarRascunhoPreservadoAposFalha();\n    } finally { $('btn-enviar').disabled = false; }\n    return;\n  }",
-      "novo": ""
-    },
-    {
-      "faixa": [
-        2513,
-        2516
-      ],
-      "esperado": "async function reabrirUltima() {\n  try { if (token && localStorage.getItem('rebocl_conv')) { await abrir(parseInt(localStorage.getItem('rebocl_conv'), 10), localStorage.getItem('rebocl_conv_titulo') || ''); } } catch (e) {}\n}",
-      "novo": ""
-    },
-    {
-      "faixa": [
-        3784,
-        3787
-      ],
-      "esperado": "\nsetTimeout(function () { try { if (token && localStorage.getItem('rebocl_conv') && !conversa) { reabrirUltima(); return; } } catch (e) {}\n  try { if (!token) { abrirConversa(); $('titulo-conv').textContent = '⚡ Direto'; bolha('bot', '📍 **modo direto** — escreva qualquer coisa aí embaixo e eu respondo AQUI mesmo, sem caderno, sem chave, sem nada. Pra falar com a casa inteira (status, acordar, exame), um dia instalamos sua chave — mas pra conversar, agora já vale.', new Date().toISOString(), '⚡'); rolarFim(); } } catch (e) {} }, 1200);",
-      "novo": ""
-    }
-  ]
+ "rota": "direto",
+ "base": "index",
+ "regras": [
+  {
+   "faixa": [
+    1076,
+    1077
+   ],
+   "esperado": "  try { localStorage.setItem('rebocl_conv', String(numero)); } catch (e) {}",
+   "novo": ""
+  },
+  {
+   "faixa": [
+    1080,
+    1081
+   ],
+   "esperado": "  try { localStorage.setItem('rebocl_conv_titulo', titulo || ('Conversa #' + numero)); } catch (e) {}",
+   "novo": ""
+  },
+  {
+   "faixa": [
+    1387,
+    1388
+   ],
+   "esperado": "  if (!texto) return;",
+   "novo": "  if (!texto || !conversa) return;"
+  },
+  {
+   "faixa": [
+    1426,
+    1460
+   ],
+   "esperado": "  if (!conversa) {\n    caixa.value = ''; caixa.style.height = 'auto';\n    atualizarContador();\n    bolha('user', texto, new Date().toISOString()); rolarFim();\n    if (!token) {\n      pensando(true);\n      pensarStream([{ role: 'user', content: texto }], function () {}).then(function (r) {\n        pensando(false);\n        const t = (r && r.texto) || '';\n        bolha('bot', t || 'travei agora — manda de novo que eu respondo.', new Date().toISOString(), '⚡ direto'); rolarFim();\n        try { const h = JSON.parse(localStorage.getItem('rebocl_direto_h') || '[]'); h.push({ q: 'u', t: texto }); if (t) h.push({ q: 'b', t: t }); localStorage.setItem('rebocl_direto_h', JSON.stringify(h.slice(-60))); } catch (e) {}\n      }).catch(function () { pensando(false); bolha('bot', 'a fiação piscou — manda de novo.', new Date().toISOString(), '⚡'); rolarFim(); });\n      return;\n    }\n    $('btn-enviar').disabled = true;\n    atualizarEstadoEntrega('criando-conversa');\n    try {\n      const inicio = Date.now();\n      const nova = await api('/repos/' + REPO + '/issues', { method: 'POST', body: JSON.stringify({ title: texto.trim().split('\\n')[0].slice(0, 70), body: texto.trim() }) });\n      limparRascunhoPorChave('nova', texto);\n      limparPreviaArquivoTexto();\n      ultimoId = 0;\n      atualizarEstadoEntrega('conversa-criada');\n      await abrir(nova.number, nova.title, TURBO ? null : { inicio, evento: 'issues' });\n      if (TURBO) {\n        atualizarEstadoEntrega('resposta-local-solicitada');\n        emergenciaResponder(nova.number);\n      }\n    } catch (e) {\n      encerrarEstadoEntrega(estadoEntregaParaErro(e), '⚠️ entrega', mensagemErroSeguro(e));\n      avisarRascunhoPreservadoAposFalha();\n    } finally { $('btn-enviar').disabled = false; }\n    return;\n  }",
+   "novo": ""
+  },
+  {
+   "faixa": [
+    2569,
+    2572
+   ],
+   "esperado": "async function reabrirUltima() {\n  try { if (token && localStorage.getItem('rebocl_conv')) { await abrir(parseInt(localStorage.getItem('rebocl_conv'), 10), localStorage.getItem('rebocl_conv_titulo') || ''); } } catch (e) {}\n}",
+   "novo": ""
+  },
+  {
+   "faixa": [
+    3840,
+    3843
+   ],
+   "esperado": "\nsetTimeout(function () { try { if (token && localStorage.getItem('rebocl_conv') && !conversa) { reabrirUltima(); return; } } catch (e) {}\n  try { if (!token) { abrirConversa(); $('titulo-conv').textContent = '⚡ Direto'; bolha('bot', '📍 **modo direto** — escreva qualquer coisa aí embaixo e eu respondo AQUI mesmo, sem caderno, sem chave, sem nada. Pra falar com a casa inteira (status, acordar, exame), um dia instalamos sua chave — mas pra conversar, agora já vale.', new Date().toISOString(), '⚡'); rolarFim(); } } catch (e) {} }, 1200);",
+   "novo": ""
+  }
+ ]
 }

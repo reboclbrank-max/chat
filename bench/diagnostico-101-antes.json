@@ -1,0 +1,64 @@
+{
+  "started": "2026-10-29T10:25:20.031Z",
+  "sha": "5d8695010adedc2f7ddf91329f86ee49fbd9290f6a897c4dfe25b30e3f126ed2",
+  "res": [
+    {
+      "id": 16,
+      "ms": 18519,
+      "avaliacao": {
+        "ok": true,
+        "falhas": [],
+        "palavras": 213,
+        "paragrafos": 2,
+        "itens": 0
+      },
+      "saida": {
+        "texto": "O caminho da água da chuva até a torneira de casa começa quando os primeiros gotículos caem sobre o telhado e são coletados pelas calhas e raias, que conduzem o líquido para ralos conectados a canos subterrâneos. Ao atravessar o solo, a água passa por camadas de terra e rocha, onde parte é filtrada naturalmente, perdendo resíduos e adquirindo uma primeira pureza antes de alcançar os poços ou estações de captação. Dentro da rede de tubulação, o fluido é bombeado, tratado e redistribuído até as torneiras, completando assim o longo percurso iniciado pela chuva.\n\nDepois que a água da chuva abandona a rede de distribuição, ela ainda participa do ciclo hidrológico, retornando ao solo e às nascentes que alimentam rios e lençóis freáticos. Essas nascentes, muitas vezes localizadas em áreas de preservação, são o ponto de partida de muitos cursos de água que, após percorrer quilômetros, chegam às estações de tratamento. Em uma cidade do interior, por exemplo, a água que sai da torneira pode ter sido captada em uma nascente a poucos metros da casa de um morador, mas cujo caminho envolveu escoamento sobre o telhado, filtragem no solo e armazenamento em represa. Assim, cada gota que cai como chuva pode, após dias ou semanas, completar seu ciclo ao tocar a torneira.",
+        "rota": "texto-longo",
+        "rotaNome": "geração por parágrafo",
+        "classe": "forte",
+        "confianca": "nao_verificada",
+        "tentativas": 2,
+        "ms": 18508,
+        "candidatos": [
+          {
+            "palavras": 94
+          },
+          {
+            "palavras": 119
+          }
+        ],
+        "verificacaoFactual": "nao_verificada"
+      }
+    },
+    {
+      "id": 104,
+      "ms": 14131,
+      "avaliacao": {
+        "ok": true,
+        "falhas": [],
+        "palavras": 172,
+        "paragrafos": 2,
+        "itens": 0
+      },
+      "saida": {
+        "texto": "Uma biblioteca organiza seus livros em prateleiras seguindo uma classificação que facilita a localização pelos leitores usuários. Por exemplo, em uma biblioteca pública, os livros podem estar dispostos conforme o sistema de classificação decimal, com códigos que indicam temas específicos. O catálogo online permite que os usuários pesquisem títulos antes mesmo de entrar no prédio, mostrando a localização exata na prateleira. Assim, a organização física e o acesso digital trabalham juntos para que a biblioteca empreste livros de forma eficiente.\n\nPara emprestar livros, a biblioteca utiliza códigos de barras impressos em cada exemplar, que são lidos por terminais ao registrar o empréstimo no sistema. Um funcionário bibliotecário verifica a identidade do usuário, escaneia o código do livro e define um prazo padrão, geralmente de 15 a 30 dias, dependendo do tipo de material. Se o leitor não devolver o livro dentro do prazo, o sistema gera avisos automáticos. Assim, a biblioteca organiza o fluxo de empréstimo de forma ágil e controlada, garantindo que os livros sejam devolvidos e reembalçados para outros usuários.",
+        "rota": "texto-longo",
+        "rotaNome": "geração por parágrafo",
+        "classe": "forte",
+        "confianca": "nao_verificada",
+        "tentativas": 2,
+        "ms": 14125,
+        "candidatos": [
+          {
+            "palavras": 80
+          },
+          {
+            "palavras": 92
+          }
+        ],
+        "verificacaoFactual": "nao_verificada"
+      }
+    }
+  ]
+}

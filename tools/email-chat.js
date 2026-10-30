@@ -736,7 +736,7 @@ async function cerebro(pergunta, imagem, opcoes) {
     rotas.push(
       ['frota', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'auto', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, true],
       ['reserva', 'https://text.pollinations.ai/openai/chat/completions', { model: 'openai-fast', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, false],
-      ['llm7', 'https://api.llm7.io/v1/chat/completions', { model: 'DeepSeek-V4-Flash-0731', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, true],
+      ['ovhoss20', 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1/chat/completions', { model: 'gpt-oss-20b', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, false],
       ['omni', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, true]
     );
   }

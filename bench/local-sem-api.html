@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Medidor local — sem API, sem cota</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin:0; font:15px/1.5 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:#0d1117; color:#e6edf3; }
+  main { max-width: 900px; margin: 0 auto; padding: 20px 16px 80px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.sub { color:#9aa7b4; margin: 0 0 16px; font-size: 13px; }
+  .card { background:#161b22; border:1px solid #2b333d; border-radius:10px; padding:14px; margin:0 0 14px; }
+  label { display:block; font-size:13px; color:#9aa7b4; margin-bottom:6px; }
+  select, button { font:inherit; background:#21262d; color:#e6edf3; border:1px solid #3b444d; border-radius:8px; padding:9px 12px; }
+  button.primario { background:#238636; border-color:#2ea043; font-weight:600; cursor:pointer; }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  #barra { height:8px; background:#21262d; border-radius:6px; overflow:hidden; margin:10px 0 6px; }
+  #barra > i { display:block; height:100%; width:0%; background:#2ea043; transition:width .2s; }
+  #estado { font-size:13px; color:#9aa7b4; min-height:20px; }
+  table { width:100%; border-collapse: collapse; font-size:13px; margin-top:8px; }
+  th, td { text-align:left; padding:5px 6px; border-bottom:1px solid #21262d; vertical-align:top; }
+  th { color:#9aa7b4; font-weight:500; }
+  .ok { color:#3fb950; } .no { color:#f85149; }
+  pre { background:#0b0f14; border:1px solid #21262d; border-radius:8px; padding:10px; overflow:auto; font-size:12px; max-height:340px; }
+  .aviso { border-color:#9e6a03; background:#2a2001; font-size:13px; }
+  .num { font-variant-numeric: tabular-nums; }
+  textarea { width:100%; min-height:90px; background:#0b0f14; color:#e6edf3; border:1px solid #21262d; border-radius:8px; padding:8px; font:13px/1.45 ui-monospace, monospace; }
+</style>
+</head>
+<body>
+<main>
+  <h1>🧠 Medidor do cérebro local</h1>
+  <p class="sub">Mesmas 44 perguntas e a mesma rubrica da comparação pareada de 29/10/2026 — mas sem API, sem chave e sem cota. O modelo roda no seu aparelho (WebGPU).</p>
+
+  <div class="card aviso">
+    <b>Antes de rodar:</b> precisa de Chrome ou Edge atualizado (computador ou Android) com WebGPU. O primeiro preparo baixa a biblioteca e o modelo (o tamanho depende da escolha) e fica salvo neste navegador. O cálculo da resposta não sai do aparelho; a rubrica roda aqui também.
+  </div>
+
+  <div class="card">
+    <label for="modelo">Modelo local</label>
+    <select id="modelo"></select>
+    <label for="modo" style="margin-top:12px">Conjunto</label>
+    <select id="modo">
+      <option value="44">Completo — 44 respostas (mesma régua de 102)</option>
+      <option value="12">Reduzido — 12 respostas (teste rápido em aparelho fraco)</option>
+    </select>
+    <p style="margin:12px 0 0"><button class="primario" id="rodar">▶ Rodar medição</button> <button id="parar" disabled>■ parar</button></p>
+    <div id="barra"><i></i></div>
+    <div id="estado">pronto.</div>
+  </div>
+
+  <div class="card" id="card-resultado" style="display:none">
+    <h2 style="font-size:16px;margin:0 0 8px">Placar</h2>
+    <div id="placar"></div>
+    <table id="tabela"><thead><tr><th>grupo</th><th>#</th><th>r</th><th>ok</th><th>palavras</th><th>ms</th><th>falhas</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <div class="card" id="card-json" style="display:none">
+    <h2 style="font-size:16px;margin:0 0 8px">JSON para colar aqui no chat</h2>
+    <textarea id="json" readonly></textarea>
+    <p style="margin:8px 0 0"><button id="copiar">copiar JSON</button> <span id="copiado" style="font-size:13px;color:#3fb950"></span></p>
+  </div>
+</main>
+
+<script>
+// ===== rubrica injetada de bench/avaliar-aberto.js (mesma função, sem alteração) =====
+/* Equivalências verificáveis da rubrica aberta.
+ *
+ * Regra desta casa: NÃO se afrouxa gabarito por opinião. Só entra aqui o que cai em uma
+ * destas categorias, com prova:
+ *
+ *   MORFOLOGIA  — a rubrica exigia uma forma e a língua usa outra (plural, flexão).
+ *   ARITMÉTICA  — a rubrica exigia um rótulo e a resposta deu o valor equivalente (17xx = séc. XVIII).
+ *   FATO        — a resposta nomeia o mesmo referente por outro nome consagrado NA FONTE,
+ *                 com âncora que impede substituição de palavra solta.
+ *
+ * Os padrões das entradas #3 e #22 são copiados do banco já auditado na rodada 101
+ * (bench/banco-aberto-auditado-101.json), inclusive as guardas de negação
+ * `(?<!não )(?<!nunca )(?<!jamais )` — eles já existiam no repositório e já tinham teste.
+ * A rodada 102 mediu com o banco ANTERIOR a essa auditoria; por isso o falso negativo voltou.
+ *
+ * Cada entrada tem exemplo positivo E negativo, e o teste permanente exige os dois.
+ * Limite declarado: corrige vocabulário, morfologia e número. NÃO verifica se a afirmação
+ * é verdadeira. Um texto pode passar aqui e continuar factualmente errado.
+ */
+
+
+const EQUIVALENCIAS = [
+  {
+    id: 'painel-plural',
+    padraoOriginal: 'painel|placa',
+    aceita: 'pain[ée]is',
+    tipo: 'MORFOLOGIA',
+    motivo: 'plural de "painel" é "painéis" (o l vira i); a rubrica só conhecia o singular',
+    fonte: 'regra ortográfica do português; o substantivo é o mesmo',
+    trecho: 'painel → painéis',
+    exemploPositivo: 'As células solares interligadas formam os painéis solares.',
+    exemploNegativo: 'As células solares captam a luz do Sol e geram corrente elétrica.'
+  },
+  {
+    id: 'modulo-fotovoltaico',
+    padraoOriginal: 'painel|placa',
+    aceita: 'm[óo]dulos?\\s+(?:solar(?:es)?|fotovoltaicos?)',
+    tipo: 'FATO',
+    motivo: 'módulo solar é o agrupamento de células; o fato testado é "células se agrupam em conjunto maior"',
+    fonte: 'BNDES — A energia solar no Brasil',
+    trecho: 'fótons sobre semicondutor; células interligadas formam painéis',
+    exemploPositivo: 'A usina usa módulos solares ligados ao inversor.',
+    exemploNegativo: 'O módulo da rede elétrica distribui energia para as casas.'
+  },
+  {
+    id: 'celulas-agrupadas-em-modulos',
+    padraoOriginal: 'painel|placa',
+    // padrão copiado do banco auditado 101: exige contexto fotovoltaico + "células ... agrupadas em módulos"
+    aceita: '(?=[\\s\\S]*energia\\s+solar\\s+fotovoltaica)(?=[\\s\\S]*c[ée]lulas?[^.!?\\n]{0,160}(?<!n[ãa]o s[ãa]o )agrupadas?\\s+em\\s+m[óo]dulos?(?=\\s*(?:[,.;]|e\\s+conectad|para\\b)))',
+    tipo: 'FATO',
+    motivo: 'o texto diz que as células são agrupadas em módulos — é exatamente o fato pedido, sem usar a palavra "painel"',
+    fonte: 'banco auditado da rodada 101 (bench/banco-aberto-auditado-101.json)',
+    trecho: 'células agrupadas em módulos, no contexto de energia solar fotovoltaica',
+    exemploPositivo: 'A energia solar fotovoltaica usa luz para gerar corrente; cada célula é agrupada em módulos e conectada ao sistema.',
+    exemploNegativo: 'A energia solar fotovoltaica usa luz; as células são vendidas separadas.'
+  },
+  {
+    id: 'gra-bretanha',
+    padraoOriginal: 's[ée]culo (XVIII|18)|inglaterra',
+    // guarda de negação copiada do banco auditado 101
+    aceita: '(?<!n[ãa]o )(?<!nunca )(?<!jamais )(?:come[cç]ou|iniciou|surgiu|teve\\s+origem)\\s+(?:na|em)\\s+gr[ãa](?:-|\\s+)bretanha',
+    tipo: 'FATO',
+    motivo: 'a industrialização começou na Grã-Bretanha; "Inglaterra" é o uso corrente para o mesmo ponto de partida',
+    fonte: 'Britannica — Industrial Revolution',
+    trecho: 'a industrialização começou na Grã-Bretanha no século XVIII',
+    exemploPositivo: 'A Revolução Industrial começou na Grã-Bretanha por volta de 1760.',
+    exemploNegativo: 'A Revolução Industrial não começou na Grã-Bretanha, mas na França.'
+  },
+  {
+    id: 'data-para-seculo',
+    padraoOriginal: 's[ée]culo (XVIII|18)|inglaterra',
+    aceita: '(?<!n[ãa]o )\\b17\\d\\d\\b',
+    tipo: 'ARITMÉTICA',
+    motivo: 'ano entre 1700 e 1799 é o século XVIII; "por volta de 1760" responde a data que a rubrica pede',
+    fonte: 'conversão aritmética de ano para século',
+    trecho: '1760 pertence ao século XVIII',
+    exemploPositivo: 'Começou por volta de 1780, na Grã-Bretanha.',
+    exemploNegativo: 'Começou por volta de 1860, nos Estados Unidos.'
+  }
+];
+
+/* Retorna true se o padrão da rubrica casa direto OU se alguma equivalência declarada
+   para aquele padrão casa. */
+function satisfaz(texto, padrao) {
+  const t = String(texto || '');
+  if (new RegExp(padrao, 'i').test(t)) return true;
+  return EQUIVALENCIAS.some((e) => {
+    if (e.padraoOriginal !== padrao) return false;
+    if (e.exige && !new RegExp(e.exige, 'i').test(t)) return false;
+    return new RegExp(e.aceita, 'i').test(t);
+  });
+}
+
+
+
+
+
+/* As equivalências verificáveis (bench/equivalencias-rubrica.js) valem para OS DOIS lados
+   da comparação. No Node vem por require; na página injetada, `satisfaz` já está no escopo. */
+const satisfazPadrao = (function () {
+  try { return require('./equivalencias-rubrica').satisfaz; } catch (e) {
+    return (typeof satisfaz === 'function') ? satisfaz : null;
+  }
+})();
+function casa(t, padrao) {
+  return satisfazPadrao ? satisfazPadrao(t, padrao) : new RegExp(padrao, 'i').test(t);
+}
+
+function avaliar(texto, it) {
+  const t = String(texto || '');
+  const falhas = [];
+  const palavras = t.split(/\s+/).filter(Boolean).length;
+  const paragrafos = t.split(/\n+/).filter((p) => p.trim().length > 0).length;
+  const itens = (t.match(/^\s*(?:[-*•]|\d+[.)])\s+\S/gm) || []).length;
+  if (!t.trim()) return { ok: false, falhas: ['vazio'], palavras: 0, paragrafos: 0, itens: 0 };
+  if (it.minPalavras && palavras < it.minPalavras) falhas.push('curto (' + palavras + '<' + it.minPalavras + ')');
+  if (it.maxPalavras && palavras > it.maxPalavras) falhas.push('longo (' + palavras + '>' + it.maxPalavras + ')');
+  if (it.paragrafos && paragrafos < it.paragrafos) falhas.push('parágrafos (' + paragrafos + '<' + it.paragrafos + ')');
+  if (it.itens && itens < it.itens) falhas.push('itens (' + itens + '<' + it.itens + ')');
+  (it.contem || []).forEach((padrao, i) => {
+    if (!casa(t, padrao)) falhas.push('falta fato #' + (i + 1) + ' (' + padrao.split('|')[0] + ')');
+  });
+  if (/como (um )?modelo de linguagem|n[ãa]o posso (te )?ajudar|desculpe, mas/i.test(t)) falhas.push('meta-resposta');
+  if (/^\s*(claro|certamente|com certeza|aqui est[áa]|segue)/i.test(t)) falhas.push('preâmbulo');
+  if (!/[.!?…"”)]\s*$/.test(t.trim())) falhas.push('não terminou a frase (provável corte por limite de tokens)');
+  return { ok: falhas.length === 0, falhas, palavras, paragrafos, itens };
+}
+
+
+
+
+const ITENS = [{"grupo":"original","id":1,"repeticao":0,"q":"Explique em dois parágrafos o que é fotossíntese.","minPalavras":70,"paragrafos":2,"contem":["clorofila|luz solar|luz do sol|energia luminosa","g[áa]s carb[ôo]nico|CO2|di[óo]xido de carbono","oxig[êe]nio"]},{"grupo":"original","id":2,"repeticao":0,"q":"Explique em dois parágrafos a diferença entre vírus e bactéria.","minPalavras":70,"paragrafos":2,"contem":["bact[ée]ri","v[íi]rus","antibi[óo]tic|c[ée]lula"]},{"grupo":"original","id":3,"repeticao":0,"q":"Resuma em três parágrafos o que foi a Revolução Industrial.","minPalavras":90,"paragrafos":3,"contem":["s[ée]culo (XVIII|18)|inglaterra","m[áa]quina|vapor|f[áa]brica|carv[ãa]o","urbaniza|oper[áa]ri|campo|cidade"]},{"grupo":"original","id":4,"repeticao":0,"q":"Escreva um e-mail formal pedindo orçamento de 20 cadeiras para um escritório. Máximo 200 palavras.","maxPalavras":220,"paragrafos":1,"contem":["or[çc]amento","cadeira","atenciosamente|cordialmente|obrigad"]},{"grupo":"original","id":5,"repeticao":0,"q":"Explique em três passos como fazer um bolo simples.","minPalavras":60,"paragrafos":1,"contem":["farinha|ovo|leite|a[çc][úu]car","forno","mistur|bater|mexer"]},{"grupo":"original","id":6,"repeticao":0,"q":"Escreva um parágrafo argumentando a favor da reciclagem.","minPalavras":60,"paragrafos":1,"contem":["recicla","res[íi]duo|lixo","ambient"]},{"grupo":"original","id":7,"repeticao":0,"q":"Explique o ciclo da água em dois parágrafos.","minPalavras":70,"paragrafos":2,"contem":["evapora","condensa|nuvem","precipita|chuva"]},{"grupo":"original","id":8,"repeticao":0,"q":"Explique o que é inflação em dois parágrafos.","minPalavras":70,"paragrafos":2,"contem":["pre[çc]o","poder de compra|moeda|dinheiro"]},{"grupo":"original","id":9,"repeticao":0,"q":"Explique a diferença entre juros simples e juros compostos em dois parágrafos.","minPalavras":70,"paragrafos":2,"contem":["juros simples","compost","capital"]},{"grupo":"original","id":10,"repeticao":0,"q":"Escreva uma lista com 5 dicas práticas para economizar água em casa.","minPalavras":50,"itens":5,"contem":["[áa]gua","torneira|chuveiro|vazamento|descarga"]},{"grupo":"original","id":11,"repeticao":0,"q":"Explique por que o céu é azul em dois parágrafos.","minPalavras":70,"paragrafos":2,"contem":["dispers","azul","luz"]},{"grupo":"original","id":12,"repeticao":0,"q":"Resuma em três parágrafos a Segunda Guerra Mundial.","minPalavras":90,"paragrafos":3,"contem":["1939|1945","alemanha|hitler|nazista","aliado|eua|união sovi[ée]tica|sovi[ée]tic"]},{"grupo":"original","id":13,"repeticao":0,"q":"Explique como funciona uma vacina em dois parágrafos.","minPalavras":70,"paragrafos":2,"contem":["anticorpo|defesa|imun","ant[íi]geno|v[íi]rus|bact[ée]ri"]},{"grupo":"original","id":14,"repeticao":0,"q":"Explique o que é uma função em programação para quem nunca programou, em dois parágrafos.","minPalavras":70,"paragrafos":2,"contem":["fun[çc][ãa]o|function","par[âa]metro|entrada|argumento","retorn|sa[íi]da|resultado"]},{"grupo":"original","id":15,"repeticao":0,"q":"Explique o que é a LGPD em dois parágrafos.","minPalavras":70,"paragrafos":2,"contem":["dados pessoais","lei|13\\.709|consentimento","titular|privacidade"]},{"grupo":"original","id":16,"repeticao":0,"q":"Descreva em dois parágrafos o caminho da água da chuva até a torneira de casa.","minPalavras":70,"paragrafos":2,"contem":["rio|represa|reservat[óo]rio|a[çc]ude","tratamento|esta[çc][ãa]o","torneira|resid[êe]ncia|casa"]},{"grupo":"original","id":17,"repeticao":0,"q":"Escreva um texto de dois parágrafos sobre os impactos das redes sociais na vida das pessoas.","minPalavras":80,"paragrafos":2,"contem":["redes sociais","isolamento|ansiedade|sa[úu]de mental|compara","conex[ãa]o|informa[çc][ãa]o|comunica"]},{"grupo":"original","id":18,"repeticao":0,"q":"Dê quatro argumentos contra o desperdício de alimentos.","minPalavras":60,"itens":4,"contem":["desperd[íi]cio","alimento","fome|ambient|econom"]},{"grupo":"original","id":19,"repeticao":0,"q":"Explique a diferença entre clima e tempo em um parágrafo.","minPalavras":50,"paragrafos":1,"contem":["clima","tempo","anos|d[ée]cadas|longo prazo|momento"]},{"grupo":"original","id":20,"repeticao":0,"q":"Resuma em três parágrafos a teoria da evolução de Darwin.","minPalavras":90,"paragrafos":3,"contem":["sele[çc][ãa]o natural","darwin","esp[ée]cie"]},{"grupo":"original","id":21,"repeticao":0,"q":"Escreva uma mensagem curta e educada cobrando um pagamento atrasado de um cliente. Máximo 150 palavras.","maxPalavras":170,"paragrafos":1,"contem":["pagamento","atenciosamente|cordialmente|obrigad|abra[çc]o","atras|venc"]},{"grupo":"original","id":22,"repeticao":0,"q":"Explique em dois parágrafos como funciona a energia solar fotovoltaica.","minPalavras":70,"paragrafos":2,"contem":["painel|placa","sol|luz","eletricidade|energia el[ée]trica|corrente"]},{"grupo":"original","id":23,"repeticao":0,"q":"Explique em dois parágrafos o que é inteligência artificial, sem jargão.","minPalavras":70,"paragrafos":2,"contem":["dados","aprend|padr[ãa]o|trein","computador|m[áa]quina|algoritmo"]},{"grupo":"original","id":24,"repeticao":0,"q":"Escreva um parágrafo explicando a importância de dormir bem.","minPalavras":55,"paragrafos":1,"contem":["sono","mem[óo]ria|descans|recupera","sa[úu]de"]},{"grupo":"holdout","id":101,"repeticao":0,"q":"Explique em dois parágrafos o que é compostagem e por que ela ajuda uma horta.","minPalavras":70,"paragrafos":2,"contem":["org[âa]nic|restos","decompos|decompor|microrgan|microorgan|fung|bact","adubo|aduba|nutriente|solo"]},{"grupo":"holdout","id":102,"repeticao":0,"q":"Explique em dois parágrafos como uma geladeira mantém alimentos frios.","minPalavras":70,"paragrafos":2,"contem":["calor|energia t[ée]rmica","compressor|fluido|refrigerante|serpentina","temperatura|frio|resfria"]},{"grupo":"holdout","id":103,"repeticao":0,"q":"Escreva um parágrafo explicando o que é a coleta seletiva de materiais.","minPalavras":55,"paragrafos":1,"contem":["res[íi]duo|lixo|materia","separa|triagem","recicla|reaproveita"]},{"grupo":"holdout","id":104,"repeticao":0,"q":"Explique em dois parágrafos como uma biblioteca organiza e empresta livros.","minPalavras":70,"paragrafos":2,"contem":["livro","empr[ée]stim|empresta|devol","cat[áa]logo|classific|organiza"]},{"grupo":"holdout","id":105,"repeticao":0,"q":"Em um parágrafo, explique os efeitos da impermeabilização do solo nas cidades durante chuvas fortes.","minPalavras":55,"paragrafos":1,"contem":["chuva|[áa]gua","solo|asfalto|pavimenta","enchente|alagamento|inunda|escoamento"]},{"grupo":"holdout","id":106,"repeticao":0,"q":"Escreva dois parágrafos sobre como os oceanos influenciam o clima.","minPalavras":70,"paragrafos":2,"contem":["oceano|mar","calor|temperatura","circula|corrente|clima"]},{"grupo":"novo","id":201,"repeticao":0,"q":"Explique em dois parágrafos por que a Lua apresenta fases.","minPalavras":70,"paragrafos":2,"contem":["lua","sol|luz solar","terra|[óo]rbita|orbital"]},{"grupo":"novo","id":202,"repeticao":0,"q":"Explique em dois parágrafos como o sabão ajuda a limpar as mãos.","minPalavras":70,"paragrafos":2,"contem":["sab[ãa]o|detergente","gordura|[óo]leo","[áa]gua|enx[áa]gue"]},{"grupo":"novo","id":203,"repeticao":0,"q":"Explique em dois parágrafos como uma bússola indica direções.","minPalavras":70,"paragrafos":2,"contem":["b[úu]ssola|agulha","norte|sul","magn[eé]t|campo"]},{"grupo":"novo","id":204,"repeticao":0,"q":"Explique em dois parágrafos por que uma panela de metal esquenta no fogo.","minPalavras":70,"paragrafos":2,"contem":["calor|energia t[ée]rmica","metal|panela","condu[çc]|transfer|aquece"]},{"grupo":"novo","id":205,"repeticao":0,"q":"Explique em dois parágrafos como o orçamento doméstico ajuda a planejar gastos.","minPalavras":70,"paragrafos":2,"contem":["receita|renda|entrada","despesa|gasto|sa[íi]da","planej|or[çc]amento"]},{"grupo":"novo","id":206,"repeticao":0,"q":"Explique em dois parágrafos por que os manguezais são importantes para a costa.","minPalavras":70,"paragrafos":2,"contem":["mangue","costa|litoral|margem|mar[ée]","prote[çg]|ber[çc][áa]rio|esp[ée]cies|habitat"]},{"grupo":"original","id":3,"repeticao":1,"q":"Resuma em três parágrafos o que foi a Revolução Industrial.","minPalavras":90,"paragrafos":3,"contem":["s[ée]culo (XVIII|18)|inglaterra","m[áa]quina|vapor|f[áa]brica|carv[ãa]o","urbaniza|oper[áa]ri|campo|cidade"]},{"grupo":"original","id":3,"repeticao":2,"q":"Resuma em três parágrafos o que foi a Revolução Industrial.","minPalavras":90,"paragrafos":3,"contem":["s[ée]culo (XVIII|18)|inglaterra","m[áa]quina|vapor|f[áa]brica|carv[ãa]o","urbaniza|oper[áa]ri|campo|cidade"]},{"grupo":"original","id":16,"repeticao":1,"q":"Descreva em dois parágrafos o caminho da água da chuva até a torneira de casa.","minPalavras":70,"paragrafos":2,"contem":["rio|represa|reservat[óo]rio|a[çc]ude","tratamento|esta[çc][ãa]o","torneira|resid[êe]ncia|casa"]},{"grupo":"original","id":16,"repeticao":2,"q":"Descreva em dois parágrafos o caminho da água da chuva até a torneira de casa.","minPalavras":70,"paragrafos":2,"contem":["rio|represa|reservat[óo]rio|a[çc]ude","tratamento|esta[çc][ãa]o","torneira|resid[êe]ncia|casa"]},{"grupo":"original","id":22,"repeticao":1,"q":"Explique em dois parágrafos como funciona a energia solar fotovoltaica.","minPalavras":70,"paragrafos":2,"contem":["painel|placa","sol|luz","eletricidade|energia el[ée]trica|corrente"]},{"grupo":"original","id":22,"repeticao":2,"q":"Explique em dois parágrafos como funciona a energia solar fotovoltaica.","minPalavras":70,"paragrafos":2,"contem":["painel|placa","sol|luz","eletricidade|energia el[ée]trica|corrente"]},{"grupo":"holdout","id":104,"repeticao":1,"q":"Explique em dois parágrafos como uma biblioteca organiza e empresta livros.","minPalavras":70,"paragrafos":2,"contem":["livro","empr[ée]stim|empresta|devol","cat[áa]logo|classific|organiza"]},{"grupo":"holdout","id":104,"repeticao":2,"q":"Explique em dois parágrafos como uma biblioteca organiza e empresta livros.","minPalavras":70,"paragrafos":2,"contem":["livro","empr[ée]stim|empresta|devol","cat[áa]logo|classific|organiza"]}];
+const MODELOS = [["Qwen2.5-0.5B-Instruct-q4f16_1-MLC","0.5B — rápido, celular fraco"],["Qwen2.5-1.5B-Instruct-q4f16_1-MLC","1.5B — padrão do chat"],["Qwen3.5-0.8B-q4f16_1-MLC","Qwen3.5 0.8B — geração nova"],["Qwen3.5-2B-q4f16_1-MLC","Qwen3.5 2B — equilíbrio"],["Qwen2.5-3B-Instruct-q4f16_1-MLC","3B — mais qualidade"],["Qwen3.5-4B-q4f16_1-MLC","Qwen3.5 4B — precisa de RAM"],["Phi-4-mini-instruct-q4f16_1-MLC","Phi-4-mini — raciocínio leve"],["gemma3-1b-it-q4f16_1-MLC","Gemma3 1B"],["Llama-3.2-3B-Instruct-q4f16_1-MLC","Llama 3.2 3B"],["Qwen3.5-9B-q4f16_1-MLC","Qwen3.5 9B — pesado/aero"]];
+const CDN = 'https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.86/dist/web-llm.min.js';
+const TETO_MS = 110000;
+
+const $ = (id) => document.getElementById(id);
+const sel = $('modelo');
+MODELOS.forEach(([id, rotulo]) => { const o = document.createElement('option'); o.value = id; o.textContent = rotulo + ' — ' + id; sel.appendChild(o); });
+sel.value = 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC';
+
+let engine = null, parar = false;
+
+function estado(t) { $('estado').textContent = t; }
+function progresso(pct) { $('barra').firstElementChild.style.width = Math.max(0, Math.min(100, pct)) + '%'; }
+
+function carregarScript(src) {
+  return new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = res; s.onerror = () => rej(new Error('não consegui baixar a biblioteca WebLLM (precisa de internet na primeira vez)'));
+    document.head.appendChild(s);
+  });
+}
+
+async function preparar(modelo) {
+  if (engine && engine.__modelo === modelo) return engine;
+  if (engine) { try { await engine.unload(); } catch (e) {} engine = null; }
+  estado('baixando a biblioteca do cérebro local…'); progresso(2);
+  if (!window.webllm) await carregarScript(CDN);
+  if (!window.webllm) throw new Error('a biblioteca WebLLM não carregou');
+  if (!navigator.gpu) throw new Error('este navegador não tem WebGPU — use Chrome ou Edge atualizado');
+  const e = await window.webllm.CreateMLCEngine(modelo, {
+    initProgressCallback: (p) => {
+      if (p && typeof p.progress === 'number') { progresso(2 + p.progress * 8); estado('baixando o modelo… ' + Math.round(p.progress * 100) + '%'); }
+    }
+  });
+  e.__modelo = modelo;
+  engine = e;
+  return e;
+}
+
+// equivalências de rubrica já conhecidas (documentadas): nenhuma aplicada aqui.
+// A nota abaixo é idêntica à do medidor de 102, sem afrouxar nada.
+function avaliarItem(texto, it) { return avaliar(texto, it); }
+
+async function comTeto(promessa, ms) {
+  let t = null;
+  const teto = new Promise((_, rej) => { t = setTimeout(() => rej(new Error('teto de ' + Math.round(ms / 1000) + 's')), ms); });
+  try { return await Promise.race([promessa, teto]); } finally { clearTimeout(t); }
+}
+
+function resumo(linhas) {
+  const g = {};
+  for (const l of linhas) {
+    const k = l.repeticao > 0 ? 'repeticoes' : l.grupo;
+    g[k] = g[k] || { total: 0, ok: 0, ms: [] };
+    g[k].total++; if (l.ok) g[k].ok++; g[k].ms.push(l.ms);
+  }
+  const med = (a) => a.length ? a.slice().sort((x, y) => x - y)[Math.floor((a.length - 1) / 2)] : 0;
+  const o = {};
+  for (const [k, v] of Object.entries(g)) o[k] = { total: v.total, passaram: v.ok, pct: +(100 * v.ok / v.total).toFixed(1), medianaMs: med(v.ms) };
+  const tot = linhas.length, ok = linhas.filter((l) => l.ok).length;
+  o.total = { total: tot, passaram: ok, pct: tot ? +(100 * ok / tot).toFixed(1) : 0, medianaMs: med(linhas.map((l) => l.ms)) };
+  return o;
+}
+
+async function rodar() {
+  parar = false;
+  $('rodar').disabled = true; $('parar').disabled = false;
+  $('card-resultado').style.display = ''; $('card-json').style.display = 'none';
+  document.querySelector('#tabela tbody').innerHTML = '';
+  const modelo = sel.value;
+  const quantos = parseInt($('modo').value, 10);
+  const lista = quantos === 44 ? ITENS.slice() : ITENS.slice(0, quantos);
+  const linhas = [];
+  try {
+    const e = await preparar(modelo);
+    if (!navigator.gpu) throw new Error('WebGPU ausente');
+    estado('cérebro local pronto — começando 0/' + lista.length);
+    for (let i = 0; i < lista.length; i++) {
+      if (parar) break;
+      const it = lista[i];
+      progresso(10 + (i / lista.length) * 90);
+      estado('(' + (i + 1) + '/' + lista.length + ') ' + it.grupo + ' #' + it.id + (it.repeticao ? ' r' + it.repeticao : ''));
+      const t0 = performance.now();
+      let texto = '', erro = null;
+      try {
+        const r = await comTeto(e.chat.completions.create({
+          messages: [
+            { role: 'system', content: 'Responda em português do Brasil, claro e correto. Siga exatamente o formato pedido (número de parágrafos, itens e limite de palavras). Não use preâmbulo.' },
+            { role: 'user', content: it.q }
+          ],
+          temperature: 0.3,
+          max_tokens: 900
+        }), TETO_MS);
+        texto = (((r.choices || [])[0] || {}).message || {}).content || '';
+      } catch (err) { erro = String((err && err.message) || err); }
+      const ms = Math.round(performance.now() - t0);
+      const av = texto ? avaliarItem(texto, it) : { ok: false, falhas: ['sem texto: ' + erro], palavras: 0, paragrafos: 0, itens: 0 };
+      const linha = { grupo: it.grupo, id: it.id, repeticao: it.repeticao, q: it.q, ok: av.ok, falhas: av.falhas, palavras: av.palavras, paragrafos: av.paragrafos, itens: av.itens, ms, erro, texto };
+      linhas.push(linha);
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + it.grupo + '</td><td class="num">' + it.id + '</td><td class="num">' + (it.repeticao || '') +
+        '</td><td class="' + (av.ok ? 'ok' : 'no') + '">' + (av.ok ? '✔' : '✘') + '</td><td class="num">' + av.palavras +
+        '</td><td class="num">' + ms + '</td><td>' + (av.falhas.join('; ') || '—') + '</td>';
+      document.querySelector('#tabela tbody').appendChild(tr);
+    }
+    const sum = resumo(linhas);
+    $('placar').innerHTML = Object.entries(sum).map(([k, v]) =>
+      '<div>' + (k === 'total' ? '<b>total</b>' : k) + ': <b>' + v.passaram + '/' + v.total + '</b> (' + v.pct + '%) · mediana ' + (v.medianaMs / 1000).toFixed(1) + ' s</div>'
+    ).join('');
+    const pacote = {
+      meta: {
+        tipo: 'medicao-local-sem-api', geradoEm: new Date().toISOString(), modelo,
+        webllm: '0.2.86', navegador: navigator.userAgent,
+        rubrica: 'bench/avaliar-aberto.js (injetada, sem alteração)',
+        itens: '24 originais + 6 holdout + 6 novos + 8 repetições = 44 (mesma régua de 102)',
+        limite: 'rubrica avalia forma e termos, não verifica se a afirmação é verdadeira'
+      },
+      sum, res: linhas
+    };
+    $('json').value = JSON.stringify(pacote);
+    $('card-json').style.display = '';
+    estado('terminou: ' + sum.total.passaram + '/' + sum.total.total + ' — copie o JSON e mande no chat.');
+    progresso(100);
+  } catch (err) {
+    estado('erro: ' + String((err && err.message) || err));
+  } finally {
+    $('rodar').disabled = false; $('parar').disabled = true;
+  }
+}
+
+$('rodar').addEventListener('click', rodar);
+$('parar').addEventListener('click', () => { parar = true; estado('parando depois do item atual…'); });
+$('copiar').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText($('json').value); $('copiado').textContent = 'copiado ✓'; }
+  catch (e) { $('json').select(); $('copiado').textContent = 'selecione e copie (Ctrl+C)'; }
+});
+
+if (!navigator.gpu) {
+  estado('⚠️ este navegador não expõe WebGPU — abra no Chrome/Edge atualizado (computador ou Android). O cérebro local não roda aqui.');
+  $('rodar').disabled = true;
+}
+</script>
+</body>
+</html>

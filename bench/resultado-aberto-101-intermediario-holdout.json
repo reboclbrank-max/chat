@@ -1,0 +1,303 @@
+{
+ "sum": {
+  "modo": "depois",
+  "total": 6,
+  "totalPrevisto": 6,
+  "completo": true,
+  "passaram": 5,
+  "pct": 83.3,
+  "medianaPalavras": 176,
+  "cortados": 0,
+  "curtos": 0,
+  "faltouFato": 0,
+  "medianaMs": 25585
+ },
+ "res": [
+  {
+   "id": 101,
+   "q": "Explique em dois parágrafos o que é compostagem e por que ela ajuda uma horta.",
+   "ok": false,
+   "falhas": [
+    "parágrafos (1<2)"
+   ],
+   "palavras": 82,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 110002,
+   "rota": "texto-longo",
+   "tentativasSelecionadas": 8,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": "Restrições de formato não atendidas: 1 de 2 parágrafos. Confira ou tente novamente.",
+   "incompleto": true,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T10:56:09.338Z",
+     "msParede": 534,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-29T10:56:09.873Z",
+     "msParede": 12002,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq",
+     "inicio": "2026-10-29T10:56:21.876Z",
+     "msParede": 35001,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-29T10:56:56.878Z",
+     "msParede": 25169,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-29T10:57:22.048Z",
+     "msParede": 10798,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-29T10:57:32.847Z",
+     "msParede": 301,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-29T10:57:33.148Z",
+     "msParede": 1725,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-29T10:57:41.651Z",
+     "msParede": 265,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq",
+     "inicio": "2026-10-29T10:57:41.916Z",
+     "msParede": 9958,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-29T10:57:51.874Z",
+     "msParede": 362,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "gigante2",
+     "inicio": "2026-10-29T10:57:52.238Z",
+     "msParede": 7086,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    }
+   ],
+   "texto": "Compostagem é o processo natural de decomposição de resíduos orgânicos, transformando restos de cozinha e folhas em um solo rico em nutrientes. Quando se aplica esse material à horta, ele ajuda a melhorar a estrutura do solo, aumentando a retenção de água e aeração. Além disso, a compostagem reduz a necessidade de fertilizantes químicos, pois fornece micronutrientes essenciais para o crescimento das plantas. Assim, a prática não só recicla resíduos, mas também cria um ambiente mais saudável para a produção de alimentos.",
+   "trecho": "Compostagem é o processo natural de decomposição de resíduos orgânicos, transformando restos de cozinha e folhas em um solo rico em nutrientes. Quando se aplica esse material à horta, ele ajuda a melh",
+   "fim": "esíduos, mas também cria um ambiente mais saudável para a produção de alimentos."
+  },
+  {
+   "id": 102,
+   "q": "Explique em dois parágrafos como uma geladeira mantém alimentos frios.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 192,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 7636,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T10:57:59.333Z",
+     "msParede": 7628,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Uma geladeira mantém os alimentos frios por meio de um ciclo de refrigeração que começa com a compressão de um refrigerante, geralmente gás refrigerante como freon. O compressor, localizado na parte de trás ou embaixo do aparelho, comprime o gás, aumentando sua temperatura e pressão. Em seguida, o refrigerante passa por um condensador, onde libera calor para o ambiente e se transforma em líquido. Ao atravessar um expansion valve ou capilar, o líquido reduz sua pressão abruptamente, tornando-se frio e entrando no evaporador, onde absorve o calor do interior da geladeira.\n\nO ar frio produzido pelo evaporador é distribuído pelo compartimento através de um ventilador. Quando o termostato detecta que a temperatura sobe, ele ativa o compressor para repetir o ciclo. A isolamento térmico nas paredes da geladeira ajuda a manter o frio por mais tempo, reduzindo a frequência com que o aparelho precisa ligar. Além disso, itens já frios dentro da geladeira ajudam a estabilizar a temperatura ao liberar menos calor do que alimentos quentes. Esse processo contínuo garante que a temperatura interna permaneça entre 1 e 4 °C, evitando o crescimento de bactérias e conservando os alimentos por mais tempo.",
+   "trecho": "Uma geladeira mantém os alimentos frios por meio de um ciclo de refrigeração que começa com a compressão de um refrigerante, geralmente gás refrigerante como freon. O compressor, localizado na parte d",
+   "fim": ", evitando o crescimento de bactérias e conservando os alimentos por mais tempo."
+  },
+  {
+   "id": 103,
+   "q": "Escreva um parágrafo explicando o que é a coleta seletiva de materiais.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 104,
+   "paragrafos": 1,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 44154,
+   "rota": "ultra",
+   "tentativasSelecionadas": 2,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "kilolight",
+     "inicio": "2026-10-29T10:58:06.967Z",
+     "msParede": 21856,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-29T10:58:28.824Z",
+     "msParede": 22288,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "A coleta seletiva de materiais é o processo de separar, na fonte, os resíduos gerados em residências, comércios e indústrias em categorias como papel, plástico, vidro, metal e orgânicos, para que cada fração possa ser encaminhada a destinos adequados de reciclagem, compostagem ou disposição final ambientalmente segura. Essa prática reduz o volume de lixo enviado a aterros, diminui a extração de matérias‑primas virgens, economiza energia e água na fabricação de novos produtos e contribui para a mitigação das emissões de gases de efeito estufa. A efetividade depende da conscientização da população, da infraestrutura de coleta e da existência de mercados para os materiais reciclados.",
+   "trecho": "A coleta seletiva de materiais é o processo de separar, na fonte, os resíduos gerados em residências, comércios e indústrias em categorias como papel, plástico, vidro, metal e orgânicos, para que cada",
+   "fim": "fraestrutura de coleta e da existência de mercados para os materiais reciclados."
+  },
+  {
+   "id": 104,
+   "q": "Explique em dois parágrafos como uma biblioteca organiza e empresta livros.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 176,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 7862,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T10:58:51.119Z",
+     "msParede": 7861,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Uma biblioteca organiza seus livros principalmente pelo Sistema de Classificação Decimal de Dewey (CDD) ou pela Classificação NLM, atribuindo a cada obra um número que reflete seu tema. Ao receber um novo título, o bibliotecário verifica o catálogo, define a classificação, imprime a etiqueta com o número e o código de barras, e posiciona o volume na prateleha correspondente, mantendo a ordem crescente dos números. Livros de referência, periódicos e mídias digitais ocupam áreas específicas, enquanto o acervo é constantemente reordenado durante as conferências periódicas.\n\nPara o empréstimo, o usuário apresenta documento de identificação e o cartão de leitor, que é registrado no sistema. O livro passa pelo scanner de entrada e saída, gerando a data prevista para devolução, geralmente entre 7 e 30 dias. Ao retornar, o volume é conferido quanto a atrasos e danos; multas são cobradas proporcionalmente ao atraso, e o item volta à prateleha ou a uma área de triagem para nova classificação. Usuários podem renovar online ou por telefone, desde que não haja reservas de outros leitores sobre o mesmo título.",
+   "trecho": "Uma biblioteca organiza seus livros principalmente pelo Sistema de Classificação Decimal de Dewey (CDD) ou pela Classificação NLM, atribuindo a cada obra um número que reflete seu tema. Ao receber um ",
+   "fim": "r telefone, desde que não haja reservas de outros leitores sobre o mesmo título."
+  },
+  {
+   "id": 105,
+   "q": "Em um parágrafo, explique os efeitos da impermeabilização do solo nas cidades durante chuvas fortes.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 124,
+   "paragrafos": 1,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 25585,
+   "rota": "gigante2",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "gigante2",
+     "inicio": "2026-10-29T10:58:58.983Z",
+     "msParede": 25584,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "A impermeabilização do solo nas cidades impede a infiltração natural da água da chuva, fazendo com que o volume de escoamento superficial aumente drasticamente durante eventos intensos; isso sobrecarrega os sistemas de drenagem, eleva o nível dos rios urbanos e provoca alagamentos rápidos em ruas, praças e subsolos, além de intensificar a erosão das margens e a contaminação de corpos d’água pelo arraste de poluentes. A redução da recarga dos aquíferos compromete o abastecimento futuro, enquanto o acúmulo de água parada favorece a proliferação de vetores de doenças e danifica infraestruturas como pavimentos, redes de esgoto e fundações de edifícios. Em conjunto, esses efeitos ampliam os prejuízos econômicos, sociais e ambientais, tornando a gestão de águas pluviais um desafio crítico para a resiliência urbana.",
+   "trecho": "A impermeabilização do solo nas cidades impede a infiltração natural da água da chuva, fazendo com que o volume de escoamento superficial aumente drasticamente durante eventos intensos; isso sobrecarr",
+   "fim": "ornando a gestão de águas pluviais um desafio crítico para a resiliência urbana."
+  },
+  {
+   "id": 106,
+   "q": "Escreva dois parágrafos sobre como os oceanos influenciam o clima.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 205,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 11729,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T10:59:24.569Z",
+     "msParede": 11728,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Os oceanos exercem um papel fundamental na regulação do clima global, atuando como grandes armazenadores de calor. A água possui uma alta capacidade térmica, o que significa que absorve e retém grandes quantidades de energia térmica sem sofrer variações bruscas de temperatura. Durante o dia, as águas superficiais aquecem-se ao receberem radiação solar, enquanto à noite liberam lentamente esse calor para a atmosfera. Esse processo atenua as oscilações térmicas entre o dia e a noite, suavizando o clima em regiões costeiras e interiores próximos ao mar. Além disso, as correntes oceânicas transportam massas de água morna ou fria por longas distâncias, redistribuindo calor entre os equadores e os polos, influenciando padrões climáticos em escala global.\n\nOutro mecanismo importante é a evaporação da água do mar, que incorpora umidade à atmosfera. Esse vapor d'água, ao se condensar, libera energia latente, alimentando sistemas de baixa pressão e promovendo a formação de nuvens e precipitações. Assim, os oceanos não apenas modulam a temperatura, mas também regulam a umidade do ar, afetando a distribuição de chuvas em diferentes regiões do planeta. Fenômenos como o El Niño e a La Niña demonstram como pequenas variações na temperatura superficial dos oceanos podem desencadear impactos climáticos significativos em diversas partes do mundo.",
+   "trecho": "Os oceanos exercem um papel fundamental na regulação do clima global, atuando como grandes armazenadores de calor. A água possui uma alta capacidade térmica, o que significa que absorve e retém grande",
+   "fim": "odem desencadear impactos climáticos significativos em diversas partes do mundo."
+  }
+ ],
+ "meta": {
+  "iniciado": "2026-10-29T10:56:09.310Z",
+  "terminado": "2026-10-29T10:59:36.299Z",
+  "banco": "banco-aberto-holdout-100.json",
+  "bancoSha256": "8305995395f3406cb4ecba02d4b7f494ad3dcfe96ed39b1ef8aaba81b25ef4ce",
+  "codigoSha256": "af87248a8c9875855c9c91af6d423c1b06b488bfaf31d36142d88d693fc53f2c",
+  "rubricaSha256": "f3ff579d3ca2a56b735b1c414791eab1050eb58e0367d5ec2c1bbad8ba25665e",
+  "concorrencia": 1,
+  "janelas": [
+   {
+    "iniciado": "2026-10-29T10:56:09.310Z",
+    "terminado": "2026-10-29T10:59:36.299Z"
+   }
+  ],
+  "retomadas": 0,
+  "invalido": false
+ }
+}

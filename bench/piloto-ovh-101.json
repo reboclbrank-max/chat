@@ -1,0 +1,26 @@
+[
+  {
+    "id": "ovhl",
+    "modelo": "Meta-Llama-3_3-70B-Instruct",
+    "msParede": 30006,
+    "resultado": "timeout",
+    "fim": null,
+    "texto": null
+  },
+  {
+    "id": "ovhnemo",
+    "modelo": "Mistral-Nemo-Instruct-2407",
+    "msParede": 5450,
+    "resultado": "servidor",
+    "fim": null,
+    "texto": null
+  },
+  {
+    "id": "ovhoss20",
+    "modelo": "gpt-oss-20b",
+    "msParede": 5495,
+    "resultado": "texto",
+    "fim": "stop",
+    "texto": "Quando um cliente faz um pedido em uma loja online, o processo começa com a seleção dos produtos e a adição ao carrinho. Em seguida, o cliente fornece suas informações de entrega e escolhe a forma de pagamento. A loja confirma a disponibilidade dos itens, calcula o valor total, incluindo frete e impostos, e gera uma fatura. Após o pagamento ser aprovado, o pedido é registrado no sistema da loja e passa para a etapa de preparação.\n\nNa fase de preparação, os itens são retirados do estoque, embalados com cuidado e etiquetados com o endereço do cliente. A loja então gera uma etiqueta de envio e escolhe a transportadora mais adequada, enviando o pacote para o centro de distribuição ou diretamente para o endereço do cliente. A transportadora rastreia o pacote, e o cliente recebe atualizações de status por e‑mail ou SMS. Quando o pacote chega ao destino, o cliente o recebe, verifica se tudo está em ordem e, se necessário, confirma a entrega no sistema da loja, encerrando o ciclo."
+  }
+]

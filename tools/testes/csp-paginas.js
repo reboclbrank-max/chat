@@ -44,10 +44,21 @@ function diretivas(pol) {
   }
   return mapa;
 }
-function hostsDaPagina(html) {
+function hostsDaPagina(html, arquivo) {
   // Ignora a própria meta de CSP: ela lista os hosts autorizados, não usos.
   const semCsp = html.replace(/<meta http-equiv="Content-Security-Policy" content="[^"]+">/, '');
-  return new Set([...semCsp.matchAll(/https:\/\/([a-z0-9.-]+\.[a-z]{2,})/gi)].map((m) => m[1].toLowerCase()));
+  const achados = new Set([...semCsp.matchAll(/https:\/\/([a-z0-9.-]+\.[a-z]{2,})/gi)].map((m) => m[1].toLowerCase()));
+  // 2026-10-27: o roteador vive em módulo próprio (roteador-ia.js). Para o contrato enxergar o
+  // que a página realmente requisita, os hosts dos scripts locais entram na conta — isso APERTA
+  // a regra: antes um host usado só dentro do módulo passava sem estar no connect-src.
+  const base = path.dirname(path.join(raiz, arquivo || 'index.html'));
+  for (const m of semCsp.matchAll(/<script[^>]+src="([^"?:]+)"/gi)) {
+    const caminho = path.join(base, m[1]);
+    if (!fs.existsSync(caminho) || !fs.statSync(caminho).isFile()) continue;
+    const fonte = fs.readFileSync(caminho, 'utf8');
+    for (const h of fonte.matchAll(/https:\/\/([a-z0-9.-]+\.[a-z]{2,})/gi)) achados.add(h[1].toLowerCase());
+  }
+  return achados;
 }
 
 ok('todas as páginas com CSP declaram a política', () => {

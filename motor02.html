@@ -62,6 +62,13 @@ function bolha(tipo, texto, origem){
 }
 function status(t){ $('#status').textContent = t; }
 
+// A integração direta neste host fica pausada enquanto não houver autorização escrita.
+// Entradas legadas no navegador também passam por esta guarda antes de qualquer chamada.
+function basePermitida(base){
+  try { const u = new URL(String(base || '')); const h = u.hostname.toLowerCase().replace(/\.$/, '');
+    return u.protocol === 'https:' && !u.username && !u.password && h !== 'llm7.io' && !h.endsWith('.llm7.io');
+  } catch(e) { return false; }
+}
 async function carregarDNA(){
   let dna = [];
   try { const j = await (await fetch(DNA_URL, {cache:'no-store'})).json(); dna = j.motores || []; } catch(e){}
@@ -69,12 +76,13 @@ async function carregarDNA(){
   try { extras = JSON.parse(localStorage.getItem('celula_frota') || '[]'); } catch(e){}
   const todos = dna.concat(extras);
   const vistos = new Set();
-  FROTA = todos.filter(m => m && m.base && m.modelo && !vistos.has(m.base + '|' + m.modelo) && vistos.add(m.base + '|' + m.modelo));
+  FROTA = todos.filter(m => m && basePermitida(m.base) && m.modelo && !vistos.has(m.base + '|' + m.modelo) && vistos.add(m.base + '|' + m.modelo));
   if (CELULA.ids) FROTA = FROTA.filter(m => CELULA.ids.includes(m.id) || (m.id || '').startsWith('x'));
   status(FROTA.length + ' motores no DNA' + (extras.length ? ' (+' + extras.length + ' plantados aqui)' : '') + ' · modo: ' + ($('#modo').value === 'enxame' ? 'enxame 10+10' : 'simples'));
 }
 
 async function pinga(m){
+  if (!m || !basePermitida(m.base)) return {ok:false, ms:0};
   const t0 = Date.now();
   try{
     const r = await fetch(m.base + '/chat/completions', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({model:m.modelo, messages:[{role:'user',content:'ping'}], max_tokens:4}), signal: AbortSignal.timeout(12000)});
@@ -82,6 +90,7 @@ async function pinga(m){
   }catch(e){ return {ok:false, ms:Date.now()-t0}; }
 }
 async function falaMotor(m, mensagens, temp){
+  if (!m || !basePermitida(m.base)) return null;
   try{
     const r = await fetch(m.base + '/chat/completions', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({model:m.modelo, messages:mensagens, temperature:temp||0.7, max_tokens:600}), signal: AbortSignal.timeout(90000)});
     if(!r.ok) return null;
@@ -145,7 +154,7 @@ function comando(txt){
   }
   if (txt.startsWith('!plantar ')){
     const p = txt.slice(9).split('|').map(s=>s.trim());
-    if(!/^https:\/\//.test(p[0]||'') || !p[1]) { bolha('celula','⚠️ uso: !plantar https://base | modelo | nome','🧬'); return true; }
+    if(!basePermitida(p[0]) || !p[1]) { bolha('celula','⚠️ base inválida ou integração pausada; uso: !plantar https://base | modelo | nome','🧬'); return true; }
     let ex = []; try{ ex = JSON.parse(localStorage.getItem('celula_frota')||'[]'); }catch(e){}
     ex.push({id:'x'+Date.now().toString(36), nome:p[2]||p[1], base:p[0], modelo:p[1]});
     localStorage.setItem('celula_frota', JSON.stringify(ex.slice(-12)));

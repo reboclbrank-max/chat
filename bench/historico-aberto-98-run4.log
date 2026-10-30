@@ -1,0 +1,27 @@
+✔ # 1  225p 16410ms  
+✔ # 2  191p 17043ms  
+✔ # 3  272p 22877ms  
+✔ # 4  106p 70302ms  
+✔ # 5   66p 70281ms  
+✘ # 6  139p 25963ms  falta fato #2 (res[íi]duo)
+✔ # 7  193p 44090ms  
+✔ # 8  204p 70678ms  
+✔ # 9  206p 74921ms  
+✔ #10   81p 75609ms  
+✘ #11   36p 123081ms  curto (36<70) · parágrafos (1<2) · falta fato #1 (dispers)
+✘ #12   23p 226640ms  curto (23<90) · parágrafos (1<3) · falta fato #2 (alemanha) · não terminou a frase (provável corte por limite 
+✔ #13  181p 42142ms  
+✔ #14  206p 42459ms  
+✘ #15  189p 80629ms  falta fato #3 (titular)
+✔ #16  157p 167620ms  
+✔ #17  184p 108576ms  
+✘ #18   85p 70652ms  falta fato #3 (fome)
+✔ #19   79p 14009ms  
+✔ #20  175p 257047ms  
+✔ #21   70p 64038ms  
+✘ #22   45p 173541ms  curto (45<70) · parágrafos (1<2) · falta fato #1 (painel)
+✔ #23  131p 187044ms  
+✔ #24   83p 17531ms  
+
+{"modo":"depois","total":24,"passaram":18,"pct":75,"medianaPalavras":157,"cortados":1,"curtos":3,"faltouFato":6,"medianaMs":70652}
+salvo em /home/user/chat-v2/bench/resultado-aberto-depois.json

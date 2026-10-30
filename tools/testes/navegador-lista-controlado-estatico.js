@@ -164,6 +164,16 @@ ok('exercita recuperação do Workspace e prova o layout em navegador real', () 
   assert.match(texto, /INFO:CONSOLE\.\*\(Uncaught\|Error\)/);
 });
 
+ok('a barreira do CI executa o harness e trata ausência como SKIP explícito', () => {
+  const fs = require('fs');
+  const path = require('path');
+  const workflow = fs.readFileSync(path.resolve(__dirname, '../../.github/workflows/testes-rapidos.yml'), 'utf8');
+  assert(/bash tools\/testes\/navegador-lista-controlado\.sh/.test(workflow), 'o CI deixou de rodar o navegador controlado');
+  assert(/if \[ "\$codigo" -eq 2 \]/.test(workflow), 'o CI precisa tratar código 2 (sem navegador) como SKIP, não como falha nem como verde');
+  assert(/::warning::navegador controlado sem pré-requisito local/.test(workflow), 'o SKIP precisa aparecer no log da CI');
+  assert(!/continue-on-error: true/.test(workflow), 'continue-on-error esconderia falha real do navegador');
+});
+
 ok('não contém padrão usual de segredo', () => {
   assert(!/github_pat_[A-Za-z0-9_]{20,}|gh[pousr]_[A-Za-z0-9]{20,}/.test(texto));
   assert(!/-----BEGIN [A-Z ]*PRIVATE KEY-----/.test(texto));

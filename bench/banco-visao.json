@@ -1,0 +1,92 @@
+[
+ {
+  "id": 1,
+  "arq": "n7.png",
+  "q": "Qual número aparece nesta imagem? Responda em uma linha, só o número.",
+  "g": [
+   "7"
+  ]
+ },
+ {
+  "id": 2,
+  "arq": "nove.png",
+  "q": "Qual número aparece nesta imagem? Responda em uma linha, só o número.",
+  "g": [
+   "9"
+  ]
+ },
+ {
+  "id": 3,
+  "arq": "n123.png",
+  "q": "Qual número aparece nesta imagem? Responda em uma linha, só o número.",
+  "g": [
+   "123"
+  ]
+ },
+ {
+  "id": 4,
+  "arq": "q.png",
+  "q": "Qual letra aparece nesta imagem? Responda em uma linha, só a letra.",
+  "g": [
+   "q"
+  ]
+ },
+ {
+  "id": 5,
+  "arq": "azul.png",
+  "q": "Qual palavra está escrita nesta imagem? Responda em uma linha, só a palavra.",
+  "g": [
+   "azul"
+  ]
+ },
+ {
+  "id": 6,
+  "arq": "casa.png",
+  "q": "Qual palavra está escrita nesta imagem? Responda em uma linha, só a palavra.",
+  "g": [
+   "casa"
+  ]
+ },
+ {
+  "id": 7,
+  "arq": "tres.png",
+  "q": "Quantos círculos pretos há nesta imagem? Responda em uma linha, só o número.",
+  "g": [
+   "3",
+   "três"
+  ]
+ },
+ {
+  "id": 8,
+  "arq": "doisquad.png",
+  "q": "Quantos quadrados há nesta imagem? Responda em uma linha, só o número.",
+  "g": [
+   "2",
+   "dois"
+  ]
+ },
+ {
+  "id": 9,
+  "arq": "quad42.png",
+  "q": "Qual número aparece dentro do quadrado? Responda em uma linha, só o número.",
+  "g": [
+   "42"
+  ]
+ },
+ {
+  "id": 10,
+  "arq": "seta.png",
+  "q": "Para que lado a seta aponta? Responda em uma linha: esquerda, direita, cima ou baixo.",
+  "g": [
+   "esquerda"
+  ]
+ },
+ {
+  "id": 11,
+  "arq": "seta_dir.png",
+  "q": "Para que lado a seta aponta? Responda em uma linha: esquerda, direita, cima ou baixo.",
+  "g": [
+   "direita"
+  ]
+ }
+]

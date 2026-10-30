@@ -1,0 +1,9 @@
+✔ #101  176p  8220ms   [1/6]
+✔ #102  175p 72687ms   [2/6]
+✔ #103  170p  9725ms   [3/6]
+✔ #104  229p  7553ms   [4/6]
+✔ #105  193p  9835ms   [5/6]
+✔ #106  201p 14070ms   [6/6]
+
+{"modo":"depois","total":6,"totalPrevisto":6,"completo":true,"passaram":6,"pct":100,"medianaPalavras":184.5,"cortados":0,"curtos":0,"faltouFato":0,"medianaMs":9780}
+salvo em /home/user/chat-v2/bench/resultado-aberto-101-holdout.json

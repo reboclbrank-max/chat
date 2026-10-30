@@ -1,0 +1,27 @@
+✔ # 1  217p 140393ms  
+✔ # 2  200p 66144ms  
+✘ # 3   86p 181051ms  curto (86<90) · parágrafos (2<3)
+✔ # 4  111p 45727ms  
+✔ # 5   63p 45586ms  
+✔ # 6  111p 43636ms  
+✔ # 7  124p 152393ms  
+✔ # 8  118p 124624ms  
+✘ # 9   41p 118396ms  curto (41<70) · parágrafos (1<2)
+✔ #10   81p 88230ms  
+✔ #11  204p 48852ms  
+✔ #12  259p 141968ms  
+✘ #13   44p 152553ms  curto (44<70) · parágrafos (1<2) · falta fato #2 (ant[íi]geno)
+✘ #14   27p 152666ms  curto (27<70) · parágrafos (1<2)
+✔ #15  168p 152968ms  
+✔ #16  185p 13539ms  
+✔ #17  219p 10869ms  
+✔ #18  100p 84435ms  
+✔ #19   71p 10298ms  
+✔ #20  305p 22908ms  
+✔ #21   78p 74167ms  
+✘ #22  203p 11229ms  falta fato #1 (painel)
+✔ #23  208p 12703ms  
+✔ #24   67p 124184ms  
+
+{"modo":"depois","total":24,"passaram":19,"pct":79.2,"medianaPalavras":118,"cortados":0,"curtos":4,"faltouFato":2,"medianaMs":84435}
+salvo em /home/user/chat-v2/bench/resultado-aberto-depois.json

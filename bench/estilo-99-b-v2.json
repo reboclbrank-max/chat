@@ -1,0 +1,386 @@
+{
+  "versao": 2,
+  "aviso": "Indicadores descritivos; não avaliam qualidade literária, coesão ou veracidade.",
+  "total": 24,
+  "medianas": {
+    "fraseMed": 21.75,
+    "longasPct": 0,
+    "repeticao": 12.05,
+    "conectivosPor100": 2.11
+  },
+  "itens": [
+    {
+      "id": 1,
+      "palavras": 188,
+      "frases": 8,
+      "fraseMed": 21.5,
+      "longasPct": 12.5,
+      "repeticao": 20.56,
+      "variedadeLexical": 79.44,
+      "ocorrenciasConectivos": 6,
+      "tiposConectivos": {
+        "uma vez que": 1,
+        "portanto": 1,
+        "já que": 1,
+        "também": 1,
+        "assim": 1,
+        "mas": 1
+      },
+      "conectivosPor100": 3.19
+    },
+    {
+      "id": 2,
+      "palavras": 136,
+      "frases": 10,
+      "fraseMed": 14,
+      "longasPct": 0,
+      "repeticao": 12.64,
+      "variedadeLexical": 87.36,
+      "ocorrenciasConectivos": 2,
+      "tiposConectivos": {
+        "inclusive": 1,
+        "no entanto": 1
+      },
+      "conectivosPor100": 1.47
+    },
+    {
+      "id": 3,
+      "palavras": 215,
+      "frases": 9,
+      "fraseMed": 25,
+      "longasPct": 0,
+      "repeticao": 7.14,
+      "variedadeLexical": 92.86,
+      "ocorrenciasConectivos": 5,
+      "tiposConectivos": {
+        "além disso": 1,
+        "mas": 2,
+        "também": 2
+      },
+      "conectivosPor100": 2.33
+    },
+    {
+      "id": 4,
+      "palavras": 54,
+      "frases": 3,
+      "fraseMed": 21,
+      "longasPct": 0,
+      "repeticao": 8.33,
+      "variedadeLexical": 91.67,
+      "ocorrenciasConectivos": 0,
+      "tiposConectivos": {},
+      "conectivosPor100": 0
+    },
+    {
+      "id": 5,
+      "palavras": 66,
+      "frases": 6,
+      "fraseMed": 8,
+      "longasPct": 0,
+      "repeticao": 10.53,
+      "variedadeLexical": 89.47,
+      "ocorrenciasConectivos": 1,
+      "tiposConectivos": {
+        "depois": 1
+      },
+      "conectivosPor100": 1.52
+    },
+    {
+      "id": 6,
+      "palavras": 109,
+      "frases": 3,
+      "fraseMed": 39,
+      "longasPct": 66.67,
+      "repeticao": 6.9,
+      "variedadeLexical": 93.1,
+      "ocorrenciasConectivos": 1,
+      "tiposConectivos": {
+        "pois": 1
+      },
+      "conectivosPor100": 0.92
+    },
+    {
+      "id": 7,
+      "palavras": 133,
+      "frases": 9,
+      "fraseMed": 15,
+      "longasPct": 0,
+      "repeticao": 10.13,
+      "variedadeLexical": 89.87,
+      "ocorrenciasConectivos": 2,
+      "tiposConectivos": {
+        "também": 1,
+        "portanto": 1
+      },
+      "conectivosPor100": 1.5
+    },
+    {
+      "id": 8,
+      "palavras": 42,
+      "frases": 2,
+      "fraseMed": 21,
+      "longasPct": 0,
+      "repeticao": 0,
+      "variedadeLexical": 100,
+      "ocorrenciasConectivos": 1,
+      "tiposConectivos": {
+        "pois": 1
+      },
+      "conectivosPor100": 2.38
+    },
+    {
+      "id": 9,
+      "palavras": 98,
+      "frases": 6,
+      "fraseMed": 16.5,
+      "longasPct": 0,
+      "repeticao": 13.21,
+      "variedadeLexical": 86.79,
+      "ocorrenciasConectivos": 2,
+      "tiposConectivos": {
+        "assim": 1,
+        "pois": 1
+      },
+      "conectivosPor100": 2.04
+    },
+    {
+      "id": 10,
+      "palavras": 79,
+      "frases": 10,
+      "fraseMed": 7,
+      "longasPct": 0,
+      "repeticao": 2.33,
+      "variedadeLexical": 97.67,
+      "ocorrenciasConectivos": 1,
+      "tiposConectivos": {
+        "enquanto": 1
+      },
+      "conectivosPor100": 1.27
+    },
+    {
+      "id": 11,
+      "palavras": 169,
+      "frases": 8,
+      "fraseMed": 19,
+      "longasPct": 0,
+      "repeticao": 25,
+      "variedadeLexical": 75,
+      "ocorrenciasConectivos": 5,
+      "tiposConectivos": {
+        "porque": 1,
+        "além disso": 1,
+        "assim": 1,
+        "mas": 1,
+        "também": 1
+      },
+      "conectivosPor100": 2.96
+    },
+    {
+      "id": 12,
+      "palavras": 242,
+      "frases": 10,
+      "fraseMed": 25.5,
+      "longasPct": 10,
+      "repeticao": 14.18,
+      "variedadeLexical": 85.82,
+      "ocorrenciasConectivos": 8,
+      "tiposConectivos": {
+        "também": 3,
+        "além disso": 1,
+        "uma vez que": 1,
+        "portanto": 1,
+        "mas": 1,
+        "assim": 1
+      },
+      "conectivosPor100": 3.31
+    },
+    {
+      "id": 13,
+      "palavras": 149,
+      "frases": 5,
+      "fraseMed": 28,
+      "longasPct": 40,
+      "repeticao": 19.05,
+      "variedadeLexical": 80.95,
+      "ocorrenciasConectivos": 3,
+      "tiposConectivos": {
+        "dessa forma": 1,
+        "mas": 1,
+        "também": 1
+      },
+      "conectivosPor100": 2.01
+    },
+    {
+      "id": 14,
+      "palavras": 41,
+      "frases": 1,
+      "fraseMed": 41,
+      "longasPct": 100,
+      "repeticao": 4.35,
+      "variedadeLexical": 95.65,
+      "ocorrenciasConectivos": 0,
+      "tiposConectivos": {},
+      "conectivosPor100": 0
+    },
+    {
+      "id": 15,
+      "palavras": 166,
+      "frases": 7,
+      "fraseMed": 22,
+      "longasPct": 14.29,
+      "repeticao": 28.05,
+      "variedadeLexical": 71.95,
+      "ocorrenciasConectivos": 5,
+      "tiposConectivos": {
+        "além disso": 2,
+        "já que": 1,
+        "uma vez que": 1,
+        "portanto": 1
+      },
+      "conectivosPor100": 3.01
+    },
+    {
+      "id": 16,
+      "palavras": 150,
+      "frases": 5,
+      "fraseMed": 30,
+      "longasPct": 20,
+      "repeticao": 12.94,
+      "variedadeLexical": 87.06,
+      "ocorrenciasConectivos": 1,
+      "tiposConectivos": {
+        "assim": 1
+      },
+      "conectivosPor100": 0.67
+    },
+    {
+      "id": 17,
+      "palavras": 236,
+      "frases": 9,
+      "fraseMed": 28,
+      "longasPct": 0,
+      "repeticao": 16.45,
+      "variedadeLexical": 83.55,
+      "ocorrenciasConectivos": 9,
+      "tiposConectivos": {
+        "uma vez que": 2,
+        "já que": 2,
+        "portanto": 2,
+        "embora": 1,
+        "também": 1,
+        "além disso": 1
+      },
+      "conectivosPor100": 3.81
+    },
+    {
+      "id": 18,
+      "palavras": 95,
+      "frases": 8,
+      "fraseMed": 8,
+      "longasPct": 0,
+      "repeticao": 20,
+      "variedadeLexical": 80,
+      "ocorrenciasConectivos": 3,
+      "tiposConectivos": {
+        "pois": 2,
+        "enquanto": 1
+      },
+      "conectivosPor100": 3.16
+    },
+    {
+      "id": 19,
+      "palavras": 92,
+      "frases": 3,
+      "fraseMed": 32,
+      "longasPct": 33.33,
+      "repeticao": 6.9,
+      "variedadeLexical": 93.1,
+      "ocorrenciasConectivos": 2,
+      "tiposConectivos": {
+        "enquanto": 1,
+        "portanto": 1
+      },
+      "conectivosPor100": 2.17
+    },
+    {
+      "id": 20,
+      "palavras": 212,
+      "frases": 13,
+      "fraseMed": 16,
+      "longasPct": 0,
+      "repeticao": 11.45,
+      "variedadeLexical": 88.55,
+      "ocorrenciasConectivos": 3,
+      "tiposConectivos": {
+        "também": 1,
+        "assim": 1,
+        "embora": 1
+      },
+      "conectivosPor100": 1.42
+    },
+    {
+      "id": 21,
+      "palavras": 76,
+      "frases": 6,
+      "fraseMed": 12,
+      "longasPct": 0,
+      "repeticao": 4.88,
+      "variedadeLexical": 95.12,
+      "ocorrenciasConectivos": 0,
+      "tiposConectivos": {},
+      "conectivosPor100": 0
+    },
+    {
+      "id": 22,
+      "palavras": 216,
+      "frases": 6,
+      "fraseMed": 36,
+      "longasPct": 50,
+      "repeticao": 17.74,
+      "variedadeLexical": 82.26,
+      "ocorrenciasConectivos": 7,
+      "tiposConectivos": {
+        "já que": 1,
+        "também": 2,
+        "além disso": 1,
+        "uma vez que": 1,
+        "portanto": 1,
+        "mas": 1
+      },
+      "conectivosPor100": 3.24
+    },
+    {
+      "id": 23,
+      "palavras": 228,
+      "frases": 9,
+      "fraseMed": 25,
+      "longasPct": 0,
+      "repeticao": 17.04,
+      "variedadeLexical": 82.96,
+      "ocorrenciasConectivos": 8,
+      "tiposConectivos": {
+        "já que": 3,
+        "assim": 2,
+        "por outro lado": 1,
+        "mas": 1,
+        "portanto": 1
+      },
+      "conectivosPor100": 3.51
+    },
+    {
+      "id": 24,
+      "palavras": 82,
+      "frases": 3,
+      "fraseMed": 27,
+      "longasPct": 0,
+      "repeticao": 4.17,
+      "variedadeLexical": 95.83,
+      "ocorrenciasConectivos": 2,
+      "tiposConectivos": {
+        "pois": 1,
+        "portanto": 1
+      },
+      "conectivosPor100": 2.44
+    }
+  ]
+}

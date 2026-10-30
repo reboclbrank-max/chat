@@ -1,0 +1,175 @@
+{
+  "aviso": "Reavaliação do MESMO texto; não é uma nova geração nem avalia verdade ou qualidade literária.",
+  "gabaritoHistoricoSha256": "f00a1ed677974487bc70024ddb4e083e3fd11fe41e139c5a1270f7c6d68558e2",
+  "gabaritoCorrigidoSha256": "3c23382ded2b1ea498bbb11e195338eb141921318fa1a595c02c32f1f08a3223",
+  "resultados": [
+    {
+      "arquivo": "resultado-aberto-99-a.json",
+      "sha256": "602a1a370f73123f2b1deb9b6dc9dd60e4d9b2287e06e36d6882408bec7a83fe",
+      "gravadoOriginal": {
+        "modo": "depois",
+        "total": 24,
+        "passaram": 22,
+        "pct": 91.7,
+        "medianaPalavras": 223,
+        "cortados": 0,
+        "curtos": 0,
+        "faltouFato": 2,
+        "medianaMs": 24006
+      },
+      "pontuacaoHistorica": {
+        "total": 24,
+        "passaram": 22,
+        "falhas": [
+          {
+            "id": 6,
+            "falhas": [
+              "falta fato #2 (res[íi]duo)"
+            ]
+          },
+          {
+            "id": 11,
+            "falhas": [
+              "falta fato #1 (dispers)"
+            ]
+          }
+        ]
+      },
+      "pontuacaoCorrigida": {
+        "total": 24,
+        "passaram": 24,
+        "falhas": []
+      },
+      "itensComMudancaDeResultado": [
+        6,
+        11
+      ]
+    },
+    {
+      "arquivo": "resultado-aberto-99-b.json",
+      "sha256": "61bab3692338b7a39ea0cc3af5c19b670ccbe16be73bcd128adcb9d6000f7892",
+      "gravadoOriginal": {
+        "modo": "depois",
+        "total": 24,
+        "passaram": 20,
+        "pct": 83.3,
+        "medianaPalavras": 136,
+        "cortados": 0,
+        "curtos": 2,
+        "faltouFato": 2,
+        "medianaMs": 82861
+      },
+      "pontuacaoHistorica": {
+        "total": 24,
+        "passaram": 20,
+        "falhas": [
+          {
+            "id": 6,
+            "falhas": [
+              "falta fato #2 (res[íi]duo)"
+            ]
+          },
+          {
+            "id": 8,
+            "falhas": [
+              "curto (42<70)",
+              "parágrafos (1<2)"
+            ]
+          },
+          {
+            "id": 14,
+            "falhas": [
+              "curto (40<70)",
+              "parágrafos (1<2)"
+            ]
+          },
+          {
+            "id": 22,
+            "falhas": [
+              "falta fato #1 (painel)"
+            ]
+          }
+        ]
+      },
+      "pontuacaoCorrigida": {
+        "total": 24,
+        "passaram": 22,
+        "falhas": [
+          {
+            "id": 8,
+            "falhas": [
+              "curto (42<70)",
+              "parágrafos (1<2)"
+            ]
+          },
+          {
+            "id": 14,
+            "falhas": [
+              "curto (40<70)",
+              "parágrafos (1<2)"
+            ]
+          }
+        ]
+      },
+      "itensComMudancaDeResultado": [
+        6,
+        22
+      ]
+    },
+    {
+      "arquivo": "resultado-aberto-100-original.json",
+      "sha256": "c7c92f337a67bcd426b40b981f78fdad04c7c3f9c005fd3e500878431008ced8",
+      "gravadoOriginal": {
+        "modo": "depois",
+        "total": 24,
+        "passaram": 21,
+        "pct": 87.5,
+        "medianaPalavras": 206,
+        "cortados": 0,
+        "curtos": 0,
+        "faltouFato": 3,
+        "medianaMs": 27580
+      },
+      "pontuacaoHistorica": {
+        "total": 24,
+        "passaram": 21,
+        "falhas": [
+          {
+            "id": 6,
+            "falhas": [
+              "falta fato #3 (ambient)"
+            ]
+          },
+          {
+            "id": 16,
+            "falhas": [
+              "falta fato #1 (rio)"
+            ]
+          },
+          {
+            "id": 22,
+            "falhas": [
+              "falta fato #1 (painel)"
+            ]
+          }
+        ]
+      },
+      "pontuacaoCorrigida": {
+        "total": 24,
+        "passaram": 23,
+        "falhas": [
+          {
+            "id": 16,
+            "falhas": [
+              "falta fato #1 (rio)"
+            ]
+          }
+        ]
+      },
+      "itensComMudancaDeResultado": [
+        6,
+        22
+      ]
+    }
+  ]
+}

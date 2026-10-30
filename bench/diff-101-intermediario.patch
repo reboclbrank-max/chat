@@ -1,0 +1,110 @@
+--- a/roteador-ia.js
++++ b/roteador-ia.js
+@@ -21 +21 @@
+-    { id: 'ovhoss20',  nome: 'gpt-oss-20b (OVH)',             base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'gpt-oss-20b',                                       classe: 'leve' , peso: 7, latPar: 20000 }, // prioridade conservadora, não promessa de latência
++    { id: 'ovhoss20',  nome: 'gpt-oss-20b (OVH)',             base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',          modelo: 'gpt-oss-20b',                                       classe: 'leve' , peso: 7 },
+@@ -1220,10 +1219,0 @@
+-  function itensAproveitaveis(resposta, ex) {
+-    if (!resposta || !resposta.texto || ex.itens < 2) return [];
+-    var linhas = String(resposta.texto).split(/\n+/).map(function (p) { return p.trim(); }).filter(Boolean);
+-    if (!linhas.length || linhas.length >= ex.itens) return [];
+-    return linhas.every(function (linha, i) {
+-      var m = /^(\d+)[.)]\s+(\S[\s\S]*)$/.exec(linha);
+-      return !!m && Number(m[1]) === i + 1 && /[.!?…]["”)]?\s*$/.test(m[2]);
+-    }) ? linhas : [];
+-  }
+-
+@@ -1673,3 +1663,2 @@
+-    rotas.sort(function (a, b) { return (a.latPar || 30000) - (b.latPar || 30000); });
+-    var idx = 0, linhas = (opc.itensIniciais || []).slice(0, n - 1), tentativas = 0;
+-    for (var i = linhas.length; i < n && agora() < prazo; i++) {
++    var idx = 0, linhas = [], tentativas = 0;
++    for (var i = 0; i < n && agora() < prazo; i++) {
+@@ -1681 +1669,0 @@
+-      if (linhas.length) ped += '\n\nItens anteriores, já escritos:\n' + linhas.join('\n').slice(0, 1000);
+@@ -1696 +1684 @@
+-          if (espera + 1000 >= prazo - t) break;
++          if (espera >= prazo - t || espera > 30000) break;
+@@ -1711 +1699 @@
+-        if (txt && palavras >= Math.max(10, piso) && /[.!?…]["”)]?$/.test(txt)) {
++        if (txt && palavras >= Math.max(10, piso) && /[.!?…]["”)]?$/.test(txt))
+@@ -1713,2 +1700,0 @@
+-          idx = rotas.indexOf(rota); // a próxima etapa começa pela rota que acabou de responder
+-        }
+@@ -1855,3 +1841 @@
+-        // Incluir rotas temporariamente em cooldown: podem voltar dentro do prazo.
+-        // A chamada em si sempre confere disponivel() e respeita Retry-After.
+-        if (!self.saude[r.id] || self.saude[r.id].morta) return;
++        if (!self.disponivel(r.id)) return;
+@@ -1859,3 +1843 @@
+-        var livre = self.disponivel(r.id), livreAtual = atual && self.disponivel(atual.id);
+-        if (!atual || (livre && !livreAtual) || (livre === livreAtual && (r.latPar || 30000) < (atual.latPar || 30000)))
+-          porBase[r.base] = r;
++        if (!atual || (r.latPar || 30000) < (atual.latPar || 30000)) porBase[r.base] = r;
+@@ -1880 +1862 @@
+-      if (!opc.semPlano && !blocos.some(Boolean) && this.disponivel(hostPlano.id) && agora() < prazoGlobal &&
++      if (!blocos.some(Boolean) && this.disponivel(hostPlano.id) && agora() < prazoGlobal &&
+@@ -1961,2 +1942,0 @@
+-      // Não escreva a segunda metade antes de saber o que diz a primeira.
+-      if (!blocos[i]) break;
+@@ -1973,4 +1953,3 @@
+-      var espera = proximos.length ? Math.min.apply(null, proximos) - t + 500 : 0;
+-      // Só espera se a rota puder voltar com tempo para outra chamada. Não
+-      // encurta Retry-After e não perde uma volta válida por um teto fixo de 40s.
+-      if (espera + 1000 >= Math.min(prazoGlobal - t, 110000)) espera = 0;
++      var espera = proximos.length ? Math.min(Math.min.apply(null, proximos) - t + 500, 40000) : 0;
++      // Não encurta o cooldown para fazer outra chamada; apenas encerra se o prazo acabar.
++      espera = Math.min(espera, Math.max(0, prazoGlobal - t));
+@@ -1978 +1957 @@
+-      var prazoRetry = Math.min(agora() + 70000, prazoGlobal);
++      var prazoRetry = Math.min(agora() + 35000, prazoGlobal);
+@@ -1981 +1959,0 @@
+-        if (!blocos[j]) break;
+@@ -2128,5 +2106,4 @@
+-      // Uma resposta inteira pode evitar várias chamadas em parágrafos, listas e
+-      // textos curtos. Se faltar estrutura, conservar partes já terminadas.
+-      var rapido = null;
+-      if (agora() < prazoAberto) {
+-        rapido = await this._gerar(pergunta, {
++      // Primeiro uma resposta inteira: quando funciona, economiza plano e chamadas por
++      // parágrafo. Se for parcial, conserva blocos completos e gera só os ausentes.
++      if (ex.paragrafos >= 2 && agora() < prazoAberto) {
++        var rapido = await this._gerar(pergunta, {
+@@ -2138,8 +2115 @@
+-          transformar: function (t) {
+-            var limpo = sanear(t);
+-            var linhas = limpo.split(/\n+/).map(function (l) { return l.trim(); }).filter(Boolean);
+-            // Só normalizar marcadores se isso não apagar linhas de continuação.
+-            if (ex.itens >= 2 && linhas.every(function (l) { return /^(?:[-*•]|\d+[.)])\s+/.test(l); }))
+-              limpo = numerarLista(limpo, ex.itens);
+-            return ajustarFechamento(fecharTexto(limpo), pergunta);
+-          }
++          transformar: function (t) { return fecharTexto(sanear(t)); }
+@@ -2149,6 +2119,6 @@
+-      }
+-      if (ex.paragrafos >= 2 && agora() < prazoAberto) {
+-        var longo = await this._textoLongo(pergunta, ex,
+-          { prazo: prazoAberto, blocosIniciais: blocosAproveitaveis(rapido, ex), semPlano: !rapido });
+-        guardarAberto(longo);
+-        if (candidatoAbertoCompleto(longo, ex)) return devolverAberto(longo);
++        if (agora() < prazoAberto) {
++          var longo = await this._textoLongo(pergunta, ex,
++            { prazo: prazoAberto, blocosIniciais: blocosAproveitaveis(rapido, ex) });
++          guardarAberto(longo);
++          if (candidatoAbertoCompleto(longo, ex)) return devolverAberto(longo);
++        }
+@@ -2156,2 +2126 @@
+-        var lista = await this._listaLonga(pergunta, ex,
+-          { prazo: prazoAberto, itensIniciais: itensAproveitaveis(rapido, ex) });
++        var lista = await this._listaLonga(pergunta, ex, { prazo: prazoAberto });
+@@ -2163 +2132 @@
+-          tentativas: 3, priorizarLatencia: true, prazo: prazoAberto,
++          tentativas: 3, prazo: prazoAberto,
+@@ -2170,6 +2139 @@
+-            if (ex.itens >= 2) {
+-              var linhas = limpo.split(/\n+/).map(function (l) { return l.trim(); }).filter(Boolean);
+-              if (linhas.every(function (l) { return /^(?:[-*•]|\d+[.)])\s+/.test(l); }))
+-                limpo = numerarLista(limpo, ex.itens);
+-              return ajustarFechamento(fecharTexto(limpo), pergunta);
+-            }
++            if (ex.itens >= 2) return ajustarFechamento(fecharTexto(numerarLista(limpo, ex.itens)), pergunta);

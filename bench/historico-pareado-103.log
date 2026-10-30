@@ -1,0 +1,164 @@
+✔ original #4 r0 B 57p 7085ms  [1/88]
+✔ original #4 r0 A 79p 4611ms  [2/88]
+✔ original #11 r0 A 159p 8557ms  [3/88]
+✔ original #11 r0 B 178p 39003ms  [4/88]
+✘ holdout #101 r0 B 82p 114076ms parágrafos (1<2) [5/88]
+✔ holdout #101 r0 A 189p 8155ms  [6/88]
+✔ original #20 r0 A 268p 11551ms  [7/88]
+✘ original #20 r0 B 78p 110282ms curto (78<90) · parágrafos (1<3) [8/88]
+✔ original #16 r0 B 169p 13650ms  [9/88]
+✔ original #16 r0 A 133p 15084ms  [10/88]
+✔ novo #203 r0 B 189p 76251ms  [11/88]
+✔ novo #203 r0 A 194p 12540ms  [12/88]
+✔ holdout #106 r0 B 187p 73144ms  [13/88]
+✔ holdout #106 r0 A 189p 11642ms  [14/88]
+✔ original #9 r0 A 159p 9917ms  [15/88]
+✔ original #9 r0 B 129p 8777ms  [16/88]
+✔ original #2 r0 A 189p 12031ms  [17/88]
+✔ original #2 r0 B 155p 8120ms  [18/88]
+✔ original #10 r0 A 88p 4793ms  [19/88]
+✔ original #10 r0 B 78p 6495ms  [20/88]
+✔ original #21 r0 A 78p 5131ms  [21/88]
+✔ original #21 r0 B 79p 14617ms  [22/88]
+✔ original #12 r0 A 285p 14760ms  [23/88]
+✔ original #12 r0 B 329p 19293ms  [24/88]
+✔ novo #202 r0 B 189p 9449ms  [25/88]
+✔ novo #202 r0 A 164p 7170ms  [26/88]
+✔ original #1 r0 B 177p 10141ms  [27/88]
+✔ original #1 r0 A 144p 10471ms  [28/88]
+✔ original #13 r0 A 194p 74808ms  [29/88]
+✔ original #13 r0 B 163p 9064ms  [30/88]
+✔ holdout #105 r0 A 110p 31644ms  [31/88]
+✔ holdout #105 r0 B 107p 97743ms  [32/88]
+✔ original #5 r0 B 94p 4908ms  [33/88]
+✔ original #5 r0 A 73p 89078ms  [34/88]
+✔ holdout #103 r0 A 108p 8831ms  [35/88]
+✔ holdout #103 r0 B 112p 9216ms  [36/88]
+✔ novo #201 r0 A 155p 105661ms  [37/88]
+✔ novo #201 r0 B 190p 8967ms  [38/88]
+✔ original #7 r0 B 155p 9475ms  [39/88]
+✔ original #7 r0 A 161p 8474ms  [40/88]
+✔ original #24 r0 A 139p 8104ms  [41/88]
+✔ original #24 r0 B 151p 8297ms  [42/88]
+✔ original #6 r0 A 169p 6540ms  [43/88]
+✘ original #6 r0 B 135p 7047ms falta fato #3 (ambient) [44/88]
+✘ novo #206 r0 A 181p 22861ms falta fato #2 (costa) [45/88]
+✔ novo #206 r0 B 190p 53007ms  [46/88]
+✔ holdout #102 r0 A 171p 33344ms  [47/88]
+✔ holdout #102 r0 B 130p 18501ms  [48/88]
+✔ original #14 r0 B 215p 84386ms  [49/88]
+✘ original #14 r0 A 187p 9292ms falta fato #2 (par[âa]metro) [50/88]
+✔ original #18 r0 B 74p 98880ms  [51/88]
+✔ original #18 r0 A 117p 96784ms  [52/88]
+✘ holdout #104 r0 B 78p 110002ms parágrafos (1<2) [53/88]
+✔ holdout #104 r0 A 206p 35092ms  [54/88]
+✔ original #3 r0 B 291p 82977ms  [55/88]
+✔ original #3 r0 A 327p 15816ms  [56/88]
+✔ original #19 r0 A 138p 8740ms  [57/88]
+✔ original #19 r0 B 97p 6330ms  [58/88]
+✔ original #23 r0 B 160p 67110ms  [59/88]
+✔ original #23 r0 A 159p 10843ms  [60/88]
+✔ original #17 r0 B 197p 13088ms  [61/88]
+✘ original #17 r0 A 100p 110003ms parágrafos (1<2) [62/88]
+✘ original #22 r0 B 121p 10032ms falta fato #1 (painel) [63/88]
+✔ original #22 r0 A 158p 60722ms  [64/88]
+✔ novo #204 r0 A 166p 11035ms  [65/88]
+✔ novo #204 r0 B 165p 103075ms  [66/88]
+✔ original #15 r0 B 220p 48716ms  [67/88]
+✔ original #15 r0 A 195p 8933ms  [68/88]
+✔ novo #205 r0 B 127p 8781ms  [69/88]
+✔ novo #205 r0 A 172p 6886ms  [70/88]
+✔ original #8 r0 A 193p 9520ms  [71/88]
+✔ original #8 r0 B 189p 6918ms  [72/88]
+✔ original #3 r2 A 276p 12882ms  [73/88]
+✔ original #3 r2 B 235p 10243ms  [74/88]
+✔ original #3 r1 B 254p 75750ms  [75/88]
+✔ original #3 r1 A 251p 89688ms  [76/88]
+✔ holdout #104 r2 B 181p 11416ms  [77/88]
+✔ holdout #104 r2 A 178p 5737ms  [78/88]
+✘ original #22 r1 A 134p 6756ms falta fato #1 (painel) [79/88]
+✔ original #22 r1 B 166p 66192ms  [80/88]
+✘ original #22 r2 B 0p 106572ms vazio [81/88]
+✔ original #22 r2 A 194p 63126ms  [82/88]
+✔ original #16 r1 A 138p 20915ms  [83/88]
+✔ original #16 r1 B 139p 21831ms  [84/88]
+✘ holdout #104 r1 A 81p 110001ms parágrafos (1<2) [85/88]
+✔ holdout #104 r1 B 138p 17572ms  [86/88]
+✔ original #16 r2 B 178p 19861ms  [87/88]
+✘ original #16 r2 A 87p 110002ms parágrafos (1<2) · falta fato #1 (rio) · falta fato #2 (tratamento) [88/88]
+
+{
+  "original": {
+    "A": {
+      "total": 24,
+      "previsto": 24,
+      "completo": true,
+      "passaram": 22,
+      "pct": 91.7,
+      "medianaMs": 10194
+    },
+    "B": {
+      "total": 24,
+      "previsto": 24,
+      "completo": true,
+      "passaram": 21,
+      "pct": 87.5,
+      "medianaMs": 10086.5
+    }
+  },
+  "holdout": {
+    "A": {
+      "total": 6,
+      "previsto": 6,
+      "completo": true,
+      "passaram": 6,
+      "pct": 100,
+      "medianaMs": 21643
+    },
+    "B": {
+      "total": 6,
+      "previsto": 6,
+      "completo": true,
+      "passaram": 4,
+      "pct": 66.7,
+      "medianaMs": 85443.5
+    }
+  },
+  "novo": {
+    "A": {
+      "total": 6,
+      "previsto": 6,
+      "completo": true,
+      "passaram": 5,
+      "pct": 83.3,
+      "medianaMs": 11787.5
+    },
+    "B": {
+      "total": 6,
+      "previsto": 6,
+      "completo": true,
+      "passaram": 6,
+      "pct": 100,
+      "medianaMs": 31228
+    }
+  },
+  "repeticoes": {
+    "A": {
+      "total": 8,
+      "previsto": 8,
+      "completo": true,
+      "passaram": 5,
+      "pct": 62.5,
+      "medianaMs": 42020.5
+    },
+    "B": {
+      "total": 8,
+      "previsto": 8,
+      "completo": true,
+      "passaram": 7,
+      "pct": 87.5,
+      "medianaMs": 20846
+    }
+  }
+}
+Arquivo: /home/user/chat-102/bench/resultado-pareado-103.json

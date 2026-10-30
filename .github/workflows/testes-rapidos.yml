@@ -92,3 +92,17 @@ jobs:
         env:
           REBOCL_EXIGIR_MULTIMODAL: '1'
         run: node tools/testes/roda-testes.js
+      - name: Navegador controlado (quatro rotas, desktop e mobile)
+        # O harness já existia, mas só rodava à mão: as quatro rotas, o Workspace, o PWA e os
+        # favoritos nunca eram provados no CI. O runner traz Chrome; sem ele, o script sai com
+        # código 2 e este passo registra SKIP explícito em vez de fingir verde.
+        run: |
+          set +e
+          bash tools/testes/navegador-lista-controlado.sh
+          codigo=$?
+          set -e
+          if [ "$codigo" -eq 2 ]; then
+            echo "::warning::navegador controlado sem pré-requisito local — SKIP honesto"
+            exit 0
+          fi
+          exit "$codigo"

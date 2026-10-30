@@ -1,0 +1,279 @@
+{
+ "quando": "2026-10-28T19:52:00.765Z",
+ "rotas": [
+  {
+   "id": "ultra",
+   "nome": "Nemotron-3-Ultra-550B (g4f)",
+   "classe": "media",
+   "acertos": 2,
+   "total": 30,
+   "pct": 6.7,
+   "erros": 28,
+   "medianaMs": 24,
+   "porTipo": {
+    "mat": {
+     "n": 9,
+     "ok": 2
+    },
+    "seq": {
+     "n": 1,
+     "ok": 0
+    },
+    "logica": {
+     "n": 8,
+     "ok": 0
+    },
+    "mundo": {
+     "n": 7,
+     "ok": 0
+    },
+    "lingua": {
+     "n": 5,
+     "ok": 0
+    }
+   },
+   "res": [
+    {
+     "id": 1,
+     "tipo": "mat",
+     "ok": false,
+     "erro": "http 504",
+     "ms": 25159,
+     "resp": ""
+    },
+    {
+     "id": 2,
+     "tipo": "mat",
+     "ok": true,
+     "erro": null,
+     "ms": 1871,
+     "resp": "3060"
+    },
+    {
+     "id": 3,
+     "tipo": "mat",
+     "ok": true,
+     "erro": null,
+     "ms": 6763,
+     "resp": "1200"
+    },
+    {
+     "id": 4,
+     "tipo": "seq",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 29,
+     "resp": ""
+    },
+    {
+     "id": 5,
+     "tipo": "mat",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 60,
+     "resp": ""
+    },
+    {
+     "id": 6,
+     "tipo": "mat",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 24,
+     "resp": ""
+    },
+    {
+     "id": 7,
+     "tipo": "mat",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 25,
+     "resp": ""
+    },
+    {
+     "id": 8,
+     "tipo": "mat",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 26,
+     "resp": ""
+    },
+    {
+     "id": 9,
+     "tipo": "mat",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 23,
+     "resp": ""
+    },
+    {
+     "id": 10,
+     "tipo": "mat",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 22,
+     "resp": ""
+    },
+    {
+     "id": 11,
+     "tipo": "logica",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 18,
+     "resp": ""
+    },
+    {
+     "id": 12,
+     "tipo": "logica",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 54,
+     "resp": ""
+    },
+    {
+     "id": 13,
+     "tipo": "logica",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 24,
+     "resp": ""
+    },
+    {
+     "id": 14,
+     "tipo": "logica",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 23,
+     "resp": ""
+    },
+    {
+     "id": 15,
+     "tipo": "logica",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 39,
+     "resp": ""
+    },
+    {
+     "id": 16,
+     "tipo": "logica",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 41,
+     "resp": ""
+    },
+    {
+     "id": 17,
+     "tipo": "logica",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 21,
+     "resp": ""
+    },
+    {
+     "id": 18,
+     "tipo": "logica",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 22,
+     "resp": ""
+    },
+    {
+     "id": 19,
+     "tipo": "mundo",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 18,
+     "resp": ""
+    },
+    {
+     "id": 20,
+     "tipo": "mundo",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 42,
+     "resp": ""
+    },
+    {
+     "id": 21,
+     "tipo": "mundo",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 18,
+     "resp": ""
+    },
+    {
+     "id": 22,
+     "tipo": "mundo",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 21,
+     "resp": ""
+    },
+    {
+     "id": 23,
+     "tipo": "mundo",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 23,
+     "resp": ""
+    },
+    {
+     "id": 24,
+     "tipo": "mundo",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 36,
+     "resp": ""
+    },
+    {
+     "id": 25,
+     "tipo": "mundo",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 26,
+     "resp": ""
+    },
+    {
+     "id": 26,
+     "tipo": "lingua",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 30,
+     "resp": ""
+    },
+    {
+     "id": 27,
+     "tipo": "lingua",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 23,
+     "resp": ""
+    },
+    {
+     "id": 28,
+     "tipo": "lingua",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 23,
+     "resp": ""
+    },
+    {
+     "id": 29,
+     "tipo": "lingua",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 18,
+     "resp": ""
+    },
+    {
+     "id": 30,
+     "tipo": "lingua",
+     "ok": false,
+     "erro": "http 429",
+     "ms": 19,
+     "resp": ""
+    }
+   ]
+  }
+ ]
+}

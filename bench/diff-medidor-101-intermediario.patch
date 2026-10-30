@@ -1,0 +1,23 @@
+--- a/medir-aberto.js
++++ b/medir-aberto.js
+@@ -16,6 +16 @@
+-  const mediana = (nome) => {
+-    if (!res.length) return null;
+-    const valores = res.map((x) => x[nome]).sort((a, b) => a - b);
+-    const meio = Math.floor(valores.length / 2);
+-    return valores.length % 2 ? valores[meio] : (valores[meio - 1] + valores[meio]) / 2;
+-  };
++  const mediana = (nome) => res.length ? res.map((x) => x[nome]).sort((a, b) => a - b)[Math.floor(res.length / 2)] : null;
+@@ -40 +35 @@
+-  for (const campo of ['bancoSha256', 'codigoSha256', 'rubricaSha256', 'medidorSha256', 'concorrencia']) {
++  for (const campo of ['bancoSha256', 'codigoSha256', 'rubricaSha256', 'concorrencia']) {
+@@ -68 +63 @@
+-    codigoSha256: sha(caminhoCodigo), rubricaSha256: sha(caminhoRubrica), medidorSha256: sha(__filename), concorrencia: CONC,
++    codigoSha256: sha(caminhoCodigo), rubricaSha256: sha(caminhoRubrica), concorrencia: CONC,
+@@ -83,2 +78 @@
+-    if (sha(caminhoCodigo) !== meta.codigoSha256 || sha(caminhoBanco) !== meta.bancoSha256 ||
+-        sha(caminhoRubrica) !== meta.rubricaSha256 || sha(__filename) !== meta.medidorSha256)
++    if (sha(caminhoCodigo) !== meta.codigoSha256 || sha(caminhoBanco) !== meta.bancoSha256 || sha(caminhoRubrica) !== meta.rubricaSha256)
+@@ -92 +86 @@
+-    if (meta.invalido) throw new Error('código, banco, rubrica ou medidor mudou durante a execução; não há placar válido');
++    if (meta.invalido) throw new Error('código, banco ou rubrica mudou durante a execução; não há placar válido');

@@ -1,0 +1,246 @@
+{
+ "sum": {
+  "modo": "depois",
+  "total": 6,
+  "totalPrevisto": 6,
+  "completo": true,
+  "passaram": 6,
+  "pct": 100,
+  "medianaPalavras": 184.5,
+  "cortados": 0,
+  "curtos": 0,
+  "faltouFato": 0,
+  "medianaMs": 9780
+ },
+ "res": [
+  {
+   "id": 101,
+   "q": "Explique em dois parágrafos o que é compostagem e por que ela ajuda uma horta.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 176,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 8220,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:13:31.467Z",
+     "msParede": 8207,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Compostagem é o processo de decomposição controlada de resíduos orgânicos, como restos de alimentos, folhas, cascas de frutas e esterco animal, transformando-os em um solo escuro, rico e com odor suave chamado composto. Esse processo depende da ação de microrganismos, fungos, bactérias e pequenos invertebrados, que quebram matérias orgânicas em nutrientes simples que as plantas podem absorver. Para que a compostagem seja eficiente, é necessário equilibrar material verde (rico em nitrogênio) e material marrom (rico em carbono), manter a umidade adequada e promover aeração, virando o monte de compostagem periodicamente.\n\nNa horta, o composto atua como um adubo orgânico que melhora a estrutura do solo, aumentando sua capacidade de reter água e nutrientes, além de estimular a atividade de microrganismos benéficos. Ao incorporar o composto à terra, reduz-se a necessidade de fertilizantes químicos, promove-se a reciclagem de resíduos e se combate a degradação do solo. Plantas cultivadas em solo enriquecido com composto geralmente apresentam melhor crescimento, maior resistência a doenças e produtividade mais elevada, tornando a compostagem uma prática sustentável e essencial para uma horta saudável.",
+   "trecho": "Compostagem é o processo de decomposição controlada de resíduos orgânicos, como restos de alimentos, folhas, cascas de frutas e esterco animal, transformando-os em um solo escuro, rico e com odor suav",
+   "fim": "nando a compostagem uma prática sustentável e essencial para uma horta saudável."
+  },
+  {
+   "id": 102,
+   "q": "Explique em dois parágrafos como uma geladeira mantém alimentos frios.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 175,
+   "paragrafos": 2,
+   "itens": 0,
+   "erro": null,
+   "ms": 72687,
+   "rota": "texto-longo",
+   "tentativasSelecionadas": 4,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:13:39.683Z",
+     "msParede": 394,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-29T11:13:40.078Z",
+     "msParede": 14265,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-29T11:13:54.343Z",
+     "msParede": 15276,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-29T11:14:09.619Z",
+     "msParede": 25179,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-29T11:14:34.799Z",
+     "msParede": 17565,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Uma geladeira funciona como um pequeno refrigerador que mantém os alimentos frios por meio de um ciclo de compressão e expansão. O compressor comprime o gás refrigerante, elevando sua temperatura, e o faz circular pelo sistema. Quando o gás quente passa pelos condensadores, ele libera calor para o ambiente e se condensa em líquido. Esse líquido, ao entrar nos evaporadores, absorve calor dos compartimentos internos, resfriando o ar e, consequentemente, mantendo os alimentos frios. Assim, a temperatura interna permanece constante, evitando a deterioração.\n\nAlém disso, a geladeira conta com um isolamento térmico que impede a entrada de calor externo, mantendo a temperatura interna estável. O termostato monitora constantemente a temperatura, acionando o compressor apenas quando necessário, o que evita oscilações bruscas que poderiam comprometer a conservação dos alimentos frios. Em modelos mais avançados, um ciclo de descongelamento automático remove a umidade acumulada, prevenindo a formação de gelo que poderia reduzir a eficiência do resfriamento. Dessa forma, a combinação de isolamento, controle preciso e manutenção regular garante que os alimentos permaneçam frescos e seguros para consumo.",
+   "trecho": "Uma geladeira funciona como um pequeno refrigerador que mantém os alimentos frios por meio de um ciclo de compressão e expansão. O compressor comprime o gás refrigerante, elevando sua temperatura, e o",
+   "fim": "nção regular garante que os alimentos permaneçam frescos e seguros para consumo."
+  },
+  {
+   "id": 103,
+   "q": "Escreva um parágrafo explicando o que é a coleta seletiva de materiais.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 170,
+   "paragrafos": 1,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 9725,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:14:52.367Z",
+     "msParede": 9722,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "A coleta seletiva de materiais é o processo de separação dos resíduos sólidos em fonte, ou seja, no momento em que são gerados, de acordo com a natureza de cada tipo de material, como papel, plástico, vidro, metal e orgânico. Essa prática visa promover a reutilização e o reciclagem dos materiais, reduzindo a quantidade de resíduos enviados aos aterros sanitários e diminuindo o impacto ambiental causado pela disposição inadequada de resíduos. Para que a coleta seletiva seja eficaz, é necessário que os cidadãos armazenem os resíduos em recipientes específicos, identificados por cores ou rótulos, e que haja uma logística de coleta diferenciada, com veículos e equipes especializadas. Além disso, a educação ambiental desempenha papel fundamental, pois conscientiza a população sobre a importância de separar os resíduos e de descartá-los corretamente. Quando bem implementada, a coleta seletiva contribui para a economia circular, gera empregos e renda, especialmente por meio da atuação de catadores formais e informais, e apoia a indústria de reciclagem, que utiliza os materiais recuperados para produzir novos produtos.",
+   "trecho": "A coleta seletiva de materiais é o processo de separação dos resíduos sólidos em fonte, ou seja, no momento em que são gerados, de acordo com a natureza de cada tipo de material, como papel, plástico,",
+   "fim": "e reciclagem, que utiliza os materiais recuperados para produzir novos produtos."
+  },
+  {
+   "id": 104,
+   "q": "Explique em dois parágrafos como uma biblioteca organiza e empresta livros.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 229,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 7553,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:15:02.092Z",
+     "msParede": 7552,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Uma biblioteca organiza seus livros segundo um sistema de classificação, geralmente o padrão decimal de Dewey ou a classificação Library of Congress, que atribui um número chamado call number a cada obra conforme seu tema. Esses números são impressos na etiqueta de cada livro e também aparecem nos rótulos das prateleiras, permitindo que os itens sejam posicionados em ordem numérica e alfabética. Além disso, cada livro recebe um código de barras com o ISBN e o número de identificação do item, que são registrados no sistema de gestão da biblioteca. Esse banco de dados guarda informações como título, autor, editora, ano de publicação, localização física e status de disponibilidade, facilitando a localização tanto pelo público quanto pelos funcionários.\n\nPara o empréstimo, o usuário primeiro se cadastra ou apresenta seu cartão de leitor, cujo histórico de empréstimos é verificado para evitar pendências. Em seguida, o funcionário escaneia o código de barras do livro e o cartão, registrando a data de retirada e a data prevista de devolução, que costuma variar de 7 a 30 dias conforme o tipo de material e o perfil do usuário. O sistema atualiza automaticamente o status do item para \"emprestado\", bloqueado para novas reservas até o retorno. Ao receber o livro de volta, a equipe verifica se há atrasos, calcula eventuais multas e devolve o item ao estoque, tornando-o disponível para nova consulta ou empréstimo.",
+   "trecho": "Uma biblioteca organiza seus livros segundo um sistema de classificação, geralmente o padrão decimal de Dewey ou a classificação Library of Congress, que atribui um número chamado call number a cada o",
+   "fim": "volve o item ao estoque, tornando-o disponível para nova consulta ou empréstimo."
+  },
+  {
+   "id": 105,
+   "q": "Em um parágrafo, explique os efeitos da impermeabilização do solo nas cidades durante chuvas fortes.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 193,
+   "paragrafos": 1,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 9835,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:15:09.648Z",
+     "msParede": 9832,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "A impermeabilização do solo nas cidades, caracterizada pela substituição de superfícies naturais por asfalto, calçadas e edifícios, intensifica significativamente os efeitos das chuvas fortes, pois impede a infiltração da água na camada de solo, aumentando abruptamente o escoamento superficial. Esse excesso de água que não é absorvida pelo solo sobrecarrega rapidamente os sistemas de drenagem urbana, levando a alagamentos frequentes em ruas, praças e áreas baixas, colocando em risco a segurança de pessoas e bens. Além disso, o escoamento rápido transporta sedimentos, óleos, resíduos e poluentes das superfícies urbanas, contaminando corpos d'água próximos e degradando a qualidade da água. A falta de infiltração também reduz a recarga dos aquíferos, comprometendo o abastecimento de água subterrânea. O aumento da temperatura urbana, associado à ausência de vegetação e solo permeável, pode intensificar ainda mais a evaporação e a formação de nuvens, potencializando a intensidade das chuvas locais. Para mitigar esses impactos, é essencial implementar soluções como parques regionais de infiltração, telhados verdes, sistemas de drenagem sustentáveis e políticas de preservação de áreas verdes, que permitem que a água da chuva seja absorvida, filtrada e direcionada de forma controlada, reduzindo os riscos associados às enchentes urbanas.",
+   "trecho": "A impermeabilização do solo nas cidades, caracterizada pela substituição de superfícies naturais por asfalto, calçadas e edifícios, intensifica significativamente os efeitos das chuvas fortes, pois im",
+   "fim": "ionada de forma controlada, reduzindo os riscos associados às enchentes urbanas."
+  },
+  {
+   "id": 106,
+   "q": "Escreva dois parágrafos sobre como os oceanos influenciam o clima.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 201,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 14070,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-29T11:15:19.482Z",
+     "msParede": 14069,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Os oceanos exercem um papel fundamental no regulamento do clima global, agindo como grandes reservatórios de calor. A água possui alta capacidade térmica, o que significa que absorve e armazena grandes quantidades de energia solar sem sofrer variações bruscas de temperatura. Durante o dia, as águas superficiais aquecem-se, retendo calor que é liberado lentamente à noite ou em períodos de menor incidência solar. Esse processo atenua as flutuações térmicas entre o dia e a noite, suavizando o clima de regiões costeiras. Além disso, as correntes oceânicas transportam massas de água morna ou fria por longas distâncias, redistribuindo calor entre os equadores e os polos, influenciando padrões climáticos em escala global.\n\nOutro mecanismo importante é a evaporação da água do mar, que libera vapor d'água na atmosfera. Esse vapor forma nuvens e contribui para a precipitação, regulando a umidade do ar e a distribuição de chuvas em diferentes regiões. A transpiração oceânica também está ligada à formação de sistemas meteorológicos, como tempestades tropicais, que se alimentam do calor e da umidade provenientes das águas mornas. Assim, os oceanos não apenas armazenam energia, mas também a redistribuem e transformam, atuando como motores do clima e influenciando diretamente as condições atmosféricas locais e globais.",
+   "trecho": "Os oceanos exercem um papel fundamental no regulamento do clima global, agindo como grandes reservatórios de calor. A água possui alta capacidade térmica, o que significa que absorve e armazena grande",
+   "fim": "do clima e influenciando diretamente as condições atmosféricas locais e globais."
+  }
+ ],
+ "meta": {
+  "iniciado": "2026-10-29T11:13:31.449Z",
+  "terminado": "2026-10-29T11:15:33.553Z",
+  "banco": "banco-aberto-holdout-100.json",
+  "bancoSha256": "8305995395f3406cb4ecba02d4b7f494ad3dcfe96ed39b1ef8aaba81b25ef4ce",
+  "codigoSha256": "5ff3587204e2b1394bcbb7f64b4705cc605a83bdf59c4b159e419192f4f48e27",
+  "rubricaSha256": "f3ff579d3ca2a56b735b1c414791eab1050eb58e0367d5ec2c1bbad8ba25665e",
+  "medidorSha256": "2feb2f0b95259c62ab6196b54bb54d426b7e1defadf1ea6d3877ec56cac5352e",
+  "concorrencia": 1,
+  "janelas": [
+   {
+    "iniciado": "2026-10-29T11:13:31.449Z",
+    "terminado": "2026-10-29T11:15:33.553Z"
+   }
+  ],
+  "retomadas": 0,
+  "invalido": false
+ }
+}

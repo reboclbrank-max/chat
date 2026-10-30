@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel do Roteador — chat da casa</title>
+<style>
+  :root { --fundo:#0b1020; --card:#141c33; --linha:#243356; --texto:#e8eefc; --fraco:#9fb0d4; --ok:#35d07f; --medio:#f5c451; --ruim:#ff6b6b; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:var(--fundo); color:var(--texto); }
+  header { padding:22px 18px 10px; }
+  h1 { font-size:20px; margin:0 0 6px; }
+  p.sub { margin:0; color:var(--fraco); font-size:13px; }
+  main { padding:14px 18px 40px; max-width:1000px; }
+  .cartoes { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin:14px 0; }
+  .cartao { background:var(--card); border:1px solid var(--linha); border-radius:12px; padding:12px; }
+  .cartao b { display:block; font-size:22px; }
+  .cartao span { color:var(--fraco); font-size:12px; }
+  button { background:#2b5cff; color:#fff; border:0; border-radius:10px; padding:10px 14px; font-weight:600; cursor:pointer; margin:0 8px 8px 0; }
+  button.sec { background:#1d2a4a; border:1px solid var(--linha); }
+  button:disabled { opacity:.5; cursor:progress; }
+  table { width:100%; border-collapse:collapse; margin-top:10px; font-size:13px; }
+  th, td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--linha); }
+  th { color:var(--fraco); font-weight:600; }
+  .ok { color:var(--ok); } .medio { color:var(--medio); } .ruim { color:var(--ruim); }
+  #log { background:#0f1730; border:1px solid var(--linha); border-radius:10px; padding:10px; min-height:60px; max-height:260px; overflow:auto; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; white-space:pre-wrap; }
+  .nota { color:var(--fraco); font-size:12px; margin-top:16px; border-left:3px solid var(--linha); padding-left:10px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🥇 Painel do Roteador de IA</h1>
+  <p class="sub">Cascata por qualidade · backoff com jitter · disjuntor por rota · ferramenta exata primeiro · cache. Mede, não opina.</p>
+</header>
+<main>
+  <div class="cartoes">
+    <div class="cartao"><b id="cRotas">–</b><span>rotas no catálogo</span></div>
+    <div class="cartao"><b id="cVivas">–</b><span>vivas agora</span></div>
+    <div class="cartao"><b id="cPerg">0</b><span>perguntas nesta sessão</span></div>
+    <div class="cartao"><b id="cTent">0</b><span>tentativas de rota</span></div>
+    <div class="cartao"><b id="cCache">0</b><span>acertos de cache</span></div>
+    <div class="cartao"><b id="cFerr">0</b><span>resolvidas por ferramenta</span></div>
+  </div>
+
+  <button id="bVarrer">🔍 Varrer as rotas</button>
+  <button id="bBateria" class="sec">🧪 Rodar bateria (24 itens)</button>
+  <button id="bLimpar" class="sec">🧹 Zerar métricas</button>
+
+  <div id="log">pronto. As rotas só mostram status real depois da varredura — nada é inventado.</div>
+
+  <h2 style="font-size:16px;margin:22px 0 4px">Saúde das rotas</h2>
+  <table id="tabela"><thead><tr><th>rota</th><th>modelo</th><th>classe</th><th>status</th><th>latência</th><th>ok/falhas</th></tr></thead><tbody></tbody></table>
+
+  <p class="nota">Sem rede (pré-visualização isolada) o painel abre e não mede nada — é proposital: número só aparece quando houve resposta HTTP de verdade. Rode este arquivo servido junto do <code>roteador-ia.js</code> e do <code>bench/banco200.json</code>, na mesma pasta do chat.</p>
+</main>
+<script src="roteador-ia.js"></script>
+<script>
+const log = (t) => { const el = document.getElementById('log'); el.textContent += '\n' + t; el.scrollTop = el.scrollHeight; };
+const R = new window.RoteadorIA.Roteador();
+const lat = {};
+function pintarMetricas() {
+  const m = R.metricas;
+  document.getElementById('cRotas').textContent = R.catalogo.length;
+  document.getElementById('cPerg').textContent = m.perguntas;
+  document.getElementById('cTent').textContent = m.tentativas;
+  document.getElementById('cCache').textContent = m.cacheAcertos;
+  document.getElementById('cFerr').textContent = m.ferramenta;
+}
+function linha(r, status, ms) {
+  const s = R.saude[r.id];
+  const cls = status === 'viva' ? 'ok' : (status === 'limitada' ? 'medio' : 'ruim');
+  return `<tr><td>${r.id}</td><td>${r.nome}</td><td>${r.classe}</td><td class="${cls}">${status}</td><td>${ms == null ? '–' : ms + ' ms'}</td><td>${s.ok}/${s.falhas}</td></tr>`;
+}
+async function varrer() {
+  const b = document.getElementById('bVarrer'); b.disabled = true;
+  const corpo = document.querySelector('#tabela tbody'); corpo.innerHTML = '';
+  let vivas = 0;
+  log('varrendo ' + R.catalogo.length + ' rotas…');
+  await Promise.all(R.catalogo.map(async (r) => {
+    const t0 = Date.now();
+    let status = 'fora', ms = null;
+    try {
+      const c = new AbortController(); const to = setTimeout(() => c.abort(), 25000);
+      const resp = await fetch(r.base.replace(/\/$/, '') + '/chat/completions', {
+        method: 'POST', signal: c.signal, headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: r.modelo, messages: [{ role: 'user', content: 'Responda só: ok' }], max_tokens: 16 })
+      });
+      clearTimeout(to); ms = Date.now() - t0;
+      if (resp.status === 200) { const txt = await resp.text(); status = /choices/.test(txt) ? 'viva' : 'fora'; }
+      else if (resp.status === 429) status = 'limitada';
+    } catch (e) { ms = Date.now() - t0; status = e.name === 'AbortError' ? 'timeout' : 'fora'; }
+    if (status === 'viva') vivas++;
+    corpo.insertAdjacentHTML('beforeend', linha(r, status, ms));
+  }));
+  document.getElementById('cVivas').textContent = vivas + '/' + R.catalogo.length;
+  log('varredura concluída: ' + vivas + ' vivas de ' + R.catalogo.length + '.');
+  b.disabled = false; pintarMetricas();
+}
+async function bateria() {
+  const b = document.getElementById('bBateria'); b.disabled = true;
+  let banco = null;
+  try { banco = (await (await fetch('bench/banco200.json')).json()).itens; } catch (e) { log('não achei bench/banco200.json nesta origem.'); b.disabled = false; return; }
+  const amostra = banco.slice().sort(() => Math.random() - 0.5).slice(0, 24);
+  const nm = s => String(s || '').toLowerCase().normalize('NFC');
+  let ok = 0, mudos = 0, errados = 0;
+  log('bateria de 24 itens começou…');
+  for (const it of amostra) {
+    const r = await R.responder({ pergunta: it.q, dificuldade: 'dificil' });
+    const resp = nm(r.texto);
+    const acertou = r.texto && it.g.some(g => resp.includes(nm(g)));
+    if (!r.texto) mudos++; else if (acertou) ok++; else errados++;
+    log((acertou ? '✅' : (r.texto ? '❌' : '⚠️')) + ' ' + it.q.slice(0, 44) + ' → ' + (r.texto ? String(r.texto).slice(0, 40) : '(' + (r.erro || 'mudo') + ')') + (r.rota ? '  [via ' + r.rota + ']' : ''));
+  }
+  log(`bateria: ${ok}/24 certos · ${errados} errados · ${mudos} sem resposta`);
+  pintarMetricas(); b.disabled = false;
+}
+document.getElementById('bVarrer').onclick = varrer;
+document.getElementById('bBateria').onclick = bateria;
+document.getElementById('bLimpar').onclick = () => { R.metricas.perguntas = 0; R.metricas.tentativas = 0; R.metricas.cacheAcertos = 0; R.metricas.ferramenta = 0; R.cache.clear(); document.getElementById('log').textContent = 'métricas zeradas.'; pintarMetricas(); };
+document.getElementById('cRotas').textContent = R.catalogo.length;
+</script>
+</body>
+</html>
