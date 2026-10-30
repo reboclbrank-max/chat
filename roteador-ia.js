@@ -621,6 +621,10 @@
     // McNemar exato p = 0,0078, 8 ganhos e nenhuma derrota. Custo: 2× chamadas e +87% de latência
     // nas perguntas abertas. Desliga com `amostrasAberto: 1` ou `pedido.semSegundaAmostra`.
     this.amostrasAberto = opcoes.amostrasAberto || 2;
+    // Duas amostras em paralelo em vez de uma depois da outra: a escolha é a mesma (duas
+    // gerações independentes, vence a de melhor nota), mas a espera passa a ser a da amostra
+    // mais lenta em vez da soma das duas. Desliga com `amostrasEmParalelo: false`.
+    this.amostrasEmParalelo = opcoes.amostrasEmParalelo !== false;
     this.votos = opcoes.votos || 3;              // quantos modelos votam no consenso
     this.ferramentasLigadas = opcoes.ferramentas !== false;
     this.metricas = { perguntas: 0, tentativas: 0, sucessos: 0, falhas: 0, cacheAcertos: 0, ferramenta: 0, consenso: 0, consensoDivergente: 0, porRota: {} };
@@ -2509,23 +2513,35 @@
   Roteador.prototype.responder = async function (pedido) {
     var pergunta = typeof pedido === 'object' && pedido ? pedido.pergunta : pedido;
     var tipo = (typeof pedido === 'object' && pedido && pedido.tipo) || classificarPedido(pergunta);
-    var primeira = await responderUmaAmostra.call(this, pedido);
     var quantas = this.amostrasAberto || 1;
-    if (tipo !== 'aberto' || quantas < 2) return primeira;
-    if (typeof pedido === 'object' && pedido && pedido.semSegundaAmostra) return primeira;
-    // A segunda amostra é pedida SEMPRE nas perguntas abertas, exatamente como foi medida.
+    var desligada = typeof pedido === 'object' && pedido && pedido.semSegundaAmostra;
+    if (tipo !== 'aberto' || quantas < 2 || desligada) {
+      return responderUmaAmostra.call(this, pedido);
+    }
+    var ex = exigenciaDoPedido(pergunta);
+    // A segunda amostra é pedida SEMPRE nas perguntas abertas, exatamente como foi medido.
     // (Cheguei a testar pular a segunda quando a primeira já estava completa; a validação mostrou
     // que quase nenhuma pergunta usava a segunda e o ganho desaparecia — então o produto fica
     // igual ao experimento. Quem quiser economizar usa `amostrasAberto: 1`.)
-    var ex = exigenciaDoPedido(pergunta);
-    // Amostra nova de verdade: sem cache e sem herdar a primeira.
-    var cacheGet = this._cacheGet, cacheSet = this._cacheSet;
-    this._cacheGet = function () { return null; };
-    this._cacheSet = function () {};
-    var segunda = null;
-    try { segunda = await responderUmaAmostra.call(this, pedido); }
-    catch (e) { segunda = null; }
-    finally { this._cacheGet = cacheGet; this._cacheSet = cacheSet; }
+    var primeira, segunda = null;
+    if (this.amostrasEmParalelo) {
+      // As duas gerações começam juntas e a espera é a da mais lenta, não a soma das duas.
+      // Não é preciso desligar o cache: as duas usam a MESMA chave (a pergunta), então um acerto
+      // de cache atende as duas na hora e pergunta repetida continua custando zero chamada.
+      var uma = responderUmaAmostra.call(this, pedido);
+      var outra = responderUmaAmostra.call(this, pedido).catch(function () { return null; });
+      primeira = await uma;
+      segunda = await outra;
+    } else {
+      primeira = await responderUmaAmostra.call(this, pedido);
+      // Amostra nova de verdade: sem cache e sem herdar a primeira.
+      var cacheGet = this._cacheGet, cacheSet = this._cacheSet;
+      this._cacheGet = function () { return null; };
+      this._cacheSet = function () {};
+      try { segunda = await responderUmaAmostra.call(this, pedido); }
+      catch (e) { segunda = null; }
+      finally { this._cacheGet = cacheGet; this._cacheSet = cacheSet; }
+    }
     var escolhida = pontosDaAmostra(segunda, ex) > pontosDaAmostra(primeira, ex) ? segunda : primeira;
     return Object.assign({}, escolhida, { amostras: 2, daSegunda: escolhida === segunda });
   };
