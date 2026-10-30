@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-10-30T22:51:05.957Z",
+ "verificado_em": "2026-10-30T23:18:03.710Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -32,14 +32,16 @@
    "evidencia": "bateria-recem-executada"
   },
   "itch Ceifalume": {
-   "ok": false,
-   "falhas": 1,
-   "causa": "sonda-indisponivel"
+   "ok": true,
+   "falhas": 0,
+   "causa": "saudavel",
+   "evidencia": "pagina-respondendo"
   },
   "itch Prancheta": {
-   "ok": false,
-   "falhas": 1,
-   "causa": "sonda-indisponivel"
+   "ok": true,
+   "falhas": 0,
+   "causa": "saudavel",
+   "evidencia": "pagina-respondendo"
   },
   "Caixa de e-mail": {
    "ok": true,
