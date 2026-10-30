@@ -13,7 +13,7 @@
     "cobertura-paginas": "node --experimental-websocket tools/cobertura-navegador.js"
   },
   "dependencies": {
-    "imapflow": "2.4.3",
+    "imapflow": "2.5.9",
     "nodemailer": "10.2.1"
   },
   "devDependencies": {
