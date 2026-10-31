@@ -1254,12 +1254,20 @@ function criarCartaoConversa(i) {
   div.className = 'conv conv-conversa';
   div.dataset.conversaNumero = String(numero);
   div.dataset.tituloBusca = titulo.toLowerCase();
-  const rotina = (i.labels || []).some((l) => l.name === 'rotina');
+  const rotulos = (i.labels || []).map((l) => (l && l.name) || '');
+  const rotina = rotulos.indexOf('rotina') !== -1;
+  // AVISO NÃO É CONVERSA: o que a casa publica sozinha (boletim, calor, "ela acordou") entra na
+  // mesma lista das conversas do dono e, medido em 31/10/2026, eram 30 de 31 cartões — a conversa
+  // de verdade ficava enterrada. O cartão agora se identifica e vai para o fim da lista.
+  const avisoDaCasa = rotulos.indexOf('aviso') !== -1;
+  if (avisoDaCasa) { div.classList.add('conv-aviso-casa'); div.dataset.avisoCasa = '1'; }
   const abrirConversa = document.createElement('button');
   abrirConversa.type = 'button';
   abrirConversa.className = 'conv-abrir';
-  abrirConversa.setAttribute('aria-label', 'Abrir conversa: ' + titulo.slice(0, 160));
-  abrirConversa.innerHTML = `<span class="titulo">${rotina ? '📋 ' : ''}${escapar(titulo)}</span><span class="meta"><span>💬 ${i.comments}</span><span>🕒 ${quando(i.updated_at)}</span></span>`;
+  abrirConversa.setAttribute('aria-label', 'Abrir ' + (avisoDaCasa ? 'aviso da casa' : 'conversa') + ': ' + titulo.slice(0, 160));
+  const etiqueta = avisoDaCasa ? '📣 ' : (rotina ? '📋 ' : '');
+  const contagem = avisoDaCasa ? '📣 aviso da casa' : ('💬 ' + i.comments);
+  abrirConversa.innerHTML = `<span class="titulo">${etiqueta}${escapar(titulo)}</span><span class="meta"><span>${contagem}</span><span>🕒 ${quando(i.updated_at)}</span></span>`;
   abrirConversa.onclick = () => abrir(numero, titulo);
   const favorita = conversaEhFavorita(numero);
   const botaoFavorito = document.createElement('button');
@@ -1378,13 +1386,19 @@ function renderListaAtual(offline = false) {
   if (!listaAtual.length && !offline) {
     elLista.innerHTML = '<div class="vazio"><span class="emoji">💬</span>nenhuma conversa ainda.<br>crie a primeira no botão abaixo.</div>';
   }
-  listaAtual.forEach((i) => elLista.appendChild(criarCartaoConversa(i)));
+  // conversas do dono primeiro; avisos da casa (publicados sozinhos) no fim, com etiqueta.
+  const ehAvisoDaCasa = (i) => ((i.labels || []).some((l) => l && l.name === 'aviso'));
+  const conversasDoDono = listaAtual.filter((i) => !ehAvisoDaCasa(i));
+  const avisosDaCasa = listaAtual.filter(ehAvisoDaCasa);
+  conversasDoDono.concat(avisosDaCasa).forEach((i) => elLista.appendChild(criarCartaoConversa(i)));
   if (!offline && maisListaDisponivel) elLista.appendChild(criarCartaoMais());
   if (!offline) elLista.appendChild(criarCartaoNova());
   if (offline) {
     elFaixa.textContent = '📦 modo offline — mostrando ' + listaAtual.length + ' conversa(s) salvas neste aparelho';
   } else {
-    elFaixa.textContent = listaAtual.length + ' conversa' + (listaAtual.length === 1 ? '' : 's') + ' carregada' + (listaAtual.length === 1 ? '' : 's') + (maisListaDisponivel ? ' · toque para carregar mais' : '') + ' · tudo fica salvo no GitHub';
+    const nConversas = listaAtual.filter((i) => !ehAvisoDaCasa(i)).length;
+    const nAvisos = listaAtual.length - nConversas;
+    elFaixa.textContent = nConversas + ' conversa' + (nConversas === 1 ? '' : 's') + ' · ' + nAvisos + ' aviso' + (nAvisos === 1 ? '' : 's') + ' da casa' + (maisListaDisponivel ? ' · toque para carregar mais' : '') + ' · tudo fica salvo no GitHub';
   }
   aplicarFiltroLista();
 }
@@ -1745,6 +1759,7 @@ const ESTADOS_ENTREGA = Object.freeze({
   'envio-recusado': 'O serviço recusou o envio. Nada foi reenviado automaticamente; confira o acesso antes de decidir tentar de novo.',
   'resultado-incerto': 'Não consegui confirmar o envio. Atualize antes de tentar novamente; sua mensagem não será reenviada automaticamente.',
   'consulta-interrompida': 'Não consegui confirmar a resposta agora. Atualize mais tarde; sua mensagem não será reenviada automaticamente.',
+  'resposta-acelerada': 'Motor acordado agora; a resposta típica sai em ~2 min (latência medida em 31/10/2026).',
   'contingencia-sem-resposta': 'A contingência local não respondeu agora. Sua mensagem não será reenviada automaticamente.'
 });
 let estadoEntregaAtual = 'ocioso';
@@ -1772,19 +1787,50 @@ function encerrarEstadoEntrega(estado, rotulo, detalhe) {
   rolarFim();
   return texto;
 }
+// FILA VISÍVEL — números MEDIDOS (31/10/2026), não estimativa de marketing:
+//   * com o motor acordado na hora (repository_dispatch): ~2 min do envio à resposta;
+//   * sem acordar, o relógio do GitHub decide: mediana 198,5 min e p90 379 min entre envio e
+//     resposta nos runs medidos.
+// Antes a tela repetia "aguardando resposta…" e não dizia há quanto tempo — o dono não sabia se
+// estava na fila há 20 s ou há 3 h, e reenviava (o que criava conversa nova e poluía a lista).
+const FILA_MEDIDA = Object.freeze({ acordado_s: 120, mediana_s: 11910, p90_s: 22740 });
+let inicioDaEspera = 0;
+let relogioDaEspera = null;
+
+function duracaoCurta(segundos) {
+  const s = Math.max(0, Math.round(Number(segundos) || 0));
+  if (s < 60) return s + ' s';
+  const min = Math.floor(s / 60);
+  if (min < 60) return min + ' min ' + (s % 60) + ' s';
+  return Math.floor(min / 60) + ' h ' + (min % 60) + ' min';
+}
+
+function linhaDaFila(segundos) {
+  const espera = '⏱ na fila há ' + duracaoCurta(segundos);
+  if (segundos < FILA_MEDIDA.acordado_s) return espera + ' · típico ~2 min com o motor acordado';
+  if (segundos < FILA_MEDIDA.p90_s) return espera + ' · passou do típico (sem acordar, a mediana medida é 198,5 min) — a mensagem está guardada, não precisa reenviar';
+  return espera + ' · acima do p90 medido (379 min) — nada foi perdido, mas vale olhar o motor no GitHub';
+}
+
 function pensando(mostrar, texto) {
   const velho = $('pensando');
   if (velho) velho.remove();
-  if (mostrar) {
-    const d = document.createElement('div');
-    d.id = 'pensando';
-    d.className = 'pensando';
-    d.setAttribute('role', 'status');
-    d.setAttribute('aria-live', 'polite');
-    d.innerHTML = '<span class="ponto"></span><span class="ponto"></span><span class="ponto"></span> ' + escapar(texto || 'mensagem enviada; aguardando resposta…');
-    elMsgs.appendChild(d);
-    rolarFim();
-  }
+  if (relogioDaEspera) { clearInterval(relogioDaEspera); relogioDaEspera = null; }
+  if (!mostrar) { inicioDaEspera = 0; return; }
+  if (!inicioDaEspera) inicioDaEspera = Date.now();
+  const d = document.createElement('div');
+  d.id = 'pensando';
+  d.className = 'pensando';
+  d.setAttribute('role', 'status');
+  d.setAttribute('aria-live', 'polite');
+  const desenhar = () => {
+    d.innerHTML = '<span class="ponto"></span><span class="ponto"></span><span class="ponto"></span> '
+      + escapar(texto || 'mensagem enviada; aguardando resposta…') + ' — ' + escapar(linhaDaFila((Date.now() - inicioDaEspera) / 1000));
+  };
+  desenhar();
+  elMsgs.appendChild(d);
+  rolarFim();
+  relogioDaEspera = setInterval(desenhar, 1000);
 }
 
 const LIMITE_MENSAGEM_COMPOSITOR = 12000;
@@ -1810,14 +1856,25 @@ function ehComandoPrivadoLocal(texto) {
  */
 async function acordarMotor(numero) {
   if (MODO_LOCAL.ligado) return;
-  try {
-    const r = await api('/repos/reboclbrank-max/motor/actions/workflows/chat.yml/dispatches', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ref: 'main' })
-    });
-    if (r && r.ok) atualizarEstadoEntrega('resposta-acelerada');
-  } catch (e) { /* o relógio do motor cobre */ }
+  // O motor público escuta `repository_dispatch` do tipo `mensagem` (workflow chat.yml). Esse é
+  // o único evento que leva o número da conversa — e é isso que evita o motor varrer a fila
+  // inteira para achar esta mensagem. O `workflow_dispatch` fica como segunda tentativa porque
+  // é aceito por qualquer token com permissão de Actions; ele acorda o motor sem o número.
+  const alvos = [
+    ['/repos/reboclbrank-max/motor/dispatches',
+      { event_type: 'mensagem', client_payload: { conversa: Number(numero) || 0, origem: 'chat' } }],
+    ['/repos/reboclbrank-max/motor/actions/workflows/chat.yml/dispatches', { ref: 'main' }]
+  ];
+  for (let i = 0; i < alvos.length; i++) {
+    try {
+      const r = await api(alvos[i][0], {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(alvos[i][1])
+      });
+      if (r && r.ok) { atualizarEstadoEntrega('resposta-acelerada'); return; }
+    } catch (e) { /* tenta o próximo alvo; o relógio do motor cobre no fim */ }
+  }
 }
 
 

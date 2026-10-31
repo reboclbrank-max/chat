@@ -1498,3 +1498,13 @@ O roteador de texto aberto ganhou recuperação aproximada de trechos públicos 
 - **Ruído do instrumento medido**: o controle é o mesmo código nas quatro janelas e marcou 37, 38, 40 e 39 → amplitude de 3 pontos. Diferenças de 1–3 pontos não são conclusivas, incluindo o −3 da rodada 102 (fontes): rebaixar de "perdeu" para "não demonstrou ganho".
 - Eficiência melhorou de forma consistente: chamadas/resposta 2,36–2,99 → **1,97**; desperdício 42–54% → **37,6%**; timeout médio 24,8 s → **13,7 s** (−45%).
 - `!chave` agora testa a chave ao salvar (válida/401/429), lista, mascara e apaga. Barreira 108/108 com 3 ignorados.
+
+## Rodada 106 — a espera fica visível e o aviso deixa de se passar por conversa (31/10/2026)
+
+Duas esperas cegas, as duas medidas no motor público antes de mexer na tela:
+
+1. **Fila visível.** A tela dizia "aguardando resposta…" sem dizer há quanto tempo. Medição de 31/10/2026: com o motor acordado na hora, a resposta sai em **~2 min**; sem acordar, o relógio do GitHub decide — **mediana 198,5 min** e **p90 379 min** entre envio e resposta. O dono não tinha como distinguir 20 s de 3 h, e reenviava (o reenvio cria conversa nova e polui a lista). Agora a linha da fila conta o tempo andando e situa a espera nas três faixas medidas (`FILA_MEDIDA`), sem prometer prazo.
+2. **Aviso ≠ conversa.** O que a casa publica sozinha (boletim, calor, "ela acordou") entrava na mesma lista das conversas do dono: **30 dos 31 cartões** medidos em 31/10/2026 eram aviso. O cartão de aviso (`label: aviso`) agora se identifica (📣 "aviso da casa"), fica visualmente distinto e vai para o fim da lista; a faixa da lista conta "N conversas · M avisos da casa".
+3. **Acordar o motor leva o número da conversa.** `acordarMotor()` mandava `workflow_dispatch` sem o número; o motor escuta `repository_dispatch` do tipo `mensagem`, que é o único evento que carrega `client_payload.conversa`. O `workflow_dispatch` fica como segunda tentativa, e a tela passa a mostrar o estado `resposta-acelerada` com o tempo medido.
+
+Provas: `tools/testes/fila-visivel-e-avisos.js` (**13/13**, executa a linha da fila, o cartão, a ordenação e o dispatch em `vm`, offline). Barreira completa **112/112 com 3 ignorados**. `direto.html`, `ligar.html` e `limpar.html` seguem derivados de `index.html` por `tools/montar-paginas.js` (faixas de `paginas/rotas/*.json` recalculadas e `--verificar` em sincronia). Rollback: reverter este commit — nada muda no motor nem nos dados.
