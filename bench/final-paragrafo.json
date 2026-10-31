@@ -1,0 +1,2276 @@
+{
+ "sum": {
+  "modo": "depois",
+  "total": 24,
+  "totalPrevisto": 24,
+  "completo": true,
+  "passaram": 21,
+  "pct": 87.5,
+  "medianaPalavras": 127.5,
+  "cortados": 0,
+  "curtos": 2,
+  "faltouFato": 2,
+  "medianaMs": 39494
+ },
+ "res": [
+  {
+   "id": 1,
+   "q": "Explique em dois parágrafos o que é fotossíntese.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 167,
+   "paragrafos": 2,
+   "itens": 0,
+   "erro": null,
+   "ms": 56584,
+   "rota": "texto-longo",
+   "tentativasSelecionadas": 2,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:59:25.651Z",
+     "msParede": 237,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:59:25.890Z",
+     "msParede": 8867,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:59:26.850Z",
+     "msParede": 10947,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:59:37.798Z",
+     "msParede": 257,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:59:46.615Z",
+     "msParede": 229,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:59:34.759Z",
+     "msParede": 17174,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T11:59:46.845Z",
+     "msParede": 35368,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Fotossíntese é o processo pelo qual as plantas convertem luz solar, dióxido de carbono e água em glicose e oxigênio, sustentando a vida na Terra. Durante a fase luminosa, a clorofila absorve a energia solar, que é usada para separar moléculas de água e liberar oxigênio. A energia capturada alimenta a síntese de ATP e NADPH, que transportam elétrons para a fase escura. Nessas reações, o CO₂ é fixado em compostos orgânicos, formando a base da cadeia alimentar.\n\nAlém disso, a fotossíntese desempenha papel crucial na regulação do clima, pois as plantas absorvem CO₂, reduzindo a concentração de gases de efeito estufa. A produção de glicose não apenas alimenta a própria planta, mas também fornece energia para organismos heterotróficos que dependem dela como fonte primária de alimento. Em ecossistemas aquáticos, a fotossíntese de algas e cianobactérias sustenta a base da cadeia alimentar, influenciando a biodiversidade e a qualidade da água. Assim, a fotossíntese é fundamental para a manutenção da vida e do equilíbrio ambiental em escala global.",
+   "trecho": "Fotossíntese é o processo pelo qual as plantas convertem luz solar, dióxido de carbono e água em glicose e oxigênio, sustentando a vida na Terra. Durante a fase luminosa, a clorofila absorve a energia",
+   "fim": "undamental para a manutenção da vida e do equilíbrio ambiental em escala global."
+  },
+  {
+   "id": 2,
+   "q": "Explique em dois parágrafos a diferença entre vírus e bactéria.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 187,
+   "paragrafos": 2,
+   "itens": 0,
+   "erro": null,
+   "ms": 68404,
+   "rota": "texto-longo",
+   "tentativasSelecionadas": 4,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:59:28.052Z",
+     "msParede": 580,
+     "resultado": "rate",
+     "retryAfterSegundos": 32,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:59:28.632Z",
+     "msParede": 21351,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:59:29.251Z",
+     "msParede": 23150,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:59:55.344Z",
+     "msParede": 288,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:59:55.945Z",
+     "msParede": 689,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhq",
+     "inicio": "2026-10-31T11:59:54.824Z",
+     "msParede": 22222,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:00:17.046Z",
+     "msParede": 67,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:00:17.113Z",
+     "msParede": 295,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T12:00:17.408Z",
+     "msParede": 16543,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "g4super",
+     "inicio": "2026-10-31T12:00:33.951Z",
+     "msParede": 96,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    }
+   ],
+   "texto": "Vírus e bactéria são agentes infecciosos que diferem fundamentalmente em estrutura e modo de replicação. Enquanto a bactéria possui célula viva, com parede celular e capacidade de se reproduzir de forma independente, o vírus é apenas material genético envolto por proteína, incapaz de se multiplicar sem invadir uma célula hospedeira. Essa diferença explica por que antibióticos, que agem sobre processos celulares bacterianos, não funcionam contra vírus. Assim, tratamentos antivirais precisam interferir em etapas específicas do ciclo viral, como a síntese de RNA ou a montagem de capsídeo.\n\nAlém disso, a resposta imunológica ao vírus costuma envolver interferons e células T citotóxicas, enquanto a defesa contra bactérias depende fortemente de anticorpos IgG e de fagocitose por macrófagos. A diferença na forma de entrada também é marcante: bactérias podem atravessar tecidos por secreção de enzimas que degradam a matriz extracelular, enquanto vírus precisam de receptores específicos na membrana celular para iniciar a infecção. Por fim, a duração da doença costuma ser mais curta em infecções virais, mas pode ser mais grave em infecções bacterianas que geram toxinas sistêmicas. Esses contrastes orientam a escolha de terapêuticos e estratégias de prevenção.",
+   "trecho": "Vírus e bactéria são agentes infecciosos que diferem fundamentalmente em estrutura e modo de replicação. Enquanto a bactéria possui célula viva, com parede celular e capacidade de se reproduzir de for",
+   "fim": " Esses contrastes orientam a escolha de terapêuticos e estratégias de prevenção."
+  },
+  {
+   "id": 3,
+   "q": "Resuma em três parágrafos o que foi a Revolução Industrial.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 230,
+   "paragrafos": 3,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 44733,
+   "rota": "ovhoss",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:59:31.651Z",
+     "msParede": 120,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq",
+     "inicio": "2026-10-31T11:59:31.771Z",
+     "msParede": 14544,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:59:46.316Z",
+     "msParede": 247,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:59:30.451Z",
+     "msParede": 20792,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "ovhq",
+     "inicio": "2026-10-31T11:59:55.124Z",
+     "msParede": 453,
+     "resultado": "rate",
+     "retryAfterSegundos": 5,
+     "fim": null
+    },
+    {
+     "rota": "ovhq",
+     "inicio": "2026-10-31T11:59:55.424Z",
+     "msParede": 444,
+     "resultado": "rate",
+     "retryAfterSegundos": 5,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:59:55.644Z",
+     "msParede": 247,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:59:56.244Z",
+     "msParede": 286,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:59:56.544Z",
+     "msParede": 232,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T11:59:56.777Z",
+     "msParede": 164,
+     "resultado": "rate",
+     "retryAfterSegundos": 4,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:59:56.941Z",
+     "msParede": 215,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "glm",
+     "inicio": "2026-10-31T11:59:57.156Z",
+     "msParede": 85,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T11:59:55.891Z",
+     "msParede": 14484,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "A Revolução Industrial foi um processo de transformação econômica, tecnológica e social que começou na segunda metade do século XVIII, sobretudo na Grã‑Bretanha. Ela surgiu a partir da combinação de mudanças na agricultura, que aumentou a produção de alimentos, com inovações técnicas como a máquina a vapor de James Watt e os teares mecânicos. Esses avanços permitiram a produção em larga escala de tecidos, carvão e ferro, reduzindo custos e ampliando o mercado interno.\n\nA partir de 1800, o modelo industrial se espalhou para a Europa continental, os Estados Unidos e, mais tarde, para o Japão e outras regiões. As fábricas concentraram trabalhadores nas cidades, gerando um rápido processo de urbanização e a criação de uma nova classe operária. O sistema de produção em massa trouxe crescimento econômico, mas também gerou condições de trabalho precárias, longas jornadas e desigualdades sociais que motivaram movimentos sindicalistas e reformas legislativas. A expansão das ferrovias e dos sistemas de comunicação facilitou a integração dos mercados nacionais e internacionais.\n\nA Revolução Industrial inaugurou a era da produção mecanizada, cujos efeitos se estenderam ao século XX com a Segunda Revolução Industrial, marcada pela eletricidade, o automóvel e a química. Ela transformou a estrutura das sociedades, estabelecendo bases para o consumo em massa, a globalização e o desenvolvimento tecnológico acelerado. Ao mesmo tempo, iniciou desafios ambientais e de sustentabilidade que ainda influenciam políticas públicas e debates contemporâneos.",
+   "trecho": "A Revolução Industrial foi um processo de transformação econômica, tecnológica e social que começou na segunda metade do século XVIII, sobretudo na Grã‑Bretanha. Ela surgiu a partir da combinação de m",
+   "fim": "tentabilidade que ainda influenciam políticas públicas e debates contemporâneos."
+  },
+  {
+   "id": 4,
+   "q": "Escreva um e-mail formal pedindo orçamento de 20 cadeiras para um escritório. Máximo 200 palavras.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 120,
+   "paragrafos": 10,
+   "itens": 5,
+   "nota": 3,
+   "erro": null,
+   "ms": 46490,
+   "rota": "polli",
+   "tentativasSelecionadas": 2,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T12:00:34.062Z",
+     "msParede": 189,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq38",
+     "inicio": "2026-10-31T12:00:34.251Z",
+     "msParede": 45001,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:01:19.252Z",
+     "msParede": 525,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhq38",
+     "inicio": "2026-10-31T12:00:35.261Z",
+     "msParede": 45001,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:01:20.262Z",
+     "msParede": 276,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Prezado(a) Senhor(a),\n\nVenho, por meio deste, solicitar orçamento para a aquisição de 20 cadeiras de escritório, de acordo com as especificações abaixo:\n\n- Material: madeira ou metal com acabamento em verniz ou pintura industrial;\n- Estrutura: resistente, com suporte ergonômico e rodízios de alta qualidade;\n- Dimensões: altura do assento 45‑50 cm, profundidade 45 cm, largura 45 cm;\n- Peso máximo suportado: 120 kg;\n- Garantia mínima de 2 anos.\n\nSolicito que o orçamento inclua preço unitário, valor total, prazo de entrega, condições de pagamento e eventuais custos de montagem ou transporte. Caso haja opções de modelos ou cores, favor anexar catálogos ou amostras.\n\nAgradeço antecipadamente pela atenção e aguardo retorno até o dia 15 de outubro de 2026.\n\nAtenciosamente.",
+   "trecho": "Prezado(a) Senhor(a),\n\nVenho, por meio deste, solicitar orçamento para a aquisição de 20 cadeiras de escritório, de acordo com as especificações abaixo:\n\n- Material: madeira ou metal com acabamento em",
+   "fim": "pela atenção e aguardo retorno até o dia 15 de outubro de 2026.\n\nAtenciosamente."
+  },
+  {
+   "id": 5,
+   "q": "Explique em três passos como fazer um bolo simples.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 76,
+   "paragrafos": 3,
+   "itens": 3,
+   "nota": 9,
+   "erro": null,
+   "ms": 67154,
+   "rota": "ovhoss20",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ovhq38",
+     "inicio": "2026-10-31T12:00:36.463Z",
+     "msParede": 451,
+     "resultado": "rate",
+     "retryAfterSegundos": 24,
+     "fim": null
+    },
+    {
+     "rota": "ovhq9",
+     "inicio": "2026-10-31T12:00:37.662Z",
+     "msParede": 8015,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T12:00:45.677Z",
+     "msParede": 1860,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T12:00:47.537Z",
+     "msParede": 158,
+     "resultado": "rate",
+     "retryAfterSegundos": 13,
+     "fim": null
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:00:47.695Z",
+     "msParede": 726,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhq9",
+     "inicio": "2026-10-31T12:00:36.914Z",
+     "msParede": 15764,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:00:52.678Z",
+     "msParede": 1457,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:00:54.135Z",
+     "msParede": 157,
+     "resultado": "rate",
+     "retryAfterSegundos": 6,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T12:00:48.421Z",
+     "msParede": 10419,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:00:58.840Z",
+     "msParede": 274,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T12:00:59.114Z",
+     "msParede": 1181,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T12:01:00.295Z",
+     "msParede": 2094,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T12:00:54.292Z",
+     "msParede": 10944,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T12:01:05.236Z",
+     "msParede": 1627,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T12:01:06.864Z",
+     "msParede": 448,
+     "resultado": "rate",
+     "retryAfterSegundos": 53,
+     "fim": null
+    },
+    {
+     "rota": "glm",
+     "inicio": "2026-10-31T12:01:07.312Z",
+     "msParede": 99,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "g4super",
+     "inicio": "2026-10-31T12:01:07.411Z",
+     "msParede": 64,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq",
+     "inicio": "2026-10-31T12:01:07.475Z",
+     "msParede": 4550,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq397",
+     "inicio": "2026-10-31T12:01:12.025Z",
+     "msParede": 10582,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T12:01:22.607Z",
+     "msParede": 5063,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:01:27.671Z",
+     "msParede": 90,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T12:01:27.761Z",
+     "msParede": 13449,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "1. Reúna farinha, açúcar, ovos, manteiga, fermento e leite, e pré-aqueça o forno a 180°C, untando uma forma.\n2. Em uma tigela, misture a farinha, o fermento e o açúcar; em outra, bata os ovos com a manteiga e o leite, depois junte aos secos, mexendo até obter uma massa homogênea.\n3. Despeje a massa na forma preparada, asse por cerca de 30 a 35 minutos, teste com palito, deixe esfriar antes de desenformar e servir.",
+   "trecho": "1. Reúna farinha, açúcar, ovos, manteiga, fermento e leite, e pré-aqueça o forno a 180°C, untando uma forma.\n2. Em uma tigela, misture a farinha, o fermento e o açúcar; em outra, bata os ovos com a ma",
+   "fim": " 30 a 35 minutos, teste com palito, deixe esfriar antes de desenformar e servir."
+  },
+  {
+   "id": 6,
+   "q": "Escreva um parágrafo argumentando a favor da reciclagem.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 108,
+   "paragrafos": 1,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 13439,
+   "rota": "polli",
+   "tentativasSelecionadas": 2,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ovhq9",
+     "inicio": "2026-10-31T12:00:38.862Z",
+     "msParede": 441,
+     "resultado": "rate",
+     "retryAfterSegundos": 21,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:00:39.303Z",
+     "msParede": 1592,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T12:00:40.062Z",
+     "msParede": 7434,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "A reciclagem reduz a extração de recursos naturais, diminui a quantidade de resíduos enviados a aterros e economiza energia, pois a produção de materiais reciclados costuma consumir menos energia que a fabricação a partir de matéria-prima virgem. Além disso, ao transformar plástico, papel e metal em novos produtos, evitamos a poluição do solo e da água, preservando ecossistemas frágeis. Em cidades que adotam programas de coleta seletiva, há uma queda significativa nas emissões de gases de efeito estufa, contribuindo para a mitigação das mudanças climáticas. Por fim, a reciclagem cria empregos em setores de coleta, triagem e transformação, gerando renda para comunidades locais e fortalecendo a economia circular.",
+   "trecho": "A reciclagem reduz a extração de recursos naturais, diminui a quantidade de resíduos enviados a aterros e economiza energia, pois a produção de materiais reciclados costuma consumir menos energia que ",
+   "fim": "mação, gerando renda para comunidades locais e fortalecendo a economia circular."
+  },
+  {
+   "id": 7,
+   "q": "Explique o ciclo da água em dois parágrafos.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 186,
+   "paragrafos": 2,
+   "itens": 0,
+   "erro": null,
+   "ms": 23344,
+   "rota": "texto-longo",
+   "tentativasSelecionadas": 4,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T12:01:41.214Z",
+     "msParede": 172,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T12:01:41.387Z",
+     "msParede": 159,
+     "resultado": "rate",
+     "retryAfterSegundos": 19,
+     "fim": null
+    },
+    {
+     "rota": "glm",
+     "inicio": "2026-10-31T12:01:41.546Z",
+     "msParede": 78,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:01:41.624Z",
+     "msParede": 255,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:01:41.924Z",
+     "msParede": 465,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "g4super",
+     "inicio": "2026-10-31T12:01:42.413Z",
+     "msParede": 37,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:01:42.450Z",
+     "msParede": 2516,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:01:45.115Z",
+     "msParede": 164,
+     "resultado": "rate",
+     "retryAfterSegundos": 15,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:01:45.279Z",
+     "msParede": 6001,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:02:00.901Z",
+     "msParede": 3653,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "O ciclo da água começa quando a radiação solar aquece a superfície terrestre, fazendo com que a água dos rios, lagos e oceanos evapore e forme vapor d'água. Esse vapor sobe, se resfria e condensa em nuvens, formando a precipitação que volta à terra em forma de chuva, neve ou granizo. Quando a água atinge o solo, parte dela infiltra-se, alimentando aquíferos, enquanto o restante escorre como escoamento superficial, retornando aos corpos d'água. Assim, o ciclo da água mantém o equilíbrio hídrico, garantindo a disponibilidade de recursos para ecossistemas e atividades humanas.\n\nAlém disso, a evaporação da água das plantas, chamada transpiração, contribui para a formação de vapor que se mistura ao da superfície, reforçando o ciclo. Quando a precipitação se acumula em áreas de baixa altitude, ela pode ser armazenada em reservatórios artificiais, que regulam o fluxo para irrigação e geração de energia hidrelétrica. A água que infiltra no solo também pode ser retida em solos porosos, liberando gradualmente para rios e lagos, mantendo a continuidade do ciclo. Dessa forma, o ciclo da água se sustenta, equilibrando a disponibilidade de recursos hídricos em diferentes regiões.",
+   "trecho": "O ciclo da água começa quando a radiação solar aquece a superfície terrestre, fazendo com que a água dos rios, lagos e oceanos evapore e forme vapor d'água. Esse vapor sobe, se resfria e condensa em n",
+   "fim": "enta, equilibrando a disponibilidade de recursos hídricos em diferentes regiões."
+  },
+  {
+   "id": 8,
+   "q": "Explique o que é inflação em dois parágrafos.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 83,
+   "paragrafos": 2,
+   "itens": 0,
+   "erro": null,
+   "ms": 14009,
+   "rota": "texto-longo",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:01:44.814Z",
+     "msParede": 586,
+     "resultado": "rate",
+     "retryAfterSegundos": 15,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:01:45.580Z",
+     "msParede": 246,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:01:43.614Z",
+     "msParede": 3163,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T12:01:54.327Z",
+     "msParede": 444,
+     "resultado": "rate",
+     "retryAfterSegundos": 6,
+     "fim": null
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T12:01:54.627Z",
+     "msParede": 594,
+     "resultado": "rate",
+     "retryAfterSegundos": 5,
+     "fim": null
+    }
+   ],
+   "texto": "A inflação é um fenômeno econômico que se caracteriza pelo aumento generalizado e persistente dos preços de uma variedade de produtos e serviços em uma economia. Em outras palavras, é uma queda no poder de compra da moeda, o que significa que os consumidores precisam gastar mais dinheiro para comprar a mesma quantidade de bens e serviços.\n\nPor exemplo, se a inflação estiver em 10%, isso significa que os preços dos produtos e serviços aumentaram em média 10% em relação ao ano anterior.",
+   "trecho": "A inflação é um fenômeno econômico que se caracteriza pelo aumento generalizado e persistente dos preços de uma variedade de produtos e serviços em uma economia. Em outras palavras, é uma queda no pod",
+   "fim": "eços dos produtos e serviços aumentaram em média 10% em relação ao ano anterior."
+  },
+  {
+   "id": 9,
+   "q": "Explique a diferença entre juros simples e juros compostos em dois parágrafos.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 155,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 51323,
+   "rota": "ovhoss",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T12:01:46.014Z",
+     "msParede": 8974,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T12:01:47.214Z",
+     "msParede": 8974,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:01:58.263Z",
+     "msParede": 78,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T12:01:58.641Z",
+     "msParede": 32459,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T12:01:58.341Z",
+     "msParede": 34192,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Juros simples é o cálculo em que o rendimento incide apenas sobre o capital inicial durante todo o período da aplicação ou do empréstimo. A fórmula básica é J = C × i × n, onde J representa o total de juros, C o capital, i a taxa periódica e n o número de períodos. Como o valor dos juros não se incorpora ao principal, o montante cresce de forma linear, aumentando a mesma quantia a cada período.  \n\nJuros compostos, por sua vez, capitalizam os juros ao final de cada período, de modo que no período seguinte os rendimentos incidem sobre o capital mais os juros já acumulados. A expressão usada é M = C × (1 + i)^n, onde M é o montante final. Esse mecanismo gera crescimento exponencial, pois a cada ciclo o valor base aumenta, fazendo com que o ganho total seja muito maior que no regime simples, principalmente em prazos longos.",
+   "trecho": "Juros simples é o cálculo em que o rendimento incide apenas sobre o capital inicial durante todo o período da aplicação ou do empréstimo. A fórmula básica é J = C × i × n, onde J representa o total de",
+   "fim": "o total seja muito maior que no regime simples, principalmente em prazos longos."
+  },
+  {
+   "id": 10,
+   "q": "Escreva uma lista com 5 dicas práticas para economizar água em casa.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 65,
+   "paragrafos": 5,
+   "itens": 5,
+   "nota": 9,
+   "erro": null,
+   "ms": 11647,
+   "rota": "ovhoss20",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T12:02:32.838Z",
+     "msParede": 2970,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T12:02:32.538Z",
+     "msParede": 11645,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "1. Instale torneiras com aeradores para reduzir o fluxo sem perder pressão regularmente.\n2. Conserte vazamentos imediatamente; um pequeno gotejamento pode desperdiçar litros por dia.\n3. Use a água da chuva para regar plantas e limpar calçadas.\n4. Tome banhos mais curtos e desligue a torneira enquanto escova os dentes.\n5. Instale um sistema de recirculação de água sanitária para reutilizar a água da lavagem.",
+   "trecho": "1. Instale torneiras com aeradores para reduzir o fluxo sem perder pressão regularmente.\n2. Conserte vazamentos imediatamente; um pequeno gotejamento pode desperdiçar litros por dia.\n3. Use a água da ",
+   "fim": " um sistema de recirculação de água sanitária para reutilizar a água da lavagem."
+  },
+  {
+   "id": 11,
+   "q": "Explique por que o céu é azul em dois parágrafos.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 163,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 35655,
+   "rota": "ovhoss",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T12:02:33.139Z",
+     "msParede": 441,
+     "resultado": "rate",
+     "retryAfterSegundos": 27,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T12:02:33.438Z",
+     "msParede": 445,
+     "resultado": "rate",
+     "retryAfterSegundos": 27,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:02:34.726Z",
+     "msParede": 451,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:02:35.326Z",
+     "msParede": 241,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T12:02:41.886Z",
+     "msParede": 124,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:02:33.581Z",
+     "msParede": 11722,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:02:53.075Z",
+     "msParede": 272,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T12:02:53.347Z",
+     "msParede": 6001,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "g4super",
+     "inicio": "2026-10-31T12:02:59.348Z",
+     "msParede": 163,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T12:02:42.010Z",
+     "msParede": 26181,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "A cor do céu resulta da interação da luz solar com as moléculas da atmosfera terrestre. A luz do Sol contém todas as cores do espectro visível, mas ao atravessar o ar, as ondas eletromagnéticas são desviadas por partículas muito menores que o comprimento de onda da luz. Esse fenômeno, chamado espalhamento de Rayleigh, tem eficiência inversamente proporcional à quarta potência do comprimento de onda, de modo que as ondas mais curtas (azul e violeta) são dispersas muito mais intensamente que as mais longas (vermelho, laranja).\n\nComo os cones da retina são mais sensíveis ao azul que ao violeta e a maior parte da luz violeta é absorvida pela camada superior da atmosfera, percebemos o céu predominantemente azul. Quando o Sol está próximo do horizonte, a luz percorre um caminho mais longo na atmosfera, aumentando o espalhamento das cores curtas e permitindo que as ondas vermelhas e laranjas cheguem diretamente ao observador, o que explica o tom avermelhado do amanhecer e do entardecer.",
+   "trecho": "A cor do céu resulta da interação da luz solar com as moléculas da atmosfera terrestre. A luz do Sol contém todas as cores do espectro visível, mas ao atravessar o ar, as ondas eletromagnéticas são de",
+   "fim": "nte ao observador, o que explica o tom avermelhado do amanhecer e do entardecer."
+  },
+  {
+   "id": 12,
+   "q": "Resuma em três parágrafos a Segunda Guerra Mundial.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 275,
+   "paragrafos": 3,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 24565,
+   "rota": "ovhoss",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:02:33.881Z",
+     "msParede": 81,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "glm",
+     "inicio": "2026-10-31T12:02:34.038Z",
+     "msParede": 25,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:02:34.262Z",
+     "msParede": 164,
+     "resultado": "rate",
+     "retryAfterSegundos": 26,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:02:34.426Z",
+     "msParede": 279,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:02:33.962Z",
+     "msParede": 1783,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:02:35.026Z",
+     "msParede": 1470,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:02:44.288Z",
+     "msParede": 287,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T12:02:44.575Z",
+     "msParede": 158,
+     "resultado": "rate",
+     "retryAfterSegundos": 16,
+     "fim": null
+    },
+    {
+     "rota": "g4super",
+     "inicio": "2026-10-31T12:02:44.733Z",
+     "msParede": 151,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T12:02:43.088Z",
+     "msParede": 14013,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "A Segunda Guerra Mundial começou em 1º de setembro de 1939, quando a Alemanha nazista, liderada por Adolf Hitler, invadiu a Polônia, provocando a declaração de guerra de Reino Unido e França. O conflito se expandiu rapidamente, envolvendo potências do Eixo – Alemanha, Itália e Japão – que buscavam expansão territorial e ideológica, enquanto as nações aliadas – inicialmente Reino Unido, França, União Soviética, China e, depois, os Estados Unidos – se organizaram para conter a agressão. A guerra foi marcada por alianças complexas, pactos de não‑agressão e a mobilização total das economias e sociedades envolvidas.\n\nNos teatros europeu e do Pacífico, a guerra assumiu contornos decisivos. Na Europa, a estratégia de “blitzkrieg” alemã conquistou a Dinamarca, Noruega, Bélgica, Holanda e França em 1940; a Batalha da Grã‑Bretanha impediu a invasão britânica, enquanto a Operação Barbarossa, em 1941, abriu o front oriental, culminando em batalhas como Stalingrado e Kursk, que viraram a maré contra o Eixo. No Pacífico, o ataque a Pearl Harbor em dezembro de 1941 trouxe os EUA ao conflito; a campanha de “island hopping” e a vitória em Midway (1942) reverteram o avanço japonês, preparando o caminho para o bombardeio de Hiroshima e Nagasaki em 1945.\n\nA rendição incondicional da Alemanha em 8 de maio de 1945 e do Japão em 2 de setembro de 1945 encerrou o conflito, que deixou cerca de 70 milhões de mortos, incluindo o Holocausto, que exterminou seis milhões de judeus. O pós‑guerra trouxe a criação das Nações Unidas, a divisão da Europa em blocos ocidentais e soviéticos e o início da Guerra Fria, além de profundas transformações políticas, econômicas e sociais que moldaram o mundo contemporâneo.",
+   "trecho": "A Segunda Guerra Mundial começou em 1º de setembro de 1939, quando a Alemanha nazista, liderada por Adolf Hitler, invadiu a Polônia, provocando a declaração de guerra de Reino Unido e França. O confli",
+   "fim": "ansformações políticas, econômicas e sociais que moldaram o mundo contemporâneo."
+  },
+  {
+   "id": 13,
+   "q": "Explique como funciona uma vacina em dois parágrafos.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 133,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 17550,
+   "rota": "ovhoss20",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T12:03:08.195Z",
+     "msParede": 5840,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T12:03:08.495Z",
+     "msParede": 17247,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Uma vacina funciona introduzindo no organismo uma forma inofensiva ou inativada de um agente patogênico, ou ainda fragmentos de suas proteínas, como antígenos. Essas substâncias estimulam o sistema imunológico a reconhecer e armazenar a informação sobre o invasor, gerando células de memória e anticorpos específicos. Assim, quando o corpo encontra o vírus ou bactéria real, a resposta imune é rápida e eficaz, neutralizando o agente antes que cause doença.\n\nAlém disso, as vacinas podem usar diferentes tecnologias, como mRNA, vetor viral ou subunidades proteicas, cada uma com vantagens em segurança e produção. O processo de desenvolvimento inclui testes pré-clínicos em animais, ensaios clínicos em fases I, II e III para avaliar eficácia e segurança, e aprovação regulatória. Após a vacinação, a população ganha imunidade coletiva, reduzindo a propagação e a gravidade das infecções.",
+   "trecho": "Uma vacina funciona introduzindo no organismo uma forma inofensiva ou inativada de um agente patogênico, ou ainda fragmentos de suas proteínas, como antígenos. Essas substâncias estimulam o sistema im",
+   "fim": "ão ganha imunidade coletiva, reduzindo a propagação e a gravidade das infecções."
+  },
+  {
+   "id": 14,
+   "q": "Explique o que é uma função em programação para quem nunca programou, em dois parágrafos.",
+   "ok": false,
+   "falhas": [
+    "parágrafos (1<2)",
+    "falta fato #2 (par[âa]metro)",
+    "falta fato #3 (retorn)"
+   ],
+   "palavras": 79,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 28912,
+   "rota": "texto-longo",
+   "tentativasSelecionadas": 5,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": "Restrições de formato não atendidas: 1 de 2 parágrafos. Confira ou tente novamente.",
+   "incompleto": true,
+   "chamadas": [
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T12:03:08.795Z",
+     "msParede": 451,
+     "resultado": "rate",
+     "retryAfterSegundos": 51,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T12:03:09.095Z",
+     "msParede": 591,
+     "resultado": "rate",
+     "retryAfterSegundos": 51,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:03:09.846Z",
+     "msParede": 55,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:03:09.901Z",
+     "msParede": 2701,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:03:12.602Z",
+     "msParede": 582,
+     "resultado": "rate",
+     "retryAfterSegundos": 47,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:03:13.185Z",
+     "msParede": 295,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:03:09.246Z",
+     "msParede": 17869,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:03:21.981Z",
+     "msParede": 6001,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T12:03:27.982Z",
+     "msParede": 151,
+     "resultado": "rate",
+     "retryAfterSegundos": 32,
+     "fim": null
+    },
+    {
+     "rota": "glm",
+     "inicio": "2026-10-31T12:03:28.134Z",
+     "msParede": 30,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T12:03:31.029Z",
+     "msParede": 6002,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "g4super",
+     "inicio": "2026-10-31T12:03:37.031Z",
+     "msParede": 73,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    }
+   ],
+   "texto": "Uma função em programação é um bloco de código que realiza uma tarefa específica. Imagine que você nunca tenha programado antes e precisa calcular a área de um círculo. Em vez de escrever o código para calcular a área todas as vezes que precisar, você pode criar uma função chamada \"calcular_area_circulo\" que faz esse cálculo para você. Assim, sempre que precisar calcular a área de um círculo, basta chamar essa função, em vez de escrever o código completo novamente.",
+   "trecho": "Uma função em programação é um bloco de código que realiza uma tarefa específica. Imagine que você nunca tenha programado antes e precisa calcular a área de um círculo. Em vez de escrever o código par",
+   "fim": "rculo, basta chamar essa função, em vez de escrever o código completo novamente."
+  },
+  {
+   "id": 15,
+   "q": "Explique o que é a LGPD em dois parágrafos.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 152,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 59438,
+   "rota": "ovhoss",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:03:10.202Z",
+     "msParede": 3828,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:03:09.546Z",
+     "msParede": 11190,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:03:22.281Z",
+     "msParede": 248,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T12:03:22.830Z",
+     "msParede": 27570,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T12:03:22.530Z",
+     "msParede": 45001,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "glm",
+     "inicio": "2026-10-31T12:04:07.531Z",
+     "msParede": 100,
+     "resultado": "morto",
+     "retryAfterSegundos": null,
+     "fim": null
+    }
+   ],
+   "texto": "A Lei Geral de Proteção de Dados Pessoais (LGPD), Lei nº 13.709/2018, regula o tratamento de dados pessoais no Brasil, estabelecendo regras para coleta, uso, armazenamento e compartilhamento de informações que possam identificar indivíduos. Entrou em vigor em setembro de 2020, após um período de adaptação, e se aplica a qualquer pessoa física ou jurídica que realize operações de tratamento no território nacional ou ofereça serviços a brasileiros, independentemente do porte da organização.  \n\nA LGPD se baseia em princípios como a finalidade, adequação, necessidade, transparência e segurança, exigindo que o controlador justifique a razão do tratamento e adote medidas técnicas e administrativas para proteger os dados. Os titulares têm direitos garantidos, como acesso, correção, exclusão e portabilidade das informações, podendo revogar o consentimento a qualquer momento. O descumprimento pode gerar multas de até 2 % do faturamento anual da empresa, limitadas a R$ 50 milhões, além de sanções administrativas e indenizações civis.",
+   "trecho": "A Lei Geral de Proteção de Dados Pessoais (LGPD), Lei nº 13.709/2018, regula o tratamento de dados pessoais no Brasil, estabelecendo regras para coleta, uso, armazenamento e compartilhamento de inform",
+   "fim": "limitadas a R$ 50 milhões, além de sanções administrativas e indenizações civis."
+  },
+  {
+   "id": 16,
+   "q": "Descreva em dois parágrafos o caminho da água da chuva até a torneira de casa.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 160,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 62440,
+   "rota": "ovhoss",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T12:04:07.643Z",
+     "msParede": 220,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T12:04:07.863Z",
+     "msParede": 11267,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T12:04:08.842Z",
+     "msParede": 12916,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:04:21.758Z",
+     "msParede": 272,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:04:19.130Z",
+     "msParede": 6002,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:04:37.632Z",
+     "msParede": 288,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T12:04:30.530Z",
+     "msParede": 28595,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T12:04:37.920Z",
+     "msParede": 32151,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Quando a chuva atinge o solo, parte da água escorre pela superfície formando o escoamento superficial, enquanto outra fração infiltra‑se no solo e alimenta os lençóis freáticos. A água que se acumula em rios, lagos ou reservatórios artificiais é captada por estações de captação, onde passa por processos preliminares de remoção de detritos e sedimentos. Em seguida, a água segue para a estação de tratamento, onde são aplicados processos de coagulação, floculação, decantação, filtração e desinfecção, tornando‑a própria para o consumo humano.  \n\nApós a purificação, a água é bombeada para reservatórios elevados que garantem pressão constante nas redes de distribuição. A partir desses tanques, a água circula por tubulações de aço, ferro dúctil ou PVC, passando por válvulas reguladoras e medidores antes de chegar às redes de baixa pressão que abastecem os bairros. Finalmente, a água entra nas tubulações internas da residência, atravessa o registro de fechamento e chega ao ponto de consumo, a torneira da cozinha ou do banheiro.",
+   "trecho": "Quando a chuva atinge o solo, parte da água escorre pela superfície formando o escoamento superficial, enquanto outra fração infiltra‑se no solo e alimenta os lençóis freáticos. A água que se acumula ",
+   "fim": "de fechamento e chega ao ponto de consumo, a torneira da cozinha ou do banheiro."
+  },
+  {
+   "id": 17,
+   "q": "Escreva um texto de dois parágrafos sobre os impactos das redes sociais na vida das pessoas.",
+   "ok": false,
+   "falhas": [
+    "curto (75<80)",
+    "parágrafos (1<2)",
+    "falta fato #3 (conex[ãa]o)"
+   ],
+   "palavras": 75,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 31041,
+   "rota": "texto-longo",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": "Restrições de formato não atendidas: 1 de 2 parágrafos. Confira ou tente novamente.",
+   "incompleto": true,
+   "chamadas": [
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T12:04:10.042Z",
+     "msParede": 587,
+     "resultado": "rate",
+     "retryAfterSegundos": 50,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:04:10.629Z",
+     "msParede": 18399,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:04:11.242Z",
+     "msParede": 19876,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T12:04:38.221Z",
+     "msParede": 158,
+     "resultado": "rate",
+     "retryAfterSegundos": 22,
+     "fim": null
+    },
+    {
+     "rota": "g4super",
+     "inicio": "2026-10-31T12:04:38.380Z",
+     "msParede": 61,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    }
+   ],
+   "texto": "O texto examina os impactos das redes sociais na rotina de indivíduos de diferentes idades. Um exemplo claro é o jovem que, ao verificar notificações a cada poucos minutos, perde tempo de estudo e sono. Essa dinâmica cria ansiedade e comparação constante, alterando a autoestima e a forma como a pessoa se relaciona offline. Além disso, a exposição contínua a conteúdos curados pode distorcer a percepção de realidade e dificultar a construção de vínculos genuínos.",
+   "trecho": "O texto examina os impactos das redes sociais na rotina de indivíduos de diferentes idades. Um exemplo claro é o jovem que, ao verificar notificações a cada poucos minutos, perde tempo de estudo e son",
+   "fim": "storcer a percepção de realidade e dificultar a construção de vínculos genuínos."
+  },
+  {
+   "id": 18,
+   "q": "Dê quatro argumentos contra o desperdício de alimentos.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 86,
+   "paragrafos": 4,
+   "itens": 4,
+   "erro": null,
+   "ms": 110537,
+   "rota": "lista-longa",
+   "tentativasSelecionadas": 17,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:04:13.643Z",
+     "msParede": 60,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:04:13.703Z",
+     "msParede": 704,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:04:14.407Z",
+     "msParede": 1015,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:04:15.422Z",
+     "msParede": 258,
+     "resultado": "rate",
+     "retryAfterSegundos": 45,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:04:12.443Z",
+     "msParede": 4475,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "ovhq",
+     "inicio": "2026-10-31T12:04:15.680Z",
+     "msParede": 4394,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq",
+     "inicio": "2026-10-31T12:04:16.918Z",
+     "msParede": 6294,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq38",
+     "inicio": "2026-10-31T12:04:20.074Z",
+     "msParede": 4512,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq38",
+     "inicio": "2026-10-31T12:04:23.212Z",
+     "msParede": 6251,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq9",
+     "inicio": "2026-10-31T12:04:24.586Z",
+     "msParede": 7122,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T12:04:31.708Z",
+     "msParede": 6001,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq9",
+     "inicio": "2026-10-31T12:04:29.463Z",
+     "msParede": 8859,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T12:04:38.622Z",
+     "msParede": 3448,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T12:04:38.322Z",
+     "msParede": 3750,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T12:04:42.071Z",
+     "msParede": 151,
+     "resultado": "rate",
+     "retryAfterSegundos": 18,
+     "fim": null
+    },
+    {
+     "rota": "ovhq397",
+     "inicio": "2026-10-31T12:04:42.223Z",
+     "msParede": 18494,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq397",
+     "inicio": "2026-10-31T12:04:42.523Z",
+     "msParede": 20012,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T12:05:00.717Z",
+     "msParede": 5875,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T12:05:02.535Z",
+     "msParede": 4890,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:05:07.425Z",
+     "msParede": 78,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:05:07.503Z",
+     "msParede": 1125,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:05:08.628Z",
+     "msParede": 1290,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:05:09.918Z",
+     "msParede": 165,
+     "resultado": "rate",
+     "retryAfterSegundos": 50,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T12:05:10.083Z",
+     "msParede": 7490,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "coherecode",
+     "inicio": "2026-10-31T12:05:17.573Z",
+     "msParede": 137,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq",
+     "inicio": "2026-10-31T12:05:17.710Z",
+     "msParede": 25001,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq38",
+     "inicio": "2026-10-31T12:05:42.711Z",
+     "msParede": 4104,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq9",
+     "inicio": "2026-10-31T12:05:46.815Z",
+     "msParede": 9122,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T12:05:55.938Z",
+     "msParede": 2237,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "1. O desperdício de alimentos contribui significativamente para o aumento das emissões de gases de efeito estufa, prejudicando o meio ambiente globalmente.\n2. O desperdício de alimentos desperdiça recursos naturais, como água e solo, utilizados na produção de alimentos que não são consumidos.\n3. O desperdício de alimentos aumenta a fome e a insegurança alimentar, já que poderia ser utilizado para alimentar pessoas carentes.\n4. O desperdício de alimentos gera impactos econômicos negativos, aumentando os custos de produção e distribuição de alimentos que não são consumidos.",
+   "trecho": "1. O desperdício de alimentos contribui significativamente para o aumento das emissões de gases de efeito estufa, prejudicando o meio ambiente globalmente.\n2. O desperdício de alimentos desperdiça rec",
+   "fim": "ntando os custos de produção e distribuição de alimentos que não são consumidos."
+  },
+  {
+   "id": 19,
+   "q": "Explique a diferença entre clima e tempo em um parágrafo.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 84,
+   "paragrafos": 1,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 15119,
+   "rota": "ultra",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T12:05:58.180Z",
+     "msParede": 155,
+     "resultado": "rate",
+     "retryAfterSegundos": 2,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:05:58.635Z",
+     "msParede": 3551,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:05:58.335Z",
+     "msParede": 14962,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Clima refere‑se ao padrão médio de condições atmosféricas — temperatura, precipitação, umidade, vento e pressão — observado ao longo de décadas em uma região, enquanto tempo descreve o estado instantâneo ou de curto prazo desses mesmos elementos em um momento específico; assim, o clima é a síntese estatística de muitos tempos, permitindo prever tendências sazonais e anuais, ao passo que o tempo varia de hora em hora e pode mudar rapidamente, sendo o que experimentamos no dia a dia, como chuva, sol ou neblina.",
+   "trecho": "Clima refere‑se ao padrão médio de condições atmosféricas — temperatura, precipitação, umidade, vento e pressão — observado ao longo de décadas em uma região, enquanto tempo descreve o estado instantâ",
+   "fim": "apidamente, sendo o que experimentamos no dia a dia, como chuva, sol ou neblina."
+  },
+  {
+   "id": 20,
+   "q": "Resuma em três parágrafos a teoria da evolução de Darwin.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 287,
+   "paragrafos": 3,
+   "itens": 0,
+   "erro": null,
+   "ms": 59083,
+   "rota": "texto-longo",
+   "tentativasSelecionadas": 6,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:05:58.936Z",
+     "msParede": 25090,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T12:06:24.026Z",
+     "msParede": 149,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:05:59.235Z",
+     "msParede": 25106,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T12:06:24.175Z",
+     "msParede": 6001,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:06:30.177Z",
+     "msParede": 260,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T12:06:24.476Z",
+     "msParede": 6000,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:06:30.477Z",
+     "msParede": 262,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:06:30.777Z",
+     "msParede": 226,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:06:31.378Z",
+     "msParede": 272,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:06:31.677Z",
+     "msParede": 438,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:06:31.077Z",
+     "msParede": 1428,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:06:32.841Z",
+     "msParede": 65,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T12:06:32.906Z",
+     "msParede": 24265,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "g4super",
+     "inicio": "2026-10-31T12:06:57.171Z",
+     "msParede": 90,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    }
+   ],
+   "texto": "Para resuma a teoria da evolução de Darwin, é preciso entender que ele propôs que as espécies mudam ao longo do tempo por meio de variações hereditárias e seleção natural. Em seu livro *A Origem das Espécies*, ele descreve como indivíduos com características vantajosas têm maior probabilidade de sobreviver e reproduzir, transmitindo essas qualidades à prole. Esse mecanismo explica a adaptação dos organismos ao ambiente e a diversificação das formas de vida observadas na Terra. Assim, a teoria de Darwin oferece uma explicação científica para a complexidade e a história da vida.\n\nPara resuma a teoria, Darwin observou que a variação dentro das populações não é aleatória, mas pode ser influenciada por fatores ambientais, o que faz com que certas características se tornem mais frequentes ao longo das gerações. Esse processo, que ele chamou de seleção natural, funciona como um filtro que favorece indivíduos que melhor se adaptam ao seu nicho ecológico. A teoria de Darwin, portanto, sustenta que a diversidade biológica surge gradualmente, a partir de pequenas mudanças acumuladas. Assim, a evolução, segundo ele, é um mecanismo contínuo que molda a vida em resposta às pressões do ambiente.\n\nAlém disso, Darwin propôs que a herança de traços varia de forma que os descendentes herdam características que lhes conferem vantagem, mas também que mutações aleatórias introduzem novas possibilidades. Esse mecanismo de variação e seleção cria um fluxo de adaptação que pode levar a espécies inteiras a se diversificarem em formas distintas, como observado em aves de diferentes ilhas. Assim, ao resuma a teoria, percebe‑se que a evolução não depende de um propósito, mas de processos naturais que operam ao longo de milhões de anos. A teoria darwiniana permanece fundamental para compreender a complexidade da vida na Terra.",
+   "trecho": "Para resuma a teoria da evolução de Darwin, é preciso entender que ele propôs que as espécies mudam ao longo do tempo por meio de variações hereditárias e seleção natural. Em seu livro *A Origem das E",
+   "fim": "rwiniana permanece fundamental para compreender a complexidade da vida na Terra."
+  },
+  {
+   "id": 21,
+   "q": "Escreva uma mensagem curta e educada cobrando um pagamento atrasado de um cliente. Máximo 150 palavras.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 88,
+   "paragrafos": 4,
+   "itens": 0,
+   "nota": 3,
+   "erro": null,
+   "ms": 9671,
+   "rota": "polli",
+   "tentativasSelecionadas": 3,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:05:59.535Z",
+     "msParede": 76,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T12:05:59.911Z",
+     "msParede": 157,
+     "resultado": "rate",
+     "retryAfterSegundos": 1,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:06:00.068Z",
+     "msParede": 239,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "g4super",
+     "inicio": "2026-10-31T12:06:00.307Z",
+     "msParede": 39,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T12:05:59.611Z",
+     "msParede": 7960,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:06:07.571Z",
+     "msParede": 278,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Prezado(a) [Nome do Cliente],\n\nEspero que esteja bem. Gostaria de lembrar que o pagamento referente à fatura nº [Número] venceu em [Data] e ainda não foi registrado em nosso sistema. Entendemos que imprevistos acontecem e estamos à disposição para esclarecer qualquer dúvida ou ajustar a forma de pagamento, se necessário.\n\nAgradecemos a atenção e pedimos que, por gentileza, regularize a situação até o dia [Nova Data] para evitarmos interrupções nos serviços. Caso já tenha efetuado o pagamento, por favor, desconsidere esta mensagem e nos envie o comprovante.\n\nAtenciosamente.",
+   "trecho": "Prezado(a) [Nome do Cliente],\n\nEspero que esteja bem. Gostaria de lembrar que o pagamento referente à fatura nº [Número] venceu em [Data] e ainda não foi registrado em nosso sistema. Entendemos que im",
+   "fim": "or favor, desconsidere esta mensagem e nos envie o comprovante.\n\nAtenciosamente."
+  },
+  {
+   "id": 22,
+   "q": "Explique em dois parágrafos como funciona a energia solar fotovoltaica.",
+   "ok": false,
+   "falhas": [
+    "curto (49<70)",
+    "parágrafos (1<2)"
+   ],
+   "palavras": 49,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 58365,
+   "rota": "texto-longo",
+   "tentativasSelecionadas": 4,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": "Restrições de formato não atendidas: 1 de 2 parágrafos. Confira ou tente novamente.",
+   "incompleto": true,
+   "chamadas": [
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:06:57.266Z",
+     "msParede": 6024,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:06:57.566Z",
+     "msParede": 6000,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:07:03.291Z",
+     "msParede": 13053,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:07:03.892Z",
+     "msParede": 13600,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T12:07:17.492Z",
+     "msParede": 2923,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T12:07:20.415Z",
+     "msParede": 609,
+     "resultado": "rate",
+     "retryAfterSegundos": 40,
+     "fim": null
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T12:07:16.344Z",
+     "msParede": 5777,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:07:22.121Z",
+     "msParede": 268,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:07:21.024Z",
+     "msParede": 6002,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T12:07:27.026Z",
+     "msParede": 151,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:07:27.177Z",
+     "msParede": 159,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:07:22.389Z",
+     "msParede": 14333,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:07:39.528Z",
+     "msParede": 270,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T12:07:39.799Z",
+     "msParede": 15529,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T12:07:40.099Z",
+     "msParede": 15530,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    }
+   ],
+   "texto": "A energia solar fotovoltaica funciona convertendo luz do sol diretamente em eletricidade através de células solares. Por exemplo, painéis instalados em telhados captam a radiação solar, que é transformada em corrente elétrica. Esse processo utiliza semicondutores que reagem à luz, gerando energia limpa e renovável para residências ou empresas.",
+   "trecho": "A energia solar fotovoltaica funciona convertendo luz do sol diretamente em eletricidade através de células solares. Por exemplo, painéis instalados em telhados captam a radiação solar, que é transfor",
+   "fim": "ue reagem à luz, gerando energia limpa e renovável para residências ou empresas."
+  },
+  {
+   "id": 23,
+   "q": "Explique em dois parágrafos o que é inteligência artificial, sem jargão.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 160,
+   "paragrafos": 2,
+   "itens": 0,
+   "erro": null,
+   "ms": 43333,
+   "rota": "texto-longo",
+   "tentativasSelecionadas": 4,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:06:57.865Z",
+     "msParede": 448,
+     "resultado": "rate",
+     "retryAfterSegundos": 2,
+     "fim": null
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T12:06:58.165Z",
+     "msParede": 442,
+     "resultado": "rate",
+     "retryAfterSegundos": 2,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T12:06:58.914Z",
+     "msParede": 153,
+     "resultado": "rate",
+     "retryAfterSegundos": 2,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:06:59.067Z",
+     "msParede": 285,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T12:06:58.314Z",
+     "msParede": 20196,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T12:07:03.591Z",
+     "msParede": 16184,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:07:19.775Z",
+     "msParede": 283,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T12:07:18.510Z",
+     "msParede": 19304,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T12:07:40.399Z",
+     "msParede": 155,
+     "resultado": "rate",
+     "retryAfterSegundos": 20,
+     "fim": null
+    },
+    {
+     "rota": "g4super",
+     "inicio": "2026-10-31T12:07:40.554Z",
+     "msParede": 42,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    }
+   ],
+   "texto": "Inteligência artificial é a capacidade de máquinas de aprender e executar tarefas que normalmente exigiriam a intervenção humana. Em vez de seguir instruções rígidas, esses sistemas analisam dados, reconhecem padrões e tomam decisões baseadas em probabilidades. Um exemplo simples é o assistente virtual que entende comandos de voz e responde de forma contextualizada. Assim, a tecnologia evolui sem depender de um jargão técnico complexo para ser compreendida no dia a dia com.\n\nAlém disso, a inteligência artificial pode ser treinada para reconhecer emoções em textos ou vozes, ajustando suas respostas para serem mais empáticas. Esse aprendizado acontece por meio de grandes volumes de exemplos, onde o algoritmo ajusta seus parâmetros para reduzir erros. Quando aplicada em áreas como saúde, a tecnologia ajuda médicos a diagnosticar doenças mais rapidamente, analisando imagens com precisão que rivaliza a de especialistas humanos. Assim, a inteligência artificial continua a expandir seu alcance, tornando processos mais eficientes sem exigir que o usuário compreenda um jargão técnico.",
+   "trecho": "Inteligência artificial é a capacidade de máquinas de aprender e executar tarefas que normalmente exigiriam a intervenção humana. Em vez de seguir instruções rígidas, esses sistemas analisam dados, re",
+   "fim": "processos mais eficientes sem exigir que o usuário compreenda um jargão técnico."
+  },
+  {
+   "id": 24,
+   "q": "Escreva um parágrafo explicando a importância de dormir bem.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 122,
+   "paragrafos": 1,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 7945,
+   "rota": "ovhoss",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T12:06:59.367Z",
+     "msParede": 252,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T12:06:58.614Z",
+     "msParede": 6596,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Dormir bem é fundamental para a saúde física e mental, pois durante o sono o corpo realiza a reparação de tecidos, a liberação de hormônios de crescimento e a consolidação da memória, processos essenciais para o desempenho cognitivo, a regulação emocional e a manutenção do sistema imunológico; a falta de sono adequado eleva o risco de doenças cardiovasculares, diabetes, obesidade e transtornos de humor, além de comprometer a atenção, a tomada de decisões e a produtividade no dia a dia; ao garantir de 7 a 9 horas de sono de qualidade, com ambiente escuro, temperatura confortável e rotina regular, promove-se o equilíbrio hormonal, a redução do estresse e a melhoria da qualidade de vida, permitindo que o organismo funcione de forma otimizada.",
+   "trecho": "Dormir bem é fundamental para a saúde física e mental, pois durante o sono o corpo realiza a reparação de tecidos, a liberação de hormônios de crescimento e a consolidação da memória, processos essenc",
+   "fim": "ia da qualidade de vida, permitindo que o organismo funcione de forma otimizada."
+  }
+ ],
+ "meta": {
+  "iniciado": "2026-10-31T11:59:25.621Z",
+  "terminado": "2026-10-31T12:07:55.631Z",
+  "banco": "banco-aberto.json",
+  "bancoSha256": "3c23382ded2b1ea498bbb11e195338eb141921318fa1a595c02c32f1f08a3223",
+  "codigoSha256": "300ddf8e6a1f394db19e8d307c9b742f37e811a28489b2e0cd2c0ebdd7dc3865",
+  "rubricaSha256": "84994993f185630095ffb3f5111f0ad49837a6f29565da75df55f1f767579f90",
+  "medidorSha256": "2feb2f0b95259c62ab6196b54bb54d426b7e1defadf1ea6d3877ec56cac5352e",
+  "concorrencia": 3,
+  "janelas": [
+   {
+    "iniciado": "2026-10-31T11:59:25.621Z",
+    "terminado": "2026-10-31T12:07:55.631Z"
+   }
+  ],
+  "retomadas": 0,
+  "invalido": false
+ }
+}

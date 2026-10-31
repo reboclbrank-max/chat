@@ -31,11 +31,13 @@ const FORTES = (r) => r.catalogo.filter((x) => x.classe === 'forte' && (!x.chave
 
 (async () => {
   console.log('== 1. espera a rota forte voltar em vez de descer de classe');
-  await testa('forte em 429 curto → espera e responde na forte', async () => {
+  await testa('forte em 429 curto e só resta modelo fraco → espera e responde na forte', async () => {
     const r = comDuble();
     const fortes = FORTES(r);
     assert(fortes.length >= 1, 'o catálogo precisa de ao menos uma rota forte utilizável');
     for (const f of fortes) r.saude[f.id].cooldownAte = Date.now() + 1200;
+    // a regra medida: esperar SÓ quando a alternativa livre é fraca; médias vão para descanso também
+    for (const x of r.catalogo) if (x.classe === 'media') r.saude[x.id].cooldownAte = Date.now() + 1200;
     const t0 = Date.now();
     const o = await r.responder({ pergunta: 'explique o que é fotossíntese', tipo: 'curto', semConsenso: true, semFerramenta: true });
     const dur = Date.now() - t0;
@@ -43,6 +45,28 @@ const FORTES = (r) => r.catalogo.filter((x) => x.classe === 'forte' && (!x.chave
     assert.equal(classe, 'forte', 'respondeu em rota ' + o.rota + ' (' + classe + ') em vez de esperar a forte');
     assert(dur >= 1000, 'não esperou o descanso: ' + dur + ' ms');
     assert.equal(r.metricas.esperasBoa, 1);
+  });
+
+  await testa('com rota MÉDIA livre, responde na média agora (não gasta espera)', async () => {
+    const r = comDuble();
+    for (const f of FORTES(r)) r.saude[f.id].cooldownAte = Date.now() + 1200;
+    const t0 = Date.now();
+    const o = await r.responder({ pergunta: 'explique o que é fotossíntese', tipo: 'curto', semConsenso: true, semFerramenta: true });
+    const classe = (r.catalogo.find((x) => x.id === o.rota) || {}).classe;
+    assert.notEqual(classe, 'leve', 'desceu para modelo fraco tendo média livre');
+    assert(Date.now() - t0 < 1000, 'esperou tendo alternativa média livre');
+  });
+
+  await testa('teto de 3 s: descanso de 5 s não segura a resposta', async () => {
+    // Antes o teto era 15 s e a pessoa esperava por isso. Agora, acima de 3 s, responde com o que há.
+    const r = comDuble();
+    for (const f of FORTES(r)) r.saude[f.id].cooldownAte = Date.now() + 5000;
+    for (const x of r.catalogo) if (x.classe === 'media') r.saude[x.id].cooldownAte = Date.now() + 5000;
+    const t0 = Date.now();
+    await r.responder({ pergunta: 'explique o que é fotossíntese', tipo: 'curto', semConsenso: true, semFerramenta: true });
+    const dur = Date.now() - t0;
+    assert(dur < 3000, 'segurou ' + dur + ' ms por um descanso de 5 s');
+    assert.equal(r.metricas.esperasBoa || 0, 0);
   });
 
   await testa('descanso LONGO não vira espera (responder rápido é melhor)', async () => {
