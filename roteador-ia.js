@@ -768,6 +768,33 @@
     } catch (e) { return null; }
   }
 
+  /* CONTA FALADA (31/10/2026). Medido no teste de QI da casa: "quanto é 1234 vezes 5678?"
+     foi parar num modelo pequeno e voltou ",170,000" — errado por dois milhões. A calculadora
+     local existia, mas só aceitava `*`; a palavra "vezes" (e "dividido por", "mais", "menos")
+     desligava o atalho exato, e qualquer coisa depois da conta ("responda só o número")
+     também. Português comum não pode ser o motivo de uma conta sair errada. */
+  function normalizarOperadores(texto) {
+    return String(texto || '')
+      .replace(/\bmultiplicado\s+por\b/gi, '*')
+      .replace(/\bdividido\s+por\b/gi, '/')
+      .replace(/\belevado\s+a\b/gi, '^')
+      .replace(/\bvezes\b/gi, '*')
+      .replace(/\bdividido\b/gi, '/')
+      .replace(/\bmais\b/gi, '+')
+      .replace(/\bmenos\b/gi, '-');
+  }
+
+  function contaFalada(q) {
+    var m = /(?:quanto\s+(?:é|e|vale|d[áa])|calcule|calcula|some|soma)\s+(.+)$/i.exec(String(q || ''));
+    if (!m) return null;
+    var expr = normalizarOperadores(m[1]).match(/^[\s0-9.,+\-*/^×÷()%²³xX*]+/);
+    if (!expr) return null;
+    var limpa = expr[0].replace(/[.,\s]+$/, '').trim();
+    if (!/\d/.test(limpa) || !/[+\-*/^xX]/.test(limpa)) return null;
+    if (limpa.replace(/[^+\-*/^xX]/g, '').length > 12) return null;  // não é conta, é texto
+    return limpa;
+  }
+
   /* ============ VISÃO ============
      Sondado em 28/10/2026, com um PNG de teste e content-array OpenAI:
        Kilo  → 404 "No endpoints found that support image input"
@@ -979,6 +1006,12 @@
     if (multi) return multi;
 
     /* --- aritmética e porcentagem --- */
+    // Primeiro a conta falada ("vezes", "dividido por") com ou sem cauda depois da pergunta.
+    var falada = contaFalada(q);
+    if (falada) {
+      var vf = calcular(falada.replace(/×/g, '*').replace(/÷/g, '/').replace(/,/g, '.'));
+      if (vf !== null) return { texto: String(vf).replace('.', ','), ferramenta: 'calculo', fonte: 'aritmética local' };
+    }
     if ((m = q.match(/quanto\s+(?:é|e|vale|d[áa])\s*([0-9.,\s+\-*/^×÷()%²³xX]+)\??$/i))) {
       var expr = m[1].replace(/×/g, '*').replace(/÷/g, '/').replace(/,/g, '.')
         .replace(/²/g, '^2').replace(/³/g, '^3');
@@ -2838,6 +2871,7 @@
                    trechoSeguro: trechoSeguro, contextoFontes: contextoFontes,
                    buscarFonteViva: buscarFonteViva, recortarFonte: recortarFonte, radicalTermo: radicalTermo,
                    termosDeBusca: termosDeBusca, escolherFonte: escolherFonte,
+                   contaFalada: contaFalada, normalizarOperadores: normalizarOperadores,
                    fonteExternaPermitida: fonteExternaPermitida, fonteVivaLigada: fonteVivaLigada };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   raiz.RoteadorIA = api;
