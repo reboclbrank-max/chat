@@ -1670,6 +1670,21 @@
     } catch (e) { return null; }
   }
 
+  /* ============ RACIOCÍNIO LOCAL (31/10/2026) ============
+     `razao-local.js` resolve por código exato as classes de raciocínio que o modelo errava sempre
+     na bateria da casa (probabilidade sem reposição, contagem com dígito, matriz descrita).
+     É consultado ANTES de qualquer modelo e depois da aritmética local (que já era exata).
+     Se o módulo não estiver carregado, ou não reconhecer a forma do pedido, devolve null e o
+     caminho normal continua — nada quebra. */
+  var RAZAO_LOCAL = null;
+  function razaoLocal() {
+    if (RAZAO_LOCAL === null && typeof module !== 'undefined' && module.exports && typeof require === 'function') {
+      try { RAZAO_LOCAL = require('./razao-local.js'); } catch (e) { RAZAO_LOCAL = false; }
+    }
+    if (RAZAO_LOCAL === null && typeof window !== 'undefined' && window.RazaoLocal) RAZAO_LOCAL = window.RazaoLocal;
+    return RAZAO_LOCAL || null;
+  }
+
   async function carregarFontesLocais() {
     if (FONTES_LOCAIS) return FONTES_LOCAIS;
     if (FONTES_CARREGANDO) return FONTES_CARREGANDO;
@@ -2130,6 +2145,33 @@
     s.cooldownAte = Math.max(s.cooldownAte || 0, agora() + (tipo === 'morto' ? 30 * 60 * 1000
       : tipo === 'timeout' ? 12000 : 8000));
     if (tipo === 'morto') s.morta = true;
+  };
+
+  /* ============ ESPERA PELA ROTA BOA (31/10/2026) ============
+     Medido na bateria da casa: numa rajada de perguntas, as rotas fortes entram em 429 e o roteador
+     simplesmente descia para o modelo leve que ainda estava livre — o fácil caiu de 29/29 para
+     20/29 e o difícil para 12/18 no meio da rajada. Esperar o 429 passar (poucos segundos, dentro
+     do orçamento) dá resposta melhor que responder na hora com modelo fraco.
+     Limites: só quando a espera é CURTA (teto), só dentro do orçamento do pedido, e uma vez por
+     pergunta. Se não houver rota forte no catálogo, nada muda. */
+  Roteador.prototype._esperarRotaBoa = async function (inicioPedido, dificuldade, evitar) {
+    if (dificuldade === 'leve') return null;
+    var eu = this;
+    var fortes = this.catalogo.filter(function (r) {
+      return r.classe === 'forte' && !eu.saude[r.id].morta && (!r.chaveLS || eu.lerChave(r.chaveLS)) && evitar.indexOf(r.id) === -1;
+    });
+    if (!fortes.length) return null;
+    var t = agora();
+    if (fortes.some(function (r) { return eu.disponivel(r.id); })) return null;   // já tem forte livre
+    var ate = Math.min.apply(null, fortes.map(function (r) { return eu._ateDisponivel(r); }).filter(function (x) { return x > t; }));
+    if (!isFinite(ate)) return null;
+    var espera = ate - t;
+    var teto = Math.min(this.esperaRotaBoa || 15000, this.orcamento / 2);
+    if (espera <= 0 || espera > teto) return null;
+    if (agora() - inicioPedido + espera > this.orcamento) return null;
+    this.metricas.esperasBoa = (this.metricas.esperasBoa || 0) + 1;
+    await new Promise(function (r) { setTimeout(r, espera + 120 + Math.random() * 200); });
+    return espera;
   };
 
   Roteador.prototype._premiar = function (id, ms) {
@@ -2895,6 +2937,29 @@
       }
     }
 
+    /* Raciocínio local: contas e deduções exatas que o modelo errava. Mesmo interruptor da
+       ferramenta (`semFerramenta`), porque é o mesmo tipo de resposta: exata e sem modelo. */
+    if (usarFerramenta) {
+      var razao = razaoLocal();
+      if (razao && typeof razao.resolver === 'function') {
+        var rl = razao.resolver(perguntaPura);
+        if (rl && rl.texto) {
+          var resR = { texto: rl.texto, rota: rl.ferramenta, rotaNome: 'raciocínio local · ' + rl.ferramenta,
+                       classe: 'razao', confianca: 'alta', tentativas: 0, ferramenta: true, ms: 0, fonte: rl.fonte,
+                       razao: true };
+          this.metricas.razaoLocal = (this.metricas.razaoLocal || 0) + 1;
+          this._cacheSet(chave, resR);
+          return resR;
+        }
+      }
+    }
+
+    /* Espera pela rota boa: só quando a forte está em descanso curto, uma vez por pergunta.
+       Desligável em teste (`semEsperaBoa`) e nos caminhos que já decidiram responder local. */
+    if (!(typeof pedido === 'object' && pedido && pedido.semEsperaBoa) && !imagem) {
+      await this._esperarRotaBoa(inicioPedido, dificuldade, evitar);
+    }
+
     /* pedido longo (texto/código) não passa por consenso nem por 400 tokens */
     var tipo = tipoInicial;
     if (tipo === 'codigo') {
@@ -3118,6 +3183,7 @@
   };
 
   var api = { Roteador: Roteador, CATALOGO: CATALOGO, normal: normal, apresentarFontes: apresentarFontes };
+  api.razaoLocal = razaoLocal;
   api.internos = { sanear: sanear, util: util, extrairConclusao: extrairConclusao, calendarioLocal: calendarioLocal, fragmento: fragmento, instrucaoParagrafo: instrucaoParagrafo, extrairPlano: extrairPlano, fecharTexto: fecharTexto, termosDoPedido: termosDoPedido, calcular: calcular, instrucaoFormato: instrucaoFormato, ajustarFechamento: ajustarFechamento, numerarLista: numerarLista, anotarRespostaAberta: anotarRespostaAberta,
                    classificarPedido: classificarPedido, extrairCodigo: extrairCodigo,
                    codigoInteiro: codigoInteiro, textoCompleto: textoCompleto,
