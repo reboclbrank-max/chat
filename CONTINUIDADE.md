@@ -1657,3 +1657,7 @@ Medido antes/depois no ensaio de queda total: **soma da espera 338.678 ms → 76
 **Guarda novo: `tools/testes/sem-dependencia.js` (3/3).** Cobra o que foi prometido, e não a promessa: (1) queda total com ≥85% respondido e **zero** erradas; (2) **pior pergunta offline < 5 s** (o disjuntor funcionando); (3) redundância — ≥10 rotas, ≥3 provedores independentes e no máximo 1 rota com chave; (4) o disjuntor abre em 3 falhas seguidas de rede e **fecha quando a rede volta** (contraprova com fetch falso).
 
 **Provas.** `node tools/auditoria-dependencias.js`: 122/127 offline, 0 erradas, pior 1,5 s. `tools/testes/sem-dependencia.js` 3/3. Barreira completa verde com o teste novo registrado. Casca em **rebocl-chat-v105**.
+
+**Dois achados de última hora sobre o próprio medidor (mesma rodada).**
+- **O diagnóstico dizia "sem rede" e usava a rede**: em algumas execuções uma prova caía em consulta ao vivo e o mesmo comando levava **de 0,9 s a 26 s** (e estourava o tempo do CI: run 41244402599). O medidor passou a **bloquear o `fetch` de propósito** (`--com-rede` fica para quem quiser medir o caminho online) e há verificação nova: duas execuções têm de dar **o mesmo número**.
+- **Custo sem medição**: `provarFio` criava um roteador por prova (reiniciando o disjuntor) e temporizadores pendentes seguravam o processo por ~8 s. Agora é um roteador para a amostra inteira, e o programa sai assim que termina de medir. Tempo da suíte de auto-diagnóstico: **174 s → 52 s**, determinístico.

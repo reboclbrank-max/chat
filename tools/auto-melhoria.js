@@ -45,6 +45,15 @@ function hashArquivo(rel) {
 const { Roteador } = require(path.join(RAIZ, 'roteador-ia.js'));
 const RazaoLocal = require(path.join(RAIZ, 'razao-local.js'));
 
+/* MEDIÇÃO DETERMINÍSTICA (rodada 138, 31/10/2026). O cabeçalho deste programa promete "sem rede
+   e sem modelo" — mas o `fetch` continuava vivo: em algumas execuções uma prova caía em consulta
+   ao vivo (mathjs, Wikipédia) e o mesmo comando levava de 0,9 s a 26 s. Um medidor que depende da
+   internet mede a internet, não o produto (e estourava o tempo do CI). Aqui a rede é bloqueada de
+   propósito; `--com-rede` fica para quem quiser medir o caminho online. */
+if (!process.argv.includes('--com-rede')) {
+  global.fetch = function () { return Promise.reject(new Error('sem rede (diagnóstico determinístico)')); };
+}
+
 function normal(s) {
   return String(s == null ? '' : s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 }
@@ -133,11 +142,17 @@ async function provarFio(provas, amostra) {
   const porId = new Map(banco.provas.map(function (p) { return [p.id, p]; }));
   const alvo = provas.filter(function (p) { return p.caminho !== 'modelo'; }).slice(0, amostra);
   const itens = [];
+  /* UM roteador para a amostra inteira, não um por prova: criar um por prova reiniciava o
+     disjuntor de rede e cada item pagava as esperas do laço (medido 31/10/2026: 14 s por
+     execução só nisto). A sessão real também é uma só. */
+  const r = new Roteador({ amostrasAberto: 1 });
+  r._chamar = async function () { return { erro: 'rede', ms: 1 }; };   // modelo quebrado de propósito
+  r._consenso = async function () { return null; };
+  // e com o disjuntor aberto desde o começo: aqui não se mede espera de rede, mede-se o que o
+  // caminho LOCAL entrega. Sem isto cada prova pagava as voltas de espera do laço (~100 ms cada).
+  r.redePausadaAte = Date.now() + 3600000;
   for (const p of alvo) {
     const prova = porId.get(p.id);
-    const r = new Roteador({ amostrasAberto: 1 });
-    r._chamar = async function () { return { erro: 'rede', ms: 1 }; };   // modelo quebrado de propósito
-    r._consenso = async function () { return null; };
     let resposta = null;
     try {
       const o = await r.responder({ pergunta: prova.q, semConsenso: true, semEsperaBoa: true, semRevisao: true });
@@ -472,18 +487,19 @@ function salvarHistorico(relatorio) {
 }
 
 (async () => {
-  const provas = await auditarProvas();
-  const armadilhas = await auditarArmadilhas();
+  const T0=Date.now(); const marca=(n)=>{if(process.env.PROF)console.error(n, Date.now()-T0,'ms');};
+  const provas = await auditarProvas(); marca('provas');
+  const armadilhas = await auditarArmadilhas(); marca('armadilhas');
   const fio = await provarFio(provas, Number((process.argv.find(function (a) { return a.indexOf('--fio=') === 0; }) || '').split('=')[1] || 12));
-  const robusto = await robustez(provas);
-  const aberto = auditarAberto();
+  const robusto = await robustez(provas); marca('robustez');
+  const aberto = auditarAberto(); marca('aberto');
   const provasBanco = JSON.parse(fs.readFileSync(path.join(RAIZ, 'tools', 'provas-do-chat.json'), 'utf8')).provas;
   const armadilhasBanco = JSON.parse(fs.readFileSync(path.join(RAIZ, 'tools', 'armadilhas-do-chat.json'), 'utf8')).armadilhas;
   const cob = cobertura(provasBanco, armadilhasBanco);
   const porCodigo = provas.filter(function (p) { return p.caminho !== 'modelo'; }).length;
   const dependemDoModelo = provas.filter(function (p) { return p.caminho === 'modelo'; });
   const erradas = provas.filter(function (p) { return p.certo === false; });
-  const ranking = ranquear(provas, aberto);
+  const ranking = ranquear(provas, aberto); marca('ranking');
   if (cob.semArmadilha.length) {
     ranking.lacunas.push({
       tipo: 'solucionador-sem-armadilha', dominio: 'cobertura', provas: cob.semArmadilha.length,
@@ -510,7 +526,9 @@ function salvarHistorico(relatorio) {
 
   if (process.argv.includes('--json')) {
     console.log(JSON.stringify(relatorio, null, 1));
-    return;
+    // sai já: temporizadores pendentes de rota mantinham o processo vivo por mais ~8 s sem
+    // nenhuma medição a mais (medido em 31/10/2026). Medir não pode custar espera.
+    process.exit(0);
   }
 
   console.log('== PROVAS (executadas agora, sem rede e sem modelo)');
@@ -678,4 +696,6 @@ function salvarHistorico(relatorio) {
       console.log('✔ sem regressão em relação à rodada anterior registrada');
     }
   }
+  // mesmo motivo do --json: não deixar temporizador pendente segurar o processo
+  process.exit(process.exitCode || 0);
 })();
