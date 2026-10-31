@@ -1524,3 +1524,15 @@ O commit `3c00761` (rodada 106) levou junto um link simbólico `node_modules` cr
 **Testes.** Novos `tools/testes/razao-local.js` (**40/40** casos com resposta conferida à mão, incluindo 11 pedidos que o módulo **não** deve resolver ou que só parecem iguais) e `tools/testes/espera-rota-boa.js` (**4/4**, com dublê de `_chamar`, sem rede). Barreira completa **117/117 com 3 ignorados**; `--verificar` das páginas em sincronia.
 
 **Limites.** O raciocínio local só cobre as formas que ele reconhece — é exato onde atua e silencioso onde não atua, nunca um "chute". A espera pela rota boa troca latência por qualidade: sob pool muito apertado a resposta pode levar até 15 s a mais. Raciocínio aberto (texto, interpretação, código complexo) continua sendo do modelo, com os erros que o modelo tem.
+
+### Rodada 133 — o que continua aberto, medido (31/10/2026)
+
+**Espera pela rota boa: teto de 15 s caiu para 3 s, e só vale quando a alternativa é fraca.** A rodada anterior esperava até 15 s pela rota forte. Agora `_esperarRotaBoa()` só espera quando as rotas fortes estão em descanso curto **e** a única alternativa livre é de classe `leve`; se houver rota média livre, responde na média imediatamente. Teto: `esperaRotaBoa` = 3000 ms. Teste `tools/testes/espera-rota-boa.js` (**6/6**) cobre: espera quando só resta fraco, não espera com média livre, descanso de 5 s não segura a resposta, descanso longo não vira espera, e o desligamento por `semEsperaBoa`.
+
+**Repartição de parágrafo: `parcial` deixou de bloquear formatação.** `padronizarFormato()` recusava repartir frases em parágrafos quando o gerador marcava a resposta como `parcial` — e `parcial` é falta de PARTES, não corte de texto. Medido no banco aberto: uma resposta de 81 palavras e 4 frases voltou com 1 bloco quando o pedido era de 2. Agora só `cortado` bloqueia; o aviso de incompletude continua saindo por `anotarRespostaAberta`, porque a marca `parcial` é preservada no objeto devolvido.
+
+**Revisão de cobertura: implementada, medida e REJEITADA.** As falhas do banco aberto eram omissão de um conceito ("capital", "tratamento", "saúde"). Uma chamada de revisão depois da resposta (reescreve se faltar conceito, responde "OK" se não) foi implementada e medida: **20/24 outra vez, com as falhas em itens diferentes** (#14 parâmetro, #22 painel, #23 dados) e mediana de latência de **14,5 s para 45 s**. Três vezes mais espera por zero ganho medido — o código foi removido e o registro ficou em `roteador-ia.js`.
+
+**Limite que permanece, com número.** Texto aberto continua sendo do modelo. No banco aberto de 24 pedidos a nota fica entre **20/24 e 21/24** e **as falhas trocam de item entre corridas** — é variação de texto, não defeito de forma: `cortados: 0`, e as falhas são de vocabulário exigido pela rubrica. Fato recente (pós-corte de conhecimento do modelo) segue sem fonte viva: a busca viva foi medida na rodada 102 e piorou o resultado, e continua exportada em `bench/`, fora do caminho do produto.
+
+**Testes.** Barreira completa abaixo; `montar-paginas --verificar` em sincronia.

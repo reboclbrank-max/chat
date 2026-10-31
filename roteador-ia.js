@@ -2163,10 +2163,19 @@
     if (!fortes.length) return null;
     var t = agora();
     if (fortes.some(function (r) { return eu.disponivel(r.id); })) return null;   // já tem forte livre
+    /* CUSTO DA ESPERA, medido em 31/10/2026: esperar 15 s pelo retorno da rota forte melhora a
+       qualidade e cobra caro da pessoa. O teto caiu para 3 s e a espera só acontece quando a
+       alternativa que está livre é MODELO FRACO (classe leve/baixa): aí 3 s compram bastante.
+       Se há rota média livre, responder na média agora é melhor que esperar pela forte. */
+    var livres = this.catalogo.filter(function (r) {
+      return !eu.saude[r.id].morta && (!r.chaveLS || eu.lerChave(r.chaveLS)) && eu.disponivel(r.id) && evitar.indexOf(r.id) === -1;
+    });
+    var temAlternativaBoa = livres.some(function (r) { return r.classe !== 'leve'; });
+    if (temAlternativaBoa) return null;
     var ate = Math.min.apply(null, fortes.map(function (r) { return eu._ateDisponivel(r); }).filter(function (x) { return x > t; }));
     if (!isFinite(ate)) return null;
     var espera = ate - t;
-    var teto = Math.min(this.esperaRotaBoa || 15000, this.orcamento / 2);
+    var teto = Math.min(this.esperaRotaBoa || 3000, this.orcamento / 2);
     if (espera <= 0 || espera > teto) return null;
     if (agora() - inicioPedido + espera > this.orcamento) return null;
     this.metricas.esperasBoa = (this.metricas.esperasBoa || 0) + 1;
@@ -2830,6 +2839,17 @@
     return null;
   };
 
+  /* ============ REVISÃO DE COBERTURA — MEDIDA E REJEITADA (31/10/2026) ============
+     O banco aberto da casa (24 pedidos) fechou em 20/24 e as 4 falhas eram omissão de um conceito
+     ("capital" em juros, "tratamento" no caminho da água, "saúde" em dormir bem). Foi implementada
+     uma chamada de revisão depois da resposta pronta: se faltasse conceito, reescrevia; se não,
+     respondia "OK".
+     Resultado medido: **20/24 outra vez** — e as falhas mudaram de item (#14 parâmetro, #22 painel,
+     #23 dados, em vez das anteriores). Ou seja: o texto varia a cada corrida e a rubrica cobra um
+     vocabulário específico; a revisão não ataca isso. Custo medido: mediana de 14,5 s para 45 s.
+     Conclusão: 3× mais espera por zero ganho medido. O código foi removido e o parágrafo abaixo
+     registra o que sobra de conserto real nesta área (repartição de parágrafo). */
+
   Roteador.prototype.responder = async function (pedidoBruto) {
     var pedido = typeof pedidoBruto === 'object' && pedidoBruto ? pedidoBruto : { pergunta: pedidoBruto };
     var r = await this._responderNucleo(pedido);
@@ -3023,7 +3043,12 @@
         //    blocos e um aviso a menos justamente quando metade da resposta não existiu;
         //  • texto abaixo do piso de conteúdo (90% do alvo de palavras) não vira "formatado":
         //    repartir 8 palavras em dois parágrafos só maquia uma resposta curta.
-        if (cand.parcial || cand.cortado) return cand;
+        /* MEDIDO (31/10/2026, banco aberto): uma resposta com 81 palavras e 4 frases voltou num
+           bloco só porque o gerador a marcou `parcial` — e `parcial` é falta de PARTES, não corte
+           de texto. Repartir frases existentes é formato, não conteúdo, e o aviso de
+           incompletude continua saindo por `anotarRespostaAberta`. Corte de texto (`cortado`)
+           segue bloqueando: aí não existe parágrafo para repartir. */
+        if (cand.cortado) return cand;
         var nPalavras = String(cand.texto).trim().split(/\s+/).filter(Boolean).length;
         if (nPalavras < Math.floor((ex.minPalavras || 0) * 0.9)) return cand;
         var t = ajustarParagrafos(cand.texto, ex.paragrafos);

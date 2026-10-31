@@ -1,0 +1,2354 @@
+{
+ "sum": {
+  "modo": "depois",
+  "total": 24,
+  "totalPrevisto": 24,
+  "completo": true,
+  "passaram": 20,
+  "pct": 83.3,
+  "medianaPalavras": 157,
+  "cortados": 0,
+  "curtos": 0,
+  "faltouFato": 3,
+  "medianaMs": 45255.5
+ },
+ "res": [
+  {
+   "id": 1,
+   "q": "Explique em dois parágrafos o que é fotossíntese.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 186,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 19528,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:49:23.330Z",
+     "msParede": 8629,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:49:22.129Z",
+     "msParede": 12710,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:49:34.841Z",
+     "msParede": 6796,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "A fotossíntese é um processo biológico realizado por organismos autótrofos, como plantas, algas e algumas bactérias, que converte a energia luminosa em energia química armazenada em moléculas orgânicas. Esse mecanismo ocorre principalmente nas folhas, dentro de estruturas chamadas cloroplastos, onde a clorofila capta a luz solar. A fotossíntese é dividida em duas etapas principais: a fase luminosa, que acontece nos tilacóides e produz ATP e NADPH, e a fase escura ou ciclo de Calvin, que ocorre no estroma e utiliza esses compostos para fixar o dióxido de carbono, transformando-o em glicose.\n\nPara que a fotossíntese se processe, são necessários luz solar, água e dióxido de carbono. A água é absorvida pelas raízes e transportada até as folhas, onde é quebrada em oxigênio, prótons e elétrons durante a fotólise. O dióxido de carbono entra pelos estômatos e, com a ajuda do ATP e NADPH produzidos na fase luminosa, é convertido em glicose. O oxigênio liberado é expirado para a atmosfera. Esse processo é essencial para a vida na Terra, pois fornece oxigênio e serve como base da cadeia alimentar, ao produzir compostos orgânicos que alimentam outros organismos.",
+   "trecho": "A fotossíntese é um processo biológico realizado por organismos autótrofos, como plantas, algas e algumas bactérias, que converte a energia luminosa em energia química armazenada em moléculas orgânica",
+   "fim": "deia alimentar, ao produzir compostos orgânicos que alimentam outros organismos."
+  },
+  {
+   "id": 2,
+   "q": "Explique em dois parágrafos a diferença entre vírus e bactéria.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 177,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 21158,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:49:24.528Z",
+     "msParede": 9178,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:49:25.728Z",
+     "msParede": 9682,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:49:35.412Z",
+     "msParede": 7868,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Vírus e bactérias são agentes infecciosos, mas possuem estruturas e formas de ação distintas. Um vírus é muito menor que uma bactéria e não possui estrutura celular; é composto apenas por material genético (DNA ou RNA) envolto por uma cápside proteica, podendo ter uma camada lipídica externa. Para se replicar, o vírus precisa infectar uma célula hospedeira, inserindo seu material genético e utilizando as maquinarias celulares para produzir novas partículas virais, causando danos à célula. Por isso, vírus só podem ser combatidos com medicamentos específicos ou vacinas, já que antibióticos são ineficazes contra eles.\n\nJá as bactérias são micro-organismos unicelulares completos, com estrutura celular própria, parede celular e membranas. Elas podem se reproduzir por conta própria, tanto dentro quanto fora de organismos, e muitas são benéficas, como as que habitam o intestino humano. No entanto, algumas bactérias patogênicas causam doenças como pneumonia ou tuberculose. Diferentemente dos vírus, bactérias podem ser eliminadas com antibióticos, que atacam processos específicos de sua estrutura ou reprodução. O uso inadequado de antibióticos pode levar à resistência bacteriana, tornando o tratamento mais difícil.",
+   "trecho": "Vírus e bactérias são agentes infecciosos, mas possuem estruturas e formas de ação distintas. Um vírus é muito menor que uma bactéria e não possui estrutura celular; é composto apenas por material gen",
+   "fim": "ióticos pode levar à resistência bacteriana, tornando o tratamento mais difícil."
+  },
+  {
+   "id": 3,
+   "q": "Resuma em três parágrafos o que foi a Revolução Industrial.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 336,
+   "paragrafos": 3,
+   "itens": 0,
+   "erro": null,
+   "ms": 119798,
+   "rota": "texto-longo",
+   "tentativasSelecionadas": 6,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:49:26.928Z",
+     "msParede": 384,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:49:27.314Z",
+     "msParede": 9007,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:49:28.131Z",
+     "msParede": 10886,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:49:39.018Z",
+     "msParede": 75,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:49:36.322Z",
+     "msParede": 16051,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:49:52.375Z",
+     "msParede": 276,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:49:52.676Z",
+     "msParede": 237,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:49:52.913Z",
+     "msParede": 587,
+     "resultado": "rate",
+     "retryAfterSegundos": 7,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:50:01.001Z",
+     "msParede": 261,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:49:39.093Z",
+     "msParede": 30003,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:50:01.262Z",
+     "msParede": 12240,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:50:09.096Z",
+     "msParede": 13415,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:50:13.502Z",
+     "msParede": 12286,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:50:27.813Z",
+     "msParede": 8311,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:50:36.124Z",
+     "msParede": 9234,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:50:25.789Z",
+     "msParede": 21317,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq",
+     "inicio": "2026-10-31T11:50:47.106Z",
+     "msParede": 23908,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:51:11.014Z",
+     "msParede": 6001,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "gigante2",
+     "inicio": "2026-10-31T11:51:17.015Z",
+     "msParede": 4905,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Para resuma a Revolução Industrial, é preciso reconhecer que ela começou no final do século XVIII na Inglaterra, quando a mecanização das fábricas substituiu o trabalho manual. A introdução da máquina a vapor, por exemplo, aumentou a produção de tecidos e de ferros, transformando a economia e a sociedade. Esse processo de industrialização acelerou a urbanização, pois milhares de trabalhadores migraram das zonas rurais para as cidades em busca de emprego nas novas fábricas. Assim, a Revolução Industrial marcou o início de uma era de crescimento tecnológico e de mudanças sociais profundas.\n\nPara resumir a revolução industrial, é preciso destacar tambas as transformações tecnológicas quanto as mudanças no modo de vida das pessoas. A expansão das fábricas exigiu grande quantidade de mão de obra, o que intensificou a migração rural e ampliou a demanda por habitação e serviços nas cidades. Nesse contexto, surgiram novas classes sociais, como a burguesia industrial e a classe operária, que passaram a disputar condições de trabalho e direitos. Além disante, a industrialização estimulou a produção em escala, reduzindo custos e tornando bens acessíveis ao consumidor. Assim, a revolução industrial não apenas mudou a forma de produzir, mas também redefiniu as relações humanas e a organização da sociedade.\n\nPara resumir a revolução industrial, é preciso reconhecer que suas consequências ultrapassaram a esfera econômica, influenciando a política, a cultura e a consciência coletiva. A expansão da produção industrial exigiu a padronização de processos e a criação de sistemas de transporte eficientes, como ferrovias e navios a vapor, que conectaram regiões e facilitaram o comérccio internacional. Paralelamente, a revolução industrial também trouxe impactos ambientais significativos, como a poluição de rios e o aumento do consumo de recursos naturais, questões que ainda hoje demandam atenção. Apesar dos avanços tecnológicos, a industrialização revelou profundas desigualdades, tanto entre nações quanto dentro das sociedades, ampliando a necessidade de movimentos sociais e reformas trabalhistas. Assim, a revolução industrial se destaca como um marco que transformou a humanidade, mas cujos legados exigem reflexão contínua sobre desenvolvimento sustentável e justiça social.",
+   "trecho": "Para resuma a Revolução Industrial, é preciso reconhecer que ela começou no final do século XVIII na Inglaterra, quando a mecanização das fábricas substituiu o trabalho manual. A introdução da máquina",
+   "fim": "dos exigem reflexão contínua sobre desenvolvimento sustentável e justiça social."
+  },
+  {
+   "id": 4,
+   "q": "Escreva um e-mail formal pedindo orçamento de 20 cadeiras para um escritório. Máximo 200 palavras.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 75,
+   "paragrafos": 13,
+   "itens": 4,
+   "nota": 6,
+   "erro": null,
+   "ms": 57478,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:51:23.171Z",
+     "msParede": 303,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:51:21.937Z",
+     "msParede": 5326,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:51:23.474Z",
+     "msParede": 4478,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:51:28.244Z",
+     "msParede": 21317,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq397",
+     "inicio": "2026-10-31T11:51:49.562Z",
+     "msParede": 22001,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq9",
+     "inicio": "2026-10-31T11:52:11.563Z",
+     "msParede": 4540,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T11:52:16.103Z",
+     "msParede": 3297,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Assunto: Solicitação de orçamento para 20 cadeiras\n\nPrezado(a) Senhor(a),\n\nVenho por meio desta solicitar orçamento para aquisição de 20 cadeiras para nosso escritório.\n\nEspecificamos as seguintes necessidades:\n- Cadeiras ergonômicas com ajuste de altura;\n- Encosto alto para sustentação lombar;\n- Peso suportado mínimo de 120kg;\n- Garantia mínima de 5 anos.\n\nRogo enviar proposta com valores unitários e total, prazos de entrega e condições de pagamento.\n\nAtenciosamente,\nCarlos Silva\nDiretor Comercial\nTech Solutions Ltda.",
+   "trecho": "Assunto: Solicitação de orçamento para 20 cadeiras\n\nPrezado(a) Senhor(a),\n\nVenho por meio desta solicitar orçamento para aquisição de 20 cadeiras para nosso escritório.\n\nEspecificamos as seguintes nec",
+   "fim": " pagamento.\n\nAtenciosamente,\nCarlos Silva\nDiretor Comercial\nTech Solutions Ltda."
+  },
+  {
+   "id": 5,
+   "q": "Explique em três passos como fazer um bolo simples.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 74,
+   "paragrafos": 3,
+   "itens": 3,
+   "erro": null,
+   "ms": 38447,
+   "rota": "lista-longa",
+   "tentativasSelecionadas": 8,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:51:25.537Z",
+     "msParede": 858,
+     "resultado": "rate",
+     "retryAfterSegundos": 34,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:51:24.338Z",
+     "msParede": 4896,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:51:29.234Z",
+     "msParede": 73,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:51:26.395Z",
+     "msParede": 4300,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "ovhq",
+     "inicio": "2026-10-31T11:51:29.307Z",
+     "msParede": 6986,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq",
+     "inicio": "2026-10-31T11:51:30.695Z",
+     "msParede": 6804,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T11:51:36.293Z",
+     "msParede": 7487,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T11:51:37.499Z",
+     "msParede": 7319,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq38",
+     "inicio": "2026-10-31T11:51:43.780Z",
+     "msParede": 2901,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq38",
+     "inicio": "2026-10-31T11:51:44.819Z",
+     "msParede": 4538,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq9",
+     "inicio": "2026-10-31T11:51:46.682Z",
+     "msParede": 8241,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T11:51:54.923Z",
+     "msParede": 2266,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhq9",
+     "inicio": "2026-10-31T11:51:49.357Z",
+     "msParede": 8062,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T11:51:57.490Z",
+     "msParede": 161,
+     "resultado": "rate",
+     "retryAfterSegundos": 3,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T11:51:57.651Z",
+     "msParede": 162,
+     "resultado": "rate",
+     "retryAfterSegundos": 3,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:51:57.813Z",
+     "msParede": 279,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "glm",
+     "inicio": "2026-10-31T11:51:58.092Z",
+     "msParede": 66,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T11:51:57.190Z",
+     "msParede": 2095,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhq397",
+     "inicio": "2026-10-31T11:51:59.286Z",
+     "msParede": 166,
+     "resultado": "rate",
+     "retryAfterSegundos": 1,
+     "fim": null
+    },
+    {
+     "rota": "ovhq38",
+     "inicio": "2026-10-31T11:51:59.452Z",
+     "msParede": 155,
+     "resultado": "rate",
+     "retryAfterSegundos": 1,
+     "fim": null
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T11:51:59.607Z",
+     "msParede": 771,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "1. Em uma tigela grande, bata 2 ovos, 1 xícara de açúcar e 1 colher de chá de essência de baunilha até obter mistura homogênea e levemente espumosa.\n2. Adicione 2 xícaras de farinha de trigo, 1 colher de sopa de fermento e misture bem até obter uma massa lisa.\n3. Asse a massa em forno pré-aquecido a 180 graus por cerca de 30 minutos ou até que o bolo esteja firme e dourado.",
+   "trecho": "1. Em uma tigela grande, bata 2 ovos, 1 xícara de açúcar e 1 colher de chá de essência de baunilha até obter mistura homogênea e levemente espumosa.\n2. Adicione 2 xícaras de farinha de trigo, 1 colher",
+   "fim": "do a 180 graus por cerca de 30 minutos ou até que o bolo esteja firme e dourado."
+  },
+  {
+   "id": 6,
+   "q": "Escreva um parágrafo argumentando a favor da reciclagem.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 113,
+   "paragrafos": 1,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 54972,
+   "rota": "ultra",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:51:27.937Z",
+     "msParede": 10222,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:51:26.737Z",
+     "msParede": 18439,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhq397",
+     "inicio": "2026-10-31T11:51:45.177Z",
+     "msParede": 22001,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq38",
+     "inicio": "2026-10-31T11:52:07.178Z",
+     "msParede": 2950,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq9",
+     "inicio": "2026-10-31T11:52:10.128Z",
+     "msParede": 6776,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    }
+   ],
+   "texto": "A reciclagem transforma resíduos em matéria-prima, reduzindo a extração de recursos naturais e diminuindo a emissão de gases de efeito estufa associados à produção de novos materiais; ao desviar plásticos, papéis, metais e vidros dos aterros, ela prolonga a vida útil desses locais e evita a contaminação do solo e da água, protegendo ecossistemas e a saúde pública; além disso, a indústria de reciclagem gera empregos locais e estimula a inovação tecnológica, criando cadeias de valor circulares que tornam a economia mais resiliente; cada tonelada reciclada economiza energia suficiente para abastecer uma casa por meses, o que demonstra que a prática não é apenas ambientalmente necessária, mas também economicamente vantajosa para a sociedade.",
+   "trecho": "A reciclagem transforma resíduos em matéria-prima, reduzindo a extração de recursos naturais e diminuindo a emissão de gases de efeito estufa associados à produção de novos materiais; ao desviar plást",
+   "fim": "ambientalmente necessária, mas também economicamente vantajosa para a sociedade."
+  },
+  {
+   "id": 7,
+   "q": "Explique o ciclo da água em dois parágrafos.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 152,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 53177,
+   "rota": "vlqwen",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:52:19.703Z",
+     "msParede": 10584,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:52:19.404Z",
+     "msParede": 12597,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "glm",
+     "inicio": "2026-10-31T11:52:32.001Z",
+     "msParede": 113,
+     "resultado": "morto",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T11:52:32.114Z",
+     "msParede": 2400,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T11:52:34.514Z",
+     "msParede": 156,
+     "resultado": "rate",
+     "retryAfterSegundos": 26,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:52:38.507Z",
+     "msParede": 258,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T11:52:38.765Z",
+     "msParede": 14116,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:52:52.883Z",
+     "msParede": 11790,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq397",
+     "inicio": "2026-10-31T11:53:04.673Z",
+     "msParede": 7198,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T11:53:11.871Z",
+     "msParede": 707,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "O ciclo da água, também conhecido como ciclo hidrológico, é um processo contínuo que move a água pela Terra e atmosfera. Inicia-se com a evaporação, onde o calor solar transforma água de oceanos, rios e lagos em vapor. Este vapor sobe e esfria na atmosfera, condensando-se em nuvens. Quando as nuvens ficam saturadas, ocorre a precipitação, que pode ser em forma de chuva, neve ou granizo, dependendo da temperatura. A água cai sobre a superfície terrestre, infiltrando-se no solo ou fluindo para corpos d'água. \n\nA água que infiltra-se no solo reabastece aquíferos subterrâneos, enquanto a que flui na superfície alimenta rios e lagos, eventualmente retornando aos oceanos. Este processo é crucial para manter os ecossistemas e abastecer recursos hídricos. Além disso, a transpiração das plantas contribui para a evaporação, completando o ciclo. Assim, o ciclo da água é fundamental para a vida na Terra, regulando clima e distribuindo água de maneira constante.",
+   "trecho": "O ciclo da água, também conhecido como ciclo hidrológico, é um processo contínuo que move a água pela Terra e atmosfera. Inicia-se com a evaporação, onde o calor solar transforma água de oceanos, rios",
+   "fim": " para a vida na Terra, regulando clima e distribuindo água de maneira constante."
+  },
+  {
+   "id": 8,
+   "q": "Explique o que é inflação em dois parágrafos.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 162,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 33673,
+   "rota": "ovhnemo",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:52:20.004Z",
+     "msParede": 152,
+     "resultado": "rate",
+     "retryAfterSegundos": 40,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:52:20.157Z",
+     "msParede": 72,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "g4super",
+     "inicio": "2026-10-31T11:52:20.304Z",
+     "msParede": 30,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T11:52:20.530Z",
+     "msParede": 444,
+     "resultado": "rate",
+     "retryAfterSegundos": 40,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:52:20.974Z",
+     "msParede": 264,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T11:52:20.230Z",
+     "msParede": 6106,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:52:23.975Z",
+     "msParede": 4006,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhq9",
+     "inicio": "2026-10-31T11:52:27.982Z",
+     "msParede": 158,
+     "resultado": "rate",
+     "retryAfterSegundos": 32,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:52:29.739Z",
+     "msParede": 268,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T11:52:30.007Z",
+     "msParede": 5753,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhq397",
+     "inicio": "2026-10-31T11:52:35.762Z",
+     "msParede": 15445,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T11:52:51.207Z",
+     "msParede": 1866,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "A inflação é um termo econômico que se refere à elevação generalizada e persistente dos preços de bens e serviços em uma economia. Ela é medida pela variação média dos preços de uma cesta de produtos e serviços, conhecida como índice de preços ao consumidor (IPC). Quando a inflação aumenta, o poder de compra da moeda diminui, ou seja, com a mesma quantidade de dinheiro, as pessoas podem comprar menos produtos e serviços do que antes.\n\nA inflação pode ser causada por vários fatores, como aumento da oferta de dinheiro, aumento da demanda por produtos e serviços, aumento dos custos de produção, desequilíbrio na balança de pagamentos, entre outros. Ela pode ter efeitos negativos na economia, como a diminuição do poder de compra das pessoas, a incerteza sobre os preços futuros e a redução da poupança e do investimento. Por isso, os bancos centrais costumam estabelecer metas de inflação para manter a estabilidade dos preços e garantir o funcionamento adequado da economia.",
+   "trecho": "A inflação é um termo econômico que se refere à elevação generalizada e persistente dos preços de bens e serviços em uma economia. Ela é medida pela variação média dos preços de uma cesta de produtos ",
+   "fim": "anter a estabilidade dos preços e garantir o funcionamento adequado da economia."
+  },
+  {
+   "id": 9,
+   "q": "Explique a diferença entre juros simples e juros compostos em dois parágrafos.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 197,
+   "paragrafos": 2,
+   "itens": 0,
+   "erro": null,
+   "ms": 78708,
+   "rota": "texto-longo",
+   "tentativasSelecionadas": 2,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T11:52:20.830Z",
+     "msParede": 443,
+     "resultado": "rate",
+     "retryAfterSegundos": 39,
+     "fim": null
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:52:25.175Z",
+     "msParede": 335,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq38",
+     "inicio": "2026-10-31T11:52:26.376Z",
+     "msParede": 158,
+     "resultado": "rate",
+     "retryAfterSegundos": 34,
+     "fim": null
+    },
+    {
+     "rota": "ovhq38",
+     "inicio": "2026-10-31T11:52:25.510Z",
+     "msParede": 45000,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:53:10.511Z",
+     "msParede": 16756,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:53:27.267Z",
+     "msParede": 6084,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:53:33.351Z",
+     "msParede": 4758,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "A principal diferença entre juros simples e compostos está na forma como o rendimento é calculado ao longo do tempo. Em juros simples, o cálculo ocorre apenas sobre o valor inicial aplicado, mantendo-se constante em cada período. Por exemplo, ao aplicar R$ 1.000 com juros simples de 5% ao mês, o rendimento será de R$ 50 a cada mês, totalizando R$ 1.150 ao final de três meses. Já nos juros compostos, o valor generado é reinvestido, fazendo com que o montante base para cálculo cresça progressivamente. Assim, a mesma aplicação de R$ 1.000 com juros compostos de 5% ao mês renderá R$ 1.157,08 em três meses, demonstrando o efeito de capitalização crescente.\n\nEssa variação ocorre porque, nos juros compostos, cada período passa a render sobre o montante anterior, ampliando o patrimônio de origem. A diferença entre juros simples e compostos se torna mais acentuada quanto maior o tempo de aplicação e a taxa aplicada. Em situações de longo prazo, como investimentos ou empréstimos, os juros compostos podem duplicar ou triplicar o valor devido, enquanto os juros simples mantêm crescimento linear. Por isso, entender essa diferença entre juros simples e compostos é essencial para tomar decisões financeiras embocadas.",
+   "trecho": "A principal diferença entre juros simples e compostos está na forma como o rendimento é calculado ao longo do tempo. Em juros simples, o cálculo ocorre apenas sobre o valor inicial aplicado, mantendo-",
+   "fim": "juros simples e compostos é essencial para tomar decisões financeiras embocadas."
+  },
+  {
+   "id": 10,
+   "q": "Escreva uma lista com 5 dicas práticas para economizar água em casa.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 83,
+   "paragrafos": 5,
+   "itens": 5,
+   "nota": 9,
+   "erro": null,
+   "ms": 25564,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:53:38.112Z",
+     "msParede": 8019,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:53:39.313Z",
+     "msParede": 7420,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:53:46.734Z",
+     "msParede": 16940,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "1. Instale torneiras e chuveiros de baixa vazão para reduzir o consumo sem perder a pressão.\n2. Reaproveite a água da lavagem de vegetais e legumes para regar plantas ou limpar superfícies.\n3. Lave a louça e a roupa apenas quando a máquina estiver cheia, evitando ciclos incompletos.\n4. Desligue a torneira enquanto escova os dentes, faz a barba ou lava os cabelos.\n5. Armazene água em garrafas ou recipientes na geladeira para beber, em vez de deixar o registro correndo até esfriar.",
+   "trecho": "1. Instale torneiras e chuveiros de baixa vazão para reduzir o consumo sem perder a pressão.\n2. Reaproveite a água da lavagem de vegetais e legumes para regar plantas ou limpar superfícies.\n3. Lave a ",
+   "fim": "entes na geladeira para beber, em vez de deixar o registro correndo até esfriar."
+  },
+  {
+   "id": 11,
+   "q": "Explique por que o céu é azul em dois parágrafos.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 82,
+   "paragrafos": 2,
+   "itens": 0,
+   "erro": null,
+   "ms": 35081,
+   "rota": "texto-longo",
+   "tentativasSelecionadas": 4,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:53:40.525Z",
+     "msParede": 357,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:53:41.712Z",
+     "msParede": 579,
+     "resultado": "rate",
+     "retryAfterSegundos": 18,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:53:40.883Z",
+     "msParede": 7961,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:53:48.844Z",
+     "msParede": 67,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:53:48.911Z",
+     "msParede": 277,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:53:42.291Z",
+     "msParede": 14881,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:53:57.688Z",
+     "msParede": 270,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T11:53:57.958Z",
+     "msParede": 9088,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "g4super",
+     "inicio": "2026-10-31T11:54:07.046Z",
+     "msParede": 83,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T11:53:58.258Z",
+     "msParede": 9085,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq397",
+     "inicio": "2026-10-31T11:54:07.347Z",
+     "msParede": 2978,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T11:54:10.325Z",
+     "msParede": 404,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:54:10.729Z",
+     "msParede": 2462,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    }
+   ],
+   "texto": "Quando a luz solar entra na atmosfera, ela encontra moléculas de ar e pequenas partículas que espalham a luz em todas as direções. Esse fenômeno, chamado espalhamento Rayleigh, é mais eficaz para comprimentos de onda curtos, como o azul e o violeta.\n\nComo o azul tem mais energia, ele é dispersado em maior quantidade, preenchendo o céu com essa cor. Assim, enquanto a luz vermelha e amarela passa quase sem ser desviada, o azul se espalha e domina a visão do horizonte.",
+   "trecho": "Quando a luz solar entra na atmosfera, ela encontra moléculas de ar e pequenas partículas que espalham a luz em todas as direções. Esse fenômeno, chamado espalhamento Rayleigh, é mais eficaz para comp",
+   "fim": "a passa quase sem ser desviada, o azul se espalha e domina a visão do horizonte."
+  },
+  {
+   "id": 12,
+   "q": "Resuma em três parágrafos a Segunda Guerra Mundial.",
+   "ok": false,
+   "falhas": [
+    "parágrafos (1<3)"
+   ],
+   "palavras": 104,
+   "paragrafos": 1,
+   "itens": 0,
+   "erro": null,
+   "ms": 62525,
+   "rota": "texto-longo",
+   "tentativasSelecionadas": 3,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": "Restrições de formato não atendidas: 1 de 3 parágrafos. Confira ou tente novamente.",
+   "incompleto": true,
+   "chamadas": [
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:53:42.913Z",
+     "msParede": 22573,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:53:44.112Z",
+     "msParede": 25074,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:54:09.187Z",
+     "msParede": 456,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:54:09.643Z",
+     "msParede": 253,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T11:54:05.486Z",
+     "msParede": 8159,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:54:18.397Z",
+     "msParede": 276,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:54:18.974Z",
+     "msParede": 438,
+     "resultado": "rate",
+     "retryAfterSegundos": 41,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:54:18.673Z",
+     "msParede": 17701,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:54:36.375Z",
+     "msParede": 71,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq397",
+     "inicio": "2026-10-31T11:54:36.446Z",
+     "msParede": 3263,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T11:54:39.709Z",
+     "msParede": 926,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Para resuma a Segunda Guerra Mundial, é preciso reconhecer que o conflito começou em 1939, quando a Alemanha nazista invadiu a Polônia, provocando a declaração de guerra pela Grã-Bretanha e França. Esse confronto rapidamente se transformou em uma guerra mundial, envolvendo nações de todos os continentes e espalhando a violência por Europa, Ásia, África e Oceano Pacífico. A guerra foi marcada por batalhas decisivas, como a Batalha de Stalingrado e o desembarque em Normandia, que viram a aliança dos Aliados ganhar terreno. O conflito terminou em 1945, com a rendição incondicional da Alemanha e do Japão, deixando um legado de destruição e mudança geopolítica.",
+   "trecho": "Para resuma a Segunda Guerra Mundial, é preciso reconhecer que o conflito começou em 1939, quando a Alemanha nazista invadiu a Polônia, provocando a declaração de guerra pela Grã-Bretanha e França. Es",
+   "fim": " da Alemanha e do Japão, deixando um legado de destruição e mudança geopolítica."
+  },
+  {
+   "id": 13,
+   "q": "Explique como funciona uma vacina em dois parágrafos.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 207,
+   "paragrafos": 2,
+   "itens": 0,
+   "erro": null,
+   "ms": 41616,
+   "rota": "texto-longo",
+   "tentativasSelecionadas": 2,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:54:40.639Z",
+     "msParede": 63,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "g4super",
+     "inicio": "2026-10-31T11:54:40.703Z",
+     "msParede": 112,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T11:54:40.815Z",
+     "msParede": 167,
+     "resultado": "rate",
+     "retryAfterSegundos": 20,
+     "fim": null
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:54:40.940Z",
+     "msParede": 4459,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:54:42.140Z",
+     "msParede": 4543,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:54:49.341Z",
+     "msParede": 272,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:54:49.613Z",
+     "msParede": 277,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:54:48.142Z",
+     "msParede": 6662,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T11:54:59.582Z",
+     "msParede": 440,
+     "resultado": "rate",
+     "retryAfterSegundos": 1,
+     "fim": null
+    },
+    {
+     "rota": "ovhq397",
+     "inicio": "2026-10-31T11:55:00.024Z",
+     "msParede": 8312,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq",
+     "inicio": "2026-10-31T11:55:08.336Z",
+     "msParede": 7278,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T11:55:15.614Z",
+     "msParede": 6639,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Uma vacina funciona introduzindo no organismo uma substância preparada, como vírus inativados, proteínas ou fragmentos, que não causa a doença, mas ativa o sistema imunológico. Ao reconhecer esse agente estranho, o corpo produz anticorpos e células de memória, criando imunidade. Por exemplo, a vacina contra a gripe contém proteínas do vírus que permitem ao sistema imunológico aprender a combater a infecção real. Assim, quando a pessoa entra em contato com o patógeno, o corpo reage rapidamente, evitando ou reduzindo a doença.\n\nDepois que o sistema imunológico aprende a reconhecer o agente, a vacina mantém a proteção por um período que varia de acordo com o tipo de substância e com a resposta de cada pessoa. Alguns reforços são necessários porque a imunidade pode diminuir ao longo do tempo, e é nesse momento que a vacina é aplicada novamente para reforçar a memória imunológica. A eficácia de uma vacina depende também de fatores como idade, estado imunológico e características genéticas, o que explica por que nem todos respondem igualmente à mesma imunização. Estudos clínicos testam a vacina em grandes grupos antes da liberação para garantir sua segurança e eficácia. Assim, a vacina funciona como uma forma de preparar o corpo para combater futuras ameaças sem causar a doença.",
+   "trecho": "Uma vacina funciona introduzindo no organismo uma substância preparada, como vírus inativados, proteínas ou fragmentos, que não causa a doença, mas ativa o sistema imunológico. Ao reconhecer esse agen",
+   "fim": "uma forma de preparar o corpo para combater futuras ameaças sem causar a doença."
+  },
+  {
+   "id": 14,
+   "q": "Explique o que é uma função em programação para quem nunca programou, em dois parágrafos.",
+   "ok": false,
+   "falhas": [
+    "falta fato #2 (par[âa]metro)"
+   ],
+   "palavras": 163,
+   "paragrafos": 2,
+   "itens": 0,
+   "erro": null,
+   "ms": 54636,
+   "rota": "texto-longo",
+   "tentativasSelecionadas": 2,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:54:44.540Z",
+     "msParede": 4377,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:54:43.340Z",
+     "msParede": 8831,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T11:54:50.541Z",
+     "msParede": 3532,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T11:54:59.281Z",
+     "msParede": 580,
+     "resultado": "rate",
+     "retryAfterSegundos": 1,
+     "fim": null
+    },
+    {
+     "rota": "ovhq397",
+     "inicio": "2026-10-31T11:54:59.862Z",
+     "msParede": 22001,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq",
+     "inicio": "2026-10-31T11:55:21.863Z",
+     "msParede": 6645,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T11:55:28.508Z",
+     "msParede": 6766,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Uma função em programação é um bloco de instruções que realiza uma tarefa específica e pode ser reutilizado ao longo do código. Se você nunca programou, pense nela como uma receita de culinária: você segue passo a passo para obter um resultado, como misturar ingredientes e assar um bolo. Na programação, essa \"receita\" é escrita uma vez e pode ser chamada quantas vezes for necessário, evitando repetir a mesma sequência de comandos. Por exemplo, uma função chamada \"saudacao\" pode receber um nome e exibir uma mensagem de boas-vindas, facilitando a organização e a manutenção do software.\n\nQuando alguém nunca programou, pode ser difícil entender como uma função funciona na prática, mas é essencial para a programação. Uma função pode ser usada em diferentes partes do código, tornando a programação mais eficiente e reduzindo a quantidade de código que precisa ser escrito. Isso ajuda a manter o software organizado e fácil de entender, o que é fundamental para quem está começando a aprender programação.",
+   "trecho": "Uma função em programação é um bloco de instruções que realiza uma tarefa específica e pode ser reutilizado ao longo do código. Se você nunca programou, pense nela como uma receita de culinária: você ",
+   "fim": "e entender, o que é fundamental para quem está começando a aprender programação."
+  },
+  {
+   "id": 15,
+   "q": "Explique o que é a LGPD em dois parágrafos.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 169,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 46128,
+   "rota": "vlqwen",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:54:46.940Z",
+     "msParede": 4257,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T11:54:51.197Z",
+     "msParede": 591,
+     "resultado": "rate",
+     "retryAfterSegundos": 9,
+     "fim": null
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:54:45.740Z",
+     "msParede": 6252,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:54:58.390Z",
+     "msParede": 290,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T11:54:58.681Z",
+     "msParede": 10763,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T11:54:58.982Z",
+     "msParede": 11042,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhq397",
+     "inicio": "2026-10-31T11:55:10.026Z",
+     "msParede": 160,
+     "resultado": "rate",
+     "retryAfterSegundos": 50,
+     "fim": null
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T11:55:10.186Z",
+     "msParede": 5193,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T11:55:15.379Z",
+     "msParede": 11386,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    }
+   ],
+   "texto": "A Lei Geral de Proteção de Dados (LGPD) é uma legislação brasileira que entrou em vigor em setembro de 2020, visando proteger os dados pessoais dos cidadãos. Ela estabelece regras claras sobre como empresas e organizações devem coletar, armazenar, tratar e compartilhar informações pessoais. A LGPD aplica-se a qualquer operação que envolva dados pessoais, independentemente da tecnologia utilizada, e estende sua jurisdição a empresas estrangeiras que ofereçam produtos ou serviços para o mercado brasileiro. A lei prevê penalidades para quem não cumprir suas normas, incluindo multas que podem chegar a 2% do faturamento da empresa.\n\nPara garantir conformidade com a LGPD, as empresas devem implementar medidas de segurança adequadas, nomear um encarregado de dados e fornecer transparência aos titulares dos dados sobre como seus dados são usados. Além disso, os indivíduos têm direitos específicos, como acesso, retificação e exclusão de seus dados pessoais. A LGPD busca equilibrar a proteção dos dados pessoais com a necessidade de inovação e desenvolvimento econômico, incentivando práticas éticas e responsáveis no tratamento de dados.",
+   "trecho": "A Lei Geral de Proteção de Dados (LGPD) é uma legislação brasileira que entrou em vigor em setembro de 2020, visando proteger os dados pessoais dos cidadãos. Ela estabelece regras claras sobre como em",
+   "fim": "o econômico, incentivando práticas éticas e responsáveis no tratamento de dados."
+  },
+  {
+   "id": 16,
+   "q": "Descreva em dois parágrafos o caminho da água da chuva até a torneira de casa.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 175,
+   "paragrafos": 2,
+   "itens": 0,
+   "erro": null,
+   "ms": 91049,
+   "rota": "texto-longo",
+   "tentativasSelecionadas": 4,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:55:35.289Z",
+     "msParede": 11329,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "g4super",
+     "inicio": "2026-10-31T11:55:46.618Z",
+     "msParede": 31,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq38",
+     "inicio": "2026-10-31T11:55:46.649Z",
+     "msParede": 156,
+     "resultado": "rate",
+     "retryAfterSegundos": 14,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:55:35.588Z",
+     "msParede": 11329,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:55:52.024Z",
+     "msParede": 5063,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:55:57.087Z",
+     "msParede": 4520,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhq9",
+     "inicio": "2026-10-31T11:55:46.917Z",
+     "msParede": 22652,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:56:09.569Z",
+     "msParede": 8440,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:56:18.009Z",
+     "msParede": 6132,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "gigante2",
+     "inicio": "2026-10-31T11:56:24.142Z",
+     "msParede": 12141,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "kilolight",
+     "inicio": "2026-10-31T11:56:36.283Z",
+     "msParede": 19713,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:56:55.996Z",
+     "msParede": 10329,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    }
+   ],
+   "texto": "Quando a chuva cai sobre o telhado de uma casa, a água escorre pelos canaletos e é direcionada para as sarjetas, iniciando o caminho que a separa do solo. Essa água então percorre tubulações subterrâneas, passando por válvulas de retenção e filtros que retêm resíduos maiores, antes de chegar à rede de distribuição urbana. Ao abrir a torneira no lavatório, o consumidor recebe água que, após esse longo percurso, está pronta para o uso doméstico.\n\nApós ser coletada e filtrada, a água segue para estações de tratamento onde passa por processos químicos e físicos que eliminam microrganismos e poluentes, garantindo sua potabilidade antes de entrar na rede de distribuição. Ao longo do caminho, sensores monitoram a qualidade em tempo real, ajustando a dosagem de cloro ou outros produtos químicos conforme necessário. Quando a torneira é aberta, a água chega ao consumidor final, mas seu ciclo não termina ali: a água usada escorre pelas sarjetas e, após passar por sistemas de esgoto, retorna ao meio ambiente, pronta para ser evaporada e, eventualmente, transformada em nova chuva.",
+   "trecho": "Quando a chuva cai sobre o telhado de uma casa, a água escorre pelos canaletos e é direcionada para as sarjetas, iniciando o caminho que a separa do solo. Essa água então percorre tubulações subterrân",
+   "fim": "mbiente, pronta para ser evaporada e, eventualmente, transformada em nova chuva."
+  },
+  {
+   "id": 17,
+   "q": "Escreva um texto de dois parágrafos sobre os impactos das redes sociais na vida das pessoas.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 204,
+   "paragrafos": 2,
+   "itens": 0,
+   "erro": null,
+   "ms": 45911,
+   "rota": "texto-longo",
+   "tentativasSelecionadas": 3,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:55:35.888Z",
+     "msParede": 441,
+     "resultado": "rate",
+     "retryAfterSegundos": 24,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:55:36.188Z",
+     "msParede": 445,
+     "resultado": "rate",
+     "retryAfterSegundos": 24,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:55:36.929Z",
+     "msParede": 8654,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:55:45.583Z",
+     "msParede": 46,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:55:45.629Z",
+     "msParede": 284,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:55:36.329Z",
+     "msParede": 16887,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:55:50.823Z",
+     "msParede": 5755,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:55:53.223Z",
+     "msParede": 4547,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:55:59.488Z",
+     "msParede": 6343,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "gigante2",
+     "inicio": "2026-10-31T11:56:05.833Z",
+     "msParede": 14230,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:56:20.063Z",
+     "msParede": 1134,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "As redes sociais transformaram a maneira como as pessoas se comunicam e compartilham informações no dia a dia. Os impactos dessas plataformas são tanto positivos quanto negativos, influenciando hábitos, relações e até a autoestima. Por exemplo, uma adolescente que passa horas diárias em plataformas como Instagram pode sentir-se pressionada a seguir padrões estéticos irrealistas, o que afeta seu bem-estar emocional. Ao mesmo tempo, essas redes permitem o contato com comunidades distantes, fortalecendo laços e ampliando o acesso a conteúdos educativos. Assim, o texto precisa refletir sobre como as redes sociais redefinem a vida cotidiana, exigindo equilíbrio e consciência.\n\nAlém disso, as redes sociais influenciam diretamente o comportamento de consumo, pois expõem os usuários a milhares de produtos e serviços de forma constante, muitas vezes estimulando desejos que antes não existiam. Esse tipo de texto revela como algoritmos moldam escolhas, priorizando conteúdos que geram engajamento, o que pode levar à compulsão por notificações e ao medo de perder informações relevantes. Com o avanço dessas redes, também cresce a dependência emocional, especialmente entre jovens que buscam validação por meio de curtidas e comentários. Diante dos impactos observados, é essencial que as redes sociais sejam usadas com intencionalidade, promovendo conexões reais e protegendo o tempo de desconexão.",
+   "trecho": "As redes sociais transformaram a maneira como as pessoas se comunicam e compartilham informações no dia a dia. Os impactos dessas plataformas são tanto positivos quanto negativos, influenciando hábito",
+   "fim": " intencionalidade, promovendo conexões reais e protegendo o tempo de desconexão."
+  },
+  {
+   "id": 18,
+   "q": "Dê quatro argumentos contra o desperdício de alimentos.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 149,
+   "paragrafos": 4,
+   "itens": 4,
+   "nota": 9,
+   "erro": null,
+   "ms": 54453,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:55:36.629Z",
+     "msParede": 5450,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:55:37.229Z",
+     "msParede": 5322,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T11:55:42.551Z",
+     "msParede": 447,
+     "resultado": "rate",
+     "retryAfterSegundos": 18,
+     "fim": null
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T11:55:42.079Z",
+     "msParede": 1115,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T11:55:43.298Z",
+     "msParede": 160,
+     "resultado": "rate",
+     "retryAfterSegundos": 17,
+     "fim": null
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T11:55:42.998Z",
+     "msParede": 1535,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T11:55:43.458Z",
+     "msParede": 1326,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T11:55:44.834Z",
+     "msParede": 156,
+     "resultado": "rate",
+     "retryAfterSegundos": 16,
+     "fim": null
+    },
+    {
+     "rota": "ovhq",
+     "inicio": "2026-10-31T11:55:44.989Z",
+     "msParede": 158,
+     "resultado": "rate",
+     "retryAfterSegundos": 15,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss",
+     "inicio": "2026-10-31T11:55:45.147Z",
+     "msParede": 157,
+     "resultado": "rate",
+     "retryAfterSegundos": 15,
+     "fim": null
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T11:55:44.533Z",
+     "msParede": 1315,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhq38",
+     "inicio": "2026-10-31T11:55:45.848Z",
+     "msParede": 2905,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq38",
+     "inicio": "2026-10-31T11:55:45.304Z",
+     "msParede": 3926,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhq9",
+     "inicio": "2026-10-31T11:55:49.230Z",
+     "msParede": 162,
+     "resultado": "rate",
+     "retryAfterSegundos": 11,
+     "fim": null
+    },
+    {
+     "rota": "ovhq397",
+     "inicio": "2026-10-31T11:55:49.392Z",
+     "msParede": 159,
+     "resultado": "rate",
+     "retryAfterSegundos": 11,
+     "fim": null
+    },
+    {
+     "rota": "ovhq9",
+     "inicio": "2026-10-31T11:55:48.753Z",
+     "msParede": 8606,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:55:57.359Z",
+     "msParede": 279,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "kilolight",
+     "inicio": "2026-10-31T11:55:58.288Z",
+     "msParede": 3375,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:55:49.623Z",
+     "msParede": 14259,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhq397",
+     "inicio": "2026-10-31T11:56:01.663Z",
+     "msParede": 18183,
+     "resultado": "degenerada",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:56:19.846Z",
+     "msParede": 2270,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:56:22.116Z",
+     "msParede": 3976,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "gigante2",
+     "inicio": "2026-10-31T11:56:26.093Z",
+     "msParede": 3646,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "1. O desperdício de alimentos contribui diretamente para a emissão de gases de efeito estufa, pois alimentos descartados em aterros geram metano, um gás muito mais potente que o dióxido de carbono, agravando o aquecimento global.\n2. Recursos hídricos e terrestres são desperdiçados quando alimentos são jogados fora, já que a produção de um quilo de carne bovina, por exemplo, exige milhares de litros de água e grandes áreas de pastagem, tornando o descarte um abuso de recursos naturais.\n3. Enquanto milhões de pessoas no mundo sofrem de fome, o desperdício de alimentos representa uma injustiça social, pois a comida poderia ser redistribuída para atender populações em situação de vulnerabilidade.\n4. O descarte de alimentos em bom estado prejudica a economia familiar e o setor agrícola, aumentando custos de produção, transporte e descarte, além de reduzir a eficiência da cadeia de suprimentos, impactando negativamente o lucro de pequenos produtores.",
+   "trecho": "1. O desperdício de alimentos contribui diretamente para a emissão de gases de efeito estufa, pois alimentos descartados em aterros geram metano, um gás muito mais potente que o dióxido de carbono, ag",
+   "fim": " cadeia de suprimentos, impactando negativamente o lucro de pequenos produtores."
+  },
+  {
+   "id": 19,
+   "q": "Explique a diferença entre clima e tempo em um parágrafo.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 143,
+   "paragrafos": 1,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 19451,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:57:06.328Z",
+     "msParede": 10097,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:57:07.528Z",
+     "msParede": 9123,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:57:16.653Z",
+     "msParede": 9125,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Clima e tempo são conceitos relacionados à atmosfera, mas diferem no período de observação e na natureza das variações. Tempo refere-se ao estado da atmosfera em um momento específico ou em um curto intervalo, como chuva, calor ou vento em um dia. Clima, por outro lado, é o conjunto de condições atmosféricas que ocorrem em uma região ao longo de anos, resultando de padrões repetidos e médias estatísticas. O tempo muda rapidamente, influenciando o dia a dia, enquanto o clima é mais estável e definido por fatores como latitude, altitude e proximidade do mar. Por exemplo, uma tempestade é um evento de tempo, mas a frequência de tempestades em uma região ao longo do ano caracteriza seu clima. Em resumo, o tempo é a \"roupa\" que a atmosfera veste diariamente, enquanto o clima é o guarda-roupa que ela usa ao longo do tempo.",
+   "trecho": "Clima e tempo são conceitos relacionados à atmosfera, mas diferem no período de observação e na natureza das variações. Tempo refere-se ao estado da atmosfera em um momento específico ou em um curto i",
+   "fim": "te diariamente, enquanto o clima é o guarda-roupa que ela usa ao longo do tempo."
+  },
+  {
+   "id": 20,
+   "q": "Resuma em três parágrafos a teoria da evolução de Darwin.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 223,
+   "paragrafos": 3,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 64675,
+   "rota": "ovhnemo",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:57:08.729Z",
+     "msParede": 328,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:57:09.057Z",
+     "msParede": 7218,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:57:09.929Z",
+     "msParede": 11330,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:57:21.259Z",
+     "msParede": 77,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:57:21.336Z",
+     "msParede": 264,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:57:21.636Z",
+     "msParede": 442,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:57:22.078Z",
+     "msParede": 6001,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:57:16.276Z",
+     "msParede": 20309,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:57:40.579Z",
+     "msParede": 271,
+     "resultado": "servidor",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T11:57:41.151Z",
+     "msParede": 438,
+     "resultado": "rate",
+     "retryAfterSegundos": 19,
+     "fim": null
+    },
+    {
+     "rota": "g4super",
+     "inicio": "2026-10-31T11:57:41.589Z",
+     "msParede": 79,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T11:57:40.850Z",
+     "msParede": 7752,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhq397",
+     "inicio": "2026-10-31T11:57:48.603Z",
+     "msParede": 12637,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T11:58:01.240Z",
+     "msParede": 9122,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "vlqwen",
+     "inicio": "2026-10-31T11:58:10.362Z",
+     "msParede": 640,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "A teoria da evolução de Darwin é baseada na observação de que todas as espécies de seres vivos mudam ao longo do tempo, um processo conhecido como evolução. Segundo Darwin, essa mudança ocorre devido à seleção natural, onde os indivíduos mais adaptados ao seu ambiente têm maior probabilidade de sobreviver e reproduzir, passando assim suas características vantajosas para a próxima geração. Ao longo do tempo, essas pequenas mudanças podem levar a novas espécies, um processo conhecido como especiação.\n\nDarwin também propôs que todas as espécies de seres vivos compartilham um ancestral comum, o que significa que todas as formas de vida na Terra estão relacionadas. Ele baseou essa ideia na observação de semelhanças entre espécies diferentes, tanto em sua aparência quanto em sua estrutura interna. Por exemplo, as patas das aves, dos répteis e dos mamíferos são muito diferentes em sua aparência, mas todas são construídas sobre o mesmo padrão ósseo básico.\n\nA teoria da evolução de Darwin tem sido amplamente apoiada por evidências científicas, incluindo a genética molecular, a paleontologia e a biogeografia. Hoje, é amplamente aceita pela comunidade científica como a melhor explicação para a diversidade das espécies na Terra. No entanto, ainda existem debates e questões em aberto, como a natureza exata do processo de especiação e a influência de outros fatores, além da seleção natural, na evolução das espécies.",
+   "trecho": "A teoria da evolução de Darwin é baseada na observação de que todas as espécies de seres vivos mudam ao longo do tempo, um processo conhecido como evolução. Segundo Darwin, essa mudança ocorre devido ",
+   "fim": "influência de outros fatores, além da seleção natural, na evolução das espécies."
+  },
+  {
+   "id": 21,
+   "q": "Escreva uma mensagem curta e educada cobrando um pagamento atrasado de um cliente. Máximo 150 palavras.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 62,
+   "paragrafos": 4,
+   "itens": 0,
+   "nota": 3,
+   "erro": null,
+   "ms": 44600,
+   "rota": "ultra",
+   "tentativasSelecionadas": 3,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:57:11.129Z",
+     "msParede": 732,
+     "resultado": "rate",
+     "retryAfterSegundos": 49,
+     "fim": null
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:57:12.328Z",
+     "msParede": 14061,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:57:11.861Z",
+     "msParede": 15324,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "polli",
+     "inicio": "2026-10-31T11:57:27.185Z",
+     "msParede": 396,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T11:57:26.389Z",
+     "msParede": 4073,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ovhq397",
+     "inicio": "2026-10-31T11:57:30.463Z",
+     "msParede": 11186,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "length"
+    },
+    {
+     "rota": "ovhnemo",
+     "inicio": "2026-10-31T11:57:41.649Z",
+     "msParede": 155,
+     "resultado": "rate",
+     "retryAfterSegundos": 19,
+     "fim": null
+    },
+    {
+     "rota": "ovhl",
+     "inicio": "2026-10-31T11:57:41.804Z",
+     "msParede": 9123,
+     "resultado": "timeout",
+     "retryAfterSegundos": null,
+     "fim": null
+    }
+   ],
+   "texto": "Prezado(a) [Nome],\n\nGostaríamos de lembrar que a fatura nº 12345, no valor de R$ 1.200,00, venceu em 10/08/2025. Caso já tenha efetuado o pagamento, por favor desconsidere este aviso. Caso contrário, solicitamos a regularização até 20/08/2025 para evitar juros e possíveis restrições. Estamos à disposição para esclarecer dúvidas ou enviar a segunda via do boleto.\n\nAgradecemos a atenção e a parceria.\n\nAtenciosamente.",
+   "trecho": "Prezado(a) [Nome],\n\nGostaríamos de lembrar que a fatura nº 12345, no valor de R$ 1.200,00, venceu em 10/08/2025. Caso já tenha efetuado o pagamento, por favor desconsidere este aviso. Caso contrário, ",
+   "fim": "r a segunda via do boleto.\n\nAgradecemos a atenção e a parceria.\n\nAtenciosamente."
+  },
+  {
+   "id": 22,
+   "q": "Explique em dois parágrafos como funciona a energia solar fotovoltaica.",
+   "ok": false,
+   "falhas": [
+    "falta fato #1 (painel)"
+   ],
+   "palavras": 186,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 20589,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:58:11.006Z",
+     "msParede": 15792,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:58:12.206Z",
+     "msParede": 16851,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:58:29.059Z",
+     "msParede": 2533,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "A energia solar fotovoltaica converte a luz do Sol diretamente em eletricidade por meio de células solares fabricadas principalmente de silício, um semicondutor. Quando os fótons atingem a superfície da célula, eles transferem energia aos elétrons do material, liberando-os de seus laços atômicos. Esses elétrons livres são então direcionados por um campo eletromagnético interno criado pela junção entre camadas de silício dopado, gerando uma corrente elétrica contínua. Cada célula produz uma pequena quantidade de energia, por isso são agrupadas em módulos e, posteriormente, em strings para aumentar a potência total disponível.\n\nO sistema completo inclui inversores, que convertem a corrente contínua gerada pelas células em corrente alternada, compatível com a rede elétrica e os eletrodomésticos. Quando há excedente de energia, ela pode ser armazenada em baterias ou injetada na rede, enquanto, em períodos de baixa produção, como à noite, o consumo é atendido pela rede ou pelos sistemas de armazenamento. A eficiência do sistema depende da incidência direta da luz solar, da qualidade das células e das condições climáticas locais, mas, uma vez instalado, o sistema requer pouco manutenção e não emite poluentes durante sua operação.",
+   "trecho": "A energia solar fotovoltaica converte a luz do Sol diretamente em eletricidade por meio de células solares fabricadas principalmente de silício, um semicondutor. Quando os fótons atingem a superfície ",
+   "fim": "o, o sistema requer pouco manutenção e não emite poluentes durante sua operação."
+  },
+  {
+   "id": 23,
+   "q": "Explique em dois parágrafos o que é inteligência artificial, sem jargão.",
+   "ok": false,
+   "falhas": [
+    "falta fato #1 (dados)"
+   ],
+   "palavras": 128,
+   "paragrafos": 2,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 19708,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:58:14.605Z",
+     "msParede": 7320,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:58:13.407Z",
+     "msParede": 10328,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:58:23.735Z",
+     "msParede": 6978,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Inteligência artificial é um ramo da computação que busca criar máquinas capazes de realizar tarefas que normalmente exigem raciocínio humano, como reconhecer padrões, tomar decisões ou entender linguagem. Em vez de seguir apenas instruções rígidas, esses sistemas aprendem com exemplos e experiências, ajustando-se ao longo do tempo para melhorar seu desempenho.\n\nUm exemplo comum é o reconhecimento de voz: um programa ouve centenas de gravações de pessoas falando e, aos poucos, identifica como diferentes vozes e sotaques se parecem. Outro caso é a recomendação de filmes ou músicas em serviços de streaming, onde o sistema analisa o que você assistiu ou tocou para sugerir novidades que possam lhe interessar. O objetivo não é substituir humanos, mas apoiar processos, automatizar tarefas repetitivas e oferecer respostas mais rápidas e personalizadas.",
+   "trecho": "Inteligência artificial é um ramo da computação que busca criar máquinas capazes de realizar tarefas que normalmente exigem raciocínio humano, como reconhecer padrões, tomar decisões ou entender lingu",
+   "fim": "omatizar tarefas repetitivas e oferecer respostas mais rápidas e personalizadas."
+  },
+  {
+   "id": 24,
+   "q": "Escreva um parágrafo explicando a importância de dormir bem.",
+   "ok": true,
+   "falhas": [],
+   "palavras": 151,
+   "paragrafos": 1,
+   "itens": 0,
+   "nota": 9,
+   "erro": null,
+   "ms": 20622,
+   "rota": "lagunas",
+   "tentativasSelecionadas": 1,
+   "verificacaoFactual": "nao_verificada",
+   "avisoFormato": null,
+   "incompleto": false,
+   "chamadas": [
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:58:17.005Z",
+     "msParede": 146,
+     "resultado": "rate",
+     "retryAfterSegundos": null,
+     "fim": null
+    },
+    {
+     "rota": "ovhoss20",
+     "inicio": "2026-10-31T11:58:17.151Z",
+     "msParede": 3148,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "lagunas",
+     "inicio": "2026-10-31T11:58:15.805Z",
+     "msParede": 11238,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    },
+    {
+     "rota": "ultra",
+     "inicio": "2026-10-31T11:58:27.045Z",
+     "msParede": 4582,
+     "resultado": "texto",
+     "retryAfterSegundos": null,
+     "fim": "stop"
+    }
+   ],
+   "texto": "Dormir bem é essencial para o funcionamento adequado do corpo e da mente, pois durante o sono ocorrem processos vitais, como a reparação de tecidos, a consolidação da memória e o fortalecimento do sistema imunológico. Quando uma pessoa não obtém um descanso suficiente, ficam comprometidos a concentração, o humor, a reatividade e a capacidade de tomar decisões, aumentando o risco de acidentes e de doenças crônicas, como hipertensão, diabetes e problemas cardiovasculares. Além disso, o sono equilibrado ajuda a regular as emoções, reduzindo a irritabilidade e a ansiedade, e permite que o cérebro processe informações do dia, facilitando o aprendizado. Recomenda-se entre sete e nove horas de sono por noite para adultos, mantendo uma rotina consistente, evitando estimulantes como cafeína e telas antes de dormir. Priorizar o sono de qualidade é, portanto, um ato de cuidado com a saúde que impacta diretamente o bem-estar físico, mental e social de cada indivíduo.",
+   "trecho": "Dormir bem é essencial para o funcionamento adequado do corpo e da mente, pois durante o sono ocorrem processos vitais, como a reparação de tecidos, a consolidação da memória e o fortalecimento do sis",
+   "fim": "e que impacta diretamente o bem-estar físico, mental e social de cada indivíduo."
+  }
+ ],
+ "meta": {
+  "iniciado": "2026-10-31T11:49:22.099Z",
+  "terminado": "2026-10-31T11:58:31.630Z",
+  "banco": "banco-aberto.json",
+  "bancoSha256": "3c23382ded2b1ea498bbb11e195338eb141921318fa1a595c02c32f1f08a3223",
+  "codigoSha256": "f24bcf5850cb3f8d5cbb59b885e1f2c0e77a3a99e63c4c16b9f033b0fbd334c7",
+  "rubricaSha256": "84994993f185630095ffb3f5111f0ad49837a6f29565da75df55f1f767579f90",
+  "medidorSha256": "2feb2f0b95259c62ab6196b54bb54d426b7e1defadf1ea6d3877ec56cac5352e",
+  "concorrencia": 3,
+  "janelas": [
+   {
+    "iniciado": "2026-10-31T11:49:22.099Z",
+    "terminado": "2026-10-31T11:58:31.630Z"
+   }
+  ],
+  "retomadas": 0,
+  "invalido": false
+ }
+}
