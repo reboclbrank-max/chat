@@ -42,6 +42,12 @@ async function testa(nome, fn) {
   await testa('aceita cauda depois da conta (é assim que gente fala)', async () => {
     assert.equal(await valor('quanto é 7 vezes 6? quero só o número, por favor'), '42');
   });
+  await testa('aceita instrução em LINHA SEPARADA depois da conta', async () => {
+    // Caso real: 48271 × 3917 com "Responda só o número." e uma segunda linha de instrução.
+    // Com regex de ponto único, a última linha (a instrução) era lida como a conta.
+    assert.equal(await valor('quanto é 48271 vezes 3917? Responda só o número.\nResponda SOMENTE com o valor pedido.'), '189077507');
+    assert.equal(await valor('Quanto é 1234 vezes 5678? Responda só o número.\nResponda SOMENTE com o valor pedido.'), '7006652');
+  });
   await testa('aceita x como sinal', async () => {
     assert.equal(await valor('calcule 16x12'), '192');
   });
