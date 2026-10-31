@@ -211,7 +211,12 @@ async function robustez(provas) {
 /* ---------- 1d. cobertura: cada solucionador tem prova E armadilha? ---------- */
 // Um solucionador sem armadilha é um risco não medido: ninguém sabe se ele responde o que não
 // devia. Esta auditoria transforma isso em lista de trabalho dentro do próprio relatório.
-const SOLUCIONADORES = Object.keys(RazaoLocal).filter(function (k) { return typeof RazaoLocal[k] === 'function' && k !== 'resolver'; });
+/* Auxiliares exportados para teste (ex.: `verbete` consulta a base lexical) não são
+   solucionadores: não respondem pergunta, só ajudam quem responde. */
+const AUXILIARES = new Set(['resolver', 'verbete']);
+const SOLUCIONADORES = Object.keys(RazaoLocal).filter(function (k) {
+  return typeof RazaoLocal[k] === 'function' && !AUXILIARES.has(k);
+});
 function cobertura(provasBanco, armadilhasBanco) {
   const mapa = {};
   for (const nome of SOLUCIONADORES) mapa[nome] = { provas: [], armadilhas: [] };
@@ -227,10 +232,13 @@ function cobertura(provasBanco, armadilhasBanco) {
   const APELIDOS = { trabalho: 'trabalhoConjunto', contagem: 'contagemDigito', idade: 'problemaIdade',
     deducao: 'silogismo', conjuntos: 'inclusaoExclusao', proporcao: 'operarios', custo: 'custoTotal',
     codigo: 'codigo', memoria: 'memoria', rotacao: 'rotacao', matriz: 'matriz', fila: 'fila',
+    sinonimo: 'sinonimo', antonimo: 'antonimo', naopertence: 'naoPertence', analogia: 'analogia',
     probabilidade: 'probabilidade', sequencia: 'sequencia', operarios: 'operarios', trabalho2: 'trabalhoConjunto', 'sequencia-letras': 'sequenciaLetras',
     'ponto-flutuante': 'pontoFlutuante' };
   for (const a of armadilhasBanco) {
-    const nome = APELIDOS[a.por] || a.por;
+    // o campo `por` é escrito em português para quem lê o relatório ("antônimo", "não pertence")
+    const chave = String(a.por).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z]/g, '');
+    const nome = APELIDOS[chave] || APELIDOS[a.por] || a.por;
     if (mapa[nome]) { mapa[nome].armadilhas.push(a.id); continue; }
     for (const n of SOLUCIONADORES) {
       let r = null;

@@ -1,7 +1,7 @@
 {
  "esquema": "provas-chat-v1",
  "aviso": "Perguntas de aferição do próprio chat. Respostas conferidas à mão; não é teste de QI humano nem garantia de disponibilidade.",
- "total": 127,
+ "total": 133,
  "provas": [
   {
    "id": "facil-num1",
@@ -1020,6 +1020,54 @@
    "q": "Quem te criou?",
    "ok": [
     "Rebocl Brank"
+   ]
+  },
+  {
+   "id": "sinonimo-1",
+   "d": "verbal",
+   "q": "Qual é o sinônimo mais próximo de \"belo\": (A) feio (B) bonito (C) triste (D) lento? Responda só a letra e a palavra.",
+   "ok": [
+    "bonito"
+   ]
+  },
+  {
+   "id": "antonimo-1",
+   "d": "verbal",
+   "q": "Qual é o antônimo de \"claro\": (A) escuro (B) branco (C) leve (D) alto? Responda só a letra e a palavra.",
+   "ok": [
+    "escuro"
+   ]
+  },
+  {
+   "id": "antonimo-2",
+   "d": "verbal",
+   "q": "Qual é o antônimo de \"alto\": (A) baixo (B) grande (C) forte (D) novo? Responda só a letra e a palavra.",
+   "ok": [
+    "baixo"
+   ]
+  },
+  {
+   "id": "pertence-1",
+   "d": "verbal",
+   "q": "Qual palavra NÃO pertence ao grupo: maçã, banana, laranja, martelo? Responda só a palavra.",
+   "ok": [
+    "martelo"
+   ]
+  },
+  {
+   "id": "pertence-2",
+   "d": "verbal",
+   "q": "Qual palavra NÃO pertence ao grupo: martelo, serrote, alicate, maçã? Responda só a palavra.",
+   "ok": [
+    "maçã"
+   ]
+  },
+  {
+   "id": "analogia-1",
+   "d": "verbal",
+   "q": "Qual palavra completa a analogia: \"livro está para capítulo assim como sinfonia está para ______\"? Responda só a palavra.",
+   "ok": [
+    "movimento"
    ]
   }
  ]

@@ -1661,3 +1661,32 @@ Medido antes/depois no ensaio de queda total: **soma da espera 338.678 ms → 76
 **Dois achados de última hora sobre o próprio medidor (mesma rodada).**
 - **O diagnóstico dizia "sem rede" e usava a rede**: em algumas execuções uma prova caía em consulta ao vivo e o mesmo comando levava **de 0,9 s a 26 s** (e estourava o tempo do CI: run 41244402599). O medidor passou a **bloquear o `fetch` de propósito** (`--com-rede` fica para quem quiser medir o caminho online) e há verificação nova: duas execuções têm de dar **o mesmo número**.
 - **Custo sem medição**: `provarFio` criava um roteador por prova (reiniciando o disjuntor) e temporizadores pendentes seguravam o processo por ~8 s. Agora é um roteador para a amostra inteira, e o programa sai assim que termina de medir. Tempo da suíte de auto-diagnóstico: **174 s → 52 s**, determinístico.
+
+## Rodada 139 — base lexical própria: o vocabulário deixou de depender de modelo (31/10/2026)
+
+**O pedido.** "Melhore e deixe tudo ao ponto de não depender de nada."
+
+**O que faltava.** Sinônimo, antônimo, "qual não pertence" e analogia eram as **últimas** provas que só o modelo sabia responder. A rodada 136 mediu que o OpenWordnet-PT cobre 0 de 5 desses casos — e a conclusão da época foi "fica com o modelo".
+
+**O que mudou.** Agora existe **base lexical própria**, construída em tempo de build e versionada no repositório:
+
+- `tools/gerar-lexico-pt.js` baixa do **Wikcionário em português (CC BY-SA)**, para uma lista **geral** de palavras frequentes (não as palavras do teste), e grava `lexico-pt.json` (fonte, URL, licença e data dentro do arquivo) + espelho `lexico-pt.js`;
+- **1.502 palavras** com sinônimos, antônimos e primeira definição; **145 KB**; entra por `<script>` e fica no cache do service worker (`rebocl-chat-v106`);
+- **zero rede em execução**: a base é arquivo do repositório, não consulta.
+
+**Quatro solucionadores novos** (`sinonimo`, `antonimo`, `naoPertence`, `analogia`), todos com prova e armadilha:
+
+| solucionador | regra | exemplo medido |
+|---|---|---|
+| sinônimo | única opção que a base liga ao alvo (nos dois sentidos) | "efêmero" → **passageiro**; "belo" → **bonito** |
+| antônimo | mesma regra com antônimos | "curto" → **longo**; "alto" → **baixo** |
+| não pertence | campo semântico declarado nas definições, com famílias (`móvel`+`mobiliário`) | cadeira/mesa/sofá/geladeira/estante → **geladeira** |
+| analogia | todo→parte **declarada na base** ("capítulo é parte de", "sinfonia … dividida em quatro movimentos") | livro:capítulo :: sinfonia → **movimento** |
+
+**Resultado medido (`node tools/auto-melhoria.js`): 131/133 provas por código, 0 erradas** — era 122/127. As **duas** que restam são declaradas: `facil-ver1` (analogia profissão→local de trabalho, que a base não declara) e `facil-ver4` (antônimo de "escasso": a base liga a "numeroso", não a "abundante" — responder seria chute). Armadilhas **47/47**, fio **131/131**, cobertura **43/43** solucionadores com prova e armadilha, robustez **301/304** (0 mudaram de resposta).
+
+**Auditoria de dependências atualizada:** sem rede nenhuma o produto responde **131/133** com **0 inventadas**; a base lexical é item de inventário com fonte e licença; seguem dependendo de terceiro apenas as duas provas acima e o texto aberto.
+
+**Guarda novo (`tools/testes/lexico-local.js`, 6/6):** procedência (fonte/URL/licença no arquivo), espelho `.js` igual ao `.json`, resposta com `fetch` proibido, ordem de carregamento na página e no service worker, acerta o que a base sustenta e **cala quando não sustenta**.
+
+**Limite.** A base tem 1.502 palavras: é um começo honesto, não um dicionário. Palavra fora dela continua indo para o modelo — e o teste cobra que, nesse caso, o produto **não chute**.

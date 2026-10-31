@@ -51,7 +51,7 @@ const CASOS = [
   ['Quem escreveu "Dom Casmurro"? Responda só o nome.', null],
   // até a rodada 135 isto era do modelo; a rodada 136 implementou a forma exata (codigoSoma)
   ['Escreva em uma linha de Python a soma dos números pares de 1 a 10. Responda só o código.', 'if x % 2 == 0'],
-  ['Qual é o sinônimo mais próximo de "efêmero": (A) passageiro (B) eterno? Responda só a letra e a palavra.', null]
+  ['Qual é o sinônimo mais próximo de "efêmero": (A) passageiro (B) eterno? Responda só a letra e a palavra.', 'passageiro']
 ];
 
 // ARMADILHAS: perguntas que parecem as resolvíveis mas cuja resposta certa NÃO é a forma
