@@ -53,6 +53,12 @@ const CASOS = [
   ['Qual é o sinônimo mais próximo de "efêmero": (A) passageiro (B) eterno? Responda só a letra e a palavra.', null]
 ];
 
+// ARMADILHAS: perguntas que parecem as resolvíveis mas cuja resposta certa NÃO é a forma
+// conhecida. Aqui o certo é o módulo ficar calado (ou responder o valor do campo `esperado`).
+// Elas já acharam 6 respostas exatas erradas em 31/10/2026 — probabilidade encadeada, desconto,
+// operário que adoece, rotação com sentido que inverte, código com .length e silogismo contraditório.
+const ARMADILHAS = require('../armadilhas-do-chat.json').armadilhas;
+
 let certos = 0;
 const falhas = [];
 for (const [q, esperado] of CASOS) {
@@ -64,6 +70,20 @@ for (const [q, esperado] of CASOS) {
   if (ok) certos++;
   else falhas.push({ q: q.slice(0, 70), esperado, obtido });
 }
+// --- armadilhas do módulo (as que dependem de _ferramenta ficam no auto-melhoria) ---
+const SEM_MÓDULO = new Set(['porcentagem']);
+for (const a of ARMADILHAS) {
+  if (SEM_MÓDULO.has(a.por)) continue;
+  const r = R.resolver(a.q);
+  const obtido = r ? String(r.texto) : null;
+  const temEsperado = Object.prototype.hasOwnProperty.call(a, 'esperado');
+  const ok = temEsperado
+    ? (obtido !== null && obtido.toLowerCase().indexOf(String(a.esperado).toLowerCase()) !== -1)
+    : obtido === null;
+  if (ok) certos++;
+  else falhas.push({ q: 'ARMADILHA ' + a.id, esperado: temEsperado ? a.esperado : null, obtido });
+}
+
 for (const f of falhas) console.error('✘ ' + f.q + ' → ' + JSON.stringify(f.obtido) + ' (esperado ' + JSON.stringify(f.esperado) + ')');
-console.log((falhas.length ? '✘ ' : '✔ ') + certos + '/' + CASOS.length + ' casos de raciocínio local');
+console.log((falhas.length ? '✘ ' : '✔ ') + certos + '/' + (CASOS.length + (ARMADILHAS.length - SEM_MÓDULO.size)) + ' casos de raciocínio local (provas + armadilhas)');
 process.exit(falhas.length ? 1 : 0);

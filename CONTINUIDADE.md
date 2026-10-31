@@ -1554,3 +1554,29 @@ O commit `3c00761` (rodada 106) levou junto um link simbólico `node_modules` cr
 **Resultado medido.** Provas resolvidas por código exato e sem modelo: **33/47 → 40/47** (`node tools/auto-melhoria.js`). As 7 restantes são vocabulário (ver1–ver4, d9, d10) e geração de código (cod3) — declaradas como conhecimento/geração, não como conta. No texto aberto, a lacuna de forma ficou explicitamente como **geração incompleta** (o produto avisa, não maquia); as falhas de conteúdo seguem dependendo de fonte viva, medida na rodada 102 e piorou o resultado.
 
 **Arquivos.** `tools/auto-melhoria.js`, `tools/provas-do-chat.json`, `docs/auto-melhoria.json`, `razao-local.js`, `roteador-ia.js`, `tools/testes/auto-melhoria.js`, `tools/testes/recomeco-resgate-memoria.js` e registro em `tools/testes/roda-testes.js`. Barreira completa **118/118 com 3 ignorados**; `montar-paginas --verificar` sem divergência.
+
+## Rodada 135 — o auto-diagnóstico passou a auditar a si mesmo (31/10/2026)
+
+**O que mudou e por quê.** O auto-diagnóstico da rodada 134 dizia "isto o código resolve", mas não dizia duas coisas essenciais: **se o produto realmente entrega** aquela resposta e **se o código responde o que não devia**. Um medidor que só olha para o próprio solucionador me dava tranquilidade falsa.
+
+**Quatro auditorias novas em `tools/auto-melhoria.js`:**
+1. **Armadilhas** (`tools/armadilhas-do-chat.json`, 17 casos): perguntas que **parecem** as resolvíveis mas cuja resposta certa não é a forma conhecida. Se o caminho exato responder, ele está chutando. Oito são "tem de ficar calado"; duas são controles positivos com resposta declarada.
+2. **Prova de fio**: para cada prova resolvida por código, roda o caminho real de `responder()` com a chamada de modelo **quebrada de propósito**. Se o texto final não chegar, o fio está partido — e o placar antigo não mostrava isso. Hoje: **40/40**.
+3. **Cobertura**: cada solucionador do `razao-local.js` precisa de pelo menos uma prova e uma armadilha. Antes desta rodada **15 dos 16 não tinham armadilha** — risco não medido. Agora: 16/16 com as duas.
+4. **Integridade e trava de regressão**: hash do gabarito e das armadilhas no histórico; `--exigir-sem-regressao` compara com uma **referência monotônica** (nunca desce) e sai com código 1 se o caminho exato piorar.
+
+**Defeitos reais que o motor encontrou em mim — e foram consertados:**
+- **porcentagem encadeada**: "37% de 37% de 200" respondia **13,69** (certo: 27,38) — a forma simples casava "37% de 37" e ignorava o resto;
+- **custo com desconto**: "…com 10% de desconto" respondia **33** (certo: 29,70);
+- **operários com gente adoecendo**: respondia **6** ignorando a condição;
+- **rotação com sentido que inverte**: respondia **leste**;
+- **código encadeado**: `[1,2,3].map(x=>x*2).join("-").length` respondia **"2-4-6"** (certo: 5);
+- **silogismo contraditório** ("todo A é B" + "nenhum A é B"): respondia **Não** por vacuidade.
+
+Todas as seis eram **resposta exata errada**, o pior defeito possível neste caminho; agora o código fica calado e o modelo responde.
+
+**Correção na própria trava.** A primeira versão comparava com "a rodada anterior" do histórico — e a rodada ruim virava base, curando a si mesma (verificado em cópia com o solucionador de probabilidade desligado: a segunda execução passava). Passou a usar **referência monotônica**; na mesma simulação, as duas execuções seguidas saem com código 1.
+
+**Provas.** `tools/testes/auto-melhoria.js` cresceu de 6 para **11 verificações** (armadilhas, fio, cobertura, trava e hash). `tools/testes/razao-local.js` passou a rodar as armadilhas do módulo: **56/56**. Barreira completa **118/118 com 3 ignorados**. `docs/auto-melhoria.json` guarda a referência e 18 rodadas.
+
+**Limite que permanece.** A armadilha mede o que eu **soube** imaginar como perto-perigo; ela não prova ausência de chute em forma que ninguém pensou. Por isso a regra do módulo continua sendo devolver `null` quando a forma não casa exatamente.

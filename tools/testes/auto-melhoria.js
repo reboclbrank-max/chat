@@ -66,6 +66,39 @@ testa('o histórico cresce e guarda tendência', () => {
   assert(u.porCodigo <= u.provas);
 });
 
+testa('armadilhas: o código não responde o que não sabe', () => {
+  const rel = JSON.parse(roda(['--json', '--fio=1']));
+  assert(rel.armadilhas && rel.armadilhas.total >= 17, 'armadilhas insuficientes: ' + (rel.armadilhas && rel.armadilhas.total));
+  const ruins = rel.armadilhas.itens.filter((i) => !i.ok);
+  assert.deepEqual(ruins.map((i) => i.id + '→' + i.resposta), [],
+    'chute do caminho exato: ' + ruins.map((i) => i.id + '→' + i.resposta).join(', '));
+});
+
+testa('prova de fio: as respostas exatas chegam ao texto final SEM modelo', () => {
+  // Roda com a chamada de modelo quebrada de propósito: se o fio estiver partido, não sobra texto.
+  const rel = JSON.parse(roda(['--json', '--fio=40']));
+  assert.equal(rel.fio.ok, rel.fio.total, 'fio partido: ' + rel.fio.itens.filter((i) => !i.ok).map((i) => i.id).join(', '));
+  assert.equal(rel.fio.total, rel.provas.porCodigo, 'a prova de fio tem de cobrir todas as provas resolvidas por código');
+});
+
+testa('cobertura: todo solucionador tem prova e armadilha', () => {
+  const rel = JSON.parse(roda(['--json', '--fio=1']));
+  assert.deepEqual(rel.cobertura.semProva, [], 'sem prova: ' + rel.cobertura.semProva.join(', '));
+  assert.deepEqual(rel.cobertura.semArmadilha, [], 'sem armadilha: ' + rel.cobertura.semArmadilha.join(', '));
+});
+
+testa('trava de regressão não dispara no estado atual', () => {
+  const saida = roda(['--exigir-sem-regressao', '--fio=40']);
+  assert(/sem regressão/.test(saida), 'a trava disparou: ' + saida.slice(-400));
+});
+
+testa('o gabarito e as armadilhas têm hash registrado no histórico', () => {
+  const hist = JSON.parse(fs.readFileSync(path.join(RAIZ, 'docs', 'auto-melhoria.json'), 'utf8'));
+  const u = hist.rodadas[hist.rodadas.length - 1];
+  assert(u.provasHash, 'histórico sem hash do gabarito');
+  assert(u.armadilhasHash, 'histórico sem hash das armadilhas');
+});
+
 console.log('');
 if (falhas.length) { console.error('✘ ' + falhas.length + ' de ' + (certos + falhas.length) + ' verificações FALHARAM'); process.exit(1); }
 console.log('✔ ' + certos + '/' + (certos + falhas.length) + ' verificações do auto-diagnóstico passaram');

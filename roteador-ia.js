@@ -1187,7 +1187,19 @@
         if (v !== null) return { texto: v, ferramenta: 'mathjs', fonte: 'mathjs ' + expr };
       }
     }
-    if ((m = q.match(/(?:quanto|qual)\s+(?:é|e|vale|seria)\s+(\d+(?:[.,]\d+)?)\s*%\s*de\s*(\d+(?:[.,]\d+)?)/i))) {
+    /* Porcentagem ENCADEADA primeiro (31/10/2026). A armadilha do auto-diagnóstico mostrou que
+       "37% de 37% de 200" caía na forma simples: ela casava "37% de 37" e ignorava o resto,
+       respondendo 13,69 quando o certo é 27,38. Chute numérico é pior que resposta de modelo. */
+    if ((m = q.match(/(?:quanto|qual)\s+(?:é|e|vale|seria)\s+(\d+(?:[.,]\d+)?)\s*%\s*de\s+(\d+(?:[.,]\d+)?)\s*%\s*de\s+(\d+(?:[.,]\d+)?)/i))) {
+      var p1 = parseFloat(m[1].replace(',', '.')) / 100;
+      var p2 = parseFloat(m[2].replace(',', '.')) / 100;
+      var base = parseFloat(m[3].replace(',', '.'));
+      if (isFinite(p1) && isFinite(p2) && isFinite(base)) {
+        return { texto: String(Math.round(p1 * p2 * base * 100) / 100).replace('.', ','),
+          ferramenta: 'porcentagem', fonte: 'porcentagem encadeada · ' + m[1] + '% de ' + m[2] + '% de ' + m[3] };
+      }
+    }
+    if ((m = q.match(/(?:quanto|qual)\s+(?:é|e|vale|seria)\s+(\d+(?:[.,]\d+)?)\s*%\s*de\s+(\d+(?:[.,]\d+)?)(?!\s*%)/i))) {
       p = parseFloat(m[1].replace(',', '.')); var n = parseFloat(m[2].replace(',', '.'));
       return { texto: String(Math.round(p * n) / 100), ferramenta: 'porcentagem', fonte: 'calculo local' };
     }
