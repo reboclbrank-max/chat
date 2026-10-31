@@ -1,7 +1,7 @@
 {
  "esquema": "provas-chat-v1",
  "aviso": "Perguntas de aferição do próprio chat. Respostas conferidas à mão; não é teste de QI humano nem garantia de disponibilidade.",
- "total": 47,
+ "total": 123,
  "provas": [
   {
    "id": "facil-num1",
@@ -377,6 +377,615 @@
    "q": "Uma matriz 2x2 tem na primeira linha: quadrado preto, círculo branco; na segunda: círculo branco, quadrado preto. Se a regra é inverter as cores da diagonal principal, o que fica na posição (1,1)? Responda só: quadrado branco, quadrado preto, círculo branco ou círculo preto.",
    "ok": [
     "quadrado branco"
+   ]
+  },
+  {
+   "id": "media-1",
+   "d": "numérico",
+   "q": "Qual é a média de 4, 6, 8 e 10?",
+   "ok": [
+    "7"
+   ]
+  },
+  {
+   "id": "media-2",
+   "d": "numérico",
+   "q": "Qual é a média de 10, 20 e 30?",
+   "ok": [
+    "20"
+   ]
+  },
+  {
+   "id": "regra3-1",
+   "d": "numérico",
+   "q": "Se 4 kg de arroz custam 20 reais, quanto custam 7 kg?",
+   "ok": [
+    "35"
+   ]
+  },
+  {
+   "id": "regra3-2",
+   "d": "numérico",
+   "q": "Se 3 cadernos custam 15 reais, quanto custam 8 cadernos?",
+   "ok": [
+    "40"
+   ]
+  },
+  {
+   "id": "mdc-1",
+   "d": "numérico",
+   "q": "Qual é o MDC de 12 e 18?",
+   "ok": [
+    "6"
+   ]
+  },
+  {
+   "id": "mdc-2",
+   "d": "numérico",
+   "q": "Qual é o MDC de 24 e 36?",
+   "ok": [
+    "12"
+   ]
+  },
+  {
+   "id": "mmc-1",
+   "d": "numérico",
+   "q": "Qual é o MMC de 4 e 6?",
+   "ok": [
+    "12"
+   ]
+  },
+  {
+   "id": "mmc-2",
+   "d": "numérico",
+   "q": "Qual é o MMC de 8 e 12?",
+   "ok": [
+    "24"
+   ]
+  },
+  {
+   "id": "percentual-1",
+   "d": "numérico",
+   "q": "Um produto de 150 reais teve aumento de 20%. Qual o preço final?",
+   "ok": [
+    "180"
+   ]
+  },
+  {
+   "id": "percentual-2",
+   "d": "numérico",
+   "q": "Uma camisa de 200 reais tem desconto de 15%. Qual o valor final?",
+   "ok": [
+    "170"
+   ]
+  },
+  {
+   "id": "percentual-3",
+   "d": "numérico",
+   "q": "Um salário de 90 reais teve aumento de 10%. Qual o valor final?",
+   "ok": [
+    "99"
+   ]
+  },
+  {
+   "id": "percentual-4",
+   "d": "numérico",
+   "q": "Uma blusa de 80 reais tem desconto de 25%. Qual o valor final?",
+   "ok": [
+    "60"
+   ]
+  },
+  {
+   "id": "juros-1",
+   "d": "numérico",
+   "q": "Qual o juro simples de 2% ao mês sobre 1000 durante 3 meses?",
+   "ok": [
+    "60"
+   ]
+  },
+  {
+   "id": "juros-2",
+   "d": "numérico",
+   "q": "Qual o juro simples de 1% ao mês sobre 500 durante 10 meses?",
+   "ok": [
+    "50"
+   ]
+  },
+  {
+   "id": "juros-3",
+   "d": "numérico",
+   "q": "Qual o juro simples de 5% ao ano sobre 200 durante 2 anos?",
+   "ok": [
+    "20"
+   ]
+  },
+  {
+   "id": "velocidade-1",
+   "d": "numérico",
+   "q": "Um carro percorre 180 km em 3 horas. Qual a velocidade média?",
+   "ok": [
+    "60"
+   ]
+  },
+  {
+   "id": "velocidade-2",
+   "d": "numérico",
+   "q": "Um ônibus percorre 240 km em 4 horas. Qual a velocidade média?",
+   "ok": [
+    "60"
+   ]
+  },
+  {
+   "id": "area-1",
+   "d": "numérico",
+   "q": "Qual a área de um retângulo de 5 por 3 metros?",
+   "ok": [
+    "15"
+   ]
+  },
+  {
+   "id": "area-2",
+   "d": "numérico",
+   "q": "Qual a área de um quadrado de 7 por 7 metros?",
+   "ok": [
+    "49"
+   ]
+  },
+  {
+   "id": "perimetro-1",
+   "d": "numérico",
+   "q": "Qual o perímetro de um retângulo de 5 por 3 metros?",
+   "ok": [
+    "16"
+   ]
+  },
+  {
+   "id": "perimetro-2",
+   "d": "numérico",
+   "q": "Qual o perímetro de um quadrado de 4 por 4 metros?",
+   "ok": [
+    "16"
+   ]
+  },
+  {
+   "id": "triangulo-1",
+   "d": "numérico",
+   "q": "Qual a área de um triângulo com base de 10 e altura de 4?",
+   "ok": [
+    "20"
+   ]
+  },
+  {
+   "id": "triangulo-2",
+   "d": "numérico",
+   "q": "Qual a área de um triângulo com base de 8 e altura de 5?",
+   "ok": [
+    "20"
+   ]
+  },
+  {
+   "id": "resto-1",
+   "d": "numérico",
+   "q": "Qual o resto da divisão de 47 por 5?",
+   "ok": [
+    "2"
+   ]
+  },
+  {
+   "id": "resto-2",
+   "d": "numérico",
+   "q": "Qual o resto da divisão de 100 por 7?",
+   "ok": [
+    "2"
+   ]
+  },
+  {
+   "id": "fatorial-1",
+   "d": "numérico",
+   "q": "Quanto é 5! ?",
+   "ok": [
+    "120"
+   ]
+  },
+  {
+   "id": "fatorial-2",
+   "d": "numérico",
+   "q": "Quanto é 6! ?",
+   "ok": [
+    "720"
+   ]
+  },
+  {
+   "id": "primos-1",
+   "d": "numérico",
+   "q": "Quantos números primos há entre 10 e 30?",
+   "ok": [
+    "6"
+   ]
+  },
+  {
+   "id": "primos-2",
+   "d": "numérico",
+   "q": "Quantos números primos há entre 2 e 20?",
+   "ok": [
+    "8"
+   ]
+  },
+  {
+   "id": "primos-3",
+   "d": "numérico",
+   "q": "Quais são os números primos entre 20 e 30?",
+   "ok": [
+    "23",
+    "29"
+   ]
+  },
+  {
+   "id": "binario-1",
+   "d": "código",
+   "q": "Converta o número 13 para binário.",
+   "ok": [
+    "1101"
+   ]
+  },
+  {
+   "id": "binario-2",
+   "d": "código",
+   "q": "Converta o número 10 para binário.",
+   "ok": [
+    "1010"
+   ]
+  },
+  {
+   "id": "hexa-1",
+   "d": "código",
+   "q": "Converta o número 255 para hexadecimal.",
+   "ok": [
+    "FF"
+   ]
+  },
+  {
+   "id": "ordem-1",
+   "d": "verbal",
+   "q": "Coloque em ordem alfabética: banana, abacaxi, caju",
+   "ok": [
+    "abacaxi, banana, caju"
+   ]
+  },
+  {
+   "id": "ordem-2",
+   "d": "verbal",
+   "q": "Coloque em ordem alfabética: carro, avião, barco",
+   "ok": [
+    "avião, barco, carro"
+   ]
+  },
+  {
+   "id": "palindromo-1",
+   "d": "verbal",
+   "q": "A palavra \"arara\" é um palíndromo?",
+   "ok": [
+    "sim"
+   ]
+  },
+  {
+   "id": "palindromo-2",
+   "d": "verbal",
+   "q": "A palavra \"casa\" é um palíndromo?",
+   "ok": [
+    "não"
+   ]
+  },
+  {
+   "id": "palindromo-3",
+   "d": "verbal",
+   "q": "A palavra \"ovo\" é um palíndromo?",
+   "ok": [
+    "sim"
+   ]
+  },
+  {
+   "id": "palindromo-4",
+   "d": "verbal",
+   "q": "A frase \"A base do teto desaba\" é um palíndromo?",
+   "ok": [
+    "sim"
+   ]
+  },
+  {
+   "id": "anagrama-1",
+   "d": "verbal",
+   "q": "As palavras \"amor\" e \"roma\" são anagramas?",
+   "ok": [
+    "sim"
+   ]
+  },
+  {
+   "id": "anagrama-2",
+   "d": "verbal",
+   "q": "As palavras \"amor\" e \"ramo\" são anagramas?",
+   "ok": [
+    "sim"
+   ]
+  },
+  {
+   "id": "anagrama-3",
+   "d": "verbal",
+   "q": "As palavras \"casa\" e \"saco\" são anagramas?",
+   "ok": [
+    "não"
+   ]
+  },
+  {
+   "id": "palavras-1",
+   "d": "verbal",
+   "q": "Quantas palavras tem a frase \"o rato roeu a roupa do rei\"?",
+   "ok": [
+    "7"
+   ]
+  },
+  {
+   "id": "palavras-2",
+   "d": "verbal",
+   "q": "Quantas palavras tem a frase \"bom dia a todos\"?",
+   "ok": [
+    "4"
+   ]
+  },
+  {
+   "id": "unidades-1",
+   "d": "numérico",
+   "q": "Quantos centímetros há em 2,5 metros?",
+   "ok": [
+    "250"
+   ]
+  },
+  {
+   "id": "unidades-2",
+   "d": "numérico",
+   "q": "Quantos milímetros há em 5 centímetros?",
+   "ok": [
+    "50"
+   ]
+  },
+  {
+   "id": "unidades-3",
+   "d": "numérico",
+   "q": "Quantos gramas há em 3 quilogramas?",
+   "ok": [
+    "3000"
+   ]
+  },
+  {
+   "id": "unidades-4",
+   "d": "numérico",
+   "q": "Quantos litros há em 2000 mililitros?",
+   "ok": [
+    "2"
+   ]
+  },
+  {
+   "id": "potencia-1",
+   "d": "numérico",
+   "q": "Quanto é 2 elevado a 10?",
+   "ok": [
+    "1024"
+   ]
+  },
+  {
+   "id": "potencia-2",
+   "d": "numérico",
+   "q": "Quanto é 3 elevado a 4?",
+   "ok": [
+    "81"
+   ]
+  },
+  {
+   "id": "raiz-1",
+   "d": "numérico",
+   "q": "Qual a raiz quadrada de 144?",
+   "ok": [
+    "12"
+   ]
+  },
+  {
+   "id": "raiz-2",
+   "d": "numérico",
+   "q": "Qual a raiz quadrada de 81?",
+   "ok": [
+    "9"
+   ]
+  },
+  {
+   "id": "codigo-soma-1",
+   "d": "código",
+   "q": "Escreva em uma linha de Python a soma dos números pares de 1 a 10. Responda só o código.",
+   "ok": [
+    "sum(x for x in range(1, 11) if x % 2 == 0)"
+   ]
+  },
+  {
+   "id": "codigo-soma-2",
+   "d": "código",
+   "q": "Escreva em uma linha de Python a soma dos números ímpares de 1 a 9. Responda só o código.",
+   "ok": [
+    "sum(x for x in range(1, 10) if x % 2 == 1)"
+   ]
+  },
+  {
+   "id": "negacao-1",
+   "d": "verbal",
+   "q": "Numa frase: \"O time jogou mal, mas venceu; o técnico, porém, não ficou satisfeito.\" O técnico ficou satisfeito com o resultado? Responda SIM ou NÃO.",
+   "ok": [
+    "não"
+   ]
+  },
+  {
+   "id": "negacao-2",
+   "d": "verbal",
+   "q": "Numa frase: \"A equipe treinou muito e o treinador ficou satisfeito com o resultado.\" O treinador ficou satisfeito? Responda SIM ou NÃO.",
+   "ok": [
+    "sim"
+   ]
+  },
+  {
+   "id": "binario-3",
+   "d": "código",
+   "q": "Converta o número 13 para binário com 8 bits.",
+   "ok": [
+    "00001101"
+   ]
+  },
+  {
+   "id": "calendario-1",
+   "d": "calendário",
+   "q": "Que dia da semana será em 25/12/2026?",
+   "ok": [
+    "sexta-feira"
+   ]
+  },
+  {
+   "id": "calendario-2",
+   "d": "calendário",
+   "q": "Que dia da semana foi 1 de janeiro de 2000?",
+   "ok": [
+    "sábado"
+   ]
+  },
+  {
+   "id": "calendario-3",
+   "d": "calendário",
+   "q": "Que dia da semana é 07/09/2025?",
+   "ok": [
+    "domingo"
+   ]
+  },
+  {
+   "id": "geografia-1",
+   "d": "geografia",
+   "q": "Qual é a capital da Bahia?",
+   "ok": [
+    "Salvador"
+   ]
+  },
+  {
+   "id": "geografia-2",
+   "d": "geografia",
+   "q": "Qual é a capital de Pernambuco?",
+   "ok": [
+    "Recife"
+   ]
+  },
+  {
+   "id": "geografia-3",
+   "d": "geografia",
+   "q": "Quantos estados tem o Brasil?",
+   "ok": [
+    "26"
+   ]
+  },
+  {
+   "id": "literatura-1",
+   "d": "literatura",
+   "q": "Quem escreveu Dom Casmurro?",
+   "ok": [
+    "Machado de Assis"
+   ]
+  },
+  {
+   "id": "mediana-1",
+   "d": "estatística",
+   "q": "Qual é a mediana de 3, 7, 5?",
+   "ok": [
+    "5"
+   ]
+  },
+  {
+   "id": "mediana-2",
+   "d": "estatística",
+   "q": "Qual é a mediana de 10, 2, 8, 4, 6?",
+   "ok": [
+    "6"
+   ]
+  },
+  {
+   "id": "moda-1",
+   "d": "estatística",
+   "q": "Qual é a moda de 2, 3, 3, 5, 7?",
+   "ok": [
+    "3"
+   ]
+  },
+  {
+   "id": "algebra-1",
+   "d": "álgebra",
+   "q": "Resolva a equação 2x + 3 = 11",
+   "ok": [
+    "4"
+   ]
+  },
+  {
+   "id": "algebra-2",
+   "d": "álgebra",
+   "q": "Resolva a equação 5x - 10 = 0",
+   "ok": [
+    "2"
+   ]
+  },
+  {
+   "id": "medidas-1",
+   "d": "medidas",
+   "q": "Quantos milímetros há em 3 centímetros?",
+   "ok": [
+    "30"
+   ]
+  },
+  {
+   "id": "medidas-2",
+   "d": "medidas",
+   "q": "Quantos litros há em 500 mililitros?",
+   "ok": [
+    "0,5"
+   ]
+  },
+  {
+   "id": "financas-1",
+   "d": "finanças",
+   "q": "Qual o juro simples de 3% ao mês sobre 200 durante 5 meses?",
+   "ok": [
+    "30"
+   ]
+  },
+  {
+   "id": "sequencias-1",
+   "d": "sequências",
+   "q": "Qual número continua a sequência: 3, 9, 27, 81, ?",
+   "ok": [
+    "243"
+   ]
+  },
+  {
+   "id": "sequencias-2",
+   "d": "sequências",
+   "q": "Qual número continua a sequência: 1, 1, 2, 3, 5, 8, ?",
+   "ok": [
+    "13"
+   ]
+  },
+  {
+   "id": "aritmetica-1",
+   "d": "aritmética",
+   "q": "Quanto é 7 elevado a 3?",
+   "ok": [
+    "343"
+   ]
+  },
+  {
+   "id": "aritmetica-2",
+   "d": "aritmética",
+   "q": "Qual a raiz quadrada de 196?",
+   "ok": [
+    "14"
    ]
   }
  ]

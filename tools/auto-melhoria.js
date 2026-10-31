@@ -299,9 +299,77 @@ function ranquear(provas, aberto) {
     atual.ganho = atual.provas;
   }
   lacunas = Array.from(porChave.values());
+  /* ---------- MEDIDO E REJEITADO (rodada 136, 31/10/2026) ----------
+     A fila vinha repetindo "vale só base de fatos estáveis com fonte" para o verbal. Isso foi
+     medido: a única base lexical pública gratuita em português (OpenWordnet-PT, 38.020 lemas,
+     52.670 synsets, 109.734 relações) cobre 0 dos 5 casos. Montar léxico próprio com essas
+     palavras seria ensinar para o teste — a própria regra proíbe. Então o item deixa de ser
+     "conserto pendente" e passa a ser "medido e rejeitado", com o número do arquivo. */
+  let lexico = null;
+  try {
+    const p = path.join(RAIZ, 'bench', 'lexico-publico.json');
+    if (fs.existsSync(p)) lexico = JSON.parse(fs.readFileSync(p, 'utf8'));
+  } catch (e) { lexico = null; }
+  for (const l of lacunas) {
+    if (l.tipo === 'conhecimento-sem-lexico' && lexico) {
+      l.estado = 'rejeitado-por-medicao';
+      l.medicao = { fonte: lexico.fonte.nome, cobertos: lexico.cobertos, total: lexico.total, arquivo: 'bench/lexico-publico.json' };
+      l.acao = 'MEDIDO E REJEITADO: ' + lexico.fonte.nome + ' (' + lexico.fonte.lemas_pt + ' lemas, '
+        + lexico.fonte.synsets + ' synsets) cobre ' + lexico.cobertos + ' de ' + lexico.total
+        + ' casos verbais. Restam duas opções honestas: o modelo, ou léxico próprio — que seria '
+        + 'ensinar para o teste. O produto garante que o caminho exato NÃO chuta (armadilhas).';
+    }
+  }
   const peso = { baixo: 2, medio: 1, alto: 0.5 };
-  lacunas.sort(function (a, b) { return (b.ganho * (peso[b.custo] || 1)) - (a.ganho * (peso[a.custo] || 1)); });
+  // item rejeitado por medição vai para o fim: não é trabalho pendente, é decisão com número.
+  const valor = function (l) { return l.estado === 'rejeitado-por-medicao' ? -1 : l.ganho * (peso[l.custo] || 1); };
+  for (const l of lacunas) l.valor = valor(l);          // ordem auditável, não escondida no sort
+  lacunas.sort(function (a, b) { return b.valor - a.valor; });
   return { naoResolvidas: naoResolvidas.length, erradas: erradas.map(function (p) { return p.id; }), lacunas: lacunas };
+}
+
+/* ---------- 4. CAPACIDADE: "como dobrar" com número, não com promessa ---------- */
+// A pergunta do dono (31/10/2026): "pergunte a ele como dobrar sua capacidade em tudo e aplique".
+// A resposta é uma régua FIXA: a rodada 135, o dia em que o medidor passou a se auditar. Ela não
+// sobe quando o placar sobe — se subisse, o alvo fugiria e "dobrar" nunca teria prova.
+const REGUA_135 = { solucionadores: 16, provas: 47, porCodigo: 40, armadilhas: 17, armadilhasOk: 17,
+  fio: 40, cobertura: 16, dominios: 9, verbalPorCodigo: 1, erradas: 0 };
+
+function capacidade(rel, provas, cob) {
+  const d = REGUA_135;
+  const dominios = new Set(provas.filter(function (p) { return p.caminho !== 'modelo'; }).map(function (p) { return p.dominio; }));
+  const verbal = provas.filter(function (p) { return p.dominio === 'verbal' && p.caminho !== 'modelo'; }).length;
+  const eixos = [
+    { id: 'solucionadores', rotulo: 'solucionadores do motor', antes: d.solucionadores, hoje: SOLUCIONADORES.length, dobro: d.solucionadores * 2, unidade: '',
+      como: 'cada solucionador novo entra com prova e armadilha; sem o par, não entra' },
+    { id: 'provas', rotulo: 'provas no gabarito', antes: d.provas, hoje: rel.provas.total, dobro: d.provas * 2, unidade: '',
+      como: 'prova nova tem de ser verificável à mão e cair num caminho medido' },
+    { id: 'porCodigo', rotulo: 'provas resolvidas por código', antes: d.porCodigo, hoje: rel.provas.porCodigo, dobro: d.porCodigo * 2, unidade: '',
+      como: 'só forma que casa exatamente; o resto continua no modelo' },
+    { id: 'armadilhas', rotulo: 'armadilhas no banco', antes: d.armadilhas, hoje: rel.armadilhas ? rel.armadilhas.total : 0, dobro: d.armadilhas * 2, unidade: '',
+      como: 'para cada forma nova, uma pergunta que PARECE dela e cuja resposta certa é outra' },
+    { id: 'armadilhasOk', rotulo: 'armadilhas respeitadas', antes: d.armadilhasOk, hoje: rel.armadilhas ? rel.armadilhas.ok : 0, dobro: d.armadilhasOk * 2, unidade: '',
+      como: 'se o caminho exato responde a armadilha, ele está chutando: consertar o solucionador ou calar' },
+    { id: 'fio', rotulo: 'provas que chegam à pessoa', antes: d.fio, hoje: rel.fio ? rel.fio.ok : 0, dobro: d.fio * 2, unidade: '',
+      como: 'a resposta exata tem de sobreviver aos portões do produto (anti-eco, formato)' },
+    { id: 'cobertura', rotulo: 'solucionadores com prova E armadilha', antes: d.cobertura, hoje: SOLUCIONADORES.length - cob.semProva.length - cob.semArmadilha.length, dobro: d.cobertura * 2, unidade: '',
+      como: 'risco não medido é pior que risco medido' },
+    { id: 'dominios', rotulo: 'domínios com caminho exato', antes: d.dominios, hoje: dominios.size, dobro: d.dominios * 2, unidade: '',
+      como: 'só caminho exato novo conta; rótulo novo em prova antiga não é capacidade' },
+    { id: 'verbalPorCodigo', rotulo: 'provas verbais por código', antes: d.verbalPorCodigo, hoje: verbal, dobro: d.verbalPorCodigo * 2, unidade: '',
+      como: 'o que é léxico puro fica com o modelo (ver bench/lexico-publico.json)' },
+    { id: 'textoAberto', rotulo: 'texto aberto (régua de 24)', antes: rel.aberto ? rel.aberto.passaram : 0, hoje: rel.aberto ? rel.aberto.passaram : 0,
+      dobro: rel.aberto ? rel.aberto.total : 0, unidade: '', teto: true,
+      como: 'aqui o alvo é o TETO da régua, não o dobro: 24/24. Só muda com fonte viva ou teto de tokens' }
+  ];
+  for (const e of eixos) {
+    e.falta = Math.max(0, e.dobro - e.hoje);
+    e.progresso = e.dobro ? Math.round((e.hoje / e.dobro) * 1000) / 10 : null;
+    e.fator = e.antes ? Math.round((e.hoje / e.antes) * 100) / 100 : null;
+    e.estado = e.hoje >= e.dobro ? 'dobrado' : (e.teto ? 'teto não alcançado' : 'em curso');
+  }
+  return { esquema: 'capacidade-v1', regua: 'rodada 135', eixos: eixos,
+    dobrados: eixos.filter(function (e) { return e.estado === 'dobrado'; }).length, total: eixos.length };
 }
 
 function salvarHistorico(relatorio) {
@@ -388,6 +456,7 @@ function salvarHistorico(relatorio) {
     cobertura: { semArmadilha: cob.semArmadilha, semProva: cob.semProva },
     lacunas: ranking.lacunas
   };
+  relatorio.capacidade = capacidade(relatorio, provas, cob);
 
   if (process.argv.includes('--json')) {
     console.log(JSON.stringify(relatorio, null, 1));
@@ -439,10 +508,31 @@ function salvarHistorico(relatorio) {
   if (!ranking.lacunas.length) console.log('   nada a consertar pelas provas de hoje');
   ranking.lacunas.forEach(function (l, i) {
     console.log('   ' + (i + 1) + '. ' + l.tipo + (l.dominio ? ' · ' + l.dominio : '')
+      + (l.estado === 'rejeitado-por-medicao' ? ' [MEDIDO E REJEITADO]' : '')
       + ' — ' + l.provas + ' prova(s), custo ' + l.custo
       + (l.exemplos.length ? ' [' + l.exemplos.join(', ') + ']' : ''));
     console.log('      → ' + l.acao);
   });
+
+  /* ---------- CAPACIDADE: a resposta literal a "como dobrar" ---------- */
+  const cap = relatorio.capacidade;
+  console.log('== CAPACIDADE (régua fixa: rodada 135 · alvo = o DOBRO · estado por eixo)');
+  console.log('   ' + 'eixo'.padEnd(36) + 'antes   hoje   dobro  falta  estado');
+  for (const e of cap.eixos) {
+    const nome = e.rotulo.length > 34 ? e.rotulo.slice(0, 33) + '…' : e.rotulo;
+    console.log('   ' + nome.padEnd(36) + String(e.antes).padStart(5) + String(e.hoje).padStart(7)
+      + String(e.dobro).padStart(8) + String(e.falta).padStart(7) + '  '
+      + (e.estado === 'dobrado' ? '✔ dobrado (' + e.fator + '×)' : e.estado));
+  }
+  console.log('   ' + cap.dobrados + ' de ' + cap.total + ' eixos dobrados nesta régua.');
+  const naoDobrados = cap.eixos.filter(function (e) { return e.estado !== 'dobrado'; });
+  if (naoDobrados.length) {
+    console.log('== COMO DOBRAR O QUE AINDA NÃO DOBROU');
+    for (const e of naoDobrados) {
+      console.log('   · ' + e.rotulo + ': ' + e.hoje + ' → ' + e.dobro + ' (falta ' + e.falta + ')');
+      console.log('     → ' + e.como);
+    }
+  }
 
   const hist = salvarHistorico(relatorio);
   const anterior = hist.rodadas.length > 1 ? hist.rodadas[hist.rodadas.length - 2] : null;

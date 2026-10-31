@@ -1,0 +1,29 @@
+{
+ "esquema": "lexico-publico-v1",
+ "quando": "2026-10-31",
+ "pergunta": "A fila do auto-diagnóstico dizia que o caminho exato podia cobrir as 5 provas verbais com 'base de fatos estáveis com fonte'. Isso foi medido.",
+ "fonte": {
+  "nome": "OpenWordnet-PT (own-pt)",
+  "url": "https://github.com/own-pt/openWordnet-PT",
+  "licenca": "WordNet-like, uso livre (ver LICENSE do projeto)",
+  "arquivo_baixado_mb": 121.2,
+  "lemas_pt": 38020,
+  "synsets": 52670,
+  "relacoes": 109734
+ },
+ "casos": [
+  {"id": "facil-ver1", "tipo": "analogia profissional→local", "coberto": false,
+   "porque": "não existe relação 'profissão → local de trabalho' na base; médico e hospital não compartilham synset nem hiperônimo"},
+  {"id": "facil-ver2", "tipo": "qual não pertence (categoria)", "coberto": false,
+   "porque": "'geladeira' não tem synset em português (o mais próximo é 'frigorífico'); sem ela não há categoria para comparar"},
+  {"id": "facil-ver3", "tipo": "sinônimo (efêmero → passageiro)", "coberto": false,
+   "porque": "efêmero e passageiro não aparecem no mesmo synset em nenhum dos 52.670 synsets"},
+  {"id": "facil-ver4", "tipo": "antônimo (escasso → abundante)", "coberto": false,
+   "porque": "a base tem 513 relações de antonímia no total e nenhuma liga escasso a abundante"},
+  {"id": "dificil-d9", "tipo": "analogia todo→parte (livro:capítulo :: sinfonia:movimento)", "coberto": false,
+   "porque": "não há relação parte-de ligando livro→capítulo nem sinfonia→movimento"}
+ ],
+ "cobertos": 0,
+ "total": 5,
+ "veredito": "0 de 5. A rota 'base de fatos com fonte' NÃO resolve o verbal com a única base lexical pública gratuita em português. Montar um léxico próprio com essas palavras seria ensinar para o teste — a regra do próprio medidor proíbe. O verbal fica com o modelo, e o que o produto garante é que o caminho exato NÃO chuta (ver tools/armadilhas-do-chat.json)."
+}

@@ -51,6 +51,16 @@
     var i, n = nums.length, ult = nums[n - 1], cand = null;
     function igual(arr, v) { return arr.every(function (x) { return Math.abs(x - v) < 1e-9; }); }
 
+    /* (0) RECORRÊNCIA DE FIBONACCI (rodada 136, 31/10/2026): cada termo é a soma dos dois
+       anteriores — conferido em TODOS os termos, não em dois. 1,1,2,3,5,8 → 13. Antes disto a
+       sequência que mais aparece em prova de QI caía no modelo. */
+    if (n >= 4) {
+      var fib = true;
+      for (i = 2; i < n; i++) if (Math.abs(nums[i] - (nums[i - 1] + nums[i - 2])) > 1e-9) fib = false;
+      if (fib) return { texto: inteiro(nums[n - 1] + nums[n - 2]), ferramenta: 'razao-local',
+        fonte: 'recorrência de Fibonacci conferida em todos os termos' };
+    }
+
     // (a) quadrados e oblongos: acham o n inicial e conferem em todos os termos
     for (var n0 = 0; n0 <= 60 && !cand; n0++) {
       var quad = true, oblong = true;
@@ -631,8 +641,382 @@
     return null;
   }
 
+  /* ============ 17–33: MOTOR DOBRADO (rodada 136, 31/10/2026) ============
+     Pedido do dono: "peça o máximo de melhorias que ele conseguir trazer e implemente tudo,
+     pergunte a ele como dobrar sua capacidade em tudo e aplique". O auto-diagnóstico apontou a
+     fila; aqui ela é executada. Cada solucionador novo vem com (a) uma prova no gabarito e
+     (b) uma armadilha que mede o silêncio quando a pergunta muda de natureza. Sem o par, não entra.
+     Regra de sempre: forma que não casa EXATAMENTE devolve null. */
+
+  /* 17. regra de três direta: "Se 4 kg custam 20 reais, quanto custam 7 kg?" → 35.
+     Cala quando há grandezas que costumam ser INVERSAS (dias, operários, torneiras, velocidade):
+     aí a conta é outra e chutar proporção direta daria resposta exata errada. */
+  function regraDeTres(q) {
+    var t = norm(q);
+    if (/dias|horas|operari|homens|maquinas|torneira|velocidade|km\//.test(t)) return null;
+    if (!/quanto/.test(t)) return null;
+    var m = texto(q).match(/se\s+([\d]+)\s+[^,;.?]*?\bcustam?\b[^,;.?]*?([\d]+)[^?]*?quanto\s+custam?\s+([\d]+)/i);
+    if (!m) return null;
+    var a = Number(m[1]), b = Number(m[2]), c = Number(m[3]);
+    if (!a || [a, b, c].some(function (x) { return isNaN(x); })) return null;
+    var r = b * c / a;
+    return { texto: inteiro(r), ferramenta: 'razao-local', fonte: 'regra de três direta: ' + b + ' × ' + c + ' ÷ ' + a };
+  }
+
+  /* 18. média aritmética simples de uma lista de números. */
+  function media(q) {
+    var t = norm(q);
+    // "mediana" contém "media": sem esta guarda, a média responderia a mediana (armadilha
+    // arm-mediana-vira-media).
+    if (/mediana/.test(t)) return null;
+    if (!/media/.test(t)) return null;
+    // "a média de três números é 12; dois deles são 4 e 8" pede o TERMO que falta (armadilha
+    // arm-media-tres-numeros): a forma reconhecida só sabe a média da lista citada.
+    if (/deles|delas|terceiro|quarto|que falta|qual (?:e|o) (?:o )?numero/.test(t)) return null;
+    var trecho = null, m;
+    if ((m = texto(q).match(/m[ée]dia[^:]*?:?\s*((?:-?\d+(?:[.,]\d+)?\s*(?:,|e|;)\s*)+-?\d+(?:[.,]\d+)?)/i))) trecho = m[1];
+    else if ((m = texto(q).match(/m[ée]dia de\s+([\d.,\s]+(?:e\s+[\d.,]+))/i))) trecho = m[1];
+    if (!trecho) return null;
+    var ns = (trecho.match(/-?\d+(?:[.,]\d+)?/g) || []).map(function (x) { return Number(x.replace(/,/g, '.')); });
+    if (ns.length < 2) return null;
+    var soma = ns.reduce(function (a, b) { return a + b; }, 0);
+    return { texto: inteiro(Math.round((soma / ns.length) * 1e6) / 1e6), ferramenta: 'razao-local',
+      fonte: 'média de ' + ns.length + ' valores (soma ' + soma + ')' };
+  }
+
+  /* 19. MDC e MMC de dois números. */
+  function mdcMmc(q) {
+    var t = norm(q), m;
+    // três ou mais números não é a forma implementada (armadilha arm-mmc-tres-numeros)
+    var qtd = (t.match(/\b\d+\b/g) || []).length;
+    if (qtd > 2) return null;
+    if ((m = t.match(/\bmdc\b[^0-9]*(\d+)[^0-9]+(\d+)/)) || (m = t.match(/maximo divisor comum[^0-9]*(\d+)[^0-9]+(\d+)/))) {
+      return { texto: String(mdc(Number(m[1]), Number(m[2]))), ferramenta: 'razao-local', fonte: 'algoritmo de Euclides' };
+    }
+    if ((m = t.match(/\bmmc\b[^0-9]*(\d+)[^0-9]+(\d+)/)) || (m = t.match(/minimo multiplo comum[^0-9]*(\d+)[^0-9]+(\d+)/))) {
+      var a = Number(m[1]), b = Number(m[2]);
+      return { texto: String(a * b / mdc(a, b)), ferramenta: 'razao-local', fonte: 'mmc = a × b ÷ mdc(a,b)' };
+    }
+    return null;
+  }
+
+  /* 20. aumento ou desconto percentual sobre um valor (o caminho antigo de custo recusa desconto;
+     aqui a conta é explícita, com o valor final pedido). */
+  function aumentoDesconto(q) {
+    var t = norm(q), m;
+    if (!/aumento|desconto|acrescimo|reducao/.test(t)) return null;
+    if (!/quanto|qual|valor final|preco final|passa a custar|fica/.test(t)) return null;
+    // duas operações em sequência (armadilha arm-percentual-encadeado): a forma reconhecida
+    // aplica uma só, e uma resposta exata parcial é pior que silêncio.
+    if (/depois|em seguida|sobre o (?:valor|resultado)|e entao|encadead/.test(t)) return null;
+    if ((t.match(/aumento|desconto|acrescimo|reducao/g) || []).length > 1) return null;
+    var p = null, base = null, tipo = null;
+    if ((m = t.match(/(aumento|desconto|acrescimo|reducao)\s+de\s+(\d+(?:[.,]\d+)?)\s*%\s*(?:sobre|em|no|de)\s*(?:r\$\s*)?([\d.,]+)/))) {
+      tipo = m[1]; p = Number(m[2].replace(',', '.')); base = num(m[3]);
+    } else if ((m = t.match(/(?:de|por)\s*(?:r\$\s*)?([\d.,]+)\s*(?:reais|euros)?[^?]*?(aumento|desconto|acrescimo|reducao)\s+de\s+(\d+(?:[.,]\d+)?)\s*%/))) {
+      base = num(m[1]); tipo = m[2]; p = Number(m[3].replace(',', '.'));
+    }
+    if (p === null || base === null || isNaN(p) || isNaN(base)) return null;
+    if (p < 0 || p > 100) return null;
+    var fator = /desconto|reduc/.test(tipo) ? (1 - p / 100) : (1 + p / 100);
+    return { texto: inteiro(Math.round(base * fator * 100) / 100), ferramenta: 'razao-local',
+      fonte: (/desconto|reduc/.test(tipo) ? 'desconto' : 'aumento') + ' de ' + p + '% sobre ' + base };
+  }
+
+  /* 21. juros simples: J = C × i × t. */
+  function jurosSimples(q) {
+    var t = norm(q), m;
+    if (!/juros?\s+simples/.test(t)) return null;
+    if (!(m = t.match(/juros?\s+simples\s+de\s+(\d+(?:[.,]\d+)?)\s*%\s*ao\s*(m[eê]s|ano)\s*(?:sobre|de)\s*(?:r\$\s*)?([\d.,]+)\s*(?:durante|por)\s*(\d+)\s*(m[eê]s|meses|ano|anos)/i))) return null;
+    var i = Number(m[1].replace(',', '.')), prazo = m[2].toLowerCase(), cap = num(m[3]), tq = Number(m[4]), unidade = m[5].toLowerCase();
+    if ([i, cap, tq].some(function (x) { return isNaN(x); })) return null;
+    // unidade do prazo tem de casar com a da taxa; senão é conversão e o cálculo viraria chute
+    var taxaMes = /m/.test(prazo.charAt(0)), prazoMes = /^m/.test(unidade);
+    if (taxaMes !== prazoMes) return null;
+    var j = cap * i / 100 * tq;
+    return { texto: inteiro(Math.round(j * 100) / 100), ferramenta: 'razao-local', fonte: 'juros simples: C × i × t = ' + cap + ' × ' + i + '% × ' + tq };
+  }
+
+  /* 22. velocidade média a partir de distância em km e tempo em horas. */
+  function velocidade(q) {
+    var t = norm(q), m;
+    if (!/velocidade media/.test(t)) return null;
+    // tempo parado no caminho muda a velocidade média (armadilha arm-velocidade-com-parada)
+    if (/parou|parada|pausa|descanso|ficou parado/.test(t)) return null;
+    if (!(m = texto(q).match(/(\d+(?:[.,]\d+)?)\s*km\b[^?]*?em\s*(\d+(?:[.,]\d+)?)\s*horas?/i))) return null;
+    var d = Number(m[1].replace(',', '.')), h = Number(m[2].replace(',', '.'));
+    if (!h) return null;
+    return { texto: inteiro(Math.round((d / h) * 100) / 100) + ' km/h', ferramenta: 'razao-local', fonte: 'v = d ÷ t' };
+  }
+
+  /* 23. área e perímetro de retângulo/quadrado (e área de triângulo com base e altura). */
+  function areaPerimetro(q) {
+    var t = norm(q), m;
+    if (/triangulo/.test(t) && (m = texto(q).match(/base\s*(?:de\s*)?(\d+(?:[.,]\d+)?)\s*e\s*altura\s*(?:de\s*)?(\d+(?:[.,]\d+)?)/i))) {
+      var b = num(m[1]), a = num(m[2]);
+      if (isNaN(b) || isNaN(a)) return null;
+      return { texto: inteiro(Math.round(b * a / 2 * 100) / 100), ferramenta: 'razao-local', fonte: 'área do triângulo: b × h ÷ 2' };
+    }
+    if (!/retangulo|quadrado/.test(t)) return null;
+    // área com recorte/subtração não é a forma implementada (armadilha arm-area-com-desconto)
+    if (/descontando|sem contar|exceto|menos|faixa|recorte|buraco|caminho/.test(t)) return null;
+    if (!(m = texto(q).match(/(\d+(?:[.,]\d+)?)\s*(?:m|cm|metros?|centimetros?)?\s*(?:por|x|e)\s*(\d+(?:[.,]\d+)?)\s*(?:m|cm|metros?|centimetros?)/i))) return null;
+    var x = num(m[1]), y = num(m[2]);
+    if (isNaN(x) || isNaN(y)) return null;
+    if (/perimetro/.test(t)) return { texto: inteiro(2 * (x + y)), ferramenta: 'razao-local', fonte: 'perímetro: 2(x+y)' };
+    if (/area/.test(t)) return { texto: inteiro(Math.round(x * y * 100) / 100), ferramenta: 'razao-local', fonte: 'área: x × y' };
+    return null;
+  }
+
+  /* 24. resto de uma divisão inteira (divisor zero → cala). */
+  function divisaoResto(q) {
+    var m = texto(q).match(/resto da divis[ãa]o de\s+(\d+)\s+por\s+(\d+)/i);
+    if (!m) return null;
+    var a = Number(m[1]), b = Number(m[2]);
+    if (!b) return null;
+    return { texto: String(a % b), ferramenta: 'razao-local', fonte: 'a mod b' };
+  }
+
+  /* 25. fatorial (n ≤ 20: acima disso o número passa da precisão exata do JavaScript). */
+  function fatorial(q) {
+    var m = texto(q).match(/(?:^|[^\d])(\d{1,2})\s*!/);
+    if (!m) return null;
+    var t = norm(q);
+    if (!/fatorial|quanto|calcule|vale|!/ .test(t)) return null;
+    var n = Number(m[1]);
+    if (n > 20) return null;
+    // "5! + 1" não é fatorial (armadilha arm-fatorial-soma); "25!" passa da precisão exata
+    if (/!\s*[+\-*/^]/.test(texto(q))) return null;
+    if (/fatorial de\s+\d+\s*[+\-*/]/.test(t)) return null;
+    var r = 1;
+    for (var i = 2; i <= n; i++) r *= i;
+    return { texto: String(r), ferramenta: 'razao-local', fonte: 'n! calculado por laço' };
+  }
+
+  /* 26. quantos primos existem num intervalo fechado. */
+  function primos(q) {
+    var t = norm(q), m;
+    if (!/primos?/.test(t)) return null;
+    // "primos gêmeos" conta PARES, não primos (armadilha arm-primos-gemeos)
+    if (/gemeo|apenas|exceto|tambem|somente/.test(t)) return null;
+    if (!(m = texto(q).match(/(?:entre|de)\s+(\d+)\s+(?:e|a|at[ée])\s+(\d+)/i))) return null;
+    var a = Number(m[1]), b = Number(m[2]);
+    if (a > b || b > 100000 || a < 1) return null;
+    function ehPrimo(n) {
+      if (n < 2) return false;
+      for (var d = 2; d * d <= n; d++) if (n % d === 0) return false;
+      return true;
+    }
+    var lista = [];
+    for (var n = a; n <= b; n++) if (ehPrimo(n)) lista.push(n);
+    if (/quais/.test(t)) return { texto: lista.join(', '), ferramenta: 'razao-local', fonte: 'crivo por divisão até a raiz' };
+    return { texto: String(lista.length), ferramenta: 'razao-local', fonte: 'contagem de primos por divisão até a raiz' };
+  }
+
+  /* 27. base numérica: decimal → binário/hexadecimal. */
+  function baseBinaria(q) {
+    var t = norm(q), m;
+    if (!/binari|base 2|hexadecimal|base 16/.test(t)) return null;
+    if (!(m = t.match(/(?:converta|converter|transforme|passe|escreva)\s+(?:o\s+)?(?:numero\s+)?(\d+)\s+(?:para|em)\s+(binari[oa]|base 2|hexadecimal|base 16)/))) return null;
+    var n = Number(m[1]), paraHex = /hexadecimal|base 16/.test(m[2]);
+    var saida = paraHex ? n.toString(16).toUpperCase() : n.toString(2);
+    // largura pedida ("com 8 bits"): preencher com zero à esquerda, como a pergunta manda
+    var larg = t.match(/com\s+(\d+)\s*(?:bits?|digitos?|casas?)/);
+    if (larg) {
+      var w = Number(larg[1]);
+      if (!w || w < saida.length || w > 32) return null;
+      saida = (new Array(w + 1).join('0') + saida).slice(-w);
+    }
+    return { texto: saida, ferramenta: 'razao-local', fonte: 'conversão de base exata' + (larg ? ' com largura fixa' : '') };
+  }
+
+  /* 28. ordenar uma lista curta em ordem alfabética. */
+  function ordemAlfabetica(q) {
+    var t = norm(q), m;
+    if (!/ordem alfabetica/.test(t)) return null;
+    if (!(m = texto(q).match(/ordem alfab[ée]tica:?\s*([^?]+)/i))) return null;
+    // "… e diga quantas vogais" é uma segunda pergunta (armadilha arm-ordem-com-pergunta-extra)
+    if (/,\s*e\s+(?:diga|diz|informe|quantas|quantos|explique)/.test(norm(m[1]))) return null;
+    var itens = m[1].replace(/\.$/, '').split(/\s*,\s*|\s+e\s+/).map(function (s) { return s.trim(); }).filter(Boolean);
+    if (itens.length < 2) return null;
+    var ord = itens.slice().sort(function (a, b) {
+      var x = norm(a), y = norm(b);
+      return x < y ? -1 : x > y ? 1 : 0;
+    });
+    return { texto: ord.join(', '), ferramenta: 'razao-local', fonte: 'ordenação por comparação sem acento' };
+  }
+
+  /* 29. palíndromo: ignora espaço, hífen e acento; exige o texto entre aspas para não adivinhar. */
+  function palindromo(q) {
+    var t = norm(q);
+    if (!/palindrom/.test(t)) return null;
+    var m = texto(q).match(/["“']([^"”']{2,})["”']/);
+    if (!m) return null;
+    // duas afirmações na mesma frase (armadilha arm-palindromo-composto)
+    if ((texto(q).match(/["“][^"”]{2,}["”]/g) || []).length > 1) return null;
+    var limpo = norm(m[1]).replace(/[^a-z0-9]/g, '');
+    if (limpo.length < 2) return null;
+    var invertido = limpo.split('').reverse().join('');
+    return { texto: limpo === invertido ? 'Sim' : 'Não', ferramenta: 'razao-local',
+      fonte: 'comparação com o inverso: "' + limpo + '"' };
+  }
+
+  /* 30. anagrama: comparar letras ordenadas. */
+  function anagrama(q) {
+    var t = norm(q);
+    if (!/anagrama/.test(t)) return null;
+    var m = texto(q).match(/["“']([^"”']{2,})["”']\s*(?:e|é|com)\s*["“']([^"”']{2,})["”']/i);
+    if (!m) return null;
+    function chave(s) { return norm(s).replace(/[^a-z0-9]/g, '').split('').sort().join(''); }
+    // "e têm o mesmo significado" é outra pergunta (armadilha arm-anagrama-com-significado)
+    if (/significado|sentido|mesma coisa|sinonim/.test(t)) return null;
+    var a = chave(m[1]), b = chave(m[2]);
+    if (!a || !b) return null;
+    return { texto: a === b ? 'Sim' : 'Não', ferramenta: 'razao-local', fonte: 'letras ordenadas iguais' };
+  }
+
+  /* 31. contagem de palavras de uma frase citada. */
+  function contagemPalavras(q) {
+    var t = norm(q);
+    if (!/quantas palavras/.test(t)) return null;
+    var m = texto(q).match(/["“']([^"”']{2,})["”']/);
+    if (!m) return null;
+    // "sem contar os artigos" muda a conta (armadilha arm-palavras-sem-artigos)
+    if (/sem contar|sem os|excluindo|desconsider|tirando/.test(t)) return null;
+    var palavras = m[1].trim().split(/\s+/).filter(Boolean);
+    if (!palavras.length) return null;
+    return { texto: String(palavras.length), ferramenta: 'razao-local', fonte: 'contagem por espaço em branco' };
+  }
+
+  /* 32. conversão de unidades de comprimento/massa/volume (fatores exatos). */
+  function conversaoUnidades(q) {
+    var t = norm(q), m;
+    var F = { milimetro: 1, centimetro: 10, metro: 1000, quilometro: 1000000, grama: 1, quilograma: 1000, mililitro: 1, litro: 1000 };
+    if (!(m = t.match(/quantos?\s+(milimetros?|centimetros?|metros?|quilometros?|gramas?|quilogramas?|mililitros?|litros?)\s+(?:h[áa]|existem|tem|cabem)\s+em\s+([\d.,]+)\s+(milimetros?|centimetros?|metros?|quilometros?|gramas?|quilogramas?|mililitros?|litros?)/i))) return null;
+    function chave(w) { return norm(w).replace(/s$/, ''); }
+    var de = F[chave(m[1])], para = F[chave(m[3])];
+    if (!de || !para) return null;
+    var grupo = function (w) { return /grama|litro|mililitro/.test(chave(w)) ? 'massa/volume' : 'comprimento'; };
+    if (grupo(m[1]) !== grupo(m[3])) return null;      // não converter grama em metro: seria chute
+    var v = num(m[2]);
+    if (isNaN(v)) return null;
+    return { texto: inteiro(Math.round(v * para / de * 1e6) / 1e6), ferramenta: 'razao-local', fonte: 'fator exato de unidade' };
+  }
+
+  /* 33. potência inteira e raiz quadrada exata (raiz não exata → cala). */
+  function potenciaRaiz(q) {
+    var t = norm(q), m;
+    if ((m = texto(q).match(/raiz quadrada de\s+(\d+)/i))) {
+      var n = Number(m[1]), r = Math.sqrt(n);
+      if (Math.abs(r - Math.round(r)) > 1e-9) return null;
+      return { texto: String(Math.round(r)), ferramenta: 'razao-local', fonte: 'raiz quadrada exata' };
+    }
+    if ((m = texto(q).match(/(\d+)\s*(?:\^|elevado a)\s*(\d+)/i))) {
+      var b = Number(m[1]), e = Number(m[2]);
+      if (e > 30 || b > 1000) return null;
+      var p = Math.pow(b, e);
+      if (!isFinite(p) || p > Number.MAX_SAFE_INTEGER) return null;
+      return { texto: String(p), ferramenta: 'razao-local', fonte: 'potência inteira exata' };
+    }
+    return null;
+  }
+
+  /* 36. mediana de uma lista ímpar de números (com quantidade par a forma cala: a mediana é
+     média dos dois do meio, e isso é outra conta). */
+  function mediana(q) {
+    var t = norm(q);
+    if (!/mediana/.test(t)) return null;
+    var m = texto(q).match(/mediana[^0-9]*((?:-?\d+(?:[.,]\d+)?\s*(?:,|e|;)\s*)+-?\d+(?:[.,]\d+)?)/i);
+    if (!m) return null;
+    var ns = (m[1].match(/-?\d+(?:[.,]\d+)?/g) || []).map(function (x) { return Number(x.replace(/,/g, '.')); });
+    if (ns.length < 3 || ns.length % 2 === 0) return null;
+    var ord = ns.slice().sort(function (a, b) { return a - b; });
+    return { texto: inteiro(ord[(ord.length - 1) / 2]), ferramenta: 'razao-local',
+      fonte: 'mediana de ' + ns.length + ' valores ordenados' };
+  }
+
+  /* 37. moda: o valor que mais aparece — só responde quando há UM vencedor claro. */
+  function moda(q) {
+    var t = norm(q);
+    if (!/\bmoda\b/.test(t)) return null;
+    var m = texto(q).match(/moda[^0-9]*((?:-?\d+(?:[.,]\d+)?\s*(?:,|e|;)\s*)+-?\d+(?:[.,]\d+)?)/i);
+    if (!m) return null;
+    var ns = (m[1].match(/-?\d+(?:[.,]\d+)?/g) || []).map(function (x) { return Number(x.replace(/,/g, '.')); });
+    if (ns.length < 3) return null;
+    var cont = {};
+    for (var i = 0; i < ns.length; i++) cont[ns[i]] = (cont[ns[i]] || 0) + 1;
+    var melhor = null, qtd = 0, empate = false;
+    for (var k in cont) {
+      if (cont[k] > qtd) { qtd = cont[k]; melhor = k; empate = false; }
+      else if (cont[k] === qtd) empate = true;
+    }
+    if (empate || qtd < 2) return null;              // sem vencedor claro: cala
+    return { texto: inteiro(Number(melhor)), ferramenta: 'razao-local', fonte: 'moda: valor com ' + qtd + ' ocorrências' };
+  }
+
+  /* 38. equação do primeiro grau com x só de um lado: ax + b = c. */
+  function algebraLinear(q) {
+    var t = norm(q);
+    if (!/resolva|resolver|calcule|determine/.test(t)) return null;
+    if (!/equacao|\bx\b/.test(t)) return null;
+    var m = texto(q).match(/(-?\d+)\s*\*?\s*x\s*([+-])\s*(\d+)\s*=\s*(-?\d+)/i);
+    if (!m) return null;
+    // "2x + 3 = x + 11" (x dos dois lados) não é esta forma: cala
+    if (/=\s*-?\d*\s*\*?\s*x/i.test(texto(q))) return null;
+    var a = Number(m[1]), b = Number(m[3]) * (m[2] === '-' ? -1 : 1), c = Number(m[4]);
+    if (!a) return null;
+    var x = (c - b) / a;
+    return { texto: inteiro(Math.round(x * 1e6) / 1e6), ferramenta: 'razao-local',
+      fonte: 'equação linear: x = (' + c + ' - (' + b + ')) / ' + a };
+  }
+
+  /* 34. GERAÇÃO de uma linha de Python para soma com filtro de paridade.
+     Não é cálculo: é escrever código. Antes disto, "soma dos pares de 1 a 10" caía no modelo.
+     Cala em: produto, média, contagem, outro intervalo aberto, outra linguagem. */
+  function codigoSoma(q) {
+    var t = norm(q), m;
+    if (!/python/.test(t) || !/uma linha|one line/.test(t)) return null;
+    if (!/soma/.test(t) || /produto|multiplic|media|quantos|contagem/.test(t)) return null;
+    if (/javascript|typescript|java\b|c\+\+|ruby/.test(t)) return null;
+    if (!(m = texto(q).match(/soma dos n[úu]meros\s+(pares|ímpares|impares)\s+de\s+(\d+)\s+a\s+(\d+)/i))) return null;
+    var a = Number(m[2]), b = Number(m[3]);
+    if (a > b) return null;
+    // cuidado: "ímpares" CONTÉM "par" — testar o início da palavra, não substring
+    var filtro = /^p/i.test(norm(m[1])) ? 'x % 2 == 0' : 'x % 2 == 1';
+    return { texto: 'sum(x for x in range(' + a + ', ' + (b + 1) + ') if ' + filtro + ')',
+      ferramenta: 'razao-local', fonte: 'geração por forma reconhecida: filtro de paridade + intervalo fechado' };
+  }
+
+  /* 35. INFERÊNCIA por negação sobre o texto citado: "o técnico, porém, não ficou satisfeito"
+     e a pergunta "o técnico ficou satisfeito?" → Não. Exige o MESMO predicado e a negação
+     imediatamente antes do verbo; predicado diferente ("insatisfeito") → cala (dupla negação
+     inverte o sentido e chutar seria pior). */
+  function negacaoTexto(q) {
+    var bruto = texto(q);
+    // A pergunta vem DEPOIS do trecho citado; procurar o predicado na frase citada pegava
+    // "não ficou insatisfeito" como se fosse o pedido (armadilha arm-negacao-dupla).
+    var citado = bruto.match(/["“]([^"”]+)["”]/);
+    if (!citado) return null;
+    var pergunta = bruto.slice(citado.index + citado[0].length).split(/[\n/]/)[0];
+    var mPerg = pergunta.match(/([a-zà-ÿ]+)\s+ficou\s+([a-zà-ÿ]+)/i);
+    if (!mPerg) return null;
+    if (!/sim ou n[ãa]o|responda sim/i.test(norm(bruto))) return null;
+    var frase = citado[1];
+    var afirmativo = new RegExp('\\b' + mPerg[1] + '\\b[^.;]*?\\bficou\\s+' + mPerg[2] + '\\b', 'i');
+    var negado = new RegExp('\\bn[ãa]o\\s+ficou\\s+' + mPerg[2] + '\\b', 'i');
+    var alvo = new RegExp('\\b' + mPerg[1] + '\\b', 'i');
+    if (negado.test(frase)) return { texto: 'Não', ferramenta: 'razao-local',
+      fonte: 'negação do mesmo predicado na frase citada ("não ficou ' + norm(mPerg[2]) + '")' };
+    if (afirmativo.test(frase) && alvo.test(frase)) return { texto: 'Sim', ferramenta: 'razao-local',
+      fonte: 'predicado afirmado na frase citada' };
+    return null;
+  }
+
   var SOLUCIONADORES = [sequencia, sequenciaLetras, pontoFlutuante, contagemDigito, trabalhoConjunto, problemaIdade, silogismo, fila,
-    probabilidade, inclusaoExclusao, custoTotal, operarios, matriz, rotacao, memoria, codigo];
+    probabilidade, inclusaoExclusao, custoTotal, operarios, matriz, rotacao, memoria, codigo,
+    regraDeTres, media, mdcMmc, aumentoDesconto, jurosSimples, velocidade, areaPerimetro, divisaoResto,
+    fatorial, primos, baseBinaria, ordemAlfabetica, palindromo, anagrama, contagemPalavras,
+    conversaoUnidades, potenciaRaiz, codigoSoma, negacaoTexto, mediana, moda, algebraLinear];
 
   function resolver(pergunta) {
     var q = texto(pergunta);
@@ -648,7 +1032,14 @@
   var api = { resolver: resolver, sequencia: sequencia, sequenciaLetras: sequenciaLetras, pontoFlutuante: pontoFlutuante, contagemDigito: contagemDigito,
     trabalhoConjunto: trabalhoConjunto, problemaIdade: problemaIdade, silogismo: silogismo, fila: fila,
     probabilidade: probabilidade, inclusaoExclusao: inclusaoExclusao, custoTotal: custoTotal,
-    operarios: operarios, matriz: matriz, rotacao: rotacao, memoria: memoria, codigo: codigo };
+    operarios: operarios, matriz: matriz, rotacao: rotacao, memoria: memoria, codigo: codigo,
+    regraDeTres: regraDeTres, media: media, mdcMmc: mdcMmc, aumentoDesconto: aumentoDesconto,
+    jurosSimples: jurosSimples, velocidade: velocidade, areaPerimetro: areaPerimetro,
+    divisaoResto: divisaoResto, fatorial: fatorial, primos: primos, baseBinaria: baseBinaria,
+    ordemAlfabetica: ordemAlfabetica, palindromo: palindromo, anagrama: anagrama,
+    contagemPalavras: contagemPalavras, conversaoUnidades: conversaoUnidades, potenciaRaiz: potenciaRaiz,
+    codigoSoma: codigoSoma, negacaoTexto: negacaoTexto, mediana: mediana, moda: moda,
+    algebraLinear: algebraLinear };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (typeof window !== 'undefined') window.RazaoLocal = api;
 })();

@@ -685,7 +685,12 @@
     /* resposta sem nenhum dígito quando a pergunta pede uma conta — MAS não quando ela pergunta
        SIM/NÃO sobre a conta: medido em 31/10/2026, "0.1 + 0.2 === 0.3?" respondida com "NÃO" era
        marcada como eco, o texto era descartado e a pergunta voltava VAZIA (151 s de espera). */
-    if (/\d/.test(p) && /[+\-*/^×÷]|vezes|dividid|quant/i.test(p) && !/\d/.test(tc)
+    /* DATA NÃO É CONTA (achado pela prova de fio em 31/10/2026): "que dia da semana será em
+       25/12/2026?" tem dígitos e uma BARRA — a barra da data era lida como divisão, a resposta
+       "sexta-feira" (sem dígito) era tratada como eco e o texto chegava VAZIO ao usuário.
+       Se a pergunta traz uma data, a regra de operador não se aplica. */
+    var pareceData = /\d{1,2}\s*\/\s*\d{1,2}\s*\/\s*\d{2,4}/.test(p) || /\d{4}-\d{2}-\d{2}/.test(p);
+    if (!pareceData && /\d/.test(p) && /[+\-*/^×÷]|vezes|dividid|quant/i.test(p) && !/\d/.test(tc)
         && !/sim\s+ou\s+n[ãa]o|responda\s+(?:sim|n[ãa]o|s[óo]\s+(?:sim|n[ãa]o))/i.test(p)) return true;
     return false;
   }
@@ -908,6 +913,10 @@
     try {
       var r = soma();
       if (pos !== s.length || !isFinite(r)) return null;
+      /* Precisão (armadilha arm-potencia-inexata, 31/10/2026): "2 elevado a 200" voltava
+         1,6069380442589903e+60 — o double não representa esse inteiro. Resposta exata errada é
+         pior que silêncio: acima de 2^53, com potência no meio, devolve null e o modelo responde. */
+      if (s.indexOf('^') !== -1 && Math.abs(r) > 9007199254740992) return null;
       return Math.round(r * 1e6) / 1e6;
     } catch (e) { return null; }
   }
@@ -1127,6 +1136,33 @@
     if ((m = q.match(/quantos\s+dias\s+(?:tem|h[áa])\s+(?:o\s+)?ano(?:\s+de|\s+de)?\s*(\d{4})/i))) {
       ano = parseInt(m[1], 10);
       return { texto: bissexto(ano) ? '366' : '365', ferramenta: 'calendario', fonte: 'calendário local' };
+    }
+    /* DIA DA SEMANA de uma data (rodada 136, 31/10/2026): o calendário local sabia contar dias
+       entre datas e somar dias a partir de um dia da semana, mas não respondia "que dia da semana
+       será em 25/12/2026?" — e essa é conta exata, não interpretação. Duas formas:
+       DD/MM/AAAA e "1 de janeiro de 2000". */
+    if (/dia\s+da\s+semana/.test(q)) {
+      var NOMES = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira',
+        'sexta-feira', 'sábado'];
+      var ORDEM_MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho',
+        'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+      var dd = null, mm = null, aa = null, mm2;
+      if ((mm2 = q.match(/(\d{1,2})\s*\/\s*(\d{1,2})\s*\/\s*(\d{4})/))) {
+        dd = parseInt(mm2[1], 10); mm = parseInt(mm2[2], 10) - 1; aa = parseInt(mm2[3], 10);
+      } else if ((mm2 = q.match(/(\d{1,2})\s+de\s+(janeiro|fevereiro|mar[çc]o|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro)(?:\s+de|\s+do\s+ano\s+de)?\s+(\d{4})/i))) {
+        dd = parseInt(mm2[1], 10);
+        mm = ORDEM_MESES.indexOf(String(mm2[2]).toLowerCase().replace('marco', 'março'));
+        aa = parseInt(mm2[3], 10);
+      }
+      if (dd && mm !== null && mm >= 0 && aa) {
+        var dt = new Date(Date.UTC(aa, mm, dd));
+        // data impossível (31/02) volta normalizada: conferir antes de responder
+        if (dt.getUTCDate() === dd && dt.getUTCMonth() === mm) {
+          return { texto: NOMES[dt.getUTCDay()], ferramenta: 'calendario',
+            fonte: 'dia da semana calculado no calendário local (UTC, sem fuso)' };
+        }
+        return null;
+      }
     }
     /* "quantos dias há entre 1 de janeiro de 2026 e 1 de março de 2026" — diferença de datas.
        Medido no auto-diagnóstico (31/10/2026): era o único item de execução do banco fácil que

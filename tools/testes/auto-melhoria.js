@@ -47,7 +47,14 @@ testa('a fila de conserto é ranqueada e diz o custo de cada item', () => {
   for (const l of rel.lacunas) {
     assert(l.tipo && l.provas > 0 && l.custo && l.acao, 'lacuna incompleta: ' + JSON.stringify(l));
   }
-  if (rel.lacunas.length) assert(rel.lacunas[0].ganho >= rel.lacunas[rel.lacunas.length - 1].ganho);
+  // item medido e rejeitado vai para o FIM de propósito (não é trabalho pendente), então a
+  // ordem por ganho só vale entre os que ainda são trabalho.
+  // a ordem é por ganho ÷ custo (campo `valor`, publicada no relatório), não por ganho bruto:
+  // 1 prova barata vem antes de 3 caras.
+  const ordenaveis = rel.lacunas.filter((l) => l.estado !== 'rejeitado-por-medicao');
+  for (const l of ordenaveis) assert(typeof l.valor === 'number', 'lacuna sem valor: ' + l.tipo);
+  if (ordenaveis.length) assert(ordenaveis[0].valor >= ordenaveis[ordenaveis.length - 1].valor,
+    'fila fora de ordem: ' + ordenaveis.map((l) => l.tipo + '=' + l.valor).join(', '));
 });
 
 testa('texto aberto: os concorrentes aparecem (não se escolhe o melhor placar escondido)', () => {
@@ -76,7 +83,7 @@ testa('armadilhas: o código não responde o que não sabe', () => {
 
 testa('prova de fio: as respostas exatas chegam ao texto final SEM modelo', () => {
   // Roda com a chamada de modelo quebrada de propósito: se o fio estiver partido, não sobra texto.
-  const rel = JSON.parse(roda(['--json', '--fio=40']));
+  const rel = JSON.parse(roda(['--json', '--fio=500']));
   assert.equal(rel.fio.ok, rel.fio.total, 'fio partido: ' + rel.fio.itens.filter((i) => !i.ok).map((i) => i.id).join(', '));
   assert.equal(rel.fio.total, rel.provas.porCodigo, 'a prova de fio tem de cobrir todas as provas resolvidas por código');
 });
@@ -88,7 +95,7 @@ testa('cobertura: todo solucionador tem prova e armadilha', () => {
 });
 
 testa('trava de regressão não dispara no estado atual', () => {
-  const saida = roda(['--exigir-sem-regressao', '--fio=40']);
+  const saida = roda(['--exigir-sem-regressao', '--fio=500']);
   assert(/sem regressão/.test(saida), 'a trava disparou: ' + saida.slice(-400));
 });
 
@@ -97,6 +104,30 @@ testa('o gabarito e as armadilhas têm hash registrado no histórico', () => {
   const u = hist.rodadas[hist.rodadas.length - 1];
   assert(u.provasHash, 'histórico sem hash do gabarito');
   assert(u.armadilhasHash, 'histórico sem hash das armadilhas');
+});
+
+testa('capacidade: cada eixo tem antes, hoje, alvo do dobro e estado', () => {
+  const rel = JSON.parse(roda(['--json', '--fio=1']));
+  assert(rel.capacidade && Array.isArray(rel.capacidade.eixos) && rel.capacidade.eixos.length >= 8);
+  for (const e of rel.capacidade.eixos) {
+    assert(e.id && e.rotulo && typeof e.antes === 'number' && typeof e.hoje === 'number'
+      && typeof e.dobro === 'number' && e.estado, 'eixo incompleto: ' + JSON.stringify(e));
+    assert(e.dobro > 0, 'eixo sem alvo: ' + e.id);
+  }
+  // a régua é fixa: se a régua subisse com o placar, "dobrar" nunca teria prova
+  assert.equal(rel.capacidade.regua, 'rodada 135');
+  assert(rel.capacidade.dobrados >= 1, 'nenhum eixo dobrado — o relatório está mentindo ou o motor parou');
+});
+
+testa('fila: item medido e rejeitado não fica no topo da fila', () => {
+  const rel = JSON.parse(roda(['--json', '--fio=1']));
+  const rejeitados = rel.lacunas.filter((l) => l.estado === 'rejeitado-por-medicao');
+  if (!rejeitados.length) return;                  // repositório sem a medição: nada a cobrar
+  for (const l of rejeitados) {
+    assert(l.medicao && l.medicao.arquivo, 'rejeitado sem arquivo de medição: ' + l.tipo);
+    assert(typeof l.medicao.cobertos === 'number' && l.medicao.total > 0, 'rejeitado sem número');
+  }
+  assert(rel.lacunas[0].estado !== 'rejeitado-por-medicao', 'fila começa num item já rejeitado');
 });
 
 console.log('');

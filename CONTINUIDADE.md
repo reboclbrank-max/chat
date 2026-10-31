@@ -1580,3 +1580,38 @@ Todas as seis eram **resposta exata errada**, o pior defeito possível neste cam
 **Provas.** `tools/testes/auto-melhoria.js` cresceu de 6 para **11 verificações** (armadilhas, fio, cobertura, trava e hash). `tools/testes/razao-local.js` passou a rodar as armadilhas do módulo: **56/56**. Barreira completa **118/118 com 3 ignorados**. `docs/auto-melhoria.json` guarda a referência e 18 rodadas.
 
 **Limite que permanece.** A armadilha mede o que eu **soube** imaginar como perto-perigo; ela não prova ausência de chute em forma que ninguém pensou. Por isso a regra do módulo continua sendo devolver `null` quando a forma não casa exatamente.
+
+## Rodada 136 — o motor dobrou a capacidade e mediu o que não dá para dobrar (31/10/2026)
+
+**O pedido.** "Peça o máximo de melhorias que ele conseguir trazer e implemente tudo, pergunte a ele como dobrar sua capacidade em tudo e aplique."
+
+**1. Ele agora responde "como dobrar" com régua fixa.** `tools/auto-melhoria.js` ganhou o bloco **CAPACIDADE**: dez eixos, cada um com **antes (rodada 135) · hoje · alvo do dobro · falta · estado**. A régua é fixa de propósito — se ela subisse junto com o placar, o alvo fugiria e "dobrar" nunca teria prova. Resultado desta rodada:
+
+| eixo | antes (135) | hoje | dobro | estado |
+|---|---|---|---|---|
+| solucionadores do motor | 16 | **38** | 32 | ✔ 2,38× |
+| provas no gabarito | 47 | **123** | 94 | ✔ 2,62× |
+| provas resolvidas por código | 40 | **118** | 80 | ✔ 2,95× |
+| armadilhas no banco | 17 | **41** | 34 | ✔ 2,41× |
+| armadilhas respeitadas | 17 | **41** | 34 | ✔ 2,41× |
+| provas que chegam à pessoa (fio) | 40 | **118** | 80 | ✔ 2,95× |
+| solucionadores com prova E armadilha | 16 | **38** | 32 | ✔ 2,38× |
+| domínios com caminho exato | 9 | **18** | 18 | ✔ 2× |
+| provas verbais por código | 1 | **15** | 2 | ✔ 15× |
+| texto aberto (régua de 24) | 20 | 20 | 24 (teto) | teto não alcançado |
+
+**9 de 10 eixos dobrados.** O décimo é o texto aberto, que não depende de mim e sim de fonte viva / teto de geração — está declarado com o número.
+
+**2. A fila inteira executada, não o topo dela.** 22 solucionadores novos em `razao-local.js`, cada um com prova e armadilha: regra de três direta, média, MDC/MMC, aumento/desconto, juros simples, velocidade média, área/perímetro/triângulo, resto de divisão, fatorial, primos, bases binária/hexadecimal, ordem alfabética, palíndromo, anagrama, contagem de palavras, unidades, potência/raiz, **mediana**, **moda**, **equação do 1º grau**, geração de uma linha de Python e **inferência por negação** sobre o texto citado. Também: **recorrência de Fibonacci** conferida termo a termo em `sequencia` e **dia da semana de uma data** no calendário local.
+
+**3. O que ele encontrou em mim antes de eu publicar — 17 respostas erradas.** A primeira versão dos solucionadores novos acertava 56/56 provas e **respondia errado 14 armadilhas** (média de "termo que falta", MMC de três números, percentual encadeado, velocidade com parada, área com recorte, fatorial com soma, primos gêmeos, `"ímpares"` tratado como `par` porque a palavra *contém* "par", ordem alfabética com pergunta extra, palíndromo composto, anagrama com significado, contagem "sem artigos", `raiz quadrada de 50` respondida por ferramenta, negação dupla). Todas foram consertadas calando a forma ou implementando o caso — e cada uma virou armadilha permanente. Três defeitos de produto, fora do motor:
+
+- **anti-eco tratava data como conta**: "que dia da semana será em 25/12/2026?" tem dígitos e uma BARRA; a barra era lida como divisão, a resposta `sexta-feira` era marcada como eco e o texto chegava **vazio**. A prova de fio pegou (104/106) e o portão passou a reconhecer data;
+- **potência sem precisão**: "2 elevado a 200" devolvia `1,6069380442589903e+60` como resposta exata. Acima de 2^53 com `^` no meio, a calculadora local agora cala;
+- **`negacaoTexto` lia o predicado da frase citada, não da pergunta** — "não ficou insatisfeito" virava o predicado e a dupla negação respondia "Não".
+
+**4. O que foi medido e REJEITADO, com número.** A fila vinha repetindo "para o verbal, vale base de fatos estáveis com fonte". Foi medido: **OpenWordnet-PT** (38.020 lemas em português, 52.670 synsets, 109.734 relações) cobre **0 de 5** casos verbais — `geladeira` não tem synset, `efêmero`/`passageiro` não dividem synset, não há antonímia `escasso`/`abundante`, não há meronímia `livro`→`capítulo` nem `sinfonia`→`movimento`. Léxico próprio com essas palavras seria ensinar para o teste, o que a regra proíbe. O item saiu da fila de trabalho e virou **"[MEDIDO E REJEITADO]"**, apontando `bench/lexico-publico.json` e `tools/medir-lexico-publico.py` (reproduzível). As 5 provas verbais continuam sendo do modelo — e o que o produto garante é que o caminho exato **não chuta**.
+
+**5. Provas.** `tools/testes/auto-melhoria.js`: **13/13** (duas verificações novas: todo eixo de capacidade tem antes/hoje/dobro/estado com régua fixa; item medido e rejeitado nunca fica no topo da fila). `tools/testes/razao-local.js`: **80/80** (provas + armadilhas do módulo). `node tools/auto-melhoria.js`: **118/123 por código**, **0 erradas**, armadilhas **41/41**, fio **118/118**, cobertura **38/38**. Casca do PWA em **rebocl-chat-v103** (razao-local.js e roteador-ia.js mudaram).
+
+**Limite.** Dobrar contagem de solucionador é fácil; dobrar **confiança** não. O que sustenta os 118 são as 41 armadilhas e a regra de devolver `null` quando a forma não casa — e a única armadilha que ainda não existe é a que eu não soube imaginar.
