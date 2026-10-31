@@ -252,6 +252,18 @@
    "por": "algebraLinear",
    "q": "Resolva a equação 2x + 3 = x + 11",
    "porque": "x aparece dos dois lados: a forma ax + b = c responderia 4 quando o certo é 8."
+  },
+  {
+   "id": "arm-nome-de-outro-cadastro",
+   "por": "identidade",
+   "q": "Qual é o seu nome no cadastro do cliente?",
+   "porque": "'seu nome' aqui é o nome NO CADASTRO, não a identidade do assistente: responder 'Assistente Rebocl' seria resposta errada com cara de certa."
+  },
+  {
+   "id": "arm-nome-de-autor",
+   "por": "identidade",
+   "q": "Qual é o nome do autor do livro Dom Casmurro?",
+   "porque": "pergunta sobre o nome de terceiro: identidade própria não responde isso; quem responde é a base de fatos ou o modelo."
   }
  ]
 }

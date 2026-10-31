@@ -2,426 +2,6 @@
  "esquema": "auto-melhoria-v1",
  "rodadas": [
   {
-   "quando": "2026-10-31T14:09:15.768Z",
-   "provas": 47,
-   "porCodigo": 40,
-   "dependemDoModelo": 7,
-   "erradas": [],
-   "aberto": {
-    "arquivo": "final-paragrafo.json",
-    "passaram": 21,
-    "total": 24
-   },
-   "provasHash": "51ab1ab62f0a6e7f",
-   "armadilhasHash": "d764f52bf8b963ab",
-   "armadilhasOk": 17,
-   "fioOk": 40,
-   "topo": [
-    "conhecimento-sem-lexico:verbal:6",
-    "texto-aberto-forma:undefined:1",
-    "conhecimento-sem-lexico:código · geracao:1"
-   ]
-  },
-  {
-   "quando": "2026-10-31T14:09:43.139Z",
-   "provas": 47,
-   "porCodigo": 40,
-   "dependemDoModelo": 7,
-   "erradas": [],
-   "aberto": {
-    "arquivo": "final-paragrafo.json",
-    "passaram": 21,
-    "total": 24
-   },
-   "provasHash": "51ab1ab62f0a6e7f",
-   "armadilhasHash": "d764f52bf8b963ab",
-   "armadilhasOk": 17,
-   "fioOk": 2,
-   "topo": [
-    "conhecimento-sem-lexico:verbal:6",
-    "texto-aberto-forma:undefined:1",
-    "conhecimento-sem-lexico:código · geracao:1"
-   ]
-  },
-  {
-   "quando": "2026-10-31T14:09:53.717Z",
-   "provas": 47,
-   "porCodigo": 40,
-   "dependemDoModelo": 7,
-   "erradas": [],
-   "aberto": {
-    "arquivo": "final-paragrafo.json",
-    "passaram": 21,
-    "total": 24
-   },
-   "provasHash": "51ab1ab62f0a6e7f",
-   "armadilhasHash": "d764f52bf8b963ab",
-   "armadilhasOk": 17,
-   "fioOk": 2,
-   "topo": [
-    "conhecimento-sem-lexico:verbal:6",
-    "texto-aberto-forma:undefined:1",
-    "conhecimento-sem-lexico:código · geracao:1"
-   ]
-  },
-  {
-   "quando": "2026-10-31T14:10:00.344Z",
-   "provas": 47,
-   "porCodigo": 40,
-   "dependemDoModelo": 7,
-   "erradas": [],
-   "aberto": {
-    "arquivo": "final-paragrafo.json",
-    "passaram": 21,
-    "total": 24
-   },
-   "provasHash": "51ab1ab62f0a6e7f",
-   "armadilhasHash": "d764f52bf8b963ab",
-   "armadilhasOk": 17,
-   "fioOk": 2,
-   "topo": [
-    "conhecimento-sem-lexico:verbal:6",
-    "texto-aberto-forma:undefined:1",
-    "conhecimento-sem-lexico:código · geracao:1"
-   ]
-  },
-  {
-   "quando": "2026-10-31T14:10:04.130Z",
-   "provas": 47,
-   "porCodigo": 40,
-   "dependemDoModelo": 7,
-   "erradas": [],
-   "aberto": {
-    "arquivo": "final-paragrafo.json",
-    "passaram": 21,
-    "total": 24
-   },
-   "provasHash": "51ab1ab62f0a6e7f",
-   "armadilhasHash": "d764f52bf8b963ab",
-   "armadilhasOk": 17,
-   "fioOk": 2,
-   "topo": [
-    "conhecimento-sem-lexico:verbal:6",
-    "texto-aberto-forma:undefined:1",
-    "conhecimento-sem-lexico:código · geracao:1"
-   ]
-  },
-  {
-   "quando": "2026-10-31T14:11:00.149Z",
-   "provas": 47,
-   "porCodigo": 40,
-   "dependemDoModelo": 7,
-   "erradas": [],
-   "aberto": {
-    "arquivo": "final-paragrafo.json",
-    "passaram": 21,
-    "total": 24
-   },
-   "provasHash": "51ab1ab62f0a6e7f",
-   "armadilhasHash": "d764f52bf8b963ab",
-   "armadilhasOk": 17,
-   "fioOk": 40,
-   "topo": [
-    "conhecimento-sem-lexico:verbal:6",
-    "texto-aberto-forma:undefined:1",
-    "conhecimento-sem-lexico:código · geracao:1"
-   ]
-  },
-  {
-   "quando": "2026-10-31T14:12:02.712Z",
-   "provas": 47,
-   "porCodigo": 40,
-   "dependemDoModelo": 7,
-   "erradas": [],
-   "aberto": {
-    "arquivo": "final-paragrafo.json",
-    "passaram": 21,
-    "total": 24
-   },
-   "provasHash": "51ab1ab62f0a6e7f",
-   "armadilhasHash": "d764f52bf8b963ab",
-   "armadilhasOk": 17,
-   "fioOk": 2,
-   "topo": [
-    "conhecimento-sem-lexico:verbal:6",
-    "texto-aberto-forma:undefined:1",
-    "conhecimento-sem-lexico:código · geracao:1"
-   ]
-  },
-  {
-   "quando": "2026-10-31T14:16:34.518Z",
-   "provas": 47,
-   "porCodigo": 40,
-   "dependemDoModelo": 7,
-   "erradas": [],
-   "aberto": {
-    "arquivo": "final-paragrafo.json",
-    "passaram": 21,
-    "total": 24
-   },
-   "provasHash": "51ab1ab62f0a6e7f",
-   "armadilhasHash": "d764f52bf8b963ab",
-   "armadilhasOk": 17,
-   "fioOk": 2,
-   "topo": [
-    "conhecimento-sem-lexico:verbal:6",
-    "texto-aberto-forma:undefined:1",
-    "conhecimento-sem-lexico:código · geracao:1"
-   ]
-  },
-  {
-   "quando": "2026-10-31T14:20:39.476Z",
-   "provas": 47,
-   "porCodigo": 40,
-   "dependemDoModelo": 7,
-   "erradas": [],
-   "aberto": {
-    "arquivo": "final-paragrafo.json",
-    "passaram": 21,
-    "total": 24
-   },
-   "provasHash": "51ab1ab62f0a6e7f",
-   "armadilhasHash": "d764f52bf8b963ab",
-   "armadilhasOk": 17,
-   "fioOk": 40,
-   "topo": [
-    "conhecimento-sem-lexico:verbal:6",
-    "texto-aberto-forma:undefined:1",
-    "conhecimento-sem-lexico:código · geracao:1"
-   ]
-  },
-  {
-   "quando": "2026-10-31T14:21:02.161Z",
-   "provas": 47,
-   "porCodigo": 40,
-   "dependemDoModelo": 7,
-   "erradas": [],
-   "aberto": {
-    "arquivo": "final-paragrafo.json",
-    "passaram": 21,
-    "total": 24
-   },
-   "provasHash": "51ab1ab62f0a6e7f",
-   "armadilhasHash": "d764f52bf8b963ab",
-   "armadilhasOk": 17,
-   "fioOk": 40,
-   "topo": [
-    "conhecimento-sem-lexico:verbal:6",
-    "texto-aberto-forma:undefined:1",
-    "conhecimento-sem-lexico:código · geracao:1"
-   ]
-  },
-  {
-   "quando": "2026-10-31T14:21:02.589Z",
-   "provas": 47,
-   "porCodigo": 40,
-   "dependemDoModelo": 7,
-   "erradas": [],
-   "aberto": {
-    "arquivo": "final-paragrafo.json",
-    "passaram": 21,
-    "total": 24
-   },
-   "provasHash": "51ab1ab62f0a6e7f",
-   "armadilhasHash": "d764f52bf8b963ab",
-   "armadilhasOk": 17,
-   "fioOk": 2,
-   "topo": [
-    "conhecimento-sem-lexico:verbal:6",
-    "texto-aberto-forma:undefined:1",
-    "conhecimento-sem-lexico:código · geracao:1"
-   ]
-  },
-  {
-   "quando": "2026-10-31T14:21:55.085Z",
-   "provas": 47,
-   "porCodigo": 40,
-   "dependemDoModelo": 7,
-   "erradas": [],
-   "aberto": {
-    "arquivo": "final-paragrafo.json",
-    "passaram": 21,
-    "total": 24
-   },
-   "provasHash": "51ab1ab62f0a6e7f",
-   "armadilhasHash": "d764f52bf8b963ab",
-   "armadilhasOk": 17,
-   "fioOk": 40,
-   "topo": [
-    "conhecimento-sem-lexico:verbal:6",
-    "texto-aberto-forma:undefined:1",
-    "conhecimento-sem-lexico:código · geracao:1"
-   ]
-  },
-  {
-   "quando": "2026-10-31T18:45:19.114Z",
-   "provas": 47,
-   "porCodigo": 40,
-   "dependemDoModelo": 7,
-   "erradas": [],
-   "aberto": {
-    "arquivo": "rev-1.json",
-    "passaram": 20,
-    "total": 24
-   },
-   "provasHash": "51ab1ab62f0a6e7f",
-   "armadilhasHash": "d764f52bf8b963ab",
-   "armadilhasOk": 17,
-   "fioOk": 12,
-   "topo": [
-    "conhecimento-sem-lexico:verbal:6",
-    "texto-aberto-forma:undefined:1",
-    "texto-aberto-conteudo:undefined:3"
-   ]
-  },
-  {
-   "quando": "2026-10-31T18:50:20.633Z",
-   "provas": 104,
-   "porCodigo": 99,
-   "dependemDoModelo": 5,
-   "erradas": [],
-   "aberto": {
-    "arquivo": "rev-1.json",
-    "passaram": 20,
-    "total": 24
-   },
-   "provasHash": "4266a1952b3a6d26",
-   "armadilhasHash": "7a2909b5e912bfed",
-   "armadilhasOk": 36,
-   "fioOk": 99,
-   "topo": [
-    "conhecimento-sem-lexico:verbal:5",
-    "texto-aberto-forma:undefined:1",
-    "texto-aberto-conteudo:undefined:3"
-   ]
-  },
-  {
-   "quando": "2026-10-31T18:51:53.827Z",
-   "provas": 111,
-   "porCodigo": 106,
-   "dependemDoModelo": 5,
-   "erradas": [],
-   "aberto": {
-    "arquivo": "rev-1.json",
-    "passaram": 20,
-    "total": 24
-   },
-   "provasHash": "bf2129c6e8fb4349",
-   "armadilhasHash": "dc081ad8cc1d5c51",
-   "armadilhasOk": 38,
-   "fioOk": 104,
-   "topo": [
-    "conhecimento-sem-lexico:verbal:5",
-    "texto-aberto-forma:undefined:1",
-    "texto-aberto-conteudo:undefined:3"
-   ]
-  },
-  {
-   "quando": "2026-10-31T18:51:56.371Z",
-   "provas": 111,
-   "porCodigo": 106,
-   "dependemDoModelo": 5,
-   "erradas": [],
-   "aberto": {
-    "arquivo": "rev-1.json",
-    "passaram": 20,
-    "total": 24
-   },
-   "provasHash": "bf2129c6e8fb4349",
-   "armadilhasHash": "dc081ad8cc1d5c51",
-   "armadilhasOk": 38,
-   "fioOk": 104,
-   "topo": [
-    "conhecimento-sem-lexico:verbal:5",
-    "texto-aberto-forma:undefined:1",
-    "texto-aberto-conteudo:undefined:3"
-   ]
-  },
-  {
-   "quando": "2026-10-31T18:52:23.819Z",
-   "provas": 111,
-   "porCodigo": 106,
-   "dependemDoModelo": 5,
-   "erradas": [],
-   "aberto": {
-    "arquivo": "rev-1.json",
-    "passaram": 20,
-    "total": 24
-   },
-   "provasHash": "bf2129c6e8fb4349",
-   "armadilhasHash": "dc081ad8cc1d5c51",
-   "armadilhasOk": 38,
-   "fioOk": 106,
-   "topo": [
-    "conhecimento-sem-lexico:verbal:5",
-    "texto-aberto-forma:undefined:1",
-    "texto-aberto-conteudo:undefined:3"
-   ]
-  },
-  {
-   "quando": "2026-10-31T18:52:43.250Z",
-   "provas": 111,
-   "porCodigo": 106,
-   "dependemDoModelo": 5,
-   "erradas": [],
-   "aberto": {
-    "arquivo": "rev-1.json",
-    "passaram": 20,
-    "total": 24
-   },
-   "provasHash": "bf2129c6e8fb4349",
-   "armadilhasHash": "dc081ad8cc1d5c51",
-   "armadilhasOk": 38,
-   "fioOk": 106,
-   "topo": [
-    "texto-aberto-forma:undefined:1",
-    "texto-aberto-conteudo:undefined:3",
-    "conhecimento-sem-lexico:verbal:5"
-   ]
-  },
-  {
-   "quando": "2026-10-31T18:53:15.666Z",
-   "provas": 123,
-   "porCodigo": 118,
-   "dependemDoModelo": 5,
-   "erradas": [],
-   "aberto": {
-    "arquivo": "rev-1.json",
-    "passaram": 20,
-    "total": 24
-   },
-   "provasHash": "db4706102ee119a3",
-   "armadilhasHash": "0caa8a87c89f110e",
-   "armadilhasOk": 41,
-   "fioOk": 118,
-   "topo": [
-    "texto-aberto-forma:undefined:1",
-    "texto-aberto-conteudo:undefined:3",
-    "conhecimento-sem-lexico:verbal:5"
-   ]
-  },
-  {
-   "quando": "2026-10-31T18:53:16.184Z",
-   "provas": 123,
-   "porCodigo": 118,
-   "dependemDoModelo": 5,
-   "erradas": [],
-   "aberto": {
-    "arquivo": "rev-1.json",
-    "passaram": 20,
-    "total": 24
-   },
-   "provasHash": "db4706102ee119a3",
-   "armadilhasHash": "0caa8a87c89f110e",
-   "armadilhasOk": 41,
-   "fioOk": 118,
-   "topo": [
-    "texto-aberto-forma:undefined:1",
-    "texto-aberto-conteudo:undefined:3",
-    "conhecimento-sem-lexico:verbal:5"
-   ]
-  },
-  {
    "quando": "2026-10-31T18:53:55.637Z",
    "provas": 123,
    "porCodigo": 118,
@@ -630,15 +210,437 @@
     "texto-aberto-conteudo:undefined:3",
     "conhecimento-sem-lexico:verbal:5"
    ]
+  },
+  {
+   "quando": "2026-10-31T19:47:54.188Z",
+   "provas": 127,
+   "porCodigo": 122,
+   "dependemDoModelo": 5,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "provasHash": "9650c74f776084b6",
+   "armadilhasHash": "0f1beba57790848c",
+   "armadilhasOk": 43,
+   "fioOk": 122,
+   "topo": [
+    "texto-aberto-forma:undefined:1",
+    "texto-aberto-conteudo:undefined:3",
+    "conhecimento-sem-lexico:verbal:5"
+   ]
+  },
+  {
+   "quando": "2026-10-31T19:48:50.092Z",
+   "provas": 127,
+   "porCodigo": 122,
+   "dependemDoModelo": 5,
+   "erradas": [
+    "facil-con1"
+   ],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "provasHash": "9650c74f776084b6",
+   "armadilhasHash": "0f1beba57790848c",
+   "armadilhasOk": 43,
+   "fioOk": 121,
+   "topo": [
+    "texto-aberto-forma:undefined:1",
+    "texto-aberto-conteudo:undefined:3",
+    "conhecimento-sem-lexico:verbal:5"
+   ]
+  },
+  {
+   "quando": "2026-10-31T19:49:01.923Z",
+   "provas": 127,
+   "porCodigo": 122,
+   "dependemDoModelo": 5,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "provasHash": "bb78e01c38d36796",
+   "armadilhasHash": "0f1beba57790848c",
+   "armadilhasOk": 43,
+   "fioOk": 122,
+   "topo": [
+    "texto-aberto-forma:undefined:1",
+    "texto-aberto-conteudo:undefined:3",
+    "conhecimento-sem-lexico:verbal:5"
+   ]
+  },
+  {
+   "quando": "2026-10-31T19:49:06.196Z",
+   "provas": 127,
+   "porCodigo": 122,
+   "dependemDoModelo": 5,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "provasHash": "bb78e01c38d36796",
+   "armadilhasHash": "0f1beba57790848c",
+   "armadilhasOk": 43,
+   "fioOk": 122,
+   "topo": [
+    "texto-aberto-forma:undefined:1",
+    "texto-aberto-conteudo:undefined:3",
+    "conhecimento-sem-lexico:verbal:5"
+   ]
+  },
+  {
+   "quando": "2026-10-31T19:51:56.530Z",
+   "provas": 127,
+   "porCodigo": 122,
+   "dependemDoModelo": 5,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "provasHash": "bb78e01c38d36796",
+   "armadilhasHash": "0f1beba57790848c",
+   "armadilhasOk": 43,
+   "fioOk": 122,
+   "topo": [
+    "texto-aberto-forma:undefined:1",
+    "texto-aberto-conteudo:undefined:3",
+    "conhecimento-sem-lexico:verbal:5"
+   ]
+  },
+  {
+   "quando": "2026-10-31T19:52:18.472Z",
+   "provas": 127,
+   "porCodigo": 122,
+   "dependemDoModelo": 5,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "provasHash": "bb78e01c38d36796",
+   "armadilhasHash": "0f1beba57790848c",
+   "armadilhasOk": 43,
+   "fioOk": 122,
+   "topo": [
+    "texto-aberto-forma:undefined:1",
+    "texto-aberto-conteudo:undefined:3",
+    "conhecimento-sem-lexico:verbal:5"
+   ]
+  },
+  {
+   "quando": "2026-10-31T19:53:01.377Z",
+   "provas": 127,
+   "porCodigo": 122,
+   "dependemDoModelo": 5,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "provasHash": "bb78e01c38d36796",
+   "armadilhasHash": "0f1beba57790848c",
+   "armadilhasOk": 43,
+   "fioOk": 1,
+   "topo": [
+    "texto-aberto-forma:undefined:1",
+    "texto-aberto-conteudo:undefined:3",
+    "conhecimento-sem-lexico:verbal:5"
+   ]
+  },
+  {
+   "quando": "2026-10-31T19:55:05.131Z",
+   "provas": 127,
+   "porCodigo": 122,
+   "dependemDoModelo": 5,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "provasHash": "bb78e01c38d36796",
+   "armadilhasHash": "0f1beba57790848c",
+   "armadilhasOk": 43,
+   "fioOk": 122,
+   "topo": [
+    "texto-aberto-forma:undefined:1",
+    "texto-aberto-conteudo:undefined:3",
+    "conhecimento-sem-lexico:verbal:5"
+   ]
+  },
+  {
+   "quando": "2026-10-31T19:56:01.834Z",
+   "provas": 127,
+   "porCodigo": 122,
+   "dependemDoModelo": 5,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "provasHash": "bb78e01c38d36796",
+   "armadilhasHash": "0f1beba57790848c",
+   "armadilhasOk": 43,
+   "fioOk": 122,
+   "topo": [
+    "texto-aberto-forma:undefined:1",
+    "texto-aberto-conteudo:undefined:3",
+    "conhecimento-sem-lexico:verbal:5"
+   ]
+  },
+  {
+   "quando": "2026-10-31T19:56:29.256Z",
+   "provas": 127,
+   "porCodigo": 122,
+   "dependemDoModelo": 5,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "provasHash": "bb78e01c38d36796",
+   "armadilhasHash": "0f1beba57790848c",
+   "armadilhasOk": 43,
+   "fioOk": 1,
+   "topo": [
+    "texto-aberto-forma:undefined:1",
+    "texto-aberto-conteudo:undefined:3",
+    "conhecimento-sem-lexico:verbal:5"
+   ]
+  },
+  {
+   "quando": "2026-10-31T20:03:03.299Z",
+   "provas": 127,
+   "porCodigo": 122,
+   "dependemDoModelo": 5,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "provasHash": "bb78e01c38d36796",
+   "armadilhasHash": "0f1beba57790848c",
+   "armadilhasOk": 43,
+   "fioOk": 122,
+   "topo": [
+    "texto-aberto-forma:undefined:1",
+    "texto-aberto-conteudo:undefined:3",
+    "conhecimento-sem-lexico:verbal:5"
+   ]
+  },
+  {
+   "quando": "2026-10-31T20:03:25.553Z",
+   "provas": 127,
+   "porCodigo": 122,
+   "dependemDoModelo": 5,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "provasHash": "bb78e01c38d36796",
+   "armadilhasHash": "0f1beba57790848c",
+   "armadilhasOk": 43,
+   "fioOk": 122,
+   "topo": [
+    "texto-aberto-forma:undefined:1",
+    "texto-aberto-conteudo:undefined:3",
+    "conhecimento-sem-lexico:verbal:5"
+   ]
+  },
+  {
+   "quando": "2026-10-31T20:04:02.225Z",
+   "provas": 127,
+   "porCodigo": 122,
+   "dependemDoModelo": 5,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "provasHash": "bb78e01c38d36796",
+   "armadilhasHash": "0f1beba57790848c",
+   "armadilhasOk": 43,
+   "fioOk": 1,
+   "topo": [
+    "texto-aberto-forma:undefined:1",
+    "texto-aberto-conteudo:undefined:3",
+    "conhecimento-sem-lexico:verbal:5"
+   ]
+  },
+  {
+   "quando": "2026-10-31T20:10:01.928Z",
+   "provas": 127,
+   "porCodigo": 122,
+   "dependemDoModelo": 5,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "provasHash": "bb78e01c38d36796",
+   "armadilhasHash": "0f1beba57790848c",
+   "armadilhasOk": 43,
+   "fioOk": 122,
+   "topo": [
+    "texto-aberto-forma:undefined:1",
+    "texto-aberto-conteudo:undefined:3",
+    "conhecimento-sem-lexico:verbal:5"
+   ]
+  },
+  {
+   "quando": "2026-10-31T20:10:30.220Z",
+   "provas": 127,
+   "porCodigo": 122,
+   "dependemDoModelo": 5,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "provasHash": "bb78e01c38d36796",
+   "armadilhasHash": "0f1beba57790848c",
+   "armadilhasOk": 43,
+   "fioOk": 122,
+   "topo": [
+    "texto-aberto-forma:undefined:1",
+    "texto-aberto-conteudo:undefined:3",
+    "conhecimento-sem-lexico:verbal:5"
+   ]
+  },
+  {
+   "quando": "2026-10-31T20:11:03.982Z",
+   "provas": 127,
+   "porCodigo": 122,
+   "dependemDoModelo": 5,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "provasHash": "bb78e01c38d36796",
+   "armadilhasHash": "0f1beba57790848c",
+   "armadilhasOk": 43,
+   "fioOk": 1,
+   "topo": [
+    "texto-aberto-forma:undefined:1",
+    "texto-aberto-conteudo:undefined:3",
+    "conhecimento-sem-lexico:verbal:5"
+   ]
+  },
+  {
+   "quando": "2026-10-31T20:17:00.789Z",
+   "provas": 127,
+   "porCodigo": 122,
+   "dependemDoModelo": 5,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "provasHash": "bb78e01c38d36796",
+   "armadilhasHash": "0f1beba57790848c",
+   "armadilhasOk": 43,
+   "fioOk": 122,
+   "topo": [
+    "texto-aberto-forma:undefined:1",
+    "texto-aberto-conteudo:undefined:3",
+    "conhecimento-sem-lexico:verbal:5"
+   ]
+  },
+  {
+   "quando": "2026-10-31T20:17:41.930Z",
+   "provas": 127,
+   "porCodigo": 122,
+   "dependemDoModelo": 5,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "provasHash": "bb78e01c38d36796",
+   "armadilhasHash": "0f1beba57790848c",
+   "armadilhasOk": 43,
+   "fioOk": 122,
+   "topo": [
+    "texto-aberto-forma:undefined:1",
+    "texto-aberto-conteudo:undefined:3",
+    "conhecimento-sem-lexico:verbal:5"
+   ]
+  },
+  {
+   "quando": "2026-10-31T20:18:03.169Z",
+   "provas": 127,
+   "porCodigo": 122,
+   "dependemDoModelo": 5,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "provasHash": "bb78e01c38d36796",
+   "armadilhasHash": "0f1beba57790848c",
+   "armadilhasOk": 43,
+   "fioOk": 1,
+   "topo": [
+    "texto-aberto-forma:undefined:1",
+    "texto-aberto-conteudo:undefined:3",
+    "conhecimento-sem-lexico:verbal:5"
+   ]
+  },
+  {
+   "quando": "2026-10-31T20:22:32.123Z",
+   "provas": 127,
+   "porCodigo": 122,
+   "dependemDoModelo": 5,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "provasHash": "bb78e01c38d36796",
+   "armadilhasHash": "0f1beba57790848c",
+   "armadilhasOk": 43,
+   "fioOk": 122,
+   "topo": [
+    "texto-aberto-forma:undefined:1",
+    "texto-aberto-conteudo:undefined:3",
+    "conhecimento-sem-lexico:verbal:5"
+   ]
   }
  ],
  "referencia": {
-  "provasHash": "db4706102ee119a3",
-  "armadilhasHash": "0caa8a87c89f110e",
-  "provas": 123,
-  "porCodigo": 118,
-  "armadilhasOk": 41,
-  "fioOk": 118,
-  "fioTotal": 118
+  "provasHash": "bb78e01c38d36796",
+  "armadilhasHash": "0f1beba57790848c",
+  "provas": 127,
+  "porCodigo": 122,
+  "armadilhasOk": 43,
+  "fioOk": 122,
+  "fioTotal": 122
  }
 }

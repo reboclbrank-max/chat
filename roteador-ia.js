@@ -253,6 +253,9 @@
     'argélia': 'Argel',
     'armênia': 'Erevan',
     'arábia saudita': 'Riad',
+    // Grafia única (rodada 137, 31/10/2026): o mapa dizia "Camberra" e a lista de fatos abaixo
+    // dizia "Canberra" — a MESMA pergunta voltava com duas respostas diferentes conforme a
+    // redação. Um nome, uma resposta.
     'austrália': 'Camberra',
     'azerbaijão': 'Baku',
     'bahamas': 'Nassau',
@@ -538,7 +541,7 @@
     { q: /menor planeta.*sistema solar/i, r: 'Mercúrio' },
     { q: /planeta vermelho/i, r: 'Marte' },
     { q: /maior oceano/i, r: 'Pacífico' },
-    { q: /capital da austr[áa]lia/i, r: 'Canberra' },
+    { q: /capital da austr[áa]lia/i, r: 'Camberra' },
     { q: /proclama[çc][ãa]o da rep[úu]blica|(proclamou|proclamada) (?:a )?rep[úu]blica/i, r: '1889' },
     { q: /moeda (oficial )?d[oa] jap[ãa]o/i, r: 'Iene' },
     { q: /oceano.*banha o brasil/i, r: 'Atlântico' },
