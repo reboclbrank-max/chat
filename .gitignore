@@ -1,5 +1,9 @@
 # Dependências instaladas localmente ou pelo CI — nunca versionadas.
+# As duas linhas existem porque `node_modules/` (com barra) casa com diretório, mas NÃO com
+# um link simbólico chamado `node_modules` — e foi exatamente um link desses que entrou no
+# commit 3c00761 e derrubou a publicação do Pages (tar: ./node_modules: File removed before we read it).
 node_modules/
+node_modules
 
 # Artefatos de diagnóstico do npm.
 npm-debug.log*

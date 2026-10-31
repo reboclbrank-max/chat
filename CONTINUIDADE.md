@@ -1508,3 +1508,7 @@ Duas esperas cegas, as duas medidas no motor público antes de mexer na tela:
 3. **Acordar o motor leva o número da conversa.** `acordarMotor()` mandava `workflow_dispatch` sem o número; o motor escuta `repository_dispatch` do tipo `mensagem`, que é o único evento que carrega `client_payload.conversa`. O `workflow_dispatch` fica como segunda tentativa, e a tela passa a mostrar o estado `resposta-acelerada` com o tempo medido.
 
 Provas: `tools/testes/fila-visivel-e-avisos.js` (**13/13**, executa a linha da fila, o cartão, a ordenação e o dispatch em `vm`, offline). Barreira completa **112/112 com 3 ignorados**. `direto.html`, `ligar.html` e `limpar.html` seguem derivados de `index.html` por `tools/montar-paginas.js` (faixas de `paginas/rotas/*.json` recalculadas e `--verificar` em sincronia). Rollback: reverter este commit — nada muda no motor nem nos dados.
+
+### Correção imediata — o link `node_modules` versionado (31/10/2026)
+
+O commit `3c00761` (rodada 106) levou junto um link simbólico `node_modules` criado por engano no ambiente local. O `actions/upload-pages-artifact` roda `tar --dereference` e falhou com `tar: ./node_modules: File removed before we read it` — **a publicação do Pages parou** e a tela nova não chegou ao ar (run `41160786207`, `failure`). O `.gitignore` só tinha `node_modules/` (com barra), que casa com diretório e **não** casa com link. Correções: link removido, `.gitignore` com as duas formas, e verificação permanente em `tools/testes/fila-visivel-e-avisos.js` (**14/14**) que falha se um link desses voltar.
