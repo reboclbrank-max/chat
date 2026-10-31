@@ -49,7 +49,8 @@ const CASOS = [
   ['Explique o que é fotossíntese.', null],
   ['Qual é a capital da Austrália? Responda só a cidade.', null],
   ['Quem escreveu "Dom Casmurro"? Responda só o nome.', null],
-  ['Escreva em uma linha de Python a soma dos números pares de 1 a 10. Responda só o código.', null],
+  // até a rodada 135 isto era do modelo; a rodada 136 implementou a forma exata (codigoSoma)
+  ['Escreva em uma linha de Python a soma dos números pares de 1 a 10. Responda só o código.', 'if x % 2 == 0'],
   ['Qual é o sinônimo mais próximo de "efêmero": (A) passageiro (B) eterno? Responda só a letra e a palavra.', null]
 ];
 
