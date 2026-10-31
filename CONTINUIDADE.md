@@ -1631,3 +1631,29 @@ Todas as seis eram **resposta exata errada**, o pior defeito possível neste cam
 **Provas.** `tools/testes/identidade-do-chat.js` (novo, 5/5): nome correto, identidade não emprestada, silêncio em pergunta sobre outro nome, nome igual em título/manifest/README/casca e o nome chegando ao texto final **com o modelo quebrado**. `tools/testes/auto-melhoria.js` 13 → **17/17**. `node tools/auto-melhoria.js`: **122/127 por código, 0 erradas**, armadilhas **43/43**, fio **122/122**, cobertura **39/39**. Casca em **rebocl-chat-v104**.
 
 **Limite.** Três provas (comparação de nomes com tudo em minúsculas) param no guarda de maiúsculas do `fila`, que existe para não confundir palavra comum com nome: nesses casos o produto cala e o modelo responde — silêncio é aceitável, resposta diferente não.
+
+## Rodada 138 — de quem ele depende, e o que sobra quando tudo cai (31/10/2026)
+
+**O pedido.** "Faça uma auditoria do chat e questione e peça para ele fazer as melhorias para criar algo que não dependa de ninguém e como ele ficará de forma ilimitado."
+
+**Auditoria nova e reproduzível: `tools/auditoria-dependencias.js`.** Ela não opina: roda o produto de verdade com `fetch` bloqueado e conta. Três blocos:
+
+1. **Inventário** — modelo de texto: **19 rotas em 5 hosts** (`api.kilo.ai` 5, OVH/Kepler 9, `nvidia.g4f.dev` 3, `api.groq.com` 1, `text.pollinations.ai` 1), em 3 classes (forte/média/leve); 1 rota dessas é a única que aceita chave opcional, as outras 18 são anônimas. Fontes vivas citadas no runtime: Wikipédia, Wikidata, BrasilAPI, IBGE, mathjs, Open-Meteo, CoinGecko, MusicBrainz, archive.org, TheMealDB.
+2. **Ensaio de queda total** — `global.fetch` recusando tudo, gabarito inteiro pelo caminho real de `responder()`: **122/127 respondidas, 0 erradas, 5 vazias** (as verbais, declaradas), **mediana 0 ms · pior 1,5 s · soma 2,1 s**.
+3. **O que cada dependência carrega** — impresso com o efeito e o número medido, item por item.
+
+**O defeito que a auditoria expôs — e foi consertado.** Sem rede, as 5 perguntas que o caminho local não resolve **esperavam 32 a 85 segundos para devolver vazio**: cada uma das 19 rotas era tentada em sequência mesmo com todas recusando na hora. Espera inútil é pior que resposta curta — e o pior caso é exatamente quando o produto é 100% local. Entrou o **disjuntor de rede** em `roteador-ia.js`:
+- depois de **3 falhas de REDE seguidas** (fetch recusado — não vale para 429/500, que são do servidor), as rotas ficam pausadas por 20 s e a resposta honesta vem na hora;
+- o laço de voltas e o resgate param de insistir enquanto o disjuntor está aberto;
+- qualquer resposta HTTP que chegue zera a contagem.
+
+Medido antes/depois no ensaio de queda total: **soma da espera 338.678 ms → 763 ms** nas cinco perguntas (≈444× menos), sem mudar nenhuma resposta.
+
+**A definição honesta de "ilimitado", com número.** Ilimitado aqui não é "sabe tudo": é **não pedir licença a ninguém para o que sabe**. Hoje:
+- **caminho exato: zero dependência** — sem rede, sem chave, sem cota, sem provedor: 122/127 (96%) com **0 respostas inventadas**;
+- **texto aberto e vocabulário: depende de terceiro** — 19 rotas gratuitas em 5 provedores independentes, nenhuma exigindo chave; nenhum provedor único consegue derrubar o produto, e se todos caírem ele diz o motivo em ~1,5 s em vez de fingir;
+- **o que é estruturalmente impossível sem terceiro**: gerar texto novo e conhecer vocabulário fora da base local. A tentativa de resolver isso com base pública foi **medida e rejeitada** na rodada 136 (OpenWordnet-PT cobre 0 de 5 casos verbais).
+
+**Guarda novo: `tools/testes/sem-dependencia.js` (3/3).** Cobra o que foi prometido, e não a promessa: (1) queda total com ≥85% respondido e **zero** erradas; (2) **pior pergunta offline < 5 s** (o disjuntor funcionando); (3) redundância — ≥10 rotas, ≥3 provedores independentes e no máximo 1 rota com chave; (4) o disjuntor abre em 3 falhas seguidas de rede e **fecha quando a rede volta** (contraprova com fetch falso).
+
+**Provas.** `node tools/auditoria-dependencias.js`: 122/127 offline, 0 erradas, pior 1,5 s. `tools/testes/sem-dependencia.js` 3/3. Barreira completa verde com o teste novo registrado. Casca em **rebocl-chat-v105**.

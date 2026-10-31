@@ -752,6 +752,16 @@
     this.cooldownsRate = {};
     this.proximaChamada = {};
     this.cache = new Map();
+    /* DISJUNTOR DE REDE (rodada 138, 31/10/2026). Ensaio de queda total: com nenhuma rede, as
+       perguntas que o caminho local não resolve esperavam 32–85 s para devolver VAZIO — cada
+       rota era tentada em sequência mesmo com todas recusando na hora. Sem rede é o caso em que
+       o produto mais precisa ser rápido (é quando ele é 100% local). Depois de 3 falhas de REDE
+       seguidas (fetch recusado, não 429/500), as rotas ficam pausadas por 20 s e a resposta
+       honesta vem na hora. Qualquer sucesso zera a contagem. */
+    this.falhasRedeSeguidas = 0;
+    this.redePausadaAte = 0;
+    this.pausaRedeMs = opcoes.pausaRedeMs == null ? 20000 : opcoes.pausaRedeMs;
+    this.limiteFalhasRede = opcoes.limiteFalhasRede == null ? 3 : opcoes.limiteFalhasRede;
     this._lerDisco();
     this.cacheMax = opcoes.cacheMax || 400;
     this.cacheTtl = opcoes.cacheTtl || 15 * 60 * 1000;
@@ -2256,6 +2266,9 @@
   };
 
   Roteador.prototype._premiar = function (id, ms) {
+    // rede voltou: zera o disjuntor (ver _anotarFalhaRede)
+    this.falhasRedeSeguidas = 0;
+    this.redePausadaAte = 0;
     var s = this.saude[id];
     s.ok++;
     s.falhasSeguidas = 0;
@@ -2285,8 +2298,21 @@
     return x.length > 0 && /[0-9a-zà-ÿ]/i.test(x);
   }
 
+  /* Conta falhas de REDE seguidas e abre o disjuntor. Falha de rede é a única que permite
+     concluir "esta máquina está sem internet": 429/500 vêm do servidor, e aí o problema é da
+     rota, não da rede. */
+  Roteador.prototype._anotarFalhaRede = function () {
+    this.falhasRedeSeguidas = (this.falhasRedeSeguidas || 0) + 1;
+    if (this.falhasRedeSeguidas >= this.limiteFalhasRede) this.redePausadaAte = agora() + this.pausaRedeMs;
+  };
+  Roteador.prototype.redePausada = function () {
+    return !!(this.redePausadaAte && agora() < this.redePausadaAte);
+  };
+
   Roteador.prototype._chamar = async function (rota, pergunta, timeoutMs, opcoes) {
     var opc = opcoes || {};
+    // disjuntor: pausa curta depois de falhas de rede seguidas (ver construtor)
+    if (this.redePausadaAte && agora() < this.redePausadaAte) return { erro: 'rede', ms: 0, pausada: true };
     var url = rota.base.replace(/\/$/, '') + '/chat/completions';
     var c = new AbortController();
     var limite = this._limiteRota(rota, timeoutMs || (opc.longo ? 45000 : this.timeoutRota));
@@ -2316,6 +2342,10 @@
         var ra = segundosRetryAfter(r.headers.get('retry-after'), agora());
         return { erro: 'rate', espera: ra, ms: agora() - t0 };
       }
+      // resposta HTTP chegou: a rede está de pé, então o disjuntor zera aqui mesmo (não
+      // depende de quem chamou chamar _premiar).
+      this.falhasRedeSeguidas = 0;
+      this.redePausadaAte = 0;
       if (r.status === 401 || r.status === 403 || r.status === 404 || r.status === 400) return { erro: 'morto', ms: agora() - t0 };
       if (!r.ok) return { erro: 'servidor', ms: agora() - t0 };
       var d;
@@ -2332,7 +2362,9 @@
       if (!texto) return { erro: 'degenerada', ms: agora() - t0 };
       return { texto: texto, ms: agora() - t0, bruto: d.choices[0].finish_reason || null };
     } catch (e) {
-      return { erro: e && e.name === 'AbortError' ? 'timeout' : 'rede', ms: agora() - t0 };
+      var tipo = e && e.name === 'AbortError' ? 'timeout' : 'rede';
+      if (tipo === 'rede') this._anotarFalhaRede();
+      return { erro: tipo, ms: agora() - t0 };
     } finally {
       clearTimeout(t);
     }
@@ -2883,6 +2915,8 @@
   Roteador.prototype._resgate = async function (pedido) {
     var eu = this;
     var pergunta = pedido.pergunta;
+    // Disjuntor aberto (ensaio de queda total): resgate não tem para onde ligar.
+    if (this.redePausada()) return null;
     // 1ª tentativa: caminho leve, sem consenso e sem segunda amostra (as rotas leves são as que
     // costumam estar vivas quando as fortes entraram em quarentena por 429).
     var leve = await this._responderNucleo(Object.assign({}, pedido, {
@@ -3245,6 +3279,8 @@
     // limitada pelo orçamento, então rodada extra custa latência, não qualidade.
     this.voltasMax = 4;
     for (var volta = 0; volta < this.voltasMax; volta++) {
+      // Sem rede (disjuntor aberto): insistir só gasta espera. Devolve na hora, com o motivo.
+      if (this.redePausada()) { erroFinal = 'rede'; break; }
       var eu = this;
       var cands = this._candidatos(dificuldade)
         .filter(function (r) { return eu.disponivel(r.id) && evitar.indexOf(r.id) === -1; });
