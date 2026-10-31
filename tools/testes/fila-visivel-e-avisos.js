@@ -40,6 +40,14 @@ function trecho(src, inicio, fim) {
   return src.slice(i, f);
 }
 
+testa('nenhum link simbólico node_modules é versionado (derruba a publicação do Pages)', () => {
+  const alvo = path.join(raiz, 'node_modules');
+  let st = null;
+  try { st = fs.lstatSync(alvo); } catch (e) { return; }  // ausente é o estado normal no CI
+  assert(!st.isSymbolicLink(), 'node_modules é um link simbólico: o tar do Pages falha e a '
+    + 'página para de ser publicada. Apague o link (npm ci cria o diretório de verdade).');
+});
+
 // ---------------------------------------------------------------- fila visível (executada)
 function runtimeDaFila(src) {
   const bloco = trecho(src,
