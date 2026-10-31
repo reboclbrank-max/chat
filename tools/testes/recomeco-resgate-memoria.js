@@ -60,14 +60,16 @@ const PERGUNTA = 'explique o que é fotossíntese';
     assert.equal(internos.detectarEco('NÃO', 'quanto é 0.1 + 0.2?'), true);
   });
   await testa('eco parcial → recomeça e entrega a resposta certa', async () => {
-    const PERGUNTA_SEQ = 'Sequência de letras: A, C, F, J, O, ? Responda só a letra.';
+    // Antes este caso usava a sequência de letras; desde 31/10/2026 ela sai do raciocínio local
+    // (resposta exata, sem modelo), então o recomeço é exercitado num pedido de texto.
     let n = 0;
     const r = comDuble(async () => {
       n++;
-      return n === 1 ? { texto: 'A, C, F, J, O', ms: 3 } : { texto: 'U', ms: 3 };
+      return n === 1 ? { texto: 'o que é fotossíntese', ms: 3 }
+        : { texto: 'Fotossíntese é o processo em que a planta converte luz em energia química.', ms: 3 };
     });
-    const o = await r.responder({ pergunta: PERGUNTA_SEQ, tipo: 'curto', semConsenso: true });
-    assert.equal(o.texto, 'U', 'não recuperou: ' + o.texto);
+    const o = await r.responder({ pergunta: PERGUNTA, tipo: 'curto', semConsenso: true });
+    assert.match(String(o.texto), /energia química/, 'não recuperou: ' + o.texto);
     assert.equal(o.recomeco, true);
   });
   await testa('a conta que virava eco nem chega no modelo (ferramenta resolve)', async () => {

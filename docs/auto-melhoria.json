@@ -1,0 +1,107 @@
+{
+ "esquema": "auto-melhoria-v1",
+ "rodadas": [
+  {
+   "quando": "2026-10-31T13:31:18.634Z",
+   "provas": 47,
+   "porCodigo": 33,
+   "dependemDoModelo": 14,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "topo": [
+    "raciocinio-sem-codigo:verbal:7",
+    "raciocinio-sem-codigo:conhecimento:3",
+    "raciocinio-sem-codigo:código:2"
+   ]
+  },
+  {
+   "quando": "2026-10-31T13:32:15.773Z",
+   "provas": 47,
+   "porCodigo": 40,
+   "dependemDoModelo": 7,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "topo": [
+    "conhecimento-sem-lexico:verbal:5",
+    "mecanico-sem-codigo:código:1",
+    "texto-aberto-forma:undefined:1"
+   ]
+  },
+  {
+   "quando": "2026-10-31T13:32:26.064Z",
+   "provas": 47,
+   "porCodigo": 40,
+   "dependemDoModelo": 7,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "rev-1.json",
+    "passaram": 20,
+    "total": 24
+   },
+   "topo": [
+    "conhecimento-sem-lexico:verbal:6",
+    "texto-aberto-forma:undefined:1",
+    "texto-aberto-conteudo:undefined:3"
+   ]
+  },
+  {
+   "quando": "2026-10-31T13:32:42.113Z",
+   "provas": 47,
+   "porCodigo": 40,
+   "dependemDoModelo": 7,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "final-paragrafo.json",
+    "passaram": 21,
+    "total": 24
+   },
+   "topo": [
+    "conhecimento-sem-lexico:verbal:6",
+    "texto-aberto-forma:undefined:1",
+    "conhecimento-sem-lexico:código · geracao:1"
+   ]
+  },
+  {
+   "quando": "2026-10-31T13:33:29.304Z",
+   "provas": 47,
+   "porCodigo": 40,
+   "dependemDoModelo": 7,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "final-paragrafo.json",
+    "passaram": 21,
+    "total": 24
+   },
+   "topo": [
+    "conhecimento-sem-lexico:verbal:6",
+    "texto-aberto-forma:undefined:1",
+    "conhecimento-sem-lexico:código · geracao:1"
+   ]
+  },
+  {
+   "quando": "2026-10-31T13:44:26.236Z",
+   "provas": 47,
+   "porCodigo": 40,
+   "dependemDoModelo": 7,
+   "erradas": [],
+   "aberto": {
+    "arquivo": "final-paragrafo.json",
+    "passaram": 21,
+    "total": 24
+   },
+   "topo": [
+    "conhecimento-sem-lexico:verbal:6",
+    "texto-aberto-forma:undefined:1",
+    "conhecimento-sem-lexico:código · geracao:1"
+   ]
+  }
+ ]
+}

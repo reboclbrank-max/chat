@@ -538,6 +538,9 @@
     { q: /menor planeta.*sistema solar/i, r: 'Mercúrio' },
     { q: /planeta vermelho/i, r: 'Marte' },
     { q: /maior oceano/i, r: 'Pacífico' },
+    { q: /capital da austr[áa]lia/i, r: 'Canberra' },
+    { q: /proclama[çc][ãa]o da rep[úu]blica|(proclamou|proclamada) (?:a )?rep[úu]blica/i, r: '1889' },
+    { q: /moeda (oficial )?d[oa] jap[ãa]o/i, r: 'Iene' },
     { q: /oceano.*banha o brasil/i, r: 'Atlântico' },
     { q: /maior deserto do mundo/i, r: 'Antártico' },
     { q: /maior deserto (quente|arenoso)/i, r: 'Saara' },
@@ -1125,6 +1128,24 @@
       ano = parseInt(m[1], 10);
       return { texto: bissexto(ano) ? '366' : '365', ferramenta: 'calendario', fonte: 'calendário local' };
     }
+    /* "quantos dias há entre 1 de janeiro de 2026 e 1 de março de 2026" — diferença de datas.
+       Medido no auto-diagnóstico (31/10/2026): era o único item de execução do banco fácil que
+       ainda dependia do modelo, e é conta de calendário, não interpretação. */
+    if ((m = q.match(/quantos\s+dias\s+(?:h[áa]|existem|tem)\s+entre\s+(\d{1,2})\s+de\s+(janeiro|fevereiro|mar[çc]o|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro)(?:\s+de|\s+do\s+ano\s+de)?\s*(\d{4})?\s+e\s+(\d{1,2})\s+de\s+(janeiro|fevereiro|mar[çc]o|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro)(?:\s+de|\s+do\s+ano\s+de)?\s*(\d{4})/i))) {
+      var ORDEM = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho',
+        'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+      function paraData(dia, mes, ano) {
+        var idx = ORDEM.indexOf(String(mes).toLowerCase().replace('marco', 'março'));
+        return Date.UTC(ano, idx, parseInt(dia, 10));
+      }
+      var anoFim = parseInt(m[6], 10);
+      var anoIni = m[3] ? parseInt(m[3], 10) : anoFim;   // ano do início ausente: usa o do fim
+      var a = paraData(m[1], m[2], anoIni), b = paraData(m[4], m[5], anoFim);
+      if (!isNaN(a) && !isNaN(b)) {
+        var dias = Math.round((b - a) / 86400000);
+        return { texto: String(dias), ferramenta: 'calendario', fonte: 'diferença de datas no calendário local' };
+      }
+    }
     // "se hoje é terça-feira, que dia da semana será daqui a N dias?" — conta modular, sem modelo
     if ((m = q.match(/hoje\s+[ée]\s+(domingo|segunda-feira|segunda|ter[çc]a-feira|ter[çc]a|quarta-feira|quarta|quinta-feira|quinta|sexta-feira|sexta|s[áa]bado)[^\d]{0,40}?(\d{1,3})\s+dia/i))) {
       var base = m[1].toLowerCase().replace('-feira', '');
@@ -1166,7 +1187,7 @@
         if (v !== null) return { texto: v, ferramenta: 'mathjs', fonte: 'mathjs ' + expr };
       }
     }
-    if ((m = q.match(/quanto\s+é\s+(\d+(?:[.,]\d+)?)\s*%\s*de\s*(\d+(?:[.,]\d+)?)/i))) {
+    if ((m = q.match(/(?:quanto|qual)\s+(?:é|e|vale|seria)\s+(\d+(?:[.,]\d+)?)\s*%\s*de\s*(\d+(?:[.,]\d+)?)/i))) {
       p = parseFloat(m[1].replace(',', '.')); var n = parseFloat(m[2].replace(',', '.'));
       return { texto: String(Math.round(p * n) / 100), ferramenta: 'porcentagem', fonte: 'calculo local' };
     }
@@ -2880,6 +2901,15 @@
       texto = '';
     }
 
+    /* PORTÃO FINAL DE FORMATO — TENTADO E REVERTIDO (31/10/2026).
+       A ideia era repartir no último portão qualquer resposta aberta que chegasse com 1 bloco
+       quando o pedido era de 2. Dois testes de produto barraram, e com razão:
+       `aberto-recuperacao.js` ("não descartar o trecho que deu certo") e `estado-aberto.js`
+       ("o aviso não pode adulterar o texto bruto"). Quando a geração é incompleta, o produto
+       ENTREGA o texto como veio e avisa "1 de 2 parágrafos" — repartir esconderia justamente a
+       falta que a pessoa precisa saber. Fica valendo a regra anterior: só `cortado` bloqueia a
+       repartição de texto completo, e resposta incompleta continua avisando em vez de maquiar. */
+
     // (B) VAZIO → resgate. Nunca devolver nada quando alguma rota ainda pode falar.
     // Exceção deliberada: pedido de IMAGEM. Sem rota de visão, a resposta honesta é "não vi a
     // imagem"; resgatar com um modelo de texto inventaria descrição de foto que ninguém olhou.
@@ -3209,6 +3239,7 @@
 
   var api = { Roteador: Roteador, CATALOGO: CATALOGO, normal: normal, apresentarFontes: apresentarFontes };
   api.razaoLocal = razaoLocal;
+  api.sondar = function (q) { return { fatos: new Roteador({ amostrasAberto: 1 })._fatos(q) }; };
   api.internos = { sanear: sanear, util: util, extrairConclusao: extrairConclusao, calendarioLocal: calendarioLocal, fragmento: fragmento, instrucaoParagrafo: instrucaoParagrafo, extrairPlano: extrairPlano, fecharTexto: fecharTexto, termosDoPedido: termosDoPedido, calcular: calcular, instrucaoFormato: instrucaoFormato, ajustarFechamento: ajustarFechamento, numerarLista: numerarLista, anotarRespostaAberta: anotarRespostaAberta,
                    classificarPedido: classificarPedido, extrairCodigo: extrairCodigo,
                    codigoInteiro: codigoInteiro, textoCompleto: textoCompleto,
