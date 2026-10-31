@@ -234,6 +234,15 @@
       regras.push(r);
     }
     if (!regras.length) return null;
+    /* Contradição em linguagem natural: o MESMO par aparece como "todo A é B" e "nenhum A é B".
+       Medido pela armadilha `arm-silogismo-contraditorio` (31/10/2026): com universos vazios o
+       motor lógico respondia "Não" — tecnicamente vacuidade, mas na prática é inventar. Calar. */
+    for (var i2 = 0; i2 < regras.length; i2++) {
+      for (var j2 = i2 + 1; j2 < regras.length; j2++) {
+        var r1 = regras[i2], r2 = regras[j2];
+        if (r1.a === r2.a && r1.b === r2.b && r1.tipo !== r2.tipo) return null;
+      }
+    }
     var con = lerCategorica(norm(conclusaoTexto));
     if (!con) return null;
     var termos = {};
@@ -391,6 +400,8 @@
   /* ---------------- 9. custo total ---------------- */
   function custoTotal(q) {
     var t = norm(q);
+    // desconto, acréscimo, imposto ou frete mudam o total: a soma simples seria resposta errada
+    if (/desconto|descont|acrescimo|juros|imposto|frete|taxa/.test(t)) return null;
     var precos = {}, m;
     var re = /(\w+) custa[m]? (?:r\$ ?)?(\d+(?:[.,]\d+)?)/g;
     while ((m = re.exec(t))) {
@@ -413,6 +424,8 @@
   /* ---------------- 10. regra de três inversa (operários) ---------------- */
   function operarios(q) {
     var t = norm(q);
+    // "se 2 adoecem", "se 3 desistem": a quantidade efetiva muda e a regra de três não vale
+    if (/adoec|desist|falt|sai|doente|licenca/.test(t)) return null;
     var m = t.match(/se (\d+) (\w+) (?:fazem|faz|cavam|constroem)[\s\S]*?em (\d+) dias[\s\S]*?(\d+) (\w+)/);
     if (!m) return null;
     if (!/quantos dias|em quanto tempo/.test(t)) return null;
@@ -482,6 +495,8 @@
   /* ---------------- 12. rotação em pontos cardeais ---------------- */
   function rotacao(q) {
     var t = norm(q);
+    // sentido que muda no meio do caminho: a rotação simples não vale
+    if (/inverte|alterna|muda de sentido|ora .*ora/.test(t)) return null;
     var m = t.match(/aponta para o (norte|sul|leste|oeste)[\s\S]*?gira (\d+) graus[\s\S]*?(horario|anti-horario|anti horario)[\s\S]*?(?:no|apos|depois do|ao) (primeiro|segundo|terceiro|quarto|quinto|sexto|setimo|oitavo|\d+)\s*(?:o |º )?passo/);
     if (!m) return null;
     var pontos = ['norte', 'leste', 'sul', 'oeste'];
@@ -583,6 +598,12 @@
   /* ---------------- 14. código de uma linha ---------------- */
   function codigo(q) {
     var t = norm(q), m;
+    /* Expressão ENCADEADA depois do trecho reconhecido (".length", ".reverse()", ".sort()"):
+       a resposta muda. Medido pela armadilha `arm-codigo-encadeado` (31/10/2026): o motor devolvia
+       "2-4-6" quando o pedido era o .length (5) — resposta exata ERRADA. Calar é melhor. */
+    var exprCompleta = texto(q);
+    if (/\.join\([^)]*\)\s*\.\w+/.test(exprCompleta)) return null;          // "...join('-').length"
+    if (/\.map\([^)]*\)\s*\.(?!join\()\w+/.test(exprCompleta)) return null; // map seguido de método que não é join
     if ((m = t.match(/len\(\[([\d,\s]+)\]\)\s*\+\s*(\d+)/))) {
       var lista = m[1].split(',').filter(function (x) { return x.trim() !== ''; });
       return { texto: String(lista.length + parseInt(m[2], 10)), ferramenta: 'codigo', fonte: 'len da lista + n' };

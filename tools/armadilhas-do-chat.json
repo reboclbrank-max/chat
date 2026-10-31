@@ -1,0 +1,110 @@
+{
+  "esquema": "armadilhas-chat-v1",
+  "aviso": "Perguntas que PARECEM as que o código resolve, mas cuja resposta certa NÃO é a forma conhecida. Se o caminho exato responder alguma delas, ele está chutando — e chute exato é pior que resposta de modelo. Aqui `null` significa: a resposta certa depende de interpretação, então o código tem de ficar calado.",
+  "armadilhas": [
+    {
+      "id": "arm-torneira-esvazia",
+      "por": "trabalho",
+      "q": "Uma torneira enche um tanque em 6 horas e outra o esvazia em 4 horas. As duas abertas juntas, o tanque enche em quantas horas? Responda só o número decimal.",
+      "porque": "com uma esvaziando, é 1/6 - 1/4 < 0: o tanque nunca enche. A fórmula 1/(1/a+1/b) responderia 2,4 — errado."
+    },
+    {
+      "id": "arm-contagem-dois-digitos",
+      "por": "contagem",
+      "q": "Quantos números inteiros de 1 a 1000 contêm pelo menos dois dígitos 7? Responda só o número.",
+      "porque": "271 conta os que têm UM OU MAIS. Com 'dois dígitos' a resposta é outra; a forma conhecida não vale."
+    },
+    {
+      "id": "arm-matriz-regra-desconhecida",
+      "por": "matriz",
+      "q": "Uma matriz 2x2 tem na primeira linha: quadrado preto, círculo branco; na segunda: círculo branco, quadrado preto. Se a regra é girar a matriz 90 graus, o que fica na posição (1,1)? Responda só: quadrado branco, quadrado preto, círculo branco ou círculo preto.",
+      "porque": "só a regra 'inverter cores' está implementada; girar exige outra transformação."
+    },
+    {
+      "id": "arm-urna-reposicao-diferente",
+      "por": "probabilidade",
+      "q": "Numa urna há 3 bolas vermelhas e 2 azuis. Tiro duas sem repor. Qual a probabilidade de a primeira ser vermelha e a segunda azul? Responda só a fração.",
+      "porque": "é probabilidade condicional de ordem, não 'ambas da mesma cor'."
+    },
+    {
+      "id": "arm-sequencia-sem-padrao",
+      "por": "sequencia",
+      "q": "Qual número continua a sequência: 3, 1, 4, 1, 5, ?",
+      "porque": "é o começo dos dígitos de pi, não uma progressão aritmética/geométrica. O código tem de ficar calado."
+    },
+    {
+      "id": "arm-fila-ambigua",
+      "por": "fila",
+      "q": "Quatro pessoas sentam em fila. Ana está antes de Bia. Caio está antes de Davi. Quem é o primeiro da fila? Responda só o nome.",
+      "porque": "duas ordens são possíveis; responder um nome seria inventar."
+    },
+    {
+      "id": "arm-idade-sem-inteiro",
+      "por": "idade",
+      "q": "Ana tem o triplo da idade de Bia. Em 10 anos, Ana terá o dobro da idade de Bia. Quantos anos tem Bia hoje? Responda só o número.",
+      "porque": "controle positivo: a resposta existe e é 10 (3Y, Y+10 → Y=10). Serve para provar que o motor não fica calado só por precaução.",
+      "esperado": "10"
+    },
+    {
+      "id": "arm-porcentagem-de-porcentagem",
+      "por": "porcentagem",
+      "q": "Qual é 37% de 37% de 200?",
+      "porque": "controle positivo depois do conserto: a forma encadeada foi implementada (0,37×0,37×200). Antes desta rodada a resposta era 13,69 — o erro que a armadilha achou.",
+      "esperado": "27,38"
+    },
+    {
+      "id": "arm-letras-vogais",
+      "por": "sequencia-letras",
+      "q": "Sequência de letras: A, E, I, O, ? Responda só a letra.",
+      "porque": "são as vogais, não uma progressão de distâncias; o código tem de ficar calado."
+    },
+    {
+      "id": "arm-ponto-flutuante-python",
+      "por": "ponto-flutuante",
+      "q": "Em Python, qual é o resultado de 0.1 + 0.2 === 0.3? Responda só SIM ou NÃO.",
+      "porque": "Python não tem o operador ===; o fato de IEEE-754 é do JavaScript. Tem de ficar calado."
+    },
+    {
+      "id": "arm-silogismo-contraditorio",
+      "por": "deducao",
+      "q": "Todos os A são B. Nenhum A é B. É válido concluir que algum A é B? Responda SIM ou NÃO.",
+      "porque": "premissas contraditórias não sustentam nenhuma conclusão; responder SIM ou NÃO seria inventar."
+    },
+    {
+      "id": "arm-conjuntos-so-uma-lingua",
+      "por": "conjuntos",
+      "q": "Num grupo de 10 pessoas, 6 falam inglês, 5 falam espanhol e 3 falam as duas línguas. Quantas falam só inglês?",
+      "porque": "é outra pergunta de conjunto (A - A∩B); a conta de inclusão-exclusão não vale."
+    },
+    {
+      "id": "arm-custo-com-desconto",
+      "por": "custo",
+      "q": "Um lápis custa 3 reais e uma caneta custa 7 reais. Comprei 4 lápis e 3 canetas. Quanto paguei com 10% de desconto?",
+      "porque": "há desconto no fim; somar os preços e ignorar o desconto dá 33 quando o certo é 29,70."
+    },
+    {
+      "id": "arm-operarios-adoecem",
+      "por": "proporcao",
+      "q": "Se 5 operários fazem uma obra em 12 dias, quantos dias levam 10 operários se 2 adoecem no primeiro dia?",
+      "porque": "a quantidade efetiva muda no meio; a regra de três simples responderia 6 e ignoraria a condição."
+    },
+    {
+      "id": "arm-rotacao-sentido-muda",
+      "por": "rotacao",
+      "q": "Uma figura aponta para o norte. A cada passo ela gira 90 graus no sentido horário, mas o sentido se inverte a cada passo. Para onde ela aponta no quinto passo? Responda só o ponto cardeal.",
+      "porque": "com inversão de sentido a rotação simples não vale; responder 'leste' seria chute."
+    },
+    {
+      "id": "arm-memoria-maior-numero",
+      "por": "memoria",
+      "q": "Memorize esta lista: 7, azul, cadeira, 14, rápido. Qual é o maior número da lista? Responda só o número.",
+      "porque": "não é posição nem soma; o código não deve arriscar."
+    },
+    {
+      "id": "arm-codigo-encadeado",
+      "por": "codigo",
+      "q": "Em JavaScript, qual é o resultado de [1,2,3].map(x => x * 2).join(\"-\").length? Responda só o resultado.",
+      "porque": "há .length no fim: a resposta é 5, não '2-4-6'. Devolver '2-4-6' é resposta exata ERRADA."
+    }
+  ]
+}

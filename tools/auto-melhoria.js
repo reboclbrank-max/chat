@@ -13,6 +13,18 @@
 //   4. ranqueia as lacunas por (quantas provas × quanto custa consertar) e imprime o topo;
 //   5. grava histórico em `docs/auto-melhoria.json` para mostrar tendência entre rodadas.
 //
+// AUDITORIA DE SI MESMO (rodada 135, 31/10/2026) — porque um medidor também erra:
+//   • ARMADILHAS (`tools/armadilhas-do-chat.json`): perguntas que PARECEM resolvíveis mas cuja
+//     resposta certa não é a forma conhecida. Se o caminho exato respondê-las, ele está chutando.
+//     Foi assim que se achou o erro de porcentagem encadeada (37% de 37% de 200 → 13,69).
+//   • PROVA DE FIO: não basta o solucionador saber; o PRODUTO tem de entregar a resposta sem
+//     modelo. Para cada prova que o código diz resolver, roda `responder()` com a chamada de
+//     modelo quebrada de propósito e confere o texto final. Fio partido aparece aqui.
+//   • INTEGRIDADE DO GABARITO: guarda o hash das provas no histórico. Mudar o gabarito para
+//     melhorar o placar fica visível e o teste da barreira cobra explicação.
+//   • TRAVA DE REGRESSÃO (`--exigir-sem-regressao`): falha se o número de provas resolvidas por
+//     código cair em relação à última rodada registrada.
+//
 // Regra que vale para o próprio diagnóstico: ele NÃO inventa nota. Tudo que sai aqui vem de uma
 // prova executada agora ou de um arquivo de medição já salvo no repositório.
 //
@@ -23,6 +35,12 @@ const path = require('path');
 
 const RAIZ = path.resolve(__dirname, '..');
 const HISTORICO = path.join(RAIZ, 'docs', 'auto-melhoria.json');
+const crypto = require('crypto');
+function hashArquivo(rel) {
+  const p = path.join(RAIZ, rel);
+  if (!fs.existsSync(p)) return null;
+  return crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex').slice(0, 16);
+}
 
 const { Roteador } = require(path.join(RAIZ, 'roteador-ia.js'));
 const RazaoLocal = require(path.join(RAIZ, 'razao-local.js'));
@@ -75,6 +93,94 @@ async function auditarProvas() {
     });
   }
   return porProva;
+}
+
+/* ---------- 1b. armadilhas: o código tem de ficar calado quando não sabe ---------- */
+async function auditarArmadilhas() {
+  const arquivo = path.join(RAIZ, 'tools', 'armadilhas-do-chat.json');
+  if (!fs.existsSync(arquivo)) return null;
+  const banco = JSON.parse(fs.readFileSync(arquivo, 'utf8'));
+  const r = new Roteador({ amostrasAberto: 1 });
+  const itens = [];
+  for (const x of banco.armadilhas) {
+    let resposta = null, caminho = null;
+    const f = await r._ferramenta(x.q);
+    if (f && f.texto) { resposta = f.texto; caminho = 'ferramenta'; }
+    if (!resposta) {
+      const fato = r._fatos(x.q);
+      if (fato && fato.texto) { resposta = fato.texto; caminho = 'fatos'; }
+    }
+    if (!resposta) {
+      const rl = RazaoLocal.resolver(x.q);
+      if (rl && rl.texto) { resposta = rl.texto; caminho = 'razao-local'; }
+    }
+    const controle = Object.prototype.hasOwnProperty.call(x, 'esperado');
+    let ok;
+    if (controle) ok = resposta !== null && confere(resposta, x.esperado);
+    else ok = resposta === null;                       // tinha de ficar calado
+    itens.push({ id: x.id, por: x.por, ok: ok, controle: controle,
+      resposta: resposta === null ? null : String(resposta).slice(0, 60), caminho: caminho, porque: x.porque });
+  }
+  return { total: itens.length, ok: itens.filter(function (i) { return i.ok; }).length, itens: itens };
+}
+
+/* ---------- 1c. prova de fio: o PRODUTO entrega sem modelo? ---------- */
+// Para cada prova que o código diz resolver, roda o caminho real de `responder()` com a chamada
+// de modelo quebrada. Se o texto final vier vazio ou diferente, a resposta exata existe mas não
+// chega ao usuário — fio partido, e o placar antigo não mostrava isso.
+async function provarFio(provas, amostra) {
+  const banco = JSON.parse(fs.readFileSync(path.join(RAIZ, 'tools', 'provas-do-chat.json'), 'utf8'));
+  const porId = new Map(banco.provas.map(function (p) { return [p.id, p]; }));
+  const alvo = provas.filter(function (p) { return p.caminho !== 'modelo'; }).slice(0, amostra);
+  const itens = [];
+  for (const p of alvo) {
+    const prova = porId.get(p.id);
+    const r = new Roteador({ amostrasAberto: 1 });
+    r._chamar = async function () { return { erro: 'rede', ms: 1 }; };   // modelo quebrado de propósito
+    r._consenso = async function () { return null; };
+    let resposta = null;
+    try {
+      const o = await r.responder({ pergunta: prova.q, semConsenso: true, semEsperaBoa: true, semRevisao: true });
+      resposta = o && o.texto ? o.texto : null;
+    } catch (e) { resposta = null; }
+    itens.push({ id: p.id, ok: resposta !== null && confere(resposta, prova.ok), texto: resposta === null ? null : String(resposta).slice(0, 60) });
+  }
+  return { total: itens.length, ok: itens.filter(function (i) { return i.ok; }).length, itens: itens };
+}
+
+/* ---------- 1d. cobertura: cada solucionador tem prova E armadilha? ---------- */
+// Um solucionador sem armadilha é um risco não medido: ninguém sabe se ele responde o que não
+// devia. Esta auditoria transforma isso em lista de trabalho dentro do próprio relatório.
+const SOLUCIONADORES = Object.keys(RazaoLocal).filter(function (k) { return typeof RazaoLocal[k] === 'function' && k !== 'resolver'; });
+function cobertura(provasBanco, armadilhasBanco) {
+  const mapa = {};
+  for (const nome of SOLUCIONADORES) mapa[nome] = { provas: [], armadilhas: [] };
+  for (const p of provasBanco) {
+    for (const nome of SOLUCIONADORES) {
+      let r = null;
+      try { r = RazaoLocal[nome](p.q); } catch (e) { r = null; }
+      if (r && r.texto) { mapa[nome].provas.push(p.id); break; }
+    }
+  }
+  // A armadilha cobre o solucionador que ela APONTA (`por`), inclusive quando o certo é ele ficar
+  // calado — é justamente esse silêncio que a armadilha mede.
+  const APELIDOS = { trabalho: 'trabalhoConjunto', contagem: 'contagemDigito', idade: 'problemaIdade',
+    deducao: 'silogismo', conjuntos: 'inclusaoExclusao', proporcao: 'operarios', custo: 'custoTotal',
+    codigo: 'codigo', memoria: 'memoria', rotacao: 'rotacao', matriz: 'matriz', fila: 'fila',
+    probabilidade: 'probabilidade', sequencia: 'sequencia', operarios: 'operarios', trabalho2: 'trabalhoConjunto', 'sequencia-letras': 'sequenciaLetras',
+    'ponto-flutuante': 'pontoFlutuante' };
+  for (const a of armadilhasBanco) {
+    const nome = APELIDOS[a.por] || a.por;
+    if (mapa[nome]) { mapa[nome].armadilhas.push(a.id); continue; }
+    for (const n of SOLUCIONADORES) {
+      let r = null;
+      try { r = RazaoLocal[n](a.q); } catch (e) { r = null; }
+      if (r && r.texto) { mapa[n].armadilhas.push(a.id); break; }
+    }
+  }
+  const semArmadilha = SOLUCIONADORES.filter(function (n) { return mapa[n].provas.length && !mapa[n].armadilhas.length; });
+  const semProva = SOLUCIONADORES.filter(function (n) { return !mapa[n].provas.length; });
+  return { porSolucionador: mapa, semArmadilha: semArmadilha, semProva: semProva };
 }
 
 /* ---------- 2. texto aberto: forma ou conteúdo ---------- */
@@ -211,9 +317,39 @@ function salvarHistorico(relatorio) {
     dependemDoModelo: relatorio.provas.dependemDoModelo,
     erradas: relatorio.provas.erradas,
     aberto: relatorio.aberto ? { arquivo: relatorio.aberto.arquivo, passaram: relatorio.aberto.passaram, total: relatorio.aberto.total } : null,
+    provasHash: hashArquivo(path.join('tools', 'provas-do-chat.json')),
+    armadilhasHash: hashArquivo(path.join('tools', 'armadilhas-do-chat.json')),
+    armadilhasOk: relatorio.armadilhas ? relatorio.armadilhas.ok : null,
+    fioOk: relatorio.fio ? relatorio.fio.ok : null,
     topo: relatorio.lacunas.slice(0, 3).map(function (l) { return l.tipo + ':' + l.dominio + ':' + l.provas; })
   });
   hist.rodadas = hist.rodadas.slice(-30);
+  /* REFERÊNCIA: o melhor já medido com ESTE gabarito. Nunca desce — se um PR piorar o motor, a
+     referência continua no alto e a trava segue acusando. Sem isso, comparar com "a rodada
+     anterior" deixava a própria rodada ruim virar base (verificado em 31/10/2026). */
+  const atual = {
+    provasHash: hashArquivo(path.join('tools', 'provas-do-chat.json')),
+    armadilhasHash: hashArquivo(path.join('tools', 'armadilhas-do-chat.json')),
+    provas: relatorio.provas.total, porCodigo: relatorio.provas.porCodigo,
+    armadilhasOk: relatorio.armadilhas ? relatorio.armadilhas.ok : null,
+    fioOk: relatorio.fio ? relatorio.fio.ok : null,
+    fioTotal: relatorio.fio ? relatorio.fio.total : null
+  };
+  const ref = hist.referencia;
+  const mesmoGabarito = ref && ref.provasHash === atual.provasHash && ref.armadilhasHash === atual.armadilhasHash;
+  if (!mesmoGabarito) {
+    hist.referencia = atual;                       // gabarito mudou: referência nova, e o relatório avisa
+  } else {
+    hist.referencia = {
+      provasHash: atual.provasHash, armadilhasHash: atual.armadilhasHash,
+      provas: Math.max(ref.provas || 0, atual.provas),
+      porCodigo: Math.max(ref.porCodigo || 0, atual.porCodigo),
+      armadilhasOk: Math.max(ref.armadilhasOk || 0, atual.armadilhasOk || 0),
+      // a prova de fio é uma AMOSTRA: só se compara número com o mesmo tamanho de amostra
+      fioOk: (ref.fioTotal === atual.fioTotal) ? Math.max(ref.fioOk || 0, atual.fioOk || 0) : atual.fioOk,
+      fioTotal: atual.fioTotal
+    };
+  }
   fs.mkdirSync(path.dirname(HISTORICO), { recursive: true });
   fs.writeFileSync(HISTORICO, JSON.stringify(hist, null, 1) + '\n');
   return hist;
@@ -221,11 +357,23 @@ function salvarHistorico(relatorio) {
 
 (async () => {
   const provas = await auditarProvas();
+  const armadilhas = await auditarArmadilhas();
+  const fio = await provarFio(provas, Number((process.argv.find(function (a) { return a.indexOf('--fio=') === 0; }) || '').split('=')[1] || 12));
   const aberto = auditarAberto();
+  const provasBanco = JSON.parse(fs.readFileSync(path.join(RAIZ, 'tools', 'provas-do-chat.json'), 'utf8')).provas;
+  const armadilhasBanco = JSON.parse(fs.readFileSync(path.join(RAIZ, 'tools', 'armadilhas-do-chat.json'), 'utf8')).armadilhas;
+  const cob = cobertura(provasBanco, armadilhasBanco);
   const porCodigo = provas.filter(function (p) { return p.caminho !== 'modelo'; }).length;
   const dependemDoModelo = provas.filter(function (p) { return p.caminho === 'modelo'; });
   const erradas = provas.filter(function (p) { return p.certo === false; });
   const ranking = ranquear(provas, aberto);
+  if (cob.semArmadilha.length) {
+    ranking.lacunas.push({
+      tipo: 'solucionador-sem-armadilha', dominio: 'cobertura', provas: cob.semArmadilha.length,
+      exemplos: cob.semArmadilha, custo: 'baixo', ganho: cob.semArmadilha.length,
+      acao: 'criar armadilha para esses solucionadores: hoje ninguém mede se eles respondem o que não deviam'
+    });
+  }
   const relatorio = {
     esquema: 'auto-melhoria-v1',
     quando: new Date().toISOString(),
@@ -235,6 +383,9 @@ function salvarHistorico(relatorio) {
       semCodigo: dependemDoModelo.map(function (p) { return { id: p.id, dominio: p.dominio, esperado: p.esperado }; })
     },
     aberto: aberto,
+    armadilhas: armadilhas,
+    fio: fio,
+    cobertura: { semArmadilha: cob.semArmadilha, semProva: cob.semProva },
     lacunas: ranking.lacunas
   };
 
@@ -250,6 +401,25 @@ function salvarHistorico(relatorio) {
     console.log('   sem código: ' + dependemDoModelo.map(function (p) { return p.id + ' (' + p.dominio + ')'; }).join(', '));
   }
   if (erradas.length) console.log('   ERRADAS: ' + erradas.map(function (p) { return p.id + ' respondeu "' + p.resposta + '"'; }).join(', '));
+
+  if (armadilhas) {
+    console.log('== ARMADILHAS (o código tem de ficar calado quando não sabe)');
+    console.log('   ' + armadilhas.ok + '/' + armadilhas.total + ' se comportaram');
+    for (const i of armadilhas.itens.filter(function (x) { return !x.ok; })) {
+      console.log('   ✘ ' + i.id + (i.resposta ? ' respondeu "' + i.resposta + '"' : ' ficou calado quando devia responder')
+        + ' — ' + i.porque);
+    }
+  }
+
+  console.log('== PROVA DE FIO (o produto entrega, ou só o solucionador sabe?)');
+  console.log('   ' + fio.ok + '/' + fio.total + ' provas chegam ao texto final sem modelo');
+  for (const i of fio.itens.filter(function (x) { return !x.ok; })) {
+    console.log('   ✘ ' + i.id + ' não chegou ao texto final' + (i.texto ? ' (veio "' + i.texto + '")' : ' (veio vazio)'));
+  }
+
+  console.log('== COBERTURA DO MOTOR (cada solucionador tem prova e armadilha?)');
+  console.log('   ' + SOLUCIONADORES.length + ' solucionadores · sem prova: ' + (cob.semProva.join(', ') || 'nenhum')
+    + ' · sem armadilha: ' + (cob.semArmadilha.join(', ') || 'nenhum'));
 
   if (aberto) {
     if (aberto.concorrentes && aberto.concorrentes.length > 1) {
@@ -281,4 +451,30 @@ function salvarHistorico(relatorio) {
       + ' por código · agora ' + porCodigo + '/' + provas.length);
   }
   console.log('histórico em docs/auto-melhoria.json (' + hist.rodadas.length + ' rodada(s))');
+
+  /* TRAVA DE REGRESSÃO: quem manda é a rodada anterior registrada no repositório.
+     Serve para a barreira impedir que um PR derrube o caminho exato sem ninguém ver. */
+  const referencia = hist.referencia || null;
+  if (referencia && referencia.provasHash !== hashArquivo(path.join('tools', 'provas-do-chat.json'))) {
+    console.log('⚠ o gabarito de provas MUDOU — placar novo e referência antiga não são comparáveis (referência refeita)');
+  }
+  if (process.argv.includes('--exigir-sem-regressao') && referencia) {
+    const problemas = [];
+    if (porCodigo < referencia.porCodigo) problemas.push('provas resolvidas por código caíram de ' + referencia.porCodigo + ' para ' + porCodigo);
+    if (armadilhas && referencia.armadilhasOk != null && armadilhas.ok < referencia.armadilhasOk)
+      problemas.push('armadilhas respeitadas caíram de ' + referencia.armadilhasOk + ' para ' + armadilhas.ok);
+    if (fio && referencia.fioOk != null && referencia.fioTotal === fio.total && fio.ok < referencia.fioOk)
+      problemas.push('prova de fio caiu de ' + referencia.fioOk + '/' + referencia.fioTotal + ' para ' + fio.ok + '/' + fio.total);
+    if (fio && referencia.fioTotal != null && referencia.fioTotal !== fio.total)
+      console.log('   (prova de fio com amostra de ' + fio.total + '; a referência é de ' + referencia.fioTotal + ' — não comparada)');
+    if (erradas.length) problemas.push(erradas.length + ' prova(s) respondida(s) ERRADA(S): ' + erradas.map(function (p) { return p.id; }).join(', '));
+    if (armadilhas && armadilhas.ok < armadilhas.total)
+      problemas.push((armadilhas.total - armadilhas.ok) + ' armadilha(s) respondida(s) por chute');
+    if (problemas.length) {
+      console.error('✘ REGRESSÃO: ' + problemas.join(' · '));
+      process.exitCode = 1;
+    } else {
+      console.log('✔ sem regressão em relação à rodada anterior registrada');
+    }
+  }
 })();
