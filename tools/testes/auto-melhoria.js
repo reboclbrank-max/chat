@@ -20,6 +20,15 @@ function roda(args) {
   return execFileSync(process.execPath, [path.join(RAIZ, 'tools', 'auto-melhoria.js')].concat(args || []),
     { cwd: RAIZ, encoding: 'utf8', timeout: 120000 });
 }
+/* O diagnóstico roda o gabarito inteiro; chamar isso uma vez por verificação custava ~3 min no CI
+   e a suíte estourava o limite de 180 s (medido em 31/10/2026, run 41244402599). Agora o relatório
+   é medido UMA vez por conjunto de argumentos e reaproveitado: mesmo número, um quarto do tempo. */
+const CACHE_REL = new Map();
+function relatorio(args) {
+  const chave = (args || []).join(' ');
+  if (!CACHE_REL.has(chave)) CACHE_REL.set(chave, JSON.parse(roda(args)));
+  return CACHE_REL.get(chave);
+}
 
 testa('as provas do chat existem e têm resposta de referência', () => {
   const banco = JSON.parse(fs.readFileSync(path.join(RAIZ, 'tools', 'provas-do-chat.json'), 'utf8'));
@@ -30,19 +39,19 @@ testa('as provas do chat existem e têm resposta de referência', () => {
 });
 
 testa('o relatório classifica TODAS as provas (nada fica sem conta)', () => {
-  const rel = JSON.parse(roda(['--json']));
+  const rel = relatorio(['--json', '--fio=1']);
   assert.equal(rel.provas.porCodigo + rel.provas.dependemDoModelo, rel.provas.total);
   assert.equal(rel.provas.total, JSON.parse(fs.readFileSync(path.join(RAIZ, 'tools', 'provas-do-chat.json'), 'utf8')).provas.length);
 });
 
 testa('nenhuma prova é respondida ERRADA pelo caminho exato', () => {
   // Resposta exata errada é o pior defeito possível: se aparecer, o teste falha aqui.
-  const rel = JSON.parse(roda(['--json']));
+  const rel = relatorio(['--json', '--fio=1']);
   assert.deepEqual(rel.provas.erradas, [], 'erradas: ' + rel.provas.erradas.join(', '));
 });
 
 testa('a fila de conserto é ranqueada e diz o custo de cada item', () => {
-  const rel = JSON.parse(roda(['--json']));
+  const rel = relatorio(['--json', '--fio=1']);
   assert(Array.isArray(rel.lacunas));
   for (const l of rel.lacunas) {
     assert(l.tipo && l.provas > 0 && l.custo && l.acao, 'lacuna incompleta: ' + JSON.stringify(l));
@@ -58,7 +67,7 @@ testa('a fila de conserto é ranqueada e diz o custo de cada item', () => {
 });
 
 testa('texto aberto: os concorrentes aparecem (não se escolhe o melhor placar escondido)', () => {
-  const rel = JSON.parse(roda(['--json']));
+  const rel = relatorio(['--json', '--fio=1']);
   if (!rel.aberto) return;                        // repositório sem medição: nada a esconder
   assert(Array.isArray(rel.aberto.concorrentes) && rel.aberto.concorrentes.length >= 1);
   const escolhido = rel.aberto.concorrentes.find((c) => c.arquivo === rel.aberto.arquivo);
@@ -74,7 +83,7 @@ testa('o histórico cresce e guarda tendência', () => {
 });
 
 testa('armadilhas: o código não responde o que não sabe', () => {
-  const rel = JSON.parse(roda(['--json', '--fio=1']));
+  const rel = relatorio(['--json', '--fio=1']);
   assert(rel.armadilhas && rel.armadilhas.total >= 17, 'armadilhas insuficientes: ' + (rel.armadilhas && rel.armadilhas.total));
   const ruins = rel.armadilhas.itens.filter((i) => !i.ok);
   assert.deepEqual(ruins.map((i) => i.id + '→' + i.resposta), [],
@@ -83,13 +92,13 @@ testa('armadilhas: o código não responde o que não sabe', () => {
 
 testa('prova de fio: as respostas exatas chegam ao texto final SEM modelo', () => {
   // Roda com a chamada de modelo quebrada de propósito: se o fio estiver partido, não sobra texto.
-  const rel = JSON.parse(roda(['--json', '--fio=500']));
+  const rel = relatorio(['--json', '--fio=500']);
   assert.equal(rel.fio.ok, rel.fio.total, 'fio partido: ' + rel.fio.itens.filter((i) => !i.ok).map((i) => i.id).join(', '));
   assert.equal(rel.fio.total, rel.provas.porCodigo, 'a prova de fio tem de cobrir todas as provas resolvidas por código');
 });
 
 testa('cobertura: todo solucionador tem prova e armadilha', () => {
-  const rel = JSON.parse(roda(['--json', '--fio=1']));
+  const rel = relatorio(['--json', '--fio=1']);
   assert.deepEqual(rel.cobertura.semProva, [], 'sem prova: ' + rel.cobertura.semProva.join(', '));
   assert.deepEqual(rel.cobertura.semArmadilha, [], 'sem armadilha: ' + rel.cobertura.semArmadilha.join(', '));
 });
@@ -107,7 +116,7 @@ testa('o gabarito e as armadilhas têm hash registrado no histórico', () => {
 });
 
 testa('capacidade: cada eixo tem antes, hoje, alvo do dobro e estado', () => {
-  const rel = JSON.parse(roda(['--json', '--fio=1']));
+  const rel = relatorio(['--json', '--fio=1']);
   assert(rel.capacidade && Array.isArray(rel.capacidade.eixos) && rel.capacidade.eixos.length >= 8);
   for (const e of rel.capacidade.eixos) {
     assert(e.id && e.rotulo && typeof e.antes === 'number' && typeof e.hoje === 'number'
@@ -120,7 +129,7 @@ testa('capacidade: cada eixo tem antes, hoje, alvo do dobro e estado', () => {
 });
 
 testa('fila: item medido e rejeitado não fica no topo da fila', () => {
-  const rel = JSON.parse(roda(['--json', '--fio=1']));
+  const rel = relatorio(['--json', '--fio=1']);
   const rejeitados = rel.lacunas.filter((l) => l.estado === 'rejeitado-por-medicao');
   if (!rejeitados.length) return;                  // repositório sem a medição: nada a cobrar
   for (const l of rejeitados) {
@@ -131,7 +140,7 @@ testa('fila: item medido e rejeitado não fica no topo da fila', () => {
 });
 
 testa('guarda (--vigiar): aprova o estado atual com uma linha de veredito', () => {
-  const saida = roda(['--vigiar', '--fio=500']);
+  const saida = roda(['--vigiar', '--fio=1']);
   assert(/GUARDA: nada quebrado/.test(saida), 'o guarda reprovou o estado atual: ' + saida.slice(-500));
 });
 
@@ -150,7 +159,9 @@ testa('guarda (--vigiar): REPROVA quando alguém quebra um solucionador', () => 
   fs.writeFileSync(alvo, fonte);
   let saida = '', codigo = 0;
   try {
-    saida = execFileSync(process.execPath, [path.join(tmp, 'tools', 'auto-melhoria.js'), '--vigiar', '--fio=500'],
+    // --fio=1 basta: o defeito plantado é de COBERTURA e de regressão, não de fio. Amostra
+    // grande aqui só gastava o tempo do CI (medido em 31/10/2026).
+    saida = execFileSync(process.execPath, [path.join(tmp, 'tools', 'auto-melhoria.js'), '--vigiar', '--fio=1'],
       { cwd: tmp, encoding: 'utf8', timeout: 240000, stdio: ['ignore', 'pipe', 'pipe'] });
   } catch (e) {
     codigo = e.status || 1;
@@ -167,11 +178,22 @@ testa('pedir-mais: o produto sobe a própria barra e diz o que falta', () => {
 });
 
 testa('robustez: a mesma prova escrita de outro jeito não muda de resposta', () => {
-  const rel = JSON.parse(roda(['--json', '--fio=1']));
+  const rel = relatorio(['--json', '--fio=1']);
   assert(rel.robustez && typeof rel.robustez.total === 'number' && rel.robustez.total > 0, 'robustez não medida');
   assert.deepEqual(rel.robustez.mudou, [], 'resposta mudou com a redação: ' + rel.robustez.mudou.join(' · '));
   assert(rel.robustez.estaveis / rel.robustez.total >= 0.9, 'estabilidade sob reescrita abaixo de 90%: '
     + rel.robustez.estaveis + '/' + rel.robustez.total);
+});
+
+testa('o diagnóstico não depende da internet: duas execuções dão o MESMO número', () => {
+  // Achado da rodada 138: o programa dizia "sem rede" mas o fetch estava vivo; uma prova caía
+  // em consulta ao vivo e o mesmo comando levava de 0,9 s a 26 s. Agora a rede é bloqueada e o
+  // resultado tem de ser idêntico entre execuções — medidor que muda de número não mede nada.
+  const a = JSON.parse(roda(['--json', '--fio=1']));
+  const b = JSON.parse(roda(['--json', '--fio=1']));
+  const resumo = (r) => [r.provas.porCodigo, r.provas.dependemDoModelo, r.armadilhas.ok,
+    r.fio.ok, r.robustez.estaveis, r.robustez.total].join('/');
+  assert.equal(resumo(a), resumo(b), 'duas execuções divergiram: ' + resumo(a) + ' vs ' + resumo(b));
 });
 
 console.log('');
