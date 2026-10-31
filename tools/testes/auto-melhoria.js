@@ -130,6 +130,50 @@ testa('fila: item medido e rejeitado não fica no topo da fila', () => {
   assert(rel.lacunas[0].estado !== 'rejeitado-por-medicao', 'fila começa num item já rejeitado');
 });
 
+testa('guarda (--vigiar): aprova o estado atual com uma linha de veredito', () => {
+  const saida = roda(['--vigiar', '--fio=500']);
+  assert(/GUARDA: nada quebrado/.test(saida), 'o guarda reprovou o estado atual: ' + saida.slice(-500));
+});
+
+testa('guarda (--vigiar): REPROVA quando alguém quebra um solucionador', () => {
+  // Contraprova: um guarda que nunca dispara não é guarda. Cópia mínima do repositório com o
+  // solucionador de probabilidade desligado — o vigia TEM de sair com código 1.
+  const os = require('os');
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'guarda-'));
+  for (const rel of ['razao-local.js', 'roteador-ia.js', 'tools/auto-melhoria.js',
+    'tools/provas-do-chat.json', 'tools/armadilhas-do-chat.json', 'docs/auto-melhoria.json']) {
+    fs.mkdirSync(path.join(tmp, path.dirname(rel)), { recursive: true });
+    fs.copyFileSync(path.join(RAIZ, rel), path.join(tmp, rel));
+  }
+  const alvo = path.join(tmp, 'razao-local.js');
+  const fonte = fs.readFileSync(alvo, 'utf8').replace('  function probabilidade(q) {', '  function probabilidade(q) { return null;');
+  fs.writeFileSync(alvo, fonte);
+  let saida = '', codigo = 0;
+  try {
+    saida = execFileSync(process.execPath, [path.join(tmp, 'tools', 'auto-melhoria.js'), '--vigiar', '--fio=500'],
+      { cwd: tmp, encoding: 'utf8', timeout: 240000, stdio: ['ignore', 'pipe', 'pipe'] });
+  } catch (e) {
+    codigo = e.status || 1;
+    saida = String(e.stdout || '') + String(e.stderr || '');
+  }
+  assert.equal(codigo, 1, 'o guarda deixou passar a cópia quebrada');
+  assert(/NÃO publicar/.test(saida), 'o guarda reprovou sem dizer o motivo: ' + saida.slice(-300));
+});
+
+testa('pedir-mais: o produto sobe a própria barra e diz o que falta', () => {
+  const saida = roda(['--pedir-mais', '--fio=1']);
+  assert(/PEDIDO DE MELHORIA/.test(saida), 'sem patamar seguinte');
+  assert(/falta \d+|já passou/.test(saida), 'sem distância medida no pedido de melhoria');
+});
+
+testa('robustez: a mesma prova escrita de outro jeito não muda de resposta', () => {
+  const rel = JSON.parse(roda(['--json', '--fio=1']));
+  assert(rel.robustez && typeof rel.robustez.total === 'number' && rel.robustez.total > 0, 'robustez não medida');
+  assert.deepEqual(rel.robustez.mudou, [], 'resposta mudou com a redação: ' + rel.robustez.mudou.join(' · '));
+  assert(rel.robustez.estaveis / rel.robustez.total >= 0.9, 'estabilidade sob reescrita abaixo de 90%: '
+    + rel.robustez.estaveis + '/' + rel.robustez.total);
+});
+
 console.log('');
 if (falhas.length) { console.error('✘ ' + falhas.length + ' de ' + (certos + falhas.length) + ' verificações FALHARAM'); process.exit(1); }
 console.log('✔ ' + certos + '/' + (certos + falhas.length) + ' verificações do auto-diagnóstico passaram');

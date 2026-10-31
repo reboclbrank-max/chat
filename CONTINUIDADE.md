@@ -1615,3 +1615,19 @@ Todas as seis eram **resposta exata errada**, o pior defeito possível neste cam
 **5. Provas.** `tools/testes/auto-melhoria.js`: **13/13** (duas verificações novas: todo eixo de capacidade tem antes/hoje/dobro/estado com régua fixa; item medido e rejeitado nunca fica no topo da fila). `tools/testes/razao-local.js`: **80/80** (provas + armadilhas do módulo). `node tools/auto-melhoria.js`: **118/123 por código**, **0 erradas**, armadilhas **41/41**, fio **118/118**, cobertura **38/38**. Casca do PWA em **rebocl-chat-v103** (razao-local.js e roteador-ia.js mudaram).
 
 **Limite.** Dobrar contagem de solucionador é fácil; dobrar **confiança** não. O que sustenta os 118 são as 41 armadilhas e a regra de devolver `null` quando a forma não casa — e a única armadilha que ainda não existe é a que eu não soube imaginar.
+
+## Rodada 137 — o nome do produto e a guarda (31/10/2026)
+
+**O erro que o dono viu.** "Qual é o seu nome?" **não era respondida pelo produto**: ia para o modelo e voltava com nome de outra empresa. Um assistente que erra o próprio nome não serve — e a regra da casa é "sem identidade emprestada". Agora existe caminho exato de **identidade** em `razao-local.js`: nome (`Assistente Rebocl`), recusa de identidade emprestada ("Você é o ChatGPT?" → "Não. Sou o Assistente Rebocl.") e origem (`Rebocl Brank`). Fora desse caso — nome de cliente, de arquivo, de autor — ele **cala** e deixa o modelo responder.
+
+**Guarda no lugar da invenção.** `node tools/auto-melhoria.js --vigiar` passou a ser o modo de quem só vigia: **uma linha de veredito** e código de saída 1 se algo estiver fora do lugar (prova errada, armadilha chutada, fio partido, cobertura furada, resposta que muda com a redação, regressão contra a referência). Contraprova feita numa cópia com o solucionador de probabilidade desligado: `✘ GUARDA: 2 problema(s) — NÃO publicar · solucionador sem prova: probabilidade · regressão: por código 122 → 120`, `EXIT=1`. Virou teste permanente em `tools/testes/auto-melhoria.js`.
+
+**Ele mesmo pedindo mais.** `--pedir-mais` sobe a barra para **3× a régua da rodada 135** e imprime a distância item por item (hoje: solucionadores 39/48, provas 127/141, armadilhas 43/51, domínios 19/27; provas por código e provas que chegam à pessoa já passaram do triplo).
+
+**Robustez sob reescrita — auditoria nova.** A mesma prova escrita de outro jeito (sem a instrução final, tudo em minúsculas, com "por favor" na frente): **274/277 estáveis, 0 mudaram de resposta, 3 calaram** (vão para o modelo, o que é seguro). Ela achou dois defeitos de verdade:
+- **a mesma pergunta com duas respostas**: "capital da Austrália" respondia `Canberra` com instrução e `Camberra` sem — duas listas no `roteador-ia.js` com grafias diferentes. Unificado, e o gabarito passou a aceitar as duas grafias;
+- **negação dependia do pedido de formato**: sem a instrução "Responda SIM ou NÃO", "o técnico ficou satisfeito?" deixava de ser respondida. A regra passou a olhar a **forma da pergunta**, não o pedido de formato. Também `sequenciaLetras` passou a aceitar letras minúsculas.
+
+**Provas.** `tools/testes/identidade-do-chat.js` (novo, 5/5): nome correto, identidade não emprestada, silêncio em pergunta sobre outro nome, nome igual em título/manifest/README/casca e o nome chegando ao texto final **com o modelo quebrado**. `tools/testes/auto-melhoria.js` 13 → **17/17**. `node tools/auto-melhoria.js`: **122/127 por código, 0 erradas**, armadilhas **43/43**, fio **122/122**, cobertura **39/39**. Casca em **rebocl-chat-v104**.
+
+**Limite.** Três provas (comparação de nomes com tudo em minúsculas) param no guarda de maiúsculas do `fila`, que existe para não confundir palavra comum com nome: nesses casos o produto cala e o modelo responde — silêncio é aceitável, resposta diferente não.

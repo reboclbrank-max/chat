@@ -148,6 +148,51 @@ async function provarFio(provas, amostra) {
   return { total: itens.length, ok: itens.filter(function (i) { return i.ok; }).length, itens: itens };
 }
 
+/* ---------- 1e. ROBUSTEZ SOB REESCRITA (rodada 137, 31/10/2026) ----------
+   Uma prova pode passar porque o solucionador decorou UMA redação. Aqui a mesma prova é
+   reescrita de formas que não mudam o pedido (sem a instrução final, tudo em minúsculas, com
+   "por favor" na frente) e o resultado é comparado:
+     • MUDOU  → respondeu outra coisa: defeito grave, é resposta exata errada disfarçada;
+     • CALOU  → deixou de responder: vai para o modelo, o que é seguro (mas perde cobertura).
+   Quem dita o ritmo não é a redação da prova, é a capacidade. */
+async function robustez(provas) {
+  const banco = JSON.parse(fs.readFileSync(path.join(RAIZ, 'tools', 'provas-do-chat.json'), 'utf8'));
+  const porId = new Map(banco.provas.map(function (p) { return [p.id, p]; }));
+  const mutacoes = [
+    ['sem a instrução final', function (q) { return q.indexOf('?') !== -1 ? q.slice(0, q.indexOf('?') + 1) : q; }],
+    ['tudo em minúsculas', function (q) { return q.toLowerCase(); }],
+    ['com "por favor" na frente', function (q) { return 'Por favor, ' + q.charAt(0).toLowerCase() + q.slice(1); }]
+  ];
+  const r = new Roteador({ amostrasAberto: 1 });
+  async function caminho(q) {
+    const f = await r._ferramenta(q);
+    if (f && f.texto) return f.texto;
+    const fa = r._fatos(q);
+    if (fa && fa.texto) return fa.texto;
+    const rl = RazaoLocal.resolver(q);
+    return rl && rl.texto ? rl.texto : null;
+  }
+  let total = 0, estaveis = 0;
+  const mudou = [], calou = [];
+  for (const p of provas) {
+    if (p.caminho === 'modelo') continue;
+    const prova = porId.get(p.id);
+    if (!prova) continue;
+    const base = await caminho(prova.q);
+    if (base === null) continue;
+    for (const [nome, f] of mutacoes) {
+      const q2 = f(prova.q);
+      if (q2 === prova.q) continue;
+      total++;
+      const saida = await caminho(q2);
+      if (saida === null) { calou.push(p.id + ' · ' + nome); continue; }
+      if (normal(saida).trim() === normal(base).trim()) estaveis++;
+      else mudou.push(p.id + ' · ' + nome + ': "' + String(base).slice(0, 30) + '" → "' + String(saida).slice(0, 30) + '"');
+    }
+  }
+  return { total: total, estaveis: estaveis, mudou: mudou, calou: calou };
+}
+
 /* ---------- 1d. cobertura: cada solucionador tem prova E armadilha? ---------- */
 // Um solucionador sem armadilha é um risco não medido: ninguém sabe se ele responde o que não
 // devia. Esta auditoria transforma isso em lista de trabalho dentro do próprio relatório.
@@ -358,6 +403,9 @@ function capacidade(rel, provas, cob) {
       como: 'só caminho exato novo conta; rótulo novo em prova antiga não é capacidade' },
     { id: 'verbalPorCodigo', rotulo: 'provas verbais por código', antes: d.verbalPorCodigo, hoje: verbal, dobro: d.verbalPorCodigo * 2, unidade: '',
       como: 'o que é léxico puro fica com o modelo (ver bench/lexico-publico.json)' },
+    { id: 'robustez', rotulo: 'provas estáveis sob reescrita', antes: 0,
+      hoje: rel.robustez ? rel.robustez.estaveis : 0, dobro: rel.robustez ? rel.robustez.total : 0, unidade: '', teto: true,
+      como: 'reescrever a mesma prova sem mudar o pedido: resposta diferente é defeito, silêncio é só perda de cobertura' },
     { id: 'textoAberto', rotulo: 'texto aberto (régua de 24)', antes: rel.aberto ? rel.aberto.passaram : 0, hoje: rel.aberto ? rel.aberto.passaram : 0,
       dobro: rel.aberto ? rel.aberto.total : 0, unidade: '', teto: true,
       como: 'aqui o alvo é o TETO da régua, não o dobro: 24/24. Só muda com fonte viva ou teto de tokens' }
@@ -427,6 +475,7 @@ function salvarHistorico(relatorio) {
   const provas = await auditarProvas();
   const armadilhas = await auditarArmadilhas();
   const fio = await provarFio(provas, Number((process.argv.find(function (a) { return a.indexOf('--fio=') === 0; }) || '').split('=')[1] || 12));
+  const robusto = await robustez(provas);
   const aberto = auditarAberto();
   const provasBanco = JSON.parse(fs.readFileSync(path.join(RAIZ, 'tools', 'provas-do-chat.json'), 'utf8')).provas;
   const armadilhasBanco = JSON.parse(fs.readFileSync(path.join(RAIZ, 'tools', 'armadilhas-do-chat.json'), 'utf8')).armadilhas;
@@ -453,6 +502,7 @@ function salvarHistorico(relatorio) {
     aberto: aberto,
     armadilhas: armadilhas,
     fio: fio,
+    robustez: robusto,
     cobertura: { semArmadilha: cob.semArmadilha, semProva: cob.semProva },
     lacunas: ranking.lacunas
   };
@@ -485,6 +535,11 @@ function salvarHistorico(relatorio) {
   for (const i of fio.itens.filter(function (x) { return !x.ok; })) {
     console.log('   ✘ ' + i.id + ' não chegou ao texto final' + (i.texto ? ' (veio "' + i.texto + '")' : ' (veio vazio)'));
   }
+
+  console.log('== ROBUSTEZ SOB REESCRITA (a mesma prova, escrita de outro jeito)');
+  console.log('   ' + robusto.estaveis + '/' + robusto.total + ' estáveis · ' + robusto.mudou.length
+    + ' mudaram de resposta · ' + robusto.calou.length + ' calaram (vão para o modelo)');
+  for (const m of robusto.mudou) console.log('   ✘ ' + m);
 
   console.log('== COBERTURA DO MOTOR (cada solucionador tem prova e armadilha?)');
   console.log('   ' + SOLUCIONADORES.length + ' solucionadores · sem prova: ' + (cob.semProva.join(', ') || 'nenhum')
@@ -540,6 +595,62 @@ function salvarHistorico(relatorio) {
     console.log('== TENDÊNCIA: antes ' + anterior.porCodigo + '/' + anterior.provas
       + ' por código · agora ' + porCodigo + '/' + provas.length);
   }
+
+  /* ============ MODO GUARDIÃO (--vigiar) ============
+     Papel definido pelo dono em 31/10/2026: "fique só vigiando para não quebrar nada e errar
+     nada". Este modo não propõe nada: ele CONFERE. Uma linha de veredito e código de saída 1 se
+     qualquer coisa estiver fora do lugar — prova errada, armadilha chutada, fio partido, cobertura
+     furada, resposta que muda de acordo com a redação, ou regressão contra a referência. */
+  if (process.argv.includes('--vigiar')) {
+    const problemas = [];
+    if (erradas.length) problemas.push('prova errada: ' + erradas.map(function (p) { return p.id + '="' + p.resposta + '"'; }).join(', '));
+    if (armadilhas && armadilhas.ok < armadilhas.total)
+      problemas.push('armadilha chutada: ' + armadilhas.itens.filter(function (i) { return !i.ok; }).map(function (i) { return i.id; }).join(', '));
+    if (fio && fio.ok < fio.total)
+      problemas.push('fio partido: ' + fio.itens.filter(function (i) { return !i.ok; }).map(function (i) { return i.id; }).join(', '));
+    if (cob.semProva.length) problemas.push('solucionador sem prova: ' + cob.semProva.join(', '));
+    if (cob.semArmadilha.length) problemas.push('solucionador sem armadilha: ' + cob.semArmadilha.join(', '));
+    if (robusto.mudou.length) problemas.push('resposta muda com a redação: ' + robusto.mudou.join(' · '));
+    const ref = hist.referencia;
+    if (ref) {
+      if (porCodigo < ref.porCodigo) problemas.push('regressão: por código ' + ref.porCodigo + ' → ' + porCodigo);
+      if (armadilhas && ref.armadilhasOk != null && armadilhas.ok < ref.armadilhasOk)
+        problemas.push('regressão: armadilhas ' + ref.armadilhasOk + ' → ' + armadilhas.ok);
+      if (fio && ref.fioOk != null && ref.fioTotal === fio.total && fio.ok < ref.fioOk)
+        problemas.push('regressão: fio ' + ref.fioOk + ' → ' + fio.ok);
+    }
+    if (problemas.length) {
+      console.error('✘ GUARDA: ' + problemas.length + ' problema(s) — NÃO publicar.');
+      for (const p of problemas) console.error('   · ' + p);
+      process.exitCode = 1;
+    } else {
+      console.log('✔ GUARDA: nada quebrado · provas ' + porCodigo + '/' + provas.length + ' por código (0 erradas)'
+        + ' · armadilhas ' + (armadilhas ? armadilhas.ok + '/' + armadilhas.total : 'n/d')
+        + ' · fio ' + (fio ? fio.ok + '/' + fio.total : 'n/d')
+        + ' · cobertura ' + (SOLUCIONADORES.length - cob.semProva.length - cob.semArmadilha.length) + '/' + SOLUCIONADORES.length
+        + ' · reescrita ' + robusto.estaveis + '/' + robusto.total + ' · regressão: nenhuma');
+    }
+  }
+
+  /* ============ MODO "PEÇA MAIS" (--pedir-mais) ============
+     O dono pediu em 31/10/2026: "mande ele melhorar mais". Aqui ele sobe a própria barra: mostra
+     o patamar seguinte (3× a régua da rodada 135) e o que falta, item por item, com o caminho. */
+  if (process.argv.includes('--pedir-mais')) {
+    console.log('== PEDIDO DE MELHORIA (patamar seguinte: 3× a régua da rodada 135)');
+    for (const e of cap.eixos) {
+      if (e.id === 'robustez' || e.id === 'textoAberto') continue;
+      const alvo = e.antes ? e.antes * 3 : e.dobro;
+      const falta = Math.max(0, alvo - e.hoje);
+      console.log('   · ' + e.rotulo + ': ' + e.hoje + '/' + alvo + (falta ? ' — falta ' + falta : ' — ✔ já passou'));
+    }
+    const pendentes = cap.eixos.filter(function (e) { return e.estado !== 'dobrado'; });
+    if (pendentes.length) {
+      console.log('== O QUE ELE MESMO PEDE PARA A PRÓXIMA RODADA');
+      for (const e of pendentes) console.log('   · ' + e.rotulo + ' (' + e.hoje + ' → ' + e.dobro + '): ' + e.como);
+    }
+    for (const l of ranking.lacunas) console.log('   · fila: ' + l.tipo + (l.dominio ? ' · ' + l.dominio : '') + ' → ' + l.acao.slice(0, 140));
+  }
+
   console.log('histórico em docs/auto-melhoria.json (' + hist.rodadas.length + ' rodada(s))');
 
   /* TRAVA DE REGRESSÃO: quem manda é a rodada anterior registrada no repositório.

@@ -563,7 +563,7 @@
   function sequenciaLetras(q) {
     var t = norm(q);
     if (!/sequencia|continua|proximo|complete/.test(t)) return null;
-    var m = texto(q).match(/\b((?:[A-Z]\s*,\s*){2,}[A-Z])\s*,?\s*\?/);
+    var m = texto(q).match(/\b((?:[A-Za-z]\s*,\s*){2,}[A-Za-z])\s*,?\s*\?/);
     if (!m) return null;
     var letras = m[1].split(',').map(function (x) { return x.trim().toUpperCase(); })
       .filter(function (x) { return /^[A-Z]$/.test(x); });
@@ -647,6 +647,29 @@
      fila; aqui ela é executada. Cada solucionador novo vem com (a) uma prova no gabarito e
      (b) uma armadilha que mede o silêncio quando a pergunta muda de natureza. Sem o par, não entra.
      Regra de sempre: forma que não casa EXATAMENTE devolve null. */
+
+  /* 16b. IDENTIDADE — o produto não pode errar o próprio nome (rodada 137, 31/10/2026).
+     Medido: "qual é o seu nome?" ia PARA O MODELO e voltava com nome de outra empresa. Um
+     assistente que não sabe quem é não serve. Aqui a resposta é fixa, local e sem rede — e a
+     regra de sempre: se a pergunta não é sobre a própria identidade, cala. */
+  var NOME = 'Assistente Rebocl';
+  var DONO = 'Rebocl Brank';
+  function identidade(q) {
+    var t = norm(q);
+    if (t.length > 140) return null;                       // pergunta longa não é apresentação
+    // pergunta sobre OUTRO nome (cliente, arquivo, autor, empresa) não é identidade
+    if (/cliente|cadastro|arquivo|documento|formulario|processo|autor|empresa|produto|da sua irma|do seu irmao|dele|dela/.test(t)) return null;
+    if (/(quem\s+(?:e|foi)\s+voce|o\s+que\s+voce\s+e|seu\s+nome|voce\s+se\s+chama|te\s+chamas|como\s+devo\s+te\s+chamar)/.test(t)) {
+      return { texto: NOME, ferramenta: 'identidade', fonte: 'nome do produto declarado no repositório (index.html, manifest.json)' };
+    }
+    if (/(voce\s+(?:e|eh)\s+(?:o\s+|a\s+|um\s+|uma\s+)?(chatgpt|gpt|openai|gemini|bard|claude|meta|copilot|llama|bing))|(?:voce\s+foi\s+feito\s+pela\s+(?:openai|google|anthropic))/.test(t)) {
+      return { texto: 'Não. Sou o ' + NOME + '.', ferramenta: 'identidade', fonte: 'identidade própria: nenhuma outra empresa' };
+    }
+    if (/(quem\s+(?:te\s+criou|fez\s+voce|criou\s+voce|esta\s+por\s+tras)|quem\s+e\s+o\s+seu\s+criador)/.test(t)) {
+      return { texto: DONO, ferramenta: 'identidade', fonte: 'origem declarada no README do projeto' };
+    }
+    return null;
+  }
 
   /* 17. regra de três direta: "Se 4 kg custam 20 reais, quanto custam 7 kg?" → 35.
      Cala quando há grandezas que costumam ser INVERSAS (dias, operários, torneiras, velocidade):
@@ -1000,7 +1023,10 @@
     var pergunta = bruto.slice(citado.index + citado[0].length).split(/[\n/]/)[0];
     var mPerg = pergunta.match(/([a-zà-ÿ]+)\s+ficou\s+([a-zà-ÿ]+)/i);
     if (!mPerg) return null;
-    if (!/sim ou n[ãa]o|responda sim/i.test(norm(bruto))) return null;
+    /* A instrução "Responda SIM ou NÃO" era obrigatória — e com isso a MESMA pergunta sem essa
+       instrução caía no modelo (medido pela auditoria de reescrita, 31/10/2026). O que importa é a
+       forma da pergunta (sim/não sobre um predicado), não o pedido de formato. */
+    if (/por que|porque|como|quando|onde|quanto|quem\b/.test(norm(pergunta))) return null;
     var frase = citado[1];
     var afirmativo = new RegExp('\\b' + mPerg[1] + '\\b[^.;]*?\\bficou\\s+' + mPerg[2] + '\\b', 'i');
     var negado = new RegExp('\\bn[ãa]o\\s+ficou\\s+' + mPerg[2] + '\\b', 'i');
@@ -1016,7 +1042,7 @@
     probabilidade, inclusaoExclusao, custoTotal, operarios, matriz, rotacao, memoria, codigo,
     regraDeTres, media, mdcMmc, aumentoDesconto, jurosSimples, velocidade, areaPerimetro, divisaoResto,
     fatorial, primos, baseBinaria, ordemAlfabetica, palindromo, anagrama, contagemPalavras,
-    conversaoUnidades, potenciaRaiz, codigoSoma, negacaoTexto, mediana, moda, algebraLinear];
+    conversaoUnidades, potenciaRaiz, codigoSoma, negacaoTexto, mediana, moda, algebraLinear, identidade];
 
   function resolver(pergunta) {
     var q = texto(pergunta);
@@ -1039,7 +1065,7 @@
     ordemAlfabetica: ordemAlfabetica, palindromo: palindromo, anagrama: anagrama,
     contagemPalavras: contagemPalavras, conversaoUnidades: conversaoUnidades, potenciaRaiz: potenciaRaiz,
     codigoSoma: codigoSoma, negacaoTexto: negacaoTexto, mediana: mediana, moda: moda,
-    algebraLinear: algebraLinear };
+    algebraLinear: algebraLinear, identidade: identidade };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (typeof window !== 'undefined') window.RazaoLocal = api;
 })();

@@ -1,7 +1,7 @@
 {
  "esquema": "provas-chat-v1",
  "aviso": "Perguntas de aferição do próprio chat. Respostas conferidas à mão; não é teste de QI humano nem garantia de disponibilidade.",
- "total": 123,
+ "total": 127,
  "provas": [
   {
    "id": "facil-num1",
@@ -152,6 +152,7 @@
    "d": "conhecimento",
    "q": "Qual é a capital da Austrália? Responda só a cidade.",
    "ok": [
+    "camberra",
     "canberra"
    ]
   },
@@ -986,6 +987,39 @@
    "q": "Qual a raiz quadrada de 196?",
    "ok": [
     "14"
+   ]
+  },
+  {
+   "id": "identidade-1",
+   "d": "identidade",
+   "q": "Qual é o seu nome?",
+   "ok": [
+    "Assistente Rebocl"
+   ]
+  },
+  {
+   "id": "identidade-2",
+   "d": "identidade",
+   "q": "Como você se chama?",
+   "ok": [
+    "Assistente Rebocl"
+   ]
+  },
+  {
+   "id": "identidade-3",
+   "d": "identidade",
+   "q": "Você é o ChatGPT?",
+   "ok": [
+    "Não",
+    "Assistente Rebocl"
+   ]
+  },
+  {
+   "id": "identidade-4",
+   "d": "identidade",
+   "q": "Quem te criou?",
+   "ok": [
+    "Rebocl Brank"
    ]
   }
  ]
