@@ -1,6 +1,6 @@
 # Placar de capacidade do Chat
 
-Atualizado: `2026-10-30T16:58:46.837Z`
+Atualizado: `2026-10-31T15:59:51.479Z`
 
 **Indicador interno: 100/100.** Indicador interno de cobertura; não é resultado observável do produto, não é teste de QI, consciência nem garantia de disponibilidade.
 **Estado do canal real (tráfego controlado):** última rodada controlada: 38/38 PASS; falha ampla anterior preservada: 37/38 PASS, 1 falha(s) (provas/teste-email-r3-2026-10-18-0211.md); ainda não mede satisfação humana; reteste focado de foto mais recente: PASS (amostra única, não substitui a rodada completa).
