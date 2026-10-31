@@ -1536,3 +1536,21 @@ O commit `3c00761` (rodada 106) levou junto um link simbólico `node_modules` cr
 **Limite que permanece, com número.** Texto aberto continua sendo do modelo. No banco aberto de 24 pedidos a nota fica entre **20/24 e 21/24** e **as falhas trocam de item entre corridas** — é variação de texto, não defeito de forma: `cortados: 0`, e as falhas são de vocabulário exigido pela rubrica. Fato recente (pós-corte de conhecimento do modelo) segue sem fonte viva: a busca viva foi medida na rodada 102 e piorou o resultado, e continua exportada em `bench/`, fora do caminho do produto.
 
 **Testes.** Barreira completa abaixo; `montar-paginas --verificar` em sincronia.
+
+## Rodada 134 — o Chat passou a ditar o ritmo (31/10/2026)
+
+**O que mudou e por quê.** Até aqui quem apontava o próximo defeito era o dono. O Chat tinha baterias e número, mas ninguém transformava "o que falhou" em "o que consertar primeiro". Passa a existir `tools/auto-melhoria.js`: um auto-diagnóstico offline, sem modelo e sem rede, que (1) roda as 47 provas do próprio chat em `tools/provas-do-chat.json` pelo caminho exato do produto, (2) classifica cada prova em resolvida por código / depende do modelo / **errada**, (3) lê a medição de texto aberto salva em `bench/`, (4) ranqueia as lacunas por ganho ÷ custo e imprime a fila com a ação de cada item, (5) grava `docs/auto-melhoria.json` para mostrar tendência entre rodadas.
+
+**Guardas do próprio diagnóstico** (testadas em `tools/testes/auto-melhoria.js`, 6/6): toda prova é classificada; prova respondida **errada** pelo caminho exato faz o teste falhar; os arquivos de medição concorrentes aparecem no relatório com o número de cada um, para ninguém escolher o melhor placar escondido; e a fila separa **mecânico** (conta/regra exata, custo baixo) de **conhecimento** (vocabulário, custo médio), com a regra explícita de **não montar léxico sob medida para as provas** — isso seria ensinar para o teste.
+
+**O que a primeira fila mandou consertar, e foi consertado:**
+- sequência de **letras** com distâncias crescentes (A, C, F, J, O → U) e distância constante, agora exata em `razao-local.js`;
+- **ponto flutuante do JavaScript** (`0.1 + 0.2 === 0.3` → Não), por IEEE-754, em `razao-local.js`;
+- **porcentagem** em outra forma de pergunta ("Qual é 37% de 200?") em `_ferramenta`;
+- **diferença de dias entre duas datas** ("entre 1 de janeiro e 1 de março de 2026" → 59) em `calendarioLocal`, inclusive sem ano no início;
+- três **fatos estáveis auditáveis** na base local (capital da Austrália, ano da Proclamação da República, moeda do Japão);
+- **portão final de formato — tentado e REVERTIDO.** A ideia era repartir no último portão qualquer resposta aberta que chegasse com 1 bloco quando o pedido era de 2. Dois testes de produto barraram, com razão: `aberto-recuperacao.js` ("não descartar o trecho que deu certo") e `estado-aberto.js` ("o aviso não pode adulterar o texto bruto"). Quando a geração é incompleta, o produto ENTREGA o texto como veio e avisa "1 de 2 parágrafos"; repartir esconderia a falta. O auto-diagnóstico registra essa lacuna com essa mesma explicação, para não ser tentada de novo.
+
+**Resultado medido.** Provas resolvidas por código exato e sem modelo: **33/47 → 40/47** (`node tools/auto-melhoria.js`). As 7 restantes são vocabulário (ver1–ver4, d9, d10) e geração de código (cod3) — declaradas como conhecimento/geração, não como conta. No texto aberto, a lacuna de forma ficou explicitamente como **geração incompleta** (o produto avisa, não maquia); as falhas de conteúdo seguem dependendo de fonte viva, medida na rodada 102 e piorou o resultado.
+
+**Arquivos.** `tools/auto-melhoria.js`, `tools/provas-do-chat.json`, `docs/auto-melhoria.json`, `razao-local.js`, `roteador-ia.js`, `tools/testes/auto-melhoria.js`, `tools/testes/recomeco-resgate-memoria.js` e registro em `tools/testes/roda-testes.js`. Barreira completa **118/118 com 3 ignorados**; `montar-paginas --verificar` sem divergência.

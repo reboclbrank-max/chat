@@ -532,6 +532,54 @@
     return null;
   }
 
+  /* ---------------- 14. sequência de LETRAS ---------------- */
+  // Mesma ideia da sequência numérica, no alfabeto: confere o padrão em TODAS as letras dadas
+  // antes de responder. É o item que o auto-diagnóstico apontou como mecânico e sem código.
+  function sequenciaLetras(q) {
+    var t = norm(q);
+    if (!/sequencia|continua|proximo|complete/.test(t)) return null;
+    var m = texto(q).match(/\b((?:[A-Z]\s*,\s*){2,}[A-Z])\s*,?\s*\?/);
+    if (!m) return null;
+    var letras = m[1].split(',').map(function (x) { return x.trim().toUpperCase(); })
+      .filter(function (x) { return /^[A-Z]$/.test(x); });
+    if (letras.length < 3) return null;
+    var nums = letras.map(function (l) { return l.charCodeAt(0) - 65; });
+    var i, n = nums.length, cand = null;
+
+    // (a) distâncias crescentes: 2, 3, 4, 5... (o padrão do enunciado "as distâncias crescem")
+    var d = [];
+    for (i = 1; i < n; i++) d.push(nums[i] - nums[i - 1]);
+    var cresce = true;
+    for (i = 1; i < d.length; i++) if (d[i] - d[i - 1] !== 1) cresce = false;
+    if (cresce && d.length >= 2) cand = nums[n - 1] + d[d.length - 1] + 1;
+
+    // (b) distância constante
+    if (cand === null) {
+      var fixo = d.every(function (x) { return x === d[0]; });
+      if (fixo) cand = nums[n - 1] + d[0];
+    }
+    // (c) dobro + 1 (A, C, F, J... também sai daqui: 0,2,5,9 → +2,+3,+4 já é (a))
+    if (cand === null) return null;
+    if (!(cand >= 0 && cand < 26)) return null;          // passou de Z: não inventa
+    return { texto: String.fromCharCode(65 + cand), ferramenta: 'sequencia-letras',
+      fonte: 'sequência de letras local · distâncias ' + d.join(', ') };
+  }
+
+  /* ---------------- 15. ponto flutuante do JavaScript ---------------- */
+  // 0.1 + 0.2 === 0.3 é FALSO em JavaScript (IEEE-754). É fato de linguagem, não conta de modelo.
+  function pontoFlutuante(q) {
+    var t = norm(q);
+    if (!/javascript|js\b/.test(t)) return null;
+    var m = t.match(/([\d.]+)\s*\+\s*([\d.]+)\s*===?\s*([\d.]+)/);
+    if (!m) return null;
+    var a = parseFloat(m[1]), b = parseFloat(m[2]), c = parseFloat(m[3]);
+    if (isNaN(a) || isNaN(b) || isNaN(c)) return null;
+    var soma = a + b;
+    var iguais = soma === c;
+    return { texto: iguais ? 'Sim' : 'Não', ferramenta: 'ponto-flutuante',
+      fonte: 'IEEE-754: ' + a + ' + ' + b + ' = ' + soma + ' (não é exatamente ' + c + ')' };
+  }
+
   /* ---------------- 14. código de uma linha ---------------- */
   function codigo(q) {
     var t = norm(q), m;
@@ -562,7 +610,7 @@
     return null;
   }
 
-  var SOLUCIONADORES = [sequencia, contagemDigito, trabalhoConjunto, problemaIdade, silogismo, fila,
+  var SOLUCIONADORES = [sequencia, sequenciaLetras, pontoFlutuante, contagemDigito, trabalhoConjunto, problemaIdade, silogismo, fila,
     probabilidade, inclusaoExclusao, custoTotal, operarios, matriz, rotacao, memoria, codigo];
 
   function resolver(pergunta) {
@@ -576,7 +624,7 @@
     return null;
   }
 
-  var api = { resolver: resolver, sequencia: sequencia, contagemDigito: contagemDigito,
+  var api = { resolver: resolver, sequencia: sequencia, sequenciaLetras: sequenciaLetras, pontoFlutuante: pontoFlutuante, contagemDigito: contagemDigito,
     trabalhoConjunto: trabalhoConjunto, problemaIdade: problemaIdade, silogismo: silogismo, fila: fila,
     probabilidade: probabilidade, inclusaoExclusao: inclusaoExclusao, custoTotal: custoTotal,
     operarios: operarios, matriz: matriz, rotacao: rotacao, memoria: memoria, codigo: codigo };

@@ -1,0 +1,383 @@
+{
+ "esquema": "provas-chat-v1",
+ "aviso": "Perguntas de aferição do próprio chat. Respostas conferidas à mão; não é teste de QI humano nem garantia de disponibilidade.",
+ "total": 47,
+ "provas": [
+  {
+   "id": "facil-num1",
+   "d": "numérico",
+   "q": "Qual número continua a sequência: 2, 6, 12, 20, 30, ?",
+   "ok": [
+    "42"
+   ]
+  },
+  {
+   "id": "facil-num2",
+   "d": "numérico",
+   "q": "Qual número continua a sequência: 1, 4, 9, 16, 25, ?",
+   "ok": [
+    "36"
+   ]
+  },
+  {
+   "id": "facil-num3",
+   "d": "numérico",
+   "q": "Um lápis custa 3 reais e uma caneta custa 7 reais. Comprei 4 lápis e 3 canetas. Quanto paguei, em reais?",
+   "ok": [
+    "33"
+   ]
+  },
+  {
+   "id": "facil-num4",
+   "d": "numérico",
+   "q": "Se 5 operários fazem uma obra em 12 dias, quantos dias levam 10 operários no mesmo ritmo?",
+   "ok": [
+    "6"
+   ]
+  },
+  {
+   "id": "facil-num5",
+   "d": "numérico",
+   "q": "Qual é 37% de 200?",
+   "ok": [
+    "74"
+   ]
+  },
+  {
+   "id": "facil-ver1",
+   "d": "verbal",
+   "q": "Complete a analogia: médico está para hospital assim como professor está para ______. Responda só a palavra.",
+   "ok": [
+    "escola"
+   ]
+  },
+  {
+   "id": "facil-ver2",
+   "d": "verbal",
+   "q": "Qual palavra NÃO pertence ao grupo: cadeira, mesa, sofá, geladeira, estante? Responda só a palavra.",
+   "ok": [
+    "geladeira"
+   ]
+  },
+  {
+   "id": "facil-ver3",
+   "d": "verbal",
+   "q": "Qual é o sinônimo mais próximo de \"efêmero\": (A) passageiro (B) eterno (C) pesado (D) barulhento? Responda só a letra e a palavra.",
+   "ok": [
+    "passageiro"
+   ]
+  },
+  {
+   "id": "facil-ver4",
+   "d": "verbal",
+   "q": "Qual é o antônimo de \"escasso\": (A) raro (B) abundante (C) pequeno (D) frágil? Responda só a letra e a palavra.",
+   "ok": [
+    "abundante"
+   ]
+  },
+  {
+   "id": "facil-log1",
+   "d": "lógica",
+   "q": "Todos os gatos são mamíferos. Alguns mamíferos voam. Conclui-se que todos os gatos voam? Responda SIM ou NÃO.",
+   "ok": [
+    "não|nao"
+   ]
+  },
+  {
+   "id": "facil-log2",
+   "d": "lógica",
+   "q": "Se chove, a rua fica molhada. A rua não está molhada. Podemos concluir que não choveu? Responda SIM ou NÃO.",
+   "ok": [
+    "sim"
+   ]
+  },
+  {
+   "id": "facil-log3",
+   "d": "lógica",
+   "q": "Ana é mais velha que Bia. Bia é mais velha que Carla. Quem é a mais nova? Responda só o nome.",
+   "ok": [
+    "carla"
+   ]
+  },
+  {
+   "id": "facil-log4",
+   "d": "lógica",
+   "q": "Num grupo de 10 pessoas, 6 falam inglês, 5 falam espanhol e 3 falam as duas línguas. Quantas não falam nenhuma das duas?",
+   "ok": [
+    "2"
+   ]
+  },
+  {
+   "id": "facil-mem1",
+   "d": "memória",
+   "q": "Memorize esta lista: 7, azul, cadeira, 14, rápido. Escreva o terceiro item da lista. Responda só ele.",
+   "ok": [
+    "cadeira"
+   ]
+  },
+  {
+   "id": "facil-mem2",
+   "d": "memória",
+   "q": "Memorize: 7, azul, cadeira, 14, rápido. Some o primeiro e o quarto número. Responda só o resultado.",
+   "ok": [
+    "21"
+   ]
+  },
+  {
+   "id": "facil-mem3",
+   "d": "memória",
+   "q": "Repita de trás para frente a sequência de letras: C A S A. Responda só a sequência invertida.",
+   "ok": [
+    "a s a c|asac"
+   ]
+  },
+  {
+   "id": "facil-abs1",
+   "d": "abstrato",
+   "q": "Uma figura aponta para o norte. A cada passo ela gira 90 graus no sentido horário. Para onde ela aponta no quinto passo? Responda só o ponto cardeal.",
+   "ok": [
+    "leste"
+   ]
+  },
+  {
+   "id": "facil-abs2",
+   "d": "abstrato",
+   "q": "Se a regra é: cada figura da linha 2 tem o dobro de lados da figura da linha 1 na mesma coluna. A linha 1 tem triângulo, quadrado, pentágono. Quantos lados tem a primeira figura da linha 2?",
+   "ok": [
+    "6"
+   ]
+  },
+  {
+   "id": "facil-con1",
+   "d": "conhecimento",
+   "q": "Qual é a capital da Austrália? Responda só a cidade.",
+   "ok": [
+    "canberra"
+   ]
+  },
+  {
+   "id": "facil-con2",
+   "d": "conhecimento",
+   "q": "Quem escreveu \"Dom Casmurro\"? Responda só o nome.",
+   "ok": [
+    "machado"
+   ]
+  },
+  {
+   "id": "facil-con3",
+   "d": "conhecimento",
+   "q": "Qual é o maior planeta do Sistema Solar? Responda só o nome.",
+   "ok": [
+    "júpiter|jupiter"
+   ]
+  },
+  {
+   "id": "facil-con4",
+   "d": "conhecimento",
+   "q": "Em que ano o Brasil proclamou a República? Responda só o ano.",
+   "ok": [
+    "1889"
+   ]
+  },
+  {
+   "id": "facil-con5",
+   "d": "conhecimento",
+   "q": "Qual é a moeda oficial do Japão? Responda só o nome.",
+   "ok": [
+    "iene|yen"
+   ]
+  },
+  {
+   "id": "facil-cod1",
+   "d": "código",
+   "q": "Em Python, qual é o resultado de len([1,2,3]) + 2? Responda só o número.",
+   "ok": [
+    "5"
+   ]
+  },
+  {
+   "id": "facil-cod2",
+   "d": "código",
+   "q": "Em JavaScript, qual é o resultado de [1,2,3].map(x => x * 2).join(\"-\")? Responda só o resultado.",
+   "ok": [
+    "2-4-6"
+   ]
+  },
+  {
+   "id": "facil-cod3",
+   "d": "código",
+   "q": "Escreva em uma linha de Python a soma dos números pares de 1 a 10. Responda só o código.",
+   "ok": [
+    "sum"
+   ]
+  },
+  {
+   "id": "facil-exe1",
+   "d": "execução",
+   "q": "Quanto é 1234 vezes 5678? Responda só o número.",
+   "ok": [
+    "7006652|7.006.652"
+   ]
+  },
+  {
+   "id": "facil-exe2",
+   "d": "execução",
+   "q": "Qual é a raiz quadrada de 1764? Responda só o número.",
+   "ok": [
+    "42"
+   ]
+  },
+  {
+   "id": "facil-exe3",
+   "d": "execução",
+   "q": "Quantos dias há entre 1 de janeiro de 2026 e 1 de março de 2026 (ano não bissexto)? Responda só o número.",
+   "ok": [
+    "59"
+   ]
+  },
+  {
+   "id": "dificil-d1",
+   "d": "numérico",
+   "q": "Sequência: 3, 7, 16, 35, 74, ? (a regra muda a cada passo: dobre e some 1, depois 2, depois 3, e assim por diante). Responda só o número.",
+   "ok": [
+    "153"
+   ]
+  },
+  {
+   "id": "dificil-d2",
+   "d": "numérico",
+   "q": "Quantos números inteiros de 1 a 1000 contêm pelo menos um dígito 7? Responda só o número.",
+   "ok": [
+    "271"
+   ]
+  },
+  {
+   "id": "dificil-d3",
+   "d": "numérico",
+   "q": "Uma torneira enche um tanque em 6 horas e outra em 4 horas. As duas abertas juntas enchem em quantas horas? Responda só o número decimal.",
+   "ok": [
+    "2,4|2.4"
+   ]
+  },
+  {
+   "id": "dificil-d4",
+   "d": "numérico",
+   "q": "Ana tem o dobro da idade de Bia. Em 10 anos, Ana terá uma vez e meia a idade de Bia. Quantos anos tem Bia hoje? Responda só o número.",
+   "ok": [
+    "10"
+   ]
+  },
+  {
+   "id": "dificil-d5",
+   "d": "lógica",
+   "q": "Nenhum A é B. Algum C é B. É válido concluir que algum C não é A? Responda SIM ou NÃO.",
+   "ok": [
+    "sim"
+   ]
+  },
+  {
+   "id": "dificil-d6",
+   "d": "lógica",
+   "q": "Todos os X são Y. Nenhum Y é Z. É válido concluir que nenhum X é Z? Responda SIM ou NÃO.",
+   "ok": [
+    "sim"
+   ]
+  },
+  {
+   "id": "dificil-d7",
+   "d": "lógica",
+   "q": "Cinco pessoas sentam em fila. Ana está antes de Bia. Bia está antes de Caio. Davi está antes de Ana. Edu está depois de Caio. Quem é o primeiro da fila? Responda só o nome.",
+   "ok": [
+    "davi"
+   ]
+  },
+  {
+   "id": "dificil-d8",
+   "d": "verbal",
+   "q": "Sequência de letras: A, C, F, J, O, ? (as distâncias crescem: 2, 3, 4, 5, 6). Responda só a letra.",
+   "ok": [
+    "u"
+   ]
+  },
+  {
+   "id": "dificil-d9",
+   "d": "verbal",
+   "q": "Qual palavra completa a analogia: \"livro está para capítulo assim como sinfonia está para ______\"? Responda só a palavra.",
+   "ok": [
+    "movimento|movimentos"
+   ]
+  },
+  {
+   "id": "dificil-d10",
+   "d": "verbal",
+   "q": "Numa frase: \"O time jogou mal, mas venceu; o técnico, porém, não ficou satisfeito.\" O técnico ficou satisfeito com o resultado? Responda SIM ou NÃO.",
+   "ok": [
+    "não|nao"
+   ]
+  },
+  {
+   "id": "dificil-d11",
+   "d": "probabilidade",
+   "q": "Duas moedas justas são lançadas. Qual a probabilidade de sair exatamente uma cara? Responda só a fração.",
+   "ok": [
+    "1/2|50"
+   ]
+  },
+  {
+   "id": "dificil-d12",
+   "d": "probabilidade",
+   "q": "Numa urna há 3 bolas vermelhas e 2 azuis. Tiro duas sem repor. Qual a probabilidade de ambas serem vermelhas? Responda só a fração.",
+   "ok": [
+    "3/10|0,3|0.3"
+   ]
+  },
+  {
+   "id": "dificil-d13",
+   "d": "execução",
+   "q": "Quanto é 48271 vezes 3917? Responda só o número.",
+   "ok": [
+    "189077507"
+   ]
+  },
+  {
+   "id": "dificil-d14",
+   "d": "execução",
+   "q": "Quanto é 987654 dividido por 3? Responda só o número.",
+   "ok": [
+    "329218"
+   ]
+  },
+  {
+   "id": "dificil-d15",
+   "d": "código",
+   "q": "Em Python, o que imprime print([i*2 for i in range(3)])? Responda só a lista.",
+   "ok": [
+    "[0, 2, 4]|[0,2,4]"
+   ]
+  },
+  {
+   "id": "dificil-d16",
+   "d": "código",
+   "q": "Em JavaScript, o que vale typeof null? Responda só o valor.",
+   "ok": [
+    "object"
+   ]
+  },
+  {
+   "id": "dificil-d17",
+   "d": "código",
+   "q": "Qual é o resultado de 0.1 + 0.2 === 0.3 em JavaScript? Responda só SIM ou NÃO.",
+   "ok": [
+    "não|nao"
+   ]
+  },
+  {
+   "id": "dificil-d18",
+   "d": "abstrato",
+   "q": "Uma matriz 2x2 tem na primeira linha: quadrado preto, círculo branco; na segunda: círculo branco, quadrado preto. Se a regra é inverter as cores da diagonal principal, o que fica na posição (1,1)? Responda só: quadrado branco, quadrado preto, círculo branco ou círculo preto.",
+   "ok": [
+    "quadrado branco"
+   ]
+  }
+ ]
+}
