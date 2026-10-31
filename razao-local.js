@@ -1038,11 +1038,170 @@
     return null;
   }
 
+  /* ============ 39–41: LÉXICO LOCAL (rodada 139, 31/10/2026) ============
+     As últimas provas que dependiam de modelo eram de vocabulário. A base usada aqui é o
+     Wikcionário em português, extraído EM TEMPO DE BUILD para `lexico-pt.json`/`lexico-pt.js`
+     (fonte e licença dentro do arquivo): em tempo de execução não há rede, cota nem modelo.
+     Regra de sempre: quando a base não fecha a resposta sem ambiguidade, devolve null. */
+  function lexico() {
+    if (typeof window !== 'undefined' && window.LexicoPT && window.LexicoPT.base) return window.LexicoPT.base;
+    if (typeof module !== 'undefined' && !lexico._cache) {
+      try { lexico._cache = require('./lexico-pt.js').base; } catch (e) { lexico._cache = {}; }
+    }
+    return (typeof module !== 'undefined' && lexico._cache) ? lexico._cache : {};
+  }
+  function verbete(palavra) {
+    var b = lexico();
+    return b[norm(palavra)] || null;
+  }
+
+  // Das opções de uma questão de múltipla escolha, quais são sinônimos/antônimos segundo a base.
+  function opcoesDaQuestao(q) {
+    var achadas = [];
+    var re = /\(?([A-Da-d])\)\s*([a-zà-ÿ]{2,})/g, m;
+    while ((m = re.exec(texto(q)))) achadas.push({ letra: m[1].toUpperCase(), palavra: norm(m[2]) });
+    if (achadas.length < 2) {
+      // forma sem letras: "sinônimo de X: a, b, c"
+      var m2 = texto(q).match(/(?:sin[ôo]nimo|ant[ôo]nimo)[^:]*:\s*(.+)$/i);
+      if (m2) {
+        var partes = m2[1].replace(/\?$/, '').split(/\s*,\s*|\s+e\s+/).map(function (x) { return norm(x).trim(); }).filter(function (x) { return x.length > 2; });
+        achadas = partes.map(function (p, i) { return { letra: String.fromCharCode(65 + i), palavra: p }; });
+      }
+    }
+    return achadas.length >= 2 ? achadas : null;
+  }
+
+  /* 39. SINÔNIMO de uma palavra, escolhido entre opções declaradas.
+     Só responde quando EXATAMENTE uma opção está na lista de sinônimos do verbete (nos dois
+     sentidos: a opção no verbete, ou o verbete nos sinônimos da opção). */
+  function sinonimo(q) {
+    var t = norm(q);
+    if (!/sinonimo/.test(t)) return null;
+    var alvo = texto(q).match(/sin[ôo]nimo(?: mais pr[óo]ximo)? de\s*["“']?([a-zà-ÿ]{3,})/i);
+    if (!alvo) return null;
+    var ops = opcoesDaQuestao(q);
+    if (!ops) return null;
+    var v = verbete(alvo[1]);
+    if (!v) return null;
+    var aceitos = new Set(v.s || []);
+    var ganhadores = ops.filter(function (o) {
+      if (aceitos.has(o.palavra)) return true;
+      var vo = verbete(o.palavra);
+      return !!(vo && (vo.s || []).indexOf(norm(alvo[1])) !== -1);
+    });
+    if (ganhadores.length !== 1) return null;          // nenhuma ou ambígua: cala
+    return { texto: ganhadores[0].palavra, ferramenta: 'lexico',
+      fonte: 'base lexical local (Wikcionário, CC BY-SA) · sinônimo de "' + norm(alvo[1]) + '"' };
+  }
+
+  /* 40. ANTÔNIMO, mesma regra: só com vencedor único na base. */
+  function antonimo(q) {
+    var t = norm(q);
+    if (!/antonimo/.test(t)) return null;
+    var alvo = texto(q).match(/ant[ôo]nimo de\s*["“']?([a-zà-ÿ]{3,})/i);
+    if (!alvo) return null;
+    var ops = opcoesDaQuestao(q);
+    if (!ops) return null;
+    var v = verbete(alvo[1]);
+    if (!v) return null;
+    var aceitos = new Set(v.a || []);
+    var ganhadores = ops.filter(function (o) {
+      if (aceitos.has(o.palavra)) return true;
+      var vo = verbete(o.palavra);
+      return !!(vo && (vo.a || []).indexOf(norm(alvo[1])) !== -1);
+    });
+    if (ganhadores.length !== 1) return null;
+    return { texto: ganhadores[0].palavra, ferramenta: 'lexico',
+      fonte: 'base lexical local (Wikcionário, CC BY-SA) · antônimo de "' + norm(alvo[1]) + '"' };
+  }
+
+  /* 42. ANALOGIA todo→parte, tirada da DEFINIÇÃO do segundo termo.
+     "livro está para capítulo assim como sinfonia está para ___": a base diz que capítulo é
+     "parte constituinte de uma obra" e que sinfonia é "obra para orquestra, dividida em quatro
+     movimentos". Só responde quando as duas pontas da regra aparecem na base; qualquer outra
+     relação (instrumento→uso, profissão→local) fica para o modelo, porque a base não a declara. */
+  function analogia(q) {
+    var t = norm(q);
+    if (!/assim como|esta para|tal como/.test(t)) return null;
+    var m = texto(q).match(/([a-zà-ÿ]{3,})\s+est[áa]\s+para\s+([a-zà-ÿ]{3,})[^.]*?([a-zà-ÿ]{3,})\s+est[áa]\s+para\s+_+/i);
+    if (!m) return null;
+    var A = norm(m[1]), B = norm(m[2]), C = norm(m[3]);
+    var vb = verbete(B), vc = verbete(C);
+    if (!vb || !vc) return null;
+    var defB = norm((vb.d || '') + ' ' + (vb.ds || []).join(' '));
+    // ponta 1: B é declarado PARTE de algo
+    if (!/parte (?:constituinte|integrante|de)|componente de|divisao de/.test(defB)) return null;
+    // ponta 2: a definição de C lista suas partes ("dividida em quatro movimentos")
+    var defC = norm(vc.d || '');
+    var cauda = defC.match(/(?:dividid[ao] em|compost[ao] de|formad[ao] por|constituid[ao] por)\s+(.{4,60})/);
+    if (!cauda) return null;
+    var NUMERAIS = { um: 1, uma: 1, dois: 2, duas: 2, tres: 3, quatro: 4, cinco: 5, seis: 6,
+      sete: 7, oito: 8, nove: 9, dez: 10, varias: 1, varios: 1, duas: 2, tres: 3 };
+    var parte = null;
+    for (var w of cauda[1].split(/[^a-zà-ÿ]+/)) {
+      if (w.length < 4 || NUMERAIS[w]) continue;
+      // singular simples: "movimentos" → "movimento"
+      if (verbete(w)) { parte = w; break; }
+      if (/s$/.test(w) && verbete(w.slice(0, -1))) { parte = w.slice(0, -1); break; }
+    }
+    if (!parte) return null;
+    return { texto: parte, ferramenta: 'lexico',
+      fonte: 'base lexical local (Wikcionário, CC BY-SA) · "' + B + '" é parte de, "' + C + '" lista a parte' };
+  }
+
+  /* 41. QUAL NÃO PERTENCE, por campo semântico declarado nas definições.
+     Conta quantas palavras do grupo carregam cada âncora de campo ("móvel", "eletrodoméstico",
+     "fruta"...). Só responde quando o grupo se divide em MAIORIA com campo + UMA palavra sem ele,
+     e essa palavra é o único candidato possível. Dois candidatos = ambíguo = cala. */
+  /* Âncoras agrupadas em FAMÍLIAS: "móvel" e "mobiliário" descrevem o mesmo campo, e sem juntar
+     as duas a maioria nunca fecha (medido em 31/10/2026: cadeira="mobiliário", mesa/sofá="móvel",
+     geladeira="eletrodoméstico" — 2+1+1 não dava maioria). */
+  var FAMILIAS = {
+    movel: ['movel', 'mobilia'], fruta: ['fruta', 'fruto'], legume: ['legume', 'verdura', 'hortalica'],
+    animal: ['animal', 'ave', 'peixe', 'inseto', 'mamifero'], veiculo: ['veiculo'],
+    ferramenta: ['ferramenta', 'utensilio', 'instrumento'], eletrodomestico: ['eletrodomestico', 'aparelho eletrico'],
+    profissao: ['profissao', 'oficio'], bebida: ['bebida'], alimento: ['alimento'], cor: ['cor ']
+  };
+  function naoPertence(q) {
+    var t = norm(q);
+    if (!/nao pertence|nao faz parte|destaque o (?:diferente|intruso)|elemento diferente/.test(t)) return null;
+    var m = texto(q).match(/grupo:\s*([^?]+)/i);
+    if (!m) return null;
+    var crus = m[1].replace(/\?$/, '').split(/\s*,\s*|\s+e\s+/).map(function (x) { return x.trim(); }).filter(Boolean);
+    var itens = crus.map(function (x) { return norm(x); });
+    var grafia = {};
+    for (var g0 = 0; g0 < crus.length; g0++) grafia[norm(crus[g0])] = crus[g0].toLowerCase();
+    if (itens.length < 4 || itens.length > 7) return null;
+    var campoDe = {};
+    for (var i = 0; i < itens.length; i++) {
+      var v = verbete(itens[i]);
+      if (!v) return null;                              // palavra fora da base: não dá para julgar
+      var def = norm((v.d || '') + ' ' + (v.ds || []).join(' '));
+      var campos = [];
+      for (var fam in FAMILIAS) {
+        if (FAMILIAS[fam].some(function (a) { return def.indexOf(a) !== -1; })) campos.push(fam);
+      }
+      if (!campos.length) return null;                  // sem pista de campo: cala
+      campoDe[itens[i]] = campos;
+    }
+    // o campo do grupo é o que aparece em mais itens; o intruso é o único que não o tem
+    var contagem = {};
+    for (var k in campoDe) for (var c = 0; c < campoDe[k].length; c++) contagem[campoDe[k][c]] = (contagem[campoDe[k][c]] || 0) + 1;
+    var campos = Object.keys(contagem).sort(function (a, b) { return contagem[b] - contagem[a]; });
+    if (!campos.length) return null;
+    var dominante = campos[0];
+    if (contagem[dominante] < itens.length - 1) return null;  // maioria não é suficiente: cala
+    var fora = itens.filter(function (x) { return campoDe[x].indexOf(dominante) === -1; });
+    if (fora.length !== 1) return null;
+    return { texto: grafia[fora[0]] || fora[0], ferramenta: 'lexico',
+      fonte: 'base lexical local (Wikcionário, CC BY-SA) · ' + (itens.length - 1) + ' itens no campo "' + dominante + '"' };
+  }
+
   var SOLUCIONADORES = [sequencia, sequenciaLetras, pontoFlutuante, contagemDigito, trabalhoConjunto, problemaIdade, silogismo, fila,
     probabilidade, inclusaoExclusao, custoTotal, operarios, matriz, rotacao, memoria, codigo,
     regraDeTres, media, mdcMmc, aumentoDesconto, jurosSimples, velocidade, areaPerimetro, divisaoResto,
     fatorial, primos, baseBinaria, ordemAlfabetica, palindromo, anagrama, contagemPalavras,
-    conversaoUnidades, potenciaRaiz, codigoSoma, negacaoTexto, mediana, moda, algebraLinear, identidade];
+    conversaoUnidades, potenciaRaiz, codigoSoma, negacaoTexto, mediana, moda, algebraLinear, identidade, sinonimo, antonimo, naoPertence, analogia];
 
   function resolver(pergunta) {
     var q = texto(pergunta);
@@ -1065,7 +1224,8 @@
     ordemAlfabetica: ordemAlfabetica, palindromo: palindromo, anagrama: anagrama,
     contagemPalavras: contagemPalavras, conversaoUnidades: conversaoUnidades, potenciaRaiz: potenciaRaiz,
     codigoSoma: codigoSoma, negacaoTexto: negacaoTexto, mediana: mediana, moda: moda,
-    algebraLinear: algebraLinear, identidade: identidade };
+    algebraLinear: algebraLinear, identidade: identidade, sinonimo: sinonimo,
+    antonimo: antonimo, naoPertence: naoPertence, analogia: analogia, verbete: verbete };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (typeof window !== 'undefined') window.RazaoLocal = api;
 })();

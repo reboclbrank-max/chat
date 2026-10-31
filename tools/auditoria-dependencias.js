@@ -64,7 +64,15 @@ function inventario() {
   }).sort(function (a, b) { return (b.rotas - a.rotas) || (b.mencoes - a.mencoes); });
   const modelos = lista.filter(function (h) { return h.papel === 'modelo de texto'; });
   const comChave = rotas.filter(function (r) { return r.chaveLS; }).length;
+  // base lexical local: não é host, é arquivo versionado — o oposto de dependência externa
+  let lexical = null;
+  try {
+    const base = require(path.join(RAIZ, 'lexico-pt.js'));
+    lexical = { palavras: base.palavras, fonte: base.fonte && base.fonte.nome,
+      licenca: base.fonte && base.fonte.licenca, arquivo: 'lexico-pt.js' };
+  } catch (e) { lexical = null; }
   return {
+    lexical: lexical,
     hosts: lista,
     rotasModelo: rotas.length,
     hostsModelo: Object.keys(porRota).length,
@@ -136,6 +144,9 @@ function efeitos(inv, queda) {
     { dependencia: 'GitHub Actions (trabalhador do e-mail)',
       seCair: 'canal de e-mail para; a página do chat segue inteira',
       medido: 'medido nos testes de turno: falha visível, sem resposta inventada' },
+    { dependencia: 'base lexical local (arquivo versionado, ' + (inv.lexical ? inv.lexical.palavras + ' palavras' : 'ausente') + ')',
+      seCair: 'nada: é arquivo do repositório, entra por <script> e fica no cache do service worker',
+      medido: 'vocabulário (sinônimo/antônimo/não pertence/analogia todo→parte) responde SEM rede' },
     { dependencia: 'chaves de API',
       seCair: 'nada: nenhuma rota do catálogo exige chave por padrão',
       medido: 'só ' + inv.comChave + ' rota(s) usam chave opcional; ' + (inv.rotasModelo - inv.comChave) + ' são anônimas' }
@@ -153,7 +164,9 @@ function efeitos(inv, queda) {
     veredito: {
       ilimitadoSemRede: queda.respondidas + '/' + queda.total,
       erradasSemRede: queda.erradas.length,
-      dependeDeTerceiroPara: 'texto aberto, vocabulário (sinônimo/antônimo/analogia) e conteúdo que exige fonte viva',
+      dependeDeTerceiroPara: 'texto aberto e as provas que a base local não fecha ('
+        + (queda.erradas.length ? '' : (queda.total - queda.respondidas) + ' de ' + queda.total + '') + ')',
+      provasSemCodigo: queda.total - queda.respondidas,
       zeroChave: inv.rotasModelo > 0
     }
   };
@@ -182,5 +195,6 @@ function efeitos(inv, queda) {
   }
   console.log('== VEREDITO');
   console.log('   sem rede nenhuma o produto responde ' + saida.veredito.ilimitadoSemRede
-    + ' com 0 respostas inventadas. O que continua dependendo de terceiro: ' + saida.veredito.dependeDeTerceiroPara + '.');
+    + ' com 0 respostas inventadas (' + saida.veredito.provasSemCodigo + ' ficam para o modelo).');
+  console.log('    base lexical local: ' + (inv.lexical ? inv.lexical.palavras + ' palavras · ' + inv.lexical.fonte : 'ausente'));
 })();

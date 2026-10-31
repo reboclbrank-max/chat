@@ -264,6 +264,30 @@
    "por": "identidade",
    "q": "Qual é o nome do autor do livro Dom Casmurro?",
    "porque": "pergunta sobre o nome de terceiro: identidade própria não responde isso; quem responde é a base de fatos ou o modelo."
+  },
+  {
+   "id": "arm-sinonimo-fora-da-base",
+   "por": "sinônimo",
+   "q": "Qual é o sinônimo mais próximo de \"xilofone\": (A) instrumento (B) martelo (C) música (D) som?",
+   "porque": "palavra fora da base lexical local: nenhuma opção pode ser confirmada, e chutar a que 'parece' seria resposta errada."
+  },
+  {
+   "id": "arm-antonimo-sem-link",
+   "por": "antônimo",
+   "q": "Qual é o antônimo de \"escasso\": (A) raro (B) abundante (C) pequeno (D) frágil?",
+   "porque": "a base liga escasso ao antônimo 'numeroso', não a 'abundante'; e 'raro' aparece como sinônimo. Sem link direto, o certo é calar — quem responde é o modelo."
+  },
+  {
+   "id": "arm-pertence-sem-campo",
+   "por": "não pertence",
+   "q": "Qual palavra NÃO pertence ao grupo: sincero, honesto, leal, rápido?",
+   "porque": "as definições não declaram campo semântico comum: qualquer resposta seria palpite."
+  },
+  {
+   "id": "arm-analogia-relacao-desconhecida",
+   "por": "analogia",
+   "q": "Complete a analogia: martelo está para prego assim como serrote está para ______. Responda só a palavra.",
+   "porque": "a relação é instrumento→uso, que a base não declara; só a relação todo→parte tem prova na base."
   }
  ]
 }
