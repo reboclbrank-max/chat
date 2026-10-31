@@ -137,6 +137,10 @@
   #seletor-colecao:disabled{opacity:.55;cursor:not-allowed}
   .conv-conversa{display:flex;align-items:stretch;padding:0;cursor:default;overflow:hidden}
   .conv-conversa:active{background:var(--painel)}
+  /* Aviso publicado pela casa não é conversa do dono: fica legível, mas não se disfarça
+     de conversa (medido em 31/10/2026: 30 de 31 cartões eram avisos). */
+  .conv-aviso-casa{border-left:3px solid var(--ouro-fraco);opacity:.78}
+  .conv-aviso-casa .conv-abrir .titulo{font-style:italic}
   .conv-abrir{min-width:0;flex:1;border:0;background:none;color:var(--texto);font:inherit;text-align:left;padding:12px 4px 12px 14px;cursor:pointer}
   .conv-abrir .titulo{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .conv-abrir .meta{display:flex;overflow:hidden;white-space:nowrap}
