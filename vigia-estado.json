@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-11-01T00:09:48.604Z",
+ "verificado_em": "2026-11-01T00:19:24.071Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -15,7 +15,7 @@
   },
   "Casa postando (site)": {
    "ok": false,
-   "falhas": 1,
+   "falhas": 2,
    "causa": "execucao-falhou"
   },
   "Chat por e-mail (24h)": {
