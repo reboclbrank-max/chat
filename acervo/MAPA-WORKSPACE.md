@@ -7,14 +7,22 @@ de retorno. Todo o conteúdo está em repositório do GitHub, versionado, com UR
 |---|---|---|
 | antes de limpar | 446 MB | 7 554 |
 | meio da limpeza | 56 MB | 301 |
-| **agora** | **< 100 KB** | **6** (este mapa + 5 em `tools/`) |
+| **depois** | **< 1 KB** | **1** (só a credencial de acesso — conteúdo nenhum) |
 
 ---
 
+## Nada fica local (31/10/2026, ordem do dono: "não quero localmente")
+
+Depois de salvar tudo aqui, o workspace foi **esvaziado**: nem este mapa, nem as ferramentas, nem o acervo
+ficam em disco local. A única coisa que sobra é `tools/.token-github`, a **credencial de acesso** — e ela
+não vai para repositório de propósito: um token dentro de um repo, mesmo privado, é vazamento esperando
+acontecer. Todo o resto, inclusive este arquivo, vive em `reboclbrank-max/chat` (aqui) e em
+`reboclbrank-max/acervo` (imagens).
+
 ## Onde cada coisa mora
 
-### 1. `reboclbrank-max/chat` → pasta `acervo/` (branch `main`, commit **`08d2586`**)
-74 arquivos, 852 KB, tudo textual e verificável:
+### 1. `reboclbrank-max/chat` → pasta `acervo/` (branch `main`, commit **`4f93666`**)
+74 arquivos, 852 KB, tudo textual e verificável (entrou em `08d2586`, mapa fechado em `4f93666`):
 
 | caminho | conteúdo |
 |---|---|
@@ -47,18 +55,23 @@ Nada foi empurrado em `main` por elas: o produto publicado não mudou.
 
 | item | valor |
 |---|---|
-| `main` | **`08d2586`** (o commit anterior de produto foi `5cb5f62`, rodada 139) |
+| `main` | **`4f93666`** (último commit de produto: `5cb5f62`, rodada 139 — o resto é acervo) |
 | site | https://reboclbrank-max.github.io/chat/ — **200** |
 | casca | **`rebocl-chat-v106`** |
 | guarda | 131/133 provas por código (0 erradas) · armadilhas 47/47 · cobertura 43/43 · barreira 121/121 · QI 29/29 · difícil 18/18 |
 
-## Como voltar a trabalhar (sem memória nenhuma)
+## Como voltar a trabalhar (sem memória nenhuma, com o workspace vazio)
 
 ```bash
-bash tools/clonar.sh            # clona o chat em ./chat, instala imapflow, mostra HEAD e casca
-cd chat && node tools/testes/razao-local.js && node tools/testes/lexico-local.js
+# 1) trazer o repositório (o script está versionado em tools/clonar.sh; se não houver clone, use git direto)
+TOK=$(cat ~/tools/.token-github)
+git clone "https://x-access-token:$TOK@github.com/reboclbrank-max/chat.git" chat && cd chat
+npm install --no-audit --no-fund --silent
+# 2) conferir que está são
+node tools/testes/razao-local.js && node tools/testes/lexico-local.js
 node tools/auto-melhoria.js --fio=400      # guarda
 ```
+O acervo inteiro está em `acervo/` — comece por `acervo/INDICE.md`.
 O acervo inteiro está em `chat/acervo/` — comece por `acervo/INDICE.md`.
 
 ## Regra para não encher de novo
