@@ -1690,3 +1690,7 @@ Medido antes/depois no ensaio de queda total: **soma da espera 338.678 ms → 76
 **Guarda novo (`tools/testes/lexico-local.js`, 6/6):** procedência (fonte/URL/licença no arquivo), espelho `.js` igual ao `.json`, resposta com `fetch` proibido, ordem de carregamento na página e no service worker, acerta o que a base sustenta e **cala quando não sustenta**.
 
 **Limite.** A base tem 1.502 palavras: é um começo honesto, não um dicionário. Palavra fora dela continua indo para o modelo — e o teste cobra que, nesse caso, o produto **não chute**.
+
+## 2026-11-01 — Diagnóstico do executor correto e pedido correlacionado
+
+A interface consultava o workflow privado agente/chat.yml para inferir falha de um pedido que acorda motor/chat.yml. Agora consulta motor e exige nonce do dispatch aceito, mesmo pedido, branch main, repository_dispatch e falha concluída recente. Fila, ausência de correlação, falha do legado e outro pedido não iniciam contingência. Nonce é identificador técnico sem mensagem/conteúdo privado. Novas conversas acordam o mesmo motor já usado pelos comentários; sem cron novo. O workflow do motor inclui nonce no run-name, com varredura como fallback. Não prova entrega nem confunde HTTP204 com conclusão da tarefa. Testes de recuperação cobrem correlação, outro pedido, falta de nonce, legado, fila e sucesso. Demais controles, token local e canais preservados; registro na Base acompanha a série.

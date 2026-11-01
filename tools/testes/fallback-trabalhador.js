@@ -43,6 +43,8 @@ function runtime(src, runs) {
   const ctx = {
     token: 'presente-somente-no-teste',
     REPO: 'reboclbrank-max/agente',
+    conversa: 42,
+    despachoAtualMotor: { numero: 42, inicio: Date.now(), chave: 'teste', aceito: true },
     Date,
     Number,
     api: async (p) => { caminho = p; return { workflow_runs: runs }; }
@@ -57,7 +59,8 @@ async function main() {
     const src = fonte(nome);
     testa(nome + ' conserva o gatilho estrito e a correlação', () => {
       assert.match(src, /actions\/workflows\/chat\.yml\/runs\?per_page=10/);
-      assert.match(src, /r\.event === contexto\.evento/);
+      assert.match(src, /r\.event === 'repository_dispatch'/);
+      assert.match(src, /r\.display_title === 'Chat — pedido '/);
       assert.match(src, /r\.status === 'completed' && r\.conclusion === 'failure'/);
       assert.match(src, /tentativas >= 2/);
       assert.match(src, /emergenciaResponder\(conversa\)/);
@@ -82,23 +85,28 @@ async function main() {
       assert.equal(r.ehBotTeste(marcaNoMeioDoDono), false);
       assert.equal(r.limparTeste(marcadaDoDono.body), 'resposta');
     });
-    await testaAsync(nome + ' antecipa somente falha recente do mesmo evento', async () => {
+    await testaAsync(nome + ' antecipa somente falha recente do mesmo pedido no motor', async () => {
       const inicio = Date.now();
-      const run = { event: 'issues', created_at: new Date(inicio + 100).toISOString(), status: 'completed', conclusion: 'failure' };
+      const run = { event: 'repository_dispatch', head_branch: 'main', display_title: 'Chat — pedido teste', created_at: new Date(inicio + 100).toISOString(), status: 'completed', conclusion: 'failure' };
       const r = runtime(src, [run]);
       assert.equal(await r.ctx.verificar({ inicio, evento: 'issues' }), true);
-      assert.match(r.caminho(), /\/repos\/reboclbrank-max\/agente\/actions\/workflows\/chat\.yml\/runs/);
+      assert.match(r.caminho(), /\/repos\/reboclbrank-max\/motor\/actions\/workflows\/chat\.yml\/runs/);
     });
     await testaAsync(nome + ' não confunde fila, êxito, evento alheio ou janela antiga', async () => {
       const inicio = Date.now();
       for (const run of [
-        { event: 'issues', created_at: new Date(inicio + 100).toISOString(), status: 'in_progress', conclusion: null },
-        { event: 'issues', created_at: new Date(inicio + 100).toISOString(), status: 'completed', conclusion: 'success' },
-        { event: 'issue_comment', created_at: new Date(inicio + 100).toISOString(), status: 'completed', conclusion: 'failure' }
+        { event: 'repository_dispatch', head_branch: 'main', display_title: 'Chat — pedido teste', created_at: new Date(inicio + 100).toISOString(), status: 'in_progress', conclusion: null },
+        { event: 'repository_dispatch', head_branch: 'main', display_title: 'Chat — pedido teste', created_at: new Date(inicio + 100).toISOString(), status: 'completed', conclusion: 'success' },
+        { event: 'issues', created_at: new Date(inicio + 100).toISOString(), status: 'completed', conclusion: 'failure' }
       ]) {
         const r = runtime(src, [run]);
         assert.equal(await r.ctx.verificar({ inicio, evento: 'issues' }), false);
       }
+      const outro = runtime(src, [{ event: 'repository_dispatch', head_branch: 'main', display_title: 'Chat — pedido outra-mensagem', created_at: new Date(inicio).toISOString(), status: 'completed', conclusion: 'failure' }]);
+      assert.equal(await outro.ctx.verificar({ inicio, evento: 'issues' }), false);
+      const ausente = runtime(src, []); ausente.ctx.despachoAtualMotor = null;
+      assert.equal(await ausente.ctx.verificar({ inicio, evento: 'issues' }), false);
+      assert.equal(ausente.caminho(), '');
       const rAntigo = runtime(src, []);
       assert.equal(await rAntigo.ctx.verificar({ inicio: Date.now() - 45001, evento: 'issues' }), false);
       assert.equal(rAntigo.caminho(), '');

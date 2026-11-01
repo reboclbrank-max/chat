@@ -1510,6 +1510,7 @@ async function novaConversa(sugestao = '') {
     });
     limparRascunhoPorChave('nova', texto);
     limparPreviaArquivoTexto();
+    acordarMotor(issue.number);
     await abrir(issue.number, issue.title, { inicio, evento: 'issues' });
   } catch (e) {
     if (card) {
@@ -1855,15 +1856,18 @@ function ehComandoPrivadoLocal(texto) {
  * Falha é silenciosa de propósito: o cron de 10 minutos cobre. Nada é publicado fora
  * do GitHub e nada é enviado para terceiro.
  */
+let despachoAtualMotor = null;
 async function acordarMotor(numero) {
   if (MODO_LOCAL.ligado) return;
   // O motor público escuta `repository_dispatch` do tipo `mensagem` (workflow chat.yml). Esse é
   // o único evento que leva o número da conversa — e é isso que evita o motor varrer a fila
   // inteira para achar esta mensagem. O `workflow_dispatch` fica como segunda tentativa porque
   // é aceito por qualquer token com permissão de Actions; ele acorda o motor sem o número.
+  const inicioDespacho = Date.now();
+  const chave = inicioDespacho.toString(36) + '-' + Math.random().toString(36).slice(2, 10); despachoAtualMotor = { numero: Number(numero), inicio: inicioDespacho, chave, aceito: false };
   const alvos = [
     ['/repos/reboclbrank-max/motor/dispatches',
-      { event_type: 'mensagem', client_payload: { conversa: Number(numero) || 0, origem: 'chat' } }],
+      { event_type: 'mensagem', client_payload: { conversa: Number(numero) || 0, origem: 'chat', pedido: chave } }],
     ['/repos/reboclbrank-max/motor/actions/workflows/chat.yml/dispatches', { ref: 'main' }]
   ];
   for (let i = 0; i < alvos.length; i++) {
@@ -1873,7 +1877,12 @@ async function acordarMotor(numero) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(alvos[i][1])
       });
-      if (r && r.ok) { atualizarEstadoEntrega('resposta-acelerada'); return; }
+      if (r && r.ok) {
+        if (despachoAtualMotor && despachoAtualMotor.chave === chave) {
+          despachoAtualMotor.aceito = i === 0;
+        }
+        atualizarEstadoEntrega('resposta-acelerada'); return;
+      }
     } catch (e) { /* tenta o próximo alvo; o relógio do motor cobre no fim */ }
   }
 }
@@ -1977,19 +1986,21 @@ async function enviar() {
   } finally { $('btn-enviar').disabled = false; }
 }
 
-// Quando o workflow privado falha antes de iniciar, a página já possui uma rota de
-// emergência no navegador. Verificar um único run correlacionado evita a espera cega de
-// ~30 s, mas jamais interpreta fila, execução pendente ou ausência de rede como falha.
+// Quando o workflow privado falha, isso NÃO comprova falha deste pedido no motor.
+// Diagnóstico do executor real exige nonce por disparo aceito, nunca falha de outro pedido.
 async function trabalhadorFalhouRapido(contexto) {
   if (!contexto || !token || !contexto.evento || !Number.isFinite(Number(contexto.inicio))) return false;
   const inicio = Number(contexto.inicio);
-  if (Date.now() - inicio > 45000) return false;
+  const despacho = despachoAtualMotor;
+  if (Date.now() - inicio > 45000 || !despacho || despacho.numero !== Number(conversa) ||
+      despacho.inicio < inicio - 4000 || !despacho.chave || !despacho.aceito) return false;
   try {
-    const dados = await api(`/repos/${REPO}/actions/workflows/chat.yml/runs?per_page=10`);
-    const margem = inicio - 4000;
+    const dados = await api('/repos/reboclbrank-max/motor/actions/workflows/chat.yml/runs?per_page=10');
     return (dados.workflow_runs || []).some((r) => {
       const quando = Date.parse((r && r.created_at) || '');
-      return r && r.event === contexto.evento && Number.isFinite(quando) && quando >= margem && quando <= Date.now() + 5000 &&
+      return r && r.event === 'repository_dispatch' && r.head_branch === 'main' &&
+        r.display_title === 'Chat — pedido ' + despacho.chave &&
+        Number.isFinite(quando) && quando >= despacho.inicio - 4000 && quando <= Date.now() + 5000 &&
         r.status === 'completed' && r.conclusion === 'failure';
     });
   } catch (e) { return false; }
