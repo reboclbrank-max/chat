@@ -1,0 +1,3 @@
+docs: registra limites e resultados da rodada 101 do chat
+
+Preserva o placar intermediário, as fontes contraditórias, o risco de integração e o SHA da PR já mesclada.

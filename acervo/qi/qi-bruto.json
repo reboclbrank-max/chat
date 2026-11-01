@@ -1,0 +1,312 @@
+{
+ "quando": "2026-10-31T23:48:41.262Z",
+ "total": 29,
+ "certos": 29,
+ "pct": 100,
+ "porDominio": {
+  "numérico": {
+   "total": 5,
+   "certos": 5,
+   "pct": 100
+  },
+  "verbal": {
+   "total": 4,
+   "certos": 4,
+   "pct": 100
+  },
+  "lógica": {
+   "total": 4,
+   "certos": 4,
+   "pct": 100
+  },
+  "memória": {
+   "total": 3,
+   "certos": 3,
+   "pct": 100
+  },
+  "abstrato": {
+   "total": 2,
+   "certos": 2,
+   "pct": 100
+  },
+  "conhecimento": {
+   "total": 5,
+   "certos": 5,
+   "pct": 100
+  },
+  "código": {
+   "total": 3,
+   "certos": 3,
+   "pct": 100
+  },
+  "execução": {
+   "total": 3,
+   "certos": 3,
+   "pct": 100
+  }
+ },
+ "medianaMs": 1,
+ "tentativas": [
+  {
+   "id": "num1",
+   "d": "numérico",
+   "ok": true,
+   "ms": 13,
+   "rota": "sequencia",
+   "erro": null,
+   "texto": "42"
+  },
+  {
+   "id": "num2",
+   "d": "numérico",
+   "ok": true,
+   "ms": 12,
+   "rota": "sequencia",
+   "erro": null,
+   "texto": "36"
+  },
+  {
+   "id": "num3",
+   "d": "numérico",
+   "ok": true,
+   "ms": 9,
+   "rota": "custo",
+   "erro": null,
+   "texto": "33"
+  },
+  {
+   "id": "num4",
+   "d": "numérico",
+   "ok": true,
+   "ms": 42,
+   "rota": "proporcao",
+   "erro": null,
+   "texto": "6"
+  },
+  {
+   "id": "num5",
+   "d": "numérico",
+   "ok": true,
+   "ms": 42,
+   "rota": "porcentagem",
+   "erro": null,
+   "texto": "74"
+  },
+  {
+   "id": "ver1",
+   "d": "verbal",
+   "ok": true,
+   "ms": 3994,
+   "rota": "gigante2",
+   "erro": null,
+   "texto": "escola"
+  },
+  {
+   "id": "ver2",
+   "d": "verbal",
+   "ok": true,
+   "ms": 5267,
+   "rota": "gigante2",
+   "erro": null,
+   "texto": "geladeira"
+  },
+  {
+   "id": "log1",
+   "d": "lógica",
+   "ok": true,
+   "ms": 2,
+   "rota": "deducao",
+   "erro": null,
+   "texto": "Não"
+  },
+  {
+   "id": "log2",
+   "d": "lógica",
+   "ok": true,
+   "ms": 1,
+   "rota": "deducao",
+   "erro": null,
+   "texto": "Sim"
+  },
+  {
+   "id": "log3",
+   "d": "lógica",
+   "ok": true,
+   "ms": 1,
+   "rota": "fila",
+   "erro": null,
+   "texto": "Carla"
+  },
+  {
+   "id": "log4",
+   "d": "lógica",
+   "ok": true,
+   "ms": 0,
+   "rota": "conjuntos",
+   "erro": null,
+   "texto": "2"
+  },
+  {
+   "id": "mem1",
+   "d": "memória",
+   "ok": true,
+   "ms": 0,
+   "rota": "memoria",
+   "erro": null,
+   "texto": "cadeira"
+  },
+  {
+   "id": "mem2",
+   "d": "memória",
+   "ok": true,
+   "ms": 1,
+   "rota": "memoria",
+   "erro": null,
+   "texto": "21"
+  },
+  {
+   "id": "mem3",
+   "d": "memória",
+   "ok": true,
+   "ms": 0,
+   "rota": "memoria",
+   "erro": null,
+   "texto": "A S A C"
+  },
+  {
+   "id": "abs1",
+   "d": "abstrato",
+   "ok": true,
+   "ms": 1,
+   "rota": "rotacao",
+   "erro": null,
+   "texto": "leste"
+  },
+  {
+   "id": "abs2",
+   "d": "abstrato",
+   "ok": true,
+   "ms": 0,
+   "rota": "matriz",
+   "erro": null,
+   "texto": "6"
+  },
+  {
+   "id": "con1",
+   "d": "conhecimento",
+   "ok": true,
+   "ms": 0,
+   "rota": "fato-estavel",
+   "erro": null,
+   "texto": "Canberra"
+  },
+  {
+   "id": "con2",
+   "d": "conhecimento",
+   "ok": true,
+   "ms": 1,
+   "rota": "fato-estavel",
+   "erro": null,
+   "texto": "Machado de Assis"
+  },
+  {
+   "id": "con3",
+   "d": "conhecimento",
+   "ok": true,
+   "ms": 0,
+   "rota": "fato-estavel",
+   "erro": null,
+   "texto": "Júpiter"
+  },
+  {
+   "id": "con4",
+   "d": "conhecimento",
+   "ok": true,
+   "ms": 0,
+   "rota": "fato-estavel",
+   "erro": null,
+   "texto": "1889"
+  },
+  {
+   "id": "con5",
+   "d": "conhecimento",
+   "ok": true,
+   "ms": 0,
+   "rota": "fato-estavel",
+   "erro": null,
+   "texto": "Iene"
+  },
+  {
+   "id": "cod1",
+   "d": "código",
+   "ok": true,
+   "ms": 0,
+   "rota": "codigo",
+   "erro": null,
+   "texto": "5"
+  },
+  {
+   "id": "cod2",
+   "d": "código",
+   "ok": true,
+   "ms": 1,
+   "rota": "codigo",
+   "erro": null,
+   "texto": "2-4-6"
+  },
+  {
+   "id": "ver3",
+   "d": "verbal",
+   "ok": true,
+   "ms": 5491,
+   "rota": "gigante2",
+   "erro": null,
+   "texto": "A passageiro"
+  },
+  {
+   "id": "exe1",
+   "d": "execução",
+   "ok": true,
+   "ms": 0,
+   "rota": "calculo",
+   "erro": null,
+   "texto": "7006652"
+  },
+  {
+   "id": "exe2",
+   "d": "execução",
+   "ok": true,
+   "ms": 0,
+   "rota": "raiz",
+   "erro": null,
+   "texto": "42"
+  },
+  {
+   "id": "exe3",
+   "d": "execução",
+   "ok": true,
+   "ms": 0,
+   "rota": "calendario",
+   "erro": null,
+   "texto": "59"
+  },
+  {
+   "id": "ver4",
+   "d": "verbal",
+   "ok": true,
+   "ms": 5199,
+   "rota": "gigante2",
+   "erro": null,
+   "texto": "B abundante"
+  },
+  {
+   "id": "cod3",
+   "d": "código",
+   "ok": true,
+   "ms": 5582,
+   "rota": "gigante2",
+   "erro": null,
+   "texto": "sum(i for i in range(1, 11) if i % 2 == 0)"
+  }
+ ]
+}

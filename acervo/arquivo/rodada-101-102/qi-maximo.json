@@ -1,0 +1,200 @@
+{
+ "quando": "2026-10-31T08:21:11.014Z",
+ "rajada": {
+  "total": 12,
+  "vazias": 0,
+  "certas": 12,
+  "resgates": 0,
+  "medianaMs": 56,
+  "itens": [
+   {
+    "q": "Quanto é 47 vezes 13?",
+    "ok": true,
+    "vazio": false,
+    "resgate": false,
+    "ms": 56,
+    "rota": "calculo",
+    "texto": "611",
+    "erro": null
+   },
+   {
+    "q": "Qual número continua: 5, 10, 20, 40, ?",
+    "ok": true,
+    "vazio": false,
+    "resgate": false,
+    "ms": 55,
+    "rota": "sequencia",
+    "texto": "80",
+    "erro": null
+   },
+   {
+    "q": "Qual é o maior oceano do mundo?",
+    "ok": true,
+    "vazio": false,
+    "resgate": false,
+    "ms": 52,
+    "rota": "fato-estavel",
+    "texto": "Pacífico",
+    "erro": null
+   },
+   {
+    "q": "Quanto é 144 dividido por 12?",
+    "ok": true,
+    "vazio": false,
+    "resgate": false,
+    "ms": 5,
+    "rota": "calculo",
+    "texto": "12",
+    "erro": null
+   },
+   {
+    "q": "Quem pintou a Mona Lisa?",
+    "ok": true,
+    "vazio": false,
+    "resgate": false,
+    "ms": 5,
+    "rota": "fato-estavel",
+    "texto": "Leonardo da Vinci",
+    "erro": null
+   },
+   {
+    "q": "Quanto é 15% de 240?",
+    "ok": true,
+    "vazio": false,
+    "resgate": false,
+    "ms": 4,
+    "rota": "porcentagem",
+    "texto": "36",
+    "erro": null
+   },
+   {
+    "q": "Qual é a moeda do México?",
+    "ok": true,
+    "vazio": false,
+    "resgate": false,
+    "ms": 2840,
+    "rota": "ultra",
+    "texto": "Peso mexicano",
+    "erro": null
+   },
+   {
+    "q": "Qual é a capital do Canadá?",
+    "ok": true,
+    "vazio": false,
+    "resgate": false,
+    "ms": 3051,
+    "rota": "ultra",
+    "texto": "Ottawa",
+    "erro": null
+   },
+   {
+    "q": "Em Python, o que vale len(\"casa\")?",
+    "ok": true,
+    "vazio": false,
+    "resgate": false,
+    "ms": 1,
+    "rota": "codigo",
+    "texto": "4",
+    "erro": null
+   },
+   {
+    "q": "Qual é o plural de \"cidadão\"?",
+    "ok": true,
+    "vazio": false,
+    "resgate": false,
+    "ms": 3308,
+    "rota": "ultra",
+    "texto": "cidadãos",
+    "erro": null
+   },
+   {
+    "q": "Quantos lados tem um hexágono?",
+    "ok": true,
+    "vazio": false,
+    "resgate": false,
+    "ms": 9321,
+    "rota": "ultra",
+    "texto": "6",
+    "erro": null
+   },
+   {
+    "q": "Qual é o antônimo de \"generoso\"?",
+    "ok": true,
+    "vazio": false,
+    "resgate": false,
+    "ms": 22007,
+    "rota": "polli",
+    "texto": "avaro",
+    "erro": null
+   }
+  ]
+ },
+ "eco": {
+  "total": 6,
+  "vazias": 0,
+  "recomecos": 0,
+  "ecosCortados": 0,
+  "itens": [
+   {
+    "q": "Explique em uma frase o que é um buraco negro.",
+    "texto": "Um buraco negro é uma região do espaço-tempo onde a gravidade é tão intensa que nada, nem mesmo a luz, consegue escapar.",
+    "vazio": false,
+    "recomeco": false,
+    "ecoCortado": false,
+    "ms": 30968,
+    "rota": "ovhq397"
+   },
+   {
+    "q": "Em uma linha, o que é inflação?",
+    "texto": "Inflação é o aumento generalizado e persistente dos preços de bens e serviços, que diminui o poder de compra da moeda.",
+    "vazio": false,
+    "recomeco": false,
+    "ecoCortado": false,
+    "ms": 21327,
+    "rota": "ovhoss"
+   },
+   {
+    "q": "Responda apenas o valor: qual é a raiz quadrada de 400?",
+    "texto": "20",
+    "vazio": false,
+    "recomeco": false,
+    "ecoCortado": false,
+    "ms": 1,
+    "rota": "raiz"
+   },
+   {
+    "q": "Diga só o nome do rio mais extenso do Brasil.",
+    "texto": "Rio Amazonas",
+    "vazio": false,
+    "recomeco": false,
+    "ecoCortado": false,
+    "ms": 22003,
+    "rota": "ultra"
+   },
+   {
+    "q": "Qual é o coletivo de lobos? Responda somente a palavra.",
+    "texto": "alcateia",
+    "vazio": false,
+    "recomeco": false,
+    "ecoCortado": false,
+    "ms": 6003,
+    "rota": "ultra"
+   },
+   {
+    "q": "Em no máximo 6 palavras, o que é entropia?",
+    "texto": "Desordem ou incerteza em sistemas físicos.",
+    "vazio": false,
+    "recomeco": false,
+    "ecoCortado": false,
+    "ms": 12974,
+    "rota": "ovhoss20"
+   }
+  ]
+ },
+ "memoria": {
+  "cidade": "Tobias Barreto",
+  "lembraCidade": true,
+  "nome": "Zeca",
+  "lembraNome": true
+ }
+}

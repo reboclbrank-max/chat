@@ -1,0 +1,16 @@
+✔ um rascunho completo usa uma chamada e mantém veracidade não verificada
+✔ um bloco completo é preservado e somente o parágrafo ausente é gerado
+✔ lista parcial preserva os itens anteriores e gera só o próximo, com contexto
+✔ lista completa usa uma chamada e preserva linha de continuação
+✔ texto de um parágrafo começa pelo modelo mais rápido medido
+✔ com cota no primário, escolhe a rota OVH priorizada no experimento
+✔ parágrafos retomam rota que voltou do cooldown dentro do prazo
+✔ lista retoma rota que voltou do cooldown dentro do prazo
+✔ o segundo parágrafo não é gerado se o primeiro falhar
+✔ 429 longo preserva texto parcial, avisa, não grava cache e respeita prazo
+✔ lista também preserva item bom e respeita o limite de cota
+✔ cooldown compartilhado no Kilo e por modelo no OVH; sucesso concorrente não o apaga
+✔ Retry-After aceita segundos ou data HTTP e rejeita valores inválidos
+✔ um plano sequencial é distribuído em fatias contíguas, não alternadas
+✔ limites explícitos de palavras não se confundem com a meta interna
+✔ timeout permanece ativo durante leitura do corpo HTTP

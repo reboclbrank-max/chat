@@ -1,0 +1,6134 @@
+[
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 1,
+  "q": "Quanto é 17+26?",
+  "gabarito": [
+   "43"
+  ],
+  "resposta": "43",
+  "reasoning_len": 0,
+  "segundos": 1.03,
+  "ok": true,
+  "erro": null,
+  "tentativa": 1
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 2,
+  "q": "Quanto é 144÷12?",
+  "gabarito": [
+   "12"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 3,
+  "q": "Quanto é 15% de 80?",
+  "gabarito": [
+   "12"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 4,
+  "q": "Um caderno custa R$3. Quanto custam 7?",
+  "gabarito": [
+   "21"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 5,
+  "q": "Quanto é 9×7?",
+  "gabarito": [
+   "63"
+  ],
+  "resposta": "63",
+  "reasoning_len": 0,
+  "segundos": 1.53,
+  "ok": true,
+  "erro": null,
+  "tentativa": 1
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 6,
+  "q": "Quanto é 2^10?",
+  "gabarito": [
+   "1024"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 7,
+  "q": "Raiz quadrada de 169?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "13",
+  "reasoning_len": 0,
+  "segundos": 0.88,
+  "ok": true,
+  "erro": null,
+  "tentativa": 1
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 8,
+  "q": "Metade de 0,75?",
+  "gabarito": [
+   "0,375",
+   "0.375"
+  ],
+  "resposta": "0,375",
+  "reasoning_len": 0,
+  "segundos": 5.1,
+  "ok": true,
+  "erro": null,
+  "tentativa": 1
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 9,
+  "q": "Um ônibus a 60km/h: quantos km em 45min?",
+  "gabarito": [
+   "45"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 10,
+  "q": "Troco de R$50 numa compra de R$37?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 11,
+  "q": "Próximo: 2,4,8,16,?",
+  "gabarito": [
+   "32"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 12,
+  "q": "Próximo: 100,90,81,73,?",
+  "gabarito": [
+   "66"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 13,
+  "q": "Próximo: 1,1,2,3,5,8,?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 14,
+  "q": "Próximo: 2,6,12,20,30,?",
+  "gabarito": [
+   "42"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 15,
+  "q": "Próximo: 81,27,9,?",
+  "gabarito": [
+   "3"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 16,
+  "q": "Próximo: 5,11,23,47,?",
+  "gabarito": [
+   "95"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 17,
+  "q": "Próximo letras: B,D,G,K,?",
+  "gabarito": [
+   "p"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 18,
+  "q": "Próximo: 3,7,16,35,?",
+  "gabarito": [
+   "74"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 19,
+  "q": "Próximo: 1,8,27,?",
+  "gabarito": [
+   "64"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 20,
+  "q": "Próximo: 7,14,28,56,?",
+  "gabarito": [
+   "112"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 21,
+  "q": "Todos os pássaros têm asas; pinguim é pássaro. Pinguim tem asas? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 22,
+  "q": "Se A>B e B>C, A é maior que C? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 23,
+  "q": "São 14h; daqui a 7 horas, que hora (0-23)?",
+  "gabarito": [
+   "21"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 24,
+  "q": "Numa corrida você ultrapassa o 2º colocado. Em que posição fica?",
+  "gabarito": [
+   "2",
+   "segundo",
+   "2º",
+   "segunda"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 25,
+  "q": "5 máquinas fazem 5 peças em 5min. 1 máquina faz 1 peça em quantos min?",
+  "gabarito": [
+   "5"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 26,
+  "q": "Uma vara e meia custa R$15. Quanto custam 3 varas (R$)?",
+  "gabarito": [
+   "30"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 27,
+  "q": "Hoje é sábado. Que dia será daqui a 52 dias?",
+  "gabarito": [
+   "terca",
+   "terça"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 28,
+  "q": "Se chove levo guarda-chuva; não levei. Choveu? sim/nao/incerto",
+  "gabarito": [
+   "nao",
+   "não",
+   "incerto",
+   "nao necessariamente"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 29,
+  "q": "Todos os A são B; todos os B são C. Todos os A são C? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 30,
+  "q": "8 bolas idênticas, 1 mais pesada, balança de 2 pratos: mín. de pesagens?",
+  "gabarito": [
+   "2",
+   "duas"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 31,
+  "q": "Capital do Piauí?",
+  "gabarito": [
+   "teresina"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 32,
+  "q": "Maior estado do Brasil em área?",
+  "gabarito": [
+   "amazonas"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 33,
+  "q": "Qual rio banha Manaus?",
+  "gabarito": [
+   "negro",
+   "rio negro"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 34,
+  "q": "Quem trouxe o avião ao Brasil / pioneiro da aviação?",
+  "gabarito": [
+   "santos dumont",
+   "santos-dumont"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 35,
+  "q": "Idioma oficial do Brasil?",
+  "gabarito": [
+   "portugues",
+   "português"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 36,
+  "q": "Quantos países fazem fronteira com o Brasil?",
+  "gabarito": [
+   "10",
+   "dez"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 37,
+  "q": "Maior cidade do Brasil em população?",
+  "gabarito": [
+   "sao paulo",
+   "são paulo"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 38,
+  "q": "O Maracanã fica em qual cidade?",
+  "gabarito": [
+   "rio de janeiro",
+   "rio"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 39,
+  "q": "Que oceano banha o Brasil?",
+  "gabarito": [
+   "atlantico",
+   "atlântico"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 40,
+  "q": "Fuso oficial de Brasília: UTC-?",
+  "gabarito": [
+   "3",
+   "-3"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 41,
+  "q": "Plural de 'cidadão'?",
+  "gabarito": [
+   "cidadaos",
+   "cidadãos"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 42,
+  "q": "Singular de 'fósseis'?",
+  "gabarito": [
+   "fosseil",
+   "fóssil"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 43,
+  "q": "Feminino de 'poeta'?",
+  "gabarito": [
+   "poetisa"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 44,
+  "q": "Antônimo de 'efêmero'?",
+  "gabarito": [
+   "duradouro",
+   "permanente",
+   "eterno"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 45,
+  "q": "Complete: 'Ele agiu ___' (mal ou mau)?",
+  "gabarito": [
+   "mal"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 46,
+  "q": "Quantas sílabas tem 'paralelepípedo'?",
+  "gabarito": [
+   "7",
+   "sete"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 47,
+  "q": "Coletivo de lobos?",
+  "gabarito": [
+   "alcateia"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 48,
+  "q": "Figura de linguagem em 'chorei um rio de lágrimas'?",
+  "gabarito": [
+   "hiperbole",
+   "hipérbole",
+   "metafora",
+   "metáfora"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 49,
+  "q": "Complete com crase ou sem: 'Refiro-me ___ isso.'",
+  "gabarito": [
+   "a"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 50,
+  "q": "Futuro do subjuntivo: 'Se eu ___ rico...' (ser)?",
+  "gabarito": [
+   "for"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 51,
+  "q": "CSS serve para...? (1 palavra)",
+  "gabarito": [
+   "estilo",
+   "aparencia",
+   "aparência",
+   "apresentacao"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 52,
+  "q": "HTTP 404 significa?",
+  "gabarito": [
+   "nao encontrado",
+   "não encontrado",
+   "not found",
+   "pagina nao encontrada",
+   "página não encontrada",
+   "recurso nao encontrado",
+   "recurso não encontrado"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 53,
+  "q": "Comando git para baixar um repositório: git ___",
+  "gabarito": [
+   "clone"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 54,
+  "q": "Banco NoSQL famosa por documentos JSON (1 palavra)?",
+  "gabarito": [
+   "mongodb"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 55,
+  "q": "JavaScript roda originalmente no...? (1 palavra)",
+  "gabarito": [
+   "navegador",
+   "browser"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 56,
+  "q": "O que 'npm install' faz?",
+  "gabarito": [
+   "instala"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 57,
+  "q": "RAM guarda dados de forma volátil ou persistente?",
+  "gabarito": [
+   "volatil",
+   "volátil"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 58,
+  "q": "Sigla do protocolo seguro de páginas web?",
+  "gabarito": [
+   "https"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 59,
+  "q": "Commit no git = salvar estado do código? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 60,
+  "q": "Porta padrão do HTTPS?",
+  "gabarito": [
+   "443"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 1,
+  "q": "Quanto é 17+26?",
+  "gabarito": [
+   "43"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 2,
+  "q": "Quanto é 144÷12?",
+  "gabarito": [
+   "12"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 3,
+  "q": "Quanto é 15% de 80?",
+  "gabarito": [
+   "12"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 4,
+  "q": "Um caderno custa R$3. Quanto custam 7?",
+  "gabarito": [
+   "21"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 5,
+  "q": "Quanto é 9×7?",
+  "gabarito": [
+   "63"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 6,
+  "q": "Quanto é 2^10?",
+  "gabarito": [
+   "1024"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 7,
+  "q": "Raiz quadrada de 169?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 8,
+  "q": "Metade de 0,75?",
+  "gabarito": [
+   "0,375",
+   "0.375"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 9,
+  "q": "Um ônibus a 60km/h: quantos km em 45min?",
+  "gabarito": [
+   "45"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 10,
+  "q": "Troco de R$50 numa compra de R$37?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 11,
+  "q": "Próximo: 2,4,8,16,?",
+  "gabarito": [
+   "32"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 12,
+  "q": "Próximo: 100,90,81,73,?",
+  "gabarito": [
+   "66"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 13,
+  "q": "Próximo: 1,1,2,3,5,8,?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 14,
+  "q": "Próximo: 2,6,12,20,30,?",
+  "gabarito": [
+   "42"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 15,
+  "q": "Próximo: 81,27,9,?",
+  "gabarito": [
+   "3"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 16,
+  "q": "Próximo: 5,11,23,47,?",
+  "gabarito": [
+   "95"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 17,
+  "q": "Próximo letras: B,D,G,K,?",
+  "gabarito": [
+   "p"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 18,
+  "q": "Próximo: 3,7,16,35,?",
+  "gabarito": [
+   "74"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 19,
+  "q": "Próximo: 1,8,27,?",
+  "gabarito": [
+   "64"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 20,
+  "q": "Próximo: 7,14,28,56,?",
+  "gabarito": [
+   "112"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 21,
+  "q": "Todos os pássaros têm asas; pinguim é pássaro. Pinguim tem asas? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 22,
+  "q": "Se A>B e B>C, A é maior que C? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 23,
+  "q": "São 14h; daqui a 7 horas, que hora (0-23)?",
+  "gabarito": [
+   "21"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 24,
+  "q": "Numa corrida você ultrapassa o 2º colocado. Em que posição fica?",
+  "gabarito": [
+   "2",
+   "segundo",
+   "2º",
+   "segunda"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 25,
+  "q": "5 máquinas fazem 5 peças em 5min. 1 máquina faz 1 peça em quantos min?",
+  "gabarito": [
+   "5"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 26,
+  "q": "Uma vara e meia custa R$15. Quanto custam 3 varas (R$)?",
+  "gabarito": [
+   "30"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 27,
+  "q": "Hoje é sábado. Que dia será daqui a 52 dias?",
+  "gabarito": [
+   "terca",
+   "terça"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 28,
+  "q": "Se chove levo guarda-chuva; não levei. Choveu? sim/nao/incerto",
+  "gabarito": [
+   "nao",
+   "não",
+   "incerto",
+   "nao necessariamente"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 29,
+  "q": "Todos os A são B; todos os B são C. Todos os A são C? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 30,
+  "q": "8 bolas idênticas, 1 mais pesada, balança de 2 pratos: mín. de pesagens?",
+  "gabarito": [
+   "2",
+   "duas"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 31,
+  "q": "Capital do Piauí?",
+  "gabarito": [
+   "teresina"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 32,
+  "q": "Maior estado do Brasil em área?",
+  "gabarito": [
+   "amazonas"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 33,
+  "q": "Qual rio banha Manaus?",
+  "gabarito": [
+   "negro",
+   "rio negro"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 34,
+  "q": "Quem trouxe o avião ao Brasil / pioneiro da aviação?",
+  "gabarito": [
+   "santos dumont",
+   "santos-dumont"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 35,
+  "q": "Idioma oficial do Brasil?",
+  "gabarito": [
+   "portugues",
+   "português"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 36,
+  "q": "Quantos países fazem fronteira com o Brasil?",
+  "gabarito": [
+   "10",
+   "dez"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 37,
+  "q": "Maior cidade do Brasil em população?",
+  "gabarito": [
+   "sao paulo",
+   "são paulo"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 38,
+  "q": "O Maracanã fica em qual cidade?",
+  "gabarito": [
+   "rio de janeiro",
+   "rio"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 39,
+  "q": "Que oceano banha o Brasil?",
+  "gabarito": [
+   "atlantico",
+   "atlântico"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 40,
+  "q": "Fuso oficial de Brasília: UTC-?",
+  "gabarito": [
+   "3",
+   "-3"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 41,
+  "q": "Plural de 'cidadão'?",
+  "gabarito": [
+   "cidadaos",
+   "cidadãos"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 42,
+  "q": "Singular de 'fósseis'?",
+  "gabarito": [
+   "fosseil",
+   "fóssil"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 43,
+  "q": "Feminino de 'poeta'?",
+  "gabarito": [
+   "poetisa"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 44,
+  "q": "Antônimo de 'efêmero'?",
+  "gabarito": [
+   "duradouro",
+   "permanente",
+   "eterno"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 45,
+  "q": "Complete: 'Ele agiu ___' (mal ou mau)?",
+  "gabarito": [
+   "mal"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 46,
+  "q": "Quantas sílabas tem 'paralelepípedo'?",
+  "gabarito": [
+   "7",
+   "sete"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 47,
+  "q": "Coletivo de lobos?",
+  "gabarito": [
+   "alcateia"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 48,
+  "q": "Figura de linguagem em 'chorei um rio de lágrimas'?",
+  "gabarito": [
+   "hiperbole",
+   "hipérbole",
+   "metafora",
+   "metáfora"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 49,
+  "q": "Complete com crase ou sem: 'Refiro-me ___ isso.'",
+  "gabarito": [
+   "a"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 50,
+  "q": "Futuro do subjuntivo: 'Se eu ___ rico...' (ser)?",
+  "gabarito": [
+   "for"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 51,
+  "q": "CSS serve para...? (1 palavra)",
+  "gabarito": [
+   "estilo",
+   "aparencia",
+   "aparência",
+   "apresentacao"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 52,
+  "q": "HTTP 404 significa?",
+  "gabarito": [
+   "nao encontrado",
+   "não encontrado",
+   "not found",
+   "pagina nao encontrada",
+   "página não encontrada",
+   "recurso nao encontrado",
+   "recurso não encontrado"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 53,
+  "q": "Comando git para baixar um repositório: git ___",
+  "gabarito": [
+   "clone"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 54,
+  "q": "Banco NoSQL famosa por documentos JSON (1 palavra)?",
+  "gabarito": [
+   "mongodb"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 55,
+  "q": "JavaScript roda originalmente no...? (1 palavra)",
+  "gabarito": [
+   "navegador",
+   "browser"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 56,
+  "q": "O que 'npm install' faz?",
+  "gabarito": [
+   "instala"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 57,
+  "q": "RAM guarda dados de forma volátil ou persistente?",
+  "gabarito": [
+   "volatil",
+   "volátil"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 58,
+  "q": "Sigla do protocolo seguro de páginas web?",
+  "gabarito": [
+   "https"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 59,
+  "q": "Commit no git = salvar estado do código? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "g4f/GLM-5.3",
+  "id": 60,
+  "q": "Porta padrão do HTTPS?",
+  "gabarito": [
+   "443"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 1,
+  "q": "Quanto é 17+26?",
+  "gabarito": [
+   "43"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 2,
+  "q": "Quanto é 144÷12?",
+  "gabarito": [
+   "12"
+  ],
+  "resposta": "12",
+  "reasoning_len": 176,
+  "segundos": 1.48,
+  "ok": true,
+  "erro": null,
+  "tentativa": 1
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 3,
+  "q": "Quanto é 15% de 80?",
+  "gabarito": [
+   "12"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 4,
+  "q": "Um caderno custa R$3. Quanto custam 7?",
+  "gabarito": [
+   "21"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 5,
+  "q": "Quanto é 9×7?",
+  "gabarito": [
+   "63"
+  ],
+  "resposta": "63",
+  "reasoning_len": 198,
+  "segundos": 1.73,
+  "ok": true,
+  "erro": null,
+  "tentativa": 1
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 6,
+  "q": "Quanto é 2^10?",
+  "gabarito": [
+   "1024"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 7,
+  "q": "Raiz quadrada de 169?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 8,
+  "q": "Metade de 0,75?",
+  "gabarito": [
+   "0,375",
+   "0.375"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 9,
+  "q": "Um ônibus a 60km/h: quantos km em 45min?",
+  "gabarito": [
+   "45"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 10,
+  "q": "Troco de R$50 numa compra de R$37?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 11,
+  "q": "Próximo: 2,4,8,16,?",
+  "gabarito": [
+   "32"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 12,
+  "q": "Próximo: 100,90,81,73,?",
+  "gabarito": [
+   "66"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 13,
+  "q": "Próximo: 1,1,2,3,5,8,?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 14,
+  "q": "Próximo: 2,6,12,20,30,?",
+  "gabarito": [
+   "42"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 15,
+  "q": "Próximo: 81,27,9,?",
+  "gabarito": [
+   "3"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 16,
+  "q": "Próximo: 5,11,23,47,?",
+  "gabarito": [
+   "95"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 17,
+  "q": "Próximo letras: B,D,G,K,?",
+  "gabarito": [
+   "p"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 18,
+  "q": "Próximo: 3,7,16,35,?",
+  "gabarito": [
+   "74"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 19,
+  "q": "Próximo: 1,8,27,?",
+  "gabarito": [
+   "64"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 20,
+  "q": "Próximo: 7,14,28,56,?",
+  "gabarito": [
+   "112"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 21,
+  "q": "Todos os pássaros têm asas; pinguim é pássaro. Pinguim tem asas? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 22,
+  "q": "Se A>B e B>C, A é maior que C? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 23,
+  "q": "São 14h; daqui a 7 horas, que hora (0-23)?",
+  "gabarito": [
+   "21"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 24,
+  "q": "Numa corrida você ultrapassa o 2º colocado. Em que posição fica?",
+  "gabarito": [
+   "2",
+   "segundo",
+   "2º",
+   "segunda"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 25,
+  "q": "5 máquinas fazem 5 peças em 5min. 1 máquina faz 1 peça em quantos min?",
+  "gabarito": [
+   "5"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 26,
+  "q": "Uma vara e meia custa R$15. Quanto custam 3 varas (R$)?",
+  "gabarito": [
+   "30"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 27,
+  "q": "Hoje é sábado. Que dia será daqui a 52 dias?",
+  "gabarito": [
+   "terca",
+   "terça"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 28,
+  "q": "Se chove levo guarda-chuva; não levei. Choveu? sim/nao/incerto",
+  "gabarito": [
+   "nao",
+   "não",
+   "incerto",
+   "nao necessariamente"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 29,
+  "q": "Todos os A são B; todos os B são C. Todos os A são C? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 30,
+  "q": "8 bolas idênticas, 1 mais pesada, balança de 2 pratos: mín. de pesagens?",
+  "gabarito": [
+   "2",
+   "duas"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 31,
+  "q": "Capital do Piauí?",
+  "gabarito": [
+   "teresina"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 32,
+  "q": "Maior estado do Brasil em área?",
+  "gabarito": [
+   "amazonas"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 33,
+  "q": "Qual rio banha Manaus?",
+  "gabarito": [
+   "negro",
+   "rio negro"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 34,
+  "q": "Quem trouxe o avião ao Brasil / pioneiro da aviação?",
+  "gabarito": [
+   "santos dumont",
+   "santos-dumont"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 35,
+  "q": "Idioma oficial do Brasil?",
+  "gabarito": [
+   "portugues",
+   "português"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 36,
+  "q": "Quantos países fazem fronteira com o Brasil?",
+  "gabarito": [
+   "10",
+   "dez"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 37,
+  "q": "Maior cidade do Brasil em população?",
+  "gabarito": [
+   "sao paulo",
+   "são paulo"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 38,
+  "q": "O Maracanã fica em qual cidade?",
+  "gabarito": [
+   "rio de janeiro",
+   "rio"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 39,
+  "q": "Que oceano banha o Brasil?",
+  "gabarito": [
+   "atlantico",
+   "atlântico"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 40,
+  "q": "Fuso oficial de Brasília: UTC-?",
+  "gabarito": [
+   "3",
+   "-3"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 41,
+  "q": "Plural de 'cidadão'?",
+  "gabarito": [
+   "cidadaos",
+   "cidadãos"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 42,
+  "q": "Singular de 'fósseis'?",
+  "gabarito": [
+   "fosseil",
+   "fóssil"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 43,
+  "q": "Feminino de 'poeta'?",
+  "gabarito": [
+   "poetisa"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 44,
+  "q": "Antônimo de 'efêmero'?",
+  "gabarito": [
+   "duradouro",
+   "permanente",
+   "eterno"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 45,
+  "q": "Complete: 'Ele agiu ___' (mal ou mau)?",
+  "gabarito": [
+   "mal"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 46,
+  "q": "Quantas sílabas tem 'paralelepípedo'?",
+  "gabarito": [
+   "7",
+   "sete"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 47,
+  "q": "Coletivo de lobos?",
+  "gabarito": [
+   "alcateia"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 48,
+  "q": "Figura de linguagem em 'chorei um rio de lágrimas'?",
+  "gabarito": [
+   "hiperbole",
+   "hipérbole",
+   "metafora",
+   "metáfora"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 49,
+  "q": "Complete com crase ou sem: 'Refiro-me ___ isso.'",
+  "gabarito": [
+   "a"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 50,
+  "q": "Futuro do subjuntivo: 'Se eu ___ rico...' (ser)?",
+  "gabarito": [
+   "for"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 51,
+  "q": "CSS serve para...? (1 palavra)",
+  "gabarito": [
+   "estilo",
+   "aparencia",
+   "aparência",
+   "apresentacao"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 52,
+  "q": "HTTP 404 significa?",
+  "gabarito": [
+   "nao encontrado",
+   "não encontrado",
+   "not found",
+   "pagina nao encontrada",
+   "página não encontrada",
+   "recurso nao encontrado",
+   "recurso não encontrado"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 53,
+  "q": "Comando git para baixar um repositório: git ___",
+  "gabarito": [
+   "clone"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 54,
+  "q": "Banco NoSQL famosa por documentos JSON (1 palavra)?",
+  "gabarito": [
+   "mongodb"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 55,
+  "q": "JavaScript roda originalmente no...? (1 palavra)",
+  "gabarito": [
+   "navegador",
+   "browser"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 56,
+  "q": "O que 'npm install' faz?",
+  "gabarito": [
+   "instala"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 57,
+  "q": "RAM guarda dados de forma volátil ou persistente?",
+  "gabarito": [
+   "volatil",
+   "volátil"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 58,
+  "q": "Sigla do protocolo seguro de páginas web?",
+  "gabarito": [
+   "https"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 59,
+  "q": "Commit no git = salvar estado do código? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 60,
+  "q": "Porta padrão do HTTPS?",
+  "gabarito": [
+   "443"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 1,
+  "q": "Quanto é 17+26?",
+  "gabarito": [
+   "43"
+  ],
+  "resposta": "43",
+  "reasoning_len": 611,
+  "segundos": 2.23,
+  "ok": true,
+  "erro": null,
+  "tentativa": 1
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 2,
+  "q": "Quanto é 144÷12?",
+  "gabarito": [
+   "12"
+  ],
+  "resposta": "12",
+  "reasoning_len": 688,
+  "segundos": 3.37,
+  "ok": true,
+  "erro": null,
+  "tentativa": 1
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 3,
+  "q": "Quanto é 15% de 80?",
+  "gabarito": [
+   "12"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 4,
+  "q": "Um caderno custa R$3. Quanto custam 7?",
+  "gabarito": [
+   "21"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 5,
+  "q": "Quanto é 9×7?",
+  "gabarito": [
+   "63"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 6,
+  "q": "Quanto é 2^10?",
+  "gabarito": [
+   "1024"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 7,
+  "q": "Raiz quadrada de 169?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 8,
+  "q": "Metade de 0,75?",
+  "gabarito": [
+   "0,375",
+   "0.375"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 9,
+  "q": "Um ônibus a 60km/h: quantos km em 45min?",
+  "gabarito": [
+   "45"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 10,
+  "q": "Troco de R$50 numa compra de R$37?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 11,
+  "q": "Próximo: 2,4,8,16,?",
+  "gabarito": [
+   "32"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 12,
+  "q": "Próximo: 100,90,81,73,?",
+  "gabarito": [
+   "66"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 13,
+  "q": "Próximo: 1,1,2,3,5,8,?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 14,
+  "q": "Próximo: 2,6,12,20,30,?",
+  "gabarito": [
+   "42"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 15,
+  "q": "Próximo: 81,27,9,?",
+  "gabarito": [
+   "3"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 16,
+  "q": "Próximo: 5,11,23,47,?",
+  "gabarito": [
+   "95"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 17,
+  "q": "Próximo letras: B,D,G,K,?",
+  "gabarito": [
+   "p"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 18,
+  "q": "Próximo: 3,7,16,35,?",
+  "gabarito": [
+   "74"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 19,
+  "q": "Próximo: 1,8,27,?",
+  "gabarito": [
+   "64"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 20,
+  "q": "Próximo: 7,14,28,56,?",
+  "gabarito": [
+   "112"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 21,
+  "q": "Todos os pássaros têm asas; pinguim é pássaro. Pinguim tem asas? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 22,
+  "q": "Se A>B e B>C, A é maior que C? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 23,
+  "q": "São 14h; daqui a 7 horas, que hora (0-23)?",
+  "gabarito": [
+   "21"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 24,
+  "q": "Numa corrida você ultrapassa o 2º colocado. Em que posição fica?",
+  "gabarito": [
+   "2",
+   "segundo",
+   "2º",
+   "segunda"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 25,
+  "q": "5 máquinas fazem 5 peças em 5min. 1 máquina faz 1 peça em quantos min?",
+  "gabarito": [
+   "5"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 26,
+  "q": "Uma vara e meia custa R$15. Quanto custam 3 varas (R$)?",
+  "gabarito": [
+   "30"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 27,
+  "q": "Hoje é sábado. Que dia será daqui a 52 dias?",
+  "gabarito": [
+   "terca",
+   "terça"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 28,
+  "q": "Se chove levo guarda-chuva; não levei. Choveu? sim/nao/incerto",
+  "gabarito": [
+   "nao",
+   "não",
+   "incerto",
+   "nao necessariamente"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 29,
+  "q": "Todos os A são B; todos os B são C. Todos os A são C? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 30,
+  "q": "8 bolas idênticas, 1 mais pesada, balança de 2 pratos: mín. de pesagens?",
+  "gabarito": [
+   "2",
+   "duas"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 31,
+  "q": "Capital do Piauí?",
+  "gabarito": [
+   "teresina"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 32,
+  "q": "Maior estado do Brasil em área?",
+  "gabarito": [
+   "amazonas"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 33,
+  "q": "Qual rio banha Manaus?",
+  "gabarito": [
+   "negro",
+   "rio negro"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 34,
+  "q": "Quem trouxe o avião ao Brasil / pioneiro da aviação?",
+  "gabarito": [
+   "santos dumont",
+   "santos-dumont"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 35,
+  "q": "Idioma oficial do Brasil?",
+  "gabarito": [
+   "portugues",
+   "português"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 36,
+  "q": "Quantos países fazem fronteira com o Brasil?",
+  "gabarito": [
+   "10",
+   "dez"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 37,
+  "q": "Maior cidade do Brasil em população?",
+  "gabarito": [
+   "sao paulo",
+   "são paulo"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 38,
+  "q": "O Maracanã fica em qual cidade?",
+  "gabarito": [
+   "rio de janeiro",
+   "rio"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 39,
+  "q": "Que oceano banha o Brasil?",
+  "gabarito": [
+   "atlantico",
+   "atlântico"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 40,
+  "q": "Fuso oficial de Brasília: UTC-?",
+  "gabarito": [
+   "3",
+   "-3"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 41,
+  "q": "Plural de 'cidadão'?",
+  "gabarito": [
+   "cidadaos",
+   "cidadãos"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 42,
+  "q": "Singular de 'fósseis'?",
+  "gabarito": [
+   "fosseil",
+   "fóssil"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 43,
+  "q": "Feminino de 'poeta'?",
+  "gabarito": [
+   "poetisa"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 44,
+  "q": "Antônimo de 'efêmero'?",
+  "gabarito": [
+   "duradouro",
+   "permanente",
+   "eterno"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 45,
+  "q": "Complete: 'Ele agiu ___' (mal ou mau)?",
+  "gabarito": [
+   "mal"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 46,
+  "q": "Quantas sílabas tem 'paralelepípedo'?",
+  "gabarito": [
+   "7",
+   "sete"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 47,
+  "q": "Coletivo de lobos?",
+  "gabarito": [
+   "alcateia"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 48,
+  "q": "Figura de linguagem em 'chorei um rio de lágrimas'?",
+  "gabarito": [
+   "hiperbole",
+   "hipérbole",
+   "metafora",
+   "metáfora"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 49,
+  "q": "Complete com crase ou sem: 'Refiro-me ___ isso.'",
+  "gabarito": [
+   "a"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 50,
+  "q": "Futuro do subjuntivo: 'Se eu ___ rico...' (ser)?",
+  "gabarito": [
+   "for"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 51,
+  "q": "CSS serve para...? (1 palavra)",
+  "gabarito": [
+   "estilo",
+   "aparencia",
+   "aparência",
+   "apresentacao"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 52,
+  "q": "HTTP 404 significa?",
+  "gabarito": [
+   "nao encontrado",
+   "não encontrado",
+   "not found",
+   "pagina nao encontrada",
+   "página não encontrada",
+   "recurso nao encontrado",
+   "recurso não encontrado"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 53,
+  "q": "Comando git para baixar um repositório: git ___",
+  "gabarito": [
+   "clone"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 54,
+  "q": "Banco NoSQL famosa por documentos JSON (1 palavra)?",
+  "gabarito": [
+   "mongodb"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 55,
+  "q": "JavaScript roda originalmente no...? (1 palavra)",
+  "gabarito": [
+   "navegador",
+   "browser"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 56,
+  "q": "O que 'npm install' faz?",
+  "gabarito": [
+   "instala"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 57,
+  "q": "RAM guarda dados de forma volátil ou persistente?",
+  "gabarito": [
+   "volatil",
+   "volátil"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 58,
+  "q": "Sigla do protocolo seguro de páginas web?",
+  "gabarito": [
+   "https"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 59,
+  "q": "Commit no git = salvar estado do código? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 60,
+  "q": "Porta padrão do HTTPS?",
+  "gabarito": [
+   "443"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 429: Too Many Requests",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 1,
+  "q": "Quanto é 17+26?",
+  "gabarito": [
+   "43"
+  ],
+  "resposta": "43",
+  "reasoning_len": 189,
+  "segundos": 5.72,
+  "ok": true,
+  "erro": null,
+  "tentativa": 1
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 2,
+  "q": "Quanto é 144÷12?",
+  "gabarito": [
+   "12"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 3,
+  "q": "Quanto é 15% de 80?",
+  "gabarito": [
+   "12"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 4,
+  "q": "Um caderno custa R$3. Quanto custam 7?",
+  "gabarito": [
+   "21"
+  ],
+  "resposta": "21",
+  "reasoning_len": 173,
+  "segundos": 5.63,
+  "ok": true,
+  "erro": null,
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 5,
+  "q": "Quanto é 9×7?",
+  "gabarito": [
+   "63"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 6,
+  "q": "Quanto é 2^10?",
+  "gabarito": [
+   "1024"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "TimeoutError: The read operation timed out",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 7,
+  "q": "Raiz quadrada de 169?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 8,
+  "q": "Metade de 0,75?",
+  "gabarito": [
+   "0,375",
+   "0.375"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 9,
+  "q": "Um ônibus a 60km/h: quantos km em 45min?",
+  "gabarito": [
+   "45"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 10,
+  "q": "Troco de R$50 numa compra de R$37?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 11,
+  "q": "Próximo: 2,4,8,16,?",
+  "gabarito": [
+   "32"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 12,
+  "q": "Próximo: 100,90,81,73,?",
+  "gabarito": [
+   "66"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 13,
+  "q": "Próximo: 1,1,2,3,5,8,?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 14,
+  "q": "Próximo: 2,6,12,20,30,?",
+  "gabarito": [
+   "42"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "TimeoutError: The read operation timed out",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 15,
+  "q": "Próximo: 81,27,9,?",
+  "gabarito": [
+   "3"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 16,
+  "q": "Próximo: 5,11,23,47,?",
+  "gabarito": [
+   "95"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 17,
+  "q": "Próximo letras: B,D,G,K,?",
+  "gabarito": [
+   "p"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 18,
+  "q": "Próximo: 3,7,16,35,?",
+  "gabarito": [
+   "74"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 19,
+  "q": "Próximo: 1,8,27,?",
+  "gabarito": [
+   "64"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 20,
+  "q": "Próximo: 7,14,28,56,?",
+  "gabarito": [
+   "112"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 21,
+  "q": "Todos os pássaros têm asas; pinguim é pássaro. Pinguim tem asas? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 22,
+  "q": "Se A>B e B>C, A é maior que C? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 23,
+  "q": "São 14h; daqui a 7 horas, que hora (0-23)?",
+  "gabarito": [
+   "21"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 24,
+  "q": "Numa corrida você ultrapassa o 2º colocado. Em que posição fica?",
+  "gabarito": [
+   "2",
+   "segundo",
+   "2º",
+   "segunda"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 25,
+  "q": "5 máquinas fazem 5 peças em 5min. 1 máquina faz 1 peça em quantos min?",
+  "gabarito": [
+   "5"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "TimeoutError: The read operation timed out",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 26,
+  "q": "Uma vara e meia custa R$15. Quanto custam 3 varas (R$)?",
+  "gabarito": [
+   "30"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "TimeoutError: The read operation timed out",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 27,
+  "q": "Hoje é sábado. Que dia será daqui a 52 dias?",
+  "gabarito": [
+   "terca",
+   "terça"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 28,
+  "q": "Se chove levo guarda-chuva; não levei. Choveu? sim/nao/incerto",
+  "gabarito": [
+   "nao",
+   "não",
+   "incerto",
+   "nao necessariamente"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 29,
+  "q": "Todos os A são B; todos os B são C. Todos os A são C? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 30,
+  "q": "8 bolas idênticas, 1 mais pesada, balança de 2 pratos: mín. de pesagens?",
+  "gabarito": [
+   "2",
+   "duas"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 31,
+  "q": "Capital do Piauí?",
+  "gabarito": [
+   "teresina"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 32,
+  "q": "Maior estado do Brasil em área?",
+  "gabarito": [
+   "amazonas"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 33,
+  "q": "Qual rio banha Manaus?",
+  "gabarito": [
+   "negro",
+   "rio negro"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 34,
+  "q": "Quem trouxe o avião ao Brasil / pioneiro da aviação?",
+  "gabarito": [
+   "santos dumont",
+   "santos-dumont"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 35,
+  "q": "Idioma oficial do Brasil?",
+  "gabarito": [
+   "portugues",
+   "português"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "TimeoutError: The read operation timed out",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 36,
+  "q": "Quantos países fazem fronteira com o Brasil?",
+  "gabarito": [
+   "10",
+   "dez"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 37,
+  "q": "Maior cidade do Brasil em população?",
+  "gabarito": [
+   "sao paulo",
+   "são paulo"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 38,
+  "q": "O Maracanã fica em qual cidade?",
+  "gabarito": [
+   "rio de janeiro",
+   "rio"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "TimeoutError: The read operation timed out",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 39,
+  "q": "Que oceano banha o Brasil?",
+  "gabarito": [
+   "atlantico",
+   "atlântico"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 40,
+  "q": "Fuso oficial de Brasília: UTC-?",
+  "gabarito": [
+   "3",
+   "-3"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 41,
+  "q": "Plural de 'cidadão'?",
+  "gabarito": [
+   "cidadaos",
+   "cidadãos"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 42,
+  "q": "Singular de 'fósseis'?",
+  "gabarito": [
+   "fosseil",
+   "fóssil"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 43,
+  "q": "Feminino de 'poeta'?",
+  "gabarito": [
+   "poetisa"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 44,
+  "q": "Antônimo de 'efêmero'?",
+  "gabarito": [
+   "duradouro",
+   "permanente",
+   "eterno"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "TimeoutError: The read operation timed out",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 45,
+  "q": "Complete: 'Ele agiu ___' (mal ou mau)?",
+  "gabarito": [
+   "mal"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 46,
+  "q": "Quantas sílabas tem 'paralelepípedo'?",
+  "gabarito": [
+   "7",
+   "sete"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 47,
+  "q": "Coletivo de lobos?",
+  "gabarito": [
+   "alcateia"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 48,
+  "q": "Figura de linguagem em 'chorei um rio de lágrimas'?",
+  "gabarito": [
+   "hiperbole",
+   "hipérbole",
+   "metafora",
+   "metáfora"
+  ],
+  "resposta": "hipérbole",
+  "reasoning_len": 416,
+  "segundos": 7.1,
+  "ok": true,
+  "erro": null,
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 49,
+  "q": "Complete com crase ou sem: 'Refiro-me ___ isso.'",
+  "gabarito": [
+   "a"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 50,
+  "q": "Futuro do subjuntivo: 'Se eu ___ rico...' (ser)?",
+  "gabarito": [
+   "for"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 51,
+  "q": "CSS serve para...? (1 palavra)",
+  "gabarito": [
+   "estilo",
+   "aparencia",
+   "aparência",
+   "apresentacao"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 52,
+  "q": "HTTP 404 significa?",
+  "gabarito": [
+   "nao encontrado",
+   "não encontrado",
+   "not found",
+   "pagina nao encontrada",
+   "página não encontrada",
+   "recurso nao encontrado",
+   "recurso não encontrado"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 53,
+  "q": "Comando git para baixar um repositório: git ___",
+  "gabarito": [
+   "clone"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "TimeoutError: The read operation timed out",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 54,
+  "q": "Banco NoSQL famosa por documentos JSON (1 palavra)?",
+  "gabarito": [
+   "mongodb"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "TimeoutError: The read operation timed out",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 55,
+  "q": "JavaScript roda originalmente no...? (1 palavra)",
+  "gabarito": [
+   "navegador",
+   "browser"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 56,
+  "q": "O que 'npm install' faz?",
+  "gabarito": [
+   "instala"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 57,
+  "q": "RAM guarda dados de forma volátil ou persistente?",
+  "gabarito": [
+   "volatil",
+   "volátil"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "TimeoutError: The read operation timed out",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 58,
+  "q": "Sigla do protocolo seguro de páginas web?",
+  "gabarito": [
+   "https"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 59,
+  "q": "Commit no git = salvar estado do código? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 60,
+  "q": "Porta padrão do HTTPS?",
+  "gabarito": [
+   "443"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 402: Payment Required",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 1,
+  "q": "Quanto é 17+26?",
+  "gabarito": [
+   "43"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 2,
+  "q": "Quanto é 144÷12?",
+  "gabarito": [
+   "12"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 3,
+  "q": "Quanto é 15% de 80?",
+  "gabarito": [
+   "12"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 4,
+  "q": "Um caderno custa R$3. Quanto custam 7?",
+  "gabarito": [
+   "21"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 5,
+  "q": "Quanto é 9×7?",
+  "gabarito": [
+   "63"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 6,
+  "q": "Quanto é 2^10?",
+  "gabarito": [
+   "1024"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 7,
+  "q": "Raiz quadrada de 169?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 8,
+  "q": "Metade de 0,75?",
+  "gabarito": [
+   "0,375",
+   "0.375"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 9,
+  "q": "Um ônibus a 60km/h: quantos km em 45min?",
+  "gabarito": [
+   "45"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 10,
+  "q": "Troco de R$50 numa compra de R$37?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 11,
+  "q": "Próximo: 2,4,8,16,?",
+  "gabarito": [
+   "32"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 12,
+  "q": "Próximo: 100,90,81,73,?",
+  "gabarito": [
+   "66"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 13,
+  "q": "Próximo: 1,1,2,3,5,8,?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 14,
+  "q": "Próximo: 2,6,12,20,30,?",
+  "gabarito": [
+   "42"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 15,
+  "q": "Próximo: 81,27,9,?",
+  "gabarito": [
+   "3"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 16,
+  "q": "Próximo: 5,11,23,47,?",
+  "gabarito": [
+   "95"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 17,
+  "q": "Próximo letras: B,D,G,K,?",
+  "gabarito": [
+   "p"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 18,
+  "q": "Próximo: 3,7,16,35,?",
+  "gabarito": [
+   "74"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 19,
+  "q": "Próximo: 1,8,27,?",
+  "gabarito": [
+   "64"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 20,
+  "q": "Próximo: 7,14,28,56,?",
+  "gabarito": [
+   "112"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 21,
+  "q": "Todos os pássaros têm asas; pinguim é pássaro. Pinguim tem asas? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 22,
+  "q": "Se A>B e B>C, A é maior que C? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 23,
+  "q": "São 14h; daqui a 7 horas, que hora (0-23)?",
+  "gabarito": [
+   "21"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 24,
+  "q": "Numa corrida você ultrapassa o 2º colocado. Em que posição fica?",
+  "gabarito": [
+   "2",
+   "segundo",
+   "2º",
+   "segunda"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 25,
+  "q": "5 máquinas fazem 5 peças em 5min. 1 máquina faz 1 peça em quantos min?",
+  "gabarito": [
+   "5"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 26,
+  "q": "Uma vara e meia custa R$15. Quanto custam 3 varas (R$)?",
+  "gabarito": [
+   "30"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 27,
+  "q": "Hoje é sábado. Que dia será daqui a 52 dias?",
+  "gabarito": [
+   "terca",
+   "terça"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 28,
+  "q": "Se chove levo guarda-chuva; não levei. Choveu? sim/nao/incerto",
+  "gabarito": [
+   "nao",
+   "não",
+   "incerto",
+   "nao necessariamente"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 29,
+  "q": "Todos os A são B; todos os B são C. Todos os A são C? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 30,
+  "q": "8 bolas idênticas, 1 mais pesada, balança de 2 pratos: mín. de pesagens?",
+  "gabarito": [
+   "2",
+   "duas"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 31,
+  "q": "Capital do Piauí?",
+  "gabarito": [
+   "teresina"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 32,
+  "q": "Maior estado do Brasil em área?",
+  "gabarito": [
+   "amazonas"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 33,
+  "q": "Qual rio banha Manaus?",
+  "gabarito": [
+   "negro",
+   "rio negro"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 34,
+  "q": "Quem trouxe o avião ao Brasil / pioneiro da aviação?",
+  "gabarito": [
+   "santos dumont",
+   "santos-dumont"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 35,
+  "q": "Idioma oficial do Brasil?",
+  "gabarito": [
+   "portugues",
+   "português"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 36,
+  "q": "Quantos países fazem fronteira com o Brasil?",
+  "gabarito": [
+   "10",
+   "dez"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 37,
+  "q": "Maior cidade do Brasil em população?",
+  "gabarito": [
+   "sao paulo",
+   "são paulo"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 38,
+  "q": "O Maracanã fica em qual cidade?",
+  "gabarito": [
+   "rio de janeiro",
+   "rio"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 39,
+  "q": "Que oceano banha o Brasil?",
+  "gabarito": [
+   "atlantico",
+   "atlântico"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 40,
+  "q": "Fuso oficial de Brasília: UTC-?",
+  "gabarito": [
+   "3",
+   "-3"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 41,
+  "q": "Plural de 'cidadão'?",
+  "gabarito": [
+   "cidadaos",
+   "cidadãos"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 42,
+  "q": "Singular de 'fósseis'?",
+  "gabarito": [
+   "fosseil",
+   "fóssil"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 43,
+  "q": "Feminino de 'poeta'?",
+  "gabarito": [
+   "poetisa"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 44,
+  "q": "Antônimo de 'efêmero'?",
+  "gabarito": [
+   "duradouro",
+   "permanente",
+   "eterno"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 45,
+  "q": "Complete: 'Ele agiu ___' (mal ou mau)?",
+  "gabarito": [
+   "mal"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 46,
+  "q": "Quantas sílabas tem 'paralelepípedo'?",
+  "gabarito": [
+   "7",
+   "sete"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 47,
+  "q": "Coletivo de lobos?",
+  "gabarito": [
+   "alcateia"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 48,
+  "q": "Figura de linguagem em 'chorei um rio de lágrimas'?",
+  "gabarito": [
+   "hiperbole",
+   "hipérbole",
+   "metafora",
+   "metáfora"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 49,
+  "q": "Complete com crase ou sem: 'Refiro-me ___ isso.'",
+  "gabarito": [
+   "a"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 50,
+  "q": "Futuro do subjuntivo: 'Se eu ___ rico...' (ser)?",
+  "gabarito": [
+   "for"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 51,
+  "q": "CSS serve para...? (1 palavra)",
+  "gabarito": [
+   "estilo",
+   "aparencia",
+   "aparência",
+   "apresentacao"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 52,
+  "q": "HTTP 404 significa?",
+  "gabarito": [
+   "nao encontrado",
+   "não encontrado",
+   "not found",
+   "pagina nao encontrada",
+   "página não encontrada",
+   "recurso nao encontrado",
+   "recurso não encontrado"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 53,
+  "q": "Comando git para baixar um repositório: git ___",
+  "gabarito": [
+   "clone"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 54,
+  "q": "Banco NoSQL famosa por documentos JSON (1 palavra)?",
+  "gabarito": [
+   "mongodb"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 55,
+  "q": "JavaScript roda originalmente no...? (1 palavra)",
+  "gabarito": [
+   "navegador",
+   "browser"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 56,
+  "q": "O que 'npm install' faz?",
+  "gabarito": [
+   "instala"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 57,
+  "q": "RAM guarda dados de forma volátil ou persistente?",
+  "gabarito": [
+   "volatil",
+   "volátil"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 58,
+  "q": "Sigla do protocolo seguro de páginas web?",
+  "gabarito": [
+   "https"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 59,
+  "q": "Commit no git = salvar estado do código? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/glm-5.3",
+  "id": 60,
+  "q": "Porta padrão do HTTPS?",
+  "gabarito": [
+   "443"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 1,
+  "q": "Quanto é 17+26?",
+  "gabarito": [
+   "43"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 2,
+  "q": "Quanto é 144÷12?",
+  "gabarito": [
+   "12"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 3,
+  "q": "Quanto é 15% de 80?",
+  "gabarito": [
+   "12"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 4,
+  "q": "Um caderno custa R$3. Quanto custam 7?",
+  "gabarito": [
+   "21"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 5,
+  "q": "Quanto é 9×7?",
+  "gabarito": [
+   "63"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 6,
+  "q": "Quanto é 2^10?",
+  "gabarito": [
+   "1024"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 7,
+  "q": "Raiz quadrada de 169?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 8,
+  "q": "Metade de 0,75?",
+  "gabarito": [
+   "0,375",
+   "0.375"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 9,
+  "q": "Um ônibus a 60km/h: quantos km em 45min?",
+  "gabarito": [
+   "45"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 10,
+  "q": "Troco de R$50 numa compra de R$37?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 11,
+  "q": "Próximo: 2,4,8,16,?",
+  "gabarito": [
+   "32"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 12,
+  "q": "Próximo: 100,90,81,73,?",
+  "gabarito": [
+   "66"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 13,
+  "q": "Próximo: 1,1,2,3,5,8,?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 14,
+  "q": "Próximo: 2,6,12,20,30,?",
+  "gabarito": [
+   "42"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 15,
+  "q": "Próximo: 81,27,9,?",
+  "gabarito": [
+   "3"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 16,
+  "q": "Próximo: 5,11,23,47,?",
+  "gabarito": [
+   "95"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 17,
+  "q": "Próximo letras: B,D,G,K,?",
+  "gabarito": [
+   "p"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 18,
+  "q": "Próximo: 3,7,16,35,?",
+  "gabarito": [
+   "74"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 19,
+  "q": "Próximo: 1,8,27,?",
+  "gabarito": [
+   "64"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 20,
+  "q": "Próximo: 7,14,28,56,?",
+  "gabarito": [
+   "112"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 21,
+  "q": "Todos os pássaros têm asas; pinguim é pássaro. Pinguim tem asas? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 22,
+  "q": "Se A>B e B>C, A é maior que C? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 23,
+  "q": "São 14h; daqui a 7 horas, que hora (0-23)?",
+  "gabarito": [
+   "21"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 24,
+  "q": "Numa corrida você ultrapassa o 2º colocado. Em que posição fica?",
+  "gabarito": [
+   "2",
+   "segundo",
+   "2º",
+   "segunda"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 25,
+  "q": "5 máquinas fazem 5 peças em 5min. 1 máquina faz 1 peça em quantos min?",
+  "gabarito": [
+   "5"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 26,
+  "q": "Uma vara e meia custa R$15. Quanto custam 3 varas (R$)?",
+  "gabarito": [
+   "30"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 27,
+  "q": "Hoje é sábado. Que dia será daqui a 52 dias?",
+  "gabarito": [
+   "terca",
+   "terça"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 28,
+  "q": "Se chove levo guarda-chuva; não levei. Choveu? sim/nao/incerto",
+  "gabarito": [
+   "nao",
+   "não",
+   "incerto",
+   "nao necessariamente"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 29,
+  "q": "Todos os A são B; todos os B são C. Todos os A são C? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 30,
+  "q": "8 bolas idênticas, 1 mais pesada, balança de 2 pratos: mín. de pesagens?",
+  "gabarito": [
+   "2",
+   "duas"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 31,
+  "q": "Capital do Piauí?",
+  "gabarito": [
+   "teresina"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 32,
+  "q": "Maior estado do Brasil em área?",
+  "gabarito": [
+   "amazonas"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 33,
+  "q": "Qual rio banha Manaus?",
+  "gabarito": [
+   "negro",
+   "rio negro"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 34,
+  "q": "Quem trouxe o avião ao Brasil / pioneiro da aviação?",
+  "gabarito": [
+   "santos dumont",
+   "santos-dumont"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 35,
+  "q": "Idioma oficial do Brasil?",
+  "gabarito": [
+   "portugues",
+   "português"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 36,
+  "q": "Quantos países fazem fronteira com o Brasil?",
+  "gabarito": [
+   "10",
+   "dez"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 37,
+  "q": "Maior cidade do Brasil em população?",
+  "gabarito": [
+   "sao paulo",
+   "são paulo"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 38,
+  "q": "O Maracanã fica em qual cidade?",
+  "gabarito": [
+   "rio de janeiro",
+   "rio"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 39,
+  "q": "Que oceano banha o Brasil?",
+  "gabarito": [
+   "atlantico",
+   "atlântico"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 40,
+  "q": "Fuso oficial de Brasília: UTC-?",
+  "gabarito": [
+   "3",
+   "-3"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 41,
+  "q": "Plural de 'cidadão'?",
+  "gabarito": [
+   "cidadaos",
+   "cidadãos"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 42,
+  "q": "Singular de 'fósseis'?",
+  "gabarito": [
+   "fosseil",
+   "fóssil"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 43,
+  "q": "Feminino de 'poeta'?",
+  "gabarito": [
+   "poetisa"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 44,
+  "q": "Antônimo de 'efêmero'?",
+  "gabarito": [
+   "duradouro",
+   "permanente",
+   "eterno"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 45,
+  "q": "Complete: 'Ele agiu ___' (mal ou mau)?",
+  "gabarito": [
+   "mal"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 46,
+  "q": "Quantas sílabas tem 'paralelepípedo'?",
+  "gabarito": [
+   "7",
+   "sete"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 47,
+  "q": "Coletivo de lobos?",
+  "gabarito": [
+   "alcateia"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 48,
+  "q": "Figura de linguagem em 'chorei um rio de lágrimas'?",
+  "gabarito": [
+   "hiperbole",
+   "hipérbole",
+   "metafora",
+   "metáfora"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 49,
+  "q": "Complete com crase ou sem: 'Refiro-me ___ isso.'",
+  "gabarito": [
+   "a"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 50,
+  "q": "Futuro do subjuntivo: 'Se eu ___ rico...' (ser)?",
+  "gabarito": [
+   "for"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 51,
+  "q": "CSS serve para...? (1 palavra)",
+  "gabarito": [
+   "estilo",
+   "aparencia",
+   "aparência",
+   "apresentacao"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 52,
+  "q": "HTTP 404 significa?",
+  "gabarito": [
+   "nao encontrado",
+   "não encontrado",
+   "not found",
+   "pagina nao encontrada",
+   "página não encontrada",
+   "recurso nao encontrado",
+   "recurso não encontrado"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 53,
+  "q": "Comando git para baixar um repositório: git ___",
+  "gabarito": [
+   "clone"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 54,
+  "q": "Banco NoSQL famosa por documentos JSON (1 palavra)?",
+  "gabarito": [
+   "mongodb"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 55,
+  "q": "JavaScript roda originalmente no...? (1 palavra)",
+  "gabarito": [
+   "navegador",
+   "browser"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 56,
+  "q": "O que 'npm install' faz?",
+  "gabarito": [
+   "instala"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 57,
+  "q": "RAM guarda dados de forma volátil ou persistente?",
+  "gabarito": [
+   "volatil",
+   "volátil"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 58,
+  "q": "Sigla do protocolo seguro de páginas web?",
+  "gabarito": [
+   "https"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 59,
+  "q": "Commit no git = salvar estado do código? sim/nao",
+  "gabarito": [
+   "sim"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ },
+ {
+  "rota": "llm7/kimi-k3",
+  "id": 60,
+  "q": "Porta padrão do HTTPS?",
+  "gabarito": [
+   "443"
+  ],
+  "resposta": "",
+  "reasoning_len": 0,
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError: HTTP Error 401: Unauthorized",
+  "tentativa": 2
+ }
+]

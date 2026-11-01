@@ -1,0 +1,120 @@
+import time, urllib.request, concurrent.futures as cf, json
+URLS = {
+ "CoinGecko (cripto)":"https://api.coingecko.com/api/v3/ping",
+ "BrasilAPI (CEP/CNPJ)":"https://brasilapi.com.br/api/cep/v2/01001000",
+ "Frankfurter (câmbio)":"https://api.frankfurter.app/latest?from=USD",
+ "Open-Meteo (clima)":"https://api.open-meteo.com/v1/forecast?latitude=-11.0&longitude=-37.9&current=temperature_2m",
+ "IBGE (localidades)":"https://servicodados.ibge.gov.br/api/v1/localidades/estados",
+ "DictionaryAPI":"https://api.dictionaryapi.dev/api/v2/entries/en/hello",
+ "Dicionário Aberto (PT)":"https://api.dicionario-aberto.net/word/casa",
+ "Wikipédia PT":"https://pt.wikipedia.org/api/rest_v1/page/summary/Brasil",
+ "RestCountries":"https://restcountries.com/v3.1/name/brazil?fields=name",
+ "GitHub API":"https://api.github.com/rate_limit",
+ "MathJS (cálculo)":"https://api.mathjs.org/v4/?expr=17%2B26",
+ "Agify (nome→idade)":"https://api.agify.io/?name=ana",
+ "Nationalize":"https://api.nationalize.io/?name=ana",
+ "Zippopotam":"https://api.zippopotam.us/us/90210",
+ "Nager (feriados)":"https://date.nager.at/api/v3/PublicHolidays/2026/BR",
+ "Sunrise-Sunset":"https://api.sunrise-sunset.org/json?lat=-11&lng=-37.9",
+ "ISS (posição)":"https://api.wheretheiss.at/v1/satellites/25544",
+ "Spaceflight News":"https://api.spaceflightnewsapi.net/v4/articles?limit=1",
+ "HN Algolia":"https://hn.algolia.com/api/v1/search?query=brasil",
+ "Chuck Norris":"https://api.chucknorris.io/jokes/random",
+ "JokeAPI":"https://v2.jokeapi.dev/joke/Any?type=single",
+ "Advice Slip":"https://api.adviceslip.com/advice",
+ "Useless Facts":"https://uselessfacts.jsph.pl/api/v2/facts/random",
+ "OpenLibrary":"https://openlibrary.org/search.json?q=dom+casmurro&limit=1",
+ "Gutendex (livros)":"https://gutendex.com/books?search=machado",
+ "OpenAlex (papers)":"https://api.openalex.org/works?per-page=1",
+ "Crossref (DOI)":"https://api.crossref.org/works?rows=1",
+ "brapi (ações)":"https://brapi.dev/api/quote/PETR4",
+ "TheMealDB (receitas)":"https://www.themealdb.com/api/json/v1/1/random.php",
+ "TheCocktailDB":"https://www.thecocktaildb.com/api/json/v1/1/random.php",
+ "PokeAPI":"https://pokeapi.co/api/v2/pokemon/1",
+ "Dog CEO":"https://dog.ceo/api/breeds/image/random",
+ "CatFact":"https://catfact.ninja/fact",
+ "OpenBreweryDB":"https://api.openbrewerydb.org/v1/breweries/random",
+ "Chess.com":"https://api.chess.com/pub/player/hikaru",
+ "Lichess":"https://lichess.org/api/user/thibault",
+ "SWAPI":"https://swapi.dev/api/people/1",
+ "Rick&Morty":"https://rickandmortyapi.com/api/character/1",
+ "Nobel Prize":"https://api.nobelprize.org/2.1/laureates?limit=1",
+ "Open-Elevation":"https://api.open-elevation.com/api/v1/lookup?locations=-11,-37",
+ "World Bank":"https://api.worldbank.org/v2/country/BR?format=json",
+ "DiceBear (avatar)":"https://api.dicebear.com/9.x/bottts/svg?seed=ana",
+ "QR Server":"https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=oi",
+ "iTunes":"https://itunes.apple.com/search?term=milton+nascimento&limit=1",
+ "MusicBrainz":"https://musicbrainz.org/ws/2/artist/?query=milton%20nascimento&fmt=json&limit=1",
+ "OpenFoodFacts":"https://world.openfoodfacts.org/api/v2/product/3017620422003.json",
+ "PubChem":"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/aspirin/JSON",
+ "NASA APOD":"https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY",
+ "USGS (terremotos)":"https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson",
+ "Wikipedia Commons":"https://commons.wikimedia.org/w/api.php?action=query&meta=siteinfo&format=json",
+ "News YC":"https://news.ycombinator.com/",
+ "Wikipedia PT (API)":"https://pt.wikipedia.org/w/api.php?action=query&meta=siteinfo&format=json",
+ "Lobste.rs":"https://lobste.rs/hottest.json",
+ "Dev.to":"https://dev.to/api/articles?per_page=1",
+ "NPM registry":"https://api.npmjs.org/downloads/point/last-week/react",
+ "PyPI":"https://pypi.org/pypi/requests/json",
+ "Crates.io":"https://crates.io/api/v1/crates/serde",
+ "Bundlephobia":"https://bundlephobia.com/api/size?package=react",
+ "Trivia API":"https://the-trivia-api.com/v2/questions?limit=1",
+ "OpenTDB":"https://opentdb.com/api.php?amount=1",
+ "Scryfall (Magic)":"https://api.scryfall.com/cards/random",
+ "YGOPRODeck":"https://db.ygoprodeck.com/api/v7/cardinfo.php?name=Dark%20Magician",
+ "D&D 5e":"https://www.dnd5eapi.co/api/monsters/aboleth",
+ "Freetogame":"https://www.freetogame.com/api/games?platform=pc",
+ "CheapShark (jogos)":"https://www.cheapshark.com/api/1.0/deals?storeID=1&upperPrice=15",
+ "Speedrun.com":"https://www.speedrun.com/api/v1/games?name=mario",
+ "MangaDex":"https://api.mangadex.org/manga?limit=1",
+ "AniList":"https://graphql.anilist.co",
+ "Jikan (anime)":"https://api.jikan.moe/v4/anime/1",
+ "TVMaze":"https://api.tvmaze.com/shows/1",
+ "ESPN":"https://site.api.espn.com/apis/site/v2/sports/soccer/brazil.1/scoreboard",
+ "TheSportsDB":"https://www.thesportsdb.com/api/v1/json/3/searchteams.php?t=Flamengo",
+ "OpenSky (voos)":"https://opensky-network.org/api/states/all?lamin=-12&lomin=-38&lamax=-10&lomax=-36",
+ "Coinlore":"https://api.coinlore.net/api/ticker/?id=90",
+ "Bitstamp":"https://www.bitstamp.net/api/v2/ticker/btcusd/",
+ "BCB (PTAX)":"https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json",
+ "ReceitaWS (CNPJ)":"https://receitaws.com.br/v1/cnpj/06990590000123",
+ "IP who is":"https://ipwho.is/",
+ "GeoJS":"https://get.geojs.io/v1/ip/geo.json",
+ "Nominatim (mapas)":"https://nominatim.openstreetmap.org/search?q=Tobias+Barreto&format=json&limit=1",
+ "RainViewer":"https://api.rainviewer.com/public/weather-maps.json",
+ "NOAA SWPC (sol)":"https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json",
+ "Loterias Caixa":"https://loteriascaixa-api.herokuapp.com/api/megasena/latest",
+ "Transport CH":"https://transport.opendata.ch/v1/connections?from=Z%C3%BCrich&to=Bern",
+ "EUR-Lex":"https://eur-lex.europa.eu/",
+ "Camara dos Deputados":"https://dadosabertos.camara.leg.br/api/v2/deputados?itens=1",
+ "Senado":"https://legis.senado.leg.br/dadosabertos/senador/lista/atual.json",
+ "Gutendex OK":"https://gutendex.com/books?languages=pt",
+ "Bible API":"https://bible-api.com/joao+3:16?translation=almeida",
+ "AlQuran":"https://api.alquran.cloud/v1/surah/1",
+ "Stoic Quotes":"https://stoic-quotes.com/api/quote",
+ "Quotable alt":"https://api.kanye.rest/",
+ "YesNo":"https://yesno.wtf/api",
+ "Excuser":"https://excuser-three.vercel.app/v1/excuse",
+ "RandomUser":"https://randomuser.me/api/",
+ "Trivia OpenTDB2":"https://opentdb.com/api_category.php",
+ "Scientific Calc":"https://newton.vercel.app/api/v2/derive/x%5E2",
+}
+def check(item):
+    nome,u=item
+    t=time.time()
+    try:
+        req=urllib.request.Request(u,headers={"User-Agent":"chat-medicao/1.0 (teste de disponibilidade)"})
+        with urllib.request.urlopen(req,timeout=20) as r:
+            r.read(256); code=r.status
+        return nome,u,code,round((time.time()-t)*1000),None
+    except urllib.error.HTTPError as e:
+        return nome,u,e.code,round((time.time()-t)*1000),"http"
+    except Exception as e:
+        return nome,u,None,round((time.time()-t)*1000),type(e).__name__
+out=[]
+with cf.ThreadPoolExecutor(12) as ex:
+    for r in ex.map(check, URLS.items()): out.append(r)
+json.dump(out, open('/home/user/pesquisas/medicao-chat-2026-10-27/ferramentas.json','w'), ensure_ascii=False, indent=1)
+vivos=[r for r in out if r[2] and r[2]<500]
+print(f"TOTAL {len(out)} | vivos(<500) {len(vivos)}")
+for nome,u,code,ms,err in sorted(out,key=lambda x:(x[2] or 999)):
+    print(f"{str(code):>4s} {str(ms)+'ms':>7s}  {nome}")

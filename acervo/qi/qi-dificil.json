@@ -1,0 +1,183 @@
+{
+ "quando": "2026-10-31T23:48:45.173Z",
+ "total": 18,
+ "certos": 18,
+ "pct": 100,
+ "porDominio": {
+  "numérico": {
+   "total": 4,
+   "certos": 4
+  },
+  "lógica": {
+   "total": 3,
+   "certos": 3
+  },
+  "verbal": {
+   "total": 3,
+   "certos": 3
+  },
+  "probabilidade": {
+   "total": 2,
+   "certos": 2
+  },
+  "execução": {
+   "total": 2,
+   "certos": 2
+  },
+  "código": {
+   "total": 3,
+   "certos": 3
+  },
+  "abstrato": {
+   "total": 1,
+   "certos": 1
+  }
+ },
+ "medianaMs": 5,
+ "tentativas": [
+  {
+   "id": "d1",
+   "d": "numérico",
+   "ok": true,
+   "ms": 12,
+   "rota": "sequencia",
+   "texto": "153"
+  },
+  {
+   "id": "d2",
+   "d": "numérico",
+   "ok": true,
+   "ms": 10,
+   "rota": "contagem",
+   "texto": "271"
+  },
+  {
+   "id": "d3",
+   "d": "numérico",
+   "ok": true,
+   "ms": 7,
+   "rota": "trabalho",
+   "texto": "2,4"
+  },
+  {
+   "id": "d4",
+   "d": "numérico",
+   "ok": true,
+   "ms": 4,
+   "rota": "idade",
+   "texto": "10"
+  },
+  {
+   "id": "d5",
+   "d": "lógica",
+   "ok": true,
+   "ms": 5,
+   "rota": "deducao",
+   "texto": "Sim"
+  },
+  {
+   "id": "d6",
+   "d": "lógica",
+   "ok": true,
+   "ms": 5,
+   "rota": "deducao",
+   "texto": "Sim"
+  },
+  {
+   "id": "d7",
+   "d": "lógica",
+   "ok": true,
+   "ms": 32,
+   "rota": "fila",
+   "texto": "Davi"
+  },
+  {
+   "id": "d8",
+   "d": "verbal",
+   "ok": true,
+   "ms": 31,
+   "rota": "sequencia-letras",
+   "texto": "U"
+  },
+  {
+   "id": "d11",
+   "d": "probabilidade",
+   "ok": true,
+   "ms": 5,
+   "rota": "probabilidade",
+   "texto": "1/2"
+  },
+  {
+   "id": "d12",
+   "d": "probabilidade",
+   "ok": true,
+   "ms": 0,
+   "rota": "probabilidade",
+   "texto": "3/10"
+  },
+  {
+   "id": "d13",
+   "d": "execução",
+   "ok": true,
+   "ms": 1,
+   "rota": "calculo",
+   "texto": "189077507"
+  },
+  {
+   "id": "d14",
+   "d": "execução",
+   "ok": true,
+   "ms": 0,
+   "rota": "calculo",
+   "texto": "329218"
+  },
+  {
+   "id": "d15",
+   "d": "código",
+   "ok": true,
+   "ms": 0,
+   "rota": "codigo",
+   "texto": "[0, 2, 4]"
+  },
+  {
+   "id": "d16",
+   "d": "código",
+   "ok": true,
+   "ms": 0,
+   "rota": "codigo",
+   "texto": "object"
+  },
+  {
+   "id": "d17",
+   "d": "código",
+   "ok": true,
+   "ms": 0,
+   "rota": "ponto-flutuante",
+   "texto": "Não"
+  },
+  {
+   "id": "d18",
+   "d": "abstrato",
+   "ok": true,
+   "ms": 0,
+   "rota": "matriz",
+   "texto": "quadrado branco"
+  },
+  {
+   "id": "d10",
+   "d": "verbal",
+   "ok": true,
+   "ms": 3167,
+   "rota": "gigante2",
+   "texto": "NÃO"
+  },
+  {
+   "id": "d9",
+   "d": "verbal",
+   "ok": true,
+   "ms": 3858,
+   "rota": "gigante2",
+   "texto": "movimento"
+  }
+ ]
+}
