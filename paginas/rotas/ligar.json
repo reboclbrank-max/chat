@@ -1,55 +1,55 @@
 {
- "rota": "ligar",
- "base": "index",
- "regras": [
-  {
-   "faixa": [
-    1090,
-    1091
-   ],
-   "esperado": "  try { localStorage.setItem('rebocl_conv', String(numero)); } catch (e) {}",
-   "novo": ""
-  },
-  {
-   "faixa": [
-    1094,
-    1095
-   ],
-   "esperado": "  try { localStorage.setItem('rebocl_conv_titulo', titulo || ('Conversa #' + numero)); } catch (e) {}",
-   "novo": ""
-  },
-  {
-   "faixa": [
-    1444,
-    1445
-   ],
-   "esperado": "  if (!texto) return;",
-   "novo": "  if (!texto || !conversa) return;"
-  },
-  {
-   "faixa": [
-    1483,
-    1517
-   ],
-   "esperado": "  if (!conversa) {\n    caixa.value = ''; caixa.style.height = 'auto';\n    atualizarContador();\n    bolha('user', texto, new Date().toISOString()); rolarFim();\n    if (!token) {\n      pensando(true);\n      pensarStream([{ role: 'user', content: texto }], function () {}).then(function (r) {\n        pensando(false);\n        const t = (r && r.texto) || '';\n        bolha('bot', t || 'travei agora — manda de novo que eu respondo.', new Date().toISOString(), '⚡ direto'); rolarFim();\n        try { const h = JSON.parse(localStorage.getItem('rebocl_direto_h') || '[]'); h.push({ q: 'u', t: texto }); if (t) h.push({ q: 'b', t: t }); localStorage.setItem('rebocl_direto_h', JSON.stringify(h.slice(-60))); } catch (e) {}\n      }).catch(function () { pensando(false); bolha('bot', 'a fiação piscou — manda de novo.', new Date().toISOString(), '⚡'); rolarFim(); });\n      return;\n    }\n    $('btn-enviar').disabled = true;\n    atualizarEstadoEntrega('criando-conversa');\n    try {\n      const inicio = Date.now();\n      const nova = await api('/repos/' + REPO + '/issues', { method: 'POST', body: JSON.stringify({ title: texto.trim().split('\\n')[0].slice(0, 70), body: texto.trim() }) });\n      limparRascunhoPorChave('nova', texto);\n      limparPreviaArquivoTexto();\n      ultimoId = 0;\n      atualizarEstadoEntrega('conversa-criada');\n      await abrir(nova.number, nova.title, TURBO ? null : { inicio, evento: 'issues' });\n      if (TURBO) {\n        atualizarEstadoEntrega('resposta-local-solicitada');\n        emergenciaResponder(nova.number);\n      }\n    } catch (e) {\n      encerrarEstadoEntrega(estadoEntregaParaErro(e), '⚠️ entrega', mensagemErroSeguro(e));\n      avisarRascunhoPreservadoAposFalha();\n    } finally { $('btn-enviar').disabled = false; }\n    return;\n  }",
-   "novo": ""
-  },
-  {
-   "faixa": [
-    2638,
-    2641
-   ],
-   "esperado": "async function reabrirUltima() {\n  try { if (token && localStorage.getItem('rebocl_conv')) { await abrir(parseInt(localStorage.getItem('rebocl_conv'), 10), localStorage.getItem('rebocl_conv_titulo') || ''); } } catch (e) {}\n}",
-   "novo": ""
-  },
-  {
-   "faixa": [
-    3909,
-    3912
-   ],
-   "esperado": "\nsetTimeout(function () { try { if (token && localStorage.getItem('rebocl_conv') && !conversa) { reabrirUltima(); return; } } catch (e) {}\n  try { if (!token) { abrirConversa(); $('titulo-conv').textContent = '⚡ Direto'; bolha('bot', '📍 **modo direto** — escreva qualquer coisa aí embaixo e eu respondo AQUI mesmo, sem caderno, sem chave, sem nada. Pra falar com a casa inteira (status, acordar, exame), um dia instalamos sua chave — mas pra conversar, agora já vale.', new Date().toISOString(), '⚡'); rolarFim(); } } catch (e) {} }, 1200);",
-   "novo": ""
-  }
- ],
- "cauda": "</script>\n<script>\n(function(){try{\nvar p=new URLSearchParams(location.search);var tinhaToken=p.has('t');\nif(tinhaToken){p.delete('t');history.replaceState({},'',location.pathname);}\nvar aviso=function(){var b=document.createElement('div');b.setAttribute('role','status');b.setAttribute('aria-live','polite');b.style.cssText='position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:99999;background:#12351f;color:#b6f0c3;padding:16px 24px;border-radius:14px;font-size:16px;text-align:center;box-shadow:0 4px 18px #0008;font-family:sans-serif;pointer-events:none';\nb.textContent=tinhaToken?'🔐 Por segurança, links não ativam token. Abra ⚙️ Configurar acesso e cole-o no campo protegido deste navegador.':'🔐 Abra ⚙️ Configurar acesso para ativar seu token neste navegador.';document.body.appendChild(b);setTimeout(function(){b.remove();},15000);};\nif(document.body)aviso();else window.addEventListener('DOMContentLoaded',aviso);}catch(e){}})();\n</script></body>\n</html>\n"
+  "rota": "ligar",
+  "base": "index",
+  "regras": [
+    {
+      "faixa": [
+        1091,
+        1092
+      ],
+      "esperado": "  try { localStorage.setItem('rebocl_conv', String(numero)); } catch (e) {}",
+      "novo": ""
+    },
+    {
+      "faixa": [
+        1095,
+        1096
+      ],
+      "esperado": "  try { localStorage.setItem('rebocl_conv_titulo', titulo || ('Conversa #' + numero)); } catch (e) {}",
+      "novo": ""
+    },
+    {
+      "faixa": [
+        1453,
+        1454
+      ],
+      "esperado": "  if (!texto) return;",
+      "novo": "  if (!texto || !conversa) return;"
+    },
+    {
+      "faixa": [
+        1492,
+        1527
+      ],
+      "esperado": "  if (!conversa) {\n    caixa.value = ''; caixa.style.height = 'auto';\n    atualizarContador();\n    bolha('user', texto, new Date().toISOString()); rolarFim();\n    if (!token) {\n      pensando(true);\n      pensarStream([{ role: 'user', content: texto }], function () {}).then(function (r) {\n        pensando(false);\n        const t = (r && r.texto) || '';\n        bolha('bot', t || 'travei agora — manda de novo que eu respondo.', new Date().toISOString(), '⚡ direto'); rolarFim();\n        try { const h = JSON.parse(localStorage.getItem('rebocl_direto_h') || '[]'); h.push({ q: 'u', t: texto }); if (t) h.push({ q: 'b', t: t }); localStorage.setItem('rebocl_direto_h', JSON.stringify(h.slice(-60))); } catch (e) {}\n      }).catch(function () { pensando(false); bolha('bot', 'a fiação piscou — manda de novo.', new Date().toISOString(), '⚡'); rolarFim(); });\n      return;\n    }\n    $('btn-enviar').disabled = true;\n    atualizarEstadoEntrega('criando-conversa');\n    try {\n      const inicio = Date.now();\n      const nova = await api('/repos/' + REPO + '/issues', { method: 'POST', body: JSON.stringify({ title: texto.trim().split('\\n')[0].slice(0, 70), body: texto.trim() }) });\n      limparRascunhoPorChave('nova', texto);\n      limparPreviaArquivoTexto();\n      ultimoId = 0;\n      atualizarEstadoEntrega('conversa-criada');\n      if (!TURBO) acordarMotor(nova.number);\n      await abrir(nova.number, nova.title, TURBO ? null : { inicio, evento: 'issues' });\n      if (TURBO) {\n        atualizarEstadoEntrega('resposta-local-solicitada');\n        emergenciaResponder(nova.number);\n      }\n    } catch (e) {\n      encerrarEstadoEntrega(estadoEntregaParaErro(e), '⚠️ entrega', mensagemErroSeguro(e));\n      avisarRascunhoPreservadoAposFalha();\n    } finally { $('btn-enviar').disabled = false; }\n    return;\n  }",
+      "novo": ""
+    },
+    {
+      "faixa": [
+        2650,
+        2653
+      ],
+      "esperado": "async function reabrirUltima() {\n  try { if (token && localStorage.getItem('rebocl_conv')) { await abrir(parseInt(localStorage.getItem('rebocl_conv'), 10), localStorage.getItem('rebocl_conv_titulo') || ''); } } catch (e) {}\n}",
+      "novo": ""
+    },
+    {
+      "faixa": [
+        3921,
+        3924
+      ],
+      "esperado": "\nsetTimeout(function () { try { if (token && localStorage.getItem('rebocl_conv') && !conversa) { reabrirUltima(); return; } } catch (e) {}\n  try { if (!token) { abrirConversa(); $('titulo-conv').textContent = '⚡ Direto'; bolha('bot', '📍 **modo direto** — escreva qualquer coisa aí embaixo e eu respondo AQUI mesmo, sem caderno, sem chave, sem nada. Pra falar com a casa inteira (status, acordar, exame), um dia instalamos sua chave — mas pra conversar, agora já vale.', new Date().toISOString(), '⚡'); rolarFim(); } } catch (e) {} }, 1200);",
+      "novo": ""
+    }
+  ],
+  "cauda": "</script>\n<script>\n(function(){try{\nvar p=new URLSearchParams(location.search);var tinhaToken=p.has('t');\nif(tinhaToken){p.delete('t');history.replaceState({},'',location.pathname);}\nvar aviso=function(){var b=document.createElement('div');b.setAttribute('role','status');b.setAttribute('aria-live','polite');b.style.cssText='position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:99999;background:#12351f;color:#b6f0c3;padding:16px 24px;border-radius:14px;font-size:16px;text-align:center;box-shadow:0 4px 18px #0008;font-family:sans-serif;pointer-events:none';\nb.textContent=tinhaToken?'🔐 Por segurança, links não ativam token. Abra ⚙️ Configurar acesso e cole-o no campo protegido deste navegador.':'🔐 Abra ⚙️ Configurar acesso para ativar seu token neste navegador.';document.body.appendChild(b);setTimeout(function(){b.remove();},15000);};\nif(document.body)aviso();else window.addEventListener('DOMContentLoaded',aviso);}catch(e){}})();\n</script></body>\n</html>\n"
 }
