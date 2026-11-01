@@ -1,0 +1,20 @@
+HTTP/2 200 
+date: Thu, 29 Oct 2026 10:50:59 GMT
+content-type: application/json
+content-length: 68969
+server: cloudflare
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+cache-control: public, max-age=60, s-maxage=120, stale-while-revalidate=300
+etag: "a908481e39ca6ce8dd62610cddc51bbb1394e41af32fa70b43c8e28942ffc770"
+access-control-expose-headers: X-Request-ID
+vary: Origin
+x-request-id: f6a54535e0b0455fa0b7ceddc23b158a
+access-control-allow-origin: *
+access-control-allow-methods: GET, OPTIONS
+access-control-allow-headers: If-None-Match, Content-Type
+access-control-max-age: 86400
+cf-cache-status: DYNAMIC
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=Q1ufwbOnXoQV3NHGYhVVWn1WHkTfPHud1rcGz9QjxG62%2FdZKNa95F0eMeJq5tcCS6bzSrARcO0LYioHP9K6%2BigR%2B60kc%2BWmolMQY6Ie0c9b4BVw0CW1IGFbGdHefKg%3D%3D"}]}
+cf-ray: a5219f559ae702e4-SEA
+alt-svc: h3=":443"; ma=86400
+

@@ -1,0 +1,3 @@
+fix: recupera textos abertos e torna a régua auditável
+
+Preserva blocos e listas úteis, respeita cooldown e prazo, registra checkpoints e mede as mesmas réguas com rastros e hashes. Corrige a mediana para amostras pares e mantém as execuções intermediárias e os limites factuais documentados.

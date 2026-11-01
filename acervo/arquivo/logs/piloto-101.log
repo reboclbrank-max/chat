@@ -1,0 +1,26 @@
+{
+  "iniciado": "2026-10-29T10:35:56.940Z",
+  "sha": "0a5bcf81aa5f8c04453dfd56f987aa68d1c1fa208d5569b7a74f050da5db6aee",
+  "q": "Explique em dois parágrafos como uma encomenda segue do remetente até o destinatário.",
+  "ms": 7746,
+  "saida": {
+    "texto": "Quando o remetente entrega a encomenda a uma transportadora, o pacote é registrado e etiquetado com um código de rastreamento. Em seguida, é levado a um centro de triagem regional, onde é classificado por destino e carregado em um caminhão ou avião. Durante o transporte, o código permite acompanhar cada etapa, desde a saída do centro de origem até a chegada ao centro de distribuição mais próximo do destinatário.\n\nNo último centro de triagem, a encomenda é separada para entrega final. Um motorista da transportadora ou de uma empresa terceirizada recolhe o pacote e segue a rota programada até o endereço indicado. Ao chegar ao destino, o destinatário recebe a encomenda, assinando ou confirmando a entrega conforme o serviço contratado. O rastreamento é encerrado com o status de entregue, completando assim o percurso do remetente ao destinatário.",
+    "rota": "lagunas",
+    "rotaNome": "Laguna-S-2.1 (Kilo)",
+    "classe": "forte",
+    "confianca": "nao_verificada",
+    "nota": 9,
+    "tentativas": 1,
+    "ms": 7732,
+    "cortado": false,
+    "candidatos": [
+      {
+        "rota": "lagunas",
+        "nota": 9,
+        "palavras": 137
+      }
+    ],
+    "verificacaoFactual": "nao_verificada",
+    "msParede": 7746
+  }
+}

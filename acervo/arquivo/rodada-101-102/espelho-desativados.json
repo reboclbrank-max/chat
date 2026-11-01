@@ -1,0 +1,82 @@
+[
+ {
+  "nome": "batente (coração dos motores)",
+  "id": 380651166,
+  "estado": "disabled_manually"
+ },
+ {
+  "nome": "bom-dia",
+  "id": 379864416,
+  "estado": "disabled_manually"
+ },
+ {
+  "nome": "caza-motores (HF router + OR free + Ollama nuvem)",
+  "id": 381607031,
+  "estado": "disabled_manually"
+ },
+ {
+  "nome": "checkup (saude dos motores — ideia da Assistente)",
+  "id": 381486654,
+  "estado": "disabled_manually"
+ },
+ {
+  "nome": "diario (boletim da manha no telegram)",
+  "id": 381584045,
+  "estado": "disabled_manually"
+ },
+ {
+  "nome": "espelho da memoria",
+  "id": 379864421,
+  "estado": "disabled_manually"
+ },
+ {
+  "nome": "inspire (turno autonomo diario)",
+  "id": 381486647,
+  "estado": "disabled_manually"
+ },
+ {
+  "nome": "melhoria-continua",
+  "id": 379864427,
+  "estado": "disabled_manually"
+ },
+ {
+  "nome": "oficina",
+  "id": 379864428,
+  "estado": "disabled_manually"
+ },
+ {
+  "nome": "piloto automatico",
+  "id": 379864429,
+  "estado": "disabled_manually"
+ },
+ {
+  "nome": "relatorio-semanal",
+  "id": 379864430,
+  "estado": "disabled_manually"
+ },
+ {
+  "nome": "Rotinas do Assistente (ele te procura)",
+  "id": 379864431,
+  "estado": "disabled_manually"
+ },
+ {
+  "nome": "Assistente Rebocl (vigia)",
+  "id": 379864432,
+  "estado": "disabled_manually"
+ },
+ {
+  "nome": "sonho (revisao noturna dela)",
+  "id": 381584036,
+  "estado": "disabled_manually"
+ },
+ {
+  "nome": "teste-tumblr (OAuth1 imortal · vigia diário)",
+  "id": 381507175,
+  "estado": "disabled_manually"
+ },
+ {
+  "nome": "varredura-motores",
+  "id": 379864440,
+  "estado": "disabled_manually"
+ }
+]

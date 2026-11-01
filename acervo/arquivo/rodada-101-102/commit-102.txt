@@ -1,0 +1,3 @@
+feat: fontes públicas opcionais e rota sem autorização removida
+
+Adiciona base local de trechos públicos com atribuição e aviso, sob opt-in; bloqueia host sem autorização escrita no chat, nas células e no DNA; reserva tempo por bloco. Publica a comparação pareada completa, inclusive o resultado desfavorável, e a auditoria de conteúdo de #16/#104.

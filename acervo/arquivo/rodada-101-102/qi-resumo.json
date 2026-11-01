@@ -1,0 +1,50 @@
+{
+ "dim": [
+  [
+   "Raciocínio em pergunta difícil (bateria de 18 itens)",
+   78.0,
+   0.3,
+   "14/18 acertos hoje; bateria fácil 29/29 (teto)"
+  ],
+  [
+   "Confiabilidade (não voltar vazio, não travar)",
+   83.3,
+   0.2,
+   "10/12 chamadas com texto (2 vazias na 1ª passada, refeitas ok); 59/60 runs OK"
+  ],
+  [
+   "Execução exata (conta, data, ferramenta)",
+   100.0,
+   0.12,
+   "12/12 testes novos + 3/3 itens; era 66,7% antes do conserto de hoje"
+  ],
+  [
+   "Verdade e calibração (não inventar, admitir)",
+   91.2,
+   0.12,
+   "calibração 3/3 (não inventou CPF, corrigiu premissa falsa) + 82,3% de completude de fato medida na rodada 108"
+  ],
+  [
+   "Cobertura (comandos, canais, ferramentas)",
+   90.0,
+   0.1,
+   "148 comandos na página, 40+ ferramentas locais, 20 rotas, visão 11/11, 3 canais"
+  ],
+  [
+   "Memória entre mensagens",
+   50.0,
+   0.08,
+   "motor tem memória semântica (visto no log); caminho web do roteador é de uma pergunta só"
+  ],
+  [
+   "Segurança e privacidade",
+   90.0,
+   0.08,
+   "17 suítes de privacidade/segurança, CSP testado, nenhuma chave no repositório"
+  ]
+ ],
+ "nota_total": 83.204,
+ "qi_total": 123.0,
+ "nota_alt": 83.58460000000001,
+ "qi_alt": 124.0
+}

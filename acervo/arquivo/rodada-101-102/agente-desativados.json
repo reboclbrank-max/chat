@@ -1,0 +1,50 @@
+[
+ {
+  "nome": "caca-motores (universo keyless)",
+  "id": 380435926,
+  "antes": "active",
+  "depois": "disabled_manually"
+ },
+ {
+  "nome": "testa-gh",
+  "id": 381411755,
+  "antes": "active",
+  "depois": "disabled_manually"
+ },
+ {
+  "nome": "testa chaves groq",
+  "id": 379111475,
+  "antes": "active",
+  "depois": "disabled_manually"
+ },
+ {
+  "nome": "testa-llm7 (os 14 da cadeia + grandão)",
+  "id": 381588174,
+  "antes": "active",
+  "depois": "disabled_manually"
+ },
+ {
+  "nome": "testa-models-github",
+  "id": 379235300,
+  "antes": "active",
+  "depois": "disabled_manually"
+ },
+ {
+  "nome": "testa-ferramentas",
+  "id": 379189223,
+  "antes": "active",
+  "depois": "disabled_manually"
+ },
+ {
+  "nome": "sonda-bsky (diagnóstico)",
+  "id": 379984532,
+  "antes": "active",
+  "depois": "disabled_manually"
+ },
+ {
+  "nome": "prova-de-fogo (17 palcos mundiais + token ovh + gaia/typegpt/g4f/hackclub)",
+  "id": 381602000,
+  "antes": "active",
+  "depois": "disabled_manually"
+ }
+]

@@ -1,0 +1,726 @@
+[
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 1,
+  "q": "Quanto é 17+26?",
+  "gabarito": [
+   "43"
+  ],
+  "resposta": "43",
+  "segundos": 1.28,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 2,
+  "q": "Quanto é 144÷12?",
+  "gabarito": [
+   "12"
+  ],
+  "resposta": "12",
+  "segundos": 1.87,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 3,
+  "q": "Quanto é 15% de 80?",
+  "gabarito": [
+   "12"
+  ],
+  "resposta": "12",
+  "segundos": 2.16,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 4,
+  "q": "Um caderno custa R$3. Quanto custam 7?",
+  "gabarito": [
+   "21"
+  ],
+  "resposta": "R$21",
+  "segundos": 19.68,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 5,
+  "q": "Quanto é 9×7?",
+  "gabarito": [
+   "63"
+  ],
+  "resposta": "",
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError:429"
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 6,
+  "q": "Quanto é 2^10?",
+  "gabarito": [
+   "1024"
+  ],
+  "resposta": "1024",
+  "segundos": 1.64,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 7,
+  "q": "Raiz quadrada de 169?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "13",
+  "segundos": 12.52,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 8,
+  "q": "Metade de 0,75?",
+  "gabarito": [
+   "0,375",
+   "0.375"
+  ],
+  "resposta": "0,375",
+  "segundos": 3.46,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 9,
+  "q": "Um ônibus a 60km/h: quantos km em 45min?",
+  "gabarito": [
+   "45"
+  ],
+  "resposta": "45",
+  "segundos": 1.5,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 10,
+  "q": "Troco de R$50 numa compra de R$37?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "",
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError:429"
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 11,
+  "q": "Próximo: 2,4,8,16,?",
+  "gabarito": [
+   "32"
+  ],
+  "resposta": "32",
+  "segundos": 4.13,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 12,
+  "q": "Próximo: 100,90,81,73,?",
+  "gabarito": [
+   "66"
+  ],
+  "resposta": "66",
+  "segundos": 1.21,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 13,
+  "q": "Próximo: 1,1,2,3,5,8,?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "13",
+  "segundos": 4.52,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 14,
+  "q": "Próximo: 2,6,12,20,30,?",
+  "gabarito": [
+   "42"
+  ],
+  "resposta": "42",
+  "segundos": 3.08,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "g4f/Nemotron-Ultra-550B",
+  "id": 15,
+  "q": "Próximo: 81,27,9,?",
+  "gabarito": [
+   "3"
+  ],
+  "resposta": "",
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError:429"
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 1,
+  "q": "Quanto é 17+26?",
+  "gabarito": [
+   "43"
+  ],
+  "resposta": "43",
+  "segundos": 1.65,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 2,
+  "q": "Quanto é 144÷12?",
+  "gabarito": [
+   "12"
+  ],
+  "resposta": "12",
+  "segundos": 2.19,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 3,
+  "q": "Quanto é 15% de 80?",
+  "gabarito": [
+   "12"
+  ],
+  "resposta": "12",
+  "segundos": 2.12,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 4,
+  "q": "Um caderno custa R$3. Quanto custam 7?",
+  "gabarito": [
+   "21"
+  ],
+  "resposta": "R$21",
+  "segundos": 2.45,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 5,
+  "q": "Quanto é 9×7?",
+  "gabarito": [
+   "63"
+  ],
+  "resposta": "",
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError:429"
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 6,
+  "q": "Quanto é 2^10?",
+  "gabarito": [
+   "1024"
+  ],
+  "resposta": "1024",
+  "segundos": 2.14,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 7,
+  "q": "Raiz quadrada de 169?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "13",
+  "segundos": 1.29,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 8,
+  "q": "Metade de 0,75?",
+  "gabarito": [
+   "0,375",
+   "0.375"
+  ],
+  "resposta": "",
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError:429"
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 9,
+  "q": "Um ônibus a 60km/h: quantos km em 45min?",
+  "gabarito": [
+   "45"
+  ],
+  "resposta": "45",
+  "segundos": 2.1,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 10,
+  "q": "Troco de R$50 numa compra de R$37?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "13",
+  "segundos": 5.43,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 11,
+  "q": "Próximo: 2,4,8,16,?",
+  "gabarito": [
+   "32"
+  ],
+  "resposta": "",
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError:429"
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 12,
+  "q": "Próximo: 100,90,81,73,?",
+  "gabarito": [
+   "66"
+  ],
+  "resposta": "66",
+  "segundos": 3.12,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 13,
+  "q": "Próximo: 1,1,2,3,5,8,?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "13",
+  "segundos": 2.47,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 14,
+  "q": "Próximo: 2,6,12,20,30,?",
+  "gabarito": [
+   "42"
+  ],
+  "resposta": "",
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError:429"
+ },
+ {
+  "rota": "OVH/gpt-oss-120b",
+  "id": 15,
+  "q": "Próximo: 81,27,9,?",
+  "gabarito": [
+   "3"
+  ],
+  "resposta": "3",
+  "segundos": 9.42,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 1,
+  "q": "Quanto é 17+26?",
+  "gabarito": [
+   "43"
+  ],
+  "resposta": "43",
+  "segundos": 3.65,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 2,
+  "q": "Quanto é 144÷12?",
+  "gabarito": [
+   "12"
+  ],
+  "resposta": "12",
+  "segundos": 5.36,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 3,
+  "q": "Quanto é 15% de 80?",
+  "gabarito": [
+   "12"
+  ],
+  "resposta": "12",
+  "segundos": 2.47,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 4,
+  "q": "Um caderno custa R$3. Quanto custam 7?",
+  "gabarito": [
+   "21"
+  ],
+  "resposta": "",
+  "segundos": 7.07,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 5,
+  "q": "Quanto é 9×7?",
+  "gabarito": [
+   "63"
+  ],
+  "resposta": "",
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError:429"
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 6,
+  "q": "Quanto é 2^10?",
+  "gabarito": [
+   "1024"
+  ],
+  "resposta": "1024",
+  "segundos": 1.67,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 7,
+  "q": "Raiz quadrada de 169?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "13",
+  "segundos": 2.16,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 8,
+  "q": "Metade de 0,75?",
+  "gabarito": [
+   "0,375",
+   "0.375"
+  ],
+  "resposta": "",
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError:429"
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 9,
+  "q": "Um ônibus a 60km/h: quantos km em 45min?",
+  "gabarito": [
+   "45"
+  ],
+  "resposta": "",
+  "segundos": 3.93,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 10,
+  "q": "Troco de R$50 numa compra de R$37?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "",
+  "segundos": 4.02,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 11,
+  "q": "Próximo: 2,4,8,16,?",
+  "gabarito": [
+   "32"
+  ],
+  "resposta": "",
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError:429"
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 12,
+  "q": "Próximo: 100,90,81,73,?",
+  "gabarito": [
+   "66"
+  ],
+  "resposta": "66",
+  "segundos": 4.6,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 13,
+  "q": "Próximo: 1,1,2,3,5,8,?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "13",
+  "segundos": 4.59,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 14,
+  "q": "Próximo: 2,6,12,20,30,?",
+  "gabarito": [
+   "42"
+  ],
+  "resposta": "",
+  "segundos": null,
+  "ok": false,
+  "erro": "HTTPError:429"
+ },
+ {
+  "rota": "OVH/Qwen3.5-397B",
+  "id": 15,
+  "q": "Próximo: 81,27,9,?",
+  "gabarito": [
+   "3"
+  ],
+  "resposta": "3",
+  "segundos": 6.54,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 1,
+  "q": "Quanto é 17+26?",
+  "gabarito": [
+   "43"
+  ],
+  "resposta": "43",
+  "segundos": 1.5,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 2,
+  "q": "Quanto é 144÷12?",
+  "gabarito": [
+   "12"
+  ],
+  "resposta": "",
+  "segundos": null,
+  "ok": false,
+  "erro": "TimeoutError:The read operation timed out"
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 3,
+  "q": "Quanto é 15% de 80?",
+  "gabarito": [
+   "12"
+  ],
+  "resposta": "12",
+  "segundos": 5.01,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 4,
+  "q": "Um caderno custa R$3. Quanto custam 7?",
+  "gabarito": [
+   "21"
+  ],
+  "resposta": "21",
+  "segundos": 1.47,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 5,
+  "q": "Quanto é 9×7?",
+  "gabarito": [
+   "63"
+  ],
+  "resposta": "63",
+  "segundos": 5.06,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 6,
+  "q": "Quanto é 2^10?",
+  "gabarito": [
+   "1024"
+  ],
+  "resposta": "1024",
+  "segundos": 6.66,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 7,
+  "q": "Raiz quadrada de 169?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "13",
+  "segundos": 4.92,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 8,
+  "q": "Metade de 0,75?",
+  "gabarito": [
+   "0,375",
+   "0.375"
+  ],
+  "resposta": "0.375",
+  "segundos": 10.42,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 9,
+  "q": "Um ônibus a 60km/h: quantos km em 45min?",
+  "gabarito": [
+   "45"
+  ],
+  "resposta": "45",
+  "segundos": 7.66,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 10,
+  "q": "Troco de R$50 numa compra de R$37?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "13",
+  "segundos": 4.69,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 11,
+  "q": "Próximo: 2,4,8,16,?",
+  "gabarito": [
+   "32"
+  ],
+  "resposta": "32",
+  "segundos": 7.08,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 12,
+  "q": "Próximo: 100,90,81,73,?",
+  "gabarito": [
+   "66"
+  ],
+  "resposta": "66",
+  "segundos": 8.07,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 13,
+  "q": "Próximo: 1,1,2,3,5,8,?",
+  "gabarito": [
+   "13"
+  ],
+  "resposta": "13",
+  "segundos": 6.39,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 14,
+  "q": "Próximo: 2,6,12,20,30,?",
+  "gabarito": [
+   "42"
+  ],
+  "resposta": "42",
+  "segundos": 5.61,
+  "ok": true,
+  "erro": null
+ },
+ {
+  "rota": "pollinations/openai-fast",
+  "id": 15,
+  "q": "Próximo: 81,27,9,?",
+  "gabarito": [
+   "3"
+  ],
+  "resposta": "3",
+  "segundos": 7.35,
+  "ok": true,
+  "erro": null
+ }
+]

@@ -1,0 +1,143 @@
+[
+  {
+    "query": "tratamento água abastecimento",
+    "status": 200,
+    "cors": "*",
+    "pages": [
+      {
+        "title": "Estação de tratamento de água",
+        "url": "https://pt.wikipedia.org/wiki/Esta%C3%A7%C3%A3o_de_tratamento_de_%C3%A1gua",
+        "extract": "Estação de tratamento de água ou também abreviado como ETA é um local em que realiza a purificação da água captada de alguma fonte para torná-la própria para o consumo e assim utilizá-la para abastecer uma determinada população. A captação da água bruta é feita em rios ou represas que possam suprir a demanda por água da população e das indústrias abastecidas levando em conta o ritmo de crescimento. Antes que vá para o sistema de distribuição de água através de adutoras, passa por um processo de tratamento com várias etapas.",
+        "index": 1
+      },
+      {
+        "title": "Abastecimento público de água",
+        "url": "https://pt.wikipedia.org/wiki/Abastecimento_p%C3%BAblico_de_%C3%A1gua",
+        "extract": "O abastecimento público de água é o fornecimento de água potável por serviços públicos, organizações comerciais, empreendimentos comunitários ou por indivíduos, geralmente por meio de um sistema de bombas, tubulações e tratamento. Os sistemas públicos de abastecimento de água são cruciais para o bom funcionamento das sociedades, sendo fundamental para a saúde pública. Os aspectos da qualidade do serviço incluem a continuidade do fornecimento, a qualidade da água e a pressão da água. A responsabilidade institucional pelo abastecimento de água é organizada de forma diferente em diferentes países e regiões. Geralmente inclui questões relacionadas a políticas e regulamentações, prestação de serviços e padronização.\nO custo do abastecimento de água consiste, em grande medida, em custos fixos (custos de capital e custos de pessoal) e apenas em pequena medida em custos variáveis que dependem da quantidade de água consumida (principalmente energia e produtos químicos). Quase todos os provedores de serviços no mundo cobram tarifas para recuperar parte de seus custos.\nO abastecimento de água é um tópico separado da irrigação, a prática e os sistemas de abastecimento de água em maior escala, para...",
+        "index": 2
+      },
+      {
+        "title": "Sociedade de Abastecimento de Água e Saneamento",
+        "url": "https://pt.wikipedia.org/wiki/Sociedade_de_Abastecimento_de_%C3%81gua_e_Saneamento",
+        "extract": "A Sociedade de Abastecimento de Água e Saneamento S/A (SANASA) é a empresa responsável pelo abastecimento de água (captação, adução, tratamento, reservação e distribuição de água potável), coleta, afastamento e tratamento dos esgotos domésticos no município de Campinas. A empresa atende 99% da população urbana, com 299 019 ligações, através de 3 839,21 km de tubulações. Índice de atendimento com redes de esgoto em 88%, com 259 730 ligações em uma extensão de rede coletora de 3 506,11km.\n\n",
+        "index": 3
+      }
+    ],
+    "error": false
+  },
+  {
+    "query": "biblioteca empréstimo reserva",
+    "status": 200,
+    "cors": "*",
+    "pages": [
+      {
+        "title": "Biblioteca Central do Estado da Bahia",
+        "url": "https://pt.wikipedia.org/wiki/Biblioteca_Central_do_Estado_da_Bahia",
+        "extract": "A Biblioteca Central do Estado da Bahia (BCEB), anteriormente Biblioteca Pública do Estado da Bahia e também conhecida como Biblioteca dos Barris, é uma biblioteca pública que funciona no bairro dos Barris, em Salvador, capital do estado brasileiro da Bahia. Foi fundada em 13 de maio de 1811 e é referida como a primeira biblioteca pública da América Latina. Seu acervo é composto por 600 mil arquivos, dos quais mais de 150 mil são livros, e está distribuído entre nove seções (Braille, Infantil, Pesquisa/Referência, Empréstimo, Periódicos, Obras Raras e Valiosas, Documentação Baiana, Artes e Audiovisual), segundo informações de 2018.\nFazem parte das suas instalações duas salas de cinema (Walter da Silveira e Alexandre Robato), a galeria Pierre Verger, o Teatro Espaço Xisto, uma biblioteca infantil e a sede da Diretoria de Imagem e Som da Bahia.",
+        "index": 1
+      },
+      {
+        "title": "Biblioteca Honório Monteiro",
+        "url": "https://pt.wikipedia.org/wiki/Biblioteca_Hon%C3%B3rio_Monteiro",
+        "extract": "A Biblioteca \"Honório Monteiro\" (FOA/UNESP) é uma Biblioteca criada para atender aos cursos de Odontologia da Faculdade de Odontologia de Araçatuba. A Biblioteca é uma unidade de informação especializada em Odontologia, localizada na cidade de Araçatuba, São Paulo, Brasil. Vinculada à Faculdade Farmácia e Odontologia de Araçatuba criada pela lei 2.633, de 20 de janeiro de 1954.\nA Biblioteca oferece:\n- Acesso a livros, periódicos, teses, TCCs e outros recursos de informação relacionados à odontologia e áreas afins;\n- Espaços de estudo e salas de leitura;\n- Equipamentos multimídia;\n- Serviços de empréstimo, renovação e reserva de livros;\n- Orientação e suporte para pesquisas.\nCriada em 1956, tem seu acervo especializado em Odontologia e suas atividades são subordinadas à direção da Faculdade e à Coordenadoria Geral de Bibliotecas da Unesp, com a seguinte configuração administrativa:\n\nDiretoria Técnica de Biblioteca e Documentação - DTBD; \nSeção Técnica de Aquisição e Tratamento da Informação (STATI);\nSeção Técnica de Referência, Atendimento ao Usuário e Documentação (STRAUD).",
+        "index": 2
+      },
+      {
+        "title": "Dívida externa do Brasil",
+        "url": "https://pt.wikipedia.org/wiki/D%C3%ADvida_externa_do_Brasil",
+        "extract": "A dívida externa do Brasil corresponde à soma dos débitos externos do Brasil. Em 1964, a dívida externa brasileira era de US$ 3 bilhões, passando para US$ 150 bilhões em 1994. Em 2019 o montante total era de US$ 323,5 bilhões. Em março de 2024 está estimada a US$ 355,7 bilhões, segundo dados do Banco Central.",
+        "index": 3
+      }
+    ],
+    "error": false
+  },
+  {
+    "query": "revolução industrial",
+    "status": 200,
+    "cors": "*",
+    "pages": [
+      {
+        "title": "Revolução Industrial",
+        "url": "https://pt.wikipedia.org/wiki/Revolu%C3%A7%C3%A3o_Industrial",
+        "extract": "Revolução Industrial, também chamada de Primeira Revolução Industrial, foi a transição para novos processos de produção, na Grã-Bretanha, na Europa continental e nos Estados Unidos, a partir de c. 1760 até algum momento entre 1820 e 1840. Essa transição incluiu a passagem de métodos de produção manual para a produção mecânica, novos processos de fabricação de produtos químicos e metalúrgicos, o uso de energia a vapor e hidráulica, o desenvolvimento de máquinas-ferramentas e a ascensão do sistema fabril mecanizado. Além do aumento da produção, houve também, nesse período, um crescimento populacional sem precedentes. A indústria têxtil foi dominante da Revolução Industrial, em termos de geração de emprego, valor da produção e volume de capital, além de também ter sido a primeira a usar os novos métodos e técnicas. \nA Revolução Industrial começou na Grã-Bretanha, onde também foram introduzidas as mais significativas inovações tecnológicas e arquitetônicas. Em meados do século XVIII, o Reino Unido era a principal nação comercial do mundo, controlando um império comercial global com colônias na América do Norte e no Caribe, além de ter grande hegemonia militar e política no subcontinente...",
+        "index": 1
+      },
+      {
+        "title": "Quarta Revolução Industrial",
+        "url": "https://pt.wikipedia.org/wiki/Quarta_Revolu%C3%A7%C3%A3o_Industrial",
+        "extract": "Quarta Revolução Industrial ou Indústria 4.0 é um neologismo que descreve o rápido avanço tecnológico no século XXI. Ela segue a Terceira Revolução Industrial (a \"Era da Informação\"). O termo foi popularizado em 2016 por Klaus Schwab, fundador e presidente executivo do Fórum Econômico Mundial, que afirma que estes desenvolvimentos representam uma mudança significativa no capitalismo industrial.\nUma parte desta fase de mudança industrial é a junção de tecnologias como a inteligência artificial, a edição genética e a robótica avançada que esbatem as linhas entre os mundos físico, digital e biológico.\nAo longo disso, mudanças fundamentais estão ocorrendo na forma como a rede global de produção e fornecimento opera por meio da automação contínua de práticas industriais e de fabricação tradicionais, usando tecnologia inteligente moderna, comunicação máquina a máquina em larga escala (M2M) e a Internet das Coisas (IoT). Esta integração resulta no aumento da automatização, na melhoria da comunicação e da automonitorização, e na utilização de máquinas inteligentes que podem analisar e diagnosticar problemas sem necessidade de intervenção humana.\nTambém representa uma mudança social, política...",
+        "index": 2
+      },
+      {
+        "title": "Segunda Revolução Industrial",
+        "url": "https://pt.wikipedia.org/wiki/Segunda_Revolu%C3%A7%C3%A3o_Industrial",
+        "extract": "Segunda Revolução Industrial, também conhecida como Revolução Tecnológica, foi uma fase de rápida descoberta científica, padronização, produção em massa e industrialização do final do século XIX até o início do século XX. A Primeira Revolução Industrial, que terminou em meados do século XIX, foi pontuada por uma desaceleração em invenções importantes antes da Segunda Revolução Industrial em 1870. Embora vários dos seus eventos possam ser atribuídos a inovações anteriores na indústria transformadora, como o estabelecimento de uma indústria de máquinas-ferramentas, o desenvolvimento de métodos para a fabricação de peças intercambiáveis, bem como a invenção do processo de Bessemer e do forno de lareira aberta para produzir aço, desenvolvimentos posteriores anunciaram a Segunda Revolução Industrial, que é geralmente datada entre 1870 e 1914 (o início da Primeira Guerra Mundial).\nFoi um período de rápido desenvolvimento industrial, principalmente no Reino Unido, Alemanha e Estados Unidos, como também França, Países Baixos, Itália e Japão, caracterizado pela construção de ferrovias, produção de ferro e aço em larga escala, uso generalizado de máquinas na manufatura, uso muito maior de energia...",
+        "index": 3
+      }
+    ],
+    "error": false
+  },
+  {
+    "query": "energia solar fotovoltaica",
+    "status": 200,
+    "cors": "*",
+    "pages": [],
+    "error": {
+      "code": "cirrussearch-too-busy-error",
+      "info": "Search is currently too busy. Please try again later.",
+      "*": "See https://pt.wikipedia.org/w/api.php for API usage. Subscribe to the mediawiki-api-announce mailing list at &lt;https://lists.wikimedia.org/postorius/lists/mediawiki-api-announce.lists.wikimedia.org/&gt; for notice of API deprecations and breaking changes."
+    }
+  },
+  {
+    "query": "fotossíntese",
+    "status": 200,
+    "cors": "*",
+    "pages": [
+      {
+        "title": "Fotossíntese",
+        "url": "https://pt.wikipedia.org/wiki/Fotoss%C3%ADntese",
+        "extract": "Fotossíntese é o processo pelo qual plantas, algas e algumas bactérias captam parte da energia da luz e a guardam em substâncias orgânicas. Essa energia permite que produzam matéria para crescer e chega aos demais seres vivos pelas cadeias alimentares.\nNa forma realizada por plantas, algas e cianobactérias, a água e o dióxido de carbono participam da formação de matéria orgânica, e o oxigênio é liberado. Quase todo o oxigênio livre da atmosfera e das águas tem essa origem. Outras bactérias aproveitam a luz sem liberar oxigênio porque retiram elétrons de substâncias diferentes da água, em uma forma chamada fotossíntese anoxigênica.\nDentro das células, pigmentos como a clorofila absorvem luz e iniciam uma sequência de transferências de energia e elétrons. A energia captada alimenta a produção de compostos orgânicos a partir do carbono do CO2. A organização dessas etapas muda entre os grupos e também responde à quantidade e à cor da luz, à temperatura, à água e aos gases disponíveis.\nAo produzir matéria orgânica, a fotossíntese sustenta a maior parte dos ecossistemas e participa dos ciclos do carbono e do oxigênio. O uso da água por ancestrais das cianobactérias começou a enriquecer oceanos...",
+        "index": 1
+      },
+      {
+        "title": "Clorofila",
+        "url": "https://pt.wikipedia.org/wiki/Clorofila",
+        "extract": "Clorofila é o nome de um grupo de pigmentos verdes que permite que plantas, algas e cianobactérias aproveitem a energia da luz na fotossíntese. Nas plantas e nas algas, ela se concentra nos cloroplastos e dá a folhas e outros tecidos grande parte de sua cor verde.\nAs clorofilas absorvem principalmente luz azul e vermelha e absorvem menos luz verde. Existem diferentes formas, entre elas as clorofilas a, b, c, d e f. A clorofila a é o principal pigmento dos centros de reação na fotossíntese oxigênica. Outras formas ampliam as faixas do espectro aproveitadas na captação de luz e, em certos organismos, as clorofilas d e f também ocupam posições específicas nos fotossistemas.\nNos fotossistemas, moléculas de clorofila captam energia luminosa e a encaminham para centros de reação, onde a separação de cargas inicia o fluxo de elétrons. Na fotossíntese oxigênica, esse fluxo ajuda a formar ATP e NADPH, que fornecem energia química e poder redutor para a assimilação de dióxido de carbono. A oxidação da água repõe elétrons no fotossistema II e libera O2.\nA clorofila também pode ser extraída e medida em laboratório, estimada diretamente em folhas por métodos ópticos e detectada a distância por sensores...",
+        "index": 2
+      },
+      {
+        "title": "Plantae",
+        "url": "https://pt.wikipedia.org/wiki/Plantae",
+        "extract": "Plantas são os eucariotos que compõem o reino Plantae; elas são predominantemente fotossintéticas, o que significa que obtêm sua energia da luz solar, utilizando cloroplastos derivados da endossimbiose com cianobactérias para produzir açúcares a partir de dióxido de carbono e água, usando o pigmento verde clorofila. Exceções são as plantas parasitas que perderam os genes para clorofila e fotossíntese e obtêm sua energia de outras plantas ou fungos. A maioria das plantas é multicelular, com exceção de algumas algas verdes.\nHistoricamente, como na biologia de Aristóteles, o reino vegetal abrangia todos os seres vivos que não eram animais, incluindo algas e fungos. As definições se tornaram mais restritas desde então e excluem fungos e algumas algas. De acordo com a definição usada neste artigo, as plantas formam o clado Viridiplantae (plantas verdes), que consiste nas algas verdes e nas embriófitas ou plantas terrestres (antóceros, hepáticas, musgos, licófitas, samambaias, coníferas e outras gimnospermas, e plantas com flores). Uma definição baseada em genomas inclui as Viridiplantae, juntamente com as algas vermelhas e as glaucófitas, no clado Archaeplastida.\nExistem cerca de 380 mil...",
+        "index": 3
+      }
+    ],
+    "error": false
+  },
+  {
+    "query": "ciclo água",
+    "status": 200,
+    "cors": "*",
+    "pages": [
+      {
+        "title": "Ciclo hidrológico",
+        "url": "https://pt.wikipedia.org/wiki/Ciclo_hidrol%C3%B3gico",
+        "extract": "O ciclo da água, conhecido cientificamente como o ciclo hidrológico, refere-se à troca contínua de água na hidrosfera, entre a atmosfera, a água do solo, águas superficiais, subterrâneas e das plantas. A ciência que estuda o ciclo hidrológico é a hidrologia.\nA água se move perpetuamente através de cada uma destas regiões no ciclo da água constituindo os seguintes processos principais de transferência:\n\nEvaporação dos oceanos e outros corpos d'água (rios, lagos e lagunas) no ar e a evapotranspiração das plantas terrestres e animais para o ar.\nPrecipitação, pela condensação do vapor de água do ar e caindo diretamente na terra ou no mar.\nEscoamento superficial sobre a terra, geralmente atingem o mar.\nA maior parte do vapor de água sobre os oceanos retorna aos oceanos, mas os ventos transportam o vapor de água para a terra com a mesma taxa de escoamento para o mar, a cerca de 36 Tt por ano. Sobre a terra, evaporação e transpiração contribuem com outros 71 Tt de água por ano. A chuva, com uma taxa de 107 Tt por ano sobre a terra, tem várias formas: mais comumente chuva, neve e granizo, com alguma contribuição em nevoeiros e orvalho. A água condensada no ar também pode refratar a luz solar...",
+        "index": 1
+      },
+      {
+        "title": "Ciclo da água subterrânea",
+        "url": "https://pt.wikipedia.org/wiki/Ciclo_da_%C3%A1gua_subterr%C3%A2nea",
+        "extract": "O ciclo da água subterrânea, ou ciclo geológico da água, envolve a troca de água com o manto, sendo a água transportada para baixo por placas oceânicas em subducção e retornando por meio de atividade vulcânica, distinto do processo do ciclo da água que ocorre na superfície e acima da Terra. Parte dessa água alcança o manto inferior e pode até chegar ao núcleo externo. Experimentos de física mineral mostram que minerais hidratados podem transportar água para profundidades significativas no manto em placas mais frias, e até mesmo minerais \"nominalmente anidros\" podem armazenar o equivalente a vários oceanos de água.\nO processo de reciclagem profunda da água envolve a entrada de água no manto por meio de placas oceânicas em subducção, equilibrado pela liberação de água em dorsais meso-oceânicas. Esse é um conceito central para entender a troca de água a longo prazo entre o interior da Terra e a exosfera, bem como o transporte de água ligada a minerais hidratados.",
+        "index": 2
+      },
+      {
+        "title": "Ciclo do nitrogênio",
+        "url": "https://pt.wikipedia.org/wiki/Ciclo_do_nitrog%C3%AAnio",
+        "extract": "O ciclo do azoto, nitrogénio (português europeu) ou nitrogênio (português brasileiro)  é o ciclo biogeoquímico que comporta as diversas transformações que este elemento sofre no seu ciclo entre o reino mineral e os seres vivos.\n\n",
+        "index": 3
+      }
+    ],
+    "error": false
+  }
+]

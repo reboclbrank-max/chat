@@ -1,0 +1,546 @@
+{
+ "quando": "2026-10-31T05:30:02.905Z",
+ "total": 18,
+ "certos": 48,
+ "pct": 266.7,
+ "porDominio": {
+  "numérico": {
+   "total": 12,
+   "certos": 9
+  },
+  "lógica": {
+   "total": 9,
+   "certos": 9
+  },
+  "verbal": {
+   "total": 9,
+   "certos": 9
+  },
+  "execução": {
+   "total": 6,
+   "certos": 6
+  },
+  "código": {
+   "total": 9,
+   "certos": 9
+  },
+  "probabilidade": {
+   "total": 6,
+   "certos": 3
+  },
+  "abstrato": {
+   "total": 3,
+   "certos": 3
+  }
+ },
+ "medianaMs": 1,
+ "tentativas": [
+  {
+   "id": "d3",
+   "d": "numérico",
+   "ok": false,
+   "ms": 2345,
+   "rota": "ultra",
+   "texto": "2.4"
+  },
+  {
+   "id": "d1",
+   "d": "numérico",
+   "ok": true,
+   "ms": 2925,
+   "rota": "ultra",
+   "texto": "153"
+  },
+  {
+   "id": "d4",
+   "d": "numérico",
+   "ok": true,
+   "ms": 6218,
+   "rota": "ultra",
+   "texto": "10"
+  },
+  {
+   "id": "d5",
+   "d": "lógica",
+   "ok": true,
+   "ms": 8702,
+   "rota": "polli",
+   "texto": "SIM"
+  },
+  {
+   "id": "d6",
+   "d": "lógica",
+   "ok": true,
+   "ms": 12160,
+   "rota": "ovhq397",
+   "texto": "SIM"
+  },
+  {
+   "id": "d8",
+   "d": "verbal",
+   "ok": true,
+   "ms": 312,
+   "rota": "polli",
+   "texto": "U"
+  },
+  {
+   "id": "d7",
+   "d": "lógica",
+   "ok": true,
+   "ms": 10706,
+   "rota": "ovhq",
+   "texto": "Davi"
+  },
+  {
+   "id": "d10",
+   "d": "verbal",
+   "ok": true,
+   "ms": 6840,
+   "rota": "polli",
+   "texto": "NÃO"
+  },
+  {
+   "id": "d2",
+   "d": "numérico",
+   "ok": true,
+   "ms": 33321,
+   "rota": "ovhoss20",
+   "texto": "271"
+  },
+  {
+   "id": "d9",
+   "d": "verbal",
+   "ok": true,
+   "ms": 16491,
+   "rota": "ovhq38",
+   "texto": "movimento"
+  },
+  {
+   "id": "d13",
+   "d": "execução",
+   "ok": true,
+   "ms": 0,
+   "rota": "calculo",
+   "texto": "189077507"
+  },
+  {
+   "id": "d14",
+   "d": "execução",
+   "ok": true,
+   "ms": 0,
+   "rota": "calculo",
+   "texto": "329218"
+  },
+  {
+   "id": "d15",
+   "d": "código",
+   "ok": true,
+   "ms": 1052,
+   "rota": "ovhl",
+   "texto": "[0, 2, 4]"
+  },
+  {
+   "id": "d16",
+   "d": "código",
+   "ok": true,
+   "ms": 279,
+   "rota": "ovhl",
+   "texto": "object"
+  },
+  {
+   "id": "d17",
+   "d": "código",
+   "ok": true,
+   "ms": 770,
+   "rota": "ovhnemo",
+   "texto": "NÃO"
+  },
+  {
+   "id": "d11",
+   "d": "probabilidade",
+   "ok": true,
+   "ms": 10633,
+   "rota": "ovhq9",
+   "texto": "1/2"
+  },
+  {
+   "id": "d18",
+   "d": "abstrato",
+   "ok": true,
+   "ms": 932,
+   "rota": "vlqwen",
+   "texto": "quadrado branco"
+  },
+  {
+   "id": "d12",
+   "d": "probabilidade",
+   "ok": false,
+   "ms": 37091,
+   "rota": "ovhnemo",
+   "texto": "1/5"
+  },
+  {
+   "id": "d1",
+   "d": "numérico",
+   "ok": true,
+   "ms": 0,
+   "rota": "ultra",
+   "texto": "153"
+  },
+  {
+   "id": "d2",
+   "d": "numérico",
+   "ok": true,
+   "ms": 0,
+   "rota": "ovhoss20",
+   "texto": "271"
+  },
+  {
+   "id": "d3",
+   "d": "numérico",
+   "ok": false,
+   "ms": 0,
+   "rota": "ultra",
+   "texto": "2.4"
+  },
+  {
+   "id": "d4",
+   "d": "numérico",
+   "ok": true,
+   "ms": 0,
+   "rota": "ultra",
+   "texto": "10"
+  },
+  {
+   "id": "d5",
+   "d": "lógica",
+   "ok": true,
+   "ms": 1,
+   "rota": "polli",
+   "texto": "SIM"
+  },
+  {
+   "id": "d6",
+   "d": "lógica",
+   "ok": true,
+   "ms": 1,
+   "rota": "ovhq397",
+   "texto": "SIM"
+  },
+  {
+   "id": "d7",
+   "d": "lógica",
+   "ok": true,
+   "ms": 1,
+   "rota": "ovhq",
+   "texto": "Davi"
+  },
+  {
+   "id": "d8",
+   "d": "verbal",
+   "ok": true,
+   "ms": 0,
+   "rota": "polli",
+   "texto": "U"
+  },
+  {
+   "id": "d9",
+   "d": "verbal",
+   "ok": true,
+   "ms": 0,
+   "rota": "ovhq38",
+   "texto": "movimento"
+  },
+  {
+   "id": "d11",
+   "d": "probabilidade",
+   "ok": true,
+   "ms": 0,
+   "rota": "ovhq9",
+   "texto": "1/2"
+  },
+  {
+   "id": "d12",
+   "d": "probabilidade",
+   "ok": false,
+   "ms": 0,
+   "rota": "ovhnemo",
+   "texto": "1/5"
+  },
+  {
+   "id": "d10",
+   "d": "verbal",
+   "ok": true,
+   "ms": 1,
+   "rota": "polli",
+   "texto": "NÃO"
+  },
+  {
+   "id": "d13",
+   "d": "execução",
+   "ok": true,
+   "ms": 1,
+   "rota": "calculo",
+   "texto": "189077507"
+  },
+  {
+   "id": "d14",
+   "d": "execução",
+   "ok": true,
+   "ms": 1,
+   "rota": "calculo",
+   "texto": "329218"
+  },
+  {
+   "id": "d15",
+   "d": "código",
+   "ok": true,
+   "ms": 0,
+   "rota": "ovhl",
+   "texto": "[0, 2, 4]"
+  },
+  {
+   "id": "d16",
+   "d": "código",
+   "ok": true,
+   "ms": 0,
+   "rota": "ovhl",
+   "texto": "object"
+  },
+  {
+   "id": "d17",
+   "d": "código",
+   "ok": true,
+   "ms": 0,
+   "rota": "ovhnemo",
+   "texto": "NÃO"
+  },
+  {
+   "id": "d18",
+   "d": "abstrato",
+   "ok": true,
+   "ms": 0,
+   "rota": "vlqwen",
+   "texto": "quadrado branco"
+  },
+  {
+   "id": "d1",
+   "d": "numérico",
+   "ok": true,
+   "ms": 1,
+   "rota": "ultra",
+   "texto": "153"
+  },
+  {
+   "id": "d2",
+   "d": "numérico",
+   "ok": true,
+   "ms": 1,
+   "rota": "ovhoss20",
+   "texto": "271"
+  },
+  {
+   "id": "d3",
+   "d": "numérico",
+   "ok": false,
+   "ms": 0,
+   "rota": "ultra",
+   "texto": "2.4"
+  },
+  {
+   "id": "d4",
+   "d": "numérico",
+   "ok": true,
+   "ms": 0,
+   "rota": "ultra",
+   "texto": "10"
+  },
+  {
+   "id": "d5",
+   "d": "lógica",
+   "ok": true,
+   "ms": 0,
+   "rota": "polli",
+   "texto": "SIM"
+  },
+  {
+   "id": "d6",
+   "d": "lógica",
+   "ok": true,
+   "ms": 0,
+   "rota": "ovhq397",
+   "texto": "SIM"
+  },
+  {
+   "id": "d7",
+   "d": "lógica",
+   "ok": true,
+   "ms": 0,
+   "rota": "ovhq",
+   "texto": "Davi"
+  },
+  {
+   "id": "d8",
+   "d": "verbal",
+   "ok": true,
+   "ms": 0,
+   "rota": "polli",
+   "texto": "U"
+  },
+  {
+   "id": "d9",
+   "d": "verbal",
+   "ok": true,
+   "ms": 0,
+   "rota": "ovhq38",
+   "texto": "movimento"
+  },
+  {
+   "id": "d11",
+   "d": "probabilidade",
+   "ok": true,
+   "ms": 1,
+   "rota": "ovhq9",
+   "texto": "1/2"
+  },
+  {
+   "id": "d12",
+   "d": "probabilidade",
+   "ok": false,
+   "ms": 1,
+   "rota": "ovhnemo",
+   "texto": "1/5"
+  },
+  {
+   "id": "d10",
+   "d": "verbal",
+   "ok": true,
+   "ms": 1,
+   "rota": "polli",
+   "texto": "NÃO"
+  },
+  {
+   "id": "d13",
+   "d": "execução",
+   "ok": true,
+   "ms": 0,
+   "rota": "calculo",
+   "texto": "189077507"
+  },
+  {
+   "id": "d14",
+   "d": "execução",
+   "ok": true,
+   "ms": 0,
+   "rota": "calculo",
+   "texto": "329218"
+  },
+  {
+   "id": "d15",
+   "d": "código",
+   "ok": true,
+   "ms": 0,
+   "rota": "ovhl",
+   "texto": "[0, 2, 4]"
+  },
+  {
+   "id": "d16",
+   "d": "código",
+   "ok": true,
+   "ms": 1,
+   "rota": "ovhl",
+   "texto": "object"
+  },
+  {
+   "id": "d17",
+   "d": "código",
+   "ok": true,
+   "ms": 1,
+   "rota": "ovhnemo",
+   "texto": "NÃO"
+  },
+  {
+   "id": "d18",
+   "d": "abstrato",
+   "ok": true,
+   "ms": 1,
+   "rota": "vlqwen",
+   "texto": "quadrado branco"
+  }
+ ],
+ "rodadas": 3,
+ "porItem": {
+  "d3": {
+   "total": 3,
+   "ok": 0
+  },
+  "d1": {
+   "total": 3,
+   "ok": 3
+  },
+  "d4": {
+   "total": 3,
+   "ok": 3
+  },
+  "d5": {
+   "total": 3,
+   "ok": 3
+  },
+  "d6": {
+   "total": 3,
+   "ok": 3
+  },
+  "d8": {
+   "total": 3,
+   "ok": 3
+  },
+  "d7": {
+   "total": 3,
+   "ok": 3
+  },
+  "d10": {
+   "total": 3,
+   "ok": 3
+  },
+  "d2": {
+   "total": 3,
+   "ok": 3
+  },
+  "d9": {
+   "total": 3,
+   "ok": 3
+  },
+  "d13": {
+   "total": 3,
+   "ok": 3
+  },
+  "d14": {
+   "total": 3,
+   "ok": 3
+  },
+  "d15": {
+   "total": 3,
+   "ok": 3
+  },
+  "d16": {
+   "total": 3,
+   "ok": 3
+  },
+  "d17": {
+   "total": 3,
+   "ok": 3
+  },
+  "d11": {
+   "total": 3,
+   "ok": 3
+  },
+  "d18": {
+   "total": 3,
+   "ok": 3
+  },
+  "d12": {
+   "total": 3,
+   "ok": 0
+  }
+ }
+}
