@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-11-02T19:13:37.141Z",
+ "verificado_em": "2026-11-02T19:25:17.642Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -26,9 +26,10 @@
    "evidencia": "turno-ativo"
   },
   "Bateria do cérebro": {
-   "ok": false,
-   "falhas": 1,
-   "causa": "bateria-atrasada"
+   "ok": true,
+   "falhas": 0,
+   "causa": "saudavel",
+   "evidencia": "bateria-recem-executada"
   },
   "itch Ceifalume": {
    "ok": true,
@@ -47,11 +48,6 @@
    "falhas": 0,
    "causa": "saudavel",
    "evidencia": "caixa-sem-pendencia"
-  }
- },
- "recuperacoes": {
-  "exame": {
-   "ultima_tentativa_em": "2026-11-02T19:13:37.141Z"
   }
  }
 }
