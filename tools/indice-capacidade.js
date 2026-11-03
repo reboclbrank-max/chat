@@ -175,6 +175,12 @@ function avaliar(entrada = {}) {
   return {
     esquema: 'placar-capacidade-v2',
     gerado_em: referencia,
+    evidencia: { fonte_estado: 'estado/operacional', tipo: 'cobertura_estrutural_e_amostras',
+      autonomia_universal: false, entrega_ponta_a_ponta: 'nao_medida_por_este_indicador',
+      vigia_observado_em: vigia.verificado_em || null,
+      qualidade_observada_em: rastreavel.recente || null,
+      vigia_vigente: frescor(vigia.verificado_em, 90, Date.parse(referencia)),
+      qualidade_vigente: rastreavel.valida },
     aviso: 'Indicador interno de cobertura; não é resultado observável do produto, não é teste de QI, consciência nem garantia de disponibilidade.',
     total_em_100: total,
     canal_real: Object.assign({}, estadoCanal, {
@@ -207,6 +213,9 @@ function markdown(placar) {
   const linhas = [
     '# Placar de capacidade do Chat', '',
     `Atualizado: \`${placar.gerado_em}\``, '',
+    'Fonte operacional: `estado/operacional`; cópias em `main` podem ser históricas.',
+    'Esta nota combina cobertura estrutural e amostras; não mede entrega ponta a ponta nem autonomia universal.',
+    `Vigia observado: ${(placar.evidencia || {}).vigia_observado_em || 'não observado'}; qualidade observada: ${(placar.evidencia || {}).qualidade_observada_em || 'não observada'}.`, '',
     `**Indicador interno: ${placar.total_em_100}/100.** ${placar.aviso}`,
     `**Estado do canal real (tráfego controlado):** ${(placar.canal_real || {}).texto || 'sem informação'}.`, '',
     '| Dimensão | Pontos | Evidência |', '|---|---:|---|'
@@ -233,3 +242,4 @@ function salvar() {
 
 if (require.main === module) salvar();
 module.exports = { bateria, frescor, qualidadeRastreavel, resultadosCanalReal, resultadoCanalReal, resultadoFotoControlado, estadoCanalReal, avaliar, markdown, salvar };
+
