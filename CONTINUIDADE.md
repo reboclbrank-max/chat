@@ -1704,3 +1704,10 @@ A interface consultava o workflow privado agente/chat.yml para inferir falha de 
 - A CI verifica sintaxe das três fontes JavaScript centrais. No runner, ausência de Chromium passou de **SKIP com conclusão verde** a erro explícito; a execução local continua podendo relatar ausência de navegador como limite, sem fingir que a prova ocorreu. Contratos de continuidade e navegador cobram essa guarda.
 - **Validação exigida antes de promover:** PR protegida, testes rápidos e navegador reais verdes, revisão do diff e ausência de segredos. Sem check verde ou sem revisão humana exigida pela proteção, não promover a `main`.
 - **Limites:** isto melhora a cobertura de alterações e impede aprovação visual falsa no CI; não demonstra zero bugs, SLA, entrega de e-mail, funcionamento ininterrupto, inteligência geral, segurança certificada ou autonomia universal. A PR de dependências #70 permanece separada e não é mesclada automaticamente.
+
+
+## 2026-11-03 — transporte HTTP fixado e evidência operacional explícita
+
+Pedido do dono: implementar as melhorias identificadas na auditoria. O navegador público passa a conectar ao IP público validado por lookup fixo, preservando Host/SNI, revalidando redirecionamentos e encerrando corpos recusados. Não usa uma segunda resolução DNS livre no pré-fetch/fallback. Não muda autenticação, canais, permissões, rede privada ou crons. O placar preserva a série histórica e os pesos, mas informa a origem estado/operacional, a data de cada sinal e a distinção entre cobertura, entrega e autonomia.
+
+Validação local: nove contratos anteriores do navegador e regressão de transporte simulado sem rede, treze contratos anteriores do placar e regressão de procedência/validade, sintaxe e diff. A barreira completa e o navegador controlado são exigidos na PR antes da promoção. Nenhum tráfego real de canal ou modelo foi criado como prova. Rollback: reverter o conjunto por PR; não apagar estado operacional. A cópia 100/100 em main é histórica: o ramo operacional consultado em03/11 tinha98/100 e dados atualizados, o que também não prova autonomia universal. Correção da interpretação da auditoria registrada na Base.

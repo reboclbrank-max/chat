@@ -35,3 +35,37 @@ ok('Chrome fica preso ao IP público aprovado e bloqueia outros hosts', () => {
   assert.throws(() => nav.regraResolverChrome('https://example.com/', ['2001:db8::1']));
 });
 console.log(`${n}/9 testes do navegador público passaram`);
+
+
+// Transporte e DNS simulados: nenhum acesso à rede interna ou externa.
+(async () => {
+  const dns = require('dns').promises, https = require('https');
+  const { PassThrough } = require('stream'), { EventEmitter } = require('events');
+  const oldDns = dns.lookup, oldRequest = https.request;
+  let resolucoes = 0, pedidos = 0;
+  dns.lookup = async () => { resolucoes++; return [{ address: '93.184.216.34', family: 4 }]; };
+  https.request = (u, options, cb) => {
+    pedidos++;
+    assert.equal(options.agent, false);
+    assert.equal(u.hostname, 'example.com');
+    options.lookup('example.com', { all: true }, (err, ips) => {
+      assert.ifError(err); assert.deepEqual(ips, [{ address: '93.184.216.34', family: 4 }]);
+    });
+    const req = new EventEmitter();
+    req.destroy = e => req.emit('error', e);
+    req.end = () => {
+      const res = new PassThrough(); res.statusCode = 200; res.headers = {};
+      cb(res); res.end('<title>Fixture</title><p>texto público</p>');
+    };
+    return req;
+  };
+  try {
+    const r = await nav.abreComFetch('https://example.com/');
+    assert.equal(r.titulo, 'Fixture'); assert.equal(resolucoes, 1); assert.equal(pedidos, 1);
+    assert.throws(() => nav.lookupFixado('example.com', ['127.0.0.1']));
+    nav.lookupFixado('example.com', ['93.184.216.34'])('outro.example', {}, err => assert(err));
+    dns.lookup = async () => [{ address: '127.0.0.1', family: 4 }];
+    await assert.rejects(nav.abreComFetch('https://example.com/')); assert.equal(pedidos, 1);
+    console.log('✔ conexão usa IP aprovado, preserva host e bloqueia DNS privado antes do transporte');
+  } finally { dns.lookup = oldDns; https.request = oldRequest; }
+})().catch(e => { console.error(e); process.exitCode = 1; });
