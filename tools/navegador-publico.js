@@ -3,6 +3,10 @@
 // paywall, CAPTCHA, rede interna ou qualquer área privada.
 'use strict';
 const dns = require('dns').promises;
+const http = require('http');
+const https = require('https');
+const { Readable } = require('stream');
+const net = require('net');
 const { spawnSync } = require('child_process');
 
 const MAX_HTML = 900000;
@@ -70,7 +74,10 @@ function tituloHtml(html) {
 
 async function corpoLimitado(resposta, maximo = MAX_HTML) {
   const declarado = Number(resposta.headers.get('content-length') || 0);
-  if (Number.isFinite(declarado) && declarado > maximo) throw new Error('página pública grande demais para leitura segura');
+  if (Number.isFinite(declarado) && declarado > maximo) {
+    if (resposta.body) await resposta.body.cancel();
+    throw new Error('página pública grande demais para leitura segura');
+  }
   if (!resposta.body) return '';
   const leitor = resposta.body.getReader();
   const partes = [];
@@ -120,19 +127,55 @@ function abreComChrome(url, ips) {
   return { via: 'chrome', titulo: tituloHtml(html), texto: tiraHtml(html).slice(0, MAX_TEXTO) };
 }
 
+function lookupFixado(host, ips) {
+  const aprovados = ips.filter(ip => net.isIP(ip) && !ipPrivado(ip));
+  if (!aprovados.length || aprovados.length !== ips.length) throw new Error('IP público não confirmado');
+  const address = aprovados[0], family = net.isIP(address);
+  return (hostname, options, callback) => {
+    if (hostname !== host) return callback(new Error('host fora da validação'));
+    if (options && options.all) return callback(null, [{ address, family }]);
+    callback(null, address, family);
+  };
+}
+
+function fetchPublicoFixado(u, ips) {
+  // Preserva hostname/Host/SNI, mas nunca resolve DNS novamente na conexão.
+  const lookup = lookupFixado(u.hostname.replace(/^\[|\]$/g, ''), ips);
+  const transporte = u.protocol === 'https:' ? https : http;
+  return new Promise((resolve, reject) => {
+    let timer;
+    const req = transporte.request(u, {
+      method: 'GET', agent: false, lookup,
+      headers: { 'User-Agent': AGENTE, Accept: 'text/html,application/xhtml+xml,text/plain;q=0.8,*/*;q=0.1' }
+    }, res => {
+      res.once('close', () => clearTimeout(timer));
+      const headers = new Headers();
+      for (const [nome, valor] of Object.entries(res.headers)) {
+        if (valor !== undefined) headers.set(nome, Array.isArray(valor) ? valor.join(', ') : String(valor));
+      }
+      resolve({ status: res.statusCode, ok: res.statusCode >= 200 && res.statusCode < 300,
+        headers, body: Readable.toWeb(res) });
+    });
+    req.once('error', e => { clearTimeout(timer); reject(e); });
+    timer = setTimeout(() => req.destroy(new Error('tempo limite HTTP público')), 20000);
+    req.end();
+  });
+}
+
 async function abreComFetch(url) {
   let atual = url;
   for (let salto = 0; salto < 4; salto++) {
     const u = urlPublica(atual);
-    await confirmaHostPublico(u);
-    const r = await fetch(u, { redirect: 'manual', headers: { 'User-Agent': AGENTE, Accept: 'text/html,application/xhtml+xml,text/plain;q=0.8,*/*;q=0.1' }, signal: AbortSignal.timeout(20000) });
+    const ips = await confirmaHostPublico(u);
+    const r = await fetchPublicoFixado(u, ips);
     if (r.status >= 300 && r.status < 400) {
       const destino = r.headers.get('location');
+      if (r.body) await r.body.cancel();
       if (!destino) throw new Error('redirecionamento sem destino');
       atual = new URL(destino, u).toString();
       continue;
     }
-    if (!r.ok) throw new Error('HTTP ' + r.status);
+    if (!r.ok) { if (r.body) await r.body.cancel(); throw new Error('HTTP ' + r.status); }
     const html = await corpoLimitado(r);
     return { via: 'leitura HTTP', titulo: tituloHtml(html), texto: tiraHtml(html).slice(0, MAX_TEXTO), urlFinal: u.toString() };
   }
@@ -180,4 +223,5 @@ if (require.main === module) {
   }
 }
 
-module.exports = { ipPrivado, urlPublica, confirmaHostPublico, tiraHtml, tituloHtml, corpoLimitado, chromeDisponivel, regraResolverChrome, abreComFetch, abrirPagina };
+module.exports = { lookupFixado, fetchPublicoFixado, ipPrivado, urlPublica, confirmaHostPublico, tiraHtml, tituloHtml, corpoLimitado, chromeDisponivel, regraResolverChrome, abreComFetch, abrirPagina };
+
