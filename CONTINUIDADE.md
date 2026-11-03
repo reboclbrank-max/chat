@@ -1719,3 +1719,15 @@ Continuidade autorizada pelo dono. Estado consultado: Chat main 5aaca3d0, Pages4
 Consenso operacional: aceitar pré-verificação integral do diretório antes de novo download. Nos testes, repetir baixar apagava edição pendente e permitia recriar arquivo removido no remoto. A correção bloqueia conteúdo divergente, arquivo órfão, link simbólico ou arquivo especial, mantém os arquivos para revisão e invalida o manifesto para impedir envio posterior. Cópia parcial idêntica pode retomar. As duas sementes públicas já distribuídas com o código têm exceção apenas por nome e SHA exatos; quando ausentes no privado, sua versão-base impede envio como memória nova. Edições perdem essa exceção. Recusados descarte automático, limpeza de memória, mescla adivinhada, sincronizador paralelo, tráfego/dispatch fabricado e reativação do componente.
 
 Escopo: motor/sincronizar.py, teste-sincronizacao-versao.py e documento de recuperação; nenhuma mudança na interface ou nos canais deste repositório. Proposta e prova: https://github.com/reboclbrank-max/motor/pull/44. Validação local:36 testes, onze regressões novas, incluindo recuperação em pasta vazia sem PUT duplicado. Promoção exige CI completa aprovada. Rollback por reversão e revisão do pin da agenda, preservando os diretórios bloqueados. Cópia antiga divergente também exige revisão e outro diretório vazio; não há proteção transacional contra escritores locais simultâneos. Não comprova recuperação real do Batente, espelhos, entrega nem operação contínua. Relatório técnico: https://github.com/reboclbrank-max/motor/blob/main/docs/RECUPERACAO-MEMORIA-2026-11-03.md.
+
+## 2026-11-03 — alternativa de token apenas de sessão
+
+A configuração do Chat passa a oferecer escolha explícita: guardar PAT só na sessão (sessionStorage) ou manter persistência (localStorage) já aprovada pelo dono, que continua padrão. Ao selecionar sessão, a cópia persistente anterior é apagada. Nenhuma inicialização promove token temporário a persistente. O campo de entrada é limpo após salvar; Console não promove token. A opção não envia o token por mensagem, URL ou log.
+
+Mudanças: index.html, páginas direto/ligar/limpar geradas a partir dela sem alterar regras de rota, console.html, sw.js v107 (ativação explícita), testes de segurança e novo teste de comportamento do armazenamento nas quatro rotas. Testes completos de PR e Chromium são obrigatórios para integrar; não mudar PAT, dependências, canais, orçamento, segredos ou política de GitHub.
+
+Limitações: token em sessionStorage continua acessível a scripts do mesmo domínio durante a sessão e navegadores podem restaurar sessões. Não é solução completa para CSP unsafe-inline ou XSS; token de escopo mínimo ainda depende do dono.
+
+A opção de sessão usa um checkbox com dimensões próprias em chat-estilos.css para não herdar width:100% dos campos de senha no celular; a barreira estática verifica o seletor.
+
+Registro do cache PWA desta mudança: `rebocl-chat-v107` em `sw.js` e nas quatro rotas. O SW permanece aguardando ativação explícita do usuário; rollback pela PR mantendo coerência com `sw.js`.

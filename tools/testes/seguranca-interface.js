@@ -22,6 +22,7 @@ for (const nome of paginas) {
   testa(nome + ' salva token somente pelo campo dedicado', /\$\('btn-salvar'\)\.onclick[\s\S]{0,240}guardarTokenPersistente\(valor\)/.test(html));
   testa(nome + ' mantém token persistente por decisão explícita', /localStorage\.getItem\(CHAVE_TOKEN\)/.test(html) && /localStorage\.setItem\(CHAVE_TOKEN, token\)/.test(html));
   testa(nome + ' bloqueia token antes de enviar', /Token não é mensagem/.test(html));
+  testa(nome + ' oferece token apenas de sessão sem promoção persistente', /id="token-sessao"/.test(html) && /guardarTokenSomenteSessao\(valor\)/.test(html) && !/if \(token && !localStorage\.getItem\(CHAVE_TOKEN\)\)/.test(html));
   testa(nome + ' usa DNA relativo', !/raw\.githubusercontent\.com\/reboclbrank-max\/chat\/main\/dna\.json/.test(html) && /fetch\(['"]\.\/dna\.json['"]/.test(html));
   testa(nome + ' fixa WebLLM', /@mlc-ai\/web-llm@0\.2\.86\//.test(html) && !/@mlc-ai\/web-llm@latest/.test(html));
   const canal = bloco(html, 'async function beberCanal()', 'let turnoN');
@@ -30,6 +31,7 @@ for (const nome of paginas) {
   testa(nome + ' seletor não interpola HTML remoto', !!seletor && !/\.innerHTML/.test(seletor) && /textContent/.test(seletor));
   testa(nome + ' não publica resumo privado no canal', !/SUM\|v1|registro-de-decisoes\.md[\s\S]{0,700}ntfy\.sh\/rebocl-enxame/.test(html));
 }
+testa('checkbox temporário mantém tamanho clicável no celular', /#token-sessao\{width:18px;min-width:18px;height:18px/.test(ler('chat-estilos.css')));
 const sw = ler('sw.js');
 testa('service worker recusa query e recursos fora da casca', /url\.search/.test(sw) && /ARQUIVOS_CACHEAVEIS/.test(sw) && /cache: 'no-store'/.test(sw));
 const consoleHtml = ler('console.html');
