@@ -128,3 +128,14 @@ ok('falha do canal aparece antes do placar e não é mascarada pelo 100 interno'
 
 console.log(`${n}/${n + falhas} testes do placar passaram`);
 process.exitCode = falhas ? 1 : 0;
+
+
+ok('origem e validade distinguem cobertura de autonomia e entrega', () => {
+  const p = avaliar({ agora, arquivos: completos, saude: '', vigia: { verificado_em: '2020-01-01T00:00:00Z', itens: {} }, qualidade: {} });
+  assert.equal(p.evidencia.fonte_estado, 'estado/operacional');
+  assert.equal(p.evidencia.vigia_vigente, false);
+  assert.equal(p.evidencia.autonomia_universal, false);
+  assert.equal(p.evidencia.entrega_ponta_a_ponta, 'nao_medida_por_este_indicador');
+  assert.match(markdown(p), /cópias em `main` podem ser históricas/);
+});
+process.exitCode = falhas ? 1 : 0;
