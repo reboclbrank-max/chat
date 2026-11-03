@@ -52,6 +52,9 @@ testa('estado da única prova real da Central não apaga os limites das demais r
 testa('dossiê 2B tem limites, rollback e barreira documentados', /!dossiechat/.test(centralOperacional) && /central\/dossie-preparo-/.test(centralOperacional) && /Revisão humana obrigatória|revisão humana/.test(centralOperacional) && /Rollback/.test(centralOperacional) && /!dossiechat/.test(autonomia) && /!dossiechat/.test(continuidade) && /tools\/dossie-preparo-controlado\.js/.test(workflowRapido));
 testa('reforço 3A mantém catálogo literal, revisão e rollback documentados', /!reforcardossie/.test(centralOperacional) && /reforco_dossie_escopo_v1/.test(centralOperacional) && /central\/reforco-dossie-/.test(centralOperacional) && /três caminhos literais/.test(centralOperacional) && /!reforcardossie/.test(autonomia) && /!reforcardossie/.test(continuidade) && /!reforcardossie/.test(agentes) && /!reforcardossie/.test(readme) && /tools\/reforco-dossie-controlado\.js/.test(workflowRapido));
 testa('barreira observa todo JavaScript/Python/Shell em tools', /'tools\/\*\*\/\*\.js'/.test(workflowRapido) && /'tools\/\*\*\/\*\.py'/.test(workflowRapido) && /'tools\/\*\*\/\*\.sh'/.test(workflowRapido));
+const entradasCriticas = ['roteador-ia.js', 'razao-local.js', 'lexico-pt.js', 'lexico-pt.json', 'fontes-publicas.json', 'banco-questoes.json', 'banco-v2.json', 'manifest.json', 'package.json', 'package-lock.json', 'paginas/rotas/**', 'roteador.html', 'motor*.html'];
+testa('push valida alterações de cérebro, dependências e rotas públicas', entradasCriticas.every(arquivo => workflowRapido.includes("      - '" + arquivo + "'")));
+testa('CI não trata ausência do Chromium como sucesso', /::error::Chromium obrigatório no CI/.test(workflowRapido) && /exit 2/.test(workflowRapido) && !/::warning::navegador controlado sem pré-requisito local/.test(workflowRapido));
 testa('inventário, portabilidade e operação entram no corredor e na sintaxe', /tools\/inventario-estado-operacional\.js/.test(workflowRapido) && /inventario-estado-operacional\.js/.test(ler('tools/testes/roda-testes.js')) && /portabilidade-estatica\.js/.test(ler('tools/testes/roda-testes.js')) && /operacao-incidentes\.js/.test(ler('tools/testes/roda-testes.js')));
 testa('incidente duplicado não autoriza cancelamento ou retry', /turnos-duplicados/.test(operacaoIncidentes) && /não cancelar nenhum/.test(operacaoIncidentes) && /não reexecutar às cegas/.test(operacaoIncidentes));
 testa('retenção mede metadados e preserva sem expurgo', /metadados-git-locais/.test(ler('tools/inventario-estado-operacional.js')) && /Não há expurgo, arquivamento externo ou exclusão automática/.test(retencao) && /preservar e não apagar/.test(retencao));
@@ -64,6 +67,10 @@ testa('documentos novos não trazem padrão de PAT', !/github_pat_[A-Za-z0-9_]{2
 function arquivoOperacional(arquivo) {
   return /^\.github\/workflows\//.test(arquivo) ||
     /^tools\/.*\.(?:js|py|sh)$/.test(arquivo) ||
+    /^(?:roteador-ia|razao-local|lexico-pt)\.js$/.test(arquivo) ||
+    /^(?:lexico-pt|fontes-publicas|banco-questoes|banco-v2|manifest|package|package-lock)\.json$/.test(arquivo) ||
+    /^paginas\/rotas\/.*\.json$/.test(arquivo) ||
+    /^(?:roteador|motor(?:02|03|04)?)\.html$/.test(arquivo) ||
     /^(?:index|direto|ligar|limpar|console|motor(?:02|03|04)?)\.html$/.test(arquivo) ||
     /^(?:chat-estilos\.css|chat-pwa\.js|chat-comandos-locais\.js|chat-filtro-chips\.js|chat-organizacao-local\.js|chat-colecoes-local\.js|chat-workspace\.js|sw\.js|manifest\.json|dna\.json|AUTONOMIA\.md|OPERACAO-CENTRAL\.md|OPERACAO-INCIDENTES\.md|POLITICA-RETENCAO-OPERACIONAL\.md|PORTABILIDADE-ESTATICA\.md|AVALIACAO-HUMANA-PILOTO\.md|GOVERNANCA-CHAT-PRIMEIRO\.md|\.github\/PULL_REQUEST_TEMPLATE\.md)$/.test(arquivo);
 }
