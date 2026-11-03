@@ -67,6 +67,7 @@
     </ol>
     <label class="visualmente-oculto" for="token">Token de acesso do GitHub</label>
     <input type="password" id="token" placeholder="cole aqui o token github_pat_..." autocomplete="off" aria-describedby="token-ajuda">
+    <label for="token-sessao" style="display:flex;align-items:center;gap:8px;margin:9px 0;font-size:14px"><input type="checkbox" id="token-sessao"> Guardar só nesta sessão (não lembrar após encerrar o navegador)</label>
     <button type="button" id="btn-salvar">Salvar e testar</button>
     <div id="status-conexao" role="status" aria-live="polite" aria-atomic="true"></div>
   </div>
@@ -232,7 +233,7 @@ const CHAVE_TOKEN = 'assistente_rebocl_token';
 // como canais de token; só ⚙️ Configurar acesso pode gravá-lo.
 const tokenDaSessao = sessionStorage.getItem(CHAVE_TOKEN);
 let token = localStorage.getItem(CHAVE_TOKEN) || tokenDaSessao || '';
-if (token && !localStorage.getItem(CHAVE_TOKEN)) localStorage.setItem(CHAVE_TOKEN, token);
+// Token vindo da sessão nunca é promovido automaticamente a persistente.
 if (token) sessionStorage.setItem(CHAVE_TOKEN, token);
 function guardarTokenPersistente(valor) {
   token = String(valor || '').trim();
@@ -243,6 +244,12 @@ function guardarTokenPersistente(valor) {
     localStorage.removeItem(CHAVE_TOKEN);
     sessionStorage.removeItem(CHAVE_TOKEN);
   }
+}
+function guardarTokenSomenteSessao(valor) {
+  token = String(valor || '').trim();
+  localStorage.removeItem(CHAVE_TOKEN);
+  if (token) sessionStorage.setItem(CHAVE_TOKEN, token);
+  else sessionStorage.removeItem(CHAVE_TOKEN);
 }
 let conversa = null, intervalo = null, ultimoId = 0, ultimoQuando = '', falando = false;
 
@@ -3301,12 +3308,12 @@ async function testarConexao(silencioso) {
 $('btn-salvar').onclick = async () => {
   const valor = $('token').value.trim();
   if (!valor) { alert('cole o token primeiro'); return; }
-  guardarTokenPersistente(valor);
+  if ($('token-sessao').checked) guardarTokenSomenteSessao(valor); else guardarTokenPersistente(valor); $('token').value = '';
   if (await testarConexao(false)) { mostrarConfig(false); carregarLista(); }
 };
 $('btn-config').onclick = () => {
   if (!$('tela-config').classList.contains('oculto')) { fecharConfiguracao(); return; }
-  $('token').value = '';
+  $('token').value = ''; $('token-sessao').checked = !!sessionStorage.getItem(CHAVE_TOKEN) && !localStorage.getItem(CHAVE_TOKEN);
   $('status-conexao').innerHTML = token ? '<div class="aviso ok">já existe um token salvo neste navegador.</div>' : '';
   mostrarConfig(true, true);
   atualizarModoSomenteLocal();
