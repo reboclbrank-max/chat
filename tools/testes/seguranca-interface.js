@@ -31,6 +31,7 @@ for (const nome of paginas) {
   testa(nome + ' seletor não interpola HTML remoto', !!seletor && !/\.innerHTML/.test(seletor) && /textContent/.test(seletor));
   testa(nome + ' não publica resumo privado no canal', !/SUM\|v1|registro-de-decisoes\.md[\s\S]{0,700}ntfy\.sh\/rebocl-enxame/.test(html));
 }
+testa('checkbox temporário mantém tamanho clicável no celular', /#token-sessao\{width:18px;min-width:18px;height:18px/.test(ler('chat-estilos.css')));
 const sw = ler('sw.js');
 testa('service worker recusa query e recursos fora da casca', /url\.search/.test(sw) && /ARQUIVOS_CACHEAVEIS/.test(sw) && /cache: 'no-store'/.test(sw));
 const consoleHtml = ler('console.html');

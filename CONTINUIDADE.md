@@ -1727,3 +1727,5 @@ A configuração do Chat passa a oferecer escolha explícita: guardar PAT só na
 Mudanças: index.html, páginas direto/ligar/limpar geradas a partir dela sem alterar regras de rota, console.html, sw.js v107 (ativação explícita), testes de segurança e novo teste de comportamento do armazenamento nas quatro rotas. Testes completos de PR e Chromium são obrigatórios para integrar; não mudar PAT, dependências, canais, orçamento, segredos ou política de GitHub.
 
 Limitações: token em sessionStorage continua acessível a scripts do mesmo domínio durante a sessão e navegadores podem restaurar sessões. Não é solução completa para CSP unsafe-inline ou XSS; token de escopo mínimo ainda depende do dono.
+
+A opção de sessão usa um checkbox com dimensões próprias em chat-estilos.css para não herdar width:100% dos campos de senha no celular; a barreira estática verifica o seletor.
