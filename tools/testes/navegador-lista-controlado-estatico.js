@@ -164,13 +164,13 @@ ok('exercita recuperação do Workspace e prova o layout em navegador real', () 
   assert.match(texto, /INFO:CONSOLE\.\*\(Uncaught\|Error\)/);
 });
 
-ok('a barreira do CI executa o harness e trata ausência como SKIP explícito', () => {
+ok('a barreira do CI exige navegador e bloqueia falsa aprovação por SKIP', () => {
   const fs = require('fs');
   const path = require('path');
   const workflow = fs.readFileSync(path.resolve(__dirname, '../../.github/workflows/testes-rapidos.yml'), 'utf8');
   assert(/bash tools\/testes\/navegador-lista-controlado\.sh/.test(workflow), 'o CI deixou de rodar o navegador controlado');
-  assert(/if \[ "\$codigo" -eq 2 \]/.test(workflow), 'o CI precisa tratar código 2 (sem navegador) como SKIP, não como falha nem como verde');
-  assert(/::warning::navegador controlado sem pré-requisito local/.test(workflow), 'o SKIP precisa aparecer no log da CI');
+  assert(/if \[ "\$codigo" -eq 2 \]/.test(workflow), 'o CI precisa detectar ausência do navegador');
+  assert(/::error::Chromium obrigatório no CI/.test(workflow) && /exit 2/.test(workflow), 'ausência do Chromium deve reprovar o CI, nunca ser marcada como verde');
   assert(!/continue-on-error: true/.test(workflow), 'continue-on-error esconderia falha real do navegador');
 });
 

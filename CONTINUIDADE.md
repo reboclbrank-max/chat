@@ -1694,3 +1694,13 @@ Medido antes/depois no ensaio de queda total: **soma da espera 338.678 ms → 76
 ## 2026-11-01 — Diagnóstico do executor correto e pedido correlacionado
 
 A interface consultava o workflow privado agente/chat.yml para inferir falha de um pedido que acorda motor/chat.yml. Agora consulta motor e exige nonce do dispatch aceito, mesmo pedido, branch main, repository_dispatch e falha concluída recente. Fila, ausência de correlação, falha do legado e outro pedido não iniciam contingência. Nonce é identificador técnico sem mensagem/conteúdo privado. Novas conversas acordam o mesmo motor já usado pelos comentários; sem cron novo. O workflow do motor inclui nonce no run-name, com varredura como fallback. Não prova entrega nem confunde HTTP204 com conclusão da tarefa. Testes de recuperação cobrem correlação, outro pedido, falta de nonce, legado, fila e sucesso. Demais controles, token local e canais preservados; registro na Base acompanha a série.
+
+
+## 2026-11-03 — melhoria de confiabilidade da barreira de mudanças do Chat
+
+**Objetivo autorizado:** elevar estabilidade, segurança e autonomia verificável, sem confundir cobertura de testes com inteligência ilimitada. Esta etapa endurece a proteção de entrada de código; não muda respostas, credenciais, contas, crons, APIs nem a interface publicada.
+
+- A barreira de push agora observa também o roteador de IA, razão local, léxico, fontes públicas, bancos de avaliação, dependências npm, manifesto e rotas derivadas. Antes, parte dessas mudanças não acionava testes em push; PR já acionava. A porta de continuidade exige o registro de mudança operacional também para esses arquivos.
+- A CI verifica sintaxe das três fontes JavaScript centrais. No runner, ausência de Chromium passou de **SKIP com conclusão verde** a erro explícito; a execução local continua podendo relatar ausência de navegador como limite, sem fingir que a prova ocorreu. Contratos de continuidade e navegador cobram essa guarda.
+- **Validação exigida antes de promover:** PR protegida, testes rápidos e navegador reais verdes, revisão do diff e ausência de segredos. Sem check verde ou sem revisão humana exigida pela proteção, não promover a `main`.
+- **Limites:** isto melhora a cobertura de alterações e impede aprovação visual falsa no CI; não demonstra zero bugs, SLA, entrega de e-mail, funcionamento ininterrupto, inteligência geral, segurança certificada ou autonomia universal. A PR de dependências #70 permanece separada e não é mesclada automaticamente.
