@@ -144,6 +144,20 @@ jobs:
         with:
           path: /home/runner/.cache/visao-casa
           key: visao-${{ env.VISAO_MODELO }}-b11635-v1
+      # 04/11/2026: a corrente do canal não depende mais do agendador.
+      # Medido em 48 h: o cron de reserva `17,47 * * * *` foi entregue em ~12% das vezes
+      # (12 execuções onde cabiam 104) e o canal passou até 13 h sem turno vivo. Fechando com
+      # sucesso, o próprio turno pede o próximo usando o coordenador que já existe
+      # (`tools/reserva-turno.js`): ele só despacha se a API confirmar que não há outro turno
+      # vivo nem fila — a mesma regra da reserva, sem inventar caminho novo.
+      # Turno que NÃO terminou bem não encadeia: assim a corrente não vira laço de execuções
+      # falhando, e a rede continua sendo a reserva agendada.
+      - name: Encaixa o próximo turno (a corrente não depende do agendador)
+        if: always() && job.status == 'success'
+        continue-on-error: true
+        run: node tools/reserva-turno.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   # Esta agenda é uma corretora, não um segundo leitor de IMAP. Se a corrente já existe,
   # termina sem tocar na caixa; se ela sumiu e a API confirma isso, pede o mesmo turno longo.
   reserva:

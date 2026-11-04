@@ -47,6 +47,16 @@
 
 **Arquivos e canais afetados.** `roteador-ia.js` (leitura/gravação da saúde por rota), `tools/testes/saude-persistente.js`, `sw.js` (casca **rebocl-chat-v110**) e este documento. Sem mudança de HTML, de rota ou de contrato público.
 
+## 04/11/2026 — a corrente do canal de e-mail não depende mais do agendador
+
+**O que foi medido.** O `email.yml` tem duas crons: `7 */6 * * *` (turno) e `17,47 * * * *` (reserva, que só coordena). Nas últimas 48 h o GitHub entregou **12 execuções agendadas onde cabiam 104** (~12%), e o canal ficou **até 13 h sem turno vivo** — apesar de se chamar "24h vivo".
+
+**O que mudou.** O turno que fecha com sucesso agora pede o próximo usando o coordenador que já existia (`tools/reserva-turno.js`): ele só despacha se a API confirmar que não há outro turno vivo nem fila. Sem caminho novo, sem cron novo.
+
+**As três guardas.** (1) `job.status == 'success'` — turno que falhou **não** encadeia, então a corrente não vira laço de execuções falhando; (2) `continue-on-error: true` — o encaixe nunca derruba um turno que já deu certo; (3) a reserva agendada continua no lugar como rede.
+
+**A barreira.** `tools/testes/auditoria-workflows.js` ganhou o contrato do encaixe (17/17). Rodado sem a guarda de status, ele **reprova**.
+
 ## 0. Regra permanente de continuidade
 
 Toda alteração que mudar comportamento, segurança, privacidade, fluxo operacional, workflow, dependência, teste, arquivo importante ou capacidade do Chat **deve atualizar este documento na mesma série de commits**. Registre, de forma curta e verificável:
