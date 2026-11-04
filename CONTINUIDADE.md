@@ -1731,3 +1731,13 @@ Limitações: token em sessionStorage continua acessível a scripts do mesmo dom
 A opção de sessão usa um checkbox com dimensões próprias em chat-estilos.css para não herdar width:100% dos campos de senha no celular; a barreira estática verifica o seletor.
 
 Registro do cache PWA desta mudança: `rebocl-chat-v107` em `sw.js` e nas quatro rotas. O SW permanece aguardando ativação explícita do usuário; rollback pela PR mantendo coerência com `sw.js`.
+
+## 2026-11-04 — evolução do contexto do roteador (respostas em sequência)
+
+**Problema real encontrado:** o roteador `roteador-ia.js` concatenava até seis mensagens prévias e, se excedesse 1200 caracteres, fazia `slice(-1200)`. Isso amputava o começo da fala mais antiga incluída, podendo perder `Dono:`/`Assistente:` e partes de frases. Qualquer papel diferente de `assistant` ou `system` também era tratado como `Dono`, inclusive ferramentas.
+
+**Correção no código:** montarContextoConversa aceita somente um array de falas `user` e `assistant` textuais; preserva a ordem e a identificação das vozes, normaliza quebras de linha, limita cada conteúdo a 400 caracteres com indicador de truncamento, e monta de trás para frente só falas completas que caibam nas mesmas 6 falas / 1200 caracteres. Se falas antigas foram omitidas, o contexto sinaliza explicitamente o corte; não inventa lembranças. A assinatura do cache continua derivada do contexto final, separando conversas diferentes.
+
+**Provas:** `tools/testes/memoria-contexto-coerente.js` executa oito casos de comportamento offline, incluindo role system/tool, orçamento, fala não quebrada, sinal de histórico truncado, texto longo e isolamento de cache. Registrado em `tools/testes/roda-testes.js`. Sem token, rede, modelos externos ou memória privada. O HTML das quatro rotas não mudou; usam `roteador-ia.js` compartilhado. `sw.js` passou para `rebocl-chat-v108` com ativação explícita; `README.md` explica a melhoria.
+
+**Limites:** isso melhora a estrutura do contexto entregue aos motores, **não é treinamento de modelo**, prova de aumento da qualidade factual nem memória infinita. É preciso validar CI completa e browser no SHA final, manter rollback por PR e preservar o orçamento R$0. A Base deve registrar o motivo e evidência. Nenhuma permissão, token, conta, cobrança, cron ou publicação foi alterada.
