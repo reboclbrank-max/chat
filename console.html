@@ -140,7 +140,7 @@ const ESTADO_URL = 'https://raw.githubusercontent.com/reboclbrank-max/site/main/
 const CHAVE_TOKEN = 'assistente_rebocl_token';
 const tokenDaSessao = sessionStorage.getItem(CHAVE_TOKEN);
 let token = localStorage.getItem(CHAVE_TOKEN) || tokenDaSessao || '';
-if (token && !localStorage.getItem(CHAVE_TOKEN)) localStorage.setItem(CHAVE_TOKEN, token);
+// O token de sessão não é copiado para armazenamento persistente no Console.
 if (token) sessionStorage.setItem(CHAVE_TOKEN, token);
 const $ = (id) => document.getElementById(id);
 

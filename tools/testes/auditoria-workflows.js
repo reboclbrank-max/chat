@@ -229,5 +229,19 @@ ok('navegador público recebe só URL e referência opaca, antes de ter token', 
   assert.match(texto, /(?:refer[eê]ncia|identificador)[^\n]*opac/i);
 });
 
+ok('canal de e-mail encadeia o próximo turno só quando o atual terminou bem', () => {
+  // 04/11/2026: o cron de reserva é entregue em ~12% das vezes; o turno que fecha bem pede o
+  // próximo pelo coordenador que já existe. A guarda impede que a corrente vire laço de falhas.
+  const email = ler('email.yml');
+  const partes = email.split('- name: Encaixa o próximo turno');
+  assert.strictEqual(partes.length, 2, 'faltou (ou duplicou) o passo que encadeia o próximo turno');
+  const bloco = partes[1].split(/\n      - name:|\n  [a-z]+:/)[0];
+  assert.match(bloco, /node tools\/reserva-turno\.js/, 'o encaixe tem de usar o coordenador existente');
+  assert.match(bloco, /if: always\(\) && job\.status == 'success'/, 'turno que falhou não pode encadear');
+  assert.match(bloco, /continue-on-error:\s*true/, 'encaixe não pode derrubar o turno que já deu certo');
+  assert.match(bloco, /GITHUB_TOKEN/, 'o coordenador precisa do token do próprio repositório');
+  assert.match(email, /reserva:\n\s+if:/, 'a reserva agendada continua sendo a rede de segurança');
+});
+
 console.log(`${certos}/${certos + falhas} testes da auditoria de workflows passaram`);
 process.exitCode = falhas ? 1 : 0;

@@ -33,6 +33,11 @@ jobs:
           node-version: '22'
       - name: Restaura o log sanitizado do ramo revisável
         run: node tools/estado-operacional-controlado.js preparar email
+      # 04/11/2026: memória de rotas entre turnos. `continue-on-error` de propósito: memória é
+      # otimização, nunca requisito — se o artefato faltar, o turno segue com a ordem original.
+      - name: Restaura a memória de rotas do canal (opcional)
+        continue-on-error: true
+        run: node tools/estado-operacional-controlado.js preparar saude-rotas
       - run: npm ci --omit=dev --no-audit --no-fund
       - name: Restaura as ferramentas Python do turno (venv em cache)
         id: cache-ferramentas
@@ -75,6 +80,7 @@ jobs:
           export FERRAMENTAS_MARCADOR=/tmp/ferramentas-prontas
           node tools/email-poll.js
         env:
+          SAUDE_ROTAS_EMAIL: saude-rotas.json
           GMAIL_CHAT_ADDR: ${{ secrets.GMAIL_CHAT_ADDR }}
           GMAIL_CHAT_PASS: ${{ secrets.GMAIL_CHAT_PASS }}
           CHAT_DONO: ${{ secrets.CHAT_DONO }}
@@ -95,6 +101,21 @@ jobs:
             # sessão avançou o ramo, concatena somente o sufixo append-only;
             # se a fotografia deixar de ser segura, falha sem tocar em main.
             node tools/estado-operacional-controlado.js publicar email
+          fi
+      # Memória de rotas: publica no mesmo ramo revisável, também sem derrubar o turno.
+      - name: Publica a memória de rotas do canal (opcional)
+        if: always()
+        continue-on-error: true
+        run: |
+          if [ -f saude-rotas.json ]; then
+            git add -- saude-rotas.json
+            if git diff --cached --quiet; then
+              echo "memória de rotas sem mudança nesta sessão"
+            else
+              node tools/estado-operacional-controlado.js publicar saude-rotas
+            fi
+          else
+            echo "sem memória de rotas nesta sessão"
           fi
       - name: Duração do preparo (sem conteúdo)
         if: always()
@@ -123,6 +144,20 @@ jobs:
         with:
           path: /home/runner/.cache/visao-casa
           key: visao-${{ env.VISAO_MODELO }}-b11635-v1
+      # 04/11/2026: a corrente do canal não depende mais do agendador.
+      # Medido em 48 h: o cron de reserva `17,47 * * * *` foi entregue em ~12% das vezes
+      # (12 execuções onde cabiam 104) e o canal passou até 13 h sem turno vivo. Fechando com
+      # sucesso, o próprio turno pede o próximo usando o coordenador que já existe
+      # (`tools/reserva-turno.js`): ele só despacha se a API confirmar que não há outro turno
+      # vivo nem fila — a mesma regra da reserva, sem inventar caminho novo.
+      # Turno que NÃO terminou bem não encadeia: assim a corrente não vira laço de execuções
+      # falhando, e a rede continua sendo a reserva agendada.
+      - name: Encaixa o próximo turno (a corrente não depende do agendador)
+        if: always() && job.status == 'success'
+        continue-on-error: true
+        run: node tools/reserva-turno.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   # Esta agenda é uma corretora, não um segundo leitor de IMAP. Se a corrente já existe,
   # termina sem tocar na caixa; se ela sumiu e a API confirma isso, pede o mesmo turno longo.
   reserva:

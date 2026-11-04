@@ -107,6 +107,7 @@
   body.claro .cartao a{color:#7a5f14}
   .cartao input{width:100%;background:#0b0b0f;border:1px solid var(--borda);color:var(--texto);
     border-radius:10px;padding:11px;font:inherit;font-size:13.5px;margin:8px 0}
+  #token-sessao{width:18px;min-width:18px;height:18px;flex:0 0 auto;margin:0;accent-color:var(--ouro)}
   /* O campo protegido mantém superfície e contorno legíveis no tema claro. */
   body.claro #token{background:var(--painel);border-color:var(--texto2);color:var(--texto)}
   .cartao button{background:linear-gradient(135deg,#d4af37,#a8862a);border:none;color:#15130a;font-weight:700;

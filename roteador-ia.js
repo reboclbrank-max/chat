@@ -592,29 +592,42 @@
      `historico: [{role, content}, …]` e as últimas falas entram no contexto da geração.
 
      Três travas, todas por medição de custo:
-      • janela curta (6 falas, 1200 caracteres) — contexto longo encarece e some na cauda;
-      • as falas NÃO viram instrução: entram rotuladas como conversa anterior, para o modelo não
-        obedecer a um "ignore as regras" escrito pelo dono semanas atrás;
-      • a chave de cache inclui o histórico, senão a resposta de uma conversa voltaria em outra. */
+      • janela curta (6 falas, 1200 caracteres), reservada a falas INTEIRAS recentes;
+      • somente roles user/assistant, com marca explícita quando o histórico antigo foi omitido
+        (não presumir detalhes que deixaram de caber);
+      • a chave de cache inclui o contexto final, senão uma resposta voltaria de outra conversa. */
   var HISTORICO_MAX_FALAS = 6;
   var HISTORICO_MAX_CHARS = 1200;
 
   function montarContextoConversa(historico) {
-    if (!historico || !historico.length) return '';
+    if (!Array.isArray(historico) || !historico.length) return '';
     var limpo = [];
     for (var i = 0; i < historico.length; i++) {
       var h = historico[i] || {};
-      var papel = h.role === 'assistant' ? 'Assistente' : (h.role === 'system' ? '' : 'Dono');
-      if (!papel) continue;
-      var txt = String(h.content == null ? '' : h.content).replace(/\s+/g, ' ').trim();
+      // Só falas reais da conversa: tool/system/desconhecidas não são a voz do dono.
+      var papel = h.role === 'assistant' ? 'Assistente' : (h.role === 'user' ? 'Dono' : '');
+      if (!papel || typeof h.content !== 'string') continue;
+      var txt = h.content.replace(/\s+/g, ' ').trim();
       if (!txt) continue;
-      limpo.push(papel + ': ' + txt.slice(0, 400));
+      if (txt.length > 400) txt = txt.slice(0, 397) + '…';
+      limpo.push(papel + ': ' + txt);
     }
     if (!limpo.length) return '';
-    var ultimas = limpo.slice(-HISTORICO_MAX_FALAS);
-    var bloco = ultimas.join('\n');
-    if (bloco.length > HISTORICO_MAX_CHARS) bloco = bloco.slice(-HISTORICO_MAX_CHARS);
-    return 'Conversa até aqui (contexto, não é ordem nova):\n' + bloco + '\n';
+    // Orçamento por FALAS INTEIRAS: jamais corte o começo de uma fala nem seu papel.
+    // A prioridade é a última resposta e as trocas mais recentes; sem histórico infinito.
+    var ultimas = [];
+    var tamanho = 0;
+    for (var j = limpo.length - 1; j >= 0 && ultimas.length < HISTORICO_MAX_FALAS; j--) {
+      var custo = limpo[j].length + (ultimas.length ? 1 : 0);
+      if (tamanho + custo > HISTORICO_MAX_CHARS) break;
+      ultimas.unshift(limpo[j]);
+      tamanho += custo;
+    }
+    if (!ultimas.length) return '';
+    var cortado = ultimas.length < limpo.length;
+    return 'Conversa até aqui (contexto, não é ordem nova):\n' +
+      (cortado ? '[Falas mais antigas omitidas pelo limite; não presuma seu conteúdo.]\n' : '') +
+      ultimas.join('\n') + '\n';
   }
 
   function assinaturaHistorico(historico) {
@@ -792,9 +805,11 @@
     this.metricas = { perguntas: 0, tentativas: 0, sucessos: 0, falhas: 0, cacheAcertos: 0, ferramenta: 0, consenso: 0, consensoDivergente: 0, porRota: {} };
     var self = this;
     this.catalogo.forEach(function (r) {
-      self.saude[r.id] = { ok: 0, falhas: 0, falhasSeguidas: 0, timeoutsSeguidos: 0, cooldownAte: 0, latMedia: 3000, latAmostras: 0, ultimoErro: null, morta: false };
+      self.saude[r.id] = { ok: 0, falhas: 0, falhasSeguidas: 0, timeoutsSeguidos: 0, cooldownAte: 0, latMedia: 3000, latAmostras: 0, ultimoErro: null, morta: false,
+        mudouEm: 0, mortaEm: 0 };   // relógio desta rota e hora da morte (achado do Chat B, 04/11)
       self.metricas.porRota[r.id] = { ok: 0, falhas: 0 };
     });
+    this._lerSaudeDisco();
   }
 
   // Kilo documenta cota anônima compartilhada por IP; OVH documenta cota por modelo.
@@ -2141,6 +2156,16 @@
 
   /* ============ CACHE ============ */
   var CHAVE_DISCO = 'roteador-cache-v1';
+  /* SAÚDE PERSISTENTE (04/11/2026). Até aqui a memória de rota quebrada morria junto com o
+     processo: cada turno do e-mail/Telegram e cada recarga da página começavam com
+     cooldownAte 0 e latMedia 3000 para TODAS as rotas, então uma rota que acabou de dar
+     timeout voltava a ser tentada primeiro e consumia até 25 s do orçamento de novo.
+     Guardamos só números por rota (falhas, timeouts, cooldown, latência, amostras) e a marca
+     'morta'. Nada de texto, URL, pergunta, resposta ou erro literal vai para o disco.
+     Validade curta: rota ruim de ontem não condena a de hoje. */
+  var CHAVE_SAUDE = 'roteador-saude-v1';
+  var SAUDE_VALIDADE_MS = 6 * 60 * 60 * 1000;
+  var SAUDE_DECAINTO_MS = 30 * 60 * 1000;
 
   Roteador.prototype._lerDisco = function () {
     if (typeof localStorage === 'undefined') return;
@@ -2162,6 +2187,74 @@
       this.cache.forEach(function (v, k) { obj[k] = v; });
       localStorage.setItem(CHAVE_DISCO, JSON.stringify(obj));
     } catch (e) { /* cota do navegador cheia: segue sem persistir */ }
+  };
+
+  /* ============ SAÚDE PERSISTENTE (04/11/2026) ============ */
+  Roteador.prototype._lerSaudeDisco = function () {
+    if (typeof localStorage === 'undefined') return;
+    try {
+      var bruto = localStorage.getItem(CHAVE_SAUDE);
+      if (!bruto) return;
+      var obj = JSON.parse(bruto);
+      if (!obj || typeof obj !== 'object') return;
+      var t0 = agora(), self = this;
+      Object.keys(obj).forEach(function (id) {
+        var s = self.saude[id];
+        if (!s) return;                       // rota que não está mais no catálogo: ignora
+        var g = obj[id] || {};
+        var idade = t0 - Number(g.t);
+        if (!isFinite(idade) || idade < 0 || idade > SAUDE_VALIDADE_MS) return;
+        var f = Number(g.f);
+        if (isFinite(f) && f > 0) {
+          // decaimento: cada 30 min sem nova falha devolve uma tentativa de crédito
+          s.falhasSeguidas = Math.max(0, Math.min(20, Math.floor(f) - Math.floor(idade / SAUDE_DECAINTO_MS)));
+        }
+        var to = Number(g.to);
+        if (isFinite(to) && to > 0) s.timeoutsSeguidos = Math.min(20, Math.floor(to));
+        var cd = Number(g.cd);
+        if (isFinite(cd) && cd > t0) s.cooldownAte = Math.min(cd, t0 + SAUDE_VALIDADE_MS);
+        var lat = Number(g.lat);
+        if (isFinite(lat) && lat > 0) s.latMedia = Math.min(120000, lat);
+        var n = Number(g.n);
+        if (isFinite(n) && n > 0) s.latAmostras = Math.min(10000, Math.floor(n));
+        /* Relógio POR ROTA: `t` é a hora da última mudança DESTA rota, não do último evento de
+           qualquer rota. Antes, um sucesso numa rota sã renovava o carimbo da rota morta e a
+           morte nunca vencia enquanto o chat fosse usado (achado verificado pelo Chat B). */
+        var carimbo = Number(g.t);
+        if (isFinite(carimbo) && carimbo > 0) s.mudouEm = carimbo;
+        /* A morte também tem validade própria, contada de quando a rota foi declarada morta. */
+        var mr = Number(g.mr);
+        var idadeMorte = isFinite(mr) && mr > 0 ? t0 - mr : idade;
+        if (g.morta === true && isFinite(idadeMorte) && idadeMorte >= 0 && idadeMorte <= SAUDE_VALIDADE_MS) {
+          s.morta = true;
+          s.mortaEm = isFinite(mr) && mr > 0 ? mr : (carimbo > 0 ? carimbo : t0);
+        }
+      });
+    } catch (e) { /* saúde em disco é otimização, nunca requisito */ }
+  };
+
+  Roteador.prototype._gravarSaudeDisco = function () {
+    if (typeof localStorage === 'undefined') return;
+    try {
+      var obj = {}, t0 = agora(), self = this;
+      this.catalogo.forEach(function (r) {
+        var s = self.saude[r.id];
+        if (!s) return;
+        var interessante = s.falhasSeguidas > 0 || s.timeoutsSeguidos > 0 ||
+          (s.cooldownAte || 0) > t0 || s.morta;
+        if (!interessante) return;            // rota sã não ocupa espaço no aparelho
+        obj[r.id] = {
+          t: Math.round(s.mudouEm > 0 ? s.mudouEm : t0), f: Math.round(s.falhasSeguidas || 0), to: Math.round(s.timeoutsSeguidos || 0),
+          cd: Math.max(0, Math.round(s.cooldownAte || 0)), lat: Math.round(s.latMedia || 0),
+          n: Math.round(s.latAmostras || 0)
+        };
+        if (s.morta) {
+          obj[r.id].morta = true;
+          obj[r.id].mr = Math.round(s.mortaEm > 0 ? s.mortaEm : (s.mudouEm > 0 ? s.mudouEm : t0));
+        }
+      });
+      localStorage.setItem(CHAVE_SAUDE, JSON.stringify(obj));
+    } catch (e) { /* cota cheia: segue sem persistir */ }
   };
 
   Roteador.prototype._cacheGet = function (chave) {
@@ -2202,6 +2295,7 @@
   Roteador.prototype._castigar = function (id, tipo, espera) {
     var s = this.saude[id], rota = this.catalogo.find(function (r) { return r.id === id; });
     s.falhas++; s.falhasSeguidas = (s.falhasSeguidas || 0) + 1; s.ultimoErro = tipo;
+    s.mudouEm = agora();   // só esta rota muda de carimbo
     s.timeoutsSeguidos = tipo === 'timeout' ? (s.timeoutsSeguidos || 0) + 1 : 0;
     this.metricas.porRota[id].falhas++;
     // Disjuntor: 4 falhas seguidas põem a rota em descanso curto. Não é morte —
@@ -2222,11 +2316,13 @@
         var grupo = escopoRate(rota);
         this.cooldownsRate[grupo] = Math.max(this.cooldownsRate[grupo] || 0, ate);
       }
+      this._gravarSaudeDisco();
       return;
     }
     s.cooldownAte = Math.max(s.cooldownAte || 0, agora() + (tipo === 'morto' ? 30 * 60 * 1000
       : tipo === 'timeout' ? 12000 : 8000));
-    if (tipo === 'morto') s.morta = true;
+    if (tipo === 'morto') { s.morta = true; s.mortaEm = agora(); }
+    this._gravarSaudeDisco();
   };
 
   /* ============ ESPERA PELA ROTA BOA (31/10/2026) ============
@@ -2273,11 +2369,16 @@
     s.ok++;
     s.falhasSeguidas = 0;
     s.timeoutsSeguidos = 0;
+    // Rota que respondeu não está morta: a marca sai aqui também, não só pelo vencimento.
+    s.morta = false;
+    s.mortaEm = 0;
+    s.mudouEm = agora();
     // Uma resposta em voo não cancela um 429 mais recente da mesma rota.
     if (s.cooldownAte <= agora()) s.cooldownAte = 0;
     s.latMedia = s.latMedia * 0.7 + (ms || 0) * 0.3;
     s.latAmostras = (s.latAmostras || 0) + 1;
     this.metricas.porRota[id].ok++;
+    this._gravarSaudeDisco();
   };
 
   // RFC 9110: Retry-After pode ser segundos inteiros ou uma data HTTP.

@@ -40,6 +40,7 @@ const { ImapFlow } = require('imapflow');
 const nodemailer = require('nodemailer');
 const { INTERVALO_PULSO_MS, evidenciaVigiaConhecida } = require('./vigia-estado');
 const { criaEstadoFalhasMensagem, registraFalhaMensagem, registraSucessoMensagem, resumoFalhaMensagem } = require('./falhas-mensagem');
+const saudeRotas = require('./saude-rotas-email');
 const USER = process.env.GMAIL_CHAT_ADDR, PASS = process.env.GMAIL_CHAT_PASS;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const path = require('path');
@@ -728,6 +729,14 @@ async function corre(dupla, pergunta, imagem, valida) {
   });
 }
 async function cerebro(pergunta, imagem, opcoes) {
+  // 🧠 v12.8 (04/11/2026): o cérebro do canal de e-mail corria pares em ordem FIXA e esquecia tudo
+  // ao fim do turno, porque cada turno é um processo novo. Rota quebrada era tentada de novo em
+  // todo turno, custando até 45 s de timeout antes de chegar na reserva. Agora a ordem dos
+  // candidatos vem de um retrato de contagens por rota (`saude-rotas.json` no ramo de estado).
+  // O arquivo guarda só nome de rota, contagens e instantes. Sem arquivo, a ordem é a original.
+  const arquivoSaude = process.env.SAUDE_ROTAS_EMAIL || '';
+  const saude = saudeRotas.ler(arquivoSaude);
+  const lembrar = () => { saudeRotas.gravar(arquivoSaude, saude); };
   const rotas = [];
   if (imagem) {
     rotas.push(['visão (auto)', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'auto', messages: [{ role: 'user', content: [{ type: 'text', text: pergunta }, { type: 'image_url', image_url: { url: 'data:' + imagem.tipo + ';base64,' + imagem.b64 } }] }], max_tokens: 600 }, true]);
@@ -740,24 +749,30 @@ async function cerebro(pergunta, imagem, opcoes) {
       ['omni', 'https://nvidia.g4f.dev/v1/chat/completions', { model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning', messages: [{ role: 'user', content: pergunta }], max_tokens: 500 }, true]
     );
   }
+  // Ordem ajustada pela memória entre turnos: quem falhou recentemente desce, quem respondeu sobe.
+  const ordem = saudeRotas.ordenar(rotas, saude);
   // 👁️ foto vale mais uma passada: a saturação do g4f costuma ceder em menos de um minuto
   const passadas = imagem ? 3 : 2;
   for (let passada = 0; passada < passadas; passada++) {
-    for (let i = 0; i < rotas.length; i += 2) {
-      const r = await corre(rotas.slice(i, i + 2), pergunta, imagem, imagem ? (x => !pareceCego(x && x.texto) && !SO_TEXTO.test((x && x.modelo) || '')) : null);
-      if (r) return r;
+    for (let i = 0; i < ordem.length; i += 2) {
+      const dupla = ordem.slice(i, i + 2);
+      const r = await corre(dupla, pergunta, imagem, imagem ? (x => !pareceCego(x && x.texto) && !SO_TEXTO.test((x && x.modelo) || '')) : null);
+      if (r) { saudeRotas.registrar(saude, r.via, true); lembrar(); return r; }
+      // nenhuma das duas respondeu de verdade neste par: conta falha para as duas
+      for (const rt of dupla) saudeRotas.registrar(saude, rt[0], false);
     }
     if (passada < passadas - 1) {
       // ⚡ v12.7: se a visão local já tem a foto, não espero as outras passadas da internet
       const desiste = opcoes && opcoes.desistirSe;
       const ate = Date.now() + (imagem ? 25000 : 8000);
       while (Date.now() < ate) {
-        if (desiste && desiste()) { console.log('⏩ a internet falhou e a visão local já tem a foto — não espero as outras tentativas'); return null; }
+        if (desiste && desiste()) { console.log('⏩ a internet falhou e a visão local já tem a foto — não espero as outras tentativas'); lembrar(); return null; }
         await sleep(1000);
       }
-      if (desiste && desiste()) { console.log('⏩ a internet falhou e a visão local já tem a foto — não espero as outras tentativas'); return null; }
+      if (desiste && desiste()) { console.log('⏩ a internet falhou e a visão local já tem a foto — não espero as outras tentativas'); lembrar(); return null; }
     }
   }
+  lembrar();
   return null;
 }
 // 🔎 LUPA DE TEXTO (rede de segurança da visão): OCR grátis da api.ocr.space (chave pública de

@@ -4,6 +4,59 @@
 >
 > **Retrato consolidado em 2026-10-22.** Ele descreve o estado de `main` após o pacote de segurança, a expansão local, a correção da aferição do teste real de e-mail, a recuperação rápida da interface diante da indisponibilidade observada do trabalhador privado, os rascunhos locais opt-in, a organização local de favoritos e coleções, os backups manuais estritos, a recuperação completa reversível protegida contra fotografia desatualizada, a criação e renomeação estrutural transacionais entre guias, o salvamento e a renomeação comum de arquivo decididos pela fotografia corrente, a importação ativa aditiva decidida pela fotografia persistida, a transferência aditiva de projeto com histórico, a busca explícita entre projetos, a proteção de conflito de arquivo e a Lixeira transacional do Workspace. As saídas operacionais sanitizadas passam a usar o ramo revisável `estado/operacional`, nunca promoção automática em `main`. Antes de agir, confira a `main` remota e o ramo de estado: eles sempre vencem este retrato se algo tiver mudado depois.
 
+## 2026-11-04 — saúde dos motores persistente: o cérebro para de esquecer a rota quebrada
+
+**O que mudou e por quê.** `roteador-ia.js` já media saúde por rota (`ok`, `falhas`, `falhasSeguidas`, `timeoutsSeguidos`, `cooldownAte`, `latMedia`, `morta`) e já ordenava candidatos por classe e por falha. O que faltava era **memória entre turnos**: `this.saude` nascia vazio em cada processo, então a rota que acabou de dar timeout voltava a ser tentada primeiro na mensagem seguinte, gastando até 25 s do orçamento outra vez — e o mesmo em cada recarga da página. Agora a saúde é gravada em `localStorage` (chave `roteador-saude-v1`) ao fim de `_premiar` e `_castigar`, e relida no construtor.
+
+**Arquivos e canais afetados.** `roteador-ia.js` (leitura/gravação da saúde), `tools/testes/saude-persistente.js` (novo, 11 contratos), `tools/testes/roda-testes.js` (registro do teste no corredor obrigatório), `sw.js` (casca **rebocl-chat-v109**) e este documento.
+
+**O que foi preservado.** Nenhuma regra de escolha de rota mudou: mesma ordem por dificuldade, mesmo disjuntor de 6 falhas sem nenhuma resposta, mesmo `Retry-After` não encurtado, mesma espera por rota boa com teto de 3 s. Não entrou provedor, chave, conta, gasto nem chamada de rede nova.
+
+**Privacidade.** O disco guarda **somente números por rota** (falhas, timeouts, cooldown, latência, amostras) e a marca booleana `morta`. Não vai pergunta, resposta, URL, mensagem de erro nem identificador de conversa. Um dos 11 testes falha se qualquer texto aparecer no registro.
+
+**Validade e esquecimento.** Registro com mais de 6 h é descartado; cada 30 min sem nova falha devolve um crédito em `falhasSeguidas`; rota recuperada sai do registro. Rota ruim de ontem não condena a de hoje, e "morta" não é definitiva.
+
+**Testes.** `node tools/testes/saude-persistente.js` → 11/11. A bateria rápida completa roda na CI do PR antes de integrar.
+
+**Limite que resta.** O `localStorage` é do navegador do dono: o trabalhador de e-mail/Telegram, que roda em processo no GitHub, continua começando sem memória — não há onde persistir sem criar artefato versionado. A página aprende entre turnos; o canal de e-mail não. Não há promessa de memória compartilhada entre canais.
+
+## 2026-11-04 — o canal de e-mail passa a lembrar qual rota quebrou
+
+**O que mudou e por quê.** O canal de e-mail não usa o `Roteador` da página: ele tem o próprio cérebro (`cerebro()` em `tools/email-chat.js`), que corre **pares de rotas em ordem fixa** em cada turno. Como cada turno é um processo novo no GitHub Actions, esse cérebro não lembrava nada: se a rota `frota` estivesse quebrada, todo turno pagava o timeout de 45 s nela outra vez antes de chegar na `reserva`. Agora a ordem dos candidatos vem de um retrato de contagens por rota (`saude-rotas.json`), restaurado do ramo `estado/operacional` no começo do turno e publicado no fim.
+
+**Arquivos e canais afetados.** `tools/saude-rotas-email.js` (novo módulo), `tools/testes/saude-rotas-email.js` (novo, 11 contratos), `tools/email-chat.js` (ordenação e registro dentro de `cerebro()`), `tools/estado-operacional-controlado.js` (novo perfil fechado `saude-rotas`), `.github/workflows/email.yml` (restaura, injeta `SAUDE_ROTAS_EMAIL` e publica), `tools/testes/roda-testes.js` (registro do teste) e este documento.
+
+**Privacidade.** O arquivo carrega **apenas** nome curto de rota, contagem de sucessos e falhas e dois instantes em milissegundos. Não vai pergunta, resposta, URL, modelo, mensagem de erro nem identificador de conversa. Um dos 11 testes falha se aparecer `http`, `@`, `token` ou texto de conteúdo no arquivo.
+
+**Esquecimento explícito.** Registro com mais de 24 h é descartado na leitura e na gravação; falha nos últimos 10 min custa 3 pontos, sucesso nos últimos 10 min rende 1; empate preserva a ordem original. Rota ruim de ontem não condena a de hoje, e a memória não cresce sem teto (máximo 20 rotas).
+
+**O que foi preservado.** A corrida em pares, as duas passadas (três na foto), os 8 s e 25 s de espera entre passadas, o filtro de modelo cego em foto, os timeouts de 45 s e a ordem original quando não há memória. Nenhum provedor, chave, conta, gasto ou rede nova.
+
+**A guarda que impede estrago.** Os dois passos novos no workflow têm `continue-on-error: true`: se o artefato faltar ou o publicador recusar, o turno continua e a resposta ao dono é entregue com a ordem original. Memória é otimização, nunca requisito — a mesma filosofia do cache em disco do roteador.
+
+**Testes.** `node tools/testes/saude-rotas-email.js` → 11/11; `node tools/testes/estado-operacional-controlado.js` → 11/11 (o perfil novo não furou a allowlist); `python3 -c yaml.safe_load` no `email.yml` → ok.
+
+**Limites.** (i) A memória só existe porque o artefato é publicado no ramo de estado: sem esse passo, a ordem volta a ser fixa. (ii) Ela mede **disponibilidade**, não qualidade de resposta. (iii) A primeira execução depois desta mudança ainda não tem histórico, então nada muda nela.
+## 04/11/2026 — morte de rota deixa de ser eterna (achado verificado do Chat B, `chat#79`)
+
+**O defeito.** A saúde persistente do #77 gravava **um único carimbo** (`t`) para todas as rotas interessadas, e o escritor roda a cada evento de saúde. Resultado: qualquer sucesso numa rota sã renovava o carimbo da rota **morta**, e a validade de 6 h nunca vencia enquanto o chat tivesse uso regular. A rota ficava fora de todas as listas de candidato para sempre — morte sem caminho de volta. O teste antigo não pegava porque congelava o relógio e gravava uma entrada vencida **sem eventos seguintes**.
+
+**A correção.** (1) carimbo **por rota** (`mudouEm`), escrito só quando aquela rota muda; (2) a morte ganhou hora própria (`mortaEm`/`mr`) e validade contada dela; (3) `_premiar` limpa a marca, porque rota que respondeu não está morta. Nada de texto novo no disco: continuam só números e um booleano.
+
+**A barreira.** `tools/testes/saude-persistente.js` passou de 11 para **16 contratos**, incluindo o repro do B (ciclo de 30 h com evento em rota sã a cada 5 h). Rodados contra o código antigo, **4 reprovam** — a barreira morde o defeito de verdade.
+
+**Arquivos e canais afetados.** `roteador-ia.js` (leitura/gravação da saúde por rota), `tools/testes/saude-persistente.js`, `sw.js` (casca **rebocl-chat-v110**) e este documento. Sem mudança de HTML, de rota ou de contrato público.
+
+## 04/11/2026 — a corrente do canal de e-mail não depende mais do agendador
+
+**O que foi medido.** O `email.yml` tem duas crons: `7 */6 * * *` (turno) e `17,47 * * * *` (reserva, que só coordena). Nas últimas 48 h o GitHub entregou **12 execuções agendadas onde cabiam 104** (~12%), e o canal ficou **até 13 h sem turno vivo** — apesar de se chamar "24h vivo".
+
+**O que mudou.** O turno que fecha com sucesso agora pede o próximo usando o coordenador que já existia (`tools/reserva-turno.js`): ele só despacha se a API confirmar que não há outro turno vivo nem fila. Sem caminho novo, sem cron novo.
+
+**As três guardas.** (1) `job.status == 'success'` — turno que falhou **não** encadeia, então a corrente não vira laço de execuções falhando; (2) `continue-on-error: true` — o encaixe nunca derruba um turno que já deu certo; (3) a reserva agendada continua no lugar como rede.
+
+**A barreira.** `tools/testes/auditoria-workflows.js` ganhou o contrato do encaixe (17/17). Rodado sem a guarda de status, ele **reprova**.
+
 ## 0. Regra permanente de continuidade
 
 Toda alteração que mudar comportamento, segurança, privacidade, fluxo operacional, workflow, dependência, teste, arquivo importante ou capacidade do Chat **deve atualizar este documento na mesma série de commits**. Registre, de forma curta e verificável:
@@ -1690,3 +1743,54 @@ Medido antes/depois no ensaio de queda total: **soma da espera 338.678 ms → 76
 **Guarda novo (`tools/testes/lexico-local.js`, 6/6):** procedência (fonte/URL/licença no arquivo), espelho `.js` igual ao `.json`, resposta com `fetch` proibido, ordem de carregamento na página e no service worker, acerta o que a base sustenta e **cala quando não sustenta**.
 
 **Limite.** A base tem 1.502 palavras: é um começo honesto, não um dicionário. Palavra fora dela continua indo para o modelo — e o teste cobra que, nesse caso, o produto **não chute**.
+
+## 2026-11-01 — Diagnóstico do executor correto e pedido correlacionado
+
+A interface consultava o workflow privado agente/chat.yml para inferir falha de um pedido que acorda motor/chat.yml. Agora consulta motor e exige nonce do dispatch aceito, mesmo pedido, branch main, repository_dispatch e falha concluída recente. Fila, ausência de correlação, falha do legado e outro pedido não iniciam contingência. Nonce é identificador técnico sem mensagem/conteúdo privado. Novas conversas acordam o mesmo motor já usado pelos comentários; sem cron novo. O workflow do motor inclui nonce no run-name, com varredura como fallback. Não prova entrega nem confunde HTTP204 com conclusão da tarefa. Testes de recuperação cobrem correlação, outro pedido, falta de nonce, legado, fila e sucesso. Demais controles, token local e canais preservados; registro na Base acompanha a série.
+
+
+## 2026-11-03 — melhoria de confiabilidade da barreira de mudanças do Chat
+
+**Objetivo autorizado:** elevar estabilidade, segurança e autonomia verificável, sem confundir cobertura de testes com inteligência ilimitada. Esta etapa endurece a proteção de entrada de código; não muda respostas, credenciais, contas, crons, APIs nem a interface publicada.
+
+- A barreira de push agora observa também o roteador de IA, razão local, léxico, fontes públicas, bancos de avaliação, dependências npm, manifesto e rotas derivadas. Antes, parte dessas mudanças não acionava testes em push; PR já acionava. A porta de continuidade exige o registro de mudança operacional também para esses arquivos.
+- A CI verifica sintaxe das três fontes JavaScript centrais. No runner, ausência de Chromium passou de **SKIP com conclusão verde** a erro explícito; a execução local continua podendo relatar ausência de navegador como limite, sem fingir que a prova ocorreu. Contratos de continuidade e navegador cobram essa guarda.
+- **Validação exigida antes de promover:** PR protegida, testes rápidos e navegador reais verdes, revisão do diff e ausência de segredos. Sem check verde ou sem revisão humana exigida pela proteção, não promover a `main`.
+- **Limites:** isto melhora a cobertura de alterações e impede aprovação visual falsa no CI; não demonstra zero bugs, SLA, entrega de e-mail, funcionamento ininterrupto, inteligência geral, segurança certificada ou autonomia universal. A PR de dependências #70 permanece separada e não é mesclada automaticamente.
+
+
+## 2026-11-03 — transporte HTTP fixado e evidência operacional explícita
+
+Pedido do dono: implementar as melhorias identificadas na auditoria. O navegador público passa a conectar ao IP público validado por lookup fixo, preservando Host/SNI, revalidando redirecionamentos e encerrando corpos recusados. Não usa uma segunda resolução DNS livre no pré-fetch/fallback. Não muda autenticação, canais, permissões, rede privada ou crons. O placar preserva a série histórica e os pesos, mas informa a origem estado/operacional, a data de cada sinal e a distinção entre cobertura, entrega e autonomia.
+
+Validação local: nove contratos anteriores do navegador e regressão de transporte simulado sem rede, treze contratos anteriores do placar e regressão de procedência/validade, sintaxe e diff. A barreira completa e o navegador controlado são exigidos na PR antes da promoção. Nenhum tráfego real de canal ou modelo foi criado como prova. Rollback: reverter o conjunto por PR; não apagar estado operacional. A cópia 100/100 em main é histórica: o ramo operacional consultado em03/11 tinha98/100 e dados atualizados, o que também não prova autonomia universal. Correção da interpretação da auditoria registrada na Base.
+
+## 2026-11-03 — recuperação da memória sem sobrescrita local
+
+Continuidade autorizada pelo dono. Estado consultado: Chat main 5aaca3d0, Pages41714668144 aprovado e barreira da PR73 aprovada; componente privado segue pausado. O suporte externo corrige uma lacuna reproduzida do sincronizador do Motor, fora das receitas fechadas da Central.
+
+Consenso operacional: aceitar pré-verificação integral do diretório antes de novo download. Nos testes, repetir baixar apagava edição pendente e permitia recriar arquivo removido no remoto. A correção bloqueia conteúdo divergente, arquivo órfão, link simbólico ou arquivo especial, mantém os arquivos para revisão e invalida o manifesto para impedir envio posterior. Cópia parcial idêntica pode retomar. As duas sementes públicas já distribuídas com o código têm exceção apenas por nome e SHA exatos; quando ausentes no privado, sua versão-base impede envio como memória nova. Edições perdem essa exceção. Recusados descarte automático, limpeza de memória, mescla adivinhada, sincronizador paralelo, tráfego/dispatch fabricado e reativação do componente.
+
+Escopo: motor/sincronizar.py, teste-sincronizacao-versao.py e documento de recuperação; nenhuma mudança na interface ou nos canais deste repositório. Proposta e prova: https://github.com/reboclbrank-max/motor/pull/44. Validação local:36 testes, onze regressões novas, incluindo recuperação em pasta vazia sem PUT duplicado. Promoção exige CI completa aprovada. Rollback por reversão e revisão do pin da agenda, preservando os diretórios bloqueados. Cópia antiga divergente também exige revisão e outro diretório vazio; não há proteção transacional contra escritores locais simultâneos. Não comprova recuperação real do Batente, espelhos, entrega nem operação contínua. Relatório técnico: https://github.com/reboclbrank-max/motor/blob/main/docs/RECUPERACAO-MEMORIA-2026-11-03.md.
+
+## 2026-11-03 — alternativa de token apenas de sessão
+
+A configuração do Chat passa a oferecer escolha explícita: guardar PAT só na sessão (sessionStorage) ou manter persistência (localStorage) já aprovada pelo dono, que continua padrão. Ao selecionar sessão, a cópia persistente anterior é apagada. Nenhuma inicialização promove token temporário a persistente. O campo de entrada é limpo após salvar; Console não promove token. A opção não envia o token por mensagem, URL ou log.
+
+Mudanças: index.html, páginas direto/ligar/limpar geradas a partir dela sem alterar regras de rota, console.html, sw.js v107 (ativação explícita), testes de segurança e novo teste de comportamento do armazenamento nas quatro rotas. Testes completos de PR e Chromium são obrigatórios para integrar; não mudar PAT, dependências, canais, orçamento, segredos ou política de GitHub.
+
+Limitações: token em sessionStorage continua acessível a scripts do mesmo domínio durante a sessão e navegadores podem restaurar sessões. Não é solução completa para CSP unsafe-inline ou XSS; token de escopo mínimo ainda depende do dono.
+
+A opção de sessão usa um checkbox com dimensões próprias em chat-estilos.css para não herdar width:100% dos campos de senha no celular; a barreira estática verifica o seletor.
+
+Registro do cache PWA desta mudança: `rebocl-chat-v107` em `sw.js` e nas quatro rotas. O SW permanece aguardando ativação explícita do usuário; rollback pela PR mantendo coerência com `sw.js`.
+
+## 2026-11-04 — evolução do contexto do roteador (respostas em sequência)
+
+**Problema real encontrado:** o roteador `roteador-ia.js` concatenava até seis mensagens prévias e, se excedesse 1200 caracteres, fazia `slice(-1200)`. Isso amputava o começo da fala mais antiga incluída, podendo perder `Dono:`/`Assistente:` e partes de frases. Qualquer papel diferente de `assistant` ou `system` também era tratado como `Dono`, inclusive ferramentas.
+
+**Correção no código:** montarContextoConversa aceita somente um array de falas `user` e `assistant` textuais; preserva a ordem e a identificação das vozes, normaliza quebras de linha, limita cada conteúdo a 400 caracteres com indicador de truncamento, e monta de trás para frente só falas completas que caibam nas mesmas 6 falas / 1200 caracteres. Se falas antigas foram omitidas, o contexto sinaliza explicitamente o corte; não inventa lembranças. A assinatura do cache continua derivada do contexto final, separando conversas diferentes.
+
+**Provas:** `tools/testes/memoria-contexto-coerente.js` executa oito casos de comportamento offline, incluindo role system/tool, orçamento, fala não quebrada, sinal de histórico truncado, texto longo e isolamento de cache. Registrado em `tools/testes/roda-testes.js`. Sem token, rede, modelos externos ou memória privada. O HTML das quatro rotas não mudou; usam `roteador-ia.js` compartilhado. `sw.js` passou para `rebocl-chat-v108` com ativação explícita; `README.md` explica a melhoria.
+
+**Limites:** isso melhora a estrutura do contexto entregue aos motores, **não é treinamento de modelo**, prova de aumento da qualidade factual nem memória infinita. É preciso validar CI completa e browser no SHA final, manter rollback por PR e preservar o orçamento R$0. A Base deve registrar o motivo e evidência. Nenhuma permissão, token, conta, cobrança, cron ou publicação foi alterada.
