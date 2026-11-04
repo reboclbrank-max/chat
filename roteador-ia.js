@@ -805,7 +805,8 @@
     this.metricas = { perguntas: 0, tentativas: 0, sucessos: 0, falhas: 0, cacheAcertos: 0, ferramenta: 0, consenso: 0, consensoDivergente: 0, porRota: {} };
     var self = this;
     this.catalogo.forEach(function (r) {
-      self.saude[r.id] = { ok: 0, falhas: 0, falhasSeguidas: 0, timeoutsSeguidos: 0, cooldownAte: 0, latMedia: 3000, latAmostras: 0, ultimoErro: null, morta: false };
+      self.saude[r.id] = { ok: 0, falhas: 0, falhasSeguidas: 0, timeoutsSeguidos: 0, cooldownAte: 0, latMedia: 3000, latAmostras: 0, ultimoErro: null, morta: false,
+        mudouEm: 0, mortaEm: 0 };   // relógio desta rota e hora da morte (achado do Chat B, 04/11)
       self.metricas.porRota[r.id] = { ok: 0, falhas: 0 };
     });
     this._lerSaudeDisco();
@@ -2216,7 +2217,18 @@
         if (isFinite(lat) && lat > 0) s.latMedia = Math.min(120000, lat);
         var n = Number(g.n);
         if (isFinite(n) && n > 0) s.latAmostras = Math.min(10000, Math.floor(n));
-        if (g.morta === true) s.morta = true;
+        /* Relógio POR ROTA: `t` é a hora da última mudança DESTA rota, não do último evento de
+           qualquer rota. Antes, um sucesso numa rota sã renovava o carimbo da rota morta e a
+           morte nunca vencia enquanto o chat fosse usado (achado verificado pelo Chat B). */
+        var carimbo = Number(g.t);
+        if (isFinite(carimbo) && carimbo > 0) s.mudouEm = carimbo;
+        /* A morte também tem validade própria, contada de quando a rota foi declarada morta. */
+        var mr = Number(g.mr);
+        var idadeMorte = isFinite(mr) && mr > 0 ? t0 - mr : idade;
+        if (g.morta === true && isFinite(idadeMorte) && idadeMorte >= 0 && idadeMorte <= SAUDE_VALIDADE_MS) {
+          s.morta = true;
+          s.mortaEm = isFinite(mr) && mr > 0 ? mr : (carimbo > 0 ? carimbo : t0);
+        }
       });
     } catch (e) { /* saúde em disco é otimização, nunca requisito */ }
   };
@@ -2232,11 +2244,14 @@
           (s.cooldownAte || 0) > t0 || s.morta;
         if (!interessante) return;            // rota sã não ocupa espaço no aparelho
         obj[r.id] = {
-          t: Math.round(t0), f: Math.round(s.falhasSeguidas || 0), to: Math.round(s.timeoutsSeguidos || 0),
+          t: Math.round(s.mudouEm > 0 ? s.mudouEm : t0), f: Math.round(s.falhasSeguidas || 0), to: Math.round(s.timeoutsSeguidos || 0),
           cd: Math.max(0, Math.round(s.cooldownAte || 0)), lat: Math.round(s.latMedia || 0),
           n: Math.round(s.latAmostras || 0)
         };
-        if (s.morta) obj[r.id].morta = true;
+        if (s.morta) {
+          obj[r.id].morta = true;
+          obj[r.id].mr = Math.round(s.mortaEm > 0 ? s.mortaEm : (s.mudouEm > 0 ? s.mudouEm : t0));
+        }
       });
       localStorage.setItem(CHAVE_SAUDE, JSON.stringify(obj));
     } catch (e) { /* cota cheia: segue sem persistir */ }
@@ -2280,6 +2295,7 @@
   Roteador.prototype._castigar = function (id, tipo, espera) {
     var s = this.saude[id], rota = this.catalogo.find(function (r) { return r.id === id; });
     s.falhas++; s.falhasSeguidas = (s.falhasSeguidas || 0) + 1; s.ultimoErro = tipo;
+    s.mudouEm = agora();   // só esta rota muda de carimbo
     s.timeoutsSeguidos = tipo === 'timeout' ? (s.timeoutsSeguidos || 0) + 1 : 0;
     this.metricas.porRota[id].falhas++;
     // Disjuntor: 4 falhas seguidas põem a rota em descanso curto. Não é morte —
@@ -2305,7 +2321,7 @@
     }
     s.cooldownAte = Math.max(s.cooldownAte || 0, agora() + (tipo === 'morto' ? 30 * 60 * 1000
       : tipo === 'timeout' ? 12000 : 8000));
-    if (tipo === 'morto') s.morta = true;
+    if (tipo === 'morto') { s.morta = true; s.mortaEm = agora(); }
     this._gravarSaudeDisco();
   };
 
@@ -2353,6 +2369,10 @@
     s.ok++;
     s.falhasSeguidas = 0;
     s.timeoutsSeguidos = 0;
+    // Rota que respondeu não está morta: a marca sai aqui também, não só pelo vencimento.
+    s.morta = false;
+    s.mortaEm = 0;
+    s.mudouEm = agora();
     // Uma resposta em voo não cancela um 429 mais recente da mesma rota.
     if (s.cooldownAte <= agora()) s.cooldownAte = 0;
     s.latMedia = s.latMedia * 0.7 + (ms || 0) * 0.3;
