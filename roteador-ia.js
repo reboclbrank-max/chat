@@ -808,6 +808,7 @@
       self.saude[r.id] = { ok: 0, falhas: 0, falhasSeguidas: 0, timeoutsSeguidos: 0, cooldownAte: 0, latMedia: 3000, latAmostras: 0, ultimoErro: null, morta: false };
       self.metricas.porRota[r.id] = { ok: 0, falhas: 0 };
     });
+    this._lerSaudeDisco();
   }
 
   // Kilo documenta cota anônima compartilhada por IP; OVH documenta cota por modelo.
@@ -2154,6 +2155,16 @@
 
   /* ============ CACHE ============ */
   var CHAVE_DISCO = 'roteador-cache-v1';
+  /* SAÚDE PERSISTENTE (04/11/2026). Até aqui a memória de rota quebrada morria junto com o
+     processo: cada turno do e-mail/Telegram e cada recarga da página começavam com
+     cooldownAte 0 e latMedia 3000 para TODAS as rotas, então uma rota que acabou de dar
+     timeout voltava a ser tentada primeiro e consumia até 25 s do orçamento de novo.
+     Guardamos só números por rota (falhas, timeouts, cooldown, latência, amostras) e a marca
+     'morta'. Nada de texto, URL, pergunta, resposta ou erro literal vai para o disco.
+     Validade curta: rota ruim de ontem não condena a de hoje. */
+  var CHAVE_SAUDE = 'roteador-saude-v1';
+  var SAUDE_VALIDADE_MS = 6 * 60 * 60 * 1000;
+  var SAUDE_DECAINTO_MS = 30 * 60 * 1000;
 
   Roteador.prototype._lerDisco = function () {
     if (typeof localStorage === 'undefined') return;
@@ -2175,6 +2186,60 @@
       this.cache.forEach(function (v, k) { obj[k] = v; });
       localStorage.setItem(CHAVE_DISCO, JSON.stringify(obj));
     } catch (e) { /* cota do navegador cheia: segue sem persistir */ }
+  };
+
+  /* ============ SAÚDE PERSISTENTE (04/11/2026) ============ */
+  Roteador.prototype._lerSaudeDisco = function () {
+    if (typeof localStorage === 'undefined') return;
+    try {
+      var bruto = localStorage.getItem(CHAVE_SAUDE);
+      if (!bruto) return;
+      var obj = JSON.parse(bruto);
+      if (!obj || typeof obj !== 'object') return;
+      var t0 = agora(), self = this;
+      Object.keys(obj).forEach(function (id) {
+        var s = self.saude[id];
+        if (!s) return;                       // rota que não está mais no catálogo: ignora
+        var g = obj[id] || {};
+        var idade = t0 - Number(g.t);
+        if (!isFinite(idade) || idade < 0 || idade > SAUDE_VALIDADE_MS) return;
+        var f = Number(g.f);
+        if (isFinite(f) && f > 0) {
+          // decaimento: cada 30 min sem nova falha devolve uma tentativa de crédito
+          s.falhasSeguidas = Math.max(0, Math.min(20, Math.floor(f) - Math.floor(idade / SAUDE_DECAINTO_MS)));
+        }
+        var to = Number(g.to);
+        if (isFinite(to) && to > 0) s.timeoutsSeguidos = Math.min(20, Math.floor(to));
+        var cd = Number(g.cd);
+        if (isFinite(cd) && cd > t0) s.cooldownAte = Math.min(cd, t0 + SAUDE_VALIDADE_MS);
+        var lat = Number(g.lat);
+        if (isFinite(lat) && lat > 0) s.latMedia = Math.min(120000, lat);
+        var n = Number(g.n);
+        if (isFinite(n) && n > 0) s.latAmostras = Math.min(10000, Math.floor(n));
+        if (g.morta === true) s.morta = true;
+      });
+    } catch (e) { /* saúde em disco é otimização, nunca requisito */ }
+  };
+
+  Roteador.prototype._gravarSaudeDisco = function () {
+    if (typeof localStorage === 'undefined') return;
+    try {
+      var obj = {}, t0 = agora(), self = this;
+      this.catalogo.forEach(function (r) {
+        var s = self.saude[r.id];
+        if (!s) return;
+        var interessante = s.falhasSeguidas > 0 || s.timeoutsSeguidos > 0 ||
+          (s.cooldownAte || 0) > t0 || s.morta;
+        if (!interessante) return;            // rota sã não ocupa espaço no aparelho
+        obj[r.id] = {
+          t: Math.round(t0), f: Math.round(s.falhasSeguidas || 0), to: Math.round(s.timeoutsSeguidos || 0),
+          cd: Math.max(0, Math.round(s.cooldownAte || 0)), lat: Math.round(s.latMedia || 0),
+          n: Math.round(s.latAmostras || 0)
+        };
+        if (s.morta) obj[r.id].morta = true;
+      });
+      localStorage.setItem(CHAVE_SAUDE, JSON.stringify(obj));
+    } catch (e) { /* cota cheia: segue sem persistir */ }
   };
 
   Roteador.prototype._cacheGet = function (chave) {
@@ -2235,11 +2300,13 @@
         var grupo = escopoRate(rota);
         this.cooldownsRate[grupo] = Math.max(this.cooldownsRate[grupo] || 0, ate);
       }
+      this._gravarSaudeDisco();
       return;
     }
     s.cooldownAte = Math.max(s.cooldownAte || 0, agora() + (tipo === 'morto' ? 30 * 60 * 1000
       : tipo === 'timeout' ? 12000 : 8000));
     if (tipo === 'morto') s.morta = true;
+    this._gravarSaudeDisco();
   };
 
   /* ============ ESPERA PELA ROTA BOA (31/10/2026) ============
@@ -2291,6 +2358,7 @@
     s.latMedia = s.latMedia * 0.7 + (ms || 0) * 0.3;
     s.latAmostras = (s.latAmostras || 0) + 1;
     this.metricas.porRota[id].ok++;
+    this._gravarSaudeDisco();
   };
 
   // RFC 9110: Retry-After pode ser segundos inteiros ou uma data HTTP.

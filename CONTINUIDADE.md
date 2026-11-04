@@ -4,6 +4,22 @@
 >
 > **Retrato consolidado em 2026-10-22.** Ele descreve o estado de `main` após o pacote de segurança, a expansão local, a correção da aferição do teste real de e-mail, a recuperação rápida da interface diante da indisponibilidade observada do trabalhador privado, os rascunhos locais opt-in, a organização local de favoritos e coleções, os backups manuais estritos, a recuperação completa reversível protegida contra fotografia desatualizada, a criação e renomeação estrutural transacionais entre guias, o salvamento e a renomeação comum de arquivo decididos pela fotografia corrente, a importação ativa aditiva decidida pela fotografia persistida, a transferência aditiva de projeto com histórico, a busca explícita entre projetos, a proteção de conflito de arquivo e a Lixeira transacional do Workspace. As saídas operacionais sanitizadas passam a usar o ramo revisável `estado/operacional`, nunca promoção automática em `main`. Antes de agir, confira a `main` remota e o ramo de estado: eles sempre vencem este retrato se algo tiver mudado depois.
 
+## 2026-11-04 — saúde dos motores persistente: o cérebro para de esquecer a rota quebrada
+
+**O que mudou e por quê.** `roteador-ia.js` já media saúde por rota (`ok`, `falhas`, `falhasSeguidas`, `timeoutsSeguidos`, `cooldownAte`, `latMedia`, `morta`) e já ordenava candidatos por classe e por falha. O que faltava era **memória entre turnos**: `this.saude` nascia vazio em cada processo, então a rota que acabou de dar timeout voltava a ser tentada primeiro na mensagem seguinte, gastando até 25 s do orçamento outra vez — e o mesmo em cada recarga da página. Agora a saúde é gravada em `localStorage` (chave `roteador-saude-v1`) ao fim de `_premiar` e `_castigar`, e relida no construtor.
+
+**Arquivos e canais afetados.** `roteador-ia.js` (leitura/gravação da saúde), `tools/testes/saude-persistente.js` (novo, 11 contratos), `tools/testes/roda-testes.js` (registro do teste no corredor obrigatório), `sw.js` (casca **rebocl-chat-v109**) e este documento.
+
+**O que foi preservado.** Nenhuma regra de escolha de rota mudou: mesma ordem por dificuldade, mesmo disjuntor de 6 falhas sem nenhuma resposta, mesmo `Retry-After` não encurtado, mesma espera por rota boa com teto de 3 s. Não entrou provedor, chave, conta, gasto nem chamada de rede nova.
+
+**Privacidade.** O disco guarda **somente números por rota** (falhas, timeouts, cooldown, latência, amostras) e a marca booleana `morta`. Não vai pergunta, resposta, URL, mensagem de erro nem identificador de conversa. Um dos 11 testes falha se qualquer texto aparecer no registro.
+
+**Validade e esquecimento.** Registro com mais de 6 h é descartado; cada 30 min sem nova falha devolve um crédito em `falhasSeguidas`; rota recuperada sai do registro. Rota ruim de ontem não condena a de hoje, e "morta" não é definitiva.
+
+**Testes.** `node tools/testes/saude-persistente.js` → 11/11. A bateria rápida completa roda na CI do PR antes de integrar.
+
+**Limite que resta.** O `localStorage` é do navegador do dono: o trabalhador de e-mail/Telegram, que roda em processo no GitHub, continua começando sem memória — não há onde persistir sem criar artefato versionado. A página aprende entre turnos; o canal de e-mail não. Não há promessa de memória compartilhada entre canais.
+
 ## 0. Regra permanente de continuidade
 
 Toda alteração que mudar comportamento, segurança, privacidade, fluxo operacional, workflow, dependência, teste, arquivo importante ou capacidade do Chat **deve atualizar este documento na mesma série de commits**. Registre, de forma curta e verificável:
