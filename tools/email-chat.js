@@ -383,6 +383,7 @@ const CAUSAS_STATUS_CASA = Object.freeze({
   'bateria-atrasada': { texto: 'bateria atrasada', recuperavel: true },
   'caixa-atrasada': { texto: 'caixa aguardando resposta', recuperavel: true },
   'postagem-atrasada': { texto: 'cadência do postador atrasada — sem recuperação automática', recuperavel: false },
+  'postador-desligado': { texto: 'postador desligado à mão — decisão do dono, não é pane', recuperavel: false },
   'api-indisponivel': { texto: 'sonda da API indisponível — sem ação cega', recuperavel: false },
   'fila-estagnada': { texto: 'fila sem executor — sem adicionar trabalho', recuperavel: false },
   'turnos-duplicados': { texto: 'mais de um turno ativo — revisão humana necessária', recuperavel: false },
