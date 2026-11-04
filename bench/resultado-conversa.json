@@ -1,0 +1,1079 @@
+{
+  "meta": {
+    "iniciado": "2026-11-04T04:54:02.708Z",
+    "terminado": "2026-11-04T05:15:04.927Z",
+    "seed": "comparacao-conversa-2026-11-04",
+    "hashes": {
+      "banco": "72fa4c246116658e58b1dfe0d403a0c5fd788c35b80f6229e3b39edf050d2113",
+      "medidor": "b57269217d487431dbedfceb0311bd4e96811a45e866840c6dd220696457860e",
+      "roteador": "5f80118650e9bf4b55aaa0a44a7c2e275b162705c18aa21273da9ffb2b645e48",
+      "pontuar": "0f434d44d3f53b343649fc23a0054b657e24dc446f2387008eb32cf7f2cfa510"
+    },
+    "versoes": {
+      "A": "truncado — montador pré-#76 (roteador-ia.js@1b62317be8): tool/developer viram Dono; bloco sofre slice(-1200) cortando fala/etiqueta sem sinal",
+      "B": "completo — montarContextoConversa pós-#76 (falas inteiras, só user/assistant, omissão sinalizada)"
+    },
+    "ordem": "pareada e contrabalanceada por classe por hash de semente fixa; uma chamada por vez; cache desligado",
+    "node": "v20.20.2",
+    "limites": "mede o pacote dos dois montadores; amostra sintética do mesmo agente; pontuação por padrão (pontuar.js), sem auditoria factual; provedores gratuitos variam entre chamadas",
+    "retomadas": 0,
+    "janelas": [
+      {
+        "iniciado": "2026-11-04T04:54:02.708Z",
+        "terminado": "2026-11-04T05:15:04.927Z"
+      }
+    ]
+  },
+  "agenda": [
+    {
+      "classe": "C",
+      "id": 16,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "classe": "C",
+      "id": 16,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "classe": "R",
+      "id": 6,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "classe": "R",
+      "id": 6,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "classe": "P",
+      "id": 4,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "classe": "P",
+      "id": 4,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "classe": "R",
+      "id": 18,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "classe": "R",
+      "id": 18,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "classe": "C",
+      "id": 13,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "classe": "C",
+      "id": 13,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "classe": "P",
+      "id": 1,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "classe": "P",
+      "id": 1,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "classe": "P",
+      "id": 5,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "classe": "P",
+      "id": 5,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "classe": "P",
+      "id": 3,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "classe": "P",
+      "id": 3,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "classe": "P",
+      "id": 2,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "classe": "P",
+      "id": 2,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "classe": "R",
+      "id": 19,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "classe": "R",
+      "id": 19,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "classe": "R",
+      "id": 8,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "classe": "R",
+      "id": 8,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "classe": "R",
+      "id": 20,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "classe": "R",
+      "id": 20,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "classe": "R",
+      "id": 10,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "classe": "R",
+      "id": 10,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "classe": "C",
+      "id": 15,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "classe": "C",
+      "id": 15,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "classe": "R",
+      "id": 7,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "classe": "R",
+      "id": 7,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "classe": "C",
+      "id": 11,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "classe": "C",
+      "id": 11,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "classe": "C",
+      "id": 12,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "classe": "C",
+      "id": 12,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "classe": "R",
+      "id": 9,
+      "primeiro": "B",
+      "versao": "B"
+    },
+    {
+      "classe": "R",
+      "id": 9,
+      "primeiro": "B",
+      "versao": "A"
+    },
+    {
+      "classe": "C",
+      "id": 14,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "classe": "C",
+      "id": 14,
+      "primeiro": "A",
+      "versao": "B"
+    },
+    {
+      "classe": "C",
+      "id": 17,
+      "primeiro": "A",
+      "versao": "A"
+    },
+    {
+      "classe": "C",
+      "id": 17,
+      "primeiro": "A",
+      "versao": "B"
+    }
+  ],
+  "res": [
+    {
+      "classe": "C",
+      "id": 16,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Escreva a abertura do relatório no padrão combinado, com o emoji.",
+      "retem": false,
+      "violou": false,
+      "violacoes": [],
+      "ok": false,
+      "ctxChars": 931,
+      "ms": 9882,
+      "rota": "ovhoss20",
+      "erro": null,
+      "incompleto": false,
+      "texto": "📊 O presente relatório apresenta os resultados da migração das planilhas para o novo banco de dados, destacando melhorias significativas nos processos operacionais. A transição permitiu reduzir em 30% o tempo de fechamento mensal, otimizando a eficiência das equipes de contabilidade e finanças. Além disso, a nova infraestrutura assegurou 99,5% de disponibilidade desde a implementação, garantindo continuidade e confiabilidade nos serviços críticos. Esses indicadores refletem o sucesso da iniciativa e a robustez da solução adotada, alinhando-se aos objetivos estratégicos de agilidade e resiliência da organização."
+    },
+    {
+      "classe": "C",
+      "id": 16,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Escreva a abertura do relatório no padrão combinado, com o emoji.",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 1249,
+      "ms": 11133,
+      "rota": "gigante2",
+      "erro": null,
+      "incompleto": false,
+      "texto": "🚀 Abertura  \nPrezados membros da diretoria,  \nEste relatório apresenta os resultados consolidados da migração do ambiente de planilhas para o novo banco de dados corporativo, concluída no último trimestre. A transição foi planejada para garantir integridade dos dados, continuidade operacional e ganhos mensuráveis de eficiência. Desde a virada do sistema, observou‑se uma redução de 30% no tempo de fechamento mensal, refletindo a automação de rotinas manuais e a eliminação de retrabalho. A disponibilidade da plataforma atingiu 99,5%, demonstrando a robustez da arquitetura implementada e a eficácia dos processos de monitoramento. Os indicadores foram validados pela equipe de operações e estão prontos para subsidiar as decisões estratégicas da reunião de sexta‑feira.  \nAgradecemos o apoio da liderança ao longo do projeto e permanecemos à disposição para esclarecimentos adicionais."
+    },
+    {
+      "classe": "R",
+      "id": 6,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Qual é o meu nome e qual é o meu prato favorito?",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 166,
+      "ms": 4359,
+      "rota": "gigante2",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Seu nome é Zuleide e seu prato favorito é bobó de camarão."
+    },
+    {
+      "classe": "R",
+      "id": 6,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Qual é o meu nome e qual é o meu prato favorito?",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 166,
+      "ms": 3590,
+      "rota": "gigante2",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Seu nome é Zuleide e seu prato favorito é bobó de camarão."
+    },
+    {
+      "classe": "P",
+      "id": 4,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Precisa saber meu nome e meu teto de gasto. Pode confirmar os dois?",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 223,
+      "ms": 3487,
+      "rota": "gigante2",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Seu nome é Letícia e o teto de lazer definido para este mês é R$ 100,00."
+    },
+    {
+      "classe": "P",
+      "id": 4,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Precisa saber meu nome e meu teto de gasto. Pode confirmar os dois?",
+      "retem": true,
+      "violou": true,
+      "violacoes": [
+        "480",
+        "premium",
+        "Espaço Central",
+        "Espaco Central"
+      ],
+      "ok": false,
+      "ctxChars": 340,
+      "ms": 7123,
+      "rota": "gigante2",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Sim, Letícia. Seu nome é Letícia e seu teto de lazer para este mês é R$ 100,00. O ingresso premium no Espaço Central custa R$ 480,00, o que está bem acima do seu limite."
+    },
+    {
+      "classe": "R",
+      "id": 18,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Quanto ainda sobra para os outros gastos da viagem?",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 222,
+      "ms": 10311,
+      "rota": "gigante2",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Prezado,\n\nConsiderando o orçamento total de R$ 2.000,00 e o valor de R$ 650,00 já despendido com a passagem, o saldo remanescente para os demais custos da viagem é de R$ 1.350,00. Esse montante deverá cobrir hospedagem, alimentação, transporte local, passeios e eventuais imprevistos. Recomendo registrar cada despesa para manter o controle financeiro dentro do planejado.\n\nAtenciosamente,\nAssistente FinanceiroPrezado,\n\nConsiderando o orçamento total de R$ 2.000,00 e o valor de R$ 650,00 já despendido com a passagem, o saldo remanescente para os demais custos da viagem é de R$ 1.350,00. Esse montante deverá cobrir hospedagem, alimentação, transporte local, passeios e eventuais imprevistos. Recomendo registrar cada despesa para manter o controle financeiro dentro do planejado."
+    },
+    {
+      "classe": "R",
+      "id": 18,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Quanto ainda sobra para os outros gastos da viagem?",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 222,
+      "ms": 71757,
+      "rota": "ultra",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Prezado,\n\nConsiderando o orçamento total de R$ 2.000,00 e o valor de R$ 650,00 já despendido com a passagem, o saldo remanescente para os demais custos da viagem é de R$ 1.350,00. Esse montante deverá cobrir hospedagem, alimentação, transporte local, passeios e eventuais imprevistos. Recomendo registrar cada despesa para manter o controle financeiro dentro do planejado.\n\nAtenciosamente,\nAssistente FinanceiroPrezado,\n\nConsiderando o orçamento total de R$ 2.000,00 e o valor de R$ 650,00 já despendido com a passagem, o saldo remanescente para os demais custos da viagem é de R$ 1.350,00. Esse montante deverá cobrir hospedagem, alimentação, transporte local, passeios e eventuais imprevistos. Recomendo registrar cada despesa para manter o controle financeiro dentro do planejado."
+    },
+    {
+      "classe": "C",
+      "id": 13,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Sugira três mudanças para a cozinha dentro do que combinamos, citando o teto.",
+      "retem": false,
+      "violou": false,
+      "violacoes": [],
+      "ok": false,
+      "ctxChars": 966,
+      "ms": 34924,
+      "rota": "ultra",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Prezado,\n\nConsiderando o teto de orçamento rígido e o estilo industrial definido, sugiro três mudanças viáveis:\n\n1. Substituir os armários superiores por prateleiras metálicas abertas com suportes aparentes; reduz custo de marcenaria, mantém a madeira maciça nas bases e reforça a estética industrial.\n\n2. Optar por cuba de aço inox embutida com acabamento escovado em vez de modelo de granito; economiza na pedra e harmoniza com o granito preto da bancada e as luminárias pendentes.\n\n3. Aplicar pintura epóxi fosca nas paredes no lugar de revestimento cerâmico até o teto; corta material e mão de obra, resiste a umidade e combina com o cimento queimado do piso.\n\nTodas as alterações cabem no valor duro combinado e preservam a identidade do projeto.\n\nAtenciosamente."
+    },
+    {
+      "classe": "C",
+      "id": 13,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Sugira três mudanças para a cozinha dentro do que combinamos, citando o teto.",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 1249,
+      "ms": 69788,
+      "rota": "gigante2",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Prezado(a),\n\nConsiderando o teto rígido de R$ 5.000,00 e o estilo industrial definido, sugiro três intervenções que se encaixam no orçamento:\n\n1. **Pintura de efeito concreto nas paredes** – tinta acrílica fosca cinza‑escuro, aplicada em duas demãos, custa cerca de R$ 300,00 e reforça a estética industrial sem obra pesada.  \n2. **Prateleiras abertas de aço preto** – dois módulos de 1,20 m cada, fixados com suportes aparentes, totalizam aproximadamente R$ 800,00 e substituem armários superiores, liberando verba para a bancada de granito.  \n3. **Troca de puxadores e dobradiças por modelos em ferro preto fosco** – kit completo para todos os armários de madeira maciça sai por volta de R$ 250,00, mantendo a coerência visual e o custo baixo.\n\nEssas três mudanças somam cerca de R$ 1.350,00, deixando margem para o granito preto, o cimento queimado e as luminárias pendentes já previstas.\n\nAtenciosamente."
+    },
+    {
+      "classe": "P",
+      "id": 1,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Pode me recomendar uma hospedagem e me lembrar qual é o meu nome?",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 426,
+      "ms": 4140,
+      "rota": "ovhoss20",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Iris, para manter o estilo simples e barato, recomendo hospedagens em hostels ou pousadas econômicas. No destino que você escolher, procure por opções com café da manhã incluso e Wi‑Fi gratuito, pois isso reduz custos extras. Em cidades turísticas, os hostels de categoria 2 ou 3 costumam ter diárias entre R$ 80 e R$ 120, com quartos compartilhados ou privados. Se preferir mais privacidade, uma pousada de 2 estrelas costuma custar de R$ 150 a R$ 200 por noite, ainda assim mais em conta que hotéis de categoria superior. Verifique avaliações recentes no TripAdvisor ou Booking.com para garantir conforto e segurança. Assim, você economiza sem abrir mão de uma boa experiência."
+    },
+    {
+      "classe": "P",
+      "id": 1,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Pode me recomendar uma hospedagem e me lembrar qual é o meu nome?",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 289,
+      "ms": 23152,
+      "rota": "ultra",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Seu nome é Iris. Para recomendar uma hospedagem simples e barata, preciso saber o destino e as datas da sua viagem. Com essas informações, posso sugerir opções como hostels, pousadas econômicas ou campings, dependendo do local. Se preferir, também posso indicar plataformas de busca com filtros de preço baixo e avaliações de outros viajantes. Assim que me der o destino e o período, envio sugestões concretas."
+    },
+    {
+      "classe": "P",
+      "id": 5,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Sugira uma música para mim agora e diga qual gênero eu combinei com você.",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 309,
+      "ms": 45235,
+      "rota": "gigante2",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Tuca, combinamos que eu só sugeriria MPB. Uma ótima pedida agora é **\"Construção\"**, do Chico Buarque — letra densa, arranjo sofisticado e aquele ritmo que vai se fechando até o final. Se quiser algo mais leve, **\"O Bêbado e a Equilibrista\"**, na voz de Elis Regina, também cai bem. O gênero que fechamos foi **MPB**."
+    },
+    {
+      "classe": "P",
+      "id": 5,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Sugira uma música para mim agora e diga qual gênero eu combinei com você.",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 197,
+      "ms": 6001,
+      "rota": "ovhoss20",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Sugiro a faixa “O Que É, O Que É” de Chico Buarque, um clássico da MPB que mistura poesia e ritmo envolvente. A melodia traz o toque suave do samba e a letra reflete a sensibilidade típica do gênero. Você combinou comigo apenas MPB, então essa escolha mantém a vibe que você gosta. Aproveite a música e deixe o som da MPB preencher o ambiente."
+    },
+    {
+      "classe": "P",
+      "id": 3,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Escreva uma frase de bom dia para mim usando o apelido combinado.",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 324,
+      "ms": 28441,
+      "rota": "ovhoss",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Bom dia, Danda! Que a luz suave do amanhecer invada sua janela e traga consigo a energia renovada que você merece, preenchendo cada instante com alegria, criatividade e aquele sorriso contagiante que ilumina quem está ao seu redor. Que o café quente desperte seus sentidos, que as ideias fluam como o canto dos pássaros e que cada passo de hoje seja guiado por confiança e inspiração. Aproveite cada pequeno detalhe, celebre a vida e sinta o carinho que todos enviam para você neste novo dia."
+    },
+    {
+      "classe": "P",
+      "id": 3,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Escreva uma frase de bom dia para mim usando o apelido combinado.",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 203,
+      "ms": 6056,
+      "rota": "gigante2",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Bom dia, Danda! Que seu dia comece com leveza, café quentinho e aquela sensação boa de que tudo vai dar certo. Aproveite cada momento, sorria para as pequenas vitórias e lembre-se de que você merece tudo de melhor que a vida tem a oferecer. Bora brilhar!"
+    },
+    {
+      "classe": "P",
+      "id": 2,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Me explique a diferença prática entre NVMe e SATA SSD no meu nível e me chame pelo nome.",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 285,
+      "ms": 22887,
+      "rota": "nanoomni",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Bento, a diferença prática entre NVMe e SATA SSD está na interface e no caminho de dados. O SATA usa a interface SATA (Serial ATA) que limita a taxa de transferência máxima a cerca de 600 MB/s, dependendo da versão, e o protocolo foi desenvolvido para HDDs, o que gera latência maior. Já o NVMe (Non‑Volatile Memory Express) opera sobre o barramento PCIe, permitindo múltiplas lanes de alta velocidade; em um SSD NVMe de 4 lanes PCIe 3.0 chega a 3,5 GB/s, e nas versões PCIe 4.0 ultrapassa 7 GB/s, com latência muito menor porque elimina a camada de emulação do AHCI. Na prática, isso se traduz em tempos de carregamento de jogos, cópia de arquivos grandes e boot do sistema noticeavelmente mais rápidos com NVMe, enquanto o SATA ainda é suficiente para uso cotidiano e projetos menos exigentes."
+    },
+    {
+      "classe": "P",
+      "id": 2,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Me explique a diferença prática entre NVMe e SATA SSD no meu nível e me chame pelo nome.",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 398,
+      "ms": 20863,
+      "rota": "ovhoss20",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Bento, imagine o SATA SSD como um corredor de 2,5 metros de largura, onde os dados são entregues em pacotes de tamanho fixo, como cartas em uma fila de correio. O NVMe, por outro lado, é um corredor de 4 metros, com várias pistas paralelas, permitindo que múltiplos pacotes sejam entregues simultaneamente, como se fossem vários carros em uma estrada de alta velocidade. Na prática, isso significa que o NVMe pode ler e escrever dados em até 10 vezes mais velocidade que o SATA, reduzindo drasticamente o tempo de boot e de carregamento de programas. Porém, o SATA SSD costuma ser mais barato e ainda oferece desempenho muito superior ao HDD tradicional. Se o seu orçamento permitir, escolha NVMe para tarefas que exigem alta taxa de transferência, como edição de vídeo ou jogos pesados. Se o custo for prioridade, o SATA SSD já traz melhorias significativas em relação ao disco mecânico."
+    },
+    {
+      "classe": "R",
+      "id": 19,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Sugira um horário para eu tomar um café da manhã reforçado, sem atrapalhar a rotina.",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 222,
+      "ms": 39534,
+      "rota": "nanoomni",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Um bom horário para o café da manhã reforçado seria entre 7h15 e 7h45, logo após o treino e antes de sair para o trabalho. Nesse intervalo você pode preparar um prato equilibrado com proteínas, carboidratos complexos e frutas, garantindo energia para a manhã. Se preferir algo mais rápido, um smoothie nutritivo ou um sanduíche de pão integral com ovo e abacate também se encaixa bem nesse período, sem interferir no seu cronograma."
+    },
+    {
+      "classe": "R",
+      "id": 19,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Sugira um horário para eu tomar um café da manhã reforçado, sem atrapalhar a rotina.",
+      "retem": true,
+      "violou": true,
+      "violacoes": [
+        "às 8h",
+        "as 8h"
+      ],
+      "ok": false,
+      "ctxChars": 222,
+      "ms": 25929,
+      "rota": "ovhoss20",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Você pode tomar o café da manhã reforçado em dois momentos que não atrapalham sua rotina: antes do treino, entre 5h45 e 6h, ou logo após, entre 7h15 e 7h30. Se escolher o horário antes do treino, consuma alimentos leves e energéticos, como aveia, banana e iogurte, para não sobrecarregar o estômago antes da atividade física. Se optar pelo horário pós‑treino, inclua proteínas e carboidratos complexos, como ovos mexidos, pão integral e frutas, para auxiliar na recuperação muscular e manter a energia até o início do expediente. Ambos os intervalos permitem que você se alimente adequadamente sem atrasar o trabalho às 8h."
+    },
+    {
+      "classe": "R",
+      "id": 8,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Quer marcar uma consulta para mim amanhã. Qual horário você sugere e por quê?",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 190,
+      "ms": 11995,
+      "rota": "nanoomni",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Para a consulta amanhã, sugiro o horário das 19h30. Nesse momento você já terminou o expediente às 18h e tem tempo suficiente para chegar em casa, descansar um pouco e evitar a pressa do trânsito pós‑trabalho. O horário também permite que a consulta não interfira nas suas atividades pessoais, pois ainda há tempo para jantar e relaxar antes de iniciar o restante da noite. Caso prefira um horário mais cedo, a janela entre 18h30 e 19h também funciona, mas o início após as 19h garante maior tranquilidade."
+    },
+    {
+      "classe": "R",
+      "id": 8,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Quer marcar uma consulta para mim amanhã. Qual horário você sugere e por quê?",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 190,
+      "ms": 27503,
+      "rota": "ovhoss20",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Sugiro marcar a consulta para amanhã às 19h30. Esse horário é o primeiro disponível depois do meu expediente, que termina às 18h. Assim, consigo atender você sem interferir nas minhas atividades profissionais e ainda garantir que a sessão seja realizada em um momento tranquilo, quando posso dedicar toda a atenção ao seu caso. Se esse horário não for conveniente, por favor me avise e tentaremos encontrar outra opção após as 19h."
+    },
+    {
+      "classe": "R",
+      "id": 20,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Escreva a primeira quadra do poema seguindo a regra que eu dei e confirme quantas sílabas cada linha tem.",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 251,
+      "ms": 114651,
+      "rota": "ovhl",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Aqui está a primeira quadra do poema:\nLuzes brilham forte\nNoites são muito longas\nRios correm sem parar\nVidas têm seu valor\n\nCada linha tem exatamente 7 sílabas poéticas, seguindo a regra da métrica da redondilha maior."
+    },
+    {
+      "classe": "R",
+      "id": 20,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Escreva a primeira quadra do poema seguindo a regra que eu dei e confirme quantas sílabas cada linha tem.",
+      "retem": false,
+      "violou": false,
+      "violacoes": [],
+      "ok": false,
+      "ctxChars": 251,
+      "ms": 202134,
+      "rota": "ovhq397",
+      "erro": null,
+      "incompleto": false,
+      "texto": "If I output 4 lines of poem"
+    },
+    {
+      "classe": "R",
+      "id": 10,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Monte um café da manhã para mim.",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 180,
+      "ms": 6233,
+      "rota": "ovhoss20",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Café da manhã equilibrado para diabético tipo 2:\n\n- 1 fatia de pão integral (≈30 g) com 1 colher de sopa de pasta de abacate (abacate, limão, sal e pimenta).  \n- 1 ovo cozido ou mexido com espinafre e tomate‑cereja (sem óleo ou com azeite de oliva extra‑virgem).  \n- 1 iogurte natural sem açúcar (≈150 g) com 1 colher de sopa de chia e uma pitada de canela.  \n- 1 fruta de baixo índice glicêmico, como ½ maçã verde ou ½ pêssego.  \n- 1 xícara de café preto ou chá verde sem açúcar.  \n\nEssa combinação oferece fibras, proteínas e gorduras saudáveis, mantendo a glicemia estável e evitando picos de açúcar. Ajuste as porções conforme orientação do seu nutricionista."
+    },
+    {
+      "classe": "R",
+      "id": 10,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Monte um café da manhã para mim.",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 180,
+      "ms": 39496,
+      "rota": "ovhoss20",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Café da manhã equilibrado para diabético tipo 2:\n\n- 1 fatia de pão integral (ou ½ xícara de aveia cozida) com 1 colher de sopa de pasta de amendoim natural (sem açúcar) ou 1 ovo mexido.\n- 1 iogurte natural sem açúcar, adoçado com canela ou 1 colher de chá de adoçante natural (eritritol) se desejar.\n- 1 porção de frutas de baixo índice glicêmico: ½ maçã verde ou ¼ de abacate.\n- 1 punhado de nozes ou amêndoas (cerca de 10 unidades) para gorduras saudáveis.\n- 1 xícara de chá verde ou café preto sem açúcar.\n\nBebida: água com gás ou água natural. Ajuste as porções conforme seu plano calórico e controle glicêmico."
+    },
+    {
+      "classe": "C",
+      "id": 15,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Agora responde de novo o que eu tinha perguntado sobre o caminhão, com a conta certa.",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 1249,
+      "ms": 45249,
+      "rota": "ovhoss20",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Para calcular o número de viagens do caminhão, basta multiplicar o número de caixas pelo peso de cada uma e dividir pelo peso máximo que o caminhão pode transportar por viagem.  \n\n- 22 caixas × 15 kg = 330 kg no total.  \n- O caminhão carrega até 400 kg por viagem.  \n\nComo 330 kg < 400 kg, todas as caixas cabem em **uma única viagem**.  \n\nEsses dados foram anotados: 22 caixas, 15 kg cada, caminhão com capacidade de 400 kg por viagem. Se precisar de mais detalhes ou ajustes, avise."
+    },
+    {
+      "classe": "C",
+      "id": 15,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Agora responde de novo o que eu tinha perguntado sobre o caminhão, com a conta certa.",
+      "retem": false,
+      "violou": false,
+      "violacoes": [],
+      "ok": false,
+      "ctxChars": 1108,
+      "ms": 48373,
+      "rota": "ovhoss20",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Para determinar o número exato de viagens que o caminhão precisará fazer, preciso de alguns dados adicionais: a capacidade de carga do caminhão (em kg ou volume), o peso total ou volume das mercadorias a serem transportadas, e a quantidade de itens que compõem essa carga. Também seria útil saber se há restrições de peso ou volume por viagem, além das regras já mencionadas sobre o elevador e a necessidade de colocar as caixas frágeis no topo. Com essas informações, poderei fazer o cálculo correto e planejar as viagens de forma eficiente."
+    },
+    {
+      "classe": "R",
+      "id": 7,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Com base no que eu disse, quantos ovos no total?",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 174,
+      "ms": 25554,
+      "rota": "ultra",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Com base no que você disse, o total é de 90 ovos. A conta é simples: três caixas multiplicadas por trinta unidades cada uma resultam em noventa ovos no total. Essa quantidade costuma ser suficiente para um bom período de consumo doméstico ou para preparar receitas maiores, como bolos, tortas ou quiches para eventos. Vale lembrar de verificar a validade e a integridade das cascas no momento da compra para evitar desperdício. Guardar os ovos na geladeira, preferencialmente na parte interna e não na porta, ajuda a manter a qualidade por mais tempo. Com noventa unidades, você tem uma reserva confortável para o dia a dia."
+    },
+    {
+      "classe": "R",
+      "id": 7,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Com base no que eu disse, quantos ovos no total?",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 174,
+      "ms": 5821,
+      "rota": "ovhoss20",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Você comprou 3 caixas, cada uma contendo 30 ovos. Para saber o total, basta multiplicar: 3 × 30 = 90. Assim, no final, você terá 90 ovos disponíveis."
+    },
+    {
+      "classe": "C",
+      "id": 11,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Agora sim: monte o cardápio de amanhã para mim, do café da manhã ao jantar, respeitando tudo o que já combinamos.",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 1249,
+      "ms": 13051,
+      "rota": "gigante2",
+      "erro": null,
+      "incompleto": false,
+      "texto": "**Café da manhã (≈10 min, 1 frigideira)**  \nOmelete de 2 ovos com queijo minas, tomate picado, cebolinha e orégano; acompanha 1 fatia de pão integral torrado e café preto.\n\n**Almoço (≈25 min, 1 panela)**  \nArroz‑feijão “one‑pot”: refogue alho, cebola e pimentão em azeite, adicione 1 xícara de arroz, ½ xícara de feijão preto cozido, 2 xícaras de água, sal, cominho e louro; cozinhe 12 min. Nos últimos 5 min, junte cubos de peixe de rio (tilápia) temperados com limão, alho e coentro. Sirva com salada de alface, rúcula, cenoura ralada e vinagrete de azeite, limão e sal.\n\n**Lanche da tarde (≈5 min, sem fogão)**  \nIogurte natural batido com 1 colher de mel, granola caseira e pedaços de banana.\n\n**Jantar (≈20 min, 1 frigideira)**  \nFrango desfiado rápido: cozinhe peito de frango em cubos com alho, cebola, páprica defumada e molho de tomate; adicione brócolis e vagem picados, tampe 5 min. Misture ao macarrão penne já cozido (3 min) e finalize com queijo parmesão ralado e manjericão fresco. Acompanha salada de tomate, cebola roxa e azeite."
+    },
+    {
+      "classe": "C",
+      "id": 11,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Agora sim: monte o cardápio de amanhã para mim, do café da manhã ao jantar, respeitando tudo o que já combinamos.",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 1005,
+      "ms": 44088,
+      "rota": "ultra",
+      "erro": null,
+      "incompleto": false,
+      "texto": "**Café da manhã (≈10 min, 1 frigideira)**  \nOmelete de 2 ovos com queijo minas, tomate picado, cebolinha e uma pitada de sal; acompanha 1 fatia de pão integral tostado e café preto.\n\n**Almoço (≈25 min, 1 panela)**  \nArroz‑feijão “one‑pot”: refogue alho, cebola e pimentão em azeite; adicione 1 xícara de arroz, ½ xícara de feijão preto já cozido, 2 xícaras de água, sal e temperos brasileiros (colorau, cominho, louro). Cozinhe tampado 15 min. Finalize com pedaços de frango grelhado (cortados em cubos) misturados ao arroz e salada de alface, rúcula e cenoura ralada temperada com limão e azeite.\n\n**Lanche da tarde (≈5 min, sem fogão)**  \nIogurte natural (ou queijo cottage) com 1 colher de mel e castanhas picadas; 1 fruta da estação (banana ou maçã).\n\n**Jantar (≈20 min, 1 frigideira)**  \nFilé de peixe de rio grelhado (temperado com alho, limão, sal e coentro) servido sobre macarrão integral al dente (cozido 8 min em água com sal) misturado a brócolis e vagem salteados na mesma frigideira com um fio de azeite. Finalize com queijo ralado por cima."
+    },
+    {
+      "classe": "C",
+      "id": 12,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Escreva uma frase de divulgação curta para o meu projeto, no estilo combinado, usando o nome correto.",
+      "retem": false,
+      "violou": false,
+      "violacoes": [],
+      "ok": false,
+      "ctxChars": 961,
+      "ms": 41058,
+      "rota": "ovhnemo",
+      "erro": null,
+      "incompleto": false,
+      "texto": "\"Crie um jardim vibrante com o Aplicativo de Jardinagem para Iniciantes. Regas e adubações registradas, cores amigáveis. Junte-se à comunidade verde!\""
+    },
+    {
+      "classe": "C",
+      "id": 12,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Escreva uma frase de divulgação curta para o meu projeto, no estilo combinado, usando o nome correto.",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 1249,
+      "ms": 40254,
+      "rota": "ovhl",
+      "erro": null,
+      "incompleto": false,
+      "texto": "O Vento Norte é o seu guia para começar a jardinagem com tranquilidade e alegria, ajudando você a cuidar de suas plantas com carinho e atenção."
+    },
+    {
+      "classe": "R",
+      "id": 9,
+      "primeiro": "B",
+      "versao": "B",
+      "q": "Sugira um presente de aniversário para ele. Não esqueça a idade.",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 145,
+      "ms": 3948,
+      "rota": "ovhoss20",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Para o Caio, que tem 7 anos, um presente que estimula a criatividade e a diversão pode ser uma caixa de construção de robôs interativos, como a LEGO Boost ou a Snap Circuits. Esses kits permitem montar peças, programar movimentos simples e criar projetos que funcionam, combinando lógica, engenharia e diversão. Além disso, um livro de histórias ilustradas com temas de aventura e ciência, como “O Pequeno Cientista” ou “Aventuras no Espaço”, pode inspirar a leitura e o interesse por descobertas. Se preferir algo mais ativo, um conjunto de jogos de tabuleiro educativos, como “Catan Junior” ou “Ticket to Ride: My First Journey”, oferece diversão em família e desenvolve habilidades de estratégia e contagem."
+    },
+    {
+      "classe": "R",
+      "id": 9,
+      "primeiro": "B",
+      "versao": "A",
+      "q": "Sugira um presente de aniversário para ele. Não esqueça a idade.",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 145,
+      "ms": 7701,
+      "rota": "gigante2",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Para o aniversário de 7 anos do Caio, um presente que estimule a criatividade e a coordenação motora costuma fazer muito sucesso. Um kit de blocos de montar avançado, com peças técnicas como engrenagens e eixos, permite que ele construa veículos ou robôs que realmente se movem, mantendo o desafio adequado à idade. Outra ótima opção é um conjunto de ciências simples, como um laboratório de slime ou um kit para cultivar cristais, que transforma a brincadeira em experimentação prática. Se ele gosta de movimento, um patinete de três rodas com altura ajustável garante diversão ao ar livre e segurança. Livros de aventuras com capítulos curtos e ilustrações, como a série \"Diário de um Banana\" ou \"O Menino Maluquinho\", incentivam o hábito da leitura independente. Complete com um jogo de tabuleiro cooperativo, tipo \"Ilha Proibida\", para jogar em família e desenvolver estratégia. Qualquer dessas escolhas une aprendizado e diversão, marcando os 7 anos com presentes que ele vai usar bastante."
+    },
+    {
+      "classe": "C",
+      "id": 14,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Qual é a minha regra principal para a música da festa e qual é o meu nome?",
+      "retem": false,
+      "violou": false,
+      "violacoes": [],
+      "ok": false,
+      "ctxChars": 1249,
+      "ms": 92033,
+      "rota": null,
+      "erro": "eco de instrução",
+      "incompleto": false,
+      "texto": ""
+    },
+    {
+      "classe": "C",
+      "id": 14,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Qual é a minha regra principal para a música da festa e qual é o meu nome?",
+      "retem": false,
+      "violou": false,
+      "violacoes": [],
+      "ok": false,
+      "ctxChars": 926,
+      "ms": 8253,
+      "rota": "ovhoss20",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Sua regra principal para a música da festa é: a banda deve tocar das 20h até a meia‑noite, apresentando um repertório de clássicos que façam os mais velhos cantarem junto, e não pode haver DJ, som montado ou vitrola.  \nO seu nome, conforme indicado no início da conversa, é Dono."
+    },
+    {
+      "classe": "C",
+      "id": 17,
+      "primeiro": "A",
+      "versao": "A",
+      "q": "Me dá uma sugestão de almoço mineiro para hoje, considerando minhas restrições todas.",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 1249,
+      "ms": 15389,
+      "rota": "gigante2",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Para o almoço mineiro de hoje, sugiro: arroz branco soltinho, feijão tropeiro feito com bacon, linguiça calabresa sem pimenta, farinha de mandioca, ovos mexidos e cheiro‑verde; angu de milho cremoso preparado com caldo de carne caseiro; couve refogada apenas com alho, cebola e um fio de azeite; carne de panela cozida lentamente com tomate, cebola, cenoura e batata, temperada só com sal e ervas frescas; salada de alface, tomate e cenoura ralada regada com vinagrete de limão, azeite e sal. Como bebida, suco de maracujá natural e, depois da refeição, café coado na hora. Antes de usar qualquer molho pronto ou tempero industrializado, confira o rótulo para garantir que não há traços de amendoim nem pimenta. Essa combinação respeita todas as suas restrições e mantém o sabor tradicional da roça."
+    },
+    {
+      "classe": "C",
+      "id": 17,
+      "primeiro": "A",
+      "versao": "B",
+      "q": "Me dá uma sugestão de almoço mineiro para hoje, considerando minhas restrições todas.",
+      "retem": true,
+      "violou": false,
+      "violacoes": [],
+      "ok": true,
+      "ctxChars": 942,
+      "ms": 20778,
+      "rota": "ultra",
+      "erro": null,
+      "incompleto": false,
+      "texto": "Para o almoço de hoje, sugiro um prato único mineiro bem caseiro: **tutu de feijão cremoso** feito com feijão carioca cozido na pressão, bacon em cubos, alho, cebola, louro e farinha de mandioca torrada na hora, tudo batido no liquidificador com o caldo do cozimento até ficar liso; **angu de milho** preparado com fubá mimoso, água, sal e um fio de óleo, mexido sem parar por 20 minutos até soltar do fundo da panela; **couve-manteiga** fatiada fininha e refogada apenas em alho dourado no óleo, sem nenhum tempero picante; e **arroz branco soltinho** com alho e cebola. Como proteína, **costelinha de porco assada** temperada só com sal grosso, alho amassado, louro e suco de limão, coberta com papel-alumínio e levada ao forno baixo por três horas até desmanchar. Para beber, **café coado no pano** bem quente depois da refeição. Verifiquei mentalmente cada item: não há pimenta-do-reino, pimenta calabresa nem qualquer molho industrializado; se quiser adicionar molho de tomate caseiro, faço com tomates frescos, cebola, alho e manjericão, sem aditivos. Confirma esse cardápio ou quer ajustar alguma preparação?"
+    }
+  ],
+  "sum": {
+    "P": {
+      "A": {
+        "total": 5,
+        "previsto": 5,
+        "completo": true,
+        "retem": 5,
+        "violou": 1,
+        "ok": 4,
+        "pctOk": 80,
+        "medianaMs": 20863,
+        "mediaCtxChars": 359
+      },
+      "B": {
+        "total": 5,
+        "previsto": 5,
+        "completo": true,
+        "retem": 5,
+        "violou": 0,
+        "ok": 5,
+        "pctOk": 100,
+        "medianaMs": 6056,
+        "mediaCtxChars": 239
+      },
+      "placar": {
+        "retem": "5×5",
+        "violou": "1×0 (menor é melhor)",
+        "ok": "4×5"
+      }
+    },
+    "R": {
+      "A": {
+        "total": 8,
+        "previsto": 8,
+        "completo": true,
+        "retem": 7,
+        "violou": 0,
+        "ok": 7,
+        "pctOk": 87.5,
+        "medianaMs": 26528.5,
+        "mediaCtxChars": 194
+      },
+      "B": {
+        "total": 8,
+        "previsto": 8,
+        "completo": true,
+        "retem": 8,
+        "violou": 1,
+        "ok": 7,
+        "pctOk": 87.5,
+        "medianaMs": 9114,
+        "mediaCtxChars": 194
+      },
+      "placar": {
+        "retem": "7×8",
+        "violou": "0×1 (menor é melhor)",
+        "ok": "7×7"
+      }
+    },
+    "C": {
+      "A": {
+        "total": 7,
+        "previsto": 7,
+        "completo": true,
+        "retem": 6,
+        "violou": 0,
+        "ok": 6,
+        "pctOk": 85.7,
+        "medianaMs": 40254,
+        "mediaCtxChars": 1249
+      },
+      "B": {
+        "total": 7,
+        "previsto": 7,
+        "completo": true,
+        "retem": 2,
+        "violou": 0,
+        "ok": 2,
+        "pctOk": 28.6,
+        "medianaMs": 34924,
+        "mediaCtxChars": 977
+      },
+      "placar": {
+        "retem": "6×2",
+        "violou": "0×0 (menor é melhor)",
+        "ok": "6×2"
+      }
+    },
+    "total": {
+      "A": {
+        "total": 20,
+        "previsto": 20,
+        "completo": true,
+        "retem": 18,
+        "violou": 1,
+        "ok": 17,
+        "pctOk": 85,
+        "medianaMs": 26528.5,
+        "mediaCtxChars": 605
+      },
+      "B": {
+        "total": 20,
+        "previsto": 20,
+        "completo": true,
+        "retem": 15,
+        "violou": 1,
+        "ok": 14,
+        "pctOk": 70,
+        "medianaMs": 16386.5,
+        "mediaCtxChars": 479
+      },
+      "placar": {
+        "retem": "18×15",
+        "violou": "1×1 (menor é melhor)",
+        "ok": "17×14"
+      }
+    }
+  },
+  "completo": true,
+  "invalido": false
+}
