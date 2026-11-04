@@ -39,7 +39,7 @@ async function buscaJSON(url) {
 const CAUSAS_VIGIA = Object.freeze([
   'saudavel', 'api-indisponivel', 'sem-execucao', 'execucao-falhou',
   'fila-estagnada', 'turnos-duplicados', 'turno-ausente', 'bateria-atrasada', 'caixa-atrasada',
-  'postagem-atrasada', 'sonda-indisponivel'
+  'postagem-atrasada', 'postador-desligado', 'sonda-indisponivel'
 ]);
 const CAUSAS_RECUPERAVEIS = Object.freeze(['sem-execucao', 'turno-ausente', 'bateria-atrasada', 'caixa-atrasada']);
 
@@ -116,10 +116,19 @@ async function acao(rotulo, arquivo) {
   // A execução recente confirma só a rotina técnica; publicação, aceite e alcance de canais externos
   // continuam fora desta sonda. Não há dispatch nem recuperação automática do postador por aqui.
   const runsPostagemSite = await buscaJSON('https://api.github.com/repos/reboclbrank-max/site/actions/workflows/postagem-diaria.yml/runs?per_page=30').catch(() => null);
+  // Um postador desligado À MÃO não está atrasado: está desligado. Sem esta leitura o vigia
+  // anunciava "postagem atrasada" (e alarmava o dono) para uma decisão humana, gastando a
+  // confiança no alarme. A leitura é do estado do workflow, não do conteúdo das postagens.
+  const estadoPostador = await buscaJSON('https://api.github.com/repos/reboclbrank-max/site/actions/workflows/postagem-diaria.yml').catch(() => null);
   const runsEmail = await buscaJSON('https://api.github.com/repos/' + REPO + '/actions/workflows/email.yml/runs?per_page=15').catch(() => null);
   const runsExame = await buscaJSON('https://api.github.com/repos/' + REPO + '/actions/workflows/evolucao.yml/runs?per_page=10').catch(() => null);
 
   itens.push(await verifica('Casa postando (site)', async () => {
+    const desligadoAMao = String((estadoPostador && estadoPostador.state) || '').toLowerCase();
+    if (desligadoAMao === 'disabled_manually') {
+      // Não tento religar: componente desligado por decisão não é pane. Fica visível e sem alarme falso.
+      throw falhaVigia('postador-desligado', 'postador desligado à mão; atraso não medido (decisão do dono)');
+    }
     if (!runsPostagemSite) throw falhaVigia('api-indisponivel', 'API de execuções do postador indisponível');
     const execucoes = Array.isArray(runsPostagemSite.workflow_runs) ? runsPostagemSite.workflow_runs : [];
     const quando = run => {
