@@ -1,7 +1,8 @@
 // Contrato isolado da reserva: ela não lê a caixa nem substitui uma corrente que já existe.
 'use strict';
 const assert = require('assert');
-const { haOutroTurnoVivo, decisaoDaReserva, coordenaReservaDeTurno } = require('../reserva-turno.js');
+const { haOutroTurnoVivo, decisaoDaReserva, coordenaReservaDeTurno,
+  consultaComRetry, TENTATIVAS_CONSULTA } = require('../reserva-turno.js');
 const casos = [];
 function ok(nome, fn) { casos.push({ nome, fn }); }
 
@@ -63,6 +64,76 @@ ok('consulta indisponível, dado malformado ou identificador ausente não despac
     assert.equal(resultado.confirmado, false);
     assert.deepEqual(pedidos, []);
   }
+});
+
+// --- retry e motivo visível (04/11) -------------------------------------------------
+ok('falha passageira na consulta é repetida e a reserva ainda conclui', async () => {
+  let chamadas = 0;
+  const esperas = [];
+  const consulta = await consultaComRetry({
+    buscar: async () => {
+      chamadas++;
+      if (chamadas < 3) return { status: 503, motivo: 'HTTP 503' };
+      return { runs: [{ id: 42, status: 'in_progress' }] };
+    },
+    esperar: async (ms) => esperas.push(ms)
+  });
+  assert.equal(consulta.tentativas, 3);
+  assert.equal(consulta.motivo, '');
+  assert.deepEqual(consulta.runs, [{ id: 42, status: 'in_progress' }]);
+  assert.deepEqual(esperas, [400, 800]);
+});
+
+ok('credencial recusada não se repete: insistir não muda a resposta', async () => {
+  let chamadas = 0;
+  const consulta = await consultaComRetry({
+    buscar: async () => { chamadas++; return { status: 401, motivo: 'HTTP 401' }; },
+    esperar: async () => { throw new Error('não deveria esperar antes de desistir'); }
+  });
+  assert.equal(chamadas, 1);
+  assert.equal(consulta.tentativas, 1);
+  assert.equal(consulta.runs, null);
+  assert.match(consulta.motivo, /401/);
+  assert.match(consulta.motivo, /definitiva/);
+});
+
+ok('todas as tentativas passageiras caem: preserva, mas diz o motivo', async () => {
+  let chamadas = 0;
+  const consulta = await consultaComRetry({
+    buscar: async () => { chamadas++; throw new Error('RemoteDisconnected'); },
+    esperar: async () => {}
+  });
+  assert.equal(chamadas, TENTATIVAS_CONSULTA);
+  assert.equal(consulta.runs, null);
+  assert.match(consulta.motivo, /RemoteDisconnected/);
+});
+
+ok('o motivo da consulta que falhou chega ao resultado e ao log da reserva', async () => {
+  const ditos = [];
+  const pedidos = [];
+  const resultado = await coordenaReservaDeTurno({
+    runId: '42',
+    consultaRuns: async () => { throw new Error('HTTP 403 (causa definitiva — não repito)'); },
+    pedirTurno: async () => pedidos.push('turno'),
+    registrar: (m) => ditos.push(m)
+  });
+  assert.equal(resultado.decisao, 'preservar-sem-confirmacao');
+  assert.equal(resultado.confirmado, false);
+  assert.deepEqual(pedidos, []);
+  assert.match(resultado.motivo, /403/);
+  assert.match(ditos.join(' '), /motivo: .*403/);
+});
+
+ok('o pedido de turno é escrita: nunca se repete, mesmo quando falha', async () => {
+  let pedidos = 0;
+  await assert.rejects(async () => {
+    await coordenaReservaDeTurno({
+      runId: '42',
+      consultaRuns: async () => [{ id: 42, status: 'in_progress' }],
+      pedirTurno: async () => { pedidos++; throw new Error('HTTP 502'); }
+    });
+  }, /502/);
+  assert.equal(pedidos, 1);
 });
 
 (async () => {
