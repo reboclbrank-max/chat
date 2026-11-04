@@ -37,6 +37,14 @@ async function executa(estadoInicial, configuracao = {}) {
     if (url.includes('/repos/reboclbrank-max/site/actions/workflows/postagem-diaria.yml/runs?')) {
       return resposta({ workflow_runs: sitePostRuns });
     }
+    // O estado do workflow do postador é lido separadamente do histórico de execuções:
+    // desligado à mão não é a mesma coisa que atrasado.
+    if (/\/repos\/reboclbrank-max\/site\/actions\/workflows\/postagem-diaria\.yml$/.test(url)) {
+      const estado = Object.prototype.hasOwnProperty.call(configuracao, 'estadoPostador')
+        ? configuracao.estadoPostador : 'active';
+      if (estado === null) throw new Error('estado do postador indisponível no isolamento');
+      return resposta({ state: estado, id: 1 });
+    }
     if (url.includes('/actions/workflows/email.yml/runs?')) {
       if (configuracao.falhaApiEmail) throw new Error('API de e-mail indisponível no isolamento');
       return resposta({ workflow_runs: emailRuns });
@@ -125,6 +133,26 @@ async function executa(estadoInicial, configuracao = {}) {
   assert.equal(duplicados.escritos[0].itens['Chat por e-mail (24h)'].causa, 'turnos-duplicados');
   assert.equal(Object.prototype.hasOwnProperty.call(duplicados.escritos[0], 'recuperacoes'), false,
     'duplicidade não entra na família automática de recuperação');
+
+  // Postador desligado À MÃO: não é atraso, não é pane e não se religa sozinho.
+  const desligadoAMao = await executa(inicial, {
+    estadoPostador: 'disabled_manually',
+    sitePostRuns: [{ status: 'completed', conclusion: 'success', event: 'schedule',
+      created_at: '2026-11-03T08:41:37Z', updated_at: '2026-11-03T08:41:37Z' }]
+  });
+  const itemPostador = desligadoAMao.escritos[0].itens['Casa postando (site)'];
+  assert.equal(itemPostador.causa, 'postador-desligado',
+    'postador desligado à mão precisa de causa própria, não de "postagem atrasada"');
+  assert(desligadoAMao.dispatches.every(d => /\/email\.yml\/dispatches$/.test(d.url)),
+    'postador desligado à mão não gera dispatch próprio: só o turno (família recuperável) é re-disparado');
+
+  const postadorAtivoAtrasado = await executa(inicial, {
+    estadoPostador: 'active',
+    sitePostRuns: [{ status: 'completed', conclusion: 'success', event: 'schedule',
+      created_at: '2026-11-01T08:41:37Z', updated_at: '2026-11-01T08:41:37Z' }]
+  });
+  assert.equal(postadorAtivoAtrasado.escritos[0].itens['Casa postando (site)'].causa, 'postagem-atrasada',
+    'atraso de verdade, com workflow ativo, continua sendo atraso');
 
   const apiIndisponivel = await executa(inicial, { falhaApiEmail: true });
   assert.equal(apiIndisponivel.dispatches.length, 0, 'API indisponível não autoriza dispatch às cegas');

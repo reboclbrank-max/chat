@@ -60,6 +60,14 @@ O janelamento novo ⊆ do antigo em chars brutos (mesma janela de 1200, mesma fi
 - Matcher estrito: gabaritos e proibições precisam casar o texto normalizado literalmente; `resultado-conversa.json` guarda os contextos exatos para auditoria.
 - Rodada **fora da CI**, como pedido — nenhum workflow foi tocado.
 
+## Errata pós-auditoria (2026-11-04, auditoria do Chat A, id 6623590718)
+
+O Chat A recalculeu o placar do bruto com implementação própria (40/40 células batem) e registrou três ressalvas de leitura, mantidas aqui sem alterar nenhum número:
+
+1. **A nota do banco prometia mais do que o banco faz.** "A chave é do turno 1" não vale para **#7 e #18** (aritméticos: 3×30 e 2000−650 — a resposta é calculada) nem para **#10** (recomendação, julgada pelo `proibir`). Legítimos, agora declarados: na v2, as notas os marcam como `CONTA DECLARADA`/`RECOMENDAÇÃO DECLARADA`.
+2. **Uma célula não tem resposta:** cenário 14, versão A, `erro: "eco de instrução"`, `texto` vazio. Contou como derrota do A (conservador para o lado que venceu). **Esta rodada teve 40 chamadas e 39 respostas**; o `17×14` tem margem de ±1 conforme o que aquela célula daria. A v2 passa a retryar célula vazia uma vez, declarar o motivo e exigir texto para `completo`.
+3. **Em 13 dos 20 cenários o gabarito era ecoado numa fala intermediária** ("Certo, Iris…", "Anotado: 3 caixas de 30"). O pareamento igualava os lados, mas o rótulo correto do instrumento é **fidelidade de contexto recente e tratamento de decoy**, não retenção de turno 1 — o que **reforça** a conclusão de que o #76 ganhou integridade, não retenção. A v2 (`banco-conversa-v2.json`) remove esses ecos e volta a exigir o turno 1.
+
 ## Reproduzir
 
 ```
