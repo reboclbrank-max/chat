@@ -20,6 +20,23 @@
 
 **Limite que resta.** O `localStorage` é do navegador do dono: o trabalhador de e-mail/Telegram, que roda em processo no GitHub, continua começando sem memória — não há onde persistir sem criar artefato versionado. A página aprende entre turnos; o canal de e-mail não. Não há promessa de memória compartilhada entre canais.
 
+## 2026-11-04 — o canal de e-mail passa a lembrar qual rota quebrou
+
+**O que mudou e por quê.** O canal de e-mail não usa o `Roteador` da página: ele tem o próprio cérebro (`cerebro()` em `tools/email-chat.js`), que corre **pares de rotas em ordem fixa** em cada turno. Como cada turno é um processo novo no GitHub Actions, esse cérebro não lembrava nada: se a rota `frota` estivesse quebrada, todo turno pagava o timeout de 45 s nela outra vez antes de chegar na `reserva`. Agora a ordem dos candidatos vem de um retrato de contagens por rota (`saude-rotas.json`), restaurado do ramo `estado/operacional` no começo do turno e publicado no fim.
+
+**Arquivos e canais afetados.** `tools/saude-rotas-email.js` (novo módulo), `tools/testes/saude-rotas-email.js` (novo, 11 contratos), `tools/email-chat.js` (ordenação e registro dentro de `cerebro()`), `tools/estado-operacional-controlado.js` (novo perfil fechado `saude-rotas`), `.github/workflows/email.yml` (restaura, injeta `SAUDE_ROTAS_EMAIL` e publica), `tools/testes/roda-testes.js` (registro do teste) e este documento.
+
+**Privacidade.** O arquivo carrega **apenas** nome curto de rota, contagem de sucessos e falhas e dois instantes em milissegundos. Não vai pergunta, resposta, URL, modelo, mensagem de erro nem identificador de conversa. Um dos 11 testes falha se aparecer `http`, `@`, `token` ou texto de conteúdo no arquivo.
+
+**Esquecimento explícito.** Registro com mais de 24 h é descartado na leitura e na gravação; falha nos últimos 10 min custa 3 pontos, sucesso nos últimos 10 min rende 1; empate preserva a ordem original. Rota ruim de ontem não condena a de hoje, e a memória não cresce sem teto (máximo 20 rotas).
+
+**O que foi preservado.** A corrida em pares, as duas passadas (três na foto), os 8 s e 25 s de espera entre passadas, o filtro de modelo cego em foto, os timeouts de 45 s e a ordem original quando não há memória. Nenhum provedor, chave, conta, gasto ou rede nova.
+
+**A guarda que impede estrago.** Os dois passos novos no workflow têm `continue-on-error: true`: se o artefato faltar ou o publicador recusar, o turno continua e a resposta ao dono é entregue com a ordem original. Memória é otimização, nunca requisito — a mesma filosofia do cache em disco do roteador.
+
+**Testes.** `node tools/testes/saude-rotas-email.js` → 11/11; `node tools/testes/estado-operacional-controlado.js` → 11/11 (o perfil novo não furou a allowlist); `python3 -c yaml.safe_load` no `email.yml` → ok.
+
+**Limites.** (i) A memória só existe porque o artefato é publicado no ramo de estado: sem esse passo, a ordem volta a ser fixa. (ii) Ela mede **disponibilidade**, não qualidade de resposta. (iii) A primeira execução depois desta mudança ainda não tem histórico, então nada muda nela.
 ## 0. Regra permanente de continuidade
 
 Toda alteração que mudar comportamento, segurança, privacidade, fluxo operacional, workflow, dependência, teste, arquivo importante ou capacidade do Chat **deve atualizar este documento na mesma série de commits**. Registre, de forma curta e verificável:

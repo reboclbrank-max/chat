@@ -38,6 +38,13 @@ const PERFIS = Object.freeze({
     escreve: ['vigia-estado.json'],
     mensagem: 'estado operacional: vigia'
   }),
+  // 04/11/2026 — memória de rotas do canal de e-mail. Só contagens e instantes por nome de rota;
+  // nenhum conteúdo de mensagem. Fica no ramo revisável, como os demais artefatos operacionais.
+  'saude-rotas': Object.freeze({
+    le: ['saude-rotas.json'],
+    escreve: ['saude-rotas.json'],
+    mensagem: 'estado operacional: memória de rotas do e-mail'
+  }),
   ferramentas: Object.freeze({
     le: [],
     escreve: [],
