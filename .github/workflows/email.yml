@@ -33,6 +33,11 @@ jobs:
           node-version: '22'
       - name: Restaura o log sanitizado do ramo revisável
         run: node tools/estado-operacional-controlado.js preparar email
+      # 04/11/2026: memória de rotas entre turnos. `continue-on-error` de propósito: memória é
+      # otimização, nunca requisito — se o artefato faltar, o turno segue com a ordem original.
+      - name: Restaura a memória de rotas do canal (opcional)
+        continue-on-error: true
+        run: node tools/estado-operacional-controlado.js preparar saude-rotas
       - run: npm ci --omit=dev --no-audit --no-fund
       - name: Restaura as ferramentas Python do turno (venv em cache)
         id: cache-ferramentas
@@ -75,6 +80,7 @@ jobs:
           export FERRAMENTAS_MARCADOR=/tmp/ferramentas-prontas
           node tools/email-poll.js
         env:
+          SAUDE_ROTAS_EMAIL: saude-rotas.json
           GMAIL_CHAT_ADDR: ${{ secrets.GMAIL_CHAT_ADDR }}
           GMAIL_CHAT_PASS: ${{ secrets.GMAIL_CHAT_PASS }}
           CHAT_DONO: ${{ secrets.CHAT_DONO }}
@@ -95,6 +101,21 @@ jobs:
             # sessão avançou o ramo, concatena somente o sufixo append-only;
             # se a fotografia deixar de ser segura, falha sem tocar em main.
             node tools/estado-operacional-controlado.js publicar email
+          fi
+      # Memória de rotas: publica no mesmo ramo revisável, também sem derrubar o turno.
+      - name: Publica a memória de rotas do canal (opcional)
+        if: always()
+        continue-on-error: true
+        run: |
+          if [ -f saude-rotas.json ]; then
+            git add -- saude-rotas.json
+            if git diff --cached --quiet; then
+              echo "memória de rotas sem mudança nesta sessão"
+            else
+              node tools/estado-operacional-controlado.js publicar saude-rotas
+            fi
+          else
+            echo "sem memória de rotas nesta sessão"
           fi
       - name: Duração do preparo (sem conteúdo)
         if: always()
