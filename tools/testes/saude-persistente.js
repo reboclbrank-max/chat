@@ -10,11 +10,12 @@ function disco(conteudo) {
   if (conteudo !== undefined) dados.set(CHAVE, conteudo);
   global.localStorage = {
     getItem: (k) => (dados.has(k) ? dados.get(k) : null),
-    setItem: (k, v) => { dados.set(k, String(v)); },
+    setItem: (k, v) => { dados.set(k, String(v)); if (k === CHAVE) ultimoDisco = String(v); },
     removeItem: (k) => { dados.delete(k); }
   };
   return dados;
 }
+let ultimoDisco = null;
 const catalogo = [
   { id: 'boa', nome: 'boa', base: 'https://boa.invalid/v1', modelo: 'x', classe: 'forte', peso: 90 },
   { id: 'ruim', nome: 'ruim', base: 'https://ruim.invalid/v1', modelo: 'y', classe: 'forte', peso: 80 }
@@ -134,6 +135,76 @@ try {
       const v = registro[chave];
       assert(['number', 'boolean'].includes(typeof v), 'campo ' + chave + ' não é número nem booleano');
     }
+  });
+
+  /* --- Correção do achado do Chat B (04/11): a morte não pode ser eterna no uso real --- */
+
+  testa('evento em rota sã NÃO renova o relógio da rota morta', () => {
+    const d = disco();
+    const r = new Roteador({ catalogo });
+    const t0 = t;
+    r._castigar('ruim', 'morto');
+    t = t0 + 30 * 60 * 1000;
+    r._premiar('boa', 800);                     // evento em OUTRA rota
+    const salvo = JSON.parse(d.get(CHAVE));
+    assert.strictEqual(salvo.ruim.t, t0, 'o carimbo da rota morta foi renovado por evento de outra rota');
+    assert.strictEqual(salvo.ruim.morta, true, 'a marca de morta deveria estar no disco');
+    assert.strictEqual(salvo.ruim.mr, t0, 'a hora da morte deveria ser a do castigo');
+    t = t0;
+  });
+
+  testa('relendo a memória o carimbo antigo é preservado (senão a morte volta a ser eterna)', () => {
+    const d = disco();
+    const t0 = t;
+    new Roteador({ catalogo })._castigar('ruim', 'morto');
+    t = t0 + 5 * 60 * 60 * 1000;
+    const segunda = new Roteador({ catalogo });  // releitura 5 h depois
+    assert.strictEqual(segunda.saude.ruim.morta, true, 'morte de 5 h ainda vale (validade 6 h)');
+    segunda._premiar('boa', 700);                // evento de outra rota na sessão seguinte
+    assert.strictEqual(JSON.parse(d.get(CHAVE)).ruim.t, t0, 'a releitura não pode rejuvenescer o carimbo');
+    t = t0;
+  });
+
+  testa('morte vence sozinha em 6 h, mesmo com o chat em uso regular (repro do Chat B)', () => {
+    disco();
+    const t0 = t;
+    new Roteador({ catalogo })._castigar('ruim', 'morto');
+    const visto = [];
+    for (let ciclo = 1; ciclo <= 6; ciclo++) {   // h5, h10, ... h30 com evento em rota sã a cada 5 h
+      t = t0 + ciclo * 5 * 60 * 60 * 1000;
+      const r = new Roteador({ catalogo });
+      visto.push(r.saude.ruim.morta);
+      r._premiar('boa', 600);
+    }
+    assert.strictEqual(visto[0], true, 'em h5 a morte ainda deveria valer');
+    assert.strictEqual(visto[1], false, 'em h10 a rota morta tem de voltar (morte eterna é o defeito)');
+    assert.strictEqual(visto[5], false, 'depois de 30 h de uso a rota continua fora do limbo');
+    t = t0;
+  });
+
+  testa('rota que respondeu deixa de ser morta na mesma sessão', () => {
+    const d = disco();
+    const r = new Roteador({ catalogo });
+    r._castigar('ruim', 'morto');
+    assert.strictEqual(r.saude.ruim.morta, true);
+    r._premiar('ruim', 400);
+    assert.strictEqual(r.saude.ruim.morta, false, 'sucesso não pode conviver com a marca de morta');
+    const salvo = JSON.parse(d.get(CHAVE));
+    assert(!salvo.ruim || salvo.ruim.morta !== true, 'o disco não pode manter a marca depois do sucesso');
+  });
+
+  testa('morte vencida sai do disco sem levar as outras rotas junto', () => {
+    const t0 = t;
+    disco();
+    const r = new Roteador({ catalogo });
+    r._castigar('ruim', 'morto');
+    t = t0 + 10 * 60 * 60 * 1000;
+    const depois = new Roteador({ catalogo });
+    depois._castigar('boa', 'timeout');          // rota sã com problema recente
+    const salvo = JSON.parse(ultimoDisco);
+    assert.strictEqual(salvo.ruim, undefined, 'a morta vencida não pode voltar do disco');
+    assert(salvo.boa && salvo.boa.to === 1, 'a rota com problema recente continua registrada');
+    t = t0;
   });
 } finally {
   Date.now = relogioReal;

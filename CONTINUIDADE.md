@@ -37,6 +37,16 @@
 **Testes.** `node tools/testes/saude-rotas-email.js` → 11/11; `node tools/testes/estado-operacional-controlado.js` → 11/11 (o perfil novo não furou a allowlist); `python3 -c yaml.safe_load` no `email.yml` → ok.
 
 **Limites.** (i) A memória só existe porque o artefato é publicado no ramo de estado: sem esse passo, a ordem volta a ser fixa. (ii) Ela mede **disponibilidade**, não qualidade de resposta. (iii) A primeira execução depois desta mudança ainda não tem histórico, então nada muda nela.
+## 04/11/2026 — morte de rota deixa de ser eterna (achado verificado do Chat B, `chat#79`)
+
+**O defeito.** A saúde persistente do #77 gravava **um único carimbo** (`t`) para todas as rotas interessadas, e o escritor roda a cada evento de saúde. Resultado: qualquer sucesso numa rota sã renovava o carimbo da rota **morta**, e a validade de 6 h nunca vencia enquanto o chat tivesse uso regular. A rota ficava fora de todas as listas de candidato para sempre — morte sem caminho de volta. O teste antigo não pegava porque congelava o relógio e gravava uma entrada vencida **sem eventos seguintes**.
+
+**A correção.** (1) carimbo **por rota** (`mudouEm`), escrito só quando aquela rota muda; (2) a morte ganhou hora própria (`mortaEm`/`mr`) e validade contada dela; (3) `_premiar` limpa a marca, porque rota que respondeu não está morta. Nada de texto novo no disco: continuam só números e um booleano.
+
+**A barreira.** `tools/testes/saude-persistente.js` passou de 11 para **16 contratos**, incluindo o repro do B (ciclo de 30 h com evento em rota sã a cada 5 h). Rodados contra o código antigo, **4 reprovam** — a barreira morde o defeito de verdade.
+
+**Arquivos e canais afetados.** `roteador-ia.js` (leitura/gravação da saúde por rota), `tools/testes/saude-persistente.js`, `sw.js` (casca **rebocl-chat-v110**) e este documento. Sem mudança de HTML, de rota ou de contrato público.
+
 ## 0. Regra permanente de continuidade
 
 Toda alteração que mudar comportamento, segurança, privacidade, fluxo operacional, workflow, dependência, teste, arquivo importante ou capacidade do Chat **deve atualizar este documento na mesma série de commits**. Registre, de forma curta e verificável:
