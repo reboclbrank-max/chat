@@ -13,7 +13,7 @@ const juntarNovo = api.internos.montarContextoConversa;
 
 const SEED = 'comparacao-conversa-2026-11-04';
 const arquivos = {
-  banco: path.join(__dirname, 'banco-conversa.json'),
+  banco: path.join(__dirname, process.env.BANCO_CONVERSA || 'banco-conversa.json'),
   medidor: __filename,
   roteador: path.resolve(__dirname, '..', 'roteador-ia.js'),
   pontuar: path.join(__dirname, 'pontuar.js')
@@ -116,8 +116,10 @@ function resumo(res, agenda) {
       const linhas = res.filter(x => x.versao === versao && (classe === 'total' || x.classe === classe));
       const ms = linhas.map(x => x.ms).sort((a, b) => a - b), meio = Math.floor(ms.length / 2);
       const ctx = linhas.map(x => x.ctxChars);
+      const semResposta = linhas.filter(x => !x.texto).length;
       out[classe][versao] = {
-        total: linhas.length, previsto, completo: linhas.length === previsto,
+        total: linhas.length, previsto, chamadas: linhas.length, respostas: linhas.length - semResposta, semResposta,
+        completo: linhas.length === previsto && semResposta === 0,
         retem: linhas.filter(x => x.retem).length,
         violou: linhas.filter(x => x.violou).length,
         ok: linhas.filter(x => x.ok).length,
@@ -185,7 +187,7 @@ async function main() {
   function registrar(final) {
     const invalido = Object.entries(arquivos).some(([k, v]) => sha(v) !== hashes[k]);
     if (final) { meta.terminado = new Date().toISOString(); meta.janelas[meta.janelas.length - 1].terminado = meta.terminado; }
-    salvar(saida, { meta, agenda, res, sum: resumo(res, agenda), completo: !invalido && res.length === agenda.length, invalido });
+    salvar(saida, { meta, agenda, res, sum: resumo(res, agenda), completo: !invalido && res.length === agenda.length && res.every(r => r.texto), invalido });
     if (invalido) throw new Error('Um dos arquivos mudou durante a medição; resultado inválido.');
   }
   registrar(false);
@@ -225,11 +227,24 @@ async function main() {
         ? await roteadores.A.responder({ pergunta, tipo: 'aberto' })
         : await roteadores.B.responder({ pergunta: perguntaFinal, tipo: 'aberto', historico: hist });
     } catch (e) { o = { texto: null, erro: String(e && e.message || e).slice(0, 200) }; }
+    // Célula sem texto é retryada UMA vez (rota gratuita falha em silêncio às vezes);
+    // se continuar vazia, fica declarada com motivo e NÃO conta como resposta — só como chamada.
+    let tentativas = 1;
+    if (!(o && o.texto)) {
+      tentativas = 2;
+      await new Promise(r => setTimeout(r, 2000));
+      try {
+        o = passo.versao === 'A'
+          ? await roteadores.A.responder({ pergunta, tipo: 'aberto' })
+          : await roteadores.B.responder({ pergunta: perguntaFinal, tipo: 'aberto', historico: hist });
+      } catch (e) { o = { texto: null, erro: String(e && e.message || e).slice(0, 200) }; }
+    }
     const av = avaliarItem(o && o.texto, it);
     const linha = {
       ...passo, q: perguntaFinal, retem: av.retem, violou: av.violou, violacoes: av.violacoes, ok: av.ok,
       ctxChars, ms: Date.now() - t0, rota: (o && o.rota) || null, erro: (o && o.erro) || null,
-      incompleto: !!(o && o.incompleto), texto: String((o && o.texto) || '')
+      incompleto: !!(o && o.incompleto), tentativas,
+      semResposta: !(o && o.texto), texto: String((o && o.texto) || '')
     };
     res.push(linha); medidos.add(chave(passo)); feitos++;
     registrar(false);
