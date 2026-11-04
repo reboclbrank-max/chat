@@ -20,6 +20,8 @@ const MINIMO_DE_CICLOS = 100;
 const BURACO_RELEVANTE_MIN = 10;
 // Dois turnos vivos ao mesmo tempo são o risco que a reserva existe para evitar.
 const SOBREPOSICAO_RELEVANTE_MIN = 5;
+// Tempo de job sem passo correspondente: acima disso não é transição de runner, é anomalia.
+const FORA_DOS_PASSOS_RELEVANTE_MIN = 5;
 const ESTADOS_EM_ANDAMENTO = new Set(['queued', 'pending', 'in_progress', 'waiting', 'requested']);
 
 function tempo(valor) {
@@ -122,6 +124,35 @@ function resumo(runs, opcoes = {}) {
   };
 }
 
+// Tempo de job que não está em nenhum passo. Existe e é invisível em qualquer painel
+// por passo: foi assim que um turno de 346 min virou job de 406 min (60 min de pós-job)
+// e ninguém viu — o run estava verde.
+function tempoForaDosPassos(job) {
+  const ini = tempo(job && job.started_at);
+  const fim = tempo(job && job.completed_at);
+  if (ini === null || fim === null || fim < ini) return null;
+  const passos = (Array.isArray(job && job.steps) ? job.steps : [])
+    .map(s => ({ inicio: tempo(s && s.started_at), fim: tempo(s && s.completed_at) }))
+    .filter(s => s.inicio !== null && s.fim !== null && s.fim >= s.inicio)
+    .sort((a, b) => a.inicio - b.inicio);
+  const soma = passos.reduce((t, s) => t + (s.fim - s.inicio), 0);
+  const depois = passos.length ? Math.max(0, fim - passos[passos.length - 1].fim) : (fim - ini);
+  const antes = passos.length ? Math.max(0, passos[0].inicio - ini) : 0;
+  // Passo que ficou pendente enquanto o job terminou significa turno abortado, não tempo
+  // morto: o job fechou com um passo ainda "em andamento". São coisas diferentes e o
+  // relatório precisa dizer qual é qual.
+  const incompletos = (Array.isArray(job && job.steps) ? job.steps : [])
+    .filter(s => s && s.status && s.status !== 'completed' && s.status !== 'skipped').length;
+  return {
+    passos_incompletos: incompletos,
+    job_min: Math.round((fim - ini) / 60000),
+    passos_min: Math.round(soma / 60000),
+    depois_do_ultimo_min: Math.round(depois / 60000),
+    antes_do_primeiro_min: Math.round(antes / 60000),
+    fora_min: Math.round((fim - ini - soma) / 60000)
+  };
+}
+
 // A execução inteira pode ficar horas "em andamento" por fila; o que interessa é o job
 // do turno, que é quem lê a caixa. Sobreposição de execuções sem olhar o job acusa
 // turno duplo onde só houve reserva esperando — por isso a medida boa é por job.
@@ -169,15 +200,28 @@ async function principal() {
   const runs = await buscaRuns(horas, token);
   const semJob = [];
   const porJob = [];
+  const foraDosPassos = [];
   for (const run of runs) {
     const jobs = await buscaJobs(run.id, token);
     const doTurno = jobs ? intervaloDoTurno(run, jobs) : null;
     if (doTurno) porJob.push(doTurno); else semJob.push(run.id);
+    const jobTurno = (jobs || []).find(j => j && j.name === 'turno');
+    const fora = tempoForaDosPassos(jobTurno);
+    if (fora && fora.fora_min >= FORA_DOS_PASSOS_RELEVANTE_MIN) {
+      foraDosPassos.push(Object.assign({
+        run: String(run.id),
+        leitura: fora.passos_incompletos
+          ? 'turno abortado com passo pendente (' + fora.passos_incompletos + ')'
+          : 'tempo fora dos passos (depois do último)'
+      }, fora));
+    }
   }
+  foraDosPassos.sort((a, b) => b.fora_min - a.fora_min);
   const base = porJob.length ? porJob : runs;
   const resultado = resumo(base, { minimoDeCiclos: MINIMO_DE_CICLOS });
   resultado.medido_por_job = porJob.length;
   resultado.execucoes_sem_job_turno = semJob.length;
+  resultado.fora_dos_passos = foraDosPassos;
   if (json) { console.log(JSON.stringify(resultado, null, 1)); return; }
   console.log('📏 Prova de ciclos do turno · janela pedida: ' + horas + ' h');
   console.log('   medida por job do turno: ' + resultado.medido_por_job + ' de ' + (resultado.medido_por_job + resultado.execucoes_sem_job_turno) + ' execuções');
@@ -188,6 +232,10 @@ async function principal() {
   console.log('   buracos ≥ ' + BURACO_RELEVANTE_MIN + ' min: ' + resultado.buracos.length
     + (resultado.buracos.length ? ' → ' + resultado.buracos.map(b => b.minutos + 'min').join(', ') : ''));
   console.log('   sobreposições ≥ ' + SOBREPOSICAO_RELEVANTE_MIN + ' min: ' + resultado.sobreposicoes.length);
+  console.log('   tempo de job fora dos passos ≥ ' + FORA_DOS_PASSOS_RELEVANTE_MIN + ' min: '
+    + resultado.fora_dos_passos.length
+    + (resultado.fora_dos_passos.length ? ' (pior: run ' + resultado.fora_dos_passos[0].run + ' com '
+      + resultado.fora_dos_passos[0].fora_min + ' min — ' + resultado.fora_dos_passos[0].leitura + ')' : ''));
   console.log('   veredito D1: ' + resultado.veredito + (resultado.razoes.length ? ' — ' + resultado.razoes.join(' · ') : ''));
 }
 
@@ -198,4 +246,7 @@ if (require.main === module) {
   });
 }
 
-module.exports = { intervalos, uniao, buracos, sobreposicoes, resumo, intervaloDoTurno, MINIMO_DE_CICLOS };
+module.exports = {
+  intervalos, uniao, buracos, sobreposicoes, resumo, intervaloDoTurno,
+  tempoForaDosPassos, MINIMO_DE_CICLOS
+};

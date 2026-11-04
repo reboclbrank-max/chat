@@ -2,7 +2,8 @@
 // tem de ser a mesma sempre, sem rede. A medição ao vivo é GET e fica no CLI.
 'use strict';
 const assert = require('assert');
-const { intervalos, uniao, buracos, sobreposicoes, resumo, intervaloDoTurno, MINIMO_DE_CICLOS } = require('../prova-ciclos.js');
+const { intervalos, uniao, buracos, sobreposicoes, resumo, intervaloDoTurno,
+  tempoForaDosPassos, MINIMO_DE_CICLOS } = require('../prova-ciclos.js');
 const casos = [];
 function ok(nome, fn) { casos.push({ nome, fn }); }
 
@@ -99,6 +100,55 @@ ok('a medida boa é o job do turno, não a execução inteira', () => {
   assert.equal(intervalos([soTurno]).validos[0].segundos, 3600);
   // execução sem job de turno não inventa medida
   assert.equal(intervaloDoTurno(execucao, [{ name: 'reserva' }]), null);
+});
+
+ok('tempo de job depois do último passo é medido, não engolido', () => {
+  // o caso real de 01/11: turno de 346 min dentro de um job de 406 min
+  const job = {
+    started_at: '2026-11-01T03:09:24Z',
+    completed_at: '2026-11-01T09:55:14Z',
+    steps: [
+      { started_at: '2026-11-01T03:09:25Z', completed_at: '2026-11-01T03:10:25Z' },
+      { started_at: '2026-11-01T03:10:25Z', completed_at: '2026-11-01T08:55:25Z' }
+    ]
+  };
+  const fora = tempoForaDosPassos(job);
+  assert.equal(fora.job_min, 406);
+  assert.equal(fora.passos_min, 346);
+  assert.equal(fora.depois_do_ultimo_min, 60);
+  assert.equal(fora.fora_min, 60);
+});
+
+ok('job sem passos legíveis não inventa anomalia nem esconde o total', () => {
+  const fora = tempoForaDosPassos({ started_at: '2026-11-01T00:00:00Z', completed_at: '2026-11-01T00:10:00Z', steps: [] });
+  assert.equal(fora.job_min, 10);
+  assert.equal(fora.passos_min, 0);
+  assert.equal(fora.fora_min, 10);
+  assert.equal(tempoForaDosPassos({}), null);
+  assert.equal(tempoForaDosPassos(null), null);
+});
+
+ok('turno abortado é distinguido de tempo morto', () => {
+  const abortado = tempoForaDosPassos({
+    started_at: '2026-11-02T15:37:58Z',
+    completed_at: '2026-11-02T16:53:31Z',
+    steps: [
+      { status: 'completed', started_at: '2026-11-02T15:37:58Z', completed_at: '2026-11-02T15:38:39Z' },
+      { status: 'in_progress', started_at: '2026-11-02T15:38:39Z', completed_at: null },
+      { status: 'pending', started_at: null, completed_at: null }
+    ]
+  });
+  assert.equal(abortado.passos_incompletos, 2);
+  assert.ok(abortado.fora_min >= 70);
+});
+
+ok('job normal (passos cobrindo o tempo) não gera anomalia', () => {
+  const fora = tempoForaDosPassos({
+    started_at: '2026-11-01T00:00:00Z',
+    completed_at: '2026-11-01T01:00:00Z',
+    steps: [{ started_at: '2026-11-01T00:00:00Z', completed_at: '2026-11-01T01:00:00Z' }]
+  });
+  assert.equal(fora.fora_min, 0);
 });
 
 (async () => {
