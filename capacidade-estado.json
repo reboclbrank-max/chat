@@ -1,6 +1,16 @@
 {
   "esquema": "placar-capacidade-v2",
-  "gerado_em": "2026-11-03T18:18:33.040Z",
+  "gerado_em": "2026-11-04T18:31:37.559Z",
+  "evidencia": {
+    "fonte_estado": "estado/operacional",
+    "tipo": "cobertura_estrutural_e_amostras",
+    "autonomia_universal": false,
+    "entrega_ponta_a_ponta": "nao_medida_por_este_indicador",
+    "vigia_observado_em": "2026-11-04T17:36:45.483Z",
+    "qualidade_observada_em": "2026-11-04T18:31:37.186Z",
+    "vigia_vigente": true,
+    "qualidade_vigente": true
+  },
   "aviso": "Indicador interno de cobertura; não é resultado observável do produto, não é teste de QI, consciência nem garantia de disponibilidade.",
   "total_em_100": 98,
   "canal_real": {
