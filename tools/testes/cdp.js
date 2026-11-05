@@ -125,34 +125,76 @@ const FLAGS_BASE = [
   '--no-default-browser-check'
 ];
 
+// Perfil por tentativa. Isto parece detalhe e é a causa de uma falha intermitente real:
+// quando a tentativa 1 é morta com SIGKILL, o perfil dela fica com SingletonLock apontando
+// para um processo que já não existe. Reusar o MESMO diretório na tentativa 2 faz o Chromium
+// concluir "já existe instância aqui", sair sem abrir a porta de depuração — e a suíte reprova
+// sem defeito nenhum no chat. Cada tentativa ganha diretório próprio e sem trava.
+function perfilDaTentativa(perfil, tentativa) {
+  return tentativa === 1 ? perfil + '-nav' : perfil + '-nav-' + tentativa;
+}
+
+// Travas que o Chromium deixa no perfil e que atrapalham a próxima tentativa.
+const TRAVAS_DO_PERFIL = ['SingletonLock', 'SingletonSocket', 'SingletonCookie', 'lockfile'];
+
+function limparTravas(perfil) {
+  for (const trava of TRAVAS_DO_PERFIL) {
+    try { fs.rmSync(path.join(perfil, trava), { force: true, recursive: true }); } catch (e) {}
+  }
+}
+
+// Uma porta pode estar ocupada por um Chromium zumbi de um teste anterior: escolher outra
+// é mais barato do que esperar 20 s por uma porta que nunca vai abrir.
+async function portaLivreDeFato(portaCandidata) {
+  const net = require('net');
+  for (let n = 0; n < 12; n++) {
+    const p = portaCandidata + n * 13;
+    const livre = await new Promise((resolve) => {
+      const s = net.createServer();
+      s.once('error', () => resolve(false));
+      s.once('listening', () => s.close(() => resolve(true)));
+      s.listen(p, '127.0.0.1');
+    });
+    if (livre) return p;
+  }
+  return portaCandidata;
+}
+
 // Sobe o navegador headless com perfil descartável e devolve o alvo já conectado.
 // O stderr vai para arquivo: quando o navegador não abre, a mensagem diz por quê em vez de
 // só informar que a porta não apareceu (foi assim que a CI de 24/10 falhou às escuras).
-async function abrirNavegador({ bin, portaCdp, perfil, tentativas = 2 }) {
+// 05/11: cada tentativa usa perfil NOVO, limpa travas, confere a porta e espera mais —
+// porque a instabilidade que travava o degrau 4 era exatamente a corrida de reuso de perfil.
+async function abrirNavegador({ bin, portaCdp, perfil, tentativas = 3, esperasPorTentativa = 150 }) {
   const erroLog = path.join(os.tmpdir(), 'navegador-stderr-' + process.pid + '.log');
   let ultimoErro = '';
   for (let tentativa = 1; tentativa <= tentativas; tentativa++) {
+    const perfilDaVez = perfilDaTentativa(perfil, tentativa);
+    try { fs.mkdirSync(perfilDaVez, { recursive: true }); } catch (e) {}
+    limparTravas(perfilDaVez);
+    const portaDaVez = await portaLivreDeFato(portaCdp);
     const fd = fs.openSync(erroLog, 'w');
     const navegador = spawn(bin, FLAGS_BASE.concat([
-      '--remote-debugging-port=' + portaCdp,
-      '--user-data-dir=' + perfil + '-nav',
+      '--remote-debugging-port=' + portaDaVez,
+      '--user-data-dir=' + perfilDaVez,
       'about:blank'
     ]), { stdio: ['ignore', fd, fd] });
     fs.closeSync(fd);
     let alvo = null;
-    for (let i = 0; i < 100 && !alvo; i++) {
-      await esperar(200);
+    for (let i = 0; i < esperasPorTentativa && !alvo; i++) {
+      await esperar(i < 10 ? 200 : 300);
       try {
-        const lista = await fetch('http://127.0.0.1:' + portaCdp + '/json/list').then((r) => r.json());
+        const lista = await fetch('http://127.0.0.1:' + portaDaVez + '/json/list').then((r) => r.json());
         alvo = lista.find((t) => t.type === 'page' && t.webSocketDebuggerUrl);
       } catch (e) {}
       if (navegador.exitCode !== null && navegador.exitCode !== 0) break;
     }
-    if (alvo) return { navegador, alvo, erroLog };
+    if (alvo) return { navegador, alvo, erroLog, tentativa, porta: portaDaVez };
     try { navegador.kill('SIGKILL'); } catch (e) {}
     ultimoErro = lerFinal(erroLog);
   }
-  throw new Error('navegador não abriu porta de depuração' + (ultimoErro ? ' — ' + ultimoErro : ''));
+  throw new Error('navegador não abriu porta de depuração em ' + tentativas + ' tentativa(s)'
+    + (ultimoErro ? ' — ' + ultimoErro : ''));
 }
 
 function lerFinal(arquivo, limite = 3) {
@@ -177,7 +219,13 @@ function matarEClarear(navegador, perfil, servidor) {
   if (servidor) { try { servidor.close(); } catch (e) {} }
   // O navegador pode continuar gravando o perfil por alguns instantes; a limpeza é best-effort.
   apagarCaminho(perfil);
-  apagarCaminho(perfil + '-nav');
+  // Todas as tentativas usam perfis próprios (perfil-nav, perfil-nav-2, ...): limpa todos.
+  try {
+    for (const entrada of fs.readdirSync(path.dirname(perfil))) {
+      const completo = path.join(path.dirname(perfil), entrada);
+      if (completo.startsWith(perfil + '-nav')) apagarCaminho(completo);
+    }
+  } catch (e) {}
   try { fs.unlinkSync(path.join(os.tmpdir(), 'navegador-stderr-' + process.pid + '.log')); } catch (e) {}
 }
 
@@ -196,6 +244,9 @@ module.exports = {
   conectar,
   esperar,
   abrirNavegador,
+  perfilDaTentativa,
+  limparTravas,
+  portaLivreDeFato,
   perfilTemporario,
   matarEClarear,
   porta,

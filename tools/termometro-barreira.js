@@ -22,7 +22,16 @@ const INSTABILIDADES_CONHECIDAS = Object.freeze([
     passo: 'Navegador controlado (quatro rotas, desktop e mobile)',
     arquivo: 'tools/testes/navegador-lista-controlado.sh',
     corrigido: false,
-    observacao: 'falha intermitente de Chromium/Workspace; reprova a barreira sem defeito real no chat'
+    observacao: '9 execuções vermelhas desde 16/10; última em 30/10'
+  },
+  {
+    passo: 'Testes rápidos (IMAP, SMTP e motores falsos)',
+    arquivo: 'tools/testes/navegador-csp.js',
+    corrigido: false,
+    observacao: '20 execuções vermelhas desde 16/10; última em 05/11 na main (4435028b1a4d), '
+      + 'com o log navegador não abriu porta de depuração (dbus/bus.cc). Causa achada em 05/11: '
+      + 'perfil de navegador reusado entre tentativas. Correção aplicada em cdp.js; só sai da '
+      + 'pendência quando houver janela verde que a sustente'
   }
 ]);
 

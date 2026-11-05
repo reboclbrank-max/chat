@@ -72,6 +72,21 @@ function avalia({ pr, arquivos, nivel = 'texto' }) {
   return { pode: true, motivo: 'na faixa do nível ' + nivel + ': ' + lista.length + ' arquivo(s)', arquivos: lista, nivel };
 }
 
+// Qual commit a main deve desfazer. Regra dura: só o commit que a execução vermelha
+// avaliou — nunca "o último merge do mesclador", que pode ser antigo e inocente.
+// Descoberto com dado real: em 05/11 a main ficou vermelha num merge HUMANO (#93) e a
+// versão anterior iria reverter uma reversão antiga, sem relação com a falha.
+function alvoDaReversao({ commits, shaVermelho, profundidade = 3 }) {
+  const lista = Array.isArray(commits) ? commits.slice(0, profundidade) : [];
+  const sha = texto(shaVermelho);
+  if (!sha) return { reverter: false, motivo: 'sem sha vermelho' };
+  const candidato = lista.find(c => texto(c && c.sha) === sha);
+  if (!candidato) return { reverter: false, motivo: 'a main andou depois da execução vermelha' };
+  const msg = texto(candidato.commit && candidato.commit.message);
+  if (!msg.includes(MARCA)) return { reverter: false, motivo: 'o commit vermelho não foi merge do mesclador' };
+  return { reverter: true, sha, motivo: 'reverter ' + sha.slice(0, 10) };
+}
+
 // Achar o merge do mesclador para reverter: marca no título do commit.
 function mergeDoMesclador(commits) {
   const lista = Array.isArray(commits) ? commits : [];
@@ -159,32 +174,27 @@ async function avaliar({ token, repo, sha, dono }) {
 
 async function reverter({ token, repo, shaVermelho }) {
   const commits = await api('/repos/' + repo + '/commits?sha=main&per_page=10', { token });
-  const plano = planoDeReversao({ commits, arquivosDoMerge: null });
-  // O plano precisa da lista de arquivos do merge: buscamos do commit marcado.
-  const merge = mergeDoMesclador(commits);
-  if (!merge) { console.log('mesclador: nada a reverter — o merge quebrado não foi meu'); return; }
+  const alvo = alvoDaReversao({ commits, shaVermelho });
+  if (!alvo.reverter) { console.log('mesclador: não reverto — ' + alvo.motivo); return; }
+
+  const merge = commits.find(c => texto(c.sha) === alvo.sha);
   const detalhe = await api('/repos/' + repo + '/commits/' + merge.sha, { token });
-  const arquivos = (detalhe.files || []).map(f => f.filename);
-  const plano2 = planoDeReversao({ commits, arquivosDoMerge: detalhe.files });
-  if (!plano2.reverter) { console.log('mesclador: não reverto — ' + plano2.motivo); return; }
+  const plano = planoDeReversao({ commits: [merge], arquivosDoMerge: detalhe.files });
+  if (!plano.reverter) { console.log('mesclador: não reverto — ' + plano.motivo); return; }
 
   const ramo = ramoDeReversao(merge.sha);
   const base = detalhe.parents && detalhe.parents[0] ? detalhe.parents[0].sha : null;
   if (!base) { console.log('mesclador: sem pai para reverter'); return; }
+  // Se o ramo de reversão já existe, a tentativa anterior já foi feita: não vira laço.
+  const jaTentado = await api('/repos/' + repo + '/git/ref/heads/' + ramo, { token }).catch(() => null);
+  if (jaTentado) { console.log('mesclador: reversão de ' + merge.sha.slice(0, 10) + ' já foi tentada antes — não repito'); return; }
   await api('/repos/' + repo + '/git/refs', {
     token, metodo: 'POST', corpo: { ref: 'refs/heads/' + ramo, sha: texto(shaVermelho) || 'main' }
-  }).catch(async () => {
-    // ramo já existe: segue (o PUT de conteúdo é idempotente por sha do arquivo)
   });
-  for (const arquivo of plano2.arquivos) {
-    let anterior;
-    try {
-      anterior = await api('/repos/' + repo + '/contents/' + arquivo + '?ref=' + base, { token });
-    } catch (e) {
-      anterior = null;
-    }
+  for (const arquivo of plano.arquivos) {
+    const anterior = await api('/repos/' + repo + '/contents/' + arquivo + '?ref=' + base, { token }).catch(() => null);
+    const atual = await api('/repos/' + repo + '/contents/' + arquivo + '?ref=' + ramo, { token }).catch(() => null);
     if (anterior && anterior.content) {
-      const atual = await api('/repos/' + repo + '/contents/' + arquivo + '?ref=' + ramo, { token }).catch(() => null);
       await api('/repos/' + repo + '/contents/' + arquivo, {
         token, metodo: 'PUT',
         corpo: {
@@ -194,30 +204,41 @@ async function reverter({ token, repo, shaVermelho }) {
           branch: ramo
         }
       });
-    } else {
-      const atual = await api('/repos/' + repo + '/contents/' + arquivo + '?ref=' + ramo, { token }).catch(() => null);
-      if (atual && atual.sha) {
-        await api('/repos/' + repo + '/contents/' + arquivo, {
-          token, metodo: 'DELETE',
-          corpo: { message: MARCA + ' revertendo ' + merge.sha.slice(0, 10) + ': removendo ' + arquivo, sha: atual.sha, branch: ramo }
-        });
-      }
+    } else if (atual && atual.sha) {
+      await api('/repos/' + repo + '/contents/' + arquivo, {
+        token, metodo: 'DELETE',
+        corpo: { message: MARCA + ' revertendo ' + merge.sha.slice(0, 10) + ': removendo ' + arquivo, sha: atual.sha, branch: ramo }
+      });
     }
   }
-  const pr = await api('/repos/' + repo + '/pulls', {
-    token, metodo: 'POST',
-    corpo: {
-      title: MARCA + ' reversão automática de ' + merge.sha.slice(0, 10),
-      head: ramo, base: 'main',
-      body: 'A `main` ficou vermelha depois de um merge do mesclador.\n\n'
-        + '| campo | valor |\n|---|---|\n'
-        + '| merge revertido | `' + merge.sha.slice(0, 40) + '` |\n'
-        + '| execução vermelha | ' + texto(shaVermelho) + ' |\n'
-        + '| arquivos | ' + plano2.arquivos.join(', ') + ' |\n\n'
-        + 'Esta PR passa pela barreira como qualquer outra; se ficar verde, o mesclador a mescla.'
-    }
-  });
-  console.log('mesclador: PR de reversão #' + pr.number + ' aberta (' + ramo + ')');
+
+  const corpo = {
+    title: MARCA + ' reversão automática de ' + merge.sha.slice(0, 10),
+    head: ramo, base: 'main',
+    body: 'A `main` ficou vermelha no commit que o mesclador mesclou.\n\n'
+      + '| campo | valor |\n|---|---|\n'
+      + '| merge revertido | `' + merge.sha.slice(0, 40) + '` |\n'
+      + '| execução vermelha | ' + texto(shaVermelho) + ' |\n'
+      + '| arquivos | ' + plano.arquivos.join(', ') + ' |\n\n'
+      + 'Esta reversão passa pela barreira como qualquer outra quando aberta como PR.'
+  };
+  try {
+    const pr = await api('/repos/' + repo + '/pulls', { token, metodo: 'POST', corpo });
+    console.log('mesclador: PR de reversão #' + pr.number + ' aberta (' + ramo + ')');
+  } catch (erro) {
+    // O repositório pode proibir Actions de abrir PR (padrão do GitHub). Nesse caso a
+    // reversão vai por merge de ramo -> main, que devolve a ÁRVORE JÁ VALIDADA anterior.
+    if (!/not permitted to create/i.test(String(erro && erro.message))) throw erro;
+    console.log('mesclador: PR de reversão proibida pelo repositório — usando merge do ramo na main');
+    const fusao = await api('/repos/' + repo + '/merges', {
+      token, metodo: 'POST',
+      corpo: {
+        base: 'main', head: ramo,
+        commit_message: MARCA + ' reversão automática de ' + merge.sha.slice(0, 10) + ' (sem PR: repositório não permite PR de Actions)'
+      }
+    });
+    console.log('mesclador: main revertida para ' + texto(fusao.sha).slice(0, 10) + ' (' + plano.arquivos.join(', ') + ')');
+  }
 }
 
 async function principal() {
@@ -238,6 +259,6 @@ if (require.main === module) {
 }
 
 module.exports = {
-  caminhoPermitido, avalia, mergeDoMesclador, planoDeReversao, ramoDeReversao,
+  caminhoPermitido, avalia, mergeDoMesclador, planoDeReversao, alvoDaReversao, ramoDeReversao,
   MARCA, PASTAS_PERMITIDAS, MAXIMO_DE_ARQUIVOS, nivelLocal
 };
