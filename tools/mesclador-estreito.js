@@ -17,6 +17,13 @@
 // não venha de PR com a barreira verde.
 'use strict';
 
+// Degrau 4: a faixa deixa de ser só "texto" e passa a vir de duas peças separadas —
+// o mapa de risco (que diz o que cada arquivo pode machucar) e o interruptor de
+// autonomia (que diz quanto a casa pode fazer hoje). O mesclador não decide nível:
+// ele obedece ao que estiver escrito em autonomia.json, e obedece fechado.
+const { lerNivel, permite } = require('./autonomia.js');
+const { liberadoNoNivel } = require('./risco-de-arquivo.js');
+
 const MARCA = '[mesclador]';
 const PASTAS_PERMITIDAS = Object.freeze(['docs/', 'posts/']);
 const CAMINHOS_PROIBIDOS = Object.freeze([
@@ -42,7 +49,8 @@ function caminhoPermitido(caminho) {
 }
 
 // Decide se uma PR pode entrar sozinha. Recebe só dados; não faz rede.
-function avalia({ pr, arquivos }) {
+// `nivel` vem de autonomia.json (degrau 3 = 'texto'); ausente = 'texto', nunca 'codigo'.
+function avalia({ pr, arquivos, nivel = 'texto' }) {
   const dados = pr || {};
   if (!dados.numero) return { pode: false, motivo: 'sem PR identificada' };
   if (texto(dados.estado) !== 'open') return { pode: false, motivo: 'PR não está aberta' };
@@ -51,11 +59,17 @@ function avalia({ pr, arquivos }) {
   const lista = (Array.isArray(arquivos) ? arquivos : []).map(a => texto(a && (a.filename || a.caminho))).filter(Boolean);
   if (!lista.length) return { pode: false, motivo: 'PR sem arquivos identificados' };
   if (lista.length > MAXIMO_DE_ARQUIVOS) return { pode: false, motivo: 'PR grande demais (' + lista.length + ' arquivos)' };
-  const fora = lista.filter(c => !caminhoPermitido(c));
+  const veredito = lista.map(c => Object.assign({ caminho: c }, liberadoNoNivel(c, categoria => permite(nivel, categoria))));
+  const fora = veredito.filter(v => !v.liberado);
   if (fora.length) {
-    return { pode: false, motivo: 'fora da faixa: ' + fora.slice(0, 3).join(', ') + (fora.length > 3 ? '…' : ''), fora };
+    return {
+      pode: false,
+      motivo: 'fora da faixa: ' + fora.slice(0, 3).map(v => v.caminho).join(', ') + (fora.length > 3 ? '…' : ''),
+      fora: fora.map(v => v.caminho),
+      nivel
+    };
   }
-  return { pode: true, motivo: 'só texto em ' + lista.length + ' arquivo(s)', arquivos: lista };
+  return { pode: true, motivo: 'na faixa do nível ' + nivel + ': ' + lista.length + ' arquivo(s)', arquivos: lista, nivel };
 }
 
 // Achar o merge do mesclador para reverter: marca no título do commit.
@@ -106,7 +120,20 @@ async function api(rota, { token, metodo = 'GET', corpo } = {}) {
   return dados;
 }
 
+// Interruptor de autonomia: lido do próprio checkout. Ausente/ilegível = desligado.
+function nivelLocal(caminhoArquivo) {
+  try {
+    const conteudo = require('fs').readFileSync(caminhoArquivo || 'autonomia.json', 'utf8');
+    return lerNivel(conteudo);
+  } catch (e) {
+    return lerNivel(null);
+  }
+}
+
 async function avaliar({ token, repo, sha, dono }) {
+  const leitura = nivelLocal();
+  console.log('mesclador: autonomia — ' + (leitura.valido ? 'nível ' + leitura.nivel : 'desligada (' + leitura.motivo + ')'));
+  if (leitura.nivel === 'desligado') { console.log('mesclador: desligado por autonomia.json — não mesclo nada'); return; }
   const abertas = await api('/repos/' + repo + '/pulls?state=open&per_page=50', { token });
   const alvo = (Array.isArray(abertas) ? abertas : []).find(p => texto(p.head && p.head.sha) === texto(sha));
   if (!alvo) { console.log('mesclador: nenhuma PR aberta para ' + texto(sha).slice(0, 10)); return; }
@@ -118,7 +145,8 @@ async function avaliar({ token, repo, sha, dono }) {
       rascunho: alvo.draft,
       deFork: Boolean(alvo.head && alvo.head.repo && alvo.head.repo.full_name !== repo)
     },
-    arquivos
+    arquivos,
+    nivel: leitura.nivel
   });
   if (!decisao.pode) { console.log('mesclador: recusa #' + alvo.number + ' — ' + decisao.motivo); return; }
   const titulo = MARCA + ' ' + texto(alvo.title).slice(0, 120);
@@ -211,5 +239,5 @@ if (require.main === module) {
 
 module.exports = {
   caminhoPermitido, avalia, mergeDoMesclador, planoDeReversao, ramoDeReversao,
-  MARCA, PASTAS_PERMITIDAS, MAXIMO_DE_ARQUIVOS
+  MARCA, PASTAS_PERMITIDAS, MAXIMO_DE_ARQUIVOS, nivelLocal
 };

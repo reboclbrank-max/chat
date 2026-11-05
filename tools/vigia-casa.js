@@ -4,6 +4,7 @@
 // por e-mail SÓ quando o estado muda. Anti-alarme-falso: uma falha só vale após 2 rodadas seguidas.
 const fs = require('fs');
 const { diagnosticoDaBarreira } = require('./socorro');
+const { lerNivel, resumo: resumoAutonomia } = require('./autonomia');
 const { deveSalvarEstado, registrosDeRecuperacao, recuperacaoPermitida, registraRecuperacao, limpaRecuperacao, evidenciaVigiaConhecida } = require('./vigia-estado');
 let nodemailer = null;
 try { nodemailer = require('nodemailer'); } catch (e) {}
@@ -157,6 +158,18 @@ async function acao(rotulo, arquivo) {
     }
     if (sucesso) throw falhaVigia('postagem-atrasada', 'última rotina automática há ' + h(idadeSucesso).toFixed(1) + 'h');
     throw falhaVigia('sem-execucao', 'nenhuma execução recente do postador encontrada');
+  }));
+
+  // Degrau 4: o dono enxerga, no próprio estado da casa, QUANTO de autonomia está ligado.
+  // Se alguém subir o nível acima do que foi provado, o vigia acusa — não passa em silêncio.
+  itens.push(await verifica('Autonomia (nível)', async () => {
+    let conteudo = null;
+    try { conteudo = fs.readFileSync('autonomia.json', 'utf8'); } catch (e) { conteudo = null; }
+    const leitura = lerNivel(conteudo);
+    if (!leitura.valido) throw falhaVigia('autonomia-ilegivel', leitura.motivo + ' (a casa age como desligada)');
+    if (leitura.nivel === 'desligado') return sondaSaudavel('autonomia desligada à mão', 'autonomia-desligada');
+    if (leitura.nivel === 'texto') return sondaSaudavel(resumoAutonomia(leitura), 'autonomia-texto');
+    throw falhaVigia('autonomia-acima-do-provado', 'nível ' + leitura.nivel + ' ligado sem o termômetro da barreira aprovado', false);
   }));
 
   itens.push(await verifica('Barreira de testes (main)', async () => {

@@ -1,0 +1,7 @@
+{
+  "nivel": "texto",
+  "desde": "2026-11-05",
+  "motivo": "degrau 3 provado em producao; degrau 4 so sobe com o termometro da barreira aprovado",
+  "niveis_possiveis": ["desligado", "texto", "codigo"],
+  "observacao": "valor invalido ou arquivo ausente e lido como desligado; nao existe nivel implicito"
+}
