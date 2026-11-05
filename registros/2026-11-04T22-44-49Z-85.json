@@ -1,0 +1,24 @@
+{
+  "quando": "2026-11-04T22:44:49Z",
+  "origem": "historico",
+  "pr": 85,
+  "sha": "545eb28dd791fd5eeeeda6f616bcf47113e8940c",
+  "mesclada": true,
+  "mergeSha": "c9c7d742d8d2b4a83eeab9ba646bb4f07eeceb33",
+  "titulo": "prova-ciclos: medir o degrau D1 em vez de opinar sobre ele",
+  "barreira": "success",
+  "arquivos": [
+    "tools/prova-ciclos.js",
+    "tools/testes/prova-ciclos.js",
+    "tools/testes/roda-testes.js"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (3)"
+  }
+}
