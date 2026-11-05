@@ -44,19 +44,23 @@ function texto(valor) {
   return String(valor == null ? '' : valor).trim().replace(/^\.\//, '');
 }
 
+// `duro` separa duas coisas que a categoria sozinha confunde:
+//   duro = true  → está na lista do que pode calar a casa (nunca entra, em nenhum exercício);
+//   duro = false → desconhecido, fechado por padrão (não entra hoje, mas é EXATAMENTE o que o
+//                  degrau 4 enfrentaria — e é o que o modo sombra precisa poder medir).
 function classificar(caminho) {
   const c = texto(caminho);
-  if (!c) return { categoria: ESSENCIAL, motivo: 'caminho vazio' };
+  if (!c) return { categoria: ESSENCIAL, motivo: 'caminho vazio', duro: true };
   if (ESSENCIAIS.some(p => c === p || c.startsWith(p))) {
-    return { categoria: ESSENCIAL, motivo: 'essencial: pode calar a casa' };
+    return { categoria: ESSENCIAL, motivo: 'essencial: pode calar a casa', duro: true };
   }
   if (LIBERADOS_PARA_DEGRAU_4.includes(c)) {
-    return { categoria: CODIGO_SEGURO, motivo: 'liberado à mão para o degrau 4' };
+    return { categoria: CODIGO_SEGURO, motivo: 'liberado à mão para o degrau 4', duro: false };
   }
   if (PASTAS_DE_TEXTO.some(p => c.startsWith(p)) && /\.(md|json)$/i.test(c)) {
-    return { categoria: TEXTO, motivo: 'texto de leitura humana' };
+    return { categoria: TEXTO, motivo: 'texto de leitura humana', duro: false };
   }
-  return { categoria: ESSENCIAL, motivo: 'desconhecido: fechado por padrão' };
+  return { categoria: ESSENCIAL, motivo: 'desconhecido: fechado por padrão', duro: false };
 }
 
 // O nível de autonomia basta para este arquivo?

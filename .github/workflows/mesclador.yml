@@ -32,6 +32,27 @@ jobs:
           REPO: ${{ github.repository }}
           HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
           ATOR: ${{ github.event.workflow_run.actor.login }}
+  sombra:
+    # Modo sombra: roda em TODA PR que passa pela barreira, verde ou vermelha, e só anota
+    # o que o degrau 4 faria. Não mescla, não abre PR, não toca em main — o registro vai
+    # para o ramo sombra/registro.
+    if: github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: main
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+      - name: Anota o que o degrau 4 faria (sem fazer)
+        run: node tools/sombra.js decidir
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          BARREIRA: ${{ github.event.workflow_run.conclusion }}
   reverter:
     if: github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.conclusion == 'failure'
     runs-on: ubuntu-24.04
