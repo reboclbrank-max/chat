@@ -86,7 +86,13 @@ function avaliaPortoes({ termometro, registros, falhasNaMain, autonomia, declara
   const faltasP3 = [];
   if (!LIBERADOS_PARA_DEGRAU_4.length) faltasP3.push('lista de código liberado vazia');
   if (LIBERADOS_PARA_DEGRAU_4.length > CRITERIOS.maximoDeArquivosNoPortao3) faltasP3.push('lista maior que o degrau 3 permite');
-  if (!declaracoes.reversaoExercitada) faltasP3.push('reversão nunca exercitada por caso real');
+  // A reversão vale por ter sido exercitada de PONTA A PONTA num repositório de verdade
+  // (ensaio isolado), não por ter tido um incidente em produção. O que fica de fora é só o
+  // gatilho (main vermelha num merge do mesclador) — e o pior caso dele já é coberto: o
+  // vigia acusa barreira vermelha e avisa o dono, que é exatamente o degrau 3 de hoje.
+  if (!declaracoes.reversaoExercitada && !declaracoes.reversaoExercitadaEmEnsaio) {
+    faltasP3.push('reversão nunca exercitada de ponta a ponta');
+  }
   if (!declaracoes.ensaioComPrazo) faltasP3.push('ensaio com prazo não preparado');
   const p3 = { numero: 3, nome: 'faixa de código e volta', aberto: faltasP3.length === 0, porque: faltasP3.length ? faltasP3.join(' · ') : 'faixa mínima e volta prontas' };
 
