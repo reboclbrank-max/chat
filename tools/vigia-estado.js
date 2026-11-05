@@ -23,6 +23,7 @@ const EVIDENCIAS_VIGIA = Object.freeze([
   'bateria-recem-executada',
   'bateria-em-andamento',
   'checagem-limitada',
+  'barreira-verde',
   'caixa-sem-pendencia',
   'caixa-recem-chegada'
 ]);

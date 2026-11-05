@@ -45,6 +45,17 @@ async function executa(estadoInicial, configuracao = {}) {
       if (estado === null) throw new Error('estado do postador indisponível no isolamento');
       return resposta({ state: estado, id: 1 });
     }
+    if (url.includes('/actions/workflows/testes-rapidos.yml/runs?')) {
+      const barreira = Object.prototype.hasOwnProperty.call(configuracao, 'barreiraRuns')
+        ? configuracao.barreiraRuns
+        : [{ id: 900, status: 'completed', conclusion: 'success', head_sha: 'abc1234def',
+             html_url: 'https://exemplo/run/900', created_at: agora }];
+      if (barreira === null) throw new Error('API da barreira indisponível no isolamento');
+      return resposta({ workflow_runs: barreira });
+    }
+    if (/\/actions\/runs\/\d+\/jobs$/.test(url)) {
+      return resposta({ jobs: configuracao.barreiraJobs || [] });
+    }
     if (url.includes('/actions/workflows/email.yml/runs?')) {
       if (configuracao.falhaApiEmail) throw new Error('API de e-mail indisponível no isolamento');
       return resposta({ workflow_runs: emailRuns });
@@ -68,6 +79,7 @@ async function executa(estadoInicial, configuracao = {}) {
     require: (nome) => {
       if (nome === 'fs') return fsFalso;
       if (nome === './vigia-estado') return estadoVigia;
+      if (nome === './socorro') return require('../socorro');
       // O teste deliberadamente não fornece SMTP/IMAP: a caixa falha de modo controlado.
       if (nome === 'nodemailer') throw new Error('nodemailer indisponível no isolamento');
       if (nome === 'imapflow') throw new Error('imapflow não deve ser carregado sem credenciais');
@@ -153,6 +165,23 @@ async function executa(estadoInicial, configuracao = {}) {
   });
   assert.equal(postadorAtivoAtrasado.escritos[0].itens['Casa postando (site)'].causa, 'postagem-atrasada',
     'atraso de verdade, com workflow ativo, continua sendo atraso');
+
+  // Barreira verde: vira evidência técnica, sem alarme.
+  const barreiraVerde = await executa(inicial);
+  assert.equal(barreiraVerde.escritos[0].itens['Barreira de testes (main)'].ok, true);
+  assert.equal(barreiraVerde.escritos[0].itens['Barreira de testes (main)'].evidencia, 'barreira-verde');
+
+  // Barreira vermelha: causa própria, com o passo que caiu — e nenhum re-disparo cego.
+  const barreiraVermelha = await executa(inicial, {
+    barreiraRuns: [{ id: 901, status: 'completed', conclusion: 'failure', head_sha: 'abcdef1234',
+      html_url: 'https://exemplo/run/901', created_at: new Date().toISOString() }],
+    barreiraJobs: [{ name: 'testes', conclusion: 'failure', steps: [
+      { name: 'Navegador controlado (quatro rotas, desktop e mobile)', conclusion: 'failure' }] }]
+  });
+  const itemBarreira = barreiraVermelha.escritos[0].itens['Barreira de testes (main)'];
+  assert.equal(itemBarreira.causa, 'barreira-vermelha');
+  assert(barreiraVermelha.dispatches.every(d => /\/email\.yml\/dispatches$/.test(d.url)),
+    'barreira vermelha não gera dispatch próprio: reexecutar barreira vermelha seria fingir conserto');
 
   const apiIndisponivel = await executa(inicial, { falhaApiEmail: true });
   assert.equal(apiIndisponivel.dispatches.length, 0, 'API indisponível não autoriza dispatch às cegas');
