@@ -1,0 +1,33 @@
+{
+  "quando": "2026-10-31T19:29:55Z",
+  "origem": "historico",
+  "pr": 63,
+  "sha": "fd0309efe95d8267c14d5b1f3aa80c637027588d",
+  "mesclada": true,
+  "mergeSha": "eb1d04e1e7810b43f49b4a04b2fafab1d28d7af3",
+  "titulo": "chat: capacidade dobrada em 9 de 10 eixos, com 17 chutes meus barrados antes do push",
+  "barreira": "success",
+  "arquivos": [
+    "CONTINUIDADE.md",
+    "bench/lexico-publico.json",
+    "docs/auto-melhoria.json",
+    "razao-local.js",
+    "roteador-ia.js",
+    "sw.js",
+    "tools/armadilhas-do-chat.json",
+    "tools/auto-melhoria.js",
+    "tools/medir-lexico-publico.py",
+    "tools/provas-do-chat.json",
+    "tools/testes/auto-melhoria.js",
+    "tools/testes/razao-local.js"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (12)"
+  }
+}
