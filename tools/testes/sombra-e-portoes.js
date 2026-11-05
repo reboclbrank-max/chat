@@ -83,6 +83,18 @@ ok('portão 2 exige volume de registros E zero incidente', () => {
   assert.equal(b.portoes[1].aberto, true, b.portoes[1].porque);
 });
 
+ok('histórico sozinho não abre o portão 2: falta operação ao vivo', () => {
+  const historicos = Array.from({ length: 40 }, (_, i) => ({ pr: i, origem: 'historico', degrau4: { decidiria: 'mesclar' }, mergeSha: 'h' + i }));
+  const a = avaliaPortoes({ termometro: termometroOk, registros: historicos, falhasNaMain: [], autonomia: { nivel: 'texto' }, declarado: semDeclaracao });
+  assert.equal(a.portoes[1].aberto, false);
+  assert.match(a.portoes[1].porque, /ao vivo/);
+  // Com 10 ao vivo no meio, o mesmo conjunto abre.
+  const misto = historicos.slice(0, 30).concat(Array.from({ length: 10 }, (_, i) => ({ pr: 100 + i, degrau4: { decidiria: 'recusar' } })));
+  const b = avaliaPortoes({ termometro: termometroOk, registros: misto, falhasNaMain: [], autonomia: { nivel: 'texto' }, declarado: semDeclaracao });
+  assert.equal(b.portoes[1].aberto, true, b.portoes[1].porque);
+  assert.equal(b.portoes[1].numeros.aoVivo, 10);
+});
+
 ok('um incidente derruba o portão 2 mesmo com muitos registros', () => {
   const registros = Array.from({ length: 40 }, (_, i) => ({ pr: i, degrau4: { decidiria: 'mesclar' }, mergeSha: 'sha' + i }));
   const a = avaliaPortoes({ termometro: termometroOk, registros, falhasNaMain: ['sha3'], autonomia: { nivel: 'texto' }, declarado: semDeclaracao });

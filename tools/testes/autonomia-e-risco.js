@@ -18,6 +18,18 @@ ok('sem arquivo, ilegível ou nível inventado, a autonomia fica desligada', () 
   assert.equal(lerNivel(JSON.stringify({ nivel: 'CODIGO' })).nivel, 'codigo');
 });
 
+ok('autonomia com prazo morre sozinha na data marcada', () => {
+  const futuro = Date.parse('2026-12-01T00:00:00Z');
+  const antes = lerNivel({ nivel: 'codigo', expira_em: '2026-12-01T00:00:00Z' }, Date.parse('2026-11-20T00:00:00Z'));
+  assert.equal(antes.nivel, 'codigo', 'dentro do prazo o nível vale');
+  const depois = lerNivel({ nivel: 'codigo', expira_em: '2026-12-01T00:00:00Z' }, futuro + 1000);
+  assert.equal(depois.nivel, 'desligado', 'passado o prazo, cai para desligado sem ninguém lembrar');
+  assert.equal(depois.expirado, true);
+  assert.match(resumo(depois), /prazo/);
+  // Data inválida não vira prazo eterno nem desligamento acidental.
+  assert.equal(lerNivel({ nivel: 'texto', expira_em: 'amanhã' }).nivel, 'texto');
+});
+
 ok('a matriz de permissão é fechada e o nível baixo não herda poder do alto', () => {
   assert.equal(permite('desligado', 'texto'), false);
   assert.equal(permite('texto', 'texto'), true);

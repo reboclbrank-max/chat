@@ -14,7 +14,7 @@ quantos estão abertos. Enquanto um portão estiver fechado, o nível fica onde 
 | portão | pergunta | como fecha | medido por |
 |---|---|---|---|
 | **1** | a barreira merece ser o juiz? | termômetro aprovado: ≥20 execuções, ≥90% verde, sem falha recente, sem instabilidade pendente | `tools/termometro-barreira.js` |
-| **2** | o julgamento da máquina se sustenta? | **≥30 registros** do modo sombra e **zero incidente** — nenhuma `main` vermelha num commit que o degrau 4 teria mesclado | `tools/sombra.js` + `tools/portoes.js` |
+| **2** | o julgamento da máquina se sustenta? | **≥30 registros** (dos quais **≥10 ao vivo**) e **zero incidente** — nenhuma `main` vermelha num commit que o degrau 4 teria mesclado | `tools/sombra.js` + `tools/portoes.js` |
 | **3** | faixa de código e volta existem? | lista de código liberado com ≤2 arquivos, **reversão exercitada por caso real**, ensaio com prazo preparado | `autonomia.json` (fatos declarados) |
 | **4** | aguenta mais de um arquivo? | lista de 3–5 arquivos e **um mês sem incidente** | idem |
 
@@ -51,6 +51,38 @@ node tools/sombra.js ler
    barradas por arquivo essencial: 11
    essenciais mais vistos: tools/email-chat.js (4), .github/workflows/email.yml (2)
 ```
+
+## O histórico também é evidência (mas não é tudo)
+
+O sombra sabe aplicar o mesmo julgamento ao que **já aconteceu**: `node tools/sombra.js historico`
+percorre as PRs já mescladas, calcula o veredito do degrau 4 e confere se a `main` ficou vermelha
+naquele merge. Não é simulação — os merges aconteceram e as consequências também.
+
+Primeira medição (05/11, 39 registros: 3 ao vivo + 36 do histórico):
+
+```
+barreira verde: 38 · vermelha: 1
+o degrau 4 teria mesclado: 24 (62%)
+barradas por arquivo essencial: 15
+essenciais mais vistos: tools/email-chat.js (5), tools/vigia-casa.js (4), index.html (3)
+incidentes: 0
+```
+
+Duas leituras honestas:
+
+1. **Zero incidente** nas 24 que o degrau 4 teria mesclado — primeiro sinal real de que o
+   julgamento não é suicida.
+2. **62% de aceitação** não é 100%: mais de um terço continuaria pedindo gente, porque toca
+   arquivo essencial. O degrau 4 nunca foi "máquina sozinha" — é "máquina na faixa estreita".
+
+Por que o portão não abre só com histórico: uma fotografia do passado não prova que o
+mecanismo que está na `main` **hoje** funciona. Daí o mínimo de 10 registros ao vivo.
+
+## ⏳ Prazo: autonomia que expira sozinha
+
+`autonomia.json` aceita `"expira_em": "2026-12-01"`. Passada a data, o nível cai para
+`desligado` sem ninguém precisar lembrar. É o que impede o pior tipo de esquecimento:
+ligar para testar e ficar ligado.
 
 ## Ordem de abertura
 

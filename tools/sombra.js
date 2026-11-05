@@ -49,10 +49,11 @@ function vereditoSombra({ pr, arquivos } = {}) {
 }
 
 // Um registro é o retrato de uma PR no momento em que a barreira terminou.
-function registroDe({ quando, pr, sha, titulo, arquivos, barreira, veredito } = {}) {
+function registroDe({ quando, pr, sha, titulo, arquivos, barreira, veredito, origem } = {}) {
   const v = veredito || vereditoSombra({ pr, arquivos });
   return {
     quando: texto(quando),
+    origem: texto(origem) || 'ao-vivo',
     pr: Number((pr && pr.numero) || 0),
     sha: texto(sha).slice(0, 40),
     mesclada: Boolean((pr || {}).mesclada),
@@ -70,6 +71,7 @@ function registroDe({ quando, pr, sha, titulo, arquivos, barreira, veredito } = 
 function resumoDoRegistro(registros) {
   const lista = (Array.isArray(registros) ? registros : []).filter(r => r && typeof r === 'object');
   const total = lista.length;
+  const aoVivo = lista.filter(r => (r.origem || 'ao-vivo') === 'ao-vivo').length;
   const verdes = lista.filter(r => r.barreira === 'success').length;
   const mesclariaDegrau4 = lista.filter(r => r.degrau4 && r.degrau4.decidiria === 'mesclar');
   const bloqueadasPorEssencial = lista.filter(r => r.degrau4 && r.degrau4.decidiria === 'recusar');
@@ -80,6 +82,8 @@ function resumoDoRegistro(registros) {
   const maisFrequentes = Object.entries(contagem).sort((a, b) => b[1] - a[1]).slice(0, 5);
   return {
     total,
+    aoVivo,
+    historicos: total - aoVivo,
     verdes,
     vermelhas: total - verdes,
     mesclariaDegrau4: mesclariaDegrau4.length,
@@ -155,6 +159,54 @@ async function decidir({ token, repo, sha, conclusaoBarreira }) {
   return registro;
 }
 
+// Backfill: o mesmo julgamento aplicado ao que JÁ aconteceu. Em vez de esperar semanas,
+// pergunta à história — "das PRs que já entraram, em quantas o degrau 4 teria dito sim, e
+// alguma delas terminou com a main vermelha?". É evidência real, não simulação: os merges
+// aconteceram de verdade e as consequências também.
+async function historico({ token, repo, limite = 40 }) {
+  const fechadas = await api('/repos/' + repo + '/pulls?state=closed&per_page=' + limite + '&sort=updated&direction=desc', { token });
+  const mescladas = (Array.isArray(fechadas) ? fechadas : []).filter(p => p.merged_at).slice(0, limite);
+  const falhasNaMain = new Map();
+  const runs = await api('/repos/' + repo + '/actions/workflows/testes-rapidos.yml/runs?branch=main&per_page=100&status=failure', { token }).catch(() => ({ workflow_runs: [] }));
+  for (const r of runs.workflow_runs || []) falhasNaMain.set(texto(r.head_sha).slice(0, 40), r.html_url || '');
+
+  const existentes = await api('/repos/' + repo + '/contents/' + PASTA + '?ref=' + encodeURIComponent(RAMO), { token }).catch(() => null);
+  const jaRegistradas = new Set((Array.isArray(existentes) ? existentes : []).map(i => Number((i.name.match(/-(\d+)\.json$/) || [])[1])).filter(Boolean));
+
+  await garantirRamo({ token, repo });
+  let gravadas = 0;
+  for (const p of mescladas) {
+    if (jaRegistradas.has(Number(p.number))) continue;
+    const arquivos = await api('/repos/' + repo + '/pulls/' + p.number + '/files?per_page=100', { token }).catch(() => []);
+    const mergeSha = texto(p.merge_commit_sha).slice(0, 40);
+    const registro = registroDe({
+      quando: p.merged_at,
+      pr: { numero: p.number, estado: 'closed', rascunho: p.draft, deFork: Boolean(p.head && p.head.repo && p.head.repo.full_name !== repo), mesclada: true, mergeSha },
+      sha: p.head && p.head.sha,
+      titulo: p.title,
+      arquivos,
+      barreira: falhasNaMain.has(mergeSha) ? 'failure' : 'success',
+      origem: 'historico'
+    });
+    const nome = PASTA + '/' + texto(p.merged_at).replace(/[:.]/g, '-') + '-' + p.number + '.json';
+    try {
+      await api('/repos/' + repo + '/contents/' + nome, {
+        token, metodo: 'PUT',
+        corpo: {
+          message: 'sombra: registro historico da PR #' + p.number + ' (nao altera nada)',
+          content: Buffer.from(JSON.stringify(registro, null, 2) + '\n').toString('base64'),
+          branch: RAMO
+        }
+      });
+      gravadas++;
+    } catch (e) {
+      console.log('sombra: não gravou #' + p.number + ' — ' + (e.message || e));
+    }
+  }
+  console.log('sombra: ' + gravadas + ' registro(s) histórico(s) gravado(s) de ' + mescladas.length + ' PR(s) mesclada(s) analisada(s)');
+  return gravadas;
+}
+
 async function ler({ token, repo }) {
   const itens = await api('/repos/' + repo + '/contents/' + PASTA + '?ref=' + encodeURIComponent(RAMO), { token }).catch(() => null);
   if (!Array.isArray(itens)) { console.log('sombra: nenhum registro ainda'); return { total: 0 }; }
@@ -166,7 +218,7 @@ async function ler({ token, repo }) {
     }
   }
   const resumo = resumoDoRegistro(registros);
-  console.log('🌓 Modo sombra — ' + resumo.total + ' registro(s)');
+  console.log('🌓 Modo sombra — ' + resumo.total + ' registro(s) (' + resumo.aoVivo + ' ao vivo, ' + resumo.historicos + ' do histórico)');
   console.log('   barreira verde: ' + resumo.verdes + ' · vermelha: ' + resumo.vermelhas);
   console.log('   o degrau 4 teria mesclado: ' + resumo.mesclariaDegrau4 + ' (' + Math.round(resumo.taxaQueODegrau4Aceitaria * 100) + '%)');
   console.log('   barradas por arquivo essencial: ' + resumo.bloqueadasPorEssencial);
@@ -183,6 +235,7 @@ async function principal() {
   if (!token) throw new Error('falta GITHUB_TOKEN');
   if (modo === 'decidir') return decidir({ token, repo, sha: texto(process.env.HEAD_SHA), conclusaoBarreira: texto(process.env.BARREIRA) });
   if (modo === 'ler') return ler({ token, repo });
+  if (modo === 'historico') return historico({ token, repo, limite: Number(process.env.LIMITE || 40) });
   throw new Error('modo desconhecido: ' + (modo || '(vazio)') + ' — use decidir ou ler');
 }
 
