@@ -25,6 +25,10 @@ const EVIDENCIAS_VIGIA = Object.freeze([
   'checagem-limitada',
   'barreira-verde',
   'barreira-em-andamento',
+  // Revisão de 05/11: o item "Autonomia (nível)" publicava evidência que não estava nesta
+  // lista fechada e o estado saía só com "saudavel", sem dizer QUAL nível estava ligado.
+  'autonomia-texto',
+  'autonomia-desligada',
   'caixa-sem-pendencia',
   'caixa-recem-chegada'
 ]);

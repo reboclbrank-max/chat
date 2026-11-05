@@ -104,20 +104,14 @@ function linha(p) {
   return (p.aberto ? '✅' : '⛔') + ' portão ' + p.numero + ' — ' + p.nome + ': ' + p.porque;
 }
 
-async function principal() {
-  const token = texto(process.env.GITHUB_TOKEN);
-  const repo = texto(process.env.REPO) || 'reboclbrank-max/chat';
-  if (!token) throw new Error('falta GITHUB_TOKEN');
+// Junta tudo o que o quadro precisa: termômetro, registros do sombra e os fatos declarados.
+// Exportado para o painel reaproveitar exatamente a mesma conta — duas contas diferentes
+// para a mesma pergunta seria o começo do fim da confiança no número.
+async function leituraCompleta({ token, repo, autonomia, execucoes, medido } = {}) {
   const { medir, avaliaTermometro } = require('./termometro-barreira.js');
-  const medido = await medir({ token, repo });
-  const termometro = avaliaTermometro({ execucoes: medido.execucoes, passosFalhos: medido.passosFalhos });
+  const medicao = medido || await medir({ token, repo });
+  const termometro = avaliaTermometro({ execucoes: medicao.execucoes, passosFalhos: medicao.passosFalhos });
 
-  const fs = require('fs');
-  let autonomia = {};
-  try { autonomia = JSON.parse(fs.readFileSync('autonomia.json', 'utf8')); } catch (e) { autonomia = lerNivel(null); }
-
-  // Registros do sombra: ramo próprio, somente leitura aqui.
-  const { RAMO, PASTA } = require('./sombra.js');
   const api = async (rota) => {
     const r = await fetch('https://api.github.com' + rota, {
       headers: { 'Accept': 'application/vnd.github+json', 'Authorization': 'Bearer ' + token, 'User-Agent': 'portoes/1' },
@@ -126,6 +120,8 @@ async function principal() {
     if (!r.ok) throw new Error(rota + ' -> HTTP ' + r.status);
     return r.json();
   };
+
+  const { RAMO, PASTA } = require('./sombra.js');
   let registros = [];
   const itens = await api('/repos/' + repo + '/contents/' + PASTA + '?ref=' + encodeURIComponent(RAMO)).catch(() => null);
   if (Array.isArray(itens)) {
@@ -134,7 +130,7 @@ async function principal() {
       if (c && c.content) { try { registros.push(JSON.parse(Buffer.from(c.content, 'base64').toString('utf8'))); } catch (e) {} }
     }
   }
-  const falhasNaMain = (medido.execucoes || []).filter(e => e.conclusion === 'failure').map(e => e.head_sha).filter(Boolean);
+  const falhasNaMain = (medicao.execucoes || []).filter(e => e.conclusion === 'failure').map(e => e.head_sha).filter(Boolean);
 
   // Resolve o merge de cada PR registrada: o sombra grava antes do merge existir.
   let comMerge = registros;
@@ -148,7 +144,19 @@ async function principal() {
     comMerge = aplicarMerges(registros, pulls);
   }
 
-  const quadro = avaliaPortoes({ termometro, registros: comMerge, falhasNaMain, autonomia, declarado: autonomia.portoes || {} });
+  return avaliaPortoes({ termometro, registros: comMerge, falhasNaMain, autonomia: autonomia || {}, declarado: (autonomia || {}).portoes || {} });
+}
+
+async function principal() {
+  const token = texto(process.env.GITHUB_TOKEN);
+  const repo = texto(process.env.REPO) || 'reboclbrank-max/chat';
+  if (!token) throw new Error('falta GITHUB_TOKEN');
+
+  const fs = require('fs');
+  let autonomia = {};
+  try { autonomia = JSON.parse(fs.readFileSync('autonomia.json', 'utf8')); } catch (e) { autonomia = lerNivel(null); }
+
+  const quadro = await leituraCompleta({ token, repo, autonomia });
   console.log('🚪 Portões do degrau 4 — ' + quadro.abertos + '/' + quadro.total + ' abertos (nível atual: ' + quadro.nivel + ')');
   for (const p of quadro.portoes) console.log('   ' + linha(p));
   if (quadro.incidentes.total) console.log('   ⚠️ incidentes observados: ' + quadro.incidentes.casos.map(c => '#' + c.pr).join(', '));
@@ -162,4 +170,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { CRITERIOS, aplicarMerges, incidentesObservados, avaliaPortoes };
+module.exports = { CRITERIOS, aplicarMerges, incidentesObservados, avaliaPortoes, leituraCompleta };

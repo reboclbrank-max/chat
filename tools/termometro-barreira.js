@@ -43,6 +43,25 @@ const LIMITES = Object.freeze({
   falhasRecentesPermitidas: 0
 });
 
+// Quando é que uma instabilidade pendente pode ser marcada como corrigida?
+// Não é quando "já faz tempo". É quando existe janela observada DEPOIS da correção, com
+// número mínimo de execuções e zero falha. Isto aqui calcula essa janela para a pessoa
+// não decidir no chute — e para a pendência não sair da lista por envelhecimento.
+const CORRECAO_DO_NAVEGADOR_EM = '2026-11-05T07:00:00Z';
+function evidenciaDeCorrecao({ execucoes, desde, minimo = 10 } = {}) {
+  const marco = Date.parse(String(desde || CORRECAO_DO_NAVEGADOR_EM));
+  const lista = (Array.isArray(execucoes) ? execucoes : [])
+    .filter(e => e && Number.isFinite(Date.parse(String(e.created_at))) && Date.parse(e.created_at) >= marco);
+  const falhas = lista.filter(e => e.conclusion === 'failure').length;
+  return {
+    desde: new Date(marco).toISOString(),
+    execucoesDesde: lista.length,
+    falhas,
+    minimo,
+    suficiente: lista.length >= minimo && falhas === 0
+  };
+}
+
 function pct(n) {
   return (Math.round(n * 1000) / 10).toFixed(1) + '%';
 }
@@ -129,6 +148,10 @@ async function principal() {
   console.log('   falhas nas últimas ' + n.janelaRecente + ': ' + n.falhasRecentes);
   if (n.passoDominante) console.log('   passo que mais reprova: ' + n.passoDominante + ' (' + pct(n.concentracao) + ' das falhas)');
   console.log('   detalhe de ' + medido.detalhadas + ' falha(s) inspecionada(s)');
+  const evidencia = evidenciaDeCorrecao({ execucoes: medido.execucoes });
+  console.log('   evidência para marcar a instabilidade como corrigida: ' + evidencia.execucoesDesde + '/' + evidencia.minimo
+    + ' execuções desde ' + evidencia.desde.slice(0, 10) + ', ' + evidencia.falhas + ' falha(s)'
+    + (evidencia.suficiente ? ' → já dá para marcar corrigido' : ' → ainda não'));
   console.log(veredito.aprovado
     ? '   ✅ barreira confiável para o degrau 4'
     : '   ⛔ degrau 4 NÃO liberado:\n     - ' + veredito.motivos.join('\n     - '));
@@ -142,4 +165,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { LIMITES, INSTABILIDADES_CONHECIDAS, avaliaTermometro, medir };
+module.exports = { LIMITES, INSTABILIDADES_CONHECIDAS, CORRECAO_DO_NAVEGADOR_EM, avaliaTermometro, evidenciaDeCorrecao, medir };

@@ -4,7 +4,7 @@
 const assert = require('assert');
 const { lerNivel, permite, nivelValido, resumo, NIVEIS } = require('../autonomia.js');
 const { classificar, liberadoNoNivel, ESSENCIAL, TEXTO, CODIGO_SEGURO } = require('../risco-de-arquivo.js');
-const { avaliaTermometro, LIMITES } = require('../termometro-barreira.js');
+const { avaliaTermometro, evidenciaDeCorrecao, LIMITES } = require('../termometro-barreira.js');
 const casos = [];
 function ok(nome, fn) { casos.push({ nome, fn }); }
 
@@ -121,6 +121,20 @@ ok('marcar a instabilidade como corrigida libera o caminho', () => {
     instabilidades: [{ passo: 'Navegador controlado', arquivo: 'x.sh', corrigido: true }]
   });
   assert.equal(v.aprovado, true, v.motivos.join('; '));
+});
+
+ok('marcar corrigido exige janela observada depois da correção, não tempo passado', () => {
+  const depois = n => Array.from({ length: n }, (_, i) => ({ conclusion: 'success', created_at: new Date(Date.UTC(2026, 10, 6, 0, i)).toISOString() }));
+  const antes = n => Array.from({ length: n }, (_, i) => ({ conclusion: 'success', created_at: new Date(Date.UTC(2026, 10, 1, 0, i)).toISOString() }));
+  // Muitas execuções verdes, mas nenhuma depois da correção: não serve como evidência.
+  assert.equal(evidenciaDeCorrecao({ execucoes: antes(40), desde: '2026-11-05T07:00:00Z' }).suficiente, false);
+  // Janela de 10 execuções verdes depois da correção: agora sim.
+  assert.equal(evidenciaDeCorrecao({ execucoes: depois(10), desde: '2026-11-05T07:00:00Z' }).suficiente, true);
+  // Uma falha na janela zera a evidência, mesmo com muitas execuções.
+  const comFalha = depois(12); comFalha[3] = { conclusion: 'failure', created_at: comFalha[3].created_at };
+  const r = evidenciaDeCorrecao({ execucoes: comFalha, desde: '2026-11-05T07:00:00Z' });
+  assert.equal(r.suficiente, false);
+  assert.equal(r.falhas, 1);
 });
 
 ok('termômetro sem dado não aprova nada', () => {
