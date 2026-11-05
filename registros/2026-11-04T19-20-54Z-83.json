@@ -1,0 +1,28 @@
+{
+  "quando": "2026-11-04T19:20:54Z",
+  "origem": "historico",
+  "pr": 83,
+  "sha": "7cffb30f2536e96498fbfb44f63fc26636c12817",
+  "mesclada": true,
+  "mergeSha": "64502cea7a92fb2efdfff360a6e0fcec085e676b",
+  "titulo": "bench: conversa v2 SEM ECO — banco, rodada 40/40, contrato e errata da v1",
+  "barreira": "success",
+  "arquivos": [
+    "bench/banco-conversa-v2.json",
+    "bench/medir-conversa.js",
+    "bench/resultado-conversa-v2.json",
+    "docs/RODADA-CONVERSA-2026-11-04.md",
+    "docs/RODADA-CONVERSA-V2-2026-11-04.md",
+    "tools/testes/banco-conversa-v2.js",
+    "tools/testes/roda-testes.js"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (7)"
+  }
+}
