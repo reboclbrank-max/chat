@@ -21,17 +21,22 @@ const INSTABILIDADES_CONHECIDAS = Object.freeze([
   {
     passo: 'Navegador controlado (quatro rotas, desktop e mobile)',
     arquivo: 'tools/testes/navegador-lista-controlado.sh',
-    corrigido: false,
-    observacao: '9 execuções vermelhas desde 16/10; última em 30/10'
+    corrigido: true,
+    corrigido_em: '2026-11-05',
+    evidencia: 'janela de 11 execuções na main desde a correção do lançador (05/11 07:00 UTC), zero falha',
+    observacao: '9 execuções vermelhas desde 16/10; última em 30/10. Correção de causa raiz em '
+      + 'tools/testes/cdp.js (perfil próprio por tentativa), provada por navegador falso em '
+      + 'cdp-recuperacao-navegador.js'
   },
   {
     passo: 'Testes rápidos (IMAP, SMTP e motores falsos)',
     arquivo: 'tools/testes/navegador-csp.js',
-    corrigido: false,
-    observacao: '20 execuções vermelhas desde 16/10; última em 05/11 na main (4435028b1a4d), '
-      + 'com o log navegador não abriu porta de depuração (dbus/bus.cc). Causa achada em 05/11: '
-      + 'perfil de navegador reusado entre tentativas. Correção aplicada em cdp.js; só sai da '
-      + 'pendência quando houver janela verde que a sustente'
+    corrigido: true,
+    corrigido_em: '2026-11-05',
+    evidencia: 'janela de 11 execuções na main desde a correção do lançador (05/11 07:00 UTC), zero falha',
+    observacao: '20 execuções vermelhas desde 16/10; última em 05/11 na main (4435028b1a4d), com o '
+      + 'log navegador não abriu porta de depuração (dbus/bus.cc). Causa achada em 05/11: perfil de '
+      + 'navegador reusado entre tentativas. Se voltar a falhar, a entrada precisa voltar a false'
   }
 ]);
 
@@ -64,6 +69,17 @@ function evidenciaDeCorrecao({ execucoes, desde, minimo = 10 } = {}) {
     minimo,
     suficiente: lista.length >= minimo && falhas === 0
   };
+}
+
+// Quais execuções merecem inspeção de passo. Só as da JANELA RECENTE: a pergunta é
+// "existe passo instável agora?", não "qual passo mais falhou desde outubro". Usar o
+// histórico inteiro mantinha o degrau 4 travado por falhas que já tinham sido corrigidas.
+function execucoesParaInspecionar({ execucoes, janela } = {}) {
+  const lista = (Array.isArray(execucoes) ? execucoes : [])
+    .filter(e => e && (e.conclusion === 'success' || e.conclusion === 'failure'))
+    .slice()
+    .sort((a, b) => Date.parse(b.created_at || 0) - Date.parse(a.created_at || 0));
+  return lista.slice(0, Number(janela) || 10);
 }
 
 function pct(n) {
@@ -129,7 +145,8 @@ async function medir({ token, repo = 'reboclbrank-max/chat', quantas = 60, maxFa
   const dados = await api('/repos/' + repo + '/actions/workflows/testes-rapidos.yml/runs?branch=main&per_page=' + quantas, token);
   const execucoes = (dados.workflow_runs || []).map(r => ({ conclusion: r.conclusion, created_at: r.created_at, id: r.id }));
   const passosFalhos = {};
-  const falhas = execucoes.filter(e => e.conclusion === 'failure').slice(0, maxFalhasDetalhadas);
+  const naJanela = execucoesParaInspecionar({ execucoes, janela: LIMITES.janelaRecente });
+  const falhas = naJanela.filter(e => e.conclusion === 'failure').slice(0, maxFalhasDetalhadas);
   for (const falha of falhas) {
     const jobs = (await api('/repos/' + repo + '/actions/runs/' + falha.id + '/jobs', token).catch(() => ({ jobs: [] }))).jobs || [];
     for (const job of jobs) {
@@ -169,4 +186,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { LIMITES, INSTABILIDADES_CONHECIDAS, CORRECAO_DO_NAVEGADOR_EM, avaliaTermometro, evidenciaDeCorrecao, medir };
+module.exports = { LIMITES, INSTABILIDADES_CONHECIDAS, CORRECAO_DO_NAVEGADOR_EM, avaliaTermometro, evidenciaDeCorrecao, execucoesParaInspecionar, medir };

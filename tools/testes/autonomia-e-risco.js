@@ -4,7 +4,7 @@
 const assert = require('assert');
 const { lerNivel, permite, nivelValido, resumo, NIVEIS } = require('../autonomia.js');
 const { classificar, liberadoNoNivel, ESSENCIAL, TEXTO, CODIGO_SEGURO, LIBERADOS_PARA_DEGRAU_4 } = require('../risco-de-arquivo.js');
-const { avaliaTermometro, evidenciaDeCorrecao, LIMITES } = require('../termometro-barreira.js');
+const { avaliaTermometro, evidenciaDeCorrecao, execucoesParaInspecionar, LIMITES } = require('../termometro-barreira.js');
 const casos = [];
 function ok(nome, fn) { casos.push({ nome, fn }); }
 
@@ -141,10 +141,13 @@ ok('um passo concentrando quase toda a falha é tratado como instabilidade, não
 });
 
 ok('janela verde NÃO aprova enquanto existir instabilidade conhecida pendente', () => {
-  const v = avaliaTermometro({ execucoes: verdes(60), passosFalhos: {} });
+  // A lista real hoje está corrigida — a prova usa uma pendência explícita para não
+  // depender do estado de produção (contrato que se espelha no mundo real não é contrato).
+  const pendente = [{ passo: 'Navegador controlado', arquivo: 'navegador-lista-controlado.sh', corrigido: false }];
+  const v = avaliaTermometro({ execucoes: verdes(60), passosFalhos: {}, instabilidades: pendente });
   assert.equal(v.aprovado, false, 'verde na janela não pode apagar a pendência conhecida');
   assert.match(v.motivos.join(' '), /instabilidade conhecida não corrigida/);
-  assert.ok(v.instabilidadesPendentes.length >= 1);
+  assert.equal(v.instabilidadesPendentes.length, 1);
 });
 
 ok('marcar a instabilidade como corrigida libera o caminho', () => {
@@ -182,6 +185,21 @@ ok('execução cancelada ou em andamento não conta como evidência de janela', 
   assert.equal(r.suficiente, false, 'com 2 de 3 não há evidência');
   const r2 = evidenciaDeCorrecao({ execucoes, desde: '2026-11-05T07:00:00Z', minimo: 2 });
   assert.equal(r2.suficiente, true);
+});
+
+ok('a inspeção de passo olha a janela recente, não o histórico inteiro', () => {
+  const dia = d => new Date(Date.UTC(2026, 10, d, 0, 0)).toISOString();
+  const execucoes = [
+    { conclusion: 'failure', created_at: dia(1) },   // antiga, já corrigida
+    { conclusion: 'success', created_at: dia(5) },
+    { conclusion: 'success', created_at: dia(6) },
+    { conclusion: 'success', created_at: dia(7) }
+  ];
+  const janela = execucoesParaInspecionar({ execucoes, janela: 3 });
+  assert.equal(janela.length, 3);
+  assert.equal(janela.some(e => e.conclusion === 'failure'), false, 'a falha antiga não entra na janela de 3');
+  // Sem janela explícita, o padrão é LIMITES.janelaRecente.
+  assert.equal(execucoesParaInspecionar({ execucoes }).length, Math.min(execucoes.length, LIMITES.janelaRecente));
 });
 
 ok('termômetro sem dado não aprova nada', () => {
