@@ -1,0 +1,32 @@
+{
+  "quando": "2026-11-05T00:27:38Z",
+  "origem": "historico",
+  "pr": 87,
+  "sha": "b6a6a245767223c6b4c090844805a68d688d60b1",
+  "mesclada": true,
+  "mergeSha": "5abbe37df3d71a1f799098b3a8dbeeaa9846d579",
+  "titulo": "degrau 2: barreira vermelha na main ganha diagnóstico (passo, categoria e link)",
+  "barreira": "success",
+  "arquivos": [
+    "tools/email-chat.js",
+    "tools/socorro.js",
+    "tools/testes/roda-testes.js",
+    "tools/testes/socorro.js",
+    "tools/testes/vigia-recuperacao-fluxo.js",
+    "tools/vigia-casa.js",
+    "tools/vigia-estado.js"
+  ],
+  "essenciais": [
+    "tools/email-chat.js",
+    "tools/vigia-casa.js",
+    "tools/vigia-estado.js"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: tools/email-chat.js, tools/vigia-casa.js, tools/vigia-estado.js"
+  }
+}
