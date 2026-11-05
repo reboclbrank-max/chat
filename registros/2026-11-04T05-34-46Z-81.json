@@ -1,0 +1,25 @@
+{
+  "quando": "2026-11-04T05:34:46Z",
+  "origem": "historico",
+  "pr": 81,
+  "sha": "5d5d16107c75330d37f780880d4db00dcff2606c",
+  "mesclada": true,
+  "mergeSha": "d24e7eaede81fa29eb3c01b9f47e5b05fa82067a",
+  "titulo": "bench: medidor de conversa pareada — 20 cenários + rodada 2026-11-04 (lados separados)",
+  "barreira": "success",
+  "arquivos": [
+    "bench/banco-conversa.json",
+    "bench/medir-conversa.js",
+    "bench/resultado-conversa.json",
+    "docs/RODADA-CONVERSA-2026-11-04.md"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (4)"
+  }
+}
