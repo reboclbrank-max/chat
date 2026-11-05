@@ -1,0 +1,22 @@
+{
+  "quando": "2026-11-05T03:12:41Z",
+  "origem": "historico",
+  "pr": 92,
+  "sha": "d4fba325c47dc8ea11bb5b6585ec5f51dc126bde",
+  "mesclada": true,
+  "mergeSha": "9d0a135d7f07976454d32ba607b30e6b469c233f",
+  "titulo": "[mesclador] reversão automática de 6c35fda894",
+  "barreira": "success",
+  "arquivos": [
+    "docs/PROVA-DEGRAU-3.md"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (1)"
+  }
+}
