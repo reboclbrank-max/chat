@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-11-05T12:30:52.712Z",
+ "verificado_em": "2026-11-05T13:10:51.696Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -54,10 +54,9 @@
    "evidencia": "pagina-respondendo"
   },
   "Caixa de e-mail": {
-   "ok": true,
-   "falhas": 0,
-   "causa": "saudavel",
-   "evidencia": "caixa-sem-pendencia"
+   "ok": false,
+   "falhas": 1,
+   "causa": "sonda-indisponivel"
   }
  }
 }
