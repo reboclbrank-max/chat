@@ -1,0 +1,26 @@
+{
+  "quando": "2026-11-05T21:04:53.046Z",
+  "origem": "ao-vivo",
+  "pr": 101,
+  "sha": "9f0468b6ff62aedb9e296d7161ebe337d542dffd",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "portão 3: o primeiro arquivo da faixa (escolhido a dedo, não por heurística)",
+  "barreira": "success",
+  "arquivos": [
+    "docs/PORTOES-DO-DEGRAU-4.md",
+    "tools/autonomia.js",
+    "tools/risco-de-arquivo.js",
+    "tools/testes/autonomia-e-risco.js",
+    "tools/testes/sombra-e-portoes.js"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: tools/autonomia.js, tools/risco-de-arquivo.js, tools/testes/autonomia-e-risco.js…"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (5)"
+  }
+}
