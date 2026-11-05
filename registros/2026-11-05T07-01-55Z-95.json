@@ -1,0 +1,28 @@
+{
+  "quando": "2026-11-05T07:01:55Z",
+  "origem": "historico",
+  "pr": 95,
+  "sha": "6bb7ba731fb0f001f67509cdb356c335e301c55e",
+  "mesclada": true,
+  "mergeSha": "a9b4d1b73780c311045c7249aed53a2adb4b1df5",
+  "titulo": "reversão que funcionava no papel, navegador que falhava por nossa causa (3 defeitos reais)",
+  "barreira": "success",
+  "arquivos": [
+    "docs/DEGRAU-4-POSSIBILIDADES.md",
+    "tools/mesclador-estreito.js",
+    "tools/termometro-barreira.js",
+    "tools/testes/cdp-recuperacao-navegador.js",
+    "tools/testes/cdp.js",
+    "tools/testes/mesclador-estreito.js",
+    "tools/testes/roda-testes.js"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (7)"
+  }
+}
