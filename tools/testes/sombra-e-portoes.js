@@ -4,7 +4,7 @@
 'use strict';
 const assert = require('assert');
 const { vereditoSombra, registroDe, resumoDoRegistro, dentroDaFaixaHipotetica } = require('../sombra.js');
-const { avaliaPortoes, incidentesObservados, CRITERIOS } = require('../portoes.js');
+const { avaliaPortoes, aplicarMerges, incidentesObservados, CRITERIOS } = require('../portoes.js');
 const casos = [];
 function ok(nome, fn) { casos.push({ nome, fn }); }
 
@@ -98,6 +98,23 @@ ok('incidente só conta quando a main vermelha é o commit que o degrau 4 teria 
   ];
   assert.equal(incidentesObservados({ registros, falhasNaMain: ['nao-entraria'] }).total, 0);
   assert.equal(incidentesObservados({ registros, falhasNaMain: ['meu'] }).total, 1);
+});
+
+ok('o merge é resolvido na leitura: sem isso o portão 2 abriria sem evidência', () => {
+  // O sombra grava no instante em que a barreira termina — antes do merge existir.
+  const registros = [{ pr: 97, degrau4: { decidiria: 'mesclar' }, mergeSha: null, mesclada: false }];
+  const comMerge = aplicarMerges(registros, [{ number: 97, merged_at: '2026-11-05T12:40:00Z', merge_commit_sha: 'abc999' }]);
+  assert.equal(comMerge[0].mesclada, true);
+  assert.equal(comMerge[0].mergeSha, 'abc999');
+  // E agora o incidente é visível, como tem de ser.
+  assert.equal(incidentesObservados({ registros: comMerge, falhasNaMain: ['abc999'] }).total, 1);
+});
+
+ok('PR não mesclada nunca conta como incidente, mesmo com sha parecido', () => {
+  const comMerge = aplicarMerges([{ pr: 5, degrau4: { decidiria: 'mesclar' }, mergeSha: 'sha-de-teste' }],
+    [{ number: 5, merged_at: null, merge_commit_sha: 'sha-de-teste' }]);
+  assert.equal(comMerge[0].mergeSha, null);
+  assert.equal(incidentesObservados({ registros: comMerge, falhasNaMain: ['sha-de-teste'] }).total, 0);
 });
 
 ok('portões 3 e 4 ficam fechados enquanto nada está declarado e a lista está vazia', () => {

@@ -24,6 +24,26 @@ function texto(valor) {
   return String(valor == null ? '' : valor).trim();
 }
 
+// O sombra anota o veredito no instante em que a barreira termina — antes do merge existir.
+// Por isso a informação de merge é resolvida NA HORA DE LER, e não na hora de gravar.
+// Sem isso o portão 2 olharia para o campo errado e abriria com zero evidência: um furo
+// silencioso justamente na trava que protege o degrau 4.
+function aplicarMerges(registros, pulls) {
+  const porNumero = new Map();
+  for (const p of Array.isArray(pulls) ? pulls : []) {
+    if (p && p.number) porNumero.set(Number(p.number), p);
+  }
+  return (Array.isArray(registros) ? registros : []).map(r => {
+    const p = porNumero.get(Number(r && r.pr));
+    if (!p) return r;
+    const mesclada = Boolean(p.merged_at);
+    return Object.assign({}, r, {
+      mesclada,
+      mergeSha: mesclada ? (p.merge_commit_sha || r.mergeSha || null) : null
+    });
+  });
+}
+
 // Incidente = a main ficou vermelha exatamente num commit que o degrau 4 teria mesclado.
 // É o único número que importa: o resto é opinião sobre a opinião.
 function incidentesObservados({ registros, falhasNaMain } = {}) {
@@ -116,7 +136,19 @@ async function principal() {
   }
   const falhasNaMain = (medido.execucoes || []).filter(e => e.conclusion === 'failure').map(e => e.head_sha).filter(Boolean);
 
-  const quadro = avaliaPortoes({ termometro, registros, falhasNaMain, autonomia, declarado: autonomia.portoes || {} });
+  // Resolve o merge de cada PR registrada: o sombra grava antes do merge existir.
+  let comMerge = registros;
+  if (registros.length) {
+    const numeros = [...new Set(registros.map(r => Number(r.pr)).filter(Boolean))].slice(0, 60);
+    const pulls = [];
+    for (const n of numeros) {
+      const p = await api('/repos/' + repo + '/pulls/' + n).catch(() => null);
+      if (p) pulls.push(p);
+    }
+    comMerge = aplicarMerges(registros, pulls);
+  }
+
+  const quadro = avaliaPortoes({ termometro, registros: comMerge, falhasNaMain, autonomia, declarado: autonomia.portoes || {} });
   console.log('🚪 Portões do degrau 4 — ' + quadro.abertos + '/' + quadro.total + ' abertos (nível atual: ' + quadro.nivel + ')');
   for (const p of quadro.portoes) console.log('   ' + linha(p));
   if (quadro.incidentes.total) console.log('   ⚠️ incidentes observados: ' + quadro.incidentes.casos.map(c => '#' + c.pr).join(', '));
@@ -130,4 +162,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { CRITERIOS, incidentesObservados, avaliaPortoes };
+module.exports = { CRITERIOS, aplicarMerges, incidentesObservados, avaliaPortoes };

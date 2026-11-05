@@ -132,7 +132,9 @@ async function decidir({ token, repo, sha, conclusaoBarreira }) {
       numero: alvo.number, estado: alvo.state, rascunho: alvo.draft,
       deFork: Boolean(alvo.head && alvo.head.repo && alvo.head.repo.full_name !== repo),
       mesclada: Boolean(alvo.merged_at),
-      mergeSha: alvo.merge_commit_sha || null
+      // Só vale com merge de verdade: o GitHub devolve merge_commit_sha também para PRs
+      // abertas (é um commit de teste), e usá-lo criaria incidente onde não houve merge.
+      mergeSha: alvo.merged_at ? (alvo.merge_commit_sha || null) : null
     },
     sha: alvo.head.sha,
     titulo: alvo.title,
