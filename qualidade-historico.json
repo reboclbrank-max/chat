@@ -1,8 +1,32 @@
 {
   "esquema": "qualidade-chat-v1",
-  "atualizado_em": "2026-11-04T18:31:37.186Z",
+  "atualizado_em": "2026-11-05T18:35:47.962Z",
   "aviso": "Histórico público sanitizado: IDs e placar, sem e-mails, destinos, respostas integrais ou segredos.",
   "baterias": [
+    {
+      "quando": "2026-11-05T18:35:47.962Z",
+      "amostra": "diaria-2026-11-05",
+      "banco": "v2",
+      "ids": [
+        116,
+        105,
+        103,
+        119,
+        108,
+        100,
+        107,
+        113,
+        112,
+        111
+      ],
+      "total": 10,
+      "certos": 9,
+      "mudos": 0,
+      "rotas": {
+        "reserva": 7,
+        "frota": 3
+      }
+    },
     {
       "quando": "2026-11-04T18:31:37.186Z",
       "amostra": "diaria-2026-11-04",
