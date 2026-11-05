@@ -1,0 +1,32 @@
+{
+  "quando": "2026-10-31T20:41:59Z",
+  "origem": "historico",
+  "pr": 64,
+  "sha": "77081300bc4ae81686036fcc7074b45fc34daf43",
+  "mesclada": true,
+  "mergeSha": "5d2e9957fb0700f6041a3aaa281dd741c5180f0a",
+  "titulo": "chat: o produto passa a saber o próprio nome e eu passo a só vigiar",
+  "barreira": "success",
+  "arquivos": [
+    "CONTINUIDADE.md",
+    "docs/auto-melhoria.json",
+    "razao-local.js",
+    "roteador-ia.js",
+    "sw.js",
+    "tools/armadilhas-do-chat.json",
+    "tools/auto-melhoria.js",
+    "tools/provas-do-chat.json",
+    "tools/testes/auto-melhoria.js",
+    "tools/testes/identidade-do-chat.js",
+    "tools/testes/roda-testes.js"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (11)"
+  }
+}
