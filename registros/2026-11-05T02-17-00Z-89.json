@@ -1,0 +1,29 @@
+{
+  "quando": "2026-11-05T02:17:00Z",
+  "origem": "historico",
+  "pr": 89,
+  "sha": "e2f50578676a24bf292b77474e8836146067aaa4",
+  "mesclada": true,
+  "mergeSha": "b499b1eff3b8ac994271d01ca23b29d64fdbdd14",
+  "titulo": "degrau 3: mesclador estreito (só texto, barreira verde, reversão automática)",
+  "barreira": "success",
+  "arquivos": [
+    ".github/workflows/mesclador.yml",
+    "docs/DEGRAU-3-MESCLADOR.md",
+    "tools/mesclador-estreito.js",
+    "tools/testes/auditoria-workflows.js",
+    "tools/testes/mesclador-estreito.js",
+    "tools/testes/roda-testes.js"
+  ],
+  "essenciais": [
+    ".github/workflows/mesclador.yml"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: .github/workflows/mesclador.yml"
+  }
+}
