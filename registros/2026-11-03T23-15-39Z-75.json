@@ -1,0 +1,34 @@
+{
+  "quando": "2026-11-03T23:15:39Z",
+  "origem": "historico",
+  "pr": 75,
+  "sha": "2df4bc36c33d000545705b5753305ae38450bdeb",
+  "mesclada": true,
+  "mergeSha": "1b62317be8e04508dbbb36851a5af02b17dfb368",
+  "titulo": "seguranca: opção de token só nesta sessão sem mudar padrão do dono",
+  "barreira": "success",
+  "arquivos": [
+    "CONTINUIDADE.md",
+    "chat-estilos.css",
+    "console.html",
+    "direto.html",
+    "index.html",
+    "ligar.html",
+    "limpar.html",
+    "sw.js",
+    "tools/testes/roda-testes.js",
+    "tools/testes/seguranca-interface.js",
+    "tools/testes/token-sessao-opcional.js"
+  ],
+  "essenciais": [
+    "index.html"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: index.html"
+  }
+}
