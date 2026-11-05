@@ -80,6 +80,8 @@ async function executa(estadoInicial, configuracao = {}) {
       if (nome === 'fs') return fsFalso;
       if (nome === './vigia-estado') return estadoVigia;
       if (nome === './socorro') return require('../socorro');
+      // O item de autonomia lê autonomia.json pelo fs falso; a leitura é pura, sem rede.
+      if (nome === './autonomia') return require('../autonomia');
       // O teste deliberadamente não fornece SMTP/IMAP: a caixa falha de modo controlado.
       if (nome === 'nodemailer') throw new Error('nodemailer indisponível no isolamento');
       if (nome === 'imapflow') throw new Error('imapflow não deve ser carregado sem credenciais');
