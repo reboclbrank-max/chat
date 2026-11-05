@@ -1,0 +1,29 @@
+{
+  "quando": "2026-10-31T14:56:21Z",
+  "origem": "historico",
+  "pr": 62,
+  "sha": "2aa327855fbdaea633981b5dcb0bdd2ae9e5746d",
+  "mesclada": true,
+  "mergeSha": "6a01ac23c2eec385b72518a72f40d5f519f84791",
+  "titulo": "chat: o auto-diagnóstico audita a si mesmo e achou 6 respostas exatas erradas",
+  "barreira": "success",
+  "arquivos": [
+    "CONTINUIDADE.md",
+    "docs/auto-melhoria.json",
+    "razao-local.js",
+    "roteador-ia.js",
+    "tools/armadilhas-do-chat.json",
+    "tools/auto-melhoria.js",
+    "tools/testes/auto-melhoria.js",
+    "tools/testes/razao-local.js"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (8)"
+  }
+}
