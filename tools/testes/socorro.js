@@ -53,6 +53,15 @@ ok('barreira verde é saúde, com evidência fechada', () => {
   assert.equal(d.evidencia, 'barreira-verde');
 });
 
+ok('barreira ainda rodando é em andamento, não ausência', () => {
+  const d = diagnosticoDaBarreira({ conclusao: '', sha: 'abc1234', runUrl: '', jobs: [] });
+  assert.equal(d.causa, 'saudavel');
+  assert.equal(d.evidencia, 'barreira-em-andamento');
+  assert.match(d.detalhe, /rodando agora/);
+  const nula = diagnosticoDaBarreira({ conclusao: null, sha: 'abc1234', runUrl: '', jobs: [] });
+  assert.equal(nula.evidencia, 'barreira-em-andamento');
+});
+
 ok('conclusão que não é falha nem sucesso não inventa diagnóstico', () => {
   const d = diagnosticoDaBarreira({ conclusao: 'cancelled', sha: 'abc', runUrl: '', jobs: [] });
   assert.equal(d.causa, 'indefinida');

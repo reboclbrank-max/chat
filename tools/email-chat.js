@@ -399,6 +399,7 @@ const EVIDENCIAS_STATUS_CASA = Object.freeze({
   'postagem-agendada-recente': 'rotina agendada recente',
   'postagem-em-andamento': 'rotina agendada em andamento',
   'barreira-verde': 'barreira de testes verde na main',
+  'barreira-em-andamento': 'barreira de testes rodando agora',
   'turno-ativo': 'turno ativo',
   'turno-ativo-com-sucessor': 'turno ativo; sucessor na fila',
   'fila-recente-sem-executor': 'fila recente; sem executor ainda',

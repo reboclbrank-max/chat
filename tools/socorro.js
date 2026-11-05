@@ -60,8 +60,13 @@ function diagnosticoDaBarreira({ conclusao, sha, runUrl, jobs }) {
   if (c === 'success') {
     return { causa: 'saudavel', categoria: '', detalhe: 'barreira verde em ' + (curto || 'commit recente'), evidencia: 'barreira-verde' };
   }
+  // Barreira ainda rodando não é pane nem ausência: é barreira em andamento. Chamar isso de
+  // sem-execucao acenderia alarme falso — e aconteceu de verdade no teste ao vivo de 04/11.
+  if (!c || c === 'null') {
+    return { causa: 'saudavel', categoria: '', detalhe: 'barreira rodando agora em ' + (curto || 'commit recente'), evidencia: 'barreira-em-andamento' };
+  }
   if (c !== 'failure') {
-    return { causa: 'indefinida', categoria: 'desconhecida', detalhe: 'última execução da barreira em ' + (c || 'estado vazio'), evidencia: '' };
+    return { causa: 'indefinida', categoria: 'desconhecida', detalhe: 'última execução da barreira em ' + c, evidencia: '' };
   }
   const falha = resumeFalha(jobs);
   const categoria = falha ? categoriaDoPasso(falha.passo) : 'desconhecida';
