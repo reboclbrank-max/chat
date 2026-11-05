@@ -87,7 +87,10 @@ ok('todas as actions usadas são de propriedade do GitHub', () => {
 });
 
 ok('não há gatilho pull_request_target e o orçamento de escrita é explícito', () => {
-  const escreveConteudo = new Set(['coleta-email.yml', 'dossie-preparo-controlado.yml', 'email.yml', 'evolucao.yml', 'ferramentas.yml', 'navegador-publico.yml', 'reforco-dossie-controlado.yml', 'teste-email.yml', 'vigia.yml']);
+  // mesclador.yml entra no orçamento por decisão explícita (degrau 3, 05/11): é o ÚNICO
+  // workflow autorizado a mexer em main, e só mesclando PR com barreira verde, só em
+  // docs/ e posts/, e com reversão automática. Os demais seguem proibidos de tocar main.
+  const escreveConteudo = new Set(['coleta-email.yml', 'dossie-preparo-controlado.yml', 'email.yml', 'evolucao.yml', 'ferramentas.yml', 'mesclador.yml', 'navegador-publico.yml', 'reforco-dossie-controlado.yml', 'teste-email.yml', 'vigia.yml']);
   const escreveAcoes = new Set(['email.yml', 'vigia.yml']);
   for (const nome of arquivos) {
     const texto = ler(nome);
