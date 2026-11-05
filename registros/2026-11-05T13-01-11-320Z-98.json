@@ -1,0 +1,23 @@
+{
+  "quando": "2026-11-05T13:01:11.320Z",
+  "pr": 98,
+  "sha": "266123be52f4157371654bc068c0e13e73e7daa6",
+  "mesclada": false,
+  "mergeSha": "362b9c8663ce19f379aa9c92e960f58931db9f0e",
+  "titulo": "portão 2 estava olhando para o campo errado (furo silencioso na trava do degrau 4)",
+  "barreira": "success",
+  "arquivos": [
+    "tools/portoes.js",
+    "tools/sombra.js",
+    "tools/testes/sombra-e-portoes.js"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: tools/portoes.js, tools/sombra.js, tools/testes/sombra-e-portoes.js"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (3)"
+  }
+}
