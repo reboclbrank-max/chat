@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-11-05T15:52:47.105Z",
+ "verificado_em": "2026-11-05T16:33:00.386Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -21,7 +21,8 @@
   "Autonomia (nível)": {
    "ok": true,
    "falhas": 0,
-   "causa": "saudavel"
+   "causa": "saudavel",
+   "evidencia": "autonomia-texto"
   },
   "Barreira de testes (main)": {
    "ok": true,
