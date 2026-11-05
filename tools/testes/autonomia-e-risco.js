@@ -3,7 +3,7 @@
 'use strict';
 const assert = require('assert');
 const { lerNivel, permite, nivelValido, resumo, NIVEIS } = require('../autonomia.js');
-const { classificar, liberadoNoNivel, ESSENCIAL, TEXTO, CODIGO_SEGURO } = require('../risco-de-arquivo.js');
+const { classificar, liberadoNoNivel, ESSENCIAL, TEXTO, CODIGO_SEGURO, LIBERADOS_PARA_DEGRAU_4 } = require('../risco-de-arquivo.js');
 const { avaliaTermometro, evidenciaDeCorrecao, LIMITES } = require('../termometro-barreira.js');
 const casos = [];
 function ok(nome, fn) { casos.push({ nome, fn }); }
@@ -78,11 +78,31 @@ ok('o mapa distingue o que PODE calar a casa do que é apenas desconhecido', () 
   assert.equal(classificar('').duro, true);
 });
 
-ok('a lista do degrau 4 está vazia hoje — nada de código está liberado', () => {
-  const vazio = { categoria: CODIGO_SEGURO }.categoria;
-  assert.equal(vazio, 'codigo-seguro');
-  assert.equal(liberadoNoNivel('tools/socorro.js', () => true).categoria, ESSENCIAL,
-    'socorro.js ainda não está liberado: só entra por decisão humana explícita');
+ok('portão 3: a lista tem UM arquivo, escolhido a dedo, e nada além dele', () => {
+  assert.equal(liberadoNoNivel('tools/indice-capacidade.js', () => true).categoria, CODIGO_SEGURO);
+  assert.ok(LIBERADOS_PARA_DEGRAU_4.length <= 2, 'o degrau 3 não comporta lista maior que 2');
+  // Todo o resto do código continua fechado: promoção é exceção, não regra.
+  for (const c of ['tools/socorro.js', 'tools/vigia-casa.js', 'tools/mesclador-estreito.js', 'tools/sombra.js']) {
+    assert.equal(liberadoNoNivel(c, () => true).categoria, ESSENCIAL, c + ' não deveria estar liberado');
+  }
+});
+
+ok('o mapa respeita a lista crítica que o próprio turno de e-mail declara', () => {
+  // O email-poll.js já protege estes arquivos; o mapa não pode ser mais permissivo que ele.
+  for (const c of ['tools/pulso-vigia.js', 'tools/reserva-turno.js', 'tools/falhas-mensagem.js',
+    'tools/turno-liveness.js', 'tools/geo...' .replace('tools/geo...', 'tools/geografia-brasil.js')]) {
+    const r = classificar(c);
+    assert.equal(r.categoria, ESSENCIAL, c + ' é crítico do turno e não pode ser mesclado sozinho');
+    assert.equal(r.duro, true, c + ' deveria ser duro');
+  }
+});
+
+ok('nível código sem prazo avisa — ensaio sem fim definido', () => {
+  const semPrazo = lerNivel({ nivel: 'codigo' });
+  assert.equal(semPrazo.semPrazo, true);
+  assert.match(semPrazo.aviso, /sem prazo/);
+  const comPrazo = lerNivel({ nivel: 'codigo', expira_em: '2026-12-01T00:00:00Z' });
+  assert.equal(comPrazo.semPrazo, false);
 });
 
 // ---- termômetro ----

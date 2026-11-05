@@ -84,6 +84,35 @@ mecanismo que está na `main` **hoje** funciona. Daí o mínimo de 10 registros 
 `desligado` sem ninguém precisar lembrar. É o que impede o pior tipo de esquecimento:
 ligar para testar e ficar ligado.
 
+## O primeiro arquivo da faixa (portão 3, 05/11)
+
+`tools/indice-capacidade.js` é o **primeiro** — e por enquanto único — arquivo autorizado ao
+degrau 4. O critério não é "parece inofensivo":
+
+| exigência | como atende |
+|---|---|
+| contrato próprio | `tools/testes/indice-capacidade.js`, roda na barreira |
+| nenhum efeito externo | lê arquivos locais; não fala com credencial nem publica estado |
+| erro chato e visível | o pior caso é um placar em markdown errado, no próprio documento |
+
+Todo o resto continua fechado. E o mapa passou a respeitar a lista que o **próprio turno de
+e-mail já declara** como crítica (`email-poll.js`, regex `CODIGO`): `pulso-vigia`,
+`reserva-turno`, `falhas-mensagem`, `turno-liveness`, `geografia-brasil`, `telegram-chat` e os
+`.py` de visão. Se o turno protege, o mesclador também protege — sem adivinhação por prefixo.
+
+## Como rodar o ensaio com prazo (quando o portão 3 abrir)
+
+1. marcar em `autonomia.json`: `"nivel": "codigo"` **e** `"expira_em": "<data ISO>"`;
+2. manter a lista `LIBERADOS_PARA_DEGRAU_4` com no máximo 2 arquivos;
+3. declarar `portoes.ensaioComPrazo: true` — e `reversaoExercitada: true` só depois de a
+   reversão ter rodado num caso real;
+4. acompanhar com `node tools/portoes.js` e `node tools/painel.js`.
+
+O `expira_em` é a rede embaixo do trapézio: passada a data, o nível cai para `desligado`
+**sem ninguém precisar lembrar**. Nível `codigo` sem prazo não é proibido, mas o interruptor
+avisa (`semPrazo`) justamente porque ensaio sem fim marcado é o começo de autonomia
+esquecida.
+
 ## Ordem de abertura
 
 ```
