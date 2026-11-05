@@ -58,6 +58,14 @@ ok('texto de leitura humana é o que já roda hoje no degrau 3', () => {
   assert.equal(classificar('docs/x.sh').categoria, ESSENCIAL);
 });
 
+ok('o mapa distingue o que PODE calar a casa do que é apenas desconhecido', () => {
+  // Ambos são `essencial` na vida real; só o `duro` é o que nunca pode entrar, nem no exercício.
+  assert.equal(classificar('tools/email-chat.js').duro, true);
+  assert.equal(classificar('tools/qualquer-coisa-nova.js').duro, false);
+  assert.equal(classificar('docs/x.md').duro, false);
+  assert.equal(classificar('').duro, true);
+});
+
 ok('a lista do degrau 4 está vazia hoje — nada de código está liberado', () => {
   const vazio = { categoria: CODIGO_SEGURO }.categoria;
   assert.equal(vazio, 'codigo-seguro');
