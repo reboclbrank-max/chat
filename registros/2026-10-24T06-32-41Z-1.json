@@ -1,0 +1,62 @@
+{
+  "quando": "2026-10-24T06:32:41Z",
+  "origem": "historico",
+  "pr": 1,
+  "sha": "bf7906817e5491b0a16a4f5d2aaeed94656d1bd2",
+  "mesclada": true,
+  "mergeSha": "100d0f6899091f6bfa090f6eb94de89201d3965c",
+  "titulo": "melhorias: operação segura, portabilidade estática e fallback PWA",
+  "barreira": "success",
+  "arquivos": [
+    ".github/PULL_REQUEST_TEMPLATE.md",
+    ".github/workflows/testes-rapidos.yml",
+    "AUTONOMIA.md",
+    "AVALIACAO-HUMANA-PILOTO.md",
+    "CONTINUIDADE.md",
+    "OPERACAO-CENTRAL.md",
+    "OPERACAO-INCIDENTES.md",
+    "POLITICA-RETENCAO-OPERACIONAL.md",
+    "PORTABILIDADE-ESTATICA.md",
+    "README.md",
+    "chat-comandos-locais.js",
+    "sw.js",
+    "tools/email-chat.js",
+    "tools/indice-capacidade.js",
+    "tools/inventario-estado-operacional.js",
+    "tools/testes/central-operacional.js",
+    "tools/testes/colecoes-conversas-local.js",
+    "tools/testes/comandos-locais-interface.js",
+    "tools/testes/conta-e-comandos.js",
+    "tools/testes/continuidade.js",
+    "tools/testes/estilos-compartilhados.js",
+    "tools/testes/filtro-chips-interface.js",
+    "tools/testes/indice-capacidade.js",
+    "tools/testes/interface-seguranca-fluxo.js",
+    "tools/testes/inventario-estado-operacional.js",
+    "tools/testes/operacao-incidentes.js",
+    "tools/testes/organizacao-conversas-local.js",
+    "tools/testes/portabilidade-estatica.js",
+    "tools/testes/preparo-controlado.js",
+    "tools/testes/pwa-atualizacao-segura.js",
+    "tools/testes/roda-testes.js",
+    "tools/testes/telegram.js",
+    "tools/testes/vigia-casa-resiliencia.js",
+    "tools/testes/vigia-recuperacao-fluxo.js",
+    "tools/testes/workspace-local.js",
+    "tools/vigia-casa.js"
+  ],
+  "essenciais": [
+    ".github/PULL_REQUEST_TEMPLATE.md",
+    ".github/workflows/testes-rapidos.yml",
+    "tools/email-chat.js",
+    "tools/vigia-casa.js"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: .github/PULL_REQUEST_TEMPLATE.md, .github/workflows/testes-rapidos.yml, tools/email-chat.js"
+  }
+}
