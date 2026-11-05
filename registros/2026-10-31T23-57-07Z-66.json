@@ -1,0 +1,41 @@
+{
+  "quando": "2026-10-31T23:57:07Z",
+  "origem": "historico",
+  "pr": 66,
+  "sha": "107c535178b67d1c916248de2281ff4433675b77",
+  "mesclada": true,
+  "mergeSha": "5cb5f6211e14535977cf50076cff021ae0b020ca",
+  "titulo": "chat: base lexical própria — o vocabulário deixa de depender de modelo (rodada 139)",
+  "barreira": "success",
+  "arquivos": [
+    "CONTINUIDADE.md",
+    "direto.html",
+    "docs/auto-melhoria.json",
+    "index.html",
+    "lexico-pt.js",
+    "lexico-pt.json",
+    "ligar.html",
+    "limpar.html",
+    "razao-local.js",
+    "sw.js",
+    "tools/armadilhas-do-chat.json",
+    "tools/auditoria-dependencias.js",
+    "tools/auto-melhoria.js",
+    "tools/gerar-lexico-pt.js",
+    "tools/provas-do-chat.json",
+    "tools/testes/lexico-local.js",
+    "tools/testes/razao-local.js",
+    "tools/testes/roda-testes.js"
+  ],
+  "essenciais": [
+    "index.html"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: index.html"
+  }
+}
