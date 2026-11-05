@@ -1,0 +1,30 @@
+{
+  "quando": "2026-10-31T22:13:04Z",
+  "origem": "historico",
+  "pr": 65,
+  "sha": "1fd5af5cee915de8be2511f0e53f7fee5a4399e4",
+  "mesclada": true,
+  "mergeSha": "36be014b974e9bcd3600c7b4a589072d732b9e2c",
+  "titulo": "chat: auditoria de dependências e disjuntor de rede — sem internet ele responde na hora",
+  "barreira": "success",
+  "arquivos": [
+    "CONTINUIDADE.md",
+    "docs/auto-melhoria.json",
+    "roteador-ia.js",
+    "sw.js",
+    "tools/auditoria-dependencias.js",
+    "tools/auto-melhoria.js",
+    "tools/testes/auto-melhoria.js",
+    "tools/testes/roda-testes.js",
+    "tools/testes/sem-dependencia.js"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (9)"
+  }
+}
