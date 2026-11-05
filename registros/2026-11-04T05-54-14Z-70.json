@@ -1,0 +1,26 @@
+{
+  "quando": "2026-11-04T05:54:14Z",
+  "origem": "historico",
+  "pr": 70,
+  "sha": "ffaf8b4b3a5a0dc538fae13d9b2a68190d55b703",
+  "mesclada": true,
+  "mergeSha": "0d2467bd5404c65be28206b16d37720c1e68d4c8",
+  "titulo": "deps: bump the bibliotecas-do-turno group with 2 updates",
+  "barreira": "success",
+  "arquivos": [
+    "package-lock.json",
+    "package.json"
+  ],
+  "essenciais": [
+    "package-lock.json",
+    "package.json"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: package-lock.json, package.json"
+  }
+}
