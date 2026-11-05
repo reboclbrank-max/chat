@@ -1,0 +1,29 @@
+{
+  "quando": "2026-11-05T17:52:44.968Z",
+  "pr": 100,
+  "sha": "c1f600e80ca10cefe69e83befff89d9d1feba77b",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "sombra olha o histórico (24 de 39 teriam entrado, zero incidente) + autonomia com prazo",
+  "barreira": "success",
+  "arquivos": [
+    "autonomia.json",
+    "docs/PORTOES-DO-DEGRAU-4.md",
+    "tools/autonomia.js",
+    "tools/portoes.js",
+    "tools/sombra.js",
+    "tools/testes/autonomia-e-risco.js",
+    "tools/testes/sombra-e-portoes.js"
+  ],
+  "essenciais": [
+    "autonomia.json"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: autonomia.json, tools/autonomia.js, tools/portoes.js…"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: autonomia.json"
+  }
+}
