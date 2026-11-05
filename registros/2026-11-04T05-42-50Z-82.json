@@ -1,0 +1,23 @@
+{
+  "quando": "2026-11-04T05:42:50Z",
+  "origem": "historico",
+  "pr": 82,
+  "sha": "a879c52c194187cc35be5a87de7d3ae2f7997e78",
+  "mesclada": true,
+  "mergeSha": "2337c7ad61d42df4fc5b8bd46ab6a34fb9907711",
+  "titulo": "teste: o instrumento de conversa do M01 ganha barreira offline",
+  "barreira": "success",
+  "arquivos": [
+    "tools/testes/banco-conversa.js",
+    "tools/testes/roda-testes.js"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (2)"
+  }
+}
