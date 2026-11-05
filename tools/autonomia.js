@@ -28,7 +28,8 @@ function nivelValido(nivel) {
 }
 
 // Lê o nível declarado. Qualquer dúvida = desligado. Nunca lança.
-function lerNivel(conteudo) {
+// `agora` existe para o teste poder fingir o futuro; em produção é o relógio real.
+function lerNivel(conteudo, agora = Date.now()) {
   let dados = conteudo;
   if (typeof conteudo === 'string') {
     try { dados = JSON.parse(conteudo); } catch (e) { return { nivel: NIVEL_PADRAO, valido: false, motivo: 'autonomia.json ilegível' }; }
@@ -36,7 +37,13 @@ function lerNivel(conteudo) {
   if (!dados || typeof dados !== 'object') return { nivel: NIVEL_PADRAO, valido: false, motivo: 'sem autonomia.json' };
   const nivel = texto(dados.nivel);
   if (!nivelValido(nivel)) return { nivel: NIVEL_PADRAO, valido: false, motivo: 'nível desconhecido: ' + (nivel || '(vazio)') };
-  return { nivel, valido: true, motivo: texto(dados.motivo), desde: texto(dados.desde) };
+  // ⏳ Prazo: qualquer nível ligado por ensaio morre sozinho na data marcada. É a única
+  // autonomia que expira sem ninguém lembrar — e a que evita "liguei de teste e ficou".
+  const expira = Date.parse(String(dados.expira_em || ''));
+  if (Number.isFinite(expira) && Number(agora) > expira) {
+    return { nivel: NIVEL_PADRAO, valido: true, expirado: true, motivo: 'prazo vencido em ' + new Date(expira).toISOString().slice(0, 10) };
+  }
+  return { nivel, valido: true, motivo: texto(dados.motivo), desde: texto(dados.desde), expira_em: texto(dados.expira_em) };
 }
 
 function permite(nivel, categoria) {
@@ -50,6 +57,7 @@ function permite(nivel, categoria) {
 function resumo(leitura) {
   const l = leitura || lerNivel(null);
   if (!l.valido) return 'autonomia desligada (motivo: ' + l.motivo + ')';
+  if (l.expirado) return 'autonomia desligada pelo prazo (' + l.motivo + ')';
   if (l.nivel === 'desligado') return 'autonomia desligada à mão';
   if (l.nivel === 'texto') return 'autonomia no degrau 3: só texto em docs/ e posts/';
   return 'autonomia no degrau 4: código de faixa segura também entra sozinho';

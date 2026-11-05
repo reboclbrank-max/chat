@@ -14,6 +14,10 @@ const { lerNivel } = require('./autonomia.js');
 
 const CRITERIOS = Object.freeze({
   minimoDeRegistros: 30,
+  // Histórico conta como evidência real — mas só o registro AO VIVO prova que o mecanismo
+  // funciona hoje, com o código que está na main. Sem esse mínimo, o portão abriria com
+  // uma fotografia do passado e nenhuma operação corrente.
+  minimoAoVivo: 10,
   incidentesPermitidos: 0,
   maximoDeArquivosNoPortao3: 2,
   minimoDeArquivosNoPortao4: 3,
@@ -67,14 +71,16 @@ function avaliaPortoes({ termometro, registros, falhasNaMain, autonomia, declara
   };
 
   const faltasP2 = [];
+  const aoVivo = regs.filter(r => (r.origem || 'ao-vivo') === 'ao-vivo').length;
   if (regs.length < CRITERIOS.minimoDeRegistros) faltasP2.push('poucos registros: ' + regs.length + ' de ' + CRITERIOS.minimoDeRegistros);
+  if (aoVivo < CRITERIOS.minimoAoVivo) faltasP2.push('poucos registros ao vivo: ' + aoVivo + ' de ' + CRITERIOS.minimoAoVivo);
   if (incidentes.total > CRITERIOS.incidentesPermitidos) faltasP2.push('incidente(s) observado(s): ' + incidentes.total);
   const p2 = {
     numero: 2,
     nome: 'julgamento com evidência',
     aberto: faltasP2.length === 0,
     porque: faltasP2.length ? faltasP2.join(' · ') : regs.length + ' registros, nenhum incidente',
-    numeros: { registros: regs.length, incidentes: incidentes.total }
+    numeros: { registros: regs.length, aoVivo, incidentes: incidentes.total }
   };
 
   const faltasP3 = [];
