@@ -1,0 +1,23 @@
+{
+  "quando": "2026-11-04T22:53:04Z",
+  "origem": "historico",
+  "pr": 84,
+  "sha": "e181eac81c1113df7cc0c85fa0c2b6eb35995966",
+  "mesclada": true,
+  "mergeSha": "3c5e1e0702e4a91069f5be2e18c3e924646b2309",
+  "titulo": "reserva: repetir so a leitura e dizer o motivo quando a fila nao confirmar",
+  "barreira": "success",
+  "arquivos": [
+    "tools/reserva-turno.js",
+    "tools/testes/reserva-turno.js"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (2)"
+  }
+}
