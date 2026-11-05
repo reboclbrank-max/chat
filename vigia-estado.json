@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-11-05T10:06:59.084Z",
+ "verificado_em": "2026-11-05T10:47:04.180Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -51,7 +51,7 @@
    "ok": true,
    "falhas": 0,
    "causa": "saudavel",
-   "evidencia": "pagina-respondendo"
+   "evidencia": "checagem-limitada"
   },
   "Caixa de e-mail": {
    "ok": true,
