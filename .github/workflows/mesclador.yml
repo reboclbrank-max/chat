@@ -1,0 +1,51 @@
+name: Mesclador estreito (degrau 3)
+# 🚦 A máquina mescla SOZINHA, mas só texto em docs/ e posts/, e só com a barreira verde.
+# Se a main ficar vermelha depois de um merge dele, ele abre a PR de reversão — e ela
+# passa pela mesma barreira. Nunca há push direto na main e nunca há merge sem teste verde.
+on:
+  workflow_run:
+    workflows: ["Testes rápidos do chat (barreira antes de entrar no ar)"]
+    types: [completed]
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+concurrency:
+  group: mesclador-${{ github.event.workflow_run.id }}
+  cancel-in-progress: false
+jobs:
+  mesclar:
+    if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: main
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+      - name: Avalia a faixa e mescla (só texto, só com barreira verde)
+        run: node tools/mesclador-estreito.js avaliar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          ATOR: ${{ github.event.workflow_run.actor.login }}
+  reverter:
+    if: github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: main
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+      - name: Abre a reversão do merge que quebrou (sem push direto)
+        run: node tools/mesclador-estreito.js reverter
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
