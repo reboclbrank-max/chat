@@ -1,0 +1,26 @@
+{
+  "quando": "2026-11-04T04:01:53Z",
+  "origem": "historico",
+  "pr": 77,
+  "sha": "e2be4f8991274227348b114cd5f66d4b254a6d58",
+  "mesclada": true,
+  "mergeSha": "35a355f115696e8f1b7db2198d6633794097c86a",
+  "titulo": "evolucao: saude dos motores persiste entre turnos no navegador",
+  "barreira": "success",
+  "arquivos": [
+    "CONTINUIDADE.md",
+    "roteador-ia.js",
+    "sw.js",
+    "tools/testes/roda-testes.js",
+    "tools/testes/saude-persistente.js"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (5)"
+  }
+}
