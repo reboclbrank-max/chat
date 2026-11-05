@@ -1,0 +1,26 @@
+{
+  "quando": "2026-11-04T05:09:59Z",
+  "origem": "historico",
+  "pr": 80,
+  "sha": "008a1630badedc77ce92d2cc0ee542fe1840823b",
+  "mesclada": true,
+  "mergeSha": "6b1d23111ce837a18d3e9b8804050ab8862e2747",
+  "titulo": "correcao: a corrente do canal de e-mail não depende mais do agendador",
+  "barreira": "success",
+  "arquivos": [
+    ".github/workflows/email.yml",
+    "CONTINUIDADE.md",
+    "tools/testes/auditoria-workflows.js"
+  ],
+  "essenciais": [
+    ".github/workflows/email.yml"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: .github/workflows/email.yml"
+  }
+}
