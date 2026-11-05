@@ -1,0 +1,34 @@
+{
+  "quando": "2026-11-05T03:31:45Z",
+  "origem": "historico",
+  "pr": 93,
+  "sha": "413ace8fbf78543a97307442d37be6ad2586d249",
+  "mesclada": true,
+  "mergeSha": "4435028b1a4dee1fba17830e5474448cb59ea58f",
+  "titulo": "degrau 4: arquitetura primeiro (interruptor, mapa de risco, termômetro) — sem ligar nada",
+  "barreira": "failure",
+  "arquivos": [
+    "autonomia.json",
+    "docs/DEGRAU-4-ARQUITETURA.md",
+    "tools/autonomia.js",
+    "tools/mesclador-estreito.js",
+    "tools/risco-de-arquivo.js",
+    "tools/termometro-barreira.js",
+    "tools/testes/autonomia-e-risco.js",
+    "tools/testes/roda-testes.js",
+    "tools/testes/vigia-recuperacao-fluxo.js",
+    "tools/vigia-casa.js"
+  ],
+  "essenciais": [
+    "autonomia.json",
+    "tools/vigia-casa.js"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: autonomia.json, tools/vigia-casa.js"
+  }
+}
