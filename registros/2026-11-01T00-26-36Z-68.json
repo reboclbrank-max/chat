@@ -1,0 +1,22 @@
+{
+  "quando": "2026-11-01T00:26:36Z",
+  "origem": "historico",
+  "pr": 68,
+  "sha": "3c35c2d0d826f035a04910773fbf53abebb6c719",
+  "mesclada": true,
+  "mergeSha": "4f936661947a91225c6e99f0c6429d291424c25b",
+  "titulo": "acervo: mapa da limpeza fechado — workspace vira area de pouso",
+  "barreira": "success",
+  "arquivos": [
+    "acervo/MAPA-WORKSPACE.md"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (1)"
+  }
+}
