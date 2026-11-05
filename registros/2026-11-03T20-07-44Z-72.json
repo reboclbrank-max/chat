@@ -1,0 +1,27 @@
+{
+  "quando": "2026-11-03T20:07:44Z",
+  "origem": "historico",
+  "pr": 72,
+  "sha": "911add9d00a08a69198e311de18ad19218df0031",
+  "mesclada": true,
+  "mergeSha": "4eb6b41eea64dd60008fbe3aba2d9b0c3e70d37a",
+  "titulo": "ci(chat): exige provas para mudanças no cérebro e navegador real",
+  "barreira": "success",
+  "arquivos": [
+    ".github/workflows/testes-rapidos.yml",
+    "CONTINUIDADE.md",
+    "tools/testes/continuidade.js",
+    "tools/testes/navegador-lista-controlado-estatico.js"
+  ],
+  "essenciais": [
+    ".github/workflows/testes-rapidos.yml"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: .github/workflows/testes-rapidos.yml"
+  }
+}
