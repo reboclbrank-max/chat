@@ -1,0 +1,33 @@
+{
+  "quando": "2026-11-05T12:31:15Z",
+  "origem": "historico",
+  "pr": 96,
+  "sha": "eb48f4976bd2b5ff2f5d8e0115e097f93a7850b0",
+  "mesclada": true,
+  "mergeSha": "565c22a9b1559971dca96c01d737976ce48c7eef",
+  "titulo": "modo sombra + os quatro portões do degrau 4 (com número, não com adjetivo)",
+  "barreira": "success",
+  "arquivos": [
+    ".github/workflows/mesclador.yml",
+    "autonomia.json",
+    "docs/PORTOES-DO-DEGRAU-4.md",
+    "tools/portoes.js",
+    "tools/risco-de-arquivo.js",
+    "tools/sombra.js",
+    "tools/testes/autonomia-e-risco.js",
+    "tools/testes/roda-testes.js",
+    "tools/testes/sombra-e-portoes.js"
+  ],
+  "essenciais": [
+    ".github/workflows/mesclador.yml",
+    "autonomia.json"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: .github/workflows/mesclador.yml, autonomia.json"
+  }
+}
