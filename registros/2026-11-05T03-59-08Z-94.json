@@ -1,0 +1,24 @@
+{
+  "quando": "2026-11-05T03:59:08Z",
+  "origem": "historico",
+  "pr": 94,
+  "sha": "2295a8ca3f7d72262421bc3510a087d24467fd1f",
+  "mesclada": true,
+  "mergeSha": "aeeda72ad38b8e62350b577390259a804f072c1a",
+  "titulo": "termômetro: instabilidade conhecida não envelhece nem vira aprovação",
+  "barreira": "success",
+  "arquivos": [
+    "docs/DEGRAU-4-ARQUITETURA.md",
+    "tools/termometro-barreira.js",
+    "tools/testes/autonomia-e-risco.js"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (3)"
+  }
+}
