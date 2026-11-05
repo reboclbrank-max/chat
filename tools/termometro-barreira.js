@@ -13,6 +13,19 @@
 // sozinho: só mede. Quem sobe de nível é gente.
 'use strict';
 
+// Instabilidades CONHECIDAS. Elas não podem "envelhecer" e sair da conta: uma janela
+// deslizante esquece a falha antiga e transforma alívio em aprovação. Aqui a pendência é
+// nominal e só sai da lista quando alguém marca `corrigido: true` — ato humano, com o
+// conserto no arquivo citado. Sem isso, o degrau 4 fica travado por definição.
+const INSTABILIDADES_CONHECIDAS = Object.freeze([
+  {
+    passo: 'Navegador controlado (quatro rotas, desktop e mobile)',
+    arquivo: 'tools/testes/navegador-lista-controlado.sh',
+    corrigido: false,
+    observacao: 'falha intermitente de Chromium/Workspace; reprova a barreira sem defeito real no chat'
+  }
+]);
+
 const LIMITES = Object.freeze({
   minimoDeExecucoes: 20,
   taxaVerdeMinima: 0.9,
@@ -28,7 +41,7 @@ function pct(n) {
 // Função pura: recebe execuções e passos que falharam; devolve veredito com números.
 // execucoes: [{ conclusion, created_at }]
 // passosFalhos: { 'nome do passo': quantidadeDeExecucoesEmQueFalhou }
-function avaliaTermometro({ execucoes, passosFalhos, limites } = {}) {
+function avaliaTermometro({ execucoes, passosFalhos, limites, instabilidades } = {}) {
   const L = Object.assign({}, LIMITES, limites || {});
   const lista = (Array.isArray(execucoes) ? execucoes : []).filter(e => e && (e.conclusion === 'success' || e.conclusion === 'failure'));
   const total = lista.length;
@@ -56,8 +69,15 @@ function avaliaTermometro({ execucoes, passosFalhos, limites } = {}) {
     motivos.push('passo concentra ' + pct(concentracao) + ' das falhas: ' + dominante[0]);
   }
 
+  const pendentes = (Array.isArray(instabilidades) ? instabilidades : INSTABILIDADES_CONHECIDAS)
+    .filter(i => i && !i.corrigido);
+  for (const p of pendentes) {
+    motivos.push('instabilidade conhecida não corrigida: ' + p.passo + ' (' + p.arquivo + ')');
+  }
+
   return {
     aprovado: motivos.length === 0,
+    instabilidadesPendentes: pendentes.map(p => p.passo),
     motivos,
     numeros: { total, verdes, vermelhos, taxaVerde: taxa, falhasRecentes, janelaRecente: recentes.length, passoDominante: dominante ? dominante[0] : null, concentracao }
   };
@@ -113,4 +133,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { LIMITES, avaliaTermometro, medir };
+module.exports = { LIMITES, INSTABILIDADES_CONHECIDAS, avaliaTermometro, medir };

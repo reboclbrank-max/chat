@@ -71,21 +71,21 @@ const vermelhos = n => Array.from({ length: n }, (_, i) => ({ conclusion: 'failu
 // Falhas mais novas que tudo: é isso que "recente" significa para o termômetro.
 const vermelhosRecentes = n => Array.from({ length: n }, (_, i) => ({ conclusion: 'failure', created_at: new Date(Date.UTC(2026, 10, 7, 0, i)).toISOString() }));
 
-ok('barreira saudável libera o degrau 4', () => {
-  const v = avaliaTermometro({ execucoes: verdes(30), passosFalhos: {} });
+ok('barreira saudável libera o degrau 4 (sem pendência conhecida)', () => {
+  const v = avaliaTermometro({ execucoes: verdes(30), passosFalhos: {}, instabilidades: [] });
   assert.equal(v.aprovado, true, v.motivos.join('; '));
   assert.equal(v.numeros.taxaVerde, 1);
 });
 
 ok('histórico curto não libera nada, mesmo 100% verde', () => {
-  const v = avaliaTermometro({ execucoes: verdes(5), passosFalhos: {} });
+  const v = avaliaTermometro({ execucoes: verdes(5), passosFalhos: {}, instabilidades: [] });
   assert.equal(v.aprovado, false);
   assert.match(v.motivos.join(' '), /histórico curto/);
 });
 
 ok('falha recente reprova mesmo com média histórica boa', () => {
   const execs = verdes(28).concat(vermelhosRecentes(2));
-  const v = avaliaTermometro({ execucoes: execs, passosFalhos: {} });
+  const v = avaliaTermometro({ execucoes: execs, passosFalhos: {}, instabilidades: [] });
   assert.equal(v.numeros.taxaVerde >= LIMITES.taxaVerdeMinima, true);
   assert.equal(v.aprovado, false);
   assert.match(v.motivos.join(' '), /falha/);
@@ -93,15 +93,30 @@ ok('falha recente reprova mesmo com média histórica boa', () => {
 
 ok('um passo concentrando quase toda a falha é tratado como instabilidade, não como defeito', () => {
   const execs = verdes(27).concat(vermelhos(1));
-  const v = avaliaTermometro({ execucoes: execs, passosFalhos: { 'Navegador controlado (quatro rotas, desktop e mobile)': 1 } });
+  const v = avaliaTermometro({ execucoes: execs, passosFalhos: { 'Navegador controlado (quatro rotas, desktop e mobile)': 1 }, instabilidades: [] });
   assert.match(v.motivos.join(' '), /passo concentra/);
   // com o mesmo volume de falhas distribuído em vários passos, o motivo muda de natureza
-  const distribuido = avaliaTermometro({ execucoes: execs, passosFalhos: { 'a': 1 } });
+  const distribuido = avaliaTermometro({ execucoes: execs, passosFalhos: { 'a': 1 }, instabilidades: [] });
   assert.equal(distribuido.numeros.passoDominante, 'a');
 });
 
+ok('janela verde NÃO aprova enquanto existir instabilidade conhecida pendente', () => {
+  const v = avaliaTermometro({ execucoes: verdes(60), passosFalhos: {} });
+  assert.equal(v.aprovado, false, 'verde na janela não pode apagar a pendência conhecida');
+  assert.match(v.motivos.join(' '), /instabilidade conhecida não corrigida/);
+  assert.ok(v.instabilidadesPendentes.length >= 1);
+});
+
+ok('marcar a instabilidade como corrigida libera o caminho', () => {
+  const v = avaliaTermometro({
+    execucoes: verdes(30), passosFalhos: {},
+    instabilidades: [{ passo: 'Navegador controlado', arquivo: 'x.sh', corrigido: true }]
+  });
+  assert.equal(v.aprovado, true, v.motivos.join('; '));
+});
+
 ok('termômetro sem dado não aprova nada', () => {
-  const v = avaliaTermometro({ execucoes: [], passosFalhos: {} });
+  const v = avaliaTermometro({ execucoes: [], passosFalhos: {}, instabilidades: [] });
   assert.equal(v.aprovado, false);
   assert.equal(v.numeros.total, 0);
 });

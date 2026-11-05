@@ -52,24 +52,38 @@ humano: exige contrato próprio e prova de que ele não cala a casa.
 
 ## 3. Termômetro da barreira — o juiz presta?
 
-Mede, com dado real dos últimos 60 ciclos da `main`: taxa verde, falhas recentes e se
-alguma falha se concentra num passo só (sintoma de teste instável, não de defeito).
+Mede, com dado real dos últimos ciclos da `main`: taxa verde, falhas recentes e se alguma
+falha se concentra num passo só (sintoma de teste instável, não de defeito).
 
 Critérios para liberar o degrau 4: **≥ 20 execuções**, **≥ 90% verde**, **zero falha nas
-últimas 10** e **nenhum passo concentrando mais de 40% das falhas**.
+últimas 10**, **nenhum passo concentrando mais de 40% das falhas** e **nenhuma
+instabilidade conhecida pendente**.
 
-Medição de 05/11/2026:
+### A armadilha que ele mesmo pegou
+
+Na primeira medição (05/11, 03:20 UTC): 60 execuções, 59 verdes, 1 vermelha, e o único passo
+que reprova concentrando 100% das falhas → **reprovado**, pelo motivo certo.
+
+Vinte minutos depois, o mesmo comando respondeu **aprovado**. Nada tinha sido consertado: a
+execução vermelha simplesmente **saiu da janela** porque novas execuções entraram. A métrica
+esqueceu a evidência e chamou o esquecimento de aprovação.
+
+Isso é exatamente o tipo de furo que tornaria o degrau 4 perigoso — um juiz que fica bonito
+com o tempo. Correção aplicada no mesmo dia: instabilidades conhecidas passam a ser
+**nominais e persistentes** (`INSTABILIDADES_CONHECIDAS`), com `corrigido: false` até alguém
+consertar o arquivo citado. Elas não envelhecem e não saem da conta.
+
+Medição atual:
 
 ```
-execuções medidas: 60 · verdes 59 · vermelhas 1 · verde em 98.3%
+execuções medidas: 59 · verdes 59 · vermelhas 0 · verde em 100.0%
 falhas nas últimas 10: 0
-passo que mais reprova: Navegador controlado (quatro rotas, desktop e mobile) — 100% das falhas
 ⛔ degrau 4 NÃO liberado
+   - instabilidade conhecida não corrigida: Navegador controlado (quatro rotas, desktop e mobile)
 ```
 
-Ou seja: a barreira está **quase** lá, e o único motivo que a reprova é exatamente o teste
-instável que já é conhecido (`navegador-lista-controlado.sh`). É um empecilho **nomeado e
-pequeno** — não uma opinião.
+Ou seja: a barreira está **quase** lá, e o único empecilho é **nomeado, pequeno e com dono** —
+o teste instável de navegador. Não é opinião, não é medo e não é "vamos ver depois".
 
 ## 4. A volta
 
