@@ -169,6 +169,21 @@ ok('marcar corrigido exige janela observada depois da correção, não tempo pas
   assert.equal(r.falhas, 1);
 });
 
+ok('execução cancelada ou em andamento não conta como evidência de janela', () => {
+  const dia = new Date(Date.UTC(2026, 10, 6, 0, 0)).toISOString();
+  const execucoes = [
+    { conclusion: 'success', created_at: dia },
+    { conclusion: 'success', created_at: dia },
+    { conclusion: 'cancelled', created_at: dia },
+    { conclusion: null, created_at: dia }
+  ];
+  const r = evidenciaDeCorrecao({ execucoes, desde: '2026-11-05T07:00:00Z', minimo: 3 });
+  assert.equal(r.execucoesDesde, 2, 'cancelada e em andamento não contam');
+  assert.equal(r.suficiente, false, 'com 2 de 3 não há evidência');
+  const r2 = evidenciaDeCorrecao({ execucoes, desde: '2026-11-05T07:00:00Z', minimo: 2 });
+  assert.equal(r2.suficiente, true);
+});
+
 ok('termômetro sem dado não aprova nada', () => {
   const v = avaliaTermometro({ execucoes: [], passosFalhos: {}, instabilidades: [] });
   assert.equal(v.aprovado, false);
