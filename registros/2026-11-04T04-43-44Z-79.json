@@ -1,0 +1,25 @@
+{
+  "quando": "2026-11-04T04:43:44Z",
+  "origem": "historico",
+  "pr": 79,
+  "sha": "3d2d2960c20627f57d0bb3aa3242574cad07fda2",
+  "mesclada": true,
+  "mergeSha": "f35f6b9c2c3527847b9d8631df755022ecb94da6",
+  "titulo": "correcao: rota morta volta ao jogo (achado verificado do Chat B no #77)",
+  "barreira": "success",
+  "arquivos": [
+    "CONTINUIDADE.md",
+    "roteador-ia.js",
+    "sw.js",
+    "tools/testes/saude-persistente.js"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (4)"
+  }
+}
