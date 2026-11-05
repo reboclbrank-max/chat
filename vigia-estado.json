@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-11-04T23:35:32.307Z",
+ "verificado_em": "2026-11-05T00:30:07.503Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -17,6 +17,11 @@
    "ok": false,
    "falhas": 2,
    "causa": "postador-desligado"
+  },
+  "Barreira de testes (main)": {
+   "ok": false,
+   "falhas": 1,
+   "causa": "sem-execucao"
   },
   "Chat por e-mail (24h)": {
    "ok": true,
