@@ -3,6 +3,7 @@
 // Olha o sistema inteiro DE FORA, cura o que dá (re-dispara turno/exame) e avisa o dono
 // por e-mail SÓ quando o estado muda. Anti-alarme-falso: uma falha só vale após 2 rodadas seguidas.
 const fs = require('fs');
+const { diagnosticoDaBarreira } = require('./socorro');
 const { deveSalvarEstado, registrosDeRecuperacao, recuperacaoPermitida, registraRecuperacao, limpaRecuperacao, evidenciaVigiaConhecida } = require('./vigia-estado');
 let nodemailer = null;
 try { nodemailer = require('nodemailer'); } catch (e) {}
@@ -39,7 +40,7 @@ async function buscaJSON(url) {
 const CAUSAS_VIGIA = Object.freeze([
   'saudavel', 'api-indisponivel', 'sem-execucao', 'execucao-falhou',
   'fila-estagnada', 'turnos-duplicados', 'turno-ausente', 'bateria-atrasada', 'caixa-atrasada',
-  'postagem-atrasada', 'postador-desligado', 'sonda-indisponivel'
+  'postagem-atrasada', 'postador-desligado', 'barreira-vermelha', 'sonda-indisponivel'
 ]);
 const CAUSAS_RECUPERAVEIS = Object.freeze(['sem-execucao', 'turno-ausente', 'bateria-atrasada', 'caixa-atrasada']);
 
@@ -121,6 +122,9 @@ async function acao(rotulo, arquivo) {
   // confiança no alarme. A leitura é do estado do workflow, não do conteúdo das postagens.
   const estadoPostador = await buscaJSON('https://api.github.com/repos/reboclbrank-max/site/actions/workflows/postagem-diaria.yml').catch(() => null);
   const runsEmail = await buscaJSON('https://api.github.com/repos/' + REPO + '/actions/workflows/email.yml/runs?per_page=15').catch(() => null);
+  // Barreira de testes NA MAIN: se ela reprova, o código que está no ar é duvidoso e o dono
+  // precisa saber qual passo caiu — não só que "ficou vermelho".
+  const runsBarreira = await buscaJSON('https://api.github.com/repos/' + REPO + '/actions/workflows/testes-rapidos.yml/runs?branch=main&per_page=5').catch(() => null);
   const runsExame = await buscaJSON('https://api.github.com/repos/' + REPO + '/actions/workflows/evolucao.yml/runs?per_page=10').catch(() => null);
 
   itens.push(await verifica('Casa postando (site)', async () => {
@@ -153,6 +157,26 @@ async function acao(rotulo, arquivo) {
     }
     if (sucesso) throw falhaVigia('postagem-atrasada', 'última rotina automática há ' + h(idadeSucesso).toFixed(1) + 'h');
     throw falhaVigia('sem-execucao', 'nenhuma execução recente do postador encontrada');
+  }));
+
+  itens.push(await verifica('Barreira de testes (main)', async () => {
+    if (!runsBarreira) throw falhaVigia('api-indisponivel', 'API de execuções da barreira indisponível');
+    const execucoes = Array.isArray(runsBarreira.workflow_runs) ? runsBarreira.workflow_runs : [];
+    if (!execucoes.length) throw falhaVigia('sem-execucao', 'nenhuma execução da barreira na main');
+    const ultima = execucoes.slice().sort((a, b) => Date.parse(b.created_at || 0) - Date.parse(a.created_at || 0))[0];
+    // Só busca os jobs quando há reprovação: um verde não precisa de detalhe e não gasta chamada.
+    const jobs = ultima.conclusion === 'failure'
+      ? ((await buscaJSON('https://api.github.com/repos/' + REPO + '/actions/runs/' + ultima.id + '/jobs').catch(() => ({}))).jobs || [])
+      : [];
+    const diagnostico = diagnosticoDaBarreira({
+      conclusao: ultima.conclusion,
+      sha: ultima.head_sha,
+      runUrl: ultima.html_url,
+      jobs
+    });
+    if (diagnostico.causa === 'saudavel') return sondaSaudavel(diagnostico.detalhe, diagnostico.evidencia);
+    // Reprovação não é recuperável por aqui: reexecutar barreira vermelha é fingir conserto.
+    throw falhaVigia(diagnostico.causa === 'barreira-vermelha' ? 'barreira-vermelha' : 'sem-execucao', diagnostico.detalhe);
   }));
 
   itens.push(await verifica('Chat por e-mail (24h)', async () => {
