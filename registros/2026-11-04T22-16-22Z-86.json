@@ -1,0 +1,27 @@
+{
+  "quando": "2026-11-04T22:16:22Z",
+  "origem": "historico",
+  "pr": 86,
+  "sha": "b2bd36668297cb6f9a1e0680488db51e4c201b09",
+  "mesclada": true,
+  "mergeSha": "1a6752b94f51de98bc5eb53df3c1179b9edb24ba",
+  "titulo": "vigia: postador desligado à mão não é postador atrasado",
+  "barreira": "success",
+  "arquivos": [
+    "tools/email-chat.js",
+    "tools/testes/vigia-recuperacao-fluxo.js",
+    "tools/vigia-casa.js"
+  ],
+  "essenciais": [
+    "tools/email-chat.js",
+    "tools/vigia-casa.js"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: tools/email-chat.js, tools/vigia-casa.js"
+  }
+}
