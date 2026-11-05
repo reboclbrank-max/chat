@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-11-05T03:37:07.666Z",
+ "verificado_em": "2026-11-05T03:45:30.722Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -24,10 +24,9 @@
    "causa": "saudavel"
   },
   "Barreira de testes (main)": {
-   "ok": true,
-   "falhas": 0,
-   "causa": "saudavel",
-   "evidencia": "barreira-em-andamento"
+   "ok": false,
+   "falhas": 1,
+   "causa": "barreira-vermelha"
   },
   "Chat por e-mail (24h)": {
    "ok": true,
