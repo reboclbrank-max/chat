@@ -1,0 +1,23 @@
+{
+  "quando": "2026-11-05T22:05:35.748Z",
+  "origem": "ao-vivo",
+  "pr": 103,
+  "sha": "39fd7a77cd2ff232f4b65067a752df29cf5f4162",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "portão 1 ABERTO: a barreira se sustenta (11 execuções, zero falha) + a trava que olhava o passado",
+  "barreira": "success",
+  "arquivos": [
+    "tools/termometro-barreira.js",
+    "tools/testes/autonomia-e-risco.js"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: tools/termometro-barreira.js, tools/testes/autonomia-e-risco.js"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (2)"
+  }
+}
