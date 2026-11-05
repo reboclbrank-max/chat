@@ -1,0 +1,32 @@
+{
+  "quando": "2026-11-04T04:20:45Z",
+  "origem": "historico",
+  "pr": 78,
+  "sha": "ec60091f1af4e05eb4418d950eddd0e036fb55a4",
+  "mesclada": true,
+  "mergeSha": "c0b2bf8a13bf4ce5502996946cc19f53f3abe904",
+  "titulo": "evolucao: canal de e-mail lembra qual rota quebrou entre turnos",
+  "barreira": "success",
+  "arquivos": [
+    ".github/workflows/email.yml",
+    "CONTINUIDADE.md",
+    "tools/email-chat.js",
+    "tools/estado-operacional-controlado.js",
+    "tools/saude-rotas-email.js",
+    "tools/testes/roda-testes.js",
+    "tools/testes/saude-rotas-email.js"
+  ],
+  "essenciais": [
+    ".github/workflows/email.yml",
+    "tools/email-chat.js",
+    "tools/estado-operacional-controlado.js"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: .github/workflows/email.yml, tools/email-chat.js, tools/estado-operacional-controlado.js"
+  }
+}
