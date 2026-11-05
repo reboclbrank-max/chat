@@ -1,0 +1,32 @@
+{
+  "quando": "2026-11-01T12:49:30Z",
+  "origem": "historico",
+  "pr": 71,
+  "sha": "c13910e3875174b36e0d2e6a80f872431795f195",
+  "mesclada": true,
+  "mergeSha": "cf8d2f080554cca826dd43c27caf86ecb206ff15",
+  "titulo": "fix: diagnostica executor real e correlaciona pedido no Chat",
+  "barreira": "success",
+  "arquivos": [
+    "CONTINUIDADE.md",
+    "direto.html",
+    "index.html",
+    "ligar.html",
+    "limpar.html",
+    "paginas/rotas/direto.json",
+    "paginas/rotas/ligar.json",
+    "paginas/rotas/limpar.json",
+    "tools/testes/fallback-trabalhador.js"
+  ],
+  "essenciais": [
+    "index.html"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: index.html"
+  }
+}
