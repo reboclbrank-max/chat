@@ -1,0 +1,22 @@
+{
+  "quando": "2026-11-03T20:56:04Z",
+  "origem": "historico",
+  "pr": 74,
+  "sha": "40302a863d4ba6a5ae3662612e67c2ba40d0ba0c",
+  "mesclada": true,
+  "mergeSha": "e52888cd49db8c9d749806c99a345b1be802457d",
+  "titulo": "Registra recuperação da memória sem descarte local",
+  "barreira": "success",
+  "arquivos": [
+    "CONTINUIDADE.md"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (1)"
+  }
+}
