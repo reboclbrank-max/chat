@@ -1,0 +1,21 @@
+{
+  "quando": "2026-11-05T12:39:24.785Z",
+  "pr": 97,
+  "sha": "98022cac8272fcf69781ce98163d04400b3ce2a6",
+  "mesclada": false,
+  "mergeSha": "2146f5f902f80d0ccb0780d7f54b5a144164c16d",
+  "titulo": "docs: prova do sombra (texto puro)",
+  "barreira": "success",
+  "arquivos": [
+    "docs/PROVA-DO-SOMBRA.md"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "mesclar",
+    "motivo": "na faixa do nível texto: 1 arquivo(s)"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (1)"
+  }
+}
