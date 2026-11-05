@@ -1,0 +1,26 @@
+{
+  "quando": "2026-11-03T20:40:02Z",
+  "origem": "historico",
+  "pr": 73,
+  "sha": "f01e55d66480aa04a372b57f22d8bbbf4fa5c60a",
+  "mesclada": true,
+  "mergeSha": "5aaca3d0295199898f320358f307a61952be8226",
+  "titulo": "Fixa IP do navegador público e explicita origem do placar",
+  "barreira": "success",
+  "arquivos": [
+    "CONTINUIDADE.md",
+    "tools/indice-capacidade.js",
+    "tools/navegador-publico.js",
+    "tools/testes/indice-capacidade.js",
+    "tools/testes/navegador-publico.js"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (5)"
+  }
+}
