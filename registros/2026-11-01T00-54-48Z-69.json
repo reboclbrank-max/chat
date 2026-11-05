@@ -1,0 +1,22 @@
+{
+  "quando": "2026-11-01T00:54:48Z",
+  "origem": "historico",
+  "pr": 69,
+  "sha": "230327b65d58912439a00deb5520c0030867ebbe",
+  "mesclada": true,
+  "mergeSha": "ba1034ee7fbf71fd5f1acf42e65e6b71a5ac103a",
+  "titulo": "acervo: nada fica local — workspace esvaziado",
+  "barreira": "success",
+  "arquivos": [
+    "acervo/MAPA-WORKSPACE.md"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (1)"
+  }
+}
