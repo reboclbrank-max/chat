@@ -1,0 +1,27 @@
+{
+  "quando": "2026-11-04T03:22:28Z",
+  "origem": "historico",
+  "pr": 76,
+  "sha": "5cc3f54f38ea890f23211060898457ba91f70732",
+  "mesclada": true,
+  "mergeSha": "35017d652f9d751515bd4d1fd4e30877b0715e50",
+  "titulo": "evolucao: memória coerente para respostas de acompanhamento",
+  "barreira": "success",
+  "arquivos": [
+    "CONTINUIDADE.md",
+    "README.md",
+    "roteador-ia.js",
+    "sw.js",
+    "tools/testes/memoria-contexto-coerente.js",
+    "tools/testes/roda-testes.js"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (6)"
+  }
+}
