@@ -2,7 +2,7 @@
 // que não é texto em docs/ ou posts/ reprova. Nenhum teste aqui usa rede.
 'use strict';
 const assert = require('assert');
-const { caminhoPermitido, avalia, mergeDoMesclador, planoDeReversao, ramoDeReversao, MARCA } = require('../mesclador-estreito.js');
+const { caminhoPermitido, avalia, mergeDoMesclador, planoDeReversao, alvoDaReversao, ramoDeReversao, MARCA } = require('../mesclador-estreito.js');
 const casos = [];
 function ok(nome, fn) { casos.push({ nome, fn }); }
 
@@ -68,6 +68,22 @@ ok('reversão também respeita a faixa', () => {
   const plano = planoDeReversao({ commits: comMarca, arquivosDoMerge: arquivos(['tools/email-chat.js']) });
   assert.equal(plano.reverter, false);
   assert.match(plano.motivo, /fora da faixa/);
+});
+
+ok('a reversão só aceita o commit que a execução vermelha avaliou', () => {
+  const commits = [
+    { sha: 'humano1', commit: { message: 'degrau 4: arquitetura (#93)' } },
+    { sha: 'antigo9', commit: { message: MARCA + ' reversão automática de abc' } }
+  ];
+  // Caso real de 05/11: main vermelha num merge HUMANO; a versão anterior reverteria o
+  // merge antigo do mesclador, sem relação nenhuma com a falha.
+  assert.equal(alvoDaReversao({ commits, shaVermelho: 'humano1' }).reverter, false);
+  assert.match(alvoDaReversao({ commits, shaVermelho: 'humano1' }).motivo, /não foi merge do mesclador/);
+  // Main andou depois da execução vermelha: não reverto às cegas.
+  assert.match(alvoDaReversao({ commits, shaVermelho: 'sumiu' }).motivo, /andou depois/);
+  // Commit do mesclador no topo: reverte ele, e só ele.
+  const mesclado = [{ sha: 'meu1', commit: { message: MARCA + ' docs: x' } }];
+  assert.equal(alvoDaReversao({ commits: mesclado, shaVermelho: 'meu1' }).reverter, true);
 });
 
 ok('o ramo de reversão tem nome previsível e sem espaço', () => {
