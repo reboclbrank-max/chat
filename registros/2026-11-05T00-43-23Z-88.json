@@ -1,0 +1,28 @@
+{
+  "quando": "2026-11-05T00:43:23Z",
+  "origem": "historico",
+  "pr": 88,
+  "sha": "7a8b5dafb16d24ba07ece634542d6d988fc26895",
+  "mesclada": true,
+  "mergeSha": "787c0c1cb37279971cf958e7be6b582ae470deac",
+  "titulo": "vigia: barreira rodando agora não é barreira ausente (correção do degrau 2)",
+  "barreira": "success",
+  "arquivos": [
+    "tools/email-chat.js",
+    "tools/socorro.js",
+    "tools/testes/socorro.js",
+    "tools/vigia-estado.js"
+  ],
+  "essenciais": [
+    "tools/email-chat.js",
+    "tools/vigia-estado.js"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: tools/email-chat.js, tools/vigia-estado.js"
+  }
+}
