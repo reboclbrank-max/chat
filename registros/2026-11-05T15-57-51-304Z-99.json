@@ -1,0 +1,29 @@
+{
+  "quando": "2026-11-05T15:57:51.304Z",
+  "pr": 99,
+  "sha": "3a31ff658579eebe1d7437f87617ecc2609bbb4a",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "painel da casa + revisão de 05/11 (um furo de visibilidade e um falso alarme evitado)",
+  "barreira": "success",
+  "arquivos": [
+    "tools/painel.js",
+    "tools/portoes.js",
+    "tools/termometro-barreira.js",
+    "tools/testes/autonomia-e-risco.js",
+    "tools/testes/painel.js",
+    "tools/testes/roda-testes.js",
+    "tools/vigia-estado.js"
+  ],
+  "essenciais": [
+    "tools/vigia-estado.js"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: tools/painel.js, tools/portoes.js, tools/termometro-barreira.js…"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: tools/vigia-estado.js"
+  }
+}
