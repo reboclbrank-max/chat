@@ -43,7 +43,13 @@ function lerNivel(conteudo, agora = Date.now()) {
   if (Number.isFinite(expira) && Number(agora) > expira) {
     return { nivel: NIVEL_PADRAO, valido: true, expirado: true, motivo: 'prazo vencido em ' + new Date(expira).toISOString().slice(0, 10) };
   }
-  return { nivel, valido: true, motivo: texto(dados.motivo), desde: texto(dados.desde), expira_em: texto(dados.expira_em) };
+  // Nível alto sem prazo é ensaio sem fim marcado. Não impede — avisa, e o vigia mostra.
+  const semPrazo = nivel === 'codigo' && !texto(dados.expira_em);
+  return {
+    nivel, valido: true, motivo: texto(dados.motivo), desde: texto(dados.desde),
+    expira_em: texto(dados.expira_em), semPrazo,
+    aviso: semPrazo ? 'nível código ligado sem prazo de término' : ''
+  };
 }
 
 function permite(nivel, categoria) {
@@ -60,6 +66,7 @@ function resumo(leitura) {
   if (l.expirado) return 'autonomia desligada pelo prazo (' + l.motivo + ')';
   if (l.nivel === 'desligado') return 'autonomia desligada à mão';
   if (l.nivel === 'texto') return 'autonomia no degrau 3: só texto em docs/ e posts/';
+  if (l.semPrazo) return 'autonomia no degrau 4 SEM prazo marcado — ensaio sem fim definido';
   return 'autonomia no degrau 4: código de faixa segura também entra sozinho';
 }
 

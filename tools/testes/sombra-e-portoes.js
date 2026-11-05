@@ -129,10 +129,11 @@ ok('PR não mesclada nunca conta como incidente, mesmo com sha parecido', () => 
   assert.equal(incidentesObservados({ registros: comMerge, falhasNaMain: ['sha-de-teste'] }).total, 0);
 });
 
-ok('portões 3 e 4 ficam fechados enquanto nada está declarado e a lista está vazia', () => {
+ok('portão 3 só abre com faixa, ensaio e volta — e hoje falta a volta', () => {
   const a = avaliaPortoes({ termometro: termometroOk, registros: [], falhasNaMain: [], autonomia: { nivel: 'texto' }, declarado: semDeclaracao });
   assert.equal(a.portoes[2].aberto, false);
-  assert.match(a.portoes[2].porque, /lista de código liberado vazia/);
+  // A lista já tem o primeiro arquivo (portão 3, 05/11); o que falta é a reversão exercitada.
+  assert.match(a.portoes[2].porque, /reversão nunca exercitada/);
   assert.equal(a.portoes[3].aberto, false);
   assert.equal(a.abertos, 1);
 });

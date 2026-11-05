@@ -18,14 +18,35 @@ const TEXTO = 'texto';
 const CODIGO_SEGURO = 'codigo-seguro';
 const ESSENCIAL = 'essencial';
 
-// Lista explícita. Vazia de propósito hoje: nenhum código está autorizado ao degrau 4.
-// Para promover, é preciso provar contrato próprio e ausência de efeito externo.
-const LIBERADOS_PARA_DEGRAU_4 = Object.freeze([]);
+// Lista explícita — e agora com o PRIMEIRO arquivo (portão 3, 05/11).
+//
+// Critério para entrar aqui: contrato próprio, nenhum efeito externo, e um erro nele é
+// CHATO e VISÍVEL, não silencioso. `indice-capacidade.js` lê arquivos locais e monta um
+// placar em markdown para o ciclo diário de evolução: se a máquina mesclar uma versão
+// errada, o pior caso é um placar errado — que aparece no próprio documento e na barreira.
+// Não fala com credencial, não publica estado operacional, não decide nada em nome do dono.
+const LIBERADOS_PARA_DEGRAU_4 = Object.freeze([
+  'tools/indice-capacidade.js'
+]);
 
 // Tudo aqui nunca entra sozinho, em nenhum nível. É o que pode calar a casa.
 const ESSENCIAIS = Object.freeze([
   '.github/',
   'tools/email',
+  // O turno de e-mail já declara seus próprios arquivos críticos (o regex CODIGO em
+  // email-poll.js). O mapa passa a respeitar essa lista em vez de adivinhar por prefixo:
+  // se o turno protege, o mesclador também protege.
+  'tools/pulso-vigia.js',
+  'tools/reserva-turno.js',
+  'tools/falhas-mensagem.js',
+  'tools/turno-liveness.js',
+  'tools/geografia-brasil.js',
+  'tools/telegram-chat.js',
+  'tools/olho.py',
+  'tools/ocr-local.py',
+  'tools/transcreve.py',
+  'tools/visao-local.py',
+  'tools/prepara-foto.py',
   'tools/estado-operacional-controlado.js',
   'tools/vigia',
   'tools/postad',
