@@ -1,0 +1,30 @@
+{
+  "quando": "2026-10-31T13:56:01Z",
+  "origem": "historico",
+  "pr": 61,
+  "sha": "6bab081ed7ad11a13b95cacccb9933c97dd255a0",
+  "mesclada": true,
+  "mergeSha": "eff1f312d9ee53285ed6817b36ee79a28b668994",
+  "titulo": "chat: auto-diagnóstico — o produto passa a ditar o que consertar primeiro",
+  "barreira": "success",
+  "arquivos": [
+    "CONTINUIDADE.md",
+    "docs/auto-melhoria.json",
+    "razao-local.js",
+    "roteador-ia.js",
+    "tools/auto-melhoria.js",
+    "tools/provas-do-chat.json",
+    "tools/testes/auto-melhoria.js",
+    "tools/testes/recomeco-resgate-memoria.js",
+    "tools/testes/roda-testes.js"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR não está aberta"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (9)"
+  }
+}
