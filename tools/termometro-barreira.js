@@ -50,8 +50,12 @@ const LIMITES = Object.freeze({
 const CORRECAO_DO_NAVEGADOR_EM = '2026-11-05T07:00:00Z';
 function evidenciaDeCorrecao({ execucoes, desde, minimo = 10 } = {}) {
   const marco = Date.parse(String(desde || CORRECAO_DO_NAVEGADOR_EM));
+  // Só entra execução que de fato rodou até o fim. Uma execução cancelada não prova nada:
+  // contá-la como evidência seria inflar a janela com o que não foi medido (achado ao vivo
+  // em 05/11, quando um grupo de concorrência cancelou uma execução no meio da contagem).
   const lista = (Array.isArray(execucoes) ? execucoes : [])
-    .filter(e => e && Number.isFinite(Date.parse(String(e.created_at))) && Date.parse(e.created_at) >= marco);
+    .filter(e => e && (e.conclusion === 'success' || e.conclusion === 'failure'))
+    .filter(e => Number.isFinite(Date.parse(String(e.created_at))) && Date.parse(e.created_at) >= marco);
   const falhas = lista.filter(e => e.conclusion === 'failure').length;
   return {
     desde: new Date(marco).toISOString(),
