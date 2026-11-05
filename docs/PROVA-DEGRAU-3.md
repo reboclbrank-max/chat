@@ -19,3 +19,4 @@ Que a reversão funciona. Reverter exige que a `main` fique vermelha por causa d
 merge do mesclador, e provocar isso de propósito seria sujar a `main` só para testar.
 A reversão fica provada em contrato (`tools/testes/mesclador-estreito.js`) e será
 exercitada de verdade no primeiro caso real.
+nota de prova: esta PR mistura texto com codigo de proposito

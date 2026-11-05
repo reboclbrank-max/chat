@@ -114,3 +114,5 @@ if (require.main === module) {
 }
 
 module.exports = { resumeFalha, categoriaDoPasso, diagnosticoDaBarreira, CATEGORIAS };
+
+// linha de prova: o mesclador NAO pode mesclar isto
