@@ -29,6 +29,7 @@ const EVIDENCIAS_VIGIA = Object.freeze([
   // lista fechada e o estado saía só com "saudavel", sem dizer QUAL nível estava ligado.
   'autonomia-texto',
   'autonomia-desligada',
+  'autonomia-codigo',
   'caixa-sem-pendencia',
   'caixa-recem-chegada'
 ]);

@@ -5,6 +5,8 @@
 const fs = require('fs');
 const { diagnosticoDaBarreira } = require('./socorro');
 const { lerNivel, resumo: resumoAutonomia } = require('./autonomia');
+// A faixa vem do MAPA, não de uma cópia: duas listas iguais divergem no dia em que uma muda.
+const { LIBERADOS_PARA_DEGRAU_4 } = require('./risco-de-arquivo');
 const { deveSalvarEstado, registrosDeRecuperacao, recuperacaoPermitida, registraRecuperacao, limpaRecuperacao, evidenciaVigiaConhecida } = require('./vigia-estado');
 let nodemailer = null;
 try { nodemailer = require('nodemailer'); } catch (e) {}
@@ -41,7 +43,10 @@ async function buscaJSON(url) {
 const CAUSAS_VIGIA = Object.freeze([
   'saudavel', 'api-indisponivel', 'sem-execucao', 'execucao-falhou',
   'fila-estagnada', 'turnos-duplicados', 'turno-ausente', 'bateria-atrasada', 'caixa-atrasada',
-  'postagem-atrasada', 'postador-desligado', 'barreira-vermelha', 'sonda-indisponivel'
+  'postagem-atrasada', 'postador-desligado', 'barreira-vermelha', 'sonda-indisponivel',
+  // 05/11: estas três não estavam na lista e viravam "sonda-indisponivel" no estado —
+  // o dono via falha de autonomia sem saber QUAL. Causa fechada, mas específica.
+  'autonomia-ilegivel', 'autonomia-sem-prazo', 'autonomia-sem-faixa'
 ]);
 const CAUSAS_RECUPERAVEIS = Object.freeze(['sem-execucao', 'turno-ausente', 'bateria-atrasada', 'caixa-atrasada']);
 
@@ -169,7 +174,16 @@ async function acao(rotulo, arquivo) {
     if (!leitura.valido) throw falhaVigia('autonomia-ilegivel', leitura.motivo + ' (a casa age como desligada)');
     if (leitura.nivel === 'desligado') return sondaSaudavel('autonomia desligada à mão', 'autonomia-desligada');
     if (leitura.nivel === 'texto') return sondaSaudavel(resumoAutonomia(leitura), 'autonomia-texto');
-    throw falhaVigia('autonomia-acima-do-provado', 'nível ' + leitura.nivel + ' ligado sem o termômetro da barreira aprovado', false);
+    if (leitura.expirado) return sondaSaudavel('ensaio encerrado pelo prazo: a casa voltou a agir como desligada', 'autonomia-desligada');
+    // Nível alto: o vigia cobra a FORMA do que foi ligado, com o que tem em mãos.
+    // Não tenta recalcular os portões aqui (seria caro e daria número diferente do painel):
+    // cobra as duas garantias que dependem só do arquivo — prazo e faixa.
+    if (leitura.semPrazo) throw falhaVigia('autonomia-sem-prazo', 'nível código ligado sem expira_em: ensaio sem fim marcado', false);
+    const faixa = Array.isArray(LIBERADOS_PARA_DEGRAU_4) ? LIBERADOS_PARA_DEGRAU_4 : [];
+    if (!faixa.length) {
+      throw falhaVigia('autonomia-sem-faixa', 'nível código ligado sem faixa declarada em autonomia.json', false);
+    }
+    return sondaSaudavel('autonomia no degrau 4: ' + faixa.length + ' arquivo(s) na faixa, prazo até ' + String(leitura.expira_em).slice(0, 10), 'autonomia-codigo');
   }));
 
   itens.push(await verifica('Barreira de testes (main)', async () => {

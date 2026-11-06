@@ -84,16 +84,17 @@ mecanismo que está na `main` **hoje** funciona. Daí o mínimo de 10 registros 
 `desligado` sem ninguém precisar lembrar. É o que impede o pior tipo de esquecimento:
 ligar para testar e ficar ligado.
 
-## O primeiro arquivo da faixa (portão 3, 05/11)
+## Os arquivos da faixa (portão 3, 05/11 → 06/11)
 
-`tools/indice-capacidade.js` é o **primeiro** — e por enquanto único — arquivo autorizado ao
-degrau 4. O critério não é "parece inofensivo":
+`tools/indice-capacidade.js` foi o **primeiro** autorizado ao degrau 4; em 06/11 entraram
+mais dois (ver *Candidatos à faixa*, adiante). O critério não é "parece inofensivo":
 
 | exigência | como atende |
 |---|---|
 | contrato próprio | `tools/testes/indice-capacidade.js`, roda na barreira |
 | nenhum efeito externo | lê arquivos locais; não fala com credencial nem publica estado |
 | erro chato e visível | o pior caso é um placar em markdown errado, no próprio documento |
+| custo do erro declarado | uma linha em `CUSTO_DO_ERRO`, cobrada por teste |
 
 Todo o resto continua fechado. E o mapa passou a respeitar a lista que o **próprio turno de
 e-mail já declara** como crítica (`email-poll.js`, regex `CODIGO`): `pulso-vigia`,
@@ -142,6 +143,29 @@ portão 1  →  portão 2  →  portão 3 (1 arquivo + prazo)  →  portão 4 (3
 
 Nenhum portão abre por tempo de espera, por cansaço ou por "já está bom". Cada um tem uma
 frase que diz **por que** está fechado — e é essa frase que vira tarefa.
+
+## O que o vigia cobra do nível alto (05/11)
+
+O item **Autonomia (nível)**, no estado que o dono lê, passou a cobrar a *forma* do
+que foi ligado — com o que ele tem em mãos, sem recalcular os portões (recalcular ali
+daria um número diferente do painel, e dois números para a mesma coisa é pior que
+nenhum):
+
+| situação em `autonomia.json` | o que o dono vê |
+|---|---|
+| `nivel: "texto"` | ✅ "autonomia no degrau 3: só texto em docs/ e posts/" |
+| `nivel: "codigo"` **com** `expira_em` e faixa não vazia | ✅ "degrau 4: N arquivo(s) na faixa, prazo até AAAA-MM-DD" |
+| `nivel: "codigo"` **sem** `expira_em` | ❌ `autonomia-sem-prazo` — ensaio sem fim marcado |
+| `expira_em` no passado | ✅ "autonomia desligada pelo prazo" (o sistema funcionando: a casa voltou sozinha ao degrau 1) |
+
+A faixa é lida do **mapa de risco** (`LIBERADOS_PARA_DEGRAU_4`), não de uma cópia em
+`autonomia.json`: duas listas iguais divergem no dia em que só uma muda. E as três
+causas novas (`autonomia-ilegivel`, `autonomia-sem-prazo`, `autonomia-sem-faixa`)
+entraram na lista fechada — antes elas caíam em `sonda-indisponivel`, e o dono via
+"falha de autonomia" sem saber qual.
+
+Nada disso acorda ninguém de madrugada: configuração errada é aviso no estado, não
+alarme com e-mail. Só o que é pane de verdade (turno, caixa, barreira vermelha) escala.
 
 ## Candidatos à faixa: a medição de 05/11
 
