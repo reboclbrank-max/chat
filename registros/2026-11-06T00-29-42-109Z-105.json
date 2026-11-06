@@ -1,0 +1,28 @@
+{
+  "quando": "2026-11-06T00:29:42.109Z",
+  "origem": "ao-vivo",
+  "pr": 105,
+  "sha": "f04584f2bf2f16dcec379dd5fc0df5e648bb904e",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "vigia: nível alto cobrado pela forma (prazo e faixa), com causa específica",
+  "barreira": "success",
+  "arquivos": [
+    "docs/PORTOES-DO-DEGRAU-4.md",
+    "tools/testes/vigia-recuperacao-fluxo.js",
+    "tools/vigia-casa.js",
+    "tools/vigia-estado.js"
+  ],
+  "essenciais": [
+    "tools/vigia-casa.js",
+    "tools/vigia-estado.js"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: tools/testes/vigia-recuperacao-fluxo.js, tools/vigia-casa.js, tools/vigia-estado.js"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: tools/vigia-casa.js, tools/vigia-estado.js"
+  }
+}
