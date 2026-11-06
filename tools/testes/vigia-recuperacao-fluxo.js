@@ -54,6 +54,13 @@ async function executa(estadoInicial, configuracao = {}) {
       if (barreira === null) throw new Error('API da barreira indisponível no isolamento');
       return resposta({ workflow_runs: barreira });
     }
+    if (/\/repos\/reboclbrank-max\/chat\/commits\/main$/.test(url)) {
+      // Por padrão a cabeça da main é a mesma da execução já configurada: cenário saudável.
+      const cabeca = Object.prototype.hasOwnProperty.call(configuracao, 'cabecaMain')
+        ? configuracao.cabecaMain : { sha: 'abc1234def', quando: agora };
+      if (cabeca === null) throw new Error('cabeça da main indisponível no isolamento');
+      return resposta({ sha: cabeca.sha, commit: { committer: { date: cabeca.quando || agora } } });
+    }
     if (/\/actions\/runs\/\d+\/jobs$/.test(url)) {
       return resposta({ jobs: configuracao.barreiraJobs || [] });
     }
@@ -276,7 +283,43 @@ async function executa(estadoInicial, configuracao = {}) {
     'expirar o prazo não inventa recuperação de e-mail');
   assert.equal(itemAutonomia(prazoVencido).causa, 'saudavel', 'prazo vencido é o sistema funcionando');
 
+  // 🕳️ A pane silenciosa de 06/11: main anda sem execução da barreira e o painel diz ✅.
+  const itemBarreiraDe = (r) => r.escritos[0].itens['Barreira de testes (main)'];
+  const duasHorasAtras = new Date(Date.now() - 120 * 60000).toISOString();
+
+  const semExecucao = await executa(inicial, {
+    cabecaMain: { sha: 'fora000000', quando: duasHorasAtras }
+  });
+  assert.equal(itemBarreiraDe(semExecucao).ok, false, 'main sem execução da barreira precisa acusar');
+  assert.equal(itemBarreiraDe(semExecucao).causa, 'barreira-sem-execucao',
+    'causa própria: "sem-execucao" é outra coisa (barreira nunca rodou)');
+
+  const recemPedida = await executa(inicial, {
+    cabecaMain: { sha: 'fora000000', quando: new Date().toISOString() }
+  });
+  assert.equal(itemBarreiraDe(recemPedida).ok, true,
+    'commit recente tem carência: a execução pode estar na fila');
+
+  const testada = await executa(inicial, { cabecaMain: { sha: 'abc1234def', quando: duasHorasAtras } });
+  assert.equal(itemBarreiraDe(testada).ok, true, 'cabeça que TEM execução não é falha, mesmo antiga');
+
   console.log('✔ nível alto no vigia: prazo manda, faixa é contada, forma errada é cobrada');
+  console.log('✔ main sem execução da barreira é pane, e tem carência para a fila');
+
+  // Contrato estático: causa sem texto no e-mail do dono é diagnóstico que não informa.
+  // Foi assim que quatro causas novas ficaram mudas — o status dizia "diagnóstico sanitizado
+  // indisponível", que é o mesmo que não dizer nada.
+  const fonteVigia = fs.readFileSync(path.join(raiz, 'tools/vigia-casa.js'), 'utf8');
+  const fonteEmail = fs.readFileSync(path.join(raiz, 'tools/email-chat.js'), 'utf8');
+  const bloco = fonteVigia.match(/const CAUSAS_VIGIA = Object\.freeze\(\[([\s\S]*?)\]\);/);
+  assert.ok(bloco, 'não achei a lista de causas do vigia');
+  const causas = [...bloco[1].matchAll(/'([a-z-]+)'/g)].map(m => m[1]);
+  assert.ok(causas.length >= 12, 'a lista de causas parece truncada: ' + causas.length);
+  const mapaEmail = fonteEmail.match(/const CAUSAS_STATUS_CASA = Object\.freeze\(\{([\s\S]*?)\n\}\);/);
+  assert.ok(mapaEmail, 'não achei o mapa de causas do e-mail de status');
+  const mudas = causas.filter(c => c !== 'saudavel' && !new RegExp("['\"]?" + c + "['\"]?\\s*:").test(mapaEmail[1]));
+  assert.deepEqual(mudas, [], 'causas que o dono veria como "diagnóstico indisponível": ' + mudas.join(', '));
+  console.log('✔ ' + (causas.length - 1) + ' causas do vigia têm texto no e-mail de status');
 })().catch((erro) => {
   console.error('✘ fluxo isolado da recuperação — ' + (erro && (erro.stack || erro.message) || erro));
   process.exitCode = 1;

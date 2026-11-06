@@ -389,7 +389,13 @@ const CAUSAS_STATUS_CASA = Object.freeze({
   'fila-estagnada': { texto: 'fila sem executor — sem adicionar trabalho', recuperavel: false },
   'turnos-duplicados': { texto: 'mais de um turno ativo — revisão humana necessária', recuperavel: false },
   'execucao-falhou': { texto: 'última execução falhou — sem reexecutar às cegas', recuperavel: false },
-  'sonda-indisponivel': { texto: 'sonda limitada — sem ação automática', recuperavel: false }
+  'sonda-indisponivel': { texto: 'sonda limitada — sem ação automática', recuperavel: false },
+  // 06/11: estas quatro causas existiam no vigia e NÃO tinham texto aqui — o status do dono
+  // dizia só "diagnóstico sanitizado indisponível", que é o mesmo que não dizer nada.
+  'autonomia-ilegivel': { texto: 'arquivo de autonomia ilegível — a casa age como desligada', recuperavel: false },
+  'autonomia-sem-prazo': { texto: 'autonomia alta sem prazo marcado — ensaio sem fim definido', recuperavel: false },
+  'autonomia-sem-faixa': { texto: 'autonomia alta sem nenhum arquivo liberado', recuperavel: false },
+  'barreira-sem-execucao': { texto: 'a main andou sem rodar a barreira — código no ar sem teste', recuperavel: false }
 });
 // Rótulos de evidência também são fechados: `status:` nunca reflete texto arbitrário que
 // possa ter sido gravado no JSON público. “Rotina recente” descreve só a execução observada,
