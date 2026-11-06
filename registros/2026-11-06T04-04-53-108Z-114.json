@@ -1,0 +1,24 @@
+{
+  "quando": "2026-11-06T04:04:53.108Z",
+  "origem": "ao-vivo",
+  "pr": 114,
+  "sha": "cdc58fe63910d4fc1c2ffe5b61177e771eecf373",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "o gatilho da reversão funcionou de verdade — em ensaio, com log sem edição",
+  "barreira": "success",
+  "arquivos": [
+    "docs/ENSAIO-DO-GATILHO-06-11.md",
+    "tools/mesclador-estreito.js",
+    "tools/testes/reversao-caminho-do-403.js"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: tools/mesclador-estreito.js, tools/testes/reversao-caminho-do-403.js"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (3)"
+  }
+}
