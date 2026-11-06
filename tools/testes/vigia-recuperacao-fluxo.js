@@ -248,7 +248,11 @@ async function executa(estadoInicial, configuracao = {}) {
   assert.equal(itemAutonomia(altoComPrazo).evidencia, 'autonomia-codigo');
   // O detalhe fica no LOG do job (por desenho, não no JSON público): é lá que se verifica.
   const linhaAutonomia = altoComPrazo.logs.find((l) => /Autonomia \(nível\)/.test(l)) || '';
-  assert.match(linhaAutonomia, /1 arquivo\(s\) na faixa/, 'o log mostra quanto está ligado, em número');
+  // O número vem da faixa REAL: escrever "1 arquivo" aqui seria espelhar o mundo, e o
+  // teste passaria a reprovar no dia em que a faixa crescer (foi o que aconteceu em 06/11).
+  const naFaixa = require('../risco-de-arquivo').LIBERADOS_PARA_DEGRAU_4.length;
+  assert.match(linhaAutonomia, new RegExp(naFaixa + ' arquivo\\(s\\) na faixa'),
+    'o log mostra quanto está ligado, em número');
   assert.match(linhaAutonomia, /prazo até 2026-12-05/, 'e até quando — a data aparece no log');
   assert.equal(Object.prototype.hasOwnProperty.call(itemAutonomia(altoComPrazo), 'detalhe'), false,
     'detalhe não vaza para o JSON público');
