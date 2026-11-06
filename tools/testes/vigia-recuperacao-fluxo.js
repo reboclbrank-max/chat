@@ -12,6 +12,7 @@ const estadoVigia = require('../vigia-estado');
 async function executa(estadoInicial, configuracao = {}) {
   const escritos = [];
   const dispatches = [];
+  const logs = [];
   const agora = new Date().toISOString();
   const token = Object.prototype.hasOwnProperty.call(configuracao, 'token') ? configuracao.token : 'controle-inerte';
   const emailRuns = Object.prototype.hasOwnProperty.call(configuracao, 'emailRuns') ? configuracao.emailRuns : [];
@@ -68,7 +69,9 @@ async function executa(estadoInicial, configuracao = {}) {
     throw new Error('URL inesperada no isolamento: ' + url);
   };
   const fsFalso = {
-    readFileSync: () => JSON.stringify(estadoInicial),
+    readFileSync: (arquivo) => (arquivo === 'autonomia.json'
+      ? JSON.stringify(Object.prototype.hasOwnProperty.call(configuracao, 'autonomia') ? configuracao.autonomia : { nivel: 'texto' })
+      : JSON.stringify(estadoInicial)),
     writeFileSync: (_arquivo, conteudo) => {
       if (configuracao.falhaEscrita) throw new Error('persistência indisponível no isolamento');
       escritos.push(JSON.parse(conteudo));
@@ -82,6 +85,7 @@ async function executa(estadoInicial, configuracao = {}) {
       if (nome === './socorro') return require('../socorro');
       // O item de autonomia lê autonomia.json pelo fs falso; a leitura é pura, sem rede.
       if (nome === './autonomia') return require('../autonomia');
+      if (nome === './risco-de-arquivo') return require('../risco-de-arquivo');
       // O teste deliberadamente não fornece SMTP/IMAP: a caixa falha de modo controlado.
       if (nome === 'nodemailer') throw new Error('nodemailer indisponível no isolamento');
       if (nome === 'imapflow') throw new Error('imapflow não deve ser carregado sem credenciais');
@@ -99,11 +103,11 @@ async function executa(estadoInicial, configuracao = {}) {
     Promise,
     setTimeout,
     clearTimeout,
-    console: { log: () => {}, warn: () => {}, error: () => {} }
+    console: { log: (...a) => logs.push(a.map(String).join(' ')), warn: () => {}, error: () => {} }
   };
   const resultado = vm.runInNewContext(fonte, contexto, { filename: 'vigia-casa-isolado.js' });
   await Promise.resolve(resultado);
-  return { escritos, dispatches, exitCode: processo.exitCode };
+  return { escritos, dispatches, logs, exitCode: processo.exitCode };
 }
 
 (async () => {
@@ -233,6 +237,42 @@ async function executa(estadoInicial, configuracao = {}) {
   const persistenciaFalha = await executa(inicial, { falhaEscrita: true });
   assert.equal(persistenciaFalha.exitCode, 1, 'falha fatal de persistência deve reprovar o workflow');
   console.log('✔ fluxo isolado contém recuperação duplicada, ruído, dispatch cego e falso verde fatal');
+
+  // Degrau 4 no vigia: o nível alto é cobrado pela FORMA do que foi ligado, e o prazo manda.
+  const itemAutonomia = (r) => r.escritos[0].itens['Autonomia (nível)'];
+
+  const altoComPrazo = await executa(inicial, {
+    autonomia: { nivel: 'codigo', desde: '2026-11-05', expira_em: '2026-12-05' }
+  });
+  assert.equal(itemAutonomia(altoComPrazo).ok, true, 'nível código com prazo e faixa não é falha');
+  assert.equal(itemAutonomia(altoComPrazo).evidencia, 'autonomia-codigo');
+  // O detalhe fica no LOG do job (por desenho, não no JSON público): é lá que se verifica.
+  const linhaAutonomia = altoComPrazo.logs.find((l) => /Autonomia \(nível\)/.test(l)) || '';
+  assert.match(linhaAutonomia, /1 arquivo\(s\) na faixa/, 'o log mostra quanto está ligado, em número');
+  assert.match(linhaAutonomia, /prazo até 2026-12-05/, 'e até quando — a data aparece no log');
+  assert.equal(Object.prototype.hasOwnProperty.call(itemAutonomia(altoComPrazo), 'detalhe'), false,
+    'detalhe não vaza para o JSON público');
+
+  const altoSemPrazo = await executa(inicial, { autonomia: { nivel: 'codigo' } });
+  assert.equal(itemAutonomia(altoSemPrazo).ok, false, 'nível código sem prazo precisa acusar');
+  assert.equal(itemAutonomia(altoSemPrazo).causa, 'autonomia-sem-prazo');
+  assert.ok(!itemAutonomia(altoSemPrazo).recuperavel,
+    'forma errada de configuração avisa no estado, não acorda o dono de madrugada');
+  assert.equal(altoSemPrazo.dispatches.filter((d) => /email\.yml/.test(d.url)).length,
+    primeira.dispatches.filter((d) => /email\.yml/.test(d.url)).length,
+    'e não inventa recuperação: configuração errada não se conserta sozinha');
+
+  const prazoVencido = await executa(inicial, {
+    autonomia: { nivel: 'codigo', expira_em: '2026-01-01' }
+  });
+  assert.equal(itemAutonomia(prazoVencido).ok, true, 'prazo vencido não é falha: a casa já voltou a ficar desligada');
+  assert.equal(itemAutonomia(prazoVencido).evidencia, 'autonomia-desligada');
+  assert.equal(prazoVencido.dispatches.filter((d) => /email\.yml/.test(d.url)).length,
+    primeira.dispatches.filter((d) => /email\.yml/.test(d.url)).length,
+    'expirar o prazo não inventa recuperação de e-mail');
+  assert.equal(itemAutonomia(prazoVencido).causa, 'saudavel', 'prazo vencido é o sistema funcionando');
+
+  console.log('✔ nível alto no vigia: prazo manda, faixa é contada, forma errada é cobrada');
 })().catch((erro) => {
   console.error('✘ fluxo isolado da recuperação — ' + (erro && (erro.stack || erro.message) || erro));
   process.exitCode = 1;

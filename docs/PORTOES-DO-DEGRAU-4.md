@@ -142,3 +142,26 @@ portão 1  →  portão 2  →  portão 3 (1 arquivo + prazo)  →  portão 4 (3
 
 Nenhum portão abre por tempo de espera, por cansaço ou por "já está bom". Cada um tem uma
 frase que diz **por que** está fechado — e é essa frase que vira tarefa.
+
+## O que o vigia cobra do nível alto (05/11)
+
+O item **Autonomia (nível)**, no estado que o dono lê, passou a cobrar a *forma* do
+que foi ligado — com o que ele tem em mãos, sem recalcular os portões (recalcular ali
+daria um número diferente do painel, e dois números para a mesma coisa é pior que
+nenhum):
+
+| situação em `autonomia.json` | o que o dono vê |
+|---|---|
+| `nivel: "texto"` | ✅ "autonomia no degrau 3: só texto em docs/ e posts/" |
+| `nivel: "codigo"` **com** `expira_em` e faixa não vazia | ✅ "degrau 4: N arquivo(s) na faixa, prazo até AAAA-MM-DD" |
+| `nivel: "codigo"` **sem** `expira_em` | ❌ `autonomia-sem-prazo` — ensaio sem fim marcado |
+| `expira_em` no passado | ✅ "autonomia desligada pelo prazo" (o sistema funcionando: a casa voltou sozinha ao degrau 1) |
+
+A faixa é lida do **mapa de risco** (`LIBERADOS_PARA_DEGRAU_4`), não de uma cópia em
+`autonomia.json`: duas listas iguais divergem no dia em que só uma muda. E as três
+causas novas (`autonomia-ilegivel`, `autonomia-sem-prazo`, `autonomia-sem-faixa`)
+entraram na lista fechada — antes elas caíam em `sonda-indisponivel`, e o dono via
+"falha de autonomia" sem saber qual.
+
+Nada disso acorda ninguém de madrugada: configuração errada é aviso no estado, não
+alarme com e-mail. Só o que é pane de verdade (turno, caixa, barreira vermelha) escala.
