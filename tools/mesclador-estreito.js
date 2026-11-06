@@ -172,13 +172,13 @@ async function avaliar({ token, repo, sha, dono }) {
   console.log('mesclador: mesclou #' + alvo.number + ' (' + decisao.motivo + ')');
 }
 
-async function reverter({ token, repo, shaVermelho }) {
-  const commits = await api('/repos/' + repo + '/commits?sha=main&per_page=10', { token });
+async function reverter({ token, repo, shaVermelho, api: chamar = api }) {
+  const commits = await chamar('/repos/' + repo + '/commits?sha=main&per_page=10', { token });
   const alvo = alvoDaReversao({ commits, shaVermelho });
   if (!alvo.reverter) { console.log('mesclador: não reverto — ' + alvo.motivo); return; }
 
   const merge = commits.find(c => texto(c.sha) === alvo.sha);
-  const detalhe = await api('/repos/' + repo + '/commits/' + merge.sha, { token });
+  const detalhe = await chamar('/repos/' + repo + '/commits/' + merge.sha, { token });
   const plano = planoDeReversao({ commits: [merge], arquivosDoMerge: detalhe.files });
   if (!plano.reverter) { console.log('mesclador: não reverto — ' + plano.motivo); return; }
 
@@ -186,16 +186,16 @@ async function reverter({ token, repo, shaVermelho }) {
   const base = detalhe.parents && detalhe.parents[0] ? detalhe.parents[0].sha : null;
   if (!base) { console.log('mesclador: sem pai para reverter'); return; }
   // Se o ramo de reversão já existe, a tentativa anterior já foi feita: não vira laço.
-  const jaTentado = await api('/repos/' + repo + '/git/ref/heads/' + ramo, { token }).catch(() => null);
+  const jaTentado = await chamar('/repos/' + repo + '/git/ref/heads/' + ramo, { token }).catch(() => null);
   if (jaTentado) { console.log('mesclador: reversão de ' + merge.sha.slice(0, 10) + ' já foi tentada antes — não repito'); return; }
-  await api('/repos/' + repo + '/git/refs', {
+  await chamar('/repos/' + repo + '/git/refs', {
     token, metodo: 'POST', corpo: { ref: 'refs/heads/' + ramo, sha: texto(shaVermelho) || 'main' }
   });
   for (const arquivo of plano.arquivos) {
-    const anterior = await api('/repos/' + repo + '/contents/' + arquivo + '?ref=' + base, { token }).catch(() => null);
-    const atual = await api('/repos/' + repo + '/contents/' + arquivo + '?ref=' + ramo, { token }).catch(() => null);
+    const anterior = await chamar('/repos/' + repo + '/contents/' + arquivo + '?ref=' + base, { token }).catch(() => null);
+    const atual = await chamar('/repos/' + repo + '/contents/' + arquivo + '?ref=' + ramo, { token }).catch(() => null);
     if (anterior && anterior.content) {
-      await api('/repos/' + repo + '/contents/' + arquivo, {
+      await chamar('/repos/' + repo + '/contents/' + arquivo, {
         token, metodo: 'PUT',
         corpo: {
           message: MARCA + ' revertendo ' + merge.sha.slice(0, 10) + ': ' + arquivo,
@@ -205,7 +205,7 @@ async function reverter({ token, repo, shaVermelho }) {
         }
       });
     } else if (atual && atual.sha) {
-      await api('/repos/' + repo + '/contents/' + arquivo, {
+      await chamar('/repos/' + repo + '/contents/' + arquivo, {
         token, metodo: 'DELETE',
         corpo: { message: MARCA + ' revertendo ' + merge.sha.slice(0, 10) + ': removendo ' + arquivo, sha: atual.sha, branch: ramo }
       });
@@ -223,14 +223,14 @@ async function reverter({ token, repo, shaVermelho }) {
       + 'Esta reversão passa pela barreira como qualquer outra quando aberta como PR.'
   };
   try {
-    const pr = await api('/repos/' + repo + '/pulls', { token, metodo: 'POST', corpo });
+    const pr = await chamar('/repos/' + repo + '/pulls', { token, metodo: 'POST', corpo });
     console.log('mesclador: PR de reversão #' + pr.number + ' aberta (' + ramo + ')');
   } catch (erro) {
     // O repositório pode proibir Actions de abrir PR (padrão do GitHub). Nesse caso a
     // reversão vai por merge de ramo -> main, que devolve a ÁRVORE JÁ VALIDADA anterior.
     if (!/not permitted to create/i.test(String(erro && erro.message))) throw erro;
     console.log('mesclador: PR de reversão proibida pelo repositório — usando merge do ramo na main');
-    const fusao = await api('/repos/' + repo + '/merges', {
+    const fusao = await chamar('/repos/' + repo + '/merges', {
       token, metodo: 'POST',
       corpo: {
         base: 'main', head: ramo,
@@ -259,6 +259,6 @@ if (require.main === module) {
 }
 
 module.exports = {
-  caminhoPermitido, avalia, mergeDoMesclador, planoDeReversao, alvoDaReversao, ramoDeReversao,
+  caminhoPermitido, avalia, mergeDoMesclador, planoDeReversao, alvoDaReversao, ramoDeReversao, reverter, avaliar,
   MARCA, PASTAS_PERMITIDAS, MAXIMO_DE_ARQUIVOS, nivelLocal
 };

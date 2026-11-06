@@ -100,6 +100,27 @@ e-mail já declara** como crítica (`email-poll.js`, regex `CODIGO`): `pulso-vig
 `reserva-turno`, `falhas-mensagem`, `turno-liveness`, `geografia-brasil`, `telegram-chat` e os
 `.py` de visão. Se o turno protege, o mesclador também protege — sem adivinhação por prefixo.
 
+## O ensaio da reversão (feito em 05/11)
+
+A reversão nunca tinha rodado de ponta a ponta: em produção ela morreu no 403 descrito
+acima. Então foi exercitada num **repositório descartável de verdade**, criado só para isso
+e apagado depois:
+
+| passo | resultado |
+|---|---|
+| mesclador avaliou a PR de ensaio | `mesclou #1 (na faixa do nível texto: 1 arquivo)` |
+| reversão com o commit do merge | `PR de reversão #2 aberta (reversao/mesclador-f8e043b313)` |
+| merge da reversão | `docs/ensaio.md` removido, `main` de volta ao estado anterior |
+
+**O que isso prova:** criar ramo, restaurar/remover conteúdo e fechar a volta — a parte que
+podia estar quebrada e estava.
+**O que não prova:** o gatilho em produção (`workflow_run` de `main` vermelha). O pior caso
+dele é conhecido e já coberto: o vigia acusa `barreira-vermelha` e avisa o dono — isto é, o
+sistema degrada para o degrau 3 de hoje, não para o silêncio.
+
+O caminho do 403 (repositório que proíbe PR de Actions → merge do ramo na `main`) está
+coberto por contrato com um GitHub de mentira: `tools/testes/reversao-caminho-do-403.js`.
+
 ## Como rodar o ensaio com prazo (quando o portão 3 abrir)
 
 1. marcar em `autonomia.json`: `"nivel": "codigo"` **e** `"expira_em": "<data ISO>"`;

@@ -9,10 +9,11 @@
   ],
   "observacao": "valor invalido ou arquivo ausente e lido como desligado; nao existe nivel implicito; expira_em (data ISO) derruba o nivel sozinho na data marcada",
   "portoes": {
-    "reversaoExercitada": false,
-    "ensaioComPrazo": false,
+    "reversaoExercitadaEmEnsaio": true,
+    "ensaioComPrazo": true,
     "mesSemIncidente": false,
-    "observacao": "fatos declarados por gente, conferidos pelo tools/portoes.js; nao existe como o proprio mecanismo marcar"
+    "observacao": "fatos declarados por gente, conferidos pelo tools/portoes.js; o proprio mecanismo nao pode marcar",
+    "ensaio_da_reversao": "repositorio descartavel reboclbrank-max/chat-ensaio-reversao-20261105 (apagado depois): mesclador mesclou a PR 1, a reversao abriu a PR 2 sozinha, o merge da 2 removeu o arquivo e devolveu a main ao estado anterior"
   },
   "expira_em": null
 }
