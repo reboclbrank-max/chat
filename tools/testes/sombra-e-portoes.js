@@ -148,6 +148,16 @@ ok('reversão exercitada em ensaio conta para o portão 3 — só o gatilho fica
   assert.match(b.portoes[2].porque, /nunca exercitada de ponta a ponta/);
 });
 
+ok('os quatro portões podem ficar abertos ao mesmo tempo — o quadro não se contradiz', () => {
+  // Regressão de 05/11: o portão 3 exigia lista de no máximo 2 arquivos e o portão 4 exigia
+  // pelo menos 3, e o 4 ainda pedia o 3 aberto. Era impossível chegar a 4 de 4 por aritmética.
+  const registros = Array.from({ length: 30 }, (_, i) => ({ pr: i + 1, origem: 'ao-vivo', degrau4: { decidiria: 'recusar' } }));
+  const declarado = { reversaoExercitadaEmEnsaio: true, ensaioComPrazo: true, mesSemIncidente: true };
+  const a = avaliaPortoes({ termometro: termometroOk, registros, falhasNaMain: [], autonomia: { nivel: 'texto' }, declarado });
+  assert.equal(a.abertos, 4, 'faltou: ' + a.portoes.filter(p => !p.aberto).map(p => p.numero + ': ' + p.porque).join(' · '));
+  assert.equal(a.portoes[2].aberto, true, 'portão 3 não pode depender do tamanho da lista');
+});
+
 ok('nível código sem os portões abertos é ilegítimo — e o desligado é sempre legítimo', () => {
   const codigo = avaliaPortoes({ termometro: termometroRuim, registros: [], falhasNaMain: [], autonomia: { nivel: 'codigo' }, declarado: semDeclaracao });
   assert.equal(codigo.nivelLegitimo, false);

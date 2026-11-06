@@ -26,8 +26,23 @@ const ESSENCIAL = 'essencial';
 // errada, o pior caso é um placar errado — que aparece no próprio documento e na barreira.
 // Não fala com credencial, não publica estado operacional, não decide nada em nome do dono.
 const LIBERADOS_PARA_DEGRAU_4 = Object.freeze([
-  'tools/indice-capacidade.js'
+  'tools/indice-capacidade.js',
+  // 05/11 (portão 4): medido o código inteiro — 234 arquivos .js, 50 em tools/ — só 15
+  // não falam com rede nem com credencial. Desses, quase todos são essenciais por
+  // doutrina (página pública, turno de e-mail, segredo, workflow, instrumento que mede
+  // os próprios portões). Sobraram dois que geram DOCUMENTO e falham de forma gritante.
+  'tools/inventario-estado-operacional.js',
+  'tools/dossie-preparo-controlado.js'
 ]);
+
+// Cada arquivo da faixa precisa dizer, em uma linha, o que acontece se a máquina mesclar
+// uma versão errada dele. Sem essa frase, o arquivo não entra — e o teste cobra a frase.
+// É o que impede a lista de crescer por conveniência: crescer exige dizer o custo.
+const CUSTO_DO_ERRO = Object.freeze({
+  'tools/indice-capacidade.js': 'placar de capacidade errado no documento e na barreira — número visível, sem efeito externo',
+  'tools/inventario-estado-operacional.js': 'inventário do ramo operacional errado — relatório de leitura, não escreve nada nem publica estado',
+  'tools/dossie-preparo-controlado.js': 'dossiê sanitizado errado em propostas/central — documento que uma pessoa lê antes de decidir'
+});
 
 // Tudo aqui nunca entra sozinho, em nenhum nível. É o que pode calar a casa.
 const ESSENCIAIS = Object.freeze([
@@ -99,4 +114,4 @@ function faixaAtual() {
   };
 }
 
-module.exports = { TEXTO, CODIGO_SEGURO, ESSENCIAL, ESSENCIAIS, LIBERADOS_PARA_DEGRAU_4, classificar, liberadoNoNivel, faixaAtual };
+module.exports = { TEXTO, CODIGO_SEGURO, ESSENCIAL, ESSENCIAIS, LIBERADOS_PARA_DEGRAU_4, CUSTO_DO_ERRO, classificar, liberadoNoNivel, faixaAtual };

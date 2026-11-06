@@ -3,7 +3,7 @@
 'use strict';
 const assert = require('assert');
 const { lerNivel, permite, nivelValido, resumo, NIVEIS } = require('../autonomia.js');
-const { classificar, liberadoNoNivel, ESSENCIAL, TEXTO, CODIGO_SEGURO, LIBERADOS_PARA_DEGRAU_4 } = require('../risco-de-arquivo.js');
+const { classificar, liberadoNoNivel, ESSENCIAL, TEXTO, CODIGO_SEGURO, LIBERADOS_PARA_DEGRAU_4, CUSTO_DO_ERRO } = require('../risco-de-arquivo.js');
 const { avaliaTermometro, evidenciaDeCorrecao, execucoesParaInspecionar, LIMITES } = require('../termometro-barreira.js');
 const casos = [];
 function ok(nome, fn) { casos.push({ nome, fn }); }
@@ -78,9 +78,22 @@ ok('o mapa distingue o que PODE calar a casa do que é apenas desconhecido', () 
   assert.equal(classificar('').duro, true);
 });
 
-ok('portão 3: a lista tem UM arquivo, escolhido a dedo, e nada além dele', () => {
+ok('a faixa é curta, escolhida a dedo, e cada arquivo declara o custo do próprio erro', () => {
   assert.equal(liberadoNoNivel('tools/indice-capacidade.js', () => true).categoria, CODIGO_SEGURO);
-  assert.ok(LIBERADOS_PARA_DEGRAU_4.length <= 2, 'o degrau 3 não comporta lista maior que 2');
+  // Antes o contrato era "no máximo 2 arquivos". Trocado em 05/11 por algo mais útil:
+  // o tamanho do portão 4 é 3 a 5, e o que impedia a lista de crescer por conveniência
+  // não era o número — era não ter o que dizer sobre cada arquivo. Agora tem.
+  assert.ok(LIBERADOS_PARA_DEGRAU_4.length >= 1 && LIBERADOS_PARA_DEGRAU_4.length <= 5,
+    'a faixa cabe no portão 4: de 1 a 5 arquivos');
+  for (const arquivo of LIBERADOS_PARA_DEGRAU_4) {
+    const custo = CUSTO_DO_ERRO[arquivo];
+    assert.ok(typeof custo === 'string' && custo.length >= 40,
+      arquivo + ' entrou na faixa sem declarar o custo do erro');
+  }
+  for (const arquivo of Object.keys(CUSTO_DO_ERRO)) {
+    assert.ok(LIBERADOS_PARA_DEGRAU_4.includes(arquivo),
+      arquivo + ' tem custo declarado mas não está na faixa — texto órfão engana quem lê');
+  }
   // Todo o resto do código continua fechado: promoção é exceção, não regra.
   for (const c of ['tools/socorro.js', 'tools/vigia-casa.js', 'tools/mesclador-estreito.js', 'tools/sombra.js']) {
     assert.equal(liberadoNoNivel(c, () => true).categoria, ESSENCIAL, c + ' não deveria estar liberado');
