@@ -91,7 +91,12 @@ ok('não há gatilho pull_request_target e o orçamento de escrita é explícito
   // workflow autorizado a mexer em main, e só mesclando PR com barreira verde, só em
   // docs/ e posts/, e com reversão automática. Os demais seguem proibidos de tocar main.
   const escreveConteudo = new Set(['coleta-email.yml', 'dossie-preparo-controlado.yml', 'email.yml', 'evolucao.yml', 'ferramentas.yml', 'mesclador.yml', 'navegador-publico.yml', 'reforco-dossie-controlado.yml', 'teste-email.yml', 'vigia.yml']);
-  const escreveAcoes = new Set(['email.yml', 'vigia.yml']);
+  // mesclador.yml entrou no orçamento de `actions: write` em 06/11, por necessidade medida:
+  // merge feito com o GITHUB_TOKEN do robô não gera evento de push, então a barreira não roda
+  // na main depois dele (medido: o merge [mesclador] 6cec24c20d não tinha execução nenhuma).
+  // O mesclador passou a pedir a barreira por dispatch — e dispatch exige actions: write. O
+  // que ele pede é só a barreira; nada de cancelar, apagar ou disparar outro workflow.
+  const escreveAcoes = new Set(['email.yml', 'vigia.yml', 'mesclador.yml']);
   for (const nome of arquivos) {
     const texto = ler(nome);
     assert(!/^\s*pull_request_target:\s*$/m.test(texto), nome + ' não pode usar pull_request_target');
