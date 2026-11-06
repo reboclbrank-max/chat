@@ -1,0 +1,26 @@
+{
+  "quando": "2026-11-06T01:57:25.320Z",
+  "origem": "ao-vivo",
+  "pr": 107,
+  "sha": "f73c0549154f7335248e55592dc209007579cbae",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "portão 4: faixa com 3 arquivos — e o defeito que impedia 4/4 por aritmética",
+  "barreira": "failure",
+  "arquivos": [
+    "docs/PORTOES-DO-DEGRAU-4.md",
+    "tools/portoes.js",
+    "tools/risco-de-arquivo.js",
+    "tools/testes/autonomia-e-risco.js",
+    "tools/testes/sombra-e-portoes.js"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: tools/portoes.js, tools/risco-de-arquivo.js, tools/testes/autonomia-e-risco.js…"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (5)"
+  }
+}
