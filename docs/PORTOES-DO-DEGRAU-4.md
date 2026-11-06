@@ -218,3 +218,40 @@ dele — existir faixa, existir volta, existir prazo. E ficou um contrato de reg
 dizendo que os quatro portões podem, sim, ficar abertos ao mesmo tempo.
 
 Com isso o quadro fica em **3 de 4**, e o único item que falta é o mês.
+
+## O ensaio da faixa de código (06/11)
+
+Faltava provar que a faixa de código funciona de verdade — o item "`indice-capacidade.js`
+nunca foi exercitado pelo mesclador". Feito num **repositório descartável**, criado só para
+isso e apagado depois (as PRs e o resultado abaixo são leitura da API, não memória):
+
+| caso | nível | o mesclador disse |
+|---|---|---|
+| PR mexe em `tools/indice-capacidade.js` (faixa) | `codigo` | **mesclou #1** — "na faixa do nível codigo: 1 arquivo(s)" |
+| PR mexe em `tools/vigia-casa.js` (essencial) | `codigo` | recusou #2 — "fora da faixa: tools/vigia-casa.js" |
+| PR mexe em `tools/sombra.js` (código, fora da faixa) | `codigo` | recusou #3 — "fora da faixa: tools/sombra.js" |
+| PR mexe em `docs/leiame.md` | `codigo` | mesclou #4 |
+| PR mexe em `tools/indice-capacidade.js` (faixa) | `texto` | recusou #5 — "fora da faixa" |
+| mesma PR, sem tocar em nada | `desligado` | "não mesclo nada" |
+
+O que isso prova: **o nível, e não o arquivo, é o que abre a porta.** O mesmo arquivo da
+faixa é mesclado com `codigo` e recusado com `texto`; o essencial é recusado mesmo com a
+faixa aberta; e `desligado` não mescla nada, nem o que já estava liberado.
+
+O que **não** prova: que um arquivo da faixa, uma vez mesclado errado, seja inofensivo na
+prática. Isso é o custo declarado em `CUSTO_DO_ERRO`, que é uma frase de gente, não uma
+medição.
+
+## O prazo, com o relógio de verdade
+
+O `expira_em` só tinha sido testado com data forjada. Prova rápida, com relógio real e
+arquivo temporário fora do repositório:
+
+```
+expira_em: 2026-11-06T02:15:28Z
+agora     → codigo   | autonomia no degrau 4: código de faixa segura também entra sozinho
+4s depois → desligado | autonomia desligada pelo prazo (prazo vencido em 2026-11-06)
+```
+
+É o mesmo caminho de código que um mês usaria — mas quatro segundos provam a comparação,
+**não** a passagem do mês. Continua sendo verdade que nenhum prazo longo foi esperado.
