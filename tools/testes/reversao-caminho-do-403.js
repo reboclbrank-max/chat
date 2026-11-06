@@ -88,6 +88,26 @@ ok('a reversão não repete tentativa já feita', async () => {
   assert.equal(novas.some(c => c.rota === '/repos/o/r/merges'), false);
 });
 
+ok('depois de reverter por merge, a reversão pede a barreira na main', async () => {
+  // Medido no ensaio de 06/11: o merge do robô não gera evento de push, então a main
+  // revertida ficava sem barreira — justo no momento em que alguém precisa saber se ela
+  // voltou sã.
+  const falso = githubFalso({ proibePR: true });
+  await reverter({ token: 'x', repo: 'o/r', shaVermelho: MERGE, api: falso.api });
+  const dispatch = falso.chamadas.find(c => /\/actions\/workflows\/.*\/dispatches$/.test(c.rota));
+  assert.ok(dispatch, 'a reversão precisa pedir a barreira depois de mesclar');
+  assert.equal(dispatch.corpo.ref, 'main');
+  const iMerge = falso.chamadas.findIndex(c => c.rota === '/repos/o/r/merges');
+  const iDispatch = falso.chamadas.findIndex(c => /\/dispatches$/.test(c.rota));
+  assert.ok(iMerge >= 0 && iMerge < iDispatch, 'primeiro mescla, depois pede');
+});
+
+ok('reversão que não aconteceu não pede barreira', async () => {
+  const falso = githubFalso({});
+  await reverter({ token: 'x', repo: 'o/r', shaVermelho: 'nao-existe', api: falso.api });
+  assert.equal(falso.chamadas.some(c => /\/dispatches$/.test(c.rota)), false);
+});
+
 (async () => {
   let certos = 0, falhas = 0;
   for (const { nome, fn } of casos) {
