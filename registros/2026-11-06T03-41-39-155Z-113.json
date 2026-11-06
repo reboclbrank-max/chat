@@ -1,0 +1,27 @@
+{
+  "quando": "2026-11-06T03:41:39.155Z",
+  "origem": "ao-vivo",
+  "pr": 113,
+  "sha": "19e1910980bb8cd9efe675d39626b765243c25e4",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "vigia acusa main que andou sem barreira — e causa muda deixa de ser muda",
+  "barreira": "success",
+  "arquivos": [
+    "tools/email-chat.js",
+    "tools/testes/vigia-recuperacao-fluxo.js",
+    "tools/vigia-casa.js"
+  ],
+  "essenciais": [
+    "tools/email-chat.js",
+    "tools/vigia-casa.js"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: tools/email-chat.js, tools/testes/vigia-recuperacao-fluxo.js, tools/vigia-casa.js"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: tools/email-chat.js, tools/vigia-casa.js"
+  }
+}
