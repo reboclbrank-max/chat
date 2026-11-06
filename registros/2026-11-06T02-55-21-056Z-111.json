@@ -1,0 +1,24 @@
+{
+  "quando": "2026-11-06T02:55:21.056Z",
+  "origem": "ao-vivo",
+  "pr": 111,
+  "sha": "7af67cc76affd029858bdc3d1c899edf6aa1325a",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "a permissão que faltava para a barreira rodar depois do merge (403 medido)",
+  "barreira": "failure",
+  "arquivos": [
+    ".github/workflows/mesclador.yml"
+  ],
+  "essenciais": [
+    ".github/workflows/mesclador.yml"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: .github/workflows/mesclador.yml"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: .github/workflows/mesclador.yml"
+  }
+}
