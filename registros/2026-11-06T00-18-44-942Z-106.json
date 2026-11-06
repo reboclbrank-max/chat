@@ -1,0 +1,22 @@
+{
+  "quando": "2026-11-06T00:18:44.942Z",
+  "origem": "ao-vivo",
+  "pr": 106,
+  "sha": "b4ef509a5bd1d0e8e5a6e1b717237c8862a085b0",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "a autonomia da casa explicada em uma página (para quem vai decidir)",
+  "barreira": "success",
+  "arquivos": [
+    "docs/AUTONOMIA-EM-UMA-PAGINA.md"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "mesclar",
+    "motivo": "na faixa do nível texto: 1 arquivo(s)"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (1)"
+  }
+}
