@@ -1,0 +1,28 @@
+{
+  "quando": "2026-11-06T02:37:36.902Z",
+  "origem": "ao-vivo",
+  "pr": 109,
+  "sha": "c9f6f76b7cd95331141c0e29a139d125abd566af",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "o merge do robô não acordava a barreira na main — medido, e consertado",
+  "barreira": "success",
+  "arquivos": [
+    ".github/workflows/mesclador.yml",
+    "docs/BURACO-DA-BARREIRA-06-11.md",
+    "tools/mesclador-estreito.js",
+    "tools/testes/barreira-depois-do-merge.js",
+    "tools/testes/roda-testes.js"
+  ],
+  "essenciais": [
+    ".github/workflows/mesclador.yml"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: .github/workflows/mesclador.yml, tools/mesclador-estreito.js, tools/testes/barreira-depois-do-merge.js…"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: .github/workflows/mesclador.yml"
+  }
+}
