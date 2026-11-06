@@ -142,3 +142,55 @@ portão 1  →  portão 2  →  portão 3 (1 arquivo + prazo)  →  portão 4 (3
 
 Nenhum portão abre por tempo de espera, por cansaço ou por "já está bom". Cada um tem uma
 frase que diz **por que** está fechado — e é essa frase que vira tarefa.
+
+## Candidatos à faixa: a medição de 05/11
+
+O portão 4 pede **3 a 5 arquivos** na faixa. A pergunta honesta não é "quais
+promover", é "quantos existem". Medido no código de hoje:
+
+| filtro | quantos |
+|---|---|
+| arquivos `.js` no repositório | 234 |
+| em `tools/` | 50 |
+| sem rede e sem credencial, com pelo menos 2 contratos | 15 |
+
+Dos 15, quase todos são essenciais — e não por excesso de zelo, por doutrina:
+
+| arquivo | por que fica fora |
+|---|---|
+| `autonomia.js` | é o interruptor: decide o que a casa pode fazer |
+| `vigia-estado.js` | decide o que o dono vê quando algo falha |
+| `pulso-vigia.js`, `turno-liveness.js`, `saude-rotas-email.js` | o turno de e-mail os declara críticos |
+| `geografia-brasil.js` | também está na lista crítica do turno de e-mail |
+| `montar-paginas.js` | gera as páginas públicas |
+| `preparo-controlado.js`, `cobertura-navegador.js` | rodam a bateria: um erro lá produz falso verde |
+| `estado-operacional-controlado.js`, `reforco-dossie-controlado.js` | escrevem ou publicam estado |
+
+Sobraram dois, e ambos **geram documento em vez de mudar a casa**:
+
+### `tools/inventario-estado-operacional.js` (124 linhas, 3 contratos)
+
+Lê o ramo operacional com `git`, não escreve nada, não usa rede, não lista nomes de
+arquivo. **Se a máquina mesclar uma versão errada:** um inventário errado. O custo é
+uma decisão humana tomada com número ruim — visível, sem efeito externo.
+
+### `tools/dossie-preparo-controlado.js` (131 linhas, 3 contratos)
+
+Monta o dossiê sanitizado em `propostas/central/`, com `flag: 'wx'` (não sobrescreve
+o que existe), lendo só `GITHUB_SHA` e `GITHUB_RUN_ID`. **Se a máquina mesclar uma
+versão errada:** um dossiê errado, que uma pessoa lê antes de decidir. Não publica
+estado, não fala com credencial.
+
+## E o que isso fez com os portões
+
+Promover os dois levou a lista a 3 — e aí apareceu um defeito de projeto que só a
+medição mostraria: **o portão 3 exigia lista de no máximo 2 arquivos e o portão 4
+exigia pelo menos 3, e o portão 4 ainda pedia o portão 3 aberto.** Os dois nunca
+poderiam estar abertos juntos: 4 de 4 era impossível por aritmética, não por falta
+de trabalho.
+
+Corrigido: o tamanho da lista pertence **só** ao portão 4. O portão 3 cobra o que é
+dele — existir faixa, existir volta, existir prazo. E ficou um contrato de regressão
+dizendo que os quatro portões podem, sim, ficar abertos ao mesmo tempo.
+
+Com isso o quadro fica em **3 de 4**, e o único item que falta é o mês.

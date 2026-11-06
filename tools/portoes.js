@@ -19,7 +19,11 @@ const CRITERIOS = Object.freeze({
   // uma fotografia do passado e nenhuma operação corrente.
   minimoAoVivo: 10,
   incidentesPermitidos: 0,
-  maximoDeArquivosNoPortao3: 2,
+  // 05/11: aqui havia um `maximoDeArquivosNoPortao3: 2`. Ele tornava os portões 3 e 4
+  // mutuamente exclusivos — o 3 exigia lista de no máximo 2, o 4 exigia pelo menos 3 — e
+  // o 4 ainda exigia o 3 aberto. Resultado: o quadro nunca poderia chegar a 4 de 4, por
+  // aritmética, não por falta de trabalho. O tamanho da lista pertence só ao portão 4;
+  // o portão 3 cobra o que é dele: existir faixa, existir volta, existir prazo.
   minimoDeArquivosNoPortao4: 3,
   maximoDeArquivosNoPortao4: 5
 });
@@ -85,7 +89,6 @@ function avaliaPortoes({ termometro, registros, falhasNaMain, autonomia, declara
 
   const faltasP3 = [];
   if (!LIBERADOS_PARA_DEGRAU_4.length) faltasP3.push('lista de código liberado vazia');
-  if (LIBERADOS_PARA_DEGRAU_4.length > CRITERIOS.maximoDeArquivosNoPortao3) faltasP3.push('lista maior que o degrau 3 permite');
   // A reversão vale por ter sido exercitada de PONTA A PONTA num repositório de verdade
   // (ensaio isolado), não por ter tido um incidente em produção. O que fica de fora é só o
   // gatilho (main vermelha num merge do mesclador) — e o pior caso dele já é coberto: o
