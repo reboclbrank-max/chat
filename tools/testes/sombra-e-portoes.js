@@ -138,6 +138,16 @@ ok('portão 3 só abre com faixa, ensaio e volta — e hoje falta a volta', () =
   assert.equal(a.abertos, 1);
 });
 
+ok('reversão exercitada em ensaio conta para o portão 3 — só o gatilho fica em aberto', () => {
+  const declarado = { reversaoExercitadaEmEnsaio: true, ensaioComPrazo: true, mesSemIncidente: false };
+  const a = avaliaPortoes({ termometro: termometroOk, registros: [], falhasNaMain: [], autonomia: { nivel: 'texto' }, declarado });
+  assert.equal(a.portoes[2].aberto, true, a.portoes[2].porque);
+  // Sem ensaio e sem caso real, continua fechado.
+  const b = avaliaPortoes({ termometro: termometroOk, registros: [], falhasNaMain: [], autonomia: { nivel: 'texto' }, declarado: semDeclaracao });
+  assert.equal(b.portoes[2].aberto, false);
+  assert.match(b.portoes[2].porque, /nunca exercitada de ponta a ponta/);
+});
+
 ok('nível código sem os portões abertos é ilegítimo — e o desligado é sempre legítimo', () => {
   const codigo = avaliaPortoes({ termometro: termometroRuim, registros: [], falhasNaMain: [], autonomia: { nivel: 'codigo' }, declarado: semDeclaracao });
   assert.equal(codigo.nivelLegitimo, false);
