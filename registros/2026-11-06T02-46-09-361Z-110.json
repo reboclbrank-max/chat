@@ -1,0 +1,22 @@
+{
+  "quando": "2026-11-06T02:46:09.361Z",
+  "origem": "ao-vivo",
+  "pr": 110,
+  "sha": "62bab40bcff361e50ad6548fcf3d52d38c2b9826",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "a decisão do degrau 4 em uma página — com as duas opções e o custo de cada uma",
+  "barreira": "success",
+  "arquivos": [
+    "docs/DECISAO-DO-DEGRAU-4.md"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "mesclar",
+    "motivo": "na faixa do nível texto: 1 arquivo(s)"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (1)"
+  }
+}
