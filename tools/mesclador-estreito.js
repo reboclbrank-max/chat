@@ -253,6 +253,17 @@ async function reverter({ token, repo, shaVermelho, api: chamar = api }) {
       }
     });
     console.log('mesclador: main revertida para ' + texto(fusao.sha).slice(0, 10) + ' (' + plano.arquivos.join(', ') + ')');
+    // Mesmo buraco do merge normal, medido no ensaio de 06/11: merge com o token do robô não
+    // gera evento de push, então a main revertida também ficaria sem barreira. A reversão é
+    // justamente o momento em que alguém precisa saber se a main voltou sã — então ela pede.
+    try {
+      await chamar('/repos/' + repo + '/actions/workflows/testes-rapidos.yml/dispatches', {
+        token, metodo: 'POST', corpo: { ref: 'main' }
+      });
+      console.log('mesclador: pedi a barreira na main depois da reversão');
+    } catch (e) {
+      console.log('mesclador: ATENÇÃO — reverti e não consegui pedir a barreira (' + ((e && e.message) || e) + ')');
+    }
   }
 }
 
