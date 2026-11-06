@@ -54,7 +54,10 @@ jobs:
           HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
           BARREIRA: ${{ github.event.workflow_run.conclusion }}
   reverter:
-    if: github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.conclusion == 'failure'
+    # ⚠️ `push` sozinho não bastava: merge feito com o GITHUB_TOKEN do robô não gera evento
+    # de push, então a barreira da main só existe se o próprio mesclador a pedir (dispatch).
+    # Aceitar os dois eventos é o que faz a reversão ter o que escutar.
+    if: (github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch') && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.conclusion == 'failure'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:

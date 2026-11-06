@@ -145,14 +145,14 @@ function nivelLocal(caminhoArquivo) {
   }
 }
 
-async function avaliar({ token, repo, sha, dono }) {
+async function avaliar({ token, repo, sha, dono, api: chamar = api }) {
   const leitura = nivelLocal();
   console.log('mesclador: autonomia — ' + (leitura.valido ? 'nível ' + leitura.nivel : 'desligada (' + leitura.motivo + ')'));
   if (leitura.nivel === 'desligado') { console.log('mesclador: desligado por autonomia.json — não mesclo nada'); return; }
-  const abertas = await api('/repos/' + repo + '/pulls?state=open&per_page=50', { token });
+  const abertas = await chamar('/repos/' + repo + '/pulls?state=open&per_page=50', { token });
   const alvo = (Array.isArray(abertas) ? abertas : []).find(p => texto(p.head && p.head.sha) === texto(sha));
   if (!alvo) { console.log('mesclador: nenhuma PR aberta para ' + texto(sha).slice(0, 10)); return; }
-  const arquivos = await api('/repos/' + repo + '/pulls/' + alvo.number + '/files?per_page=100', { token });
+  const arquivos = await chamar('/repos/' + repo + '/pulls/' + alvo.number + '/files?per_page=100', { token });
   const decisao = avalia({
     pr: {
       numero: alvo.number,
@@ -165,11 +165,26 @@ async function avaliar({ token, repo, sha, dono }) {
   });
   if (!decisao.pode) { console.log('mesclador: recusa #' + alvo.number + ' — ' + decisao.motivo); return; }
   const titulo = MARCA + ' ' + texto(alvo.title).slice(0, 120);
-  await api('/repos/' + repo + '/pulls/' + alvo.number + '/merge', {
+  await chamar('/repos/' + repo + '/pulls/' + alvo.number + '/merge', {
     token, metodo: 'PUT',
     corpo: { merge_method: 'squash', commit_title: titulo, commit_message: 'mesclado sozinho: só texto na faixa docs/ e posts/\n\nmesclado por ' + dono }
   });
   console.log('mesclador: mesclou #' + alvo.number + ' (' + decisao.motivo + ')');
+
+  // 🕳️ BURACO FECHADO EM 06/11: um merge feito com o GITHUB_TOKEN do robô NÃO gera evento
+  // de push — logo, a barreira não roda na main depois dele. Medido: o merge [mesclador] de
+  // 6cec24c20d não tem execução de push nenhuma. Sem isso, a main podia ficar quebrada em
+  // silêncio, e a reversão automática (que escuta falha de main) nunca teria o que escutar.
+  // Pedir a barreira explicitamente por dispatch funciona com o token do robô.
+  try {
+    await chamar('/repos/' + repo + '/actions/workflows/testes-rapidos.yml/dispatches', {
+      token, metodo: 'POST', corpo: { ref: 'main' }
+    });
+    console.log('mesclador: pedi a barreira na main depois do merge');
+  } catch (e) {
+    // O merge já aconteceu: não dá para desfazer. Mas o silêncio seria pior que o erro.
+    console.log('mesclador: ATENÇÃO — mesclei e não consegui pedir a barreira na main (' + ((e && e.message) || e) + ')');
+  }
 }
 
 async function reverter({ token, repo, shaVermelho, api: chamar = api }) {
