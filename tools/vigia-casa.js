@@ -46,7 +46,10 @@ const CAUSAS_VIGIA = Object.freeze([
   'postagem-atrasada', 'postador-desligado', 'barreira-vermelha', 'sonda-indisponivel',
   // 05/11: estas três não estavam na lista e viravam "sonda-indisponivel" no estado —
   // o dono via falha de autonomia sem saber QUAL. Causa fechada, mas específica.
-  'autonomia-ilegivel', 'autonomia-sem-prazo', 'autonomia-sem-faixa'
+  'autonomia-ilegivel', 'autonomia-sem-prazo', 'autonomia-sem-faixa',
+  // 06/11: main que anda sem execução da barreira é pane silenciosa — foi assim que o merge
+  // do robô passou sem teste até alguém medir. Causa própria para não virar "sem-execucao".
+  'barreira-sem-execucao'
 ]);
 const CAUSAS_RECUPERAVEIS = Object.freeze(['sem-execucao', 'turno-ausente', 'bateria-atrasada', 'caixa-atrasada']);
 
@@ -131,6 +134,9 @@ async function acao(rotulo, arquivo) {
   // Barreira de testes NA MAIN: se ela reprova, o código que está no ar é duvidoso e o dono
   // precisa saber qual passo caiu — não só que "ficou vermelho".
   const runsBarreira = await buscaJSON('https://api.github.com/repos/' + REPO + '/actions/workflows/testes-rapidos.yml/runs?branch=main&per_page=5').catch(() => null);
+  // A cabeça da main é a única forma de saber se o ÚLTIMO commit foi testado. A lista de
+  // execuções sozinha não conta isso: ela pode estar toda verde e antiga.
+  const cabecaMain = await buscaJSON('https://api.github.com/repos/' + REPO + '/commits/main').catch(() => null);
   const runsExame = await buscaJSON('https://api.github.com/repos/' + REPO + '/actions/workflows/evolucao.yml/runs?per_page=10').catch(() => null);
 
   itens.push(await verifica('Casa postando (site)', async () => {
@@ -201,6 +207,18 @@ async function acao(rotulo, arquivo) {
       runUrl: ultima.html_url,
       jobs
     });
+    // 🕳️ Falha silenciosa que existiu de verdade: merge feito pelo robô não gera evento de
+    // push, então a main andava sem execução nenhuma — e este item lia a última execução
+    // antiga e verde, dizendo ✅. Agora a cabeça da main é comparada com as execuções.
+    const cabeca = String((cabecaMain && cabecaMain.sha) || '');
+    const quandoCabeca = Date.parse(String((cabecaMain && cabecaMain.commit && cabecaMain.commit.committer && cabecaMain.commit.committer.date) || ''));
+    const testada = !cabeca || execucoes.some(r => String(r.head_sha || '') === cabeca);
+    const minutos = Number.isFinite(quandoCabeca) ? (Date.now() - quandoCabeca) / 60000 : 0;
+    // Carência de 45 min: execução recém-pedida pode ainda estar na fila. Depois disso, é pane.
+    if (cabeca && !testada && minutos > 45) {
+      throw falhaVigia('barreira-sem-execucao',
+        'main em ' + cabeca.slice(0, 10) + ' há ' + Math.round(minutos) + ' min sem execução da barreira');
+    }
     if (diagnostico.causa === 'saudavel') return sondaSaudavel(diagnostico.detalhe, diagnostico.evidencia);
     // Reprovação não é recuperável por aqui: reexecutar barreira vermelha é fingir conserto.
     throw falhaVigia(diagnostico.causa === 'barreira-vermelha' ? 'barreira-vermelha' : 'sem-execucao', diagnostico.detalhe);
