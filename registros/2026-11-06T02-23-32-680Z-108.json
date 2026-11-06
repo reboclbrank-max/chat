@@ -1,0 +1,22 @@
+{
+  "quando": "2026-11-06T02:23:32.680Z",
+  "origem": "ao-vivo",
+  "pr": 108,
+  "sha": "f989a4a6269321b7be66217163c90e8b7ed7ac0d",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "o ensaio da faixa de código — e o prazo medido no relógio de verdade",
+  "barreira": "success",
+  "arquivos": [
+    "docs/PORTOES-DO-DEGRAU-4.md"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "mesclar",
+    "motivo": "na faixa do nível texto: 1 arquivo(s)"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (1)"
+  }
+}
