@@ -1,0 +1,22 @@
+{
+  "quando": "2026-11-06T03:11:54.490Z",
+  "origem": "ao-vivo",
+  "pr": 112,
+  "sha": "fbb25e2b3632bd531a205282f9554717cac1ff71",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "registro dos defeitos reais — com a coluna que importa: como foram descobertos",
+  "barreira": "success",
+  "arquivos": [
+    "docs/REGISTRO-DE-DEFEITOS.md"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "mesclar",
+    "motivo": "na faixa do nível texto: 1 arquivo(s)"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (1)"
+  }
+}
