@@ -1,0 +1,37 @@
+{
+  "quando": "2026-11-09T09:24:23.078Z",
+  "origem": "ao-vivo",
+  "pr": 117,
+  "sha": "0cfcafb5b306f2d4737445a4387a657a08f3af4c",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "🗑️ Remove Pinterest completamente (por decisão do dono)",
+  "barreira": "success",
+  "arquivos": [
+    ".github/workflows/testar-apis.yml",
+    "package-lock.json",
+    "package.json",
+    "tools/cofre-seguro.js",
+    "tools/email-chat.js",
+    "tools/redes-sociais.js",
+    "tools/scanner-credenciais.js",
+    "tools/testar-todas-as-apis.js",
+    "tools/testar-todas-as-redes.js",
+    "tools/vigia-casa.js"
+  ],
+  "essenciais": [
+    ".github/workflows/testar-apis.yml",
+    "package-lock.json",
+    "package.json",
+    "tools/email-chat.js",
+    "tools/vigia-casa.js"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: .github/workflows/testar-apis.yml, package-lock.json, package.json…"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: .github/workflows/testar-apis.yml, package-lock.json, package.json"
+  }
+}
