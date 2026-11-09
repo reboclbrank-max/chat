@@ -1705,6 +1705,187 @@ function relatorio() {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🎵 TIKTOK — postar vídeo (Content Posting API oficial)
+// Requer: TIKTOK_CLIENT_KEY, TIKTOK_CLIENT_SECRET, TIKTOK_ACCESS_TOKEN, TIKTOK_REFRESH_TOKEN
+// Fluxo: init upload → upload chunks → publish → poll status
+async function postarTikTok(videoUrl, titulo, descricao = '', hashtags = []) {
+  const accessToken = cofre.ler('tiktok_access_token', 'postarTikTok');
+  if (!accessToken) return registrar('tiktok', false, 'sem TIKTOK_ACCESS_TOKEN configurado');
+
+  try {
+    const caption = `${titulo} ${descricao} ${hashtags.map(h => `#${h}`).join(' ')}`.trim();
+
+    // 1. Inicializar upload (PULL_FROM_URL - vídeo deve estar em URL pública verificada)
+    const initResp = await fetch('https://open.tiktokapis.com/v2/post/publish/video/init/', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: JSON.stringify({
+        post_info: {
+          title: caption.slice(0, 2200),
+          privacy_level: 'PUBLIC_TO_EVERYONE',
+          disable_duet: false,
+          disable_comment: false,
+          disable_stitch: false,
+          video_cover_timestamp_ms: 1000,
+        },
+        source_info: {
+          source: 'PULL_FROM_URL',
+          video_url: videoUrl,
+        },
+      }),
+      signal: AbortSignal.timeout(30000),
+    });
+
+    if (!initResp.ok) {
+      const erro = await initResp.text().catch(() => '');
+      return registrar('tiktok', false, `init falhou: HTTP ${initResp.status}: ${erro.slice(0, 100)}`);
+    }
+
+    const initData = await initResp.json();
+    if (initData.error && initData.error.code !== 'ok') {
+      return registrar('tiktok', false, `init erro: ${initData.error.message || initData.error.code}`);
+    }
+
+    const publishId = initData.data.publish_id;
+
+    // 2. Poll de status (até 60 segundos)
+    for (let attempt = 0; attempt < 12; attempt++) {
+      await new Promise(r => setTimeout(r, 5000));
+
+      const statusResp = await fetch('https://open.tiktokapis.com/v2/post/publish/status/fetch/', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ publish_id: publishId }),
+        signal: AbortSignal.timeout(15000),
+      });
+
+      if (!statusResp.ok) continue;
+
+      const statusData = await statusResp.json();
+      const status = statusData.data?.status;
+
+      if (status === 'PUBLISH_COMPLETE') {
+        return registrar('tiktok', true, 'vídeo publicado no TikTok', publishId, 'video');
+      }
+      if (status === 'FAILED') {
+        return registrar('tiktok', false, `publicação falhou: ${statusData.data?.fail_reason || 'erro desconhecido'}`);
+      }
+      // PROCESSING_UPLOAD ou PROCESSING_VIDEO — continuar polling
+    }
+
+    return registrar('tiktok', false, 'timeout aguardando publicação no TikTok');
+  } catch (e) {
+    return registrar('tiktok', false, `erro: ${e.message.slice(0, 100)}`);
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🎵 TIKTOK — ler métricas (Display API)
+async function lerTikTok() {
+  const accessToken = cofre.ler('tiktok_access_token', 'lerTikTok');
+  if (!accessToken) return registrar('tiktok', false, 'sem TIKTOK_ACCESS_TOKEN configurado');
+
+  try {
+    const resp = await fetch('https://open.tiktokapis.com/v2/video/query/?fields=id,title,like_count,comment_count,share_count,view_count', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      signal: AbortSignal.timeout(30000),
+    });
+
+    if (!resp.ok) {
+      const erro = await resp.text().catch(() => '');
+      return registrar('tiktok', false, `métricas falhou: HTTP ${resp.status}: ${erro.slice(0, 100)}`);
+    }
+
+    const data = await resp.json();
+    return registrar('tiktok', true, `métricas obtidas: ${JSON.stringify(data.data || {})}`);
+  } catch (e) {
+    return registrar('tiktok', false, `erro: ${e.message.slice(0, 100)}`);
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🎵 TIKTOK — interagir (curtir, comentar, seguir)
+// Nota: iteração social (like/comment/follow) não tem endpoints públicos na Content Posting API.
+// Ficam registrados como tentativas para futura implementação quando disponíveis.
+async function interagirTikTok(acao, idVideo, texto = '') {
+  const accessToken = cofre.ler('tiktok_access_token', 'interagirTikTok');
+  if (!accessToken) return registrar('tiktok', false, 'sem TIKTOK_ACCESS_TOKEN configurado');
+
+  return registrar('tiktok', false, `${acao} não disponível na Content Posting API (apenas upload de vídeo)`, idVideo, 'interacao');
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🕒 SISTEMA DE HORÁRIOS BASEADO EM FLUXO DE ACESSO
+// Determina o melhor horário para postar em cada rede baseado em métricas de engajamento.
+const FLUXO_ACESSO = {}; // { servico: { hora: { acessos, engajamento, posts } } }
+
+function registrarFluxoAcesso(servico, hora, acessos, engajamento) {
+  if (!FLUXO_ACESSO[servico]) FLUXO_ACESSO[servico] = {};
+  if (!FLUXO_ACESSO[servico][hora]) {
+    FLUXO_ACESSO[servico][hora] = { acessos: 0, engajamento: 0, posts: 0 };
+  }
+  FLUXO_ACESSO[servico][hora].acessos += acessos;
+  FLUXO_ACESSO[servico][hora].engajamento += engajamento;
+  FLUXO_ACESSO[servico][hora].posts += 1;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🕒 MELHOR HORÁRIO PARA POSTAR (por rede)
+// Calcula baseado no fluxo de acesso histórico (acessos + engajamento por hora).
+function melhorHorarioParaPostar(servico) {
+  if (!FLUXO_ACESSO[servico] || Object.keys(FLUXO_ACESSO[servico]).length === 0) {
+    // Sem dados históricos: retorna horário padrão baseado na janela 9h-22h BRT
+    return { hora: 14, motivo: 'sem dados históricos — usando horário padrão (14h BRT)' };
+  }
+
+  const horas = Object.entries(FLUXO_ACESSO[servico]);
+  let melhorHora = horas[0][0];
+  let melhorPontuacao = -1;
+
+  for (const [hora, dados] of horas) {
+    // Pontuação = acessos * 0.6 + engajamento * 0.4 (ponderado)
+    const pontuacao = dados.acessos * 0.6 + dados.engajamento * 0.4;
+    if (pontuacao > melhorPontuacao) {
+      melhorPontuacao = pontuacao;
+      melhorHora = hora;
+    }
+  }
+
+  return {
+    hora: parseInt(melhorHora),
+    pontuacao: melhorPontuacao,
+    dados: FLUXO_ACESSO[servico][melhorHora],
+    motivo: `melhor horário baseado em fluxo de acesso (${dados.posts} posts históricos)`,
+  };
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🎮 SISTEMA DE PRIORIDADE — PRANCHETA E CEIFALUME (ambos igualmente)
+// Alterna automaticamente entre os dois jogos para dar mesma exposição.
+const JOGOS_PRIORIDADE = ['prancheta', 'ceifalume'];
+let INDICE_JOGO_ATUAL = 0;
+
+function proximoJogo() {
+  const jogo = JOGOS_PRIORIDADE[INDICE_JOGO_ATUAL];
+  INDICE_JOGO_ATUAL = (INDICE_JOGO_ATUAL + 1) % JOGOS_PRIORIDADE.length;
+  return jogo;
+}
+
+function getJogoAtual() {
+  return JOGOS_PRIORIDADE[INDICE_JOGO_ATUAL];
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 🎯 POSTAR EM TODAS AS REDES DISPONÍVEI
 // Posta o mesmo conteúdo em todas as redes que tiverem credencial configurada.
 // Retorna resultados de cada rede.
@@ -1825,4 +2006,13 @@ module.exports = {
   HISTORICO_FORMATOS,
   DESEMPENHO_FORMATO,
   AGENDA_PUBLICACOES,
+  postarTikTok,
+  lerTikTok,
+  interagirTikTok,
+  registrarFluxoAcesso,
+  melhorHorarioParaPostar,
+  proximoJogo,
+  getJogoAtual,
+  JOGOS_PRIORIDADE,
+  FLUXO_ACESSO,
 };
