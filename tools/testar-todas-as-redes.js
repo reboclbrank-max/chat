@@ -67,6 +67,10 @@ async function main() {
   const r10 = await redes.postarNostr('Teste de conectividade — 09/11/2026');
   console.log(`  ${r10.sucesso ? '✅' : '❌'} Nostr: ${r10.detalhe}`);
 
+  // X (Twitter)
+  const r11 = await redes.postarX('Teste de conectividade — 09/11/2026');
+  console.log(`  ${r11.sucesso ? '✅' : '❌'} X: ${r11.detalhe}`);
+
   // Gmail
   const r12 = await redes.enviarGmail(null, 'Teste de conectividade', 'Teste do cofre seguro — 09/11/2026');
   console.log(`  ${r12.sucesso ? '✅' : '❌'} Gmail: ${r12.detalhe}`);
