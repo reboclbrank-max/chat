@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-11-09T09:25:52.722Z",
+ "verificado_em": "2026-11-09T09:40:29.835Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -108,11 +108,6 @@
    "ok": false,
    "falhas": 2,
    "causa": "rede-nostr"
-  },
-  "Pinterest": {
-   "ok": false,
-   "falhas": 2,
-   "causa": "rede-pinterest"
   },
   "Gmail IMAP/SMTP": {
    "ok": true,
