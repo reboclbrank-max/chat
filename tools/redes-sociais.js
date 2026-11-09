@@ -436,37 +436,6 @@ async function postarNostr(texto) {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 📌 PINTEREST — criar pin (exige trial aprovado)
-async function postarPinterest(titulo, descricao, urlImagem, boardId) {
-  const token = cofre.ler('pinterest', 'postarPinterest');
-  if (!token) return registrar('pinterest', false, 'sem PINTEREST_TOKEN configurado');
-  try {
-    const r = await fetch('https://api.pinterest.com/v5/pins', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        board_id: boardId,
-        media_source: { source_type: 'image_url', url: urlImagem },
-        title: titulo.slice(0, 100),
-        description: descricao.slice(0, 500),
-      }),
-      signal: AbortSignal.timeout(30000),
-    });
-    if (!r.ok) {
-      const erro = await r.text().catch(() => '');
-      return registrar('pinterest', false, `HTTP ${r.status}: ${erro.slice(0, 100)}`);
-    }
-    const j = await r.json();
-    return registrar('pinterest', true, 'pin criado', j.id);
-  } catch (e) {
-    return registrar('pinterest', false, `erro: ${e.message.slice(0, 100)}`);
-  }
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 📫 GMAIL — enviar email (via SMTP do cofre)
 async function enviarGmail(para, assunto, texto) {
   const addr = cofre.ler('gmail_addr', 'enviarGmail');
@@ -528,7 +497,6 @@ async function postarTodas(texto, opcoes = {}) {
     emailPara = null,
     gameIdItch = null,
     camposItch = null,
-    boardIdPinterest = null,
   } = opcoes;
 
   const resultados = [];
@@ -574,11 +542,6 @@ async function postarTodas(texto, opcoes = {}) {
   // Nostr
   resultados.push(await postarNostr(texto));
 
-  // Pinterest
-  if (urlImagem && boardIdPinterest) {
-    resultados.push(await postarPinterest(titulo, texto, urlImagem, boardIdPinterest));
-  }
-
   // Gmail
   if (emailPara) {
     resultados.push(await enviarGmail(emailPara, titulo, texto));
@@ -599,7 +562,6 @@ module.exports = {
   postarDevto,
   postarTumblr,
   postarNostr,
-  postarPinterest,
   enviarGmail,
   postarTodas,
   relatorio,

@@ -44,7 +44,7 @@ const PADROES_ESPECIFICOS = [
   { nome: 'Tumblr consumer key', regex: /ZnTmbM[A-Za-z0-9]{30,}/g },
   { nome: 'Tumblr consumer secret', regex: /RDK4K3[A-Za-z0-9]{30,}/g },
   { nome: 'Buttondown API key', regex: /ac9a63fc-[A-Za-z0-9\-]{25,}/g },
-  { nome: 'Pinterest token', regex: /pina_[A-Za-z0-9]{40,}/g },
+
   { nome: 'Gmail senha de app', regex: /rdmfdcjekoinsgnq/g },
   { nome: 'E-mail endereço', regex: /boges1413\+alias@gmail\.com/g },
 ];

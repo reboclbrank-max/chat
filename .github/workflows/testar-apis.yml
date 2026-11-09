@@ -41,6 +41,5 @@ jobs:
           DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
           TUMBLR_CONSUMER_KEY: ${{ secrets.TUMBLR_CONSUMER_KEY }}
           NOSTR_KEY: ${{ secrets.NOSTR_KEY }}
-          PINTEREST_TOKEN: ${{ secrets.PINTEREST_TOKEN }}
           GMAIL_CHAT_ADDR: ${{ secrets.GMAIL_CHAT_ADDR }}
           GMAIL_CHAT_PASS: ${{ secrets.GMAIL_CHAT_PASS }}
