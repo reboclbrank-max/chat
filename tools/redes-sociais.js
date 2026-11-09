@@ -377,6 +377,45 @@ async function criarJogoItch(campos) {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🎮 ITCH.IO — enviar build/arquivo do jogo (upload de binário)
+async function enviarBuildItch(gameId, caminhoArquivo) {
+  const key = cofre.ler('itch', 'enviarBuildItch');
+  if (!key) return registrar('itch', false, 'sem ITCH_API_KEYS configurado');
+  try {
+    const fs = await import('node:fs');
+    const path = await import('node:path');
+
+    if (!fs.existsSync(caminhoArquivo)) {
+      return registrar('itch', false, `arquivo não encontrado: ${caminhoArquivo}`);
+    }
+
+    const form = new FormData();
+    form.append('file', fs.createReadStream(caminhoArquivo));
+
+    const nomeArquivo = path.basename(caminhoArquivo);
+
+    const r = await fetch(`https://api.itch.io/games/${gameId}/uploads`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${key}`,
+        ...form.getHeaders ? form.getHeaders() : {},
+      },
+      body: form,
+      signal: AbortSignal.timeout(120000),
+    });
+
+    if (r.ok) {
+      const j = await r.json().catch(() => ({}));
+      return registrar('itch', true, `build enviado para jogo ${gameId}`, nomeArquivo);
+    }
+    const erro = await r.text().catch(() => '');
+    return registrar('itch', false, `enviar build falhou: HTTP ${r.status}: ${erro.slice(0, 100)}`);
+  } catch (e) {
+    return registrar('itch', false, `erro: ${e.message.slice(0, 100)}`);
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 📺 YOUTUBE — comentar em vídeo (OAuth do dono via workflow do site)
 // Como os segredos OAuth estão no repo site, usa o disparo de workflow para
 // executar ações que exigem autenticação do YouTube.
@@ -1498,6 +1537,7 @@ module.exports = {
   dispararUploadYoutube,
   postarItch,
   criarJogoItch,
+  enviarBuildItch,
   postarBluesky,
   interagirBluesky,
   postarMastodon,
