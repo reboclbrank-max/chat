@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-11-09T07:42:06.319Z",
+ "verificado_em": "2026-11-09T08:04:16.336Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -53,6 +53,71 @@
    "falhas": 0,
    "causa": "saudavel",
    "evidencia": "pagina-respondendo"
+  },
+  "GitHub API": {
+   "ok": false,
+   "falhas": 1,
+   "causa": "rede-github"
+  },
+  "YouTube API": {
+   "ok": false,
+   "falhas": 1,
+   "causa": "rede-youtube"
+  },
+  "itch.io API": {
+   "ok": false,
+   "falhas": 1,
+   "causa": "rede-itch"
+  },
+  "Bluesky": {
+   "ok": false,
+   "falhas": 1,
+   "causa": "rede-bluesky"
+  },
+  "Mastodon": {
+   "ok": false,
+   "falhas": 1,
+   "causa": "rede-mastodon"
+  },
+  "Instagram": {
+   "ok": false,
+   "falhas": 1,
+   "causa": "rede-instagram"
+  },
+  "Threads": {
+   "ok": false,
+   "falhas": 1,
+   "causa": "rede-threads"
+  },
+  "Discord": {
+   "ok": false,
+   "falhas": 1,
+   "causa": "rede-discord"
+  },
+  "dev.to": {
+   "ok": false,
+   "falhas": 1,
+   "causa": "rede-devto"
+  },
+  "Tumblr": {
+   "ok": false,
+   "falhas": 1,
+   "causa": "rede-tumblr"
+  },
+  "Nostr": {
+   "ok": false,
+   "falhas": 1,
+   "causa": "rede-nostr"
+  },
+  "Pinterest": {
+   "ok": false,
+   "falhas": 1,
+   "causa": "rede-pinterest"
+  },
+  "Gmail IMAP/SMTP": {
+   "ok": true,
+   "falhas": 0,
+   "causa": "saudavel"
   },
   "Caixa de e-mail": {
    "ok": true,
