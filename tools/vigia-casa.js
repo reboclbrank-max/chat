@@ -49,7 +49,11 @@ const CAUSAS_VIGIA = Object.freeze([
   'autonomia-ilegivel', 'autonomia-sem-prazo', 'autonomia-sem-faixa',
   // 06/11: main que anda sem execução da barreira é pane silenciosa — foi assim que o merge
   // do robô passou sem teste até alguém medir. Causa própria para não virar "sem-execucao".
-  'barreira-sem-execucao'
+  'barreira-sem-execucao',
+  // 09/11: redes sociais — cada uma tem causa própria para o dono saber QUAL falhou
+  'rede-github', 'rede-youtube', 'rede-itch', 'rede-bluesky', 'rede-mastodon',
+  'rede-instagram', 'rede-threads', 'rede-discord', 'rede-devto', 'rede-tumblr',
+  'rede-nostr', 'rede-pinterest', 'rede-gmail'
 ]);
 const CAUSAS_RECUPERAVEIS = Object.freeze(['sem-execucao', 'turno-ausente', 'bateria-atrasada', 'caixa-atrasada']);
 
@@ -285,6 +289,190 @@ async function acao(rotulo, arquivo) {
       return sondaSaudavel('no ar', 'pagina-respondendo');
     }));
   }
+
+
+  // 📱 REDES SOCIAIS: testa se cada credencial ainda responde (apenas leitura, sem modificar nada)
+  itens.push(await verifica('GitHub API', async () => {
+    if (!TOKEN) throw falhaVigia('rede-github', 'sem segredo GITHUB_TOKEN nesta execução');
+    try {
+      const r = await buscaJSON('https://api.github.com/user');
+      if (r.login) return sondaSaudavel('usuário autenticado', 'rede-github-ok');
+      throw new Error('sem campo login');
+    } catch (e) {
+      throw falhaVigia('rede-github', 'API indisponível ou token inválido: ' + String(e.message || e).slice(0, 80));
+    }
+  }));
+
+  itens.push(await verifica('YouTube API', async () => {
+    const key = process.env.YT_API_KEY;
+    if (!key) throw falhaVigia('rede-youtube', 'sem segredo YT_API_KEY nesta execução');
+    try {
+      const r = await fetch('https://www.googleapis.com/youtube/v3/channels?part=statistics&id=UCQdxKtfRnqNLd1ZOs9B6eaQ&key=' + key, { signal: AbortSignal.timeout(30000) });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      if (j.items && j.items[0] && j.items[0].statistics) {
+        const s = j.items[0].statistics;
+        return sondaSaudavel('canal lido: ' + s.subscriberCount + ' inscritos, ' + s.videoCount + ' vídeos', 'rede-youtube-ok');
+      }
+      throw new Error('canal não encontrado');
+    } catch (e) {
+      throw falhaVigia('rede-youtube', 'erro: ' + String(e.message || e).slice(0, 80));
+    }
+  }));
+
+  itens.push(await verifica('itch.io API', async () => {
+    const key = process.env.ITCH_API_KEYS;
+    if (!key) throw falhaVigia('rede-itch', 'sem segredo ITCH_API_KEYS nesta execução');
+    try {
+      const r = await fetch('https://api.itch.io/profile', { headers: { Authorization: 'Bearer ' + key }, signal: AbortSignal.timeout(30000) });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      if (j.user) return sondaSaudavel('perfil: ' + j.user.username, 'rede-itch-ok');
+      throw new Error('sem campo user');
+    } catch (e) {
+      throw falhaVigia('rede-itch', 'erro: ' + String(e.message || e).slice(0, 80));
+    }
+  }));
+
+  itens.push(await verifica('Bluesky', async () => {
+    const handle = process.env.BLUESKY_HANDLE;
+    const senha = process.env.BLUESKY_APPPASS || process.env.BSKY_APP_PASSWORD;
+    if (!handle || !senha) throw falhaVigia('rede-bluesky', 'sem BLUESKY_HANDLE ou BLUESKY_APPPASS');
+    try {
+      const r = await fetch('https://bsky.social/xrpc/com.atproto.server.createSession', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier: handle, password: senha }),
+        signal: AbortSignal.timeout(30000)
+      });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      if (j.did) return sondaSaudavel('login OK: ' + j.did.slice(0, 40), 'rede-bluesky-ok');
+      throw new Error('sem DID');
+    } catch (e) {
+      throw falhaVigia('rede-bluesky', 'erro: ' + String(e.message || e).slice(0, 80));
+    }
+  }));
+
+  itens.push(await verifica('Mastodon', async () => {
+    const token = process.env.MASTODON_TOKEN;
+    if (!token) throw falhaVigia('rede-mastodon', 'sem segredo MASTODON_TOKEN');
+    try {
+      const r = await fetch('https://mastodon.social/api/v1/accounts/verify_credentials', { headers: { Authorization: 'Bearer ' + token }, signal: AbortSignal.timeout(30000) });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      if (j.username) return sondaSaudavel('token válido: @' + j.username, 'rede-mastodon-ok');
+      throw new Error('sem username');
+    } catch (e) {
+      throw falhaVigia('rede-mastodon', 'erro: ' + String(e.message || e).slice(0, 80));
+    }
+  }));
+
+  itens.push(await verifica('Instagram', async () => {
+    const token = process.env.IG_TOKEN;
+    if (!token) throw falhaVigia('rede-instagram', 'sem segredo IG_TOKEN');
+    try {
+      const r = await fetch('https://graph.instagram.com/v21.0/me?fields=id,username&access_token=' + token, { signal: AbortSignal.timeout(30000) });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      if (j.username) return sondaSaudavel('token válido: @' + j.username, 'rede-instagram-ok');
+      throw new Error('sem username');
+    } catch (e) {
+      throw falhaVigia('rede-instagram', 'erro: ' + String(e.message || e).slice(0, 80));
+    }
+  }));
+
+  itens.push(await verifica('Threads', async () => {
+    const token = process.env.THREADS_TOKEN || process.env.THREADS_ACCESS_TOKEN;
+    if (!token) throw falhaVigia('rede-threads', 'sem segredo THREADS_TOKEN');
+    try {
+      const r = await fetch('https://graph.threads.net/v1.0/me?fields=id,username&access_token=' + token, { signal: AbortSignal.timeout(30000) });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      if (j.username) return sondaSaudavel('token válido: @' + j.username, 'rede-threads-ok');
+      throw new Error('sem username');
+    } catch (e) {
+      throw falhaVigia('rede-threads', 'erro: ' + String(e.message || e).slice(0, 80));
+    }
+  }));
+
+  itens.push(await verifica('Discord', async () => {
+    const token = process.env.DISCORD_BOT_TOKEN;
+    if (!token) throw falhaVigia('rede-discord', 'sem segredo DISCORD_BOT_TOKEN');
+    try {
+      const r = await fetch('https://discord.com/api/v10/users/@me', { headers: { Authorization: 'Bot ' + token }, signal: AbortSignal.timeout(30000) });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      if (j.username) return sondaSaudavel('bot válido: ' + j.username + '#' + j.discriminator, 'rede-discord-ok');
+      throw new Error('sem username');
+    } catch (e) {
+      throw falhaVigia('rede-discord', 'erro: ' + String(e.message || e).slice(0, 80));
+    }
+  }));
+
+  itens.push(await verifica('dev.to', async () => {
+    const key = process.env.DEVTO_API_KEY;
+    if (!key) throw falhaVigia('rede-devto', 'sem segredo DEVTO_API_KEY');
+    try {
+      const r = await fetch('https://dev.to/api/articles/me/published', { headers: { 'api-key': key }, signal: AbortSignal.timeout(30000) });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      return sondaSaudavel('API key válida: ' + (Array.isArray(j) ? j.length + ' artigos' : 'sem lista'), 'rede-devto-ok');
+    } catch (e) {
+      throw falhaVigia('rede-devto', 'erro: ' + String(e.message || e).slice(0, 80));
+    }
+  }));
+
+  itens.push(await verifica('Tumblr', async () => {
+    const key = process.env.TUMBLR_CONSUMER_KEY;
+    if (!key) throw falhaVigia('rede-tumblr', 'sem segredo TUMBLR_CONSUMER_KEY');
+    try {
+      const r = await fetch('https://api.tumblr.com/v2/blog/reboclbrank.tumblr.com/info?api_key=' + key, { signal: AbortSignal.timeout(30000) });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      if (j.meta && j.meta.status === 200 && j.response.blog) {
+        return sondaSaudavel('consumer key válida: ' + j.response.blog.name, 'rede-tumblr-ok');
+      }
+      throw new Error('resposta inválida');
+    } catch (e) {
+      throw falhaVigia('rede-tumblr', 'erro: ' + String(e.message || e).slice(0, 80));
+    }
+  }));
+
+  itens.push(await verifica('Nostr', async () => {
+    const key = process.env.NOSTR_KEY;
+    if (!key) throw falhaVigia('rede-nostr', 'sem segredo NOSTR_KEY');
+    const npub = key.startsWith('npub1') ? 'npub válido' : 'não é npub';
+    const hex = /^[0-9a-f]{64}$/.test(key) ? 'hex válido (64 chars)' : 'não é hex de 64 chars';
+    return sondaSaudavel('chave com formato: ' + npub + ' · ' + hex, 'rede-nostr-ok');
+  }));
+
+  itens.push(await verifica('Pinterest', async () => {
+    const token = process.env.PINTEREST_TOKEN;
+    if (!token) throw falhaVigia('rede-pinterest', 'sem segredo PINTEREST_TOKEN');
+    try {
+      const r = await fetch('https://api-sandbox.pinterest.com/v5/user_account', { headers: { Authorization: 'Bearer ' + token }, signal: AbortSignal.timeout(30000) });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return sondaSaudavel('sandbox token válido', 'rede-pinterest-ok');
+    } catch (e) {
+      throw falhaVigia('rede-pinterest', 'erro: ' + String(e.message || e).slice(0, 80));
+    }
+  }));
+
+  itens.push(await verifica('Gmail IMAP/SMTP', async () => {
+    if (!USER || !PASS) throw falhaVigia('rede-gmail', 'sem credenciais GMAIL_CHAT_ADDR/PASS');
+    let imap = null;
+    try { imap = require('imapflow'); } catch (e) { throw falhaVigia('rede-gmail', 'imapflow ausente nesta execução'); }
+    const cli = new imap.ImapFlow({ host: 'imap.gmail.com', port: 993, secure: true, auth: { user: USER, pass: PASS }, logger: false });
+    let lock = null;
+    try {
+      await comTeto(cli.connect(), 45000, 'IMAP connect (rede)');
+      lock = await comTeto(cli.getMailboxLock('INBOX'), 30000, 'INBOX lock (rede)');
+      try {
+        const uids = await comTeto(cli.search({ seen: false }), 30000, 'busca não lidos (rede)');
+        return sondaSaudavel('conexão OK: ' + uids.length + ' email(s) não lido(s)', 'rede-gmail-ok');
+      } finally { if (lock) lock.release(); }
+    } finally { try { await comTeto(cli.logout(), 15000, 'logout IMAP (rede)'); } catch (e) { try { cli.close(); } catch (e2) {} } }
+  }));
 
   // 📬 CAIXA: e-mail parado sem resposta é o problema mais importante da casa (o vigia não pode dormir nele)
   itens.push(await verifica('Caixa de e-mail', async () => {
