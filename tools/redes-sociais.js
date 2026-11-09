@@ -422,47 +422,83 @@ async function postarTumblr(titulo, corpo, tags = []) {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 🔢 NOSTR — postar nota (npub + chave hex)
+// 🔢 NOSTR — postar nota (chave hex privada)
+const { getPublicKey, signEvent, calculateEventHash, serializeEvent, nip19 } = require('nostr');
+
+const NOSTR_RELAYS = [
+  'wss://relay.damus.io',
+  'wss://relay.nostr.band',
+  'wss://nos.lol',
+];
+
 async function postarNostr(texto) {
   const chaveHex = cofre.ler('nostr', 'postarNostr');
   if (!chaveHex) return registrar('nostr', false, 'sem NOSTR_KEY configurado');
-  // Nostr requer biblioteca de criptografia (nostr-sdk ou similar).
-  // Sem dependências instaladas, fazemos apenas validação de formato e registro de intenção.
-  const hexValido = /^[0-9a-f]{64}$/.test(chaveHex);
-  if (!hexValido) return registrar('nostr', false, 'chave NOSTR não é hex válido de 64 caracteres');
-  // Nota: postagem real requer bibliotecas criptográficas não instaladas no sandbox.
-  // Registramos como pendente até que as bibliotecas estejam disponíveis.
-  return registrar('nostr', false, 'Nostr: chave válida mas bibliotecas criptográficas não instaladas no sandbox — postagem pendente');
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 📌 PINTEREST — criar pin (exige trial aprovado)
-async function postarPinterest(titulo, descricao, urlImagem, boardId) {
-  const token = cofre.ler('pinterest', 'postarPinterest');
-  if (!token) return registrar('pinterest', false, 'sem PINTEREST_TOKEN configurado');
   try {
-    const r = await fetch('https://api.pinterest.com/v5/pins', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        board_id: boardId,
-        media_source: { source_type: 'image_url', url: urlImagem },
-        title: titulo.slice(0, 100),
-        description: descricao.slice(0, 500),
-      }),
-      signal: AbortSignal.timeout(30000),
-    });
-    if (!r.ok) {
-      const erro = await r.text().catch(() => '');
-      return registrar('pinterest', false, `HTTP ${r.status}: ${erro.slice(0, 100)}`);
+    const hexValido = /^[0-9a-f]{64}$/.test(chaveHex);
+    let privateKey = chaveHex;
+    let npub = null;
+    if (!hexValido) {
+      // Pode ser npub ou nsec
+      try {
+        const decoded = nip19.decode(chaveHex);
+        if (decoded.type === 'nsec') {
+          privateKey = decoded.data;
+        } else if (decoded.type === 'npub') {
+          npub = decoded.data;
+          privateKey = null;
+        }
+      } catch (e) {
+        return registrar('nostr', false, 'chave NOSTR não é hex válido, npub nem nsec');
+      }
     }
-    const j = await r.json();
-    return registrar('pinterest', true, 'pin criado', j.id);
+
+    if (privateKey) {
+      const pubKey = getPublicKey(privateKey);
+      const event = {
+        kind: 1,
+        created_at: Math.floor(Date.now() / 1000),
+        tags: [],
+        content: texto.slice(0, 280),
+        pubkey: pubKey,
+      };
+      const hash = calculateEventHash(event);
+      const sig = signEvent(event, privateKey);
+      event.id = hash;
+      event.sig = sig;
+      const serialized = serializeEvent(event);
+
+      let publicados = 0;
+      let erros = 0;
+      for (const relayUrl of NOSTR_RELAYS) {
+        try {
+          const ws = new WebSocket(relayUrl);
+          await new Promise((resolve, reject) => {
+            ws.onopen = resolve;
+            ws.onerror = reject;
+            ws.onmessage = () => {};
+            setTimeout(() => reject(new Error('timeout relay')), 10000);
+          });
+          ws.send(JSON.stringify(['EVENT', event]));
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          ws.close();
+          publicados++;
+        } catch (e) {
+          erros++;
+        }
+      }
+
+      if (publicados > 0) {
+        return registrar('nostr', true, `nota publicada em ${publicados} relay(s)`, event.id);
+      }
+      return registrar('nostr', false, `falha ao publicar em todos os ${NOSTR_RELAYS.length} relay(s)`);
+    }
+
+    if (npub) {
+      return registrar('nostr', false, 'apenas npub fornecido — é necessário nsec (chave privada) para postar');
+    }
   } catch (e) {
-    return registrar('pinterest', false, `erro: ${e.message.slice(0, 100)}`);
+    return registrar('nostr', false, `erro: ${e.message.slice(0, 100)}`);
   }
 }
 
@@ -528,7 +564,6 @@ async function postarTodas(texto, opcoes = {}) {
     emailPara = null,
     gameIdItch = null,
     camposItch = null,
-    boardIdPinterest = null,
   } = opcoes;
 
   const resultados = [];
@@ -574,11 +609,6 @@ async function postarTodas(texto, opcoes = {}) {
   // Nostr
   resultados.push(await postarNostr(texto));
 
-  // Pinterest
-  if (urlImagem && boardIdPinterest) {
-    resultados.push(await postarPinterest(titulo, texto, urlImagem, boardIdPinterest));
-  }
-
   // Gmail
   if (emailPara) {
     resultados.push(await enviarGmail(emailPara, titulo, texto));
@@ -599,7 +629,6 @@ module.exports = {
   postarDevto,
   postarTumblr,
   postarNostr,
-  postarPinterest,
   enviarGmail,
   postarTodas,
   relatorio,

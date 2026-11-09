@@ -28,7 +28,6 @@ const SECRET_NAMES = {
   tumblr_secret: 'TUMBLR_CONSUMER_SECRET',
   tumblr_refresh: 'TUMBLR_REFRESH_TOKEN',
   nostr: 'NOSTR_KEY',
-  pinterest: 'PINTEREST_TOKEN',
   gmail_addr: 'GMAIL_CHAT_ADDR',
   gmail_pass: 'GMAIL_CHAT_PASS',
   chat_dono: 'CHAT_DONO',

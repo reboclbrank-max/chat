@@ -53,7 +53,7 @@ const CAUSAS_VIGIA = Object.freeze([
   // 09/11: redes sociais — cada uma tem causa própria para o dono saber QUAL falhou
   'rede-github', 'rede-youtube', 'rede-itch', 'rede-bluesky', 'rede-mastodon',
   'rede-instagram', 'rede-threads', 'rede-discord', 'rede-devto', 'rede-tumblr',
-  'rede-nostr', 'rede-pinterest', 'rede-gmail'
+  'rede-nostr', 'rede-gmail'
 ]);
 const CAUSAS_RECUPERAVEIS = Object.freeze(['sem-execucao', 'turno-ausente', 'bateria-atrasada', 'caixa-atrasada']);
 
@@ -444,18 +444,6 @@ async function acao(rotulo, arquivo) {
     const npub = key.startsWith('npub1') ? 'npub válido' : 'não é npub';
     const hex = /^[0-9a-f]{64}$/.test(key) ? 'hex válido (64 chars)' : 'não é hex de 64 chars';
     return sondaSaudavel('chave com formato: ' + npub + ' · ' + hex, 'rede-nostr-ok');
-  }));
-
-  itens.push(await verifica('Pinterest', async () => {
-    const token = process.env.PINTEREST_TOKEN;
-    if (!token) throw falhaVigia('rede-pinterest', 'sem segredo PINTEREST_TOKEN');
-    try {
-      const r = await fetch('https://api-sandbox.pinterest.com/v5/user_account', { headers: { Authorization: 'Bearer ' + token }, signal: AbortSignal.timeout(30000) });
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return sondaSaudavel('sandbox token válido', 'rede-pinterest-ok');
-    } catch (e) {
-      throw falhaVigia('rede-pinterest', 'erro: ' + String(e.message || e).slice(0, 80));
-    }
   }));
 
   itens.push(await verifica('Gmail IMAP/SMTP', async () => {

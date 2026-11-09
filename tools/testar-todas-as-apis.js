@@ -193,20 +193,6 @@ async function testeNostr() {
   } catch (e) { registro('Nostr', false, 'erro', e.message.slice(0, 100)); }
 }
 
-async function testePinterest() {
-  try {
-    const token = process.env.PINTEREST_TOKEN;
-    if (!token) { registro('Pinterest', false, 'sem segredo PINTEREST_TOKEN'); return; }
-    const r = await busca('https://api-sandbox.pinterest.com/v5/user_account', { headers: { Authorization: `Bearer ${token}` } });
-    if (r.ok) {
-      registro('Pinterest', true, 'sandbox token válido');
-    } else {
-      const j = await r.json().catch(() => ({}));
-      registro('Pinterest', false, `HTTP ${r.status}`, j.message || await r.text().slice(0, 100));
-    }
-  } catch (e) { registro('Pinterest', false, 'erro de conexão', e.message.slice(0, 100)); }
-}
-
 async function testeGmail() {
   try {
     const addr = process.env.GMAIL_CHAT_ADDR;
@@ -241,7 +227,6 @@ async function main() {
   await testeDevto();
   await testeTumblr();
   await testeNostr();
-  await testePinterest();
   await testeGmail();
 
   console.log(NL + '═══════════════════════════════════════════');
