@@ -1,0 +1,29 @@
+{
+  "quando": "2026-11-09T08:10:16.338Z",
+  "origem": "ao-vivo",
+  "pr": 116,
+  "sha": "48788ccb5e472d98d9141e47ee51e75b0a79785d",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "🔐 Cofre seguro, postagem unificada redes sociais e scanner de credenciais",
+  "barreira": "success",
+  "arquivos": [
+    ".github/workflows/seguranca-chaves.yml",
+    ".gitignore",
+    "tools/cofre-seguro.js",
+    "tools/redes-sociais.js",
+    "tools/scanner-credenciais.js",
+    "tools/testar-todas-as-redes.js"
+  ],
+  "essenciais": [
+    ".github/workflows/seguranca-chaves.yml"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: .github/workflows/seguranca-chaves.yml, .gitignore, tools/cofre-seguro.js…"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: .github/workflows/seguranca-chaves.yml"
+  }
+}
