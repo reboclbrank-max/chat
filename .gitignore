@@ -15,3 +15,4 @@ coverage/
 
 # texto de terceiros baixado pela medição de fontes (não versionar)
 bench/cache-fontes-vivas.json
+resultado-seguranca.md
