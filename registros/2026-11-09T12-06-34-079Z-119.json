@@ -1,0 +1,23 @@
+{
+  "quando": "2026-11-09T12:06:34.079Z",
+  "origem": "ao-vivo",
+  "pr": 119,
+  "sha": "bc243a454e87b7dcaa08b945481e89bb590aa6a6",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "🎮📺 Remove limitações itch.io e YouTube",
+  "barreira": "success",
+  "arquivos": [
+    "tools/cofre-seguro.js",
+    "tools/redes-sociais.js"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: tools/cofre-seguro.js, tools/redes-sociais.js"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (2)"
+  }
+}
