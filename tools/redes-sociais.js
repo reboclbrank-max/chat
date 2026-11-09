@@ -75,6 +75,89 @@ async function medirYoutube() {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 📺 YOUTUBE — upload de vídeo (OAuth 2.0 do dono; exige YT_CLIENT_ID, YT_CLIENT_SECRET, YT_REFRESH_TOKEN)
+async function obterAccessTokenYoutube() {
+  const clientId = cofre.ler('yt_client_id', 'obterAccessTokenYoutube');
+  const clientSecret = cofre.ler('yt_client_secret', 'obterAccessTokenYoutube');
+  const refreshToken = cofre.ler('yt_refresh_token', 'obterAccessTokenYoutube');
+  if (!clientId || !clientSecret || !refreshToken) return null;
+  try {
+    const r = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        client_id: clientId,
+        client_secret: clientSecret,
+        refresh_token: refreshToken,
+        grant_type: 'refresh_token',
+      }),
+      signal: AbortSignal.timeout(30000),
+    });
+    if (!r.ok) return null;
+    const j = await r.json();
+    return j.access_token || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function postarYoutube(caminhoVideo, titulo, descricao, privacidade = 'unlisted') {
+  const accessToken = await obterAccessTokenYoutube();
+  if (!accessToken) return registrar('youtube', false, 'sem YT_CLIENT_ID / YT_CLIENT_SECRET / YT_REFRESH_TOKEN ou falha ao obter access token');
+  try {
+    // Passo 1: iniciar upload resumível para obter URL
+    const init = await fetch('https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Upload-Content-Type': 'video/mp4',
+      },
+      body: JSON.stringify({
+        snippet: {
+          title: titulo.slice(0, 100),
+          description: descricao.slice(0, 5000),
+          tags: ['ceifalume', 'gamedev'],
+          categoryId: '20',
+        },
+        status: {
+          privacyStatus: privacidade,
+          selfDeclaredMadeForKids: false,
+        },
+      }),
+      signal: AbortSignal.timeout(30000),
+    });
+    if (!init.ok) {
+      const erro = await init.text().catch(() => '');
+      return registrar('youtube', false, `início upload falhou: HTTP ${init.status}: ${erro.slice(0, 100)}`);
+    }
+    const uploadUrl = init.headers.get('X-Upload-URL') || init.headers.get('x-upload-url');
+    if (!uploadUrl) return registrar('youtube', false, 'URL de upload não retornada pelo YouTube');
+
+    // Passo 2: enviar o arquivo de vídeo
+    const fs = require('fs');
+    const arquivo = fs.readFileSync(caminhoVideo);
+    const envio = await fetch(uploadUrl, {
+      method: 'PUT',
+      headers: {
+        'Content-Length': String(arquivo.length),
+        'Content-Type': 'video/mp4',
+      },
+      body: arquivo,
+      signal: AbortSignal.timeout(300000),
+    });
+    if (!envio.ok) {
+      const erro = await envio.text().catch(() => '');
+      return registrar('youtube', false, `envio falhou: HTTP ${envio.status}: ${erro.slice(0, 100)}`);
+    }
+    const j = await envio.json().catch(() => ({}));
+    return registrar('youtube', true, 'vídeo enviado', j.id || 'desconhecido');
+  } catch (e) {
+    return registrar('youtube', false, `erro: ${e.message.slice(0, 100)}`);
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 🎮 ITCH.IO — atualizar jogo (título, descrição, tags)
 async function postarItch(gameId, campos) {
   const key = cofre.ler('itch', 'postarItch');
@@ -564,6 +647,9 @@ async function postarTodas(texto, opcoes = {}) {
     emailPara = null,
     gameIdItch = null,
     camposItch = null,
+    caminhoVideo = null,
+    tituloVideo = null,
+    descricaoVideo = null,
   } = opcoes;
 
   const resultados = [];
@@ -609,6 +695,11 @@ async function postarTodas(texto, opcoes = {}) {
   // Nostr
   resultados.push(await postarNostr(texto));
 
+  // YouTube upload (se houver vídeo)
+  if (caminhoVideo) {
+    resultados.push(await postarYoutube(caminhoVideo, tituloVideo || titulo, descricaoVideo || texto));
+  }
+
   // Gmail
   if (emailPara) {
     resultados.push(await enviarGmail(emailPara, titulo, texto));
@@ -620,6 +711,7 @@ async function postarTodas(texto, opcoes = {}) {
 module.exports = {
   postarGitHub,
   medirYoutube,
+  postarYoutube,
   postarItch,
   postarBluesky,
   postarMastodon,
