@@ -1,0 +1,27 @@
+{
+  "quando": "2026-11-09T07:37:54.968Z",
+  "origem": "ao-vivo",
+  "pr": 115,
+  "sha": "36b23bda1497b723918e835458f0391ae6d15ba8",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "🧪 Testa 100% das APIs e melhora vigia com redes sociais",
+  "barreira": "failure",
+  "arquivos": [
+    ".github/workflows/testar-apis.yml",
+    "tools/testar-todas-as-apis.js",
+    "tools/vigia-casa.js"
+  ],
+  "essenciais": [
+    ".github/workflows/testar-apis.yml",
+    "tools/vigia-casa.js"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: .github/workflows/testar-apis.yml, tools/testar-todas-as-apis.js, tools/vigia-casa.js"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: .github/workflows/testar-apis.yml, tools/vigia-casa.js"
+  }
+}
