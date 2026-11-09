@@ -75,83 +75,35 @@ async function medirYoutube() {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 📺 YOUTUBE — upload de vídeo (OAuth 2.0 do dono; exige YT_CLIENT_ID, YT_CLIENT_SECRET, YT_REFRESH_TOKEN)
-async function obterAccessTokenYoutube() {
-  const clientId = cofre.ler('yt_client_id', 'obterAccessTokenYoutube');
-  const clientSecret = cofre.ler('yt_client_secret', 'obterAccessTokenYoutube');
-  const refreshToken = cofre.ler('yt_refresh_token', 'obterAccessTokenYoutube');
-  if (!clientId || !clientSecret || !refreshToken) return null;
+// 📺 YOUTUBE — dispara upload de vídeo no repo site (segredos OAuth já configurados lá)
+// O chat não precisa ter YT_CLIENT_ID/SECRET/REFRESH_TOKEN: dispara o workflow
+// enviar-youtube.yml do repositorio site, que ja possui esses segredos.
+async function dispararUploadYoutube(jogo = 'ceifalume') {
+  const pat = cofre.ler('github', 'dispararUploadYoutube');
+  if (!pat) return registrar('youtube', false, 'sem GITHUB_TOKEN para disparar workflow');
   try {
-    const r = await fetch('https://oauth2.googleapis.com/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        client_id: clientId,
-        client_secret: clientSecret,
-        refresh_token: refreshToken,
-        grant_type: 'refresh_token',
-      }),
-      signal: AbortSignal.timeout(30000),
-    });
-    if (!r.ok) return null;
-    const j = await r.json();
-    return j.access_token || null;
-  } catch (e) {
-    return null;
-  }
-}
-
-async function postarYoutube(caminhoVideo, titulo, descricao, privacidade = 'unlisted') {
-  const accessToken = await obterAccessTokenYoutube();
-  if (!accessToken) return registrar('youtube', false, 'sem YT_CLIENT_ID / YT_CLIENT_SECRET / YT_REFRESH_TOKEN ou falha ao obter access token');
-  try {
-    // Passo 1: iniciar upload resumível para obter URL
-    const init = await fetch('https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status', {
+    const r = await fetch('https://api.github.com/repos/reboclbrank-max/site/actions/workflows/enviar-youtube.yml/dispatches', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json; charset=UTF-8',
-        'X-Upload-Content-Type': 'video/mp4',
+        Authorization: `Bearer ${pat}`,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+        'User-Agent': 'rebocl-casa/1',
       },
       body: JSON.stringify({
-        snippet: {
-          title: titulo.slice(0, 100),
-          description: descricao.slice(0, 5000),
-          tags: ['ceifalume', 'gamedev'],
-          categoryId: '20',
-        },
-        status: {
-          privacyStatus: privacidade,
-          selfDeclaredMadeForKids: false,
+        ref: 'main',
+        inputs: {
+          jogo: jogo,
+          confirmacao: 'PUBLICAR',
         },
       }),
       signal: AbortSignal.timeout(30000),
     });
-    if (!init.ok) {
-      const erro = await init.text().catch(() => '');
-      return registrar('youtube', false, `início upload falhou: HTTP ${init.status}: ${erro.slice(0, 100)}`);
+    if (r.status === 204) {
+      return registrar('youtube', true, 'workflow de envio disparado no repo site', jogo);
     }
-    const uploadUrl = init.headers.get('X-Upload-URL') || init.headers.get('x-upload-url');
-    if (!uploadUrl) return registrar('youtube', false, 'URL de upload não retornada pelo YouTube');
-
-    // Passo 2: enviar o arquivo de vídeo
-    const fs = require('fs');
-    const arquivo = fs.readFileSync(caminhoVideo);
-    const envio = await fetch(uploadUrl, {
-      method: 'PUT',
-      headers: {
-        'Content-Length': String(arquivo.length),
-        'Content-Type': 'video/mp4',
-      },
-      body: arquivo,
-      signal: AbortSignal.timeout(300000),
-    });
-    if (!envio.ok) {
-      const erro = await envio.text().catch(() => '');
-      return registrar('youtube', false, `envio falhou: HTTP ${envio.status}: ${erro.slice(0, 100)}`);
-    }
-    const j = await envio.json().catch(() => ({}));
-    return registrar('youtube', true, 'vídeo enviado', j.id || 'desconhecido');
+    const erro = await r.text().catch(() => '');
+    return registrar('youtube', false, `workflow dispatch falhou: HTTP ${r.status}: ${erro.slice(0, 100)}`);
   } catch (e) {
     return registrar('youtube', false, `erro: ${e.message.slice(0, 100)}`);
   }
@@ -647,9 +599,7 @@ async function postarTodas(texto, opcoes = {}) {
     emailPara = null,
     gameIdItch = null,
     camposItch = null,
-    caminhoVideo = null,
-    tituloVideo = null,
-    descricaoVideo = null,
+    jogo = null,
   } = opcoes;
 
   const resultados = [];
@@ -695,9 +645,9 @@ async function postarTodas(texto, opcoes = {}) {
   // Nostr
   resultados.push(await postarNostr(texto));
 
-  // YouTube upload (se houver vídeo)
+  // YouTube upload (dispara workflow no repo site)
   if (caminhoVideo) {
-    resultados.push(await postarYoutube(caminhoVideo, tituloVideo || titulo, descricaoVideo || texto));
+    resultados.push(await dispararUploadYoutube(jogo || 'ceifalume'));
   }
 
   // Gmail
@@ -711,7 +661,7 @@ async function postarTodas(texto, opcoes = {}) {
 module.exports = {
   postarGitHub,
   medirYoutube,
-  postarYoutube,
+  dispararUploadYoutube,
   postarItch,
   postarBluesky,
   postarMastodon,

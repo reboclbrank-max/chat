@@ -14,9 +14,6 @@ const USO_AUDIT = []; // { servico, quando, origem }
 const SECRET_NAMES = {
   github: 'GITHUB_TOKEN',
   youtube: 'YT_API_KEY',
-  yt_client_id: 'YT_CLIENT_ID',
-  yt_client_secret: 'YT_CLIENT_SECRET',
-  yt_refresh_token: 'YT_REFRESH_TOKEN',
   itch: 'ITCH_API_KEYS',
   bluesky_handle: 'BLUESKY_HANDLE',
   bluesky_pass: 'BLUESKY_APPPASS',

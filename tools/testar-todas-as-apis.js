@@ -59,39 +59,6 @@ async function testeYouTube() {
   } catch (e) { registro('YouTube API', false, 'erro de conexão', e.message.slice(0, 100)); }
 }
 
-async function testeYoutubeUpload() {
-  try {
-    const clientId = process.env.YT_CLIENT_ID;
-    const clientSecret = process.env.YT_CLIENT_SECRET;
-    const refreshToken = process.env.YT_REFRESH_TOKEN;
-    if (!clientId || !clientSecret || !refreshToken) {
-      registro('YouTube Upload', false, 'sem YT_CLIENT_ID / YT_CLIENT_SECRET / YT_REFRESH_TOKEN');
-      return;
-    }
-    const r = await busca('https://oauth2.googleapis.com/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        client_id: clientId,
-        client_secret: clientSecret,
-        refresh_token: refreshToken,
-        grant_type: 'refresh_token',
-      }),
-    });
-    if (r.ok) {
-      const j = await r.json();
-      if (j.access_token) {
-        registro('YouTube Upload', true, 'access token obtido — pronto para upload de vídeo');
-      } else {
-        registro('YouTube Upload', false, 'access token não retornado');
-      }
-    } else {
-      const erro = await r.text().catch(() => '');
-      registro('YouTube Upload', false, `falha ao obter token: HTTP ${r.status}: ${erro.slice(0, 100)}`);
-    }
-  } catch (e) { registro('YouTube Upload', false, 'erro de conexão', e.message.slice(0, 100)); }
-}
-
 async function testeItch() {
   try {
     const key = process.env.ITCH_API_KEYS;
@@ -251,7 +218,6 @@ async function main() {
   console.log('🧪 Iniciando teste de todas as APIs...' + NL);
   await testeGitHub();
   await testeYouTube();
-  await testeYoutubeUpload();
   await testeItch();
   await testeBluesky();
   await testeMastodon();
