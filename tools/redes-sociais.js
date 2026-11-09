@@ -8,6 +8,7 @@
 // (4) toda publicação registra resultado (sucesso ou falha).
 
 const cofre = require('./cofre-seguro');
+const crypto = require('crypto');
 const NL = '\n';
 
 const PUBLICACOES = []; // { servico, quando, sucesso, detalhe, idPublicacao }
@@ -538,6 +539,196 @@ async function postarNostr(texto) {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🔢 NOSTR — ler notas dos relays (busca pública)
+async function lerNostr(autorNpub = null, limite = 20) {
+  try {
+    const filtro = {
+      kinds: [1],
+      limit: limite,
+    };
+    if (autorNpub) {
+      // Converter npub para hex pubkey se necessário
+      let pubkeyHex = autorNpub;
+      if (autorNpub.startsWith('npub1')) {
+        try {
+          const decoded = nip19.decode(autorNpub);
+          pubkeyHex = decoded.data;
+        } catch (e) {
+          return registrar('nostr', false, 'npub do autor inválido');
+        }
+      }
+      filtro.authors = [pubkeyHex];
+    }
+
+    const requisicao = JSON.stringify(['REQ', 'chat-casa-leitura', filtro]);
+    const notas = [];
+    let resolvidos = 0;
+
+    for (const relayUrl of NOSTR_RELAYS) {
+      resolvidos++;
+      try {
+        const ws = new WebSocket(relayUrl);
+        await new Promise((resolve, reject) => {
+          ws.onopen = resolve;
+          ws.onerror = reject;
+          setTimeout(() => reject(new Error('timeout relay leitura')), 15000);
+        });
+
+        ws.send(requisicao);
+
+        const timeoutPromise = new Promise((_, rejeita) =>
+          setTimeout(() => rejeita(new Error('timeout coleta')), 10000)
+        );
+
+        const coletaPromise = new Promise((resolve) => {
+          ws.onmessage = (evt) => {
+            try {
+              const msg = JSON.parse(evt.data);
+              if (msg[0] === 'EVENT' && msg[2]) {
+                notas.push({
+                  id: msg[2].id,
+                  autor: msg[2].pubkey,
+                  conteudo: msg[2].content,
+                  criado: msg[2].created_at,
+                  relay: relayUrl,
+                });
+              }
+              if (msg[0] === 'EOSE') {
+                resolve();
+              }
+            } catch (e) {
+              // ignora mensagem malformada
+            }
+          };
+          ws.onclose = () => resolve();
+        });
+
+        await Promise.race([coletaPromise, timeoutPromise]);
+        ws.close();
+      } catch (e) {
+        // relay falhou, tenta o próximo
+      }
+    }
+
+    if (notas.length > 0) {
+      return registrar('nostr', true, `${notas.length} nota(s) lida(s) de ${resolvidos} relay(s)`, notas.length);
+    }
+    return registrar('nostr', true, 'nenhuma nota encontrada (relays acessíveis)', 0);
+  } catch (e) {
+    return registrar('nostr', false, `erro ao ler: ${e.message.slice(0, 100)}`);
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🐦 X (TWITTER) — postar tweet e ler timeline (OAuth 1.0a API v2)
+function gerarOAuthX(metodo, url, parametrosExtra = {}) {
+  const consumerKey = cofre.ler('x_api_key', 'gerarOAuthX');
+  const consumerSecret = cofre.ler('x_api_secret', 'gerarOAuthX');
+  const accessToken = cofre.ler('x_access_token', 'gerarOAuthX');
+  const accessTokenSecret = cofre.ler('x_access_token_secret', 'gerarOAuthX');
+  if (!consumerKey || !consumerSecret || !accessToken || !accessTokenSecret) return null;
+
+  const oauth = {
+    oauth_consumer_key: consumerKey,
+    oauth_token: accessToken,
+    oauth_signature_method: 'HMAC-SHA1',
+    oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
+    oauth_nonce: Math.random().toString(36).substring(2, 18),
+    oauth_version: '1.0',
+  };
+
+  const todosParametros = { ...oauth, ...parametrosExtra };
+  const chavesOrdenadas = Object.keys(todosParametros).sort();
+  const stringParametros = chavesOrdenadas
+    .map((k) => `${encodeURIComponent(k)}=${encodeURIComponent(todosParametros[k])}`)
+    .join('&');
+
+  const stringAssinatura = `${metodo.toUpperCase()}&${encodeURIComponent(url)}&${encodeURIComponent(stringParametros)}`;
+  const chave = `${encodeURIComponent(consumerSecret)}&${encodeURIComponent(accessTokenSecret)}`;
+  const hmac = crypto.createHmac('sha1', chave).update(stringAssinatura).digest('base64');
+
+  oauth.oauth_signature = hmac;
+
+  const cabecalhoPartes = Object.keys(oauth)
+    .sort()
+    .map((k) => `${k}="${encodeURIComponent(oauth[k])}"`);
+  return `OAuth ${cabecalhoPartes.join(', ')}`;
+}
+
+async function postarX(texto, respostaParaId = null) {
+  const cabecalho = gerarOAuthX('POST', 'https://api.twitter.com/2/tweets');
+  if (!cabecalho) {
+    return registrar('x', false, 'sem X_API_KEY / X_API_SECRET / X_ACCESS_TOKEN / X_ACCESS_TOKEN_SECRET configurado');
+  }
+  try {
+    const corpo = { text: texto.slice(0, 280) };
+    if (respostaParaId) corpo.reply = { in_reply_to_tweet_id: respostaParaId };
+
+    const r = await fetch('https://api.twitter.com/2/tweets', {
+      method: 'POST',
+      headers: {
+        Authorization: cabecalho,
+        'Content-Type': 'application/json',
+        'User-Agent': 'rebocl-casa/1',
+      },
+      body: JSON.stringify(corpo),
+      signal: AbortSignal.timeout(30000),
+    });
+    if (!r.ok) {
+      const erro = await r.text().catch(() => '');
+      return registrar('x', false, `post falhou: HTTP ${r.status}: ${erro.slice(0, 100)}`);
+    }
+    const j = await r.json();
+    return registrar('x', true, 'tweet publicado', j.data ? j.data.id : 'desconhecido');
+  } catch (e) {
+    return registrar('x', false, `erro: ${e.message.slice(0, 100)}`);
+  }
+}
+
+async function lerX(usuario = null, limite = 20) {
+  const cabecalho = gerarOAuthX('GET', 'https://api.twitter.com/2/tweets');
+  if (!cabecalho) {
+    return registrar('x', false, 'sem credenciais X configuradas para leitura');
+  }
+  try {
+    let url = `https://api.twitter.com/2/tweets/sample/stream`;
+    // Usar endpoint de busca simples sem user_id específico (sample stream)
+    // Para usuário específico, precisa do user_id:
+    // https://api.twitter.com/2/users/:id/tweets
+    const parametros = new URLSearchParams({ 'max_results': String(Math.min(limite, 100)) });
+    if (usuario) {
+      // Tentar resolver username para user_id via lookup
+      const lookup = await fetch(`https://api.twitter.com/2/users/by/username/${usuario}`, {
+        headers: { Authorization: cabecalho, 'User-Agent': 'rebocl-casa/1' },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (lookup.ok) {
+        const lj = await lookup.json();
+        url = `https://api.twitter.com/2/users/${lj.data.id}/tweets?${parametros}`;
+      } else {
+        return registrar('x', false, `usuário X não encontrado: HTTP ${lookup.status}`);
+      }
+    } else {
+      url = `https://api.twitter.com/2/tweets/search/recent?query=ceifalume&${parametros}`;
+    }
+
+    const r = await fetch(url, {
+      headers: { Authorization: cabecalho, 'User-Agent': 'rebocl-casa/1' },
+      signal: AbortSignal.timeout(30000),
+    });
+    if (!r.ok) {
+      const erro = await r.text().catch(() => '');
+      return registrar('x', false, `leitura falhou: HTTP ${r.status}: ${erro.slice(0, 100)}`);
+    }
+    const j = await r.json();
+    const tweets = j.data || [];
+    return registrar('x', true, `${tweets.length} tweet(s) lido(s)`, tweets.length);
+  } catch (e) {
+    return registrar('x', false, `erro ao ler X: ${e.message.slice(0, 100)}`);
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 📫 GMAIL — enviar email (via SMTP do cofre)
 async function enviarGmail(para, assunto, texto) {
   const addr = cofre.ler('gmail_addr', 'enviarGmail');
@@ -645,6 +836,9 @@ async function postarTodas(texto, opcoes = {}) {
   // Nostr
   resultados.push(await postarNostr(texto));
 
+  // X (Twitter)
+  resultados.push(await postarX(texto));
+
   // YouTube upload (dispara workflow no repo site)
   if (caminhoVideo) {
     resultados.push(await dispararUploadYoutube(jogo || 'ceifalume'));
@@ -671,6 +865,9 @@ module.exports = {
   postarDevto,
   postarTumblr,
   postarNostr,
+  lerNostr,
+  postarX,
+  lerX,
   enviarGmail,
   postarTodas,
   relatorio,

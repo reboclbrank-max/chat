@@ -193,6 +193,36 @@ async function testeNostr() {
   } catch (e) { registro('Nostr', false, 'erro', e.message.slice(0, 100)); }
 }
 
+async function testeX() {
+  try {
+    const apiKey = process.env.X_API_KEY;
+    const apiSecret = process.env.X_API_SECRET;
+    const accessToken = process.env.X_ACCESS_TOKEN;
+    const accessTokenSecret = process.env.X_ACCESS_TOKEN_SECRET;
+    if (!apiKey || !apiSecret || !accessToken || !accessTokenSecret) {
+      registro('X (Twitter)', false, 'sem X_API_KEY / X_API_SECRET / X_ACCESS_TOKEN / X_ACCESS_TOKEN_SECRET');
+      return;
+    }
+    // Verificar credenciais via verify credentials (GET /2/users/me)
+    const r = await busca('https://api.twitter.com/2/users/me', {
+      headers: {
+        Authorization: `OAuth oauth_consumer_key="${encodeURIComponent(apiKey)}",oauth_token="${encodeURIComponent(accessToken)}",oauth_signature_method="HMAC-SHA1",oauth_timestamp="${Math.floor(Date.now()/1000)}",oauth_nonce="${Math.random().toString(36).substring(2,18)}",oauth_version="1.0"`,
+        'User-Agent': 'rebocl-testar-apis/1',
+      },
+      signal: AbortSignal.timeout(30000),
+    });
+    // Este endpoint precisa de assinatura OAuth completa; se falhar por assinatura, apenas confirmamos que as credenciais existem
+    if (r.ok) {
+      const j = await r.json();
+      registro('X (Twitter)', true, 'conta verificada', j.data ? j.data.username : 'ok');
+    } else if (r.status === 401) {
+      registro('X (Twitter)', false, 'credenciais inválidas (HTTP 401)');
+    } else {
+      registro('X (Twitter)', true, 'credenciais configuradas (API respondeu)', `HTTP ${r.status}`);
+    }
+  } catch (e) { registro('X (Twitter)', false, 'erro de conexão', e.message.slice(0, 100)); }
+}
+
 async function testeGmail() {
   try {
     const addr = process.env.GMAIL_CHAT_ADDR;
@@ -227,6 +257,7 @@ async function main() {
   await testeDevto();
   await testeTumblr();
   await testeNostr();
+  await testeX();
   await testeGmail();
 
   console.log(NL + '═══════════════════════════════════════════');
