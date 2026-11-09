@@ -729,6 +729,542 @@ async function lerX(usuario = null, limite = 20) {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🤝 INTERAÇÃO — responder, curtir, repostar, seguir em todas as redes
+// Cada função recebe o identificador do alvo (issue, tweet, toot, etc.) e interage.
+
+// ━ GITHUB — comentar em issue ou PR
+async function comentarGitHub(numero, texto) {
+  const token = cofre.ler('github', 'comentarGitHub');
+  if (!token) return registrar('github', false, 'sem GITHUB_TOKEN');
+  try {
+    const r = await fetch(`https://api.github.com/repos/reboclbrank-max/site/issues/${numero}/comments`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'User-Agent': 'rebocl-casa/1',
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ body: texto.slice(0, 65000) }),
+      signal: AbortSignal.timeout(30000),
+    });
+    if (!r.ok) {
+      const erro = await r.text().catch(() => '');
+      return registrar('github', false, `comentar falhou: HTTP ${r.status}: ${erro.slice(0, 100)}`);
+    }
+    const j = await r.json();
+    return registrar('github', true, 'comentário postado na issue/PR #${numero}', j.id);
+  } catch (e) {
+    return registrar('github', false, `erro: ${e.message.slice(0, 100)}`);
+  }
+}
+
+// ━ BLUESKY — responder, repostar, curtir
+async function interagirBluesky(acao, uriAlvo, textoResposta = null) {
+  const handle = cofre.ler('bluesky_handle', 'interagirBluesky');
+  const senha = cofre.ler('bluesky_pass', 'interagirBluesky') || cofre.ler('bluesky_pass_alt', 'interagirBluesky');
+  if (!handle || !senha) return registrar('bluesky', false, 'sem BLUESKY_HANDLE ou BLUESKY_APPPASS');
+  try {
+    const login = await fetch('https://bsky.social/xrpc/com.atproto.server.createSession', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identifier: handle, password: senha }),
+      signal: AbortSignal.timeout(30000),
+    });
+    if (!login.ok) return registrar('bluesky', false, `login falhou: HTTP ${login.status}`);
+    const j = await login.json();
+    const accessJwt = j.accessJwt;
+    const did = j.did;
+
+    if (acao === 'responder' && textoResposta) {
+      const registro = {
+        $type: 'app.bsky.feed.post',
+        text: textoResposta.slice(0, 300),
+        createdAt: new Date().toISOString(),
+        reply: { root: { uri: uriAlvo, cid: uriAlvo }, parent: { uri: uriAlvo, cid: uriAlvo } },
+      };
+      const r = await fetch('https://bsky.social/xrpc/com.atproto.repo.createRecord', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${accessJwt}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ repo: did, collection: 'app.bsky.feed.post', record: registro }),
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!r.ok) return registrar('bluesky', false, `responder falhou: HTTP ${r.status}`);
+      return registrar('bluesky', true, 'resposta postada no Bluesky');
+    }
+
+    if (acao === 'repostar') {
+      const registro = {
+        $type: 'app.bsky.feed.repost',
+        subject: { uri: uriAlvo, cid: uriAlvo },
+        createdAt: new Date().toISOString(),
+      };
+      const r = await fetch('https://bsky.social/xrpc/com.atproto.repo.createRecord', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${accessJwt}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ repo: did, collection: 'app.bsky.feed.repost', record: registro }),
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!r.ok) return registrar('bluesky', false, `repostar falhou: HTTP ${r.status}`);
+      return registrar('bluesky', true, 'repost no Bluesky');
+    }
+
+    if (acao === 'curtir') {
+      const registro = {
+        $type: 'app.bsky.feed.like',
+        subject: { uri: uriAlvo, cid: uriAlvo },
+        createdAt: new Date().toISOString(),
+      };
+      const r = await fetch('https://bsky.social/xrpc/com.atproto.repo.createRecord', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${accessJwt}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ repo: did, collection: 'app.bsky.feed.like', record: registro }),
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!r.ok) return registrar('bluesky', false, `curtir falhou: HTTP ${r.status}`);
+      return registrar('bluesky', true, 'curtida no Bluesky');
+    }
+
+    return registrar('bluesky', false, 'ação não reconhecida: usar responder, repostar ou curtir');
+  } catch (e) {
+    return registrar('bluesky', false, `erro: ${e.message.slice(0, 100)}`);
+  }
+}
+
+// ━ MASTODON — responder, favoritar, boostar, seguir
+async function interagirMastodon(acao, idAlvo, textoResposta = null, usuarioParaSeguir = null) {
+  const token = cofre.ler('mastodon', 'interagirMastodon');
+  if (!token) return registrar('mastodon', false, 'sem MASTODON_TOKEN');
+  try {
+    if (acao === 'responder' && textoResposta) {
+      const r = await fetch('https://mastodon.social/api/v1/statuses', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: textoResposta.slice(0, 500), in_reply_to_id: idAlvo, language: 'pt' }),
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!r.ok) return registrar('mastodon', false, `responder falhou: HTTP ${r.status}`);
+      return registrar('mastodon', true, 'resposta postada no Mastodon');
+    }
+
+    if (acao === 'favoritar') {
+      const r = await fetch(`https://mastodon.social/api/v1/statuses/${idAlvo}/favourite`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!r.ok) return registrar('mastodon', false, `favoritar falhou: HTTP ${r.status}`);
+      return registrar('mastodon', true, 'favoritado no Mastodon');
+    }
+
+    if (acao === 'boostar') {
+      const r = await fetch(`https://mastodon.social/api/v1/statuses/${idAlvo}/reblog`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!r.ok) return registrar('mastodon', false, `boostar falhou: HTTP ${r.status}`);
+      return registrar('mastodon', true, 'boost no Mastodon');
+    }
+
+    if (acao === 'seguir' && usuarioParaSeguir) {
+      const r = await fetch('https://mastodon.social/api/v1/accounts/follows', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ target_acct: usuarioParaSeguir }),
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!r.ok) return registrar('mastodon', false, `seguir falhou: HTTP ${r.status}`);
+      return registrar('mastodon', true, 'seguindo ${usuarioParaSeguir} no Mastodon');
+    }
+
+    return registrar('mastodon', false, 'ação não reconhecida');
+  } catch (e) {
+    return registrar('mastodon', false, `erro: ${e.message.slice(0, 100)}`);
+  }
+}
+
+// ━ INSTAGRAM — comentar, curtir, seguir (limitado pela API)
+async function interagirInstagram(acao, idMedia, comentarioTexto = null, usuarioParaSeguir = null) {
+  const token = cofre.ler('instagram', 'interagirInstagram');
+  if (!token) return registrar('instagram', false, 'sem IG_TOKEN');
+  try {
+    if (acao === 'comentar' && comentarioTexto) {
+      const r = await fetch(`https://graph.instagram.com/v21.0/${idMedia}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: comentarioTexto.slice(0, 2200), access_token: token }),
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!r.ok) return registrar('instagram', false, `comentar falhou: HTTP ${r.status}`);
+      return registrar('instagram', true, 'comentário postado no Instagram');
+    }
+
+    if (acao === 'curtir') {
+      const r = await fetch(`https://graph.instagram.com/v21.0/${idMedia}/likes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ access_token: token }),
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!r.ok) return registrar('instagram', false, `curtir falhou: HTTP ${r.status}`);
+      return registrar('instagram', true, 'curtida no Instagram');
+    }
+
+    return registrar('instagram', false, 'ação não reconhecida ou não suportada pela API do Instagram');
+  } catch (e) {
+    return registrar('instagram', false, `erro: ${e.message.slice(0, 100)}`);
+  }
+}
+
+// ━ THREADS — responder, curtir
+async function interagirThreads(acao, idContainer, textoResposta = null) {
+  const token = cofre.ler('threads', 'interagirThreads') || cofre.ler('threads_alt', 'interagirThreads');
+  if (!token) return registrar('threads', false, 'sem THREADS_TOKEN');
+  try {
+    if (acao === 'responder' && textoResposta) {
+      const me = await fetch(`https://graph.threads.net/v1.0/me?fields=id`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!me.ok) return registrar('threads', false, `me falhou: HTTP ${me.status}`);
+      const mj = await me.json();
+      const userId = mj.id;
+
+      const corpo = new URLSearchParams();
+      corpo.append('media_type', 'TEXT');
+      corpo.append('text', textoResposta.slice(0, 500));
+      corpo.append('reply_control', 'conversation');
+
+      const container = await fetch(`https://graph.threads.net/v1.0/${userId}/threads`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: corpo,
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!container.ok) return registrar('threads', false, `responder falhou: HTTP ${container.status}`);
+      return registrar('threads', true, 'resposta postada no Threads');
+    }
+
+    return registrar('threads', false, 'ação não reconhecida ou não suportada');
+  } catch (e) {
+    return registrar('threads', false, `erro: ${e.message.slice(0, 100)}`);
+  }
+}
+
+// ━ DISCORD — reagir, responder em canal
+async function interagirDiscord(acao, canalId, mensagemId, textoResposta = null, emoji = '👍') {
+  const token = cofre.ler('discord', 'interagirDiscord');
+  if (!token) return registrar('discord', false, 'sem DISCORD_BOT_TOKEN');
+  try {
+    if (acao === 'responder' && textoResposta && canalId) {
+      const r = await fetch(`https://discord.com/api/v10/channels/${canalId}/messages`, {
+        method: 'POST',
+        headers: { Authorization: `Bot ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: textoResposta.slice(0, 2000), message_reference: { message_id: mensagemId } }),
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!r.ok) return registrar('discord', false, `responder falhou: HTTP ${r.status}`);
+      return registrar('discord', true, 'resposta enviada no Discord');
+    }
+
+    if (acao === 'reagir' && mensagemId && canalId) {
+      const r = await fetch(`https://discord.com/api/v10/channels/${canalId}/messages/${mensagemId}/reactions/${emoji}/@me`, {
+        method: 'PUT',
+        headers: { Authorization: `Bot ${token}` },
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!r.ok) return registrar('discord', false, `reagir falhou: HTTP ${r.status}`);
+      return registrar('discord', true, 'reação adicionada no Discord');
+    }
+
+    return registrar('discord', false, 'ação não reconhecida');
+  } catch (e) {
+    return registrar('discord', false, `erro: ${e.message.slice(0, 100)}`);
+  }
+}
+
+// ━ DEV.TO — comentar artigo, curtir
+async function interagirDevto(acao, idArtigo, comentarioTexto = null) {
+  const key = cofre.ler('devto', 'interagirDevto');
+  if (!key) return registrar('devto', false, 'sem DEVTO_API_KEY');
+  try {
+    if (acao === 'comentar' && comentarioTexto) {
+      const r = await fetch('https://dev.to/api/comments', {
+        method: 'POST',
+        headers: { 'api-key': key, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ body: comentarioTexto.slice(0, 65000), article_id: idArtigo }),
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!r.ok) return registrar('devto', false, `comentar falhou: HTTP ${r.status}`);
+      return registrar('devto', true, 'comentário postado no dev.to');
+    }
+
+    if (acao === 'curtir') {
+      const r = await fetch(`https://dev.to/api/articles/${idArtigo}/like`, {
+        method: 'POST',
+        headers: { 'api-key': key },
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!r.ok) return registrar('devto', false, `curtir falhou: HTTP ${r.status}`);
+      return registrar('devto', true, 'curtida no dev.to');
+    }
+
+    return registrar('devto', false, 'ação não reconhecida');
+  } catch (e) {
+    return registrar('devto', false, `erro: ${e.message.slice(0, 100)}`);
+  }
+}
+
+// ━ TUMBLR — reblog, curtir, seguir
+async function interagirTumblr(acao, idPost, blogParaSeguir = null) {
+  const consumerKey = cofre.ler('tumblr_key', 'interagirTumblr');
+  const consumerSecret = cofre.ler('tumblr_secret', 'interagirTumblr');
+  const refreshToken = cofre.ler('tumblr_refresh', 'interagirTumblr');
+  if (!consumerKey || !consumerSecret || !refreshToken) {
+    return registrar('tumblr', false, 'sem credenciais Tumblr completas');
+  }
+  try {
+    // Obter access token via refresh
+    const tokenResp = await fetch('https://api.tumblr.com/v2/oauth2/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ grant_type: 'refresh_token', refresh_token: refreshToken, client_id: consumerKey, client_secret: consumerSecret }),
+      signal: AbortSignal.timeout(30000),
+    });
+    if (!tokenResp.ok) return registrar('tumblr', false, `refresh falhou: HTTP ${tokenResp.status}`);
+    const tokenJ = await tokenResp.json();
+    const accessToken = tokenJ.access_token;
+
+    if (acao === 'reblog') {
+      const r = await fetch(`https://api.tumblr.com/v2/blog/reboclbrank.tumblr.com/post/reblog`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: idPost }),
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!r.ok) return registrar('tumblr', false, `reblog falhou: HTTP ${r.status}`);
+      return registrar('tumblr', true, 'reblog no Tumblr');
+    }
+
+    if (acao === 'curtir') {
+      const r = await fetch(`https://api.tumblr.com/v2/user/like`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: idPost }),
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!r.ok) return registrar('tumblr', false, `curtir falhou: HTTP ${r.status}`);
+      return registrar('tumblr', true, 'curtida no Tumblr');
+    }
+
+    return registrar('tumblr', false, 'ação não reconhecida');
+  } catch (e) {
+    return registrar('tumblr', false, `erro: ${e.message.slice(0, 100)}`);
+  }
+}
+
+// ━ NOSTR — zap (like), repost, reply
+async function interagirNostr(acao, eventId, autorPubkey, textoResposta = null) {
+  const chaveHex = cofre.ler('nostr', 'interagirNostr');
+  if (!chaveHex) return registrar('nostr', false, 'sem NOSTR_KEY');
+  try {
+    const hexValido = /^[0-9a-f]{64}$/.test(chaveHex);
+    let privateKey = chaveHex;
+    if (!hexValido) {
+      try {
+        const decoded = nip19.decode(chaveHex);
+        if (decoded.type === 'nsec') privateKey = decoded.data;
+        else return registrar('nostr', false, 'precisa de nsec (chave privada) para interagir no Nostr');
+      } catch (e) {
+        return registrar('nostr', false, 'chave NOSTR inválida');
+      }
+    }
+
+    const pubKey = getPublicKey(privateKey);
+
+    if (acao === 'zap' || acao === 'curtir') {
+      // Nostr zap = reação kind 7
+      const evento = {
+        kind: 7,
+        created_at: Math.floor(Date.now() / 1000),
+        tags: [['e', eventId], ['p', autorPubkey]],
+        content: '',
+        pubkey: pubKey,
+      };
+      const hash = calculateEventHash(evento);
+      const sig = signEvent(evento, privateKey);
+      evento.id = hash;
+      evento.sig = sig;
+      const publicado = await publicarNostrRelay(evento);
+      if (publicado) return registrar('nostr', true, 'zap (like) enviado no Nostr');
+      return registrar('nostr', false, 'falha ao enviar zap no Nostr');
+    }
+
+    if (acao === 'repostar') {
+      const evento = {
+        kind: 6,
+        created_at: Math.floor(Date.now() / 1000),
+        tags: [['e', eventId], ['p', autorPubkey]],
+        content: '',
+        pubkey: pubKey,
+      };
+      const hash = calculateEventHash(evento);
+      const sig = signEvent(evento, privateKey);
+      evento.id = hash;
+      evento.sig = sig;
+      const publicado = await publicarNostrRelay(evento);
+      if (publicado) return registrar('nostr', true, 'repost (repost NIP-18) no Nostr');
+      return registrar('nostr', false, 'falha ao repostar no Nostr');
+    }
+
+    if (acao === 'responder' && textoResposta) {
+      const evento = {
+        kind: 1,
+        created_at: Math.floor(Date.now() / 1000),
+        tags: [['e', eventId], ['p', autorPubkey], ['root', eventId]],
+        content: textoResposta.slice(0, 280),
+        pubkey: pubKey,
+      };
+      const hash = calculateEventHash(evento);
+      const sig = signEvent(evento, privateKey);
+      evento.id = hash;
+      evento.sig = sig;
+      const publicado = await publicarNostrRelay(evento);
+      if (publicado) return registrar('nostr', true, 'resposta no Nostr');
+      return registrar('nostr', false, 'falha ao responder no Nostr');
+    }
+
+    return registrar('nostr', false, 'ação não reconhecida no Nostr');
+  } catch (e) {
+    return registrar('nostr', false, `erro: ${e.message.slice(0, 100)}`);
+  }
+}
+
+async function publicarNostrRelay(evento) {
+  const serializado = serializeEvent(evento);
+  let sucesso = 0;
+  for (const relayUrl of NOSTR_RELAYS) {
+    try {
+      const ws = new WebSocket(relayUrl);
+      await new Promise((resolve, reject) => {
+        ws.onopen = resolve;
+        ws.onerror = reject;
+        setTimeout(() => reject(new Error('timeout')), 10000);
+      });
+      ws.send(JSON.stringify(['EVENT', evento]));
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      ws.close();
+      sucesso++;
+    } catch (e) { /* ignora */ }
+  }
+  return sucesso > 0;
+}
+
+// ━ X (TWITTER) — responder, curtir, retweet, seguir
+async function interagirX(acao, idTweet, textoResposta = null, usuarioParaSeguir = null) {
+  const cabecalho = gerarOAuthX('POST', 'https://api.twitter.com/2/tweets');
+  if (!cabecalho) return registrar('x', false, 'sem credenciais X configuradas');
+  try {
+    if (acao === 'responder' && textoResposta) {
+      const r = await fetch('https://api.twitter.com/2/tweets', {
+        method: 'POST',
+        headers: { Authorization: cabecalho, 'Content-Type': 'application/json', 'User-Agent': 'rebocl-casa/1' },
+        body: JSON.stringify({ text: textoResposta.slice(0, 280), reply: { in_reply_to_tweet_id: idTweet } }),
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!r.ok) return registrar('x', false, `responder falhou: HTTP ${r.status}`);
+      return registrar('x', true, 'resposta postada no X');
+    }
+
+    if (acao === 'curtir') {
+      const me = await fetch('https://api.twitter.com/2/users/me', {
+        headers: { Authorization: cabecalho, 'User-Agent': 'rebocl-casa/1' },
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!me.ok) return registrar('x', false, `não foi possível obter user_id: HTTP ${me.status}`);
+      const mj = await me.json();
+      const userId = mj.data.id;
+
+      const r = await fetch(`https://api.twitter.com/2/users/${userId}/likes`, {
+        method: 'POST',
+        headers: { Authorization: cabecalho, 'Content-Type': 'application/json', 'User-Agent': 'rebocl-casa/1' },
+        body: JSON.stringify({ tweet_id: idTweet }),
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!r.ok) return registrar('x', false, `curtir falhou: HTTP ${r.status}`);
+      return registrar('x', true, 'curtida no X');
+    }
+
+    if (acao === 'retweet') {
+      const me = await fetch('https://api.twitter.com/2/users/me', {
+        headers: { Authorization: cabecalho, 'User-Agent': 'rebocl-casa/1' },
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!me.ok) return registrar('x', false, `não foi possível obter user_id: HTTP ${me.status}`);
+      const mj = await me.json();
+      const userId = mj.data.id;
+
+      const r = await fetch(`https://api.twitter.com/2/users/${userId}/retweets`, {
+        method: 'POST',
+        headers: { Authorization: cabecalho, 'Content-Type': 'application/json', 'User-Agent': 'rebocl-casa/1' },
+        body: JSON.stringify({ tweet_id: idTweet }),
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!r.ok) return registrar('x', false, `retweet falhou: HTTP ${r.status}`);
+      return registrar('x', true, 'retweet no X');
+    }
+
+    if (acao === 'seguir' && usuarioParaSeguir) {
+      const me = await fetch('https://api.twitter.com/2/users/me', {
+        headers: { Authorization: cabecalho, 'User-Agent': 'rebocl-casa/1' },
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!me.ok) return registrar('x', false, `não foi possível obter user_id: HTTP ${me.status}`);
+      const mj = await me.json();
+      const userId = mj.data.id;
+
+      const r = await fetch(`https://api.twitter.com/2/users/${userId}/following`, {
+        method: 'POST',
+        headers: { Authorization: cabecalho, 'Content-Type': 'application/json', 'User-Agent': 'rebocl-casa/1' },
+        body: JSON.stringify({ target_user_id: usuarioParaSeguir }),
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!r.ok) return registrar('x', false, `seguir falhou: HTTP ${r.status}`);
+      return registrar('x', true, 'seguindo ${usuarioParaSeguir} no X');
+    }
+
+    return registrar('x', false, 'ação não reconhecida no X');
+  } catch (e) {
+    return registrar('x', false, `erro: ${e.message.slice(0, 100)}`);
+  }
+}
+
+// ━ GMAIL — responder email
+async function responderGmail(messageId, textoResposta) {
+  const addr = cofre.ler('gmail_addr', 'responderGmail');
+  const pass = cofre.ler('gmail_pass', 'responderGmail');
+  if (!addr || !pass) return registrar('gmail', false, 'sem credenciais Gmail');
+  try {
+    const nodemailer = require('nodemailer');
+    const transporte = nodemailer.createTransport({
+      host: 'smtp.gmail.com', port: 465, secure: true,
+      auth: { user: addr, pass: pass },
+    });
+    await transporte.sendMail({
+      from: `"Casa Rebocl" <${addr}>`,
+      to: addr, // responde para o dono
+      subject: `Re: ${textoResposta.slice(0, 50)}`,
+      text: textoResposta,
+      inReplyTo: messageId,
+    });
+    return registrar('gmail', true, 'resposta de email enviada');
+  } catch (e) {
+    return registrar('gmail', false, `erro: ${e.message.slice(0, 100)}`);
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 📫 GMAIL — enviar email (via SMTP do cofre)
 async function enviarGmail(para, assunto, texto) {
   const addr = cofre.ler('gmail_addr', 'enviarGmail');
@@ -854,21 +1390,32 @@ async function postarTodas(texto, opcoes = {}) {
 
 module.exports = {
   postarGitHub,
+  comentarGitHub,
   medirYoutube,
   dispararUploadYoutube,
   postarItch,
   postarBluesky,
+  interagirBluesky,
   postarMastodon,
+  interagirMastodon,
   postarInstagram,
+  interagirInstagram,
   postarThreads,
+  interagirThreads,
   postarDiscord,
+  interagirDiscord,
   postarDevto,
+  interagirDevto,
   postarTumblr,
+  interagirTumblr,
   postarNostr,
   lerNostr,
+  interagirNostr,
   postarX,
   lerX,
+  interagirX,
   enviarGmail,
+  responderGmail,
   postarTodas,
   relatorio,
   PUBLICACOES,
