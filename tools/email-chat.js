@@ -395,7 +395,21 @@ const CAUSAS_STATUS_CASA = Object.freeze({
   'autonomia-ilegivel': { texto: 'arquivo de autonomia ilegível — a casa age como desligada', recuperavel: false },
   'autonomia-sem-prazo': { texto: 'autonomia alta sem prazo marcado — ensaio sem fim definido', recuperavel: false },
   'autonomia-sem-faixa': { texto: 'autonomia alta sem nenhum arquivo liberado', recuperavel: false },
-  'barreira-sem-execucao': { texto: 'a main andou sem rodar a barreira — código no ar sem teste', recuperavel: false }
+  'barreira-sem-execucao': { texto: 'a main andou sem rodar a barreira — código no ar sem teste', recuperavel: false },
+  // 09/11: causas de rede social — cada rede tem texto próprio para o dono saber QUAL falhou
+  'rede-github': { texto: 'GitHub API indisponível — sem leitura do repositório', recuperavel: false },
+  'rede-youtube': { texto: 'YouTube API indisponível — sem leitura do canal', recuperavel: false },
+  'rede-itch': { texto: 'itch.io API indisponível — sem leitura do perfil', recuperavel: false },
+  'rede-bluesky': { texto: 'Bluesky indisponível — login com senha de app falhou', recuperavel: false },
+  'rede-mastodon': { texto: 'Mastodon indisponível — token de acesso inválido', recuperavel: false },
+  'rede-instagram': { texto: 'Instagram Graph API indisponível — token expirado', recuperavel: false },
+  'rede-threads': { texto: 'Threads indisponível — token de 60 dias expirado', recuperavel: false },
+  'rede-discord': { texto: 'Discord indisponível — bot token inválido', recuperavel: false },
+  'rede-devto': { texto: 'dev.to indisponível — API key inválida', recuperavel: false },
+  'rede-tumblr': { texto: 'Tumblr indisponível — consumer key inválida', recuperavel: false },
+  'rede-nostr': { texto: 'Nostr — chave sem formato válido', recuperavel: false },
+  'rede-pinterest': { texto: 'Pinterest sandbox indisponível — trial não aprovado', recuperavel: false },
+  'rede-gmail': { texto: 'Gmail IMAP/SMTP indisponível — credenciais inválidas', recuperavel: false }
 });
 // Rótulos de evidência também são fechados: `status:` nunca reflete texto arbitrário que
 // possa ter sido gravado no JSON público. “Rotina recente” descreve só a execução observada,
