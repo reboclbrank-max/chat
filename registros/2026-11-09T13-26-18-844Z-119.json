@@ -1,0 +1,27 @@
+{
+  "quando": "2026-11-09T13:26:18.844Z",
+  "origem": "ao-vivo",
+  "pr": 119,
+  "sha": "1cf4f0ea740ef7be6a7d56f4e44d545e9c47e239",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "🎮📺 Remove limitações itch.io e YouTube",
+  "barreira": "success",
+  "arquivos": [
+    ".github/workflows/testar-apis.yml",
+    "tools/cofre-seguro.js",
+    "tools/redes-sociais.js",
+    "tools/testar-todas-as-apis.js"
+  ],
+  "essenciais": [
+    ".github/workflows/testar-apis.yml"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: .github/workflows/testar-apis.yml, tools/cofre-seguro.js, tools/redes-sociais.js…"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: .github/workflows/testar-apis.yml"
+  }
+}
