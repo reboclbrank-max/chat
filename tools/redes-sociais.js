@@ -445,6 +445,117 @@ async function enviarBuildItchButler(usuarioJogo, caminhoPasta, canal = 'windows
   }
 }
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🎮 ITCH.IO — interação (comentar, curtir, seguir)
+// Tenta: (1) endpoints internos não documentados da itch.io API com API key;
+//        (2) automação de navegador via Puppeteer com login do itch.io.
+// A itch.io não expõe API pública para interação social, então tentamos
+// todos os caminhos disponíveis.
+async function interagirItch(acao, alvo, valor = '') {
+  const key = cofre.ler('itch', 'interagirItch');
+  const login = cofre.ler('itch_login', 'interagirItch');
+  const senha = cofre.ler('itch_senha', 'interagirItch');
+
+  if (!key && (!login || !senha)) {
+    return registrar('itch', false, 'sem ITCH_API_KEYS ou credenciais de login (ITCH_LOGIN/ITCH_SENHA) configurado');
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // MÉTODO 1: endpoints internos não documentados da itch.io API com API key
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (key) {
+    try {
+      const endpoints = {
+        comentar: `https://itch.io/api/1/${key}/game/${alvo}/comment`,
+        curtir: `https://itch.io/api/1/${key}/game/${alvo}/like`,
+        seguir: `https://itch.io/api/1/${key}/user/${alvo}/follow`,
+      };
+      const url = endpoints[acao];
+      if (!url) {
+        return registrar('itch', false, `acao desconhecida: ${acao}`);
+      }
+      const body = acao === 'comentar' ? { comment: valor } : {};
+      const r = await fetch(url, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${key}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+        signal: AbortSignal.timeout(30000),
+      });
+      if (r.ok || r.status === 201 || r.status === 204) {
+        const j = await r.json().catch(() => ({}));
+        return registrar('itch', true, `${acao} realizado via API interna itch.io para ${alvo}`, j.id || alvo);
+      }
+      const erro = await r.text().catch(() => '');
+      if (r.status === 404 || r.status === 405 || r.status === 403) {
+        // tentar próximo método
+      } else {
+        return registrar('itch', false, `${acao} via API falhou: HTTP ${r.status}: ${erro.slice(0, 100)}`);
+      }
+    } catch (e) {
+      // cair para método 2
+    }
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // MÉTODO 2: automação de navegador via Puppeteer com login do itch.io
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (login && senha) {
+    try {
+      const puppeteer = require('puppeteer');
+      const browser = await puppeteer.launch({
+        headless: 'new',
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      });
+      const page = await browser.newPage();
+      await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+
+      // Fazer login no itch.io
+      await page.goto('https://itch.io/login', { waitUntil: 'networkidle2', timeout: 30000 });
+      await page.type('input[name="login"], input[type="email"], input[name="user[login]"]', login);
+      await page.type('input[name="password"], input[type="password"], input[name="user[password]"]', senha);
+      await page.click('button[type="submit"], input[type="submit"]');
+      await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 30000 });
+
+      // Verificar se logou
+      const estaLogado = await page.evaluate(() => {
+        return !document.querySelector('a[href*="/login"]') && !document.querySelector('form[action*="/login"]');
+      });
+      if (!estaLogado) {
+        await browser.close();
+        return registrar('itch', false, `login falhou no itch.io para ${acao}`);
+      }
+
+      if (acao === 'comentar') {
+        await page.goto(`https://itch.io/games/${alvo}`, { waitUntil: 'networkidle2', timeout: 30000 });
+        await page.type('textarea[name="comment"], textarea[placeholder*="comment"], textarea', valor);
+        await page.click('button[type="submit"], input[type="submit"], button:has-text("Comentar"), button:has-text("Comment")');
+        await page.waitForTimeout(3000);
+      } else if (acao === 'curtir') {
+        await page.goto(`https://itch.io/games/${alvo}`, { waitUntil: 'networkidle2', timeout: 30000 });
+        await page.click('button:has-text("Like"), button:has-text("Curtir"), [data-action*="like"], .rate-up');
+        await page.waitForTimeout(3000);
+      } else if (acao === 'seguir') {
+        await page.goto(`https://itch.io/user/${alvo}`, { waitUntil: 'networkidle2', timeout: 30000 });
+        await page.click('button:has-text("Follow"), button:has-text("Seguir"), [data-action*="follow"]');
+        await page.waitForTimeout(3000);
+      } else {
+        await browser.close();
+        return registrar('itch', false, `acao desconhecida: ${acao}`);
+      }
+
+      await browser.close();
+      return registrar('itch', true, `${acao} realizado via Puppeteer para ${alvo}`);
+    } catch (e) {
+      return registrar('itch', false, `puppeteer falhou: ${e.message.slice(0, 100)}`);
+    }
+  }
+
+  return registrar('itch', false, `nenhum metodo disponível para ${acao} no itch.io`);
+}
+
 // 📺 YOUTUBE — comentar em vídeo (OAuth do dono via workflow do site)
 // Como os segredos OAuth estão no repo site, usa o disparo de workflow para
 // executar ações que exigem autenticação do YouTube.
@@ -1568,6 +1679,7 @@ module.exports = {
   criarJogoItch,
   enviarBuildItch,
   enviarBuildItchButler,
+  interagirItch,
   postarBluesky,
   interagirBluesky,
   postarMastodon,
