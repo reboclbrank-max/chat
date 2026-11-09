@@ -11,19 +11,131 @@ const cofre = require('./cofre-seguro');
 const crypto = require('crypto');
 const NL = '\n';
 
-const PUBLICACOES = []; // { servico, quando, sucesso, detalhe, idPublicacao }
+const PUBLICACOES = []; // { servico, quando, sucesso, detalhe, idPublicacao, formato }
+const HISTORICO_FORMATOS = {}; // { servico: ['foto', 'video', 'post', ...] }
+const DESEMPENHO_FORMATO = {}; // { servico: { formato: { total, sucesso, zeros } } }
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🛡️ CONTROLE DE QUALIDADE — freio de texto antes de publicar
+// Regras: (1) texto não vazio; (2) máximo 2 hashtags; (3) não repetir formato na mesma rede;
+// (4) conteúdo deve ter chamada para ação ou informação útil.
+function validarQualidade(texto, tipo = 'post', servico = 'desconhecido') {
+  const problemas = [];
+
+  if (!texto || texto.trim().length === 0) {
+    problemas.push('texto vazio');
+  }
+
+  if (texto && texto.length > 0) {
+    const hashtags = (texto.match(/#\w+/g) || []).length;
+    if (hashtags > 2) {
+      problemas.push(`muitas hashtags (${hashtags}, máximo 2)`);
+    }
+
+    const palavrasChave = ['grátis', 'jogue', 'baixe', 'teste', 'veja', 'descubra', 'simule', 'link', 'navegador', 'apk'];
+    const temCTA = palavrasChave.some(p => texto.toLowerCase().includes(p));
+    if (!temCTA && tipo !== 'comentario') {
+      problemas.push('sem chamada para ação ou informação útil');
+    }
+  }
+
+  if (!HISTORICO_FORMATOS[servico]) {
+    HISTORICO_FORMATOS[servico] = [];
+  }
+
+  const ultimos3 = HISTORICO_FORMATOS[servico].slice(-3);
+  const mesmoFormatoRecente = ultimos3.includes(tipo);
+  if (mesmoFormatoRecente && ultimos3.length >= 2) {
+    problemas.push(`formato '${tipo}' repetido recentemente (diversificação obrigatória)`);
+  }
+
+  if (problemas.length > 0) {
+    return { aprovado: false, motivos: problemas };
+  }
+
+  return { aprovado: true, motivos: [] };
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 📊 REGISTRAR DESEMPENHO POR FORMATO
+function registrarDesempenho(servico, formato, sucesso, zeros = false) {
+  if (!DESEMPENHO_FORMATO[servico]) {
+    DESEMPENHO_FORMATO[servico] = {};
+  }
+  if (!DESEMPENHO_FORMATO[servico][formato]) {
+    DESEMPENHO_FORMATO[servico][formato] = { total: 0, sucesso: 0, zeros: 0 };
+  }
+  DESEMPENHO_FORMATO[servico][formato].total += 1;
+  if (sucesso) DESEMPENHO_FORMATO[servico][formato].sucesso += 1;
+  if (zeros) DESEMPENHO_FORMATO[servico][formato].zeros += 1;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 📅 AGENDAMENTO DE PUBLICAÇÃO
+const AGENDA_PUBLICACOES = []; // { servico, conteudo, tipo, horario, criadoEm }
+
+function agendarPublicacao(servico, conteudo, tipo, horarioISO) {
+  AGENDA_PUBLICACOES.push({
+    servico,
+    conteudo,
+    tipo,
+    horario: horarioISO,
+    criadoEm: new Date().toISOString(),
+    enviado: false,
+  });
+  return AGENDA_PUBLICACOES.length - 1;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🔄 OBTER PRÓXIMO FORMATO RECOMENDADO (diversificação automática)
+function obterProximoFormato(servico, formatosDisponiveis = ['video', 'foto', 'post', 'gameplay']) {
+  if (!HISTORICO_FORMATOS[servico]) {
+    return formatosDisponiveis[0];
+  }
+
+  const ultimos5 = HISTORICO_FORMATOS[servico].slice(-5);
+  const uso = {};
+  formatosDisponiveis.forEach(f => { uso[f] = 0; });
+  ultimos5.forEach(f => { if (uso[f] !== undefined) uso[f]++; });
+
+  let menosUsado = formatosDisponiveis[0];
+  let menorUso = Infinity;
+  for (const [f, u] of Object.entries(uso)) {
+    if (u < menorUso) {
+      menorUso = u;
+      menosUsado = f;
+    }
+  }
+  return menosUsado;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// HELPER: registro de publicação (atualizado para incluir formato)
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// HELPER: registro de publicação
-function registrar(servico, sucesso, detalhe, idPub) {
+// HELPER: registro de publicação (inclui formato para diversificação)
+function registrar(servico, sucesso, detalhe, idPub, formato = 'post') {
   PUBLICACOES.push({
     servico,
     quando: new Date().toISOString(),
     sucesso,
     detalhe,
     idPublicacao: idPub || null,
+    formato,
   });
-  return { sucesso, servico, detalhe, idPublicacao: idPub || null };
+
+  // Atualizar histórico de formatos
+  if (!HISTORICO_FORMATOS[servico]) {
+    HISTORICO_FORMATOS[servico] = [];
+  }
+  HISTORICO_FORMATOS[servico].push(formato);
+  if (HISTORICO_FORMATOS[servico].length > 10) {
+    HISTORICO_FORMATOS[servico] = HISTORICO_FORMATOS[servico].slice(-10);
+  }
+
+  // Registrar desempenho
+  registrarDesempenho(servico, formato, sucesso, detalhe && detalhe.includes('zero'));
+
+  return { sucesso, servico, detalhe, idPublicacao: idPub || null, formato };
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1705,4 +1817,12 @@ module.exports = {
   postarTodas,
   relatorio,
   PUBLICACOES,
+  validarQualidade,
+  registrarDesempenho,
+  agendarPublicacao,
+  obterProximoFormato,
+  relatorioDesempenho,
+  HISTORICO_FORMATOS,
+  DESEMPENHO_FORMATO,
+  AGENDA_PUBLICACOES,
 };
