@@ -343,6 +343,107 @@ async function postarThreads(texto, urlImagem) {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🎮 ITCH.IO — criar novo jogo (além de atualizar existente)
+async function criarJogoItch(campos) {
+  const key = cofre.ler('itch', 'criarJogoItch');
+  if (!key) return registrar('itch', false, 'sem ITCH_API_KEYS configurado');
+  try {
+    const body = new URLSearchParams();
+    for (const [k, v] of Object.entries(campos || {})) body.append(`game[${k}]`, v);
+    body.append('slug', campos.slug || '');
+    body.append('published', campos.published || 'draft');
+    body.append('payment_mode', campos.payment_mode || 'free');
+    body.append('type', campos.type || 'default');
+    body.append('user_classification', campos.user_classification || 'game');
+    body.append('release_status', campos.release_status || 'released');
+    body.append('community_type', campos.community_type || 'steam');
+    body.append('min_price', campos.min_price || '0');
+
+    const r = await fetch('https://api.itch.io/games', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${key}` },
+      body,
+      signal: AbortSignal.timeout(30000),
+    });
+    if (r.ok) {
+      const j = await r.json();
+      return registrar('itch', true, `jogo criado: ${j.id || 'sem ID'}`, j.id);
+    }
+    const erro = await r.text().catch(() => '');
+    return registrar('itch', false, `criar jogo falhou: HTTP ${r.status}: ${erro.slice(0, 100)}`);
+  } catch (e) {
+    return registrar('itch', false, `erro: ${e.message.slice(0, 100)}`);
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 📺 YOUTUBE — comentar em vídeo (OAuth do dono via workflow do site)
+// Como os segredos OAuth estão no repo site, usa o disparo de workflow para
+// executar ações que exigem autenticação do YouTube.
+async function comentarYoutube(videoId, texto) {
+  const pat = cofre.ler('github', 'comentarYoutube');
+  if (!pat) return registrar('youtube', false, 'sem GITHUB_TOKEN para disparar workflow');
+  try {
+    const r = await fetch('https://api.github.com/repos/reboclbrank-max/site/actions/workflows/comentar-youtube.yml/dispatches', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${pat}`,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+        'User-Agent': 'rebocl-casa/1',
+      },
+      body: JSON.stringify({
+        ref: 'main',
+        inputs: {
+          video_id: videoId,
+          comentario: texto.slice(0, 500),
+        },
+      }),
+      signal: AbortSignal.timeout(30000),
+    });
+    if (r.status === 204) {
+      return registrar('youtube', true, 'workflow de comentário disparado no repo site', videoId);
+    }
+    const erro = await r.text().catch(() => '');
+    return registrar('youtube', false, `workflow comentário falhou: HTTP ${r.status}: ${erro.slice(0, 100)}`);
+  } catch (e) {
+    return registrar('youtube', false, `erro: ${e.message.slice(0, 100)}`);
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 📺 YOUTUBE — curtir vídeo (via workflow do site)
+async function curtirYoutube(videoId) {
+  const pat = cofre.ler('github', 'curtirYoutube');
+  if (!pat) return registrar('youtube', false, 'sem GITHUB_TOKEN para disparar workflow');
+  try {
+    const r = await fetch('https://api.github.com/repos/reboclbrank-max/site/actions/workflows/curtir-youtube.yml/dispatches', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${pat}`,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+        'User-Agent': 'rebocl-casa/1',
+      },
+      body: JSON.stringify({
+        ref: 'main',
+        inputs: {
+          video_id: videoId,
+        },
+      }),
+      signal: AbortSignal.timeout(30000),
+    });
+    if (r.status === 204) {
+      return registrar('youtube', true, 'workflow de curtir disparado no repo site', videoId);
+    }
+    const erro = await r.text().catch(() => '');
+    return registrar('youtube', false, `workflow curtir falhou: HTTP ${r.status}: ${erro.slice(0, 100)}`);
+  } catch (e) {
+    return registrar('youtube', false, `erro: ${e.message.slice(0, 100)}`);
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 💬 DISCORD — enviar mensagem em canal (exige servidor criado e bot autorizado)
 async function postarDiscord(canalId, texto) {
   const token = cofre.ler('discord', 'postarDiscord');
@@ -1392,8 +1493,11 @@ module.exports = {
   postarGitHub,
   comentarGitHub,
   medirYoutube,
+  comentarYoutube,
+  curtirYoutube,
   dispararUploadYoutube,
   postarItch,
+  criarJogoItch,
   postarBluesky,
   interagirBluesky,
   postarMastodon,
