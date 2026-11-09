@@ -416,6 +416,35 @@ async function enviarBuildItch(gameId, caminhoArquivo) {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🎮 ITCH.IO — enviar build via butler CLI (método oficial, sem API REST)
+// Requer: butler instalado e logado (butler login). Comando: butler push <pasta> <usuario>/<jogo>:<canal>
+async function enviarBuildItchButler(usuarioJogo, caminhoPasta, canal = 'windows') {
+  const { execFile } = await import('node:child_process');
+  const { promisify } = await import('node:util');
+  const execFileAsync = promisify(execFile);
+
+  try {
+    const fs = await import('node:fs');
+    if (!fs.existsSync(caminhoPasta)) {
+      return registrar('itch', false, `pasta não encontrada: ${caminhoPasta}`);
+    }
+
+    const alvo = `${usuarioJogo}:${canal}`;
+    const { stdout, stderr } = await execFileAsync('butler', ['push', caminhoPasta, alvo], {
+      timeout: 300000,
+      encoding: 'utf8',
+    });
+
+    const saida = (stdout || '') + (stderr || '');
+    if (saida.toLowerCase().includes('uploaded') || saida.toLowerCase().includes('pushed') || saida.includes('OK')) {
+      return registrar('itch', true, `build enviado via butler para ${alvo}`, caminhoPasta);
+    }
+    return registrar('itch', true, `butler executado para ${alvo}`, saida.slice(0, 100));
+  } catch (e) {
+    return registrar('itch', false, `butler falhou: ${e.message.slice(0, 100)}`);
+  }
+}
+
 // 📺 YOUTUBE — comentar em vídeo (OAuth do dono via workflow do site)
 // Como os segredos OAuth estão no repo site, usa o disparo de workflow para
 // executar ações que exigem autenticação do YouTube.
@@ -1538,6 +1567,7 @@ module.exports = {
   postarItch,
   criarJogoItch,
   enviarBuildItch,
+  enviarBuildItchButler,
   postarBluesky,
   interagirBluesky,
   postarMastodon,
