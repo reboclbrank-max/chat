@@ -1,8 +1,33 @@
 {
   "esquema": "qualidade-chat-v1",
-  "atualizado_em": "2026-11-09T19:39:17.741Z",
+  "atualizado_em": "2026-11-09T21:21:27.757Z",
   "aviso": "Histórico público sanitizado: IDs e placar, sem e-mails, destinos, respostas integrais ou segredos.",
   "baterias": [
+    {
+      "quando": "2026-11-09T21:21:27.757Z",
+      "amostra": "diaria-2026-11-09",
+      "banco": "v2",
+      "ids": [
+        117,
+        105,
+        103,
+        109,
+        113,
+        112,
+        118,
+        111,
+        116,
+        108
+      ],
+      "total": 10,
+      "certos": 10,
+      "mudos": 0,
+      "rotas": {
+        "frota": 4,
+        "reserva": 5,
+        "geografia local": 1
+      }
+    },
     {
       "quando": "2026-11-09T19:39:17.741Z",
       "amostra": "manual-42684698565",
@@ -711,30 +736,6 @@
         "frota": 3,
         "reserva": 6,
         "geografia local": 1
-      }
-    },
-    {
-      "quando": "2026-10-17T05:32:30.035Z",
-      "amostra": "auditoria-capacidade-9",
-      "banco": "v2",
-      "ids": [
-        101,
-        105,
-        100,
-        119,
-        108,
-        113,
-        116,
-        109,
-        111,
-        102
-      ],
-      "total": 10,
-      "certos": 10,
-      "mudos": 0,
-      "rotas": {
-        "frota": 3,
-        "reserva": 7
       }
     }
   ]

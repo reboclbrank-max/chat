@@ -1,18 +1,18 @@
 # Placar de capacidade do Chat
 
-Atualizado: `2026-11-09T19:39:18.331Z`
+Atualizado: `2026-11-09T21:21:28.218Z`
 
 Fonte operacional: `estado/operacional`; cópias em `main` podem ser históricas.
 Esta nota combina cobertura estrutural e amostras; não mede entrega ponta a ponta nem autonomia universal.
-Vigia observado: 2026-11-09T19:34:43.336Z; qualidade observada: 2026-11-09T19:39:17.741Z.
+Vigia observado: 2026-11-09T20:55:52.323Z; qualidade observada: 2026-11-09T21:21:27.757Z.
 
 **Indicador interno: 91/100.** Indicador interno de cobertura; não é resultado observável do produto, não é teste de QI, consciência nem garantia de disponibilidade.
 **Estado do canal real (tráfego controlado):** última rodada controlada: 38/38 PASS; falha ampla anterior preservada: 37/38 PASS, 1 falha(s) (provas/teste-email-r3-2026-10-18-0211.md); ainda não mede satisfação humana; reteste focado de foto mais recente: PASS (amostra única, não substitui a rodada completa).
 
 | Dimensão | Pontos | Evidência |
 |---|---:|---|
-| qualidade de respostas | 20/20 | 5 amostras rastreáveis, 20 questões distintas, média 98%, 0 rota(s) muda(s) |
-| confiabilidade observada | 11/20 | 9/22 itens OK; vigia recente |
+| qualidade de respostas | 20/20 | 5 amostras rastreáveis, 20 questões distintas, média 100%, 0 rota(s) muda(s) |
+| confiabilidade observada | 11/20 | 10/22 itens OK; vigia recente |
 | resiliência e recuperação | 15/15 | vigia=sim, continuidade=sim, barreira=sim |
 | uso seguro de ferramentas | 15/15 | e-mail+Telegram=sim, pesquisa=sim, navegador público=sim |
 | autonomia verificável | 15/15 | bateria=sim, vigia=sim, testes=sim |

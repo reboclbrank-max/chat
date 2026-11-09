@@ -1,13 +1,13 @@
 {
   "esquema": "placar-capacidade-v2",
-  "gerado_em": "2026-11-09T19:39:18.331Z",
+  "gerado_em": "2026-11-09T21:21:28.218Z",
   "evidencia": {
     "fonte_estado": "estado/operacional",
     "tipo": "cobertura_estrutural_e_amostras",
     "autonomia_universal": false,
     "entrega_ponta_a_ponta": "nao_medida_por_este_indicador",
-    "vigia_observado_em": "2026-11-09T19:34:43.336Z",
-    "qualidade_observada_em": "2026-11-09T19:39:17.741Z",
+    "vigia_observado_em": "2026-11-09T20:55:52.323Z",
+    "qualidade_observada_em": "2026-11-09T21:21:27.757Z",
     "vigia_vigente": true,
     "qualidade_vigente": true
   },
@@ -53,14 +53,14 @@
       "nome": "qualidade de respostas",
       "maximo": 20,
       "pontos": 20,
-      "evidencia": "5 amostras rastreáveis, 20 questões distintas, média 98%, 0 rota(s) muda(s)",
+      "evidencia": "5 amostras rastreáveis, 20 questões distintas, média 100%, 0 rota(s) muda(s)",
       "comoMelhorar": "manter amostras distintas, corrigir regressões e registrar falhas de rota"
     },
     {
       "nome": "confiabilidade observada",
       "maximo": 20,
       "pontos": 11,
-      "evidencia": "9/22 itens OK; vigia recente",
+      "evidencia": "10/22 itens OK; vigia recente",
       "comoMelhorar": "tratar os itens vermelhos do vigia antes de aumentar a cadência"
     },
     {
@@ -93,11 +93,11 @@
     }
   ],
   "sinais": {
-    "itens_vigia_ok": 9,
+    "itens_vigia_ok": 10,
     "itens_vigia_total": 22,
     "vigia_recente": true,
     "baterias": 5,
-    "media_bateria": 98,
+    "media_bateria": 100,
     "qualidade_rastreavel": true,
     "cobertura_questoes": 20,
     "respostas_auditadas": 50
