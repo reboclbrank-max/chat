@@ -1,0 +1,28 @@
+{
+  "quando": "2026-11-09T10:21:37.933Z",
+  "origem": "ao-vivo",
+  "pr": 118,
+  "sha": "92b8a34c1c359ebdb358a2f1b50f498977debfa9",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "📺 YouTube upload de vídeo com OAuth 2.0",
+  "barreira": "success",
+  "arquivos": [
+    ".github/workflows/testar-apis.yml",
+    "tools/cofre-seguro.js",
+    "tools/redes-sociais.js",
+    "tools/testar-todas-as-apis.js",
+    "tools/testar-todas-as-redes.js"
+  ],
+  "essenciais": [
+    ".github/workflows/testar-apis.yml"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: .github/workflows/testar-apis.yml, tools/cofre-seguro.js, tools/redes-sociais.js…"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: .github/workflows/testar-apis.yml"
+  }
+}
