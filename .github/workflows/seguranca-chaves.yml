@@ -1,0 +1,44 @@
+name: Segurança de chaves
+# 🔒 Escaneia commits e arquivos em busca de credenciais expostas (hardcoded).
+# Roda em cada push, pull request e diariamente via cron.
+# Nenhum valor de credencial é logado — apenas hashes SHA-256 truncados.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 3 * * *'  # diário 03:00 UTC
+  workflow_dispatch:
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+concurrency:
+  group: seguranca-chaves
+  cancel-in-progress: false
+jobs:
+  escanear:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0  # histórico completo para varredura de commits antigos
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+      - name: Instalar dependências
+        run: npm ci --omit=dev --no-audit --no-fund
+      - name: Executar scanner de credenciais expostas
+        run: node tools/scanner-credenciais.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: reboclbrank-max/chat
+      - name: Publicar resultado no resumo do job
+        if: always()
+        run: |
+          if [ -f resultado-seguranca.md ]; then
+            echo '## Resultado da varredura de credenciais' >> $GITHUB_STEP_SUMMARY
+            cat resultado-seguranca.md >> $GITHUB_STEP_SUMMARY
+          fi
