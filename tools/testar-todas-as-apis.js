@@ -35,7 +35,8 @@ async function testeGitHub() {
       const j = await r.json();
       registro('GitHub PAT', true, 'usuário autenticado', j.login);
     } else {
-      registro('GitHub PAT', false, `HTTP ${r.status}`, await r.text().slice(0, 100));
+      const texto = await r.text().catch(() => '');
+      registro('GitHub PAT', false, `HTTP ${r.status}`, texto.slice(0, 100));
     }
   } catch (e) { registro('GitHub PAT', false, 'erro de conexão', e.message.slice(0, 100)); }
 }
