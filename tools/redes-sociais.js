@@ -9,11 +9,33 @@
 
 const cofre = require('./cofre-seguro');
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 const NL = '\n';
 
 const PUBLICACOES = []; // { servico, quando, sucesso, detalhe, idPublicacao, formato }
 const HISTORICO_FORMATOS = {}; // { servico: ['foto', 'video', 'post', ...] }
 const DESEMPENHO_FORMATO = {}; // { servico: { formato: { total, sucesso, zeros } } }
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 💾 BACKUP AUTOMÁTICO DE CONTEÚDO PUBLICADO
+// Salva cada publicação em arquivo JSON para histórico e reutilização.
+const PUBLICADOS_DIR = path.join(__dirname, '..', 'posts', 'publicados');
+if (!fs.existsSync(PUBLICADOS_DIR)) {
+  fs.mkdirSync(PUBLICADOS_DIR, { recursive: true });
+}
+
+function salvarBackupPublicacao(registro) {
+  try {
+    const data = new Date(registro.quando);
+    const dataStr = data.toISOString().slice(0, 10);
+    const horaStr = data.toISOString().slice(11, 19).replace(/:/g, '-');
+    const arquivo = path.join(PUBLICADOS_DIR, `${dataStr}_${horaStr}_${registro.servico}_${registro.formato || 'post'}.json`);
+    fs.writeFileSync(arquivo, JSON.stringify(registro, null, 2), 'utf8');
+  } catch (e) {
+    // Não falha a publicação por causa do backup
+  }
+}
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 🛡️ CONTROLE DE QUALIDADE — freio de texto antes de publicar
@@ -108,20 +130,61 @@ function obterProximoFormato(servico, formatosDisponiveis = ['video', 'foto', 'p
   }
   return menosUsado;
 }
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🔗 VALIDAÇÃO DE LINK ANTES DE POSTAR
+// Verifica se URLs estão ativas antes de incluir em qualquer publicação.
+// Evita desperdício de oportunidade de marketing com links quebrados.
+async function validarLink(url) {
+  if (!url || !url.startsWith('http')) return { valido: true, motivo: 'não é URL HTTP' };
+  try {
+    const r = await fetch(url, {
+      method: 'HEAD',
+      signal: AbortSignal.timeout(10000),
+      headers: { 'User-Agent': 'rebocl-marketing/1.0' },
+    });
+    if (r.ok) return { valido: true, motivo: `HTTP ${r.status}` };
+    return { valido: false, motivo: `HTTP ${r.status}` };
+  } catch (e) {
+    return { valido: false, motivo: `erro: ${e.message.slice(0, 80)}` };
+  }
+}
+
+function extrairLinks(texto) {
+  const regex = /https?:\/\/[^\s<>"{}|\^`\[\]]+/g;
+  return (texto || '').match(regex) || [];
+}
+
+async function validarLinksDoTexto(texto) {
+  const links = extrairLinks(texto);
+  if (links.length === 0) return { valido: true, links: [] };
+  const resultados = [];
+  for (const link of links) {
+    const r = await validarLink(link);
+    resultados.push({ link, ...r });
+  }
+  const algumInvalido = resultados.some(r => !r.valido);
+  return { valido: !algumInvalido, links: resultados };
+}
+
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // HELPER: registro de publicação (atualizado para incluir formato)
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // HELPER: registro de publicação (inclui formato para diversificação)
 function registrar(servico, sucesso, detalhe, idPub, formato = 'post') {
-  PUBLICACOES.push({
+  const registro = {
     servico,
     quando: new Date().toISOString(),
     sucesso,
     detalhe,
     idPublicacao: idPub || null,
     formato,
-  });
+  };
+
+  PUBLICACOES.push(registro);
+
+  // Backup automático em arquivo
+  salvarBackupPublicacao(registro);
 
   // Atualizar histórico de formatos
   if (!HISTORICO_FORMATOS[servico]) {
@@ -1800,14 +1863,26 @@ async function postarTodas(texto, opcoes = {}) {
   // Mastodon
   resultados.push(await postarMastodon(texto, imagemB64, nomeImagem, 'image/jpeg'));
 
-  // Instagram (precisa de URL externa da imagem)
+  // Instagram (precisa de URL externa da imagem) + UTM + validação de link
   if (urlImagem) {
-    resultados.push(await postarInstagram(texto, urlImagem));
+    const linkValido = await validarLinksDoTexto(texto);
+    if (!linkValido.valido) {
+      const invalidos = linkValido.links.filter(l => !l.valido).map(l => l.link);
+      registrar('sistema', false, `Links quebrados detectados, não publicar Instagram: ${invalidos.join(', ')}`);
+    } else {
+      resultados.push(await postarInstagram(texto, urlImagem));
+    }
   }
 
-  // Threads (precisa de URL externa da imagem)
+  // Threads (precisa de URL externa da imagem) + UTM + validação de link
   if (urlImagem) {
-    resultados.push(await postarThreads(texto, urlImagem));
+    const linkValidoThreads = await validarLinksDoTexto(texto);
+    if (!linkValidoThreads.valido) {
+      const invalidos = linkValidoThreads.links.filter(l => !l.valido).map(l => l.link);
+      registrar('sistema', false, `Links quebrados detectados, não publicar Threads: ${invalidos.join(', ')}`);
+    } else {
+      resultados.push(await postarThreads(texto, urlImagem));
+    }
   }
 
   // Discord
@@ -1838,6 +1913,271 @@ async function postarTodas(texto, opcoes = {}) {
   }
 
   return resultados;
+}
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🧪 A/B TESTING DE TEXTO E IMAGEM
+// Testa duas variantes do mesmo conteúdo e mede qual performa melhor.
+const AB_TESTS_DIR = path.join(__dirname, '..', 'posts', 'ab-test');
+if (!fs.existsSync(AB_TESTS_DIR)) {
+  fs.mkdirSync(AB_TESTS_DIR, { recursive: true });
+}
+
+let cacheAbTests = null;
+function carregarAbTests() {
+  if (cacheAbTests) return cacheAbTests;
+  try {
+    const arquivo = path.join(AB_TESTS_DIR, 'testes.json');
+    if (fs.existsSync(arquivo)) {
+      cacheAbTests = JSON.parse(fs.readFileSync(arquivo, 'utf8'));
+      return cacheAbTests;
+    }
+  } catch (e) {}
+  cacheAbTests = { testes: [], resultados: [] };
+  return cacheAbTests;
+}
+function salvarAbTests(dados) {
+  try {
+    fs.writeFileSync(path.join(AB_TESTS_DIR, 'testes.json'), JSON.stringify(dados, null, 2), 'utf8');
+    cacheAbTests = dados;
+  } catch (e) {}
+}
+
+function criarAbTest(nome, varianteA, varianteB, redes = [], metrica = 'cliques') {
+  const testes = carregarAbTests();
+  const teste = {
+    id: 'ab_' + Date.now(),
+    nome,
+    varianteA,
+    varianteB,
+    redes,
+    metrica, // 'cliques', 'engajamento', 'downloads'
+    criadoEm: new Date().toISOString(),
+    status: 'ativo',
+    resultados: { A: 0, B: 0 },
+  };
+  testes.testes.push(teste);
+  salvarAbTests(testes);
+  return teste.id;
+}
+
+function registrarResultadoAbTest(testeId, variante, valor = 1) {
+  const testes = carregarAbTests();
+  const teste = testes.testes.find(t => t.id === testeId);
+  if (!teste || teste.status !== 'ativo') return false;
+  teste.resultados[variante] = (teste.resultados[variante] || 0) + valor;
+  salvarAbTests(testes);
+  return true;
+}
+
+function finalizarAbTest(testeId) {
+  const testes = carregarAbTests();
+  const teste = testes.testes.find(t => t.id === testeId);
+  if (!teste) return null;
+  teste.status = 'finalizado';
+  teste.finalizadoEm = new Date().toISOString();
+  teste.vencedor = teste.resultados.A >= teste.resultados.B ? 'A' : 'B';
+  salvarAbTests(testes);
+  return teste;
+}
+
+function obterVarianteParaPostar(testeId) {
+  const testes = carregarAbTests();
+  const teste = testes.testes.find(t => t.id === testeId && t.status === 'ativo');
+  if (!teste) return null;
+  // Alternar entre A e B
+  const total = (teste.resultados.A || 0) + (teste.resultados.B || 0);
+  return total % 2 === 0 ? 'A' : 'B';
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 📊 FUNIL DE CONVERSÃO — UTM PARAMETERS
+// Adiciona parâmetros UTM a links para rastrear de onde vem cada clique/download.
+const LINKS_BASE = {
+  itch_ceifalume: 'https://reboclbrank-max.itch.io/ceifalume',
+  itch_prancheta: 'https://rebocl-brank.itch.io/prancheta',
+  site_ceifalume: 'https://reboclbrank-max.github.io/site/jogos/ceifalume/',
+  site_prancheta: 'https://reboclbrank-max.github.io/site/jogos/prancheta/',
+  youtube: 'https://www.youtube.com/channel/UCQdxKtfRnqNLd1ZOs9B6eaQ',
+};
+
+function linkComUTM(linkBase, fonte, meio, campanha, conteudo = '') {
+  const url = new URL(linkBase);
+  url.searchParams.set('utm_source', fonte);
+  url.searchParams.set('utm_medium', meio);
+  url.searchParams.set('utm_campaign', campanha);
+  if (conteudo) url.searchParams.set('utm_content', conteudo);
+  return url.toString();
+}
+
+function linkItchComUTM(jogo, fonte, meio, campanha) {
+  const chave = jogo === 'ceifalume' ? 'itch_ceifalume' : 'itch_prancheta';
+  return linkComUTM(LINKS_BASE[chave], fonte, meio, campanha);
+}
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🚨 ALERTA DE QUEDA DE DESEMPENHO
+// Detecta métricas em queda e avisa com hipótese do porquê.
+const ALERTAS_DIR = path.join(__dirname, '..', 'posts', 'marketing');
+if (!fs.existsSync(ALERTAS_DIR)) {
+  fs.mkdirSync(ALERTAS_DIR, { recursive: true });
+}
+
+let historicoMetricas = [];
+function carregarHistoricoMetricas() {
+  try {
+    const arquivo = path.join(ALERTAS_DIR, 'metricas-historico.json');
+    if (fs.existsSync(arquivo)) {
+      historicoMetricas = JSON.parse(fs.readFileSync(arquivo, 'utf8'));
+    }
+  } catch (e) {}
+  return historicoMetricas;
+}
+function salvarHistoricoMetricas() {
+  try {
+    fs.writeFileSync(path.join(ALERTAS_DIR, 'metricas-historico.json'), JSON.stringify(historicoMetricas, null, 2), 'utf8');
+  } catch (e) {}
+}
+
+function registrarMetricaDiaria(servico, metrica, valor) {
+  carregarHistoricoMetricas();
+  const hoje = new Date().toISOString().slice(0, 10);
+  historicoMetricas.push({ servico, metrica, valor, data: hoje });
+  // Manter últimos 30 dias
+  const corte = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  historicoMetricas = historicoMetricas.filter(m => m.data >= corte);
+  salvarHistoricoMetricas();
+}
+
+function detectarQueda(servico, metrica, dias = 3) {
+  carregarHistoricoMetricas();
+  const hoje = new Date();
+  const valoresRecentes = [];
+  for (let i = 0; i < dias; i++) {
+    const d = new Date(hoje);
+    d.setDate(d.getDate() - i);
+    const dataStr = d.toISOString().slice(0, 10);
+    const entrada = historicoMetricas.find(m => m.servico === servico && m.metrica === metrica && m.data === dataStr);
+    if (entrada) valoresRecentes.push(entrada.valor);
+  }
+  if (valoresRecentes.length < 2) return null;
+  const primeiro = valoresRecentes[valoresRecentes.length - 1]; // mais antigo
+  const ultimo = valoresRecentes[0]; // mais recente
+  if (ultimo < primeiro * 0.9) {
+    const quedaPct = Math.round(((primeiro - ultimo) / primeiro) * 100);
+    return {
+      servico,
+      metrica,
+      quedaPct,
+      valorAnterior: primeiro,
+      valorAtual: ultimo,
+      hipoteses: gerarHipotesesQueda(servico, metrica, quedaPct),
+    };
+  }
+  return null;
+}
+
+function gerarHipotesesQueda(servico, metrica, quedaPct) {
+  const hipoteses = [];
+  if (servico === 'itch' && metrica === 'downloads') {
+    hipoteses.push('Link do itch.io pode estar quebrado — validar antes de postar');
+    hipoteses.push('Conteúdo pode estar repetido — verificar diversificação de formato');
+    hipoteses.push('Horário de postagem pode não estar alinhado com pico de acesso');
+  }
+  if (servico === 'instagram' && metrica === 'seguidores') {
+    hipoteses.push('Falta de posts consistentes — verificar agenda de publicação');
+    hipoteses.push('Conteúdo visual pode não estar engajando — testar novas imagens');
+  }
+  if (quedaPct > 30) {
+    hipoteses.push('Queda acentuada — revisar urgente a estratégia da rede');
+  }
+  return hipoteses;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🔄 RECUPERAÇÃO AUTOMÁTICA DE FALHA
+// Tenta novamente com backoff exponencial quando uma API falha.
+const TENTATIVAS_MAX = 3;
+const TEMPOS_RETRY = [60000, 240000, 86400000]; // 1min, 4min, 24h
+
+let estadoRedes = {}; // { servico: { falhasConsecutivas, ultimoErro, proximaTentativa, desabilitadoAte } }
+
+function registrarFalhaRede(servico, erro) {
+  if (!estadoRedes[servico]) {
+    estadoRedes[servico] = { falhasConsecutivas: 0, ultimoErro: null, proximaTentativa: 0, desabilitadoAte: 0 };
+  }
+  const estado = estadoRedes[servico];
+  estado.falhasConsecutivas++;
+  estado.ultimoErro = erro;
+  estado.ultimaFalha = new Date().toISOString();
+
+  if (estado.falhasConsecutivas >= TENTATIVAS_MAX) {
+    // Desabilitar por 24h
+    estado.desabilitadoAte = Date.now() + 24 * 60 * 60 * 1000;
+    estado.proximaTentativa = estado.desabilitadoAte;
+    registrar('sistema', false, `Rede ${servico} desabilitada por 24h após ${estado.falhasConsecutivas} falhas`);
+  } else {
+    const atraso = TEMPOS_RETRY[Math.min(estado.falhasConsecutivas - 1, TEMPOS_RETRY.length - 1)];
+    estado.proximaTentativa = Date.now() + atraso;
+    registrar('sistema', false, `Rede ${servico} falhou (${estado.falhasConsecutivas}/${TENTATIVAS_MAX}), próxima tentativa em ${Math.round(atraso / 60000)} min`);
+  }
+  return estado;
+}
+
+function registrarSucessoRede(servico) {
+  if (estadoRedes[servico]) {
+    estadoRedes[servico].falhasConsecutivas = 0;
+    estadoRedes[servico].proximaTentativa = 0;
+    estadoRedes[servico].desabilitadoAte = 0;
+  }
+}
+
+function redePodeTentar(servico) {
+  if (!estadoRedes[servico]) return true;
+  const estado = estadoRedes[servico];
+  if (estado.desabilitadoAte && Date.now() < estado.desabilitadoAte) return false;
+  if (estado.proximaTentativa && Date.now() < estado.proximaTentativa) return false;
+  return true;
+}
+
+function obterEstadoRedes() {
+  return estadoRedes;
+}
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 😊 ANÁLISE DE SENTIMENTO — classificar comentários/respostas
+// Ajuda o chat a ajustar o tom do próximo post com base na reação do público.
+const PALAVRAS_POSITIVAS = ['ótimo', 'bom', 'legal', 'incrível', 'maravilhoso', 'excelente', 'adorei', 'gostei', 'recomendo', 'baixe', 'joguei', 'testei', 'aprovado', 'top', 'show', 'sensacional', 'fantástico', 'sensacional', 'imperdível', 'vale a pena', 'já baixei', 'já joguei', 'parabéns', 'nota 10'];
+const PALAVRAS_NEGATIVAS = ['ruim', 'péssimo', 'horrível', 'odeio', 'não gostei', 'não funciona', 'bug', 'erro', 'falha', 'lixo', 'não baixe', 'não jogue', 'não recomendo', 'decepção', 'perda de tempo', 'travou', 'lag', 'pago', 'cobrança'];
+
+function analisarSentimento(texto) {
+  if (!texto) return { sentimento: 'neutro', pontuacao: 0, palavrasEncontradas: [] };
+  const lower = texto.toLowerCase();
+  let pontos = 0;
+  const encontradas = [];
+  for (const p of PALAVRAS_POSITIVAS) {
+    if (lower.includes(p)) { pontos++; encontradas.push(p); }
+  }
+  for (const p of PALAVRAS_NEGATIVAS) {
+    if (lower.includes(p)) { pontos--; encontradas.push(p); }
+  }
+  let sentimento = 'neutro';
+  if (pontos > 0) sentimento = 'positivo';
+  if (pontos < 0) sentimento = 'negativo';
+  return { sentimento, pontuacao, palavrasEncontradas: encontradas };
+}
+
+function ajustarTomPorSentimento(sentimentoMedio) {
+  if (sentimentoMedio === 'positivo') {
+    return { tom: 'entusiasta', sugestao: 'Mantenha a abordagem, use mais CTAs diretos' };
+  }
+  if (sentimentoMedio === 'negativo') {
+    return { tom: 'cauteloso', sugestao: 'Mude a abordagem, foque em benefícios claros, revise o conteúdo' };
+  }
+  return { tom: 'neutro', sugestao: 'Mantenha equilíbrio, teste novas abordagens' };
 }
 
 module.exports = {
@@ -1891,4 +2231,28 @@ module.exports = {
   getJogoAtual,
   JOGOS_PRIORIDADE,
   FLUXO_ACESSO,
+
+  // Novas funções de marketing inteligente
+  validarLink,
+  extrairLinks,
+  validarLinksDoTexto,
+  obterConteudoEvergreen,
+  listarCategoriasEvergreen,
+  detectarPerguntaComum,
+  responderPerguntaComum,
+  analisarSentimento,
+  ajustarTomPorSentimento,
+  criarAbTest,
+  registrarResultadoAbTest,
+  finalizarAbTest,
+  obterVarianteParaPostar,
+  linkComUTM,
+  linkItchComUTM,
+  registrarMetricaDiaria,
+  detectarQueda,
+  gerarHipotesesQueda,
+  registrarFalhaRede,
+  registrarSucessoRede,
+  redePodeTentar,
+  obterEstadoRedes,
 };
