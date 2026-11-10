@@ -1846,6 +1846,28 @@ async function postarTodas(texto, opcoes = {}) {
 
   const resultados = [];
 
+  // 📚 Se não há texto, usar conteúdo evergreen
+  if (!texto || texto.trim().length === 0) {
+    const evergreen = obterConteudoEvergreen('apresentacao');
+    if (evergreen) {
+      texto = evergreen.texto;
+      if (!titulo || titulo === 'Post da casa') {
+        titulo = evergreen.texto.slice(0, 60);
+      }
+      registrar('sistema', true, 'Usando conteúdo evergreen para postagem');
+    } else {
+      registrar('sistema', false, 'Sem texto e sem conteúdo evergreen disponível');
+      return resultados;
+    }
+  }
+
+  // 😊 Analisar sentimento do texto e ajustar tom automaticamente
+  const sentimento = analisarSentimento(texto);
+  const ajusteTom = ajustarTomPorSentimento(sentimento.sentimento);
+  if (sentimento.sentimento === 'negativo') {
+    registrar('sistema', true, `Sentimento detectado: ${sentimento.sentimento} (${sentimento.pontuacao}). Tom ajustado para: ${ajusteTom.tom}`);
+  }
+
   // GitHub (issue)
   resultados.push(await postarGitHub(texto, titulo));
 
