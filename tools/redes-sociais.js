@@ -2180,6 +2180,88 @@ function ajustarTomPorSentimento(sentimentoMedio) {
   return { tom: 'neutro', sugestao: 'Mantenha equilíbrio, teste novas abordagens' };
 }
 
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 📊 RELATÓRIO DE DESEMPENHO
+// Retorna estatísticas de desempenho por formato e rede.
+function relatorioDesempenho() {
+  const resultado = {};
+  for (const [servico, formatos] of Object.entries(DESEMPENHO_FORMATO)) {
+    resultado[servico] = {};
+    for (const [formato, stats] of Object.entries(formatos)) {
+      resultado[servico][formato] = {
+        total: stats.total || 0,
+        sucessos: stats.sucessos || 0,
+        falhas: (stats.total || 0) - (stats.sucessos || 0),
+        zeros: stats.zeros || 0,
+        taxaSucesso: stats.total > 0 ? Math.round((stats.sucessos / stats.total) * 100) : 0
+      };
+    }
+  }
+  return resultado;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 📚 BIBLIOTECA EVERGREEN — conteúdos para republicação
+const fsEvergreen = require('fs');
+const pathEvergreen = require('path');
+
+const EVERGREEN_DIR = pathEvergreen.join(__dirname, '..', 'posts', 'evergreen');
+let cacheEvergreen = null;
+
+function carregarEvergreen() {
+  if (cacheEvergreen) return cacheEvergreen;
+  try {
+    const arquivo = pathEvergreen.join(EVERGREEN_DIR, 'conteudos.json');
+    if (fsEvergreen.existsSync(arquivo)) {
+      cacheEvergreen = JSON.parse(fsEvergreen.readFileSync(arquivo, 'utf8'));
+      return cacheEvergreen;
+    }
+  } catch (e) {}
+  return { categorias: {}, regras: {} };
+}
+
+function obterConteudoEvergreen(categoria = 'apresentacao') {
+  const lib = carregarEvergreen();
+  const conteudos = lib.categorias[categoria] || [];
+  if (conteudos.length === 0) return null;
+  const idx = Math.floor(Math.random() * conteudos.length);
+  return conteudos[idx];
+}
+
+function listarCategoriasEvergreen() {
+  const lib = carregarEvergreen();
+  return Object.keys(lib.categorias || {});
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🤖 AUTORESPOSTAR PARA COMENTÁRIOS COMUNS
+const PERGUNTAS_COMUNS = [
+  { palavras: ['baixar', 'download', 'onde', 'link'], resposta: 'Você pode baixar gratuitamente no itch.io: https://reboclbrank-max.itch.io/ceifalume e https://rebocl-brank.itch.io/prancheta 🎮', jogos: ['ceifalume', 'prancheta'] },
+  { palavras: ['grátis', 'gratuito', 'pago', 'custa'], resposta: 'Ambos os jogos são totalmente gratuitos! Sem microtransações, sem pay-to-win. 🆓', jogos: ['ceifalume', 'prancheta'] },
+  { palavras: ['android', 'celular', 'apk', 'mobile'], resposta: 'Sim, temos versões para Android! Baixe direto no itch.io ou jogue no navegador. 📱', jogos: ['ceifalume', 'prancheta'] },
+  { palavras: ['jogar', 'como jogar', 'tutorial'], resposta: 'Ceifalume: plante e colha na fazenda noturna. Prancheta: desenhe a bola parada e veja a partida simular. Ambos grátis! 🎮', jogos: ['ceifalume', 'prancheta'] },
+  { palavras: ['godot', 'engine', 'feito com'], resposta: 'Feito com Godot Engine, desenvolvido aqui no Brasil. 🇧🇷', jogos: ['ceifalume', 'prancheta'] },
+];
+
+function detectarPerguntaComum(texto) {
+  if (!texto) return null;
+  const lower = texto.toLowerCase();
+  for (const p of PERGUNTAS_COMUNS) {
+    const todasPalavras = p.palavras.some(w => lower.includes(w));
+    if (todasPalavras) {
+      return { resposta: p.resposta, jogos: p.jogos, palavras: p.palavras };
+    }
+  }
+  return null;
+}
+
+function responderPerguntaComum(servico, idAlvo, textoComentario) {
+  const deteccao = detectarPerguntaComum(textoComentario);
+  if (!deteccao) return null;
+  return deteccao;
+}
+
 module.exports = {
   postarGitHub,
   comentarGitHub,
@@ -2222,6 +2304,7 @@ module.exports = {
   agendarPublicacao,
   obterProximoFormato,
   relatorioDesempenho,
+  salvarBackupPublicacao,
   HISTORICO_FORMATOS,
   DESEMPENHO_FORMATO,
   AGENDA_PUBLICACOES,
