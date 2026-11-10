@@ -1,0 +1,40 @@
+{
+  "testes": [
+    {
+      "id": "ab_1794347823869",
+      "nome": "Teste Ceifalume",
+      "varianteA": "texto A",
+      "varianteB": "texto B",
+      "redes": [
+        "bluesky",
+        "mastodon"
+      ],
+      "metrica": "cliques",
+      "criadoEm": "2026-11-10T21:57:03.869Z",
+      "status": "ativo",
+      "resultados": {
+        "A": 1,
+        "B": 0
+      }
+    },
+    {
+      "id": "ab_1794348012000",
+      "nome": "Ceifalume - Abordagem direta vs. emocional",
+      "varianteA": "🌙 CEIFALUME é uma fazenda noturna idle. Plante, colha e expanda enquanto dorme. Grátis no navegador e Android. #indiedev #gamedev",
+      "varianteB": "🌙 Sua fazenda acorda à noite. Plante culturas, gerencie recursos e veja tudo crescer enquanto você dorme. Ceifalume é grátis! Jogue agora: #indiedev #Godot #jogosgratis",
+      "redes": [
+        "bluesky",
+        "mastodon",
+        "threads"
+      ],
+      "metrica": "cliques",
+      "criadoEm": "2026-11-10T22:00:12.000Z",
+      "status": "ativo",
+      "resultados": {
+        "A": 1,
+        "B": 0
+      }
+    }
+  ],
+  "resultados": []
+}
