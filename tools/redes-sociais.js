@@ -2167,7 +2167,7 @@ function analisarSentimento(texto) {
   let sentimento = 'neutro';
   if (pontos > 0) sentimento = 'positivo';
   if (pontos < 0) sentimento = 'negativo';
-  return { sentimento, pontuacao, palavrasEncontradas: encontradas };
+  return { sentimento, pontuacao: pontos, palavrasEncontradas: encontradas };
 }
 
 function ajustarTomPorSentimento(sentimentoMedio) {
