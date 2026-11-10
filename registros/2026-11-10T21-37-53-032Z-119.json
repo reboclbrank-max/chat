@@ -1,0 +1,34 @@
+{
+  "quando": "2026-11-10T21:37:53.032Z",
+  "origem": "ao-vivo",
+  "pr": 119,
+  "sha": "cec6d29b0bb8703482b217672c3e86b7c0f83586",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "🎮📺 Remove limitações itch.io e YouTube",
+  "barreira": "success",
+  "arquivos": [
+    "direto.html",
+    "index.html",
+    "ligar.html",
+    "limpar.html",
+    "posts/evergreen/conteudos.json",
+    "posts/marketing/dashboard.html",
+    "posts/marketing/metricas-resumo.json",
+    "tools/cofre-seguro.js",
+    "tools/gerar-metricas-marketing.js",
+    "tools/redes-sociais.js",
+    "tools/testar-todas-as-apis.js"
+  ],
+  "essenciais": [
+    "index.html"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: direto.html, index.html, ligar.html…"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: index.html"
+  }
+}
