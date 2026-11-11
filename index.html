@@ -20,6 +20,8 @@
 <script src="razao-local.js"></script>
 <script src="roteador-ia.js"></script>
 <script src="inteligencia-marketing-browser.js"></script>
+<script src="raciocinio-marketing-avancado-browser.js"></script>
+<script src="auto-correcao-aprendizado-browser.js"></script>
 </head>
 <body>
 
@@ -3099,8 +3101,179 @@ async function maosDaCasa(msg) {
     window.__inteligencia_salvarMemoriaConversa('ultimoJogo', jogo);
     bolha('bot', '✅ JOGO DEFINIDO: ' + jogo + '\nPrioridade igual para ambos os jogos — este é apenas o último mencionado.', new Date().toISOString(), '✅ jogo'); rolarFim(); return '✅ jogo definido: ' + jogo + '…';
   }
+  if (m.startsWith('!cac ')) {
+    const q = msg.trim().slice(5).trim();
+    if (!q) return '⚠️ uso: !cac <horas> <novos usuarios> [valor hora]'
+    const partes = q.split(/\s+/);
+    const horas = parseFloat(partes[0].replace(',', '.')) || 0
+    const usuarios = parseFloat(partes[1].replace(',', '.')) || 0
+    const valorHora = parseFloat((partes[2] || '0').replace(',', '.')) || 0
+    const r = window.__mkt_calcularCAC(horas, usuarios, valorHora)
+    bolha('bot', '💰 CAC — CUSTO DE AQUISIÇÃO\n' + r.texto + '\n\nDados: ' + JSON.stringify(r.dados), new Date().toISOString(), '💰 cac'); rolarFim(); return '💰 calculando CAC…'
+  }
+  if (m.startsWith('!ltv ')) {
+    const q = msg.trim().slice(5).trim();
+    if (!q) return '⚠️ uso: !ltv <receita> <usuarios> <dias retencao>'
+    const partes = q.split(/\s+/);
+    const receita = parseFloat(partes[0].replace(',', '.')) || 0
+    const usuarios = parseFloat(partes[1].replace(',', '.')) || 0
+    const dias = parseInt(partes[2]) || 30
+    const r = window.__mkt_calcularLTV(receita, usuarios, dias)
+    bolha('bot', '⏳ LTV — LIFETIME VALUE\n' + r.texto + '\n\nDados: ' + JSON.stringify(r.dados), new Date().toISOString(), '⏳ ltv'); rolarFim(); return '⏳ calculando LTV…'
+  }
+  if (m.startsWith('!churn ')) {
+    const q = msg.trim().slice(7).trim();
+    if (!q) return '⚠️ uso: !churn <usuarios perdidos> <usuarios totais> [dias]'
+    const partes = q.split(/\s+/);
+    const perdidos = parseFloat(partes[0].replace(',', '.')) || 0
+    const totais = parseFloat(partes[1].replace(',', '.')) || 0
+    const dias = parseInt(partes[2]) || 30
+    const r = window.__mkt_calcularChurn(perdidos, totais, dias)
+    bolha('bot', '📉 CHURN RATE — TAXA DE ABANDONO\n' + r.texto + '\n\nDados: ' + JSON.stringify(r.dados), new Date().toISOString(), '📉 churn'); rolarFim(); return '📉 calculando churn…'
+  }
+  if (m.startsWith('!ctr ')) {
+    const q = msg.trim().slice(5).trim();
+    if (!q) return '⚠️ uso: !ctr <cliques> <impressoes>'
+    const partes = q.split(/\s+/);
+    const cliques = parseFloat(partes[0].replace(',', '.')) || 0
+    const impressoes = parseFloat(partes[1].replace(',', '.')) || 0
+    const r = window.__mkt_calcularCTR(cliques, impressoes)
+    bolha('bot', '🔗 CTR — CLICK-THROUGH RATE\n' + r.texto + '\n\nDados: ' + JSON.stringify(r.dados), new Date().toISOString(), '🔗 ctr'); rolarFim(); return '🔗 calculando CTR…'
+  }
+  if (m.startsWith('!funil ')) {
+    const q = msg.trim().slice(7).trim();
+    if (!q) return '⚠️ uso: !funil <impressoes> <cliques> <downloads> <instalacoes> <jogaram> <reteram>'
+    const partes = q.split(/\s+/).map(p => parseFloat(p.replace(',', '.')) || 0)
+    const r = window.__mkt_analisarFunil({
+      impressoes: partes[0] || undefined,
+      cliques: partes[1] || undefined,
+      downloads: partes[2] || undefined,
+      instalacoes: partes[3] || undefined,
+      jogaram: partes[4] || undefined,
+      reteram: partes[5] || undefined,
+    })
+    bolha('bot', '📊 FUNIL DE CONVERSÃO\n' + r.texto + '\n\nDados: ' + JSON.stringify(r.dados), new Date().toISOString(), '📊 funil'); rolarFim(); return '📊 analisando funil…'
+  }
+  if (m.startsWith('!viral ')) {
+    const q = msg.trim().slice(6).trim();
+    if (!q) return '⚠️ uso: !viral <novos usuarios> <usuarios existentes>'
+    const partes = q.split(/\s+/);
+    const novos = parseFloat(partes[0].replace(',', '.')) || 0
+    const existentes = parseFloat(partes[1].replace(',', '.')) || 0
+    const r = window.__mkt_calcularViral(novos, existentes)
+    bolha('bot', '🦠 COEFICIENTE VIRAL\n' + r.texto + '\n\nDados: ' + JSON.stringify(r.dados), new Date().toISOString(), '🦠 viral'); rolarFim(); return '🦠 calculando viral…'
+  }
+  if (m.startsWith('!payback ')) {
+    const q = msg.trim().slice(9).trim();
+    if (!q) return '⚠️ uso: !payback <gasto total> <receita diaria>'
+    const partes = q.split(/\s+/);
+    const gasto = parseFloat(partes[0].replace(',', '.')) || 0
+    const receitaDia = parseFloat(partes[1].replace(',', '.')) || 0
+    const r = window.__mkt_calcularPayback(gasto, receitaDia)
+    bolha('bot', '💵 PAYBACK — TEMPO DE RECUPERAÇÃO\n' + r.texto + '\n\nDados: ' + JSON.stringify(r.dados), new Date().toISOString(), '💵 payback'); rolarFim(); return '💵 calculando payback…'
+  }
+  if (m.startsWith('!sazonal ')) {
+    const q = msg.trim().slice(9).trim();
+    if (!q) return '⚠️ uso: !sazonal <metrica> [mes|dia|hora]'
+    const partes = q.split(/\s+/)
+    const metrica = partes[0] || 'downloads'
+    const periodo = partes[1] || 'mes'
+    const r = window.__mkt_analisarSazonalidade(metrica, periodo)
+    bolha('bot', '📅 SAZONALIDADE\n' + r.texto + '\n\nDados: ' + JSON.stringify(r.dados), new Date().toISOString(), '📅 sazonal'); rolarFim(); return '📅 analisando sazonalidade…'
+  }
+  if (m.startsWith('!projetar2 ') || m.startsWith('!projecao ')) {
+    const q = msg.trim().replace(/^!(projetar2|projecao)\s*/i, '').trim()
+    if (!q) return '⚠️ uso: !projetar2 <atual> <taxa>% ao dia <dias> dias'
+    const atual = parseFloat((q.match(/(\d+(?:[.,]\d+)?)/) || [0, 0])[0].replace(',', '.')) || 0
+    const taxa = parseFloat((q.match(/(\d+(?:[.,]\d+)?)%/) || [0, 0])[1].replace(',', '.')) || 0
+    const dias = parseInt((q.match(/(\d+)\s*dia/) || [0, 0])[1]) || 30
+    const r = window.__mkt_projetarCrescimento(atual, taxa, dias)
+    bolha('bot', '📈 PROJEÇÃO DE CRESCIMENTO\n' + r.texto + '\n\nDados: ' + JSON.stringify(r.dados), new Date().toISOString(), '📈 projetar'); rolarFim(); return '📈 projetando crescimento…'
+  }
+  if (m.startsWith('!roi2 ')) {
+    const q = msg.trim().slice(6).trim();
+    if (!q) return '⚠️ uso: !roi2 <receita> <horas> [valor hora]'
+    const partes = q.split(/\s+/);
+    const receita = parseFloat(partes[0].replace(',', '.')) || 0
+    const horas = parseFloat(partes[1].replace(',', '.')) || 0
+    const valorHora = parseFloat((partes[2] || '0').replace(',', '.')) || 0
+    const r = window.__mkt_calcularROI(receita, horas, valorHora)
+    bolha('bot', '📊 ROI — RETORNO SOBRE INVESTIMENTO\n' + r.texto + '\n\nDados: ' + JSON.stringify(r.dados), new Date().toISOString(), '📊 roi'); rolarFim(); return '📊 calculando ROI…'
+  }
+  if (m.startsWith('!metrica ')) {
+    const q = msg.trim().slice(9).trim();
+    if (!q) return '⚠️ uso: !metrica <tipo> <valor> [contexto]'
+    const partes = q.split(/\s+/)
+    const tipo = partes[0]
+    const valor = parseFloat(partes[1].replace(',', '.')) || 0
+    const r = window.__mkt_registrarMetrica(tipo, valor, { fonte: 'comando' })
+    bolha('bot', '📥 MÉTRICA REGISTRADA\n• tipo: ' + tipo + '\n• valor: ' + valor + '\n• ok: ' + r.ok, new Date().toISOString(), '📥 metrica'); rolarFim(); return '📥 métrica registrada…'
+  }
+  if (m.startsWith('!resumo-metrica') || m.startsWith('!resumo metrica')) {
+    const r = window.__mkt_resumoMetricas()
+    const linhas = ['📊 RESUMO DE MÉTRICAS DE MARKETING']
+    for (const [tipo, s] of Object.entries(r)) {
+      linhas.push('• ' + tipo + ': ' + s.total + ' registros · média ' + s.media + ' · último: ' + (s.ultimo ? s.ultimo.valor : 'n/a'))
+    }
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📊 resumo'); rolarFim(); return '📊 resumo de métricas…'
+  }
+  if (m.startsWith('!aprendizado') || m.startsWith('!apr')) {
+    const est = window.__aprend_estatisticasAprendizado()
+    const linhas = ['🔄 APRENDIZADO E AUTO-CORREÇÃO',
+      '• modelos por intenção: ' + est.modeloPorIntencao,
+      '• tons por sentimento: ' + est.tomPorSentimento,
+      '• horários por rede: ' + est.horarioPorRede,
+      '• palavras bloqueadas: ' + est.palavrasBloqueadas,
+      '• conteúdo que funciona: ' + est.conteudoQueFunciona,
+      '• conteúdo que não funciona: ' + est.conteudoQueNaoFunciona,
+      '• planos executados: ' + est.planosExecutados,
+      '• amostras modelos: ' + est.totalAmostrasModelos,
+      '• amostras tons: ' + est.totalAmostrasTons,
+      '• amostras horários: ' + est.totalAmostrasHorarios]
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '�4 aprendizado'); rolarFim(); return '🔄 estatísticas de aprendizado…'
+  }
+  if (m.startsWith('!bloquear-palavra') || m.startsWith('!bloquear palavra')) {
+    const q = msg.trim().replace(/^!bloquear(-palavra| palavra)?\s*/i, '').trim()
+    if (!q) return '⚠️ uso: !bloquear-palavra <palavra> [motivo]'
+    const partes = q.split(/\s+/)
+    const palavra = partes[0]
+    const motivo = partes.slice(1).join(' ') || 'reprovado por feedback'
+    window.__aprend_adicionarPalavraBloqueada(palavra, motivo)
+    bolha('bot', '🚫 PALAVRA BLOQUEADA\n• palavra: ' + palavra + '\n• motivo: ' + motivo, new Date().toISOString(), '🚫 bloquear'); rolarFim(); return '🚫 palavra bloqueada…'
+  }
+  if (m.startsWith('!verificar-palavra') || m.startsWith('!verificar palavra')) {
+    const q = msg.trim().replace(/^!verificar(-palavra| palavra)?\s*/i, '').trim()
+    if (!q) return '⚠️ uso: !verificar-palavra <texto>'
+    const r = window.__aprend_verificarPalavrasBloqueadas(q)
+    if (r.limpo) {
+      bolha('bot', '✅ TEXTO LIMPO\nNenhuma palavra bloqueada encontrada.', new Date().toISOString(), '✅ verificar'); rolarFim(); return '✅ texto limpo…'
+    }
+    bolha('bot', '⚠️ PALAVRAS BLOQUEADAS ENCONTRADAS\n' + r.sugestao, new Date().toISOString(), '⚠️ verificar'); rolarFim(); return '⚠️ palavras bloqueadas encontradas…'
+  }
+  if (m.startsWith('!melhor-modelo') || m.startsWith('!melhor modelo')) {
+    const q = msg.trim().replace(/^!melhor(-modelo| modelo)?\s*/i, '').trim()
+    if (!q) return '⚠️ uso: !melhor-modelo <intencao>'
+    const r = window.__aprend_melhorModeloParaIntencao(q)
+    if (!r) return '⚠️ não há dados suficientes para intenção: ' + q
+    bolha('bot', '🏆 MELHOR MODELO PARA ' + q.toUpperCase() + '\n• modelo: ' + r.modelo + '\n• taxa de acerto: ' + Math.round(r.taxaAcerto * 100) + '%\n• amostras: ' + r.total, new Date().toISOString(), '🏆 melhor-modelo'); rolarFim(); return '🏆 melhor modelo…'
+  }
+  if (m.startsWith('!melhor-tom') || m.startsWith('!melhor tom')) {
+    const q = msg.trim().replace(/^!melhor(-tom| tom)?\s*/i, '').trim()
+    if (!q) return '⚠️ uso: !melhor-tom <sentimento>'
+    const r = window.__aprend_melhorTomParaSentimento(q)
+    if (!r) return '⚠️ não há dados suficientes para sentimento: ' + q
+    bolha('bot', '🎭 MELHOR TOM PARA ' + q.toUpperCase() + '\n• tom: ' + r.tom + '\n• taxa de sucesso: ' + Math.round(r.taxaSucesso * 100) + '%\n• amostras: ' + r.total, new Date().toISOString(), '🎭 melhor-tom'); rolarFim(); return '🎭 melhor tom…'
+  }
+  if (m.startsWith('!melhor-horario2') || m.startsWith('!melhor horario2')) {
+    const q = msg.trim().replace(/^!melhor(-horario2| horario2)?\s*/i, '').trim()
+    if (!q) return '⚠️ uso: !melhor-horario2 <rede>'
+    const r = window.__aprend_melhorHorarioParaRede(q)
+    if (!r) return '⚠️ não há dados suficientes para rede: ' + q
+    bolha('bot', '🕐 MELHOR HORÁRIO PARA ' + q.toUpperCase() + '\n• horário: ' + r.horario + '\n• engajamento médio: ' + r.engajamentoMedio.toFixed(1) + '\n• posts: ' + r.posts, new Date().toISOString(), '🕐 melhor-horario'); rolarFim(); return '🕐 melhor horário…'
+  }
 return null;
-}eita = false;
+}
+eita = false;
 let TURBO = localStorage.getItem('rebocl_turbo') === '1';
 function cerebroEscolhido() { return localStorage.getItem('rebocl_cerebro') || ''; }
 function ouroFiltrado() {
