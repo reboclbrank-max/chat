@@ -4194,6 +4194,97 @@ async function maosDaCasa(msg) {
     bolha('bot', '📊 ESTATÍSTICAS DE SENTIMENTO\n• Total: ' + est.total + '\n• Positivo: ' + est.positivo + '\n• Negativo: ' + est.negativo + '\n• Neutro: ' + est.neutro, new Date().toISOString(), '📊 estat-sentimento'); rolarFim(); return '📊 estatísticas de sentimento…'
   }
 
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // NOTIFICAÇÕES DE MARKETING
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!criar-notificacao') || m.startsWith('!criar notificacao')) {
+    const q = msg.trim().replace(/^!criar(-notificacao| notificacao)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__not_criarNotificacao ? window.__not_criarNotificacao(p[0], p.slice(1, -2).join(' '), p[p.length - 2] || 'info', p[p.length - 1] || 'ambos', 'chat') : null
+    if (!r || !r.ok) return '⚠️ uso: !criar-notificacao <titulo> <mensagem> <tipo> <jogo>'
+    bolha('bot', '🔔 NOTIFICAÇÃO CRIADA\n• ' + r.notificacao.titulo + '\n• Tipo: ' + r.notificacao.tipo, new Date().toISOString(), '🔔 notificacao'); rolarFim(); return '🔔 notificação criada: ' + r.notificacao.titulo
+  }
+  if (m.startsWith('!estat-notificacoes') || m.startsWith('!estat notificacoes')) {
+    const est = window.__not_estatisticasNotificacoes ? window.__not_estatisticasNotificacoes() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE NOTIFICAÇÕES\n• Total: ' + est.total + '\n• Não lidas: ' + est.naoLidas + '\n• Lidas: ' + est.lidas, new Date().toISOString(), '📊 estat-notificacoes'); rolarFim(); return '📊 estatísticas de notificações…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // RELATÓRIO PDF
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!gerar-relatorio-pdf') || m.startsWith('!gerar relatorio pdf')) {
+    const q = msg.trim().replace(/^!gerar(-relatorio| relatorio)?(-pdf| pdf)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__pdf_gerarRelatorio ? window.__pdf_gerarRelatorio(p[0], p.slice(1, -2).join(' '), p[p.length - 2] || 'ambos', p[p.length - 1] || 'semanal') : null
+    if (!r || !r.ok) return '⚠️ uso: !gerar-relatorio-pdf <titulo> <conteudo> <jogo> <tipo>'
+    bolha('bot', '📄 RELATÓRIO GERADO\n• ' + r.relatorio.titulo + '\n• Tipo: ' + r.relatorio.tipo, new Date().toISOString(), '📄 relatorio'); rolarFim(); return '📄 relatório gerado: ' + r.relatorio.titulo
+  }
+  if (m.startsWith('!estat-relatorios-pdf') || m.startsWith('!estat relatorios pdf')) {
+    const est = window.__pdf_estatisticasRelatoriosPDF ? window.__pdf_estatisticasRelatoriosPDF() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE RELATÓRIOS\n• Total: ' + est.total + '\n• Enviados: ' + est.enviados + '\n• Não enviados: ' + est.naoEnviados, new Date().toISOString(), '📊 estat-relatorios'); rolarFim(); return '📊 estatísticas de relatórios…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // INTEGRAÇÃO EMAIL
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!registrar-email') || m.startsWith('!registrar email')) {
+    const q = msg.trim().replace(/^!registrar(-email| email)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__em_registrarEmail ? window.__em_registrarEmail(p[0], p.slice(1, -3).join(' '), p.slice(-3, -2).join(' '), p[p.length - 2] || 'ambos', p[p.length - 1] || 'relatorio') : null
+    if (!r || !r.ok) return '⚠️ uso: !registrar-email <destinatario> <assunto> <corpo> <jogo> <tipo>'
+    bolha('bot', '📧 EMAIL REGISTRADO\n• Para: ' + r.email.destinatario + '\n• Assunto: ' + r.email.assunto.slice(0, 40), new Date().toISOString(), '📧 email'); rolarFim(); return '📧 email registrado: ' + r.email.destinatario
+  }
+  if (m.startsWith('!estat-emails') || m.startsWith('!estat emails')) {
+    const est = window.__em_estatisticasEmails ? window.__em_estatisticasEmails() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE EMAILS\n• Total: ' + est.total + '\n• Enviados: ' + est.enviados + '\n• Não enviados: ' + est.naoEnviados, new Date().toISOString(), '📊 estat-emails'); rolarFim(); return '📊 estatísticas de emails…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // A/B TESTING AVANÇADO
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!criar-teste-ab') || m.startsWith('!criar teste ab')) {
+    const q = msg.trim().replace(/^!criar(-teste| teste)?(-ab| ab)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__ab_criarTeste ? window.__ab_criarTeste(p[0], p.slice(1, -2).join(' '), p[p.length - 2] || 'ambos', p[p.length - 1] || 'cliques') : null
+    if (!r || !r.ok) return '⚠️ uso: !criar-teste-ab <nome> <descricao> <jogo> <metricaVencedor>'
+    bolha('bot', '🧪 TESTE A/B CRIADO\n• Nome: ' + r.teste.nome + '\n• Métrica vencedor: ' + r.teste.metricaVencedor, new Date().toISOString(), '🧪 ab-test'); rolarFim(); return '🧪 teste A/B criado: ' + r.teste.nome
+  }
+  if (m.startsWith!') return '⚠️ erro'
+  if (m.startsWith('!estat-ab-testing') || m.startsWith('!estat ab testing')) {
+    const est = window.__ab_estatisticasAB ? window.__ab_estatisticasAB() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE A/B TESTING\n• Total: ' + est.total + '\n• Concluídos: ' + est.concluidos + '\n• Ativos: ' + est.ativos, new Date().toISOString(), '📊 estat-ab'); rolarFim(); return '📊 estatísticas de A/B testing…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // FUNIL DE CONVERSÃO COMPLETO
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!registrar-etapa-funil') || m.startsWith('!registrar etapa funil')) {
+    const q = msg.trim().replace(/^!registrar(-etapa| etapa)?(-funil| funil)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__fnl_registrarEtapa ? window.__fnl_registrarEtapa(p[0], p[1] || 'ambos', p[2] || '0', p[3] || '0', p[4] || '0', p[5] || '0', p[6] || '0', p[7] || '0', p[8] || '0') : null
+    if (!r || !r.ok) return '⚠️ uso: !registrar-etapa-funil <nome> <jogo> <impressoes> <cliques> <downloads> <instalacoes> <primeiroJogo> <retencao1> <retencao7>'
+    bolha('bot', '📉 ETAPA DE FUNIL REGISTRADA\n• ' + r.funil.nome + '\n• CTR: ' + ((r.funil.cliques / Math.max(r.funil.impressoes, 1)) * 100).toFixed(2) + '%', new Date().toISOString(), '📉 funil'); rolarFim(); return '📉 etapa de funil registrada: ' + r.funil.nome
+  }
+  if (m.startsWith('!estat-funil-conversao') || m.startsWith('!estat funil conversao')) {
+    const est = window.__fnl_estatisticasFunilConversao ? window.__fnl_estatisticasFunilConversao() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE FUNIL DE CONVERSÃO\n• Total: ' + est.total + '\n• Último: ' + (est.ultimo || 'nenhum') + '\n• CTR: ' + est.ctr + '%\n• Conversão: ' + est.conversao + '%', new Date().toISOString(), '📊 estat-funil-conversao'); rolarFim(); return '📊 estatísticas de funil de conversão…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // RELATÓRIOS COMPARATIVOS
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!adicionar-comparativo-jogo') || m.startsWith('!adicionar comparativo jogo')) {
+    const q = msg.trim().replace(/^!adicionar(-comparativo| comparativo)?(-jogo| jogo)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__cmp_adicionarComparativo ? window.__cmp_adicionarComparativo(p[0], p[1] || '0', p[2] || '0', p[3] || 'empate', p.slice(4).join(' ')) : null
+    if (!r || !r.ok) return '⚠️ uso: !adicionar-comparativo-jogo <metrica> <valorCeifalume> <valorPrancheta> <vencedor> <contexto>'
+    bolha('bot', '📊 COMPARATIVO ADICIONADO\n• ' + r.comparativo.metrica + '\n• Vencedor: ' + r.comparativo.vencedor, new Date().toISOString(), '📊 comparativo'); rolarFim(); return '📊 comparativo adicionado: ' + r.comparativo.metrica
+  }
+  if (m.startsWith('!estat-comparativos') || m.startsWith('!estat comparativos')) {
+    const est = window.__cmp_estatisticasComparativos ? window.__cmp_estatisticasComparativos() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE COMPARATIVOS\n• Total: ' + est.total + '\n• Ceifalume: ' + est.ceifalume + '\n• Prancheta: ' + est.prancheta + '\n• Empates: ' + est.empates, new Date().toISOString(), '📊 estat-comparativos'); rolarFim(); return '📊 estatísticas de comparativos…'
+  }
+
 return null;
 }
 eita = false;
