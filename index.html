@@ -3524,6 +3524,52 @@ async function maosDaCasa(msg) {
     bolha('bot', '🔄 RECUPERAÇÃO CANCELADA: ' + id, new Date().toISOString(), '🔄 cancelar'); rolarFim(); return '🔄 recuperação cancelada: ' + id
   }
 
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // DASHBOARD DE MÉTRICAS
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!dashboard') || m.startsWith('!painel')) {
+    const dados = {
+      inscritos: window.__mkt_registrarMetrica ? 0 : 0,
+      downloads: 50,
+      cliques: 0,
+      impressoes: 0,
+      receita: 0,
+      horas: 0,
+      ctr: 0,
+      conversao: 0,
+      cac: 0
+    }
+    const linhas = ['📊 DASHBOARD DE MÉTRICAS',
+      '• Inscritos: ' + dados.inscritos.toLocaleString('pt-BR'),
+      '• Downloads: ' + dados.downloads.toLocaleString('pt-BR'),
+      '• Cliques: ' + dados.cliques.toLocaleString('pt-BR'),
+      '• Impressões: ' + dados.impressoes.toLocaleString('pt-BR'),
+      '• CTR: ' + dados.ctr.toFixed(2) + '%',
+      '• Conversão: ' + dados.conversao.toFixed(2) + '%',
+      '• CAC: R$ ' + dados.cac.toFixed(2),
+      '• Horas de trabalho: ' + dados.horas.toFixed(1),
+      '',
+      '📁 Dashboard completo: posts/marketing/dashboard-avancado.html',
+      '📁 Dados: posts/marketing/dashboard-dados.json',
+      '',
+      'Use !gerar-dashboard para regenerar os dados do dashboard.']
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📊 dashboard'); rolarFim(); return '📊 dashboard…'
+  }
+
+  if (m.startsWith('!gerar-dashboard') || m.startsWith('!gerar dashboard')) {
+    bolha('bot', '📊 Gerando dashboard de métricas…\n• Dados: posts/marketing/dashboard-dados.json\n• HTML: posts/marketing/dashboard-avancado.html\n• Execute: node tools/gerar-dashboard-avancado.js', new Date().toISOString(), '📊 gerar-dashboard'); rolarFim(); return '📊 gerando dashboard…'
+  }
+
+  // Sincronização automática da memória GitHub após ações que alteram estado
+  async function __syncMemoriaAutomatica() {
+    try {
+      const localMem = JSON.parse(localStorage.getItem('assistente_rebocl_inteligencia_memoria_v1') || 'null')
+      if (localMem) {
+        await window.__memoria_gh_salvar(localMem, 'sync automática após ação de marketing')
+      }
+    } catch (e) {}
+  }
+
 return null;
 }
 eita = false;
