@@ -27,6 +27,12 @@
 <script src="agendamento-inteligente-browser.js"></script>
 <script src="alerta-queda-recuperacao-browser.js"></script>
 <script src="recuperacao-automatica-browser.js"></script>
+<script src="aprovacao-humana-browser.js"></script>
+<script src="gestao-memoria-browser.js"></script>
+<script src="gerador-imagens-posts-browser.js"></script>
+<script src="relatorio-semanal-browser.js"></script>
+<script src="plano-semanal-browser.js"></script>
+<script src="detector-tendencias-browser.js"></script>
 </head>
 <body>
 
@@ -3568,6 +3574,203 @@ async function maosDaCasa(msg) {
         await window.__memoria_gh_salvar(localMem, 'sync automática após ação de marketing')
       }
     } catch (e) {}
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // APROVAÇÃO HUMANA
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!criar-rascunho') || m.startsWith('!criar rascunho')) {
+    const q = msg.trim().replace(/^!criar(-rascunho| rascunho)?\s*/i, '').trim()
+    const partes = q.split(/\s+/)
+    const texto = partes[0]
+    const rede = partes[1] || 'instagram'
+    const jogo = partes[2] || 'ambos'
+    const r = window.__aprov_criarRascunho ? window.__aprov_criarRascunho(texto, rede, jogo) : null
+    if (!r || !r.ok) return '⚠️ não foi possível criar rascunho'
+    bolha('bot', '📝 RASCUNHO CRIADO\n• ID: ' + r.rascunho.id + '\n• Rede: ' + rede + '\n• Jogo: ' + jogo + '\n• Texto: ' + texto, new Date().toISOString(), '📝 rascunho'); rolarFim(); return '📝 rascunho criado: ' + texto.slice(0, 40) + '…'
+  }
+  if (m.startsWith('!enviar-revisao') || m.startsWith('!enviar revisao')) {
+    const id = msg.trim().replace(/^!enviar(-revisao| revisao)?\s*/i, '').trim()
+    if (!id) return '⚠️ uso: !enviar-revisao <id>'
+    const r = window.__aprov_enviarParaRevisao ? window.__aprov_enviarParaRevisao(id) : null
+    if (!r || !r.ok) return '⚠️ ' + (r.erro || 'erro')
+    bolha('bot', '📤 ENVIADO PARA REVISÃO: ' + id, new Date().toISOString(), '📤 revisao'); rolarFim(); return '📤 enviado para revisão: ' + id
+  }
+  if (m.startsWith('!aprovar-post') || m.startsWith('!aprovar post')) {
+    const q = msg.trim().replace(/^!aprovar(-post| post)?\s*/i, '').trim()
+    const partes = q.split(/\s+/)
+    const id = partes[0]
+    const por = partes.slice(1).join(' ') || 'humano'
+    const r = window.__aprov_aprovar ? window.__aprov_aprovar(id, por) : null
+    if (!r || !r.ok) return '⚠️ ' + (r.erro || 'erro')
+    bolha('bot', '✅ APROVADO: ' + id + ' — por ' + por, new Date().toISOString(), '✅ aprovado'); rolarFim(); return '✅ aprovado: ' + id
+  }
+  if (m.startsWith('!rejeitar-post') || m.startsWith('!rejeitar post')) {
+    const q = msg.trim().replace(/^!rejeitar(-post| post)?\s*/i, '').trim()
+    const partes = q.split(/\s+/)
+    const id = partes[0]
+    const motivo = partes.slice(1).join(' ') || 'sem motivo'
+    const r = window.__aprov_rejeitar ? window.__aprov_rejeitar(id, motivo) : null
+    if (!r || !r.ok) return '⚠️ ' + (r.erro || 'erro')
+    bolha('bot', '❌ REJEITADO: ' + id + ' — ' + motivo, new Date().toISOString(), '❌ rejeitado'); rolarFim(); return '❌ rejeitado: ' + id
+  }
+  if (m.startsWith('!minha-aprovacao') || m.startsWith('!minha aprovacao')) {
+    const lista = window.__aprov_listar ? window.__aprov_listar() : {}
+    const linhas = ['📋 APROVAÇÃO HUMANA',
+      '• rascunhos: ' + (lista.rascunhos ? lista.rascunhos.length : 0),
+      '• pendentes: ' + (lista.pendentes ? lista.pendentes.length : 0),
+      '• aprovados: ' + (lista.aprovados ? lista.aprovados.length : 0),
+      '• publicados: ' + (lista.publicados ? lista.publicados.length : 0),
+      '• rejeitados: ' + (lista.rejeitados ? lista.rejeitados.length : 0)]
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📋 aprovacao'); rolarFim(); return '📋 lista de aprovação…'
+  }
+  if (m.startsWith('!estat-aprovacao') || m.startsWith('!estat aprovacao')) {
+    const est = window.__aprov_estatisticas ? window.__aprov_estatisticas() : {}
+    const linhas = ['📊 ESTATÍSTICAS DE APROVAÇÃO',
+      '• rascunhos: ' + est.rascunhos,
+      '• pendentes: ' + est.pendentes,
+      '• aprovados: ' + est.aprovados,
+      '• publicados: ' + est.publicados,
+      '• rejeitados: ' + est.rejeitados,
+      '• total: ' + est.total]
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📊 estat-aprovacao'); rolarFim(); return '📊 estatísticas de aprovação…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // GESTÃO DE MEMÓRIA
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!minha-memoria') || m.startsWith('!minha memoria')) {
+    const est = window.__mem_listarChaves ? window.__mem_listarChaves() : {}
+    const linhas = ['🧠 MINHA MEMÓRIA', '• total de itens: ' + est.totalItens]
+    for (const c of est.chaves || []) {
+      linhas.push('• ' + c.chave + ': ' + c.itens + ' itens (' + c.tamanho + ' bytes)')
+    }
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '🧠 memoria'); rolarFim(); return '🧠 sua memória…'
+  }
+  if (m.startsWith('!exportar-memoria') || m.startsWith('!exportar memoria')) {
+    const exp = window.__mem_exportar ? window.__mem_exportar() : {}
+    const linhas = ['💾 MEMÓRIA EXPORTADA',
+      '• exportado em: ' + exp.exportadoEm,
+      '• chaves: ' + (exp.versoes ? exp.versoes.length : 0)]
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '💾 exportar'); rolarFim(); return '💾 memória exportada (ver posts/marketing/memoria-export.json)'
+  }
+  if (m.startsWith('!editar-memoria') || m.startsWith('!editar memoria')) {
+    return '⚠️ uso: edite diretamente no arquivo posts/marketing/memoria-export.json ou use !importar-memoria'
+  }
+  if (m.startsWith('!importar-memoria') || m.startsWith('!importar memoria')) {
+    return '⚠️ cole o JSON da memória para importar. Exemplo: !importar-memoria {…}'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // IMAGENS PARA POSTS
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!gerar-imagem') || m.startsWith('!gerar imagem')) {
+    const q = msg.trim().replace(/^!gerar(-imagem| imagem)?\s*/i, '').trim()
+    const partes = q.split(/\s+/)
+    const texto = partes[0]
+    const rede = partes[1] || 'instagram'
+    const jogo = partes[2] || 'ambos'
+    const estilo = partes[3] || 'vibrante'
+    const prompt = window.__img_gerarPrompt ? window.__img_gerarPrompt(texto, rede, jogo, estilo) : texto
+    const r = window.__img_registrarImagem ? window.__img_registrarImagem(texto, rede, jogo, prompt, 'gerado_' + Date.now() + '.png', estilo) : null
+    if (!r || !r.ok) return '⚠️ não foi possível registrar imagem'
+    bolha('bot', '🖼️ IMAGEM REGISTRADA\n• ID: ' + r.imagem.id + '\n• Rede: ' + rede + '\n• Estilo: ' + estilo + '\n• Prompt: ' + prompt.slice(0, 80) + '…', new Date().toISOString(), '🖼️ imagem'); rolarFim(); return '🖼️ imagem gerada: ' + prompt.slice(0, 50) + '…'
+  }
+  if (m.startsWith('!minhas-imagens') || m.startsWith('!minhas imagens')) {
+    const imgs = window.__img_listarImagens ? window.__img_listarImagens() : []
+    if (!imgs.length) return '⚠️ nenhuma imagem registrada'
+    const linhas = ['🖼️ MINHAS IMAGENS']
+    for (const i of imgs.slice(-10)) {
+      linhas.push('• ' + i.id + ' — ' + i.rede + ' (' + i.estilo + ') — ' + (i.usadoEm ? 'usada' : 'não usada'))
+    }
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '🖼️ imagens'); rolarFim(); return '🖼️ suas imagens…'
+  }
+  if (m.startsWith('!estat-imagens') || m.startsWith('!estat imagens')) {
+    const est = window.__img_estatisticas ? window.__img_estatisticas() : {}
+    const linhas = ['📊 ESTATÍSTICAS DE IMAGENS',
+      '• total: ' + est.total,
+      '• usadas: ' + est.usadas,
+      '• não usadas: ' + est.naoUsadas]
+    for (const [rede, qtd] of Object.entries(est.porRede || {})) {
+      linhas.push('• ' + rede + ': ' + qtd)
+    }
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📊 estat-imagens'); rolarFim(); return '📊 estatísticas de imagens…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // RELATÓRIO SEMANAL
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!relatorio-semanal') || m.startsWith('!relatorio semanal')) {
+    bolha('bot', '📄 RELATÓRIO SEMANAL\n• Use: node tools/relatorio-semanal.js\n• Arquivo: posts/marketing/relatorios-semanais.json\n• Gera relatório com métricas, alertas e recomendações da semana.', new Date().toISOString(), '📄 relatorio'); rolarFim(); return '📄 relatório semanal…'
+  }
+  if (m.startsWith('!meus-relatorios') || m.startsWith('!meus relatorios')) {
+    const rels = window.__rel_listarRelatorios ? window.__rel_listarRelatorios() : []
+    if (!rels.length) return '⚠️ nenhum relatório gerado'
+    const linhas = ['📄 RELATÓRIOS SEMANAIS']
+    for (const r of rels.slice(-5)) {
+      linhas.push('• ' + r.id + ' — semana ' + new Date(r.semanaInicio).toLocaleDateString('pt-BR') + ' — downloads: ' + r.metricas.downloads)
+    }
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📄 relatorios'); rolarFim(); return '📄 seus relatórios…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // PLANO SEMANAL
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!plano-semanal') || m.startsWith('!plano semanal')) {
+    const q = msg.trim().replace(/^!plano(-semanal| semanal)?\s*/i, '').trim()
+    const jogo = q || 'ambos'
+    const r = window.__plano_gerarPlanoSemanal ? window.__plano_gerarPlanoSemanal(jogo) : null
+    if (!r || !r.ok) return '⚠️ não foi possível gerar plano'
+    const linhas = ['📅 PLANO SEMANAL: ' + r.plano.jogo,
+      '• semana: ' + new Date(r.plano.semanaInicio).toLocaleDateString('pt-BR') + ' a ' + new Date(r.plano.semanaFim).toLocaleDateString('pt-BR'),
+      '• posts planejados: ' + r.plano.cronograma.length]
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📅 plano'); rolarFim(); return '📅 plano semanal gerado para ' + jogo
+  }
+  if (m.startsWith('!meus-planos') || m.startsWith('!meus planos')) {
+    const planos = window.__plano_listarPlanos ? window.__plano_listarPlanos() : []
+    if (!planos.length) return '⚠️ nenhum plano gerado'
+    const linhas = ['📅 PLANOS SEMANAIS']
+    for (const p of planos.slice(-5)) {
+      linhas.push('• ' + p.id + ' — ' + p.jogo + ' — ' + p.cronograma.length + ' posts — ' + p.status)
+    }
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📅 planos'); rolarFim(); return '📅 seus planos…'
+  }
+  if (m.startsWith('!estat-planos') || m.startsWith('!estat planos')) {
+    const est = window.__plano_estatisticasPlanos ? window.__plano_estatisticasPlanos() : {}
+    const linhas = ['📊 ESTATÍSTICAS DE PLANOS',
+      '• total: ' + est.total,
+      '• ativos: ' + est.ativos,
+      '• total posts: ' + est.totalPosts,
+      '• posts pendentes: ' + est.postsPendentes]
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📊 estat-planos'); rolarFim(); return '📊 estatísticas de planos…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // DETECTOR DE TENDÊNCIAS
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!detectar-tendencia') || m.startsWith('!detectar tendencia')) {
+    return '⚠️ uso: !detectar-tendencia <metrica1:atual,anterior> <metrica2:atual,anterior> …\nExemplo: !detectar-tendencia downloads:80,100 ctr:1.5,2.5'
+  }
+  if (m.startsWith('!minhas-tendencias') || m.startsWith('!minhas tendencias')) {
+    const tend = window.__tend_listarDeteccoes ? window.__tend_listarDeteccoes() : []
+    if (!tend.length) return '⚠️ nenhuma tendência detectada'
+    const linhas = ['📈 TENDÊNCIAS DETECTADAS']
+    for (const t of tend.slice(-10)) {
+      linhas.push('• ' + t.id + ' — ' + t.tipo + ' (' + t.severidade + ') — ' + t.mensagem.slice(0, 60))
+    }
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📈 tendencias'); rolarFim(); return '📈 suas tendências…'
+  }
+  if (m.startsWith('!estat-tendencias') || m.startsWith('!estat tendencias')) {
+    const est = window.__tend_estatisticasTendencias ? window.__tend_estatisticasTendencias() : {}
+    const linhas = ['📊 ESTATÍSTICAS DE TENDÊNCIAS',
+      '• total: ' + est.total]
+    for (const [tipo, qtd] of Object.entries(est.porTipo || {})) {
+      linhas.push('• ' + tipo + ': ' + qtd)
+    }
+    for (const [sev, qtd] of Object.entries(est.porSeveridade || {})) {
+      linhas.push('• severidade ' + sev + ': ' + qtd)
+    }
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📊 estat-tendencias'); rolarFim(); return '📊 estatísticas de tendências…'
   }
 
 return null;
