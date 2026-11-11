@@ -33,6 +33,19 @@
 <script src="relatorio-semanal-browser.js"></script>
 <script src="plano-semanal-browser.js"></script>
 <script src="detector-tendencias-browser.js"></script>
+<script src="analise-concorrencia-browser.js"></script>
+<script src="metas-acompanhamento-browser.js"></script>
+<script src="tags-categorizacao-browser.js"></script>
+<script src="historico-conteudo-browser.js"></script>
+<script src="auditoria-acoes-browser.js"></script>
+<script src="limites-postagem-browser.js"></script>
+<script src="respostas-comentarios-browser.js"></script>
+<script src="indicacao-tracking-browser.js"></script>
+<script src="otimizacao-horario-semana-browser.js"></script>
+<script src="recomendacao-conteudo-browser.js"></script>
+<script src="ltv-cohorte-browser.js"></script>
+<script src="churn-preditivo-browser.js"></script>
+<script src="sistema-tarefas-browser.js"></script>
 </head>
 <body>
 
@@ -3771,6 +3784,297 @@ async function maosDaCasa(msg) {
       linhas.push('• severidade ' + sev + ': ' + qtd)
     }
     bolha('bot', linhas.join('\n'), new Date().toISOString(), '📊 estat-tendencias'); rolarFim(); return '📊 estatísticas de tendências…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // ANÁLISE DE CONCORRÊNCIA
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!registrar-concorrente') || m.startsWith('!registrar concorrente')) {
+    const q = msg.trim().replace(/^!registrar(-concorrente| concorrente)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__conc_registrarConcorrente ? window.__conc_registrarConcorrente(p[0], p[1] || 'ambos', p[2] || '', p[3] || '0', p.slice(4).join(' '), '') : null
+    if (!r || !r.ok) return '⚠️ não foi possível registrar concorrente'
+    bolha('bot', '🎯 CONCORRENTE REGISTRADO\n• Nome: ' + r.concorrente.nome + '\n• Jogo: ' + r.concorrente.jogo, new Date().toISOString(), '🎯 concorrente'); rolarFim(); return '🎯 concorrente registrado: ' + r.concorrente.nome
+  }
+  if (m.startsWith('!listar-concorrentes') || m.startsWith('!listar concorrentes')) {
+    const q = msg.trim().replace(/^!listar(-concorrentes| concorrentes)?\s*/i, '').trim()
+    const cs = window.__conc_listarConcorrentes ? window.__conc_listarConcorrentes(q || null) : []
+    if (!cs.length) return '⚠️ nenhum concorrente cadastrado'
+    const linhas = ['🎯 CONCORRENTES']
+    for (const c of cs) linhas.push('• ' + c.nome + ' — ' + c.jogo)
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '🎯 concorrentes'); rolarFim(); return '🎯 listando concorrentes…'
+  }
+  if (m.startsWith('!adicionar-comparativo') || m.startsWith('!adicionar comparativo')) {
+    const q = msg.trim().replace(/^!adicionar(-comparativo| comparativo)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__conc_adicionarComparativo ? window.__conc_adicionarComparativo(p[0] || 'ambos', p[1] || '', p[2] || '0', p[3] || '0', p.slice(4).join(' ')) : null
+    if (!r || !r.ok) return '⚠️ não foi possível adicionar comparativo'
+    bolha('bot', '📊 COMPARATIVO ADICIONADO\n• Métrica: ' + r.comparativo.metrica, new Date().toISOString(), '📊 comparativo'); rolarFim(); return '📊 comparativo adicionado…'
+  }
+  if (m.startsWith('!estat-concorrencia') || m.startsWith('!estat concorrencia')) {
+    const est = window.__conc_estatisticasConcorrencia ? window.__conc_estatisticasConcorrencia() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE CONCORRÊNCIA\n• Concorrentes: ' + est.totalConcorrentes + '\n• Comparativos: ' + est.totalComparativos, new Date().toISOString(), '📊 estat-concorrencia'); rolarFim(); return '📊 estatísticas de concorrência…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // METAS E ACOMPANHAMENTO
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!criar-meta') || m.startsWith('!criar meta')) {
+    const q = msg.trim().replace(/^!criar(-meta| meta)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__met_criarMeta ? window.__met_criarMeta(p.slice(0, -3).join(' '), p[p.length - 3], p[p.length - 2], p[p.length - 1] || 'ambos', 'numero') : null
+    if (!r || !r.ok) return '⚠️ uso: !criar-meta <descricao> <valorAlvo> <periodo> <jogo>'
+    bolha('bot', '🎯 META CRIADA\n• ' + r.meta.descricao + '\n• Alvo: ' + r.meta.valorAlvo + ' — Período: ' + r.meta.periodo, new Date().toISOString(), '🎯 meta'); rolarFim(); return '🎯 meta criada: ' + r.meta.descricao
+  }
+  if (m.startsWith('!atualizar-meta') || m.startsWith('!atualizar meta')) {
+    const q = msg.trim().replace(/^!atualizar(-meta| meta)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__met_atualizarProgressoMeta ? window.__met_atualizarProgressoMeta(p[0], p[1]) : null
+    if (!r || !r.ok) return '⚠️ uso: !atualizar-meta <id-meta> <valor>'
+    bolha('bot', '📈 META ATUALIZADA\n• ID: ' + r.meta.id + '\n• Valor atual: ' + r.meta.valorAtual + '\n• Status: ' + r.meta.status, new Date().toISOString(), '📈 meta'); rolarFim(); return '📈 meta atualizada: ' + r.meta.id
+  }
+  if (m.startsWith('!listar-metas') || m.startsWith('!listar metas')) {
+    const q = msg.trim().replace(/^!listar(-metas| metas)?\s*/i, '').trim()
+    const ms = window.__met_listarMetas ? window.__met_listarMetas(null, q || null) : []
+    if (!ms.length) return '⚠️ nenhuma meta cadastrada'
+    const linhas = ['🎯 METAS']
+    for (const m of ms) linhas.push('• ' + m.id + ' — ' + m.descricao + ' — ' + m.valorAtual + '/' + m.valorAlvo + ' — ' + m.status)
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '🎯 metas'); rolarFim(); return '🎯 listando metas…'
+  }
+  if (m.startsWith('!estat-metas') || m.startsWith('!estat metas')) {
+    const est = window.__met_estatisticasMetas ? window.__met_estatisticasMetas() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE METAS\n• Total: ' + est.total + '\n• Ativas: ' + est.ativas + '\n• Concluídas: ' + est.concluidas + '\n• Em risco: ' + est.emRisco, new Date().toISOString(), '📊 estat-metas'); rolarFim(); return '📊 estatísticas de metas…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // TAGS E CATEGORIZAÇÃO
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!criar-tag') || m.startsWith('!criar tag')) {
+    const q = msg.trim().replace(/^!criar(-tag| tag)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__tag_criarTag ? window.__tag_criarTag(p[0], p.slice(1).join(' '), p[2] || '#00d4aa') : null
+    if (!r || !r.ok) return '⚠️ uso: !criar-tag <nome> <descricao> <cor>'
+    bolha('bot', '🏷️ TAG CRIADA\n• Nome: ' + r.tag.nome + '\n• Cor: ' + r.tag.cor, new Date().toISOString(), '🏷️ tag'); rolarFim(); return '🏷️ tag criada: ' + r.tag.nome
+  }
+  if (m.startsWith('!listar-tags') || m.startsWith('!listar tags')) {
+    const ts = window.__tag_listarTags ? window.__tag_listarTags() : []
+    if (!ts.length) return '⚠️ nenhuma tag cadastrada'
+    const linhas = ['🏷️ TAGS']
+    for (const t of ts) linhas.push('• ' + t.nome + ' — ' + (t.usados || 0) + ' usos')
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '🏷️ tags'); rolarFim(); return '🏷️ listando tags…'
+  }
+  if (m.startsWith('!estat-tags') || m.startsWith('!estat tags')) {
+    const est = window.__tag_estatisticasTags ? window.__tag_estatisticasTags() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE TAGS\n• Total: ' + est.totalTags + '\n• Postagens: ' + est.totalPostagens, new Date().toISOString(), '📊 estat-tags'); rolarFim(); return '📊 estatísticas de tags…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // HISTÓRICO DE CONTEÚDO
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!registrar-versao') || m.startsWith('!registrar versao')) {
+    const q = msg.trim().replace(/^!registrar(-versao| versao)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__hist_registrarVersao ? window.__hist_registrarVersao(p[0], p.slice(1).join(' '), p[2] || '1.0', 'usuario', 'versao registrada') : null
+    if (!r || !r.ok) return '⚠️ uso: !registrar-versao <id-conteudo> <conteudo> <versao>'
+    bolha('bot', '📚 VERSÃO REGISTRADA\n• ID: ' + r.versao.id + '\n• Conteúdo: ' + r.versao.conteudoId, new Date().toISOString(), '📚 versao'); rolarFim(); return '📚 versão registrada: ' + r.versao.id
+  }
+  if (m.startsWith('!listar-versoes') || m.startsWith('!listar versoes')) {
+    const id = msg.trim().replace(/^!listar(-versoes| versoes)?\s*/i, '').trim()
+    if (!id) return '⚠️ uso: !listar-versoes <id-conteudo>'
+    const vs = window.__hist_listarVersoes ? window.__hist_listarVersoes(id) : []
+    if (!vs.length) return '⚠️ nenhuma versão encontrada'
+    const linhas = ['📚 VERSIONES']
+    for (const v of vs) linhas.push('• ' + v.id + ' — v' + v.versao + ' — ' + v.autor)
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📚 versoes'); rolarFim(); return '📚 listando versões…'
+  }
+  if (m.startsWith('!estat-historico') || m.startsWith('!estat historico')) {
+    const est = window.__hist_estatisticasHistorico ? window.__hist_estatisticasHistorico() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE HISTÓRICO\n• Total de versões: ' + est.totalVersoes + '\n• Conteúdos únicos: ' + est.conteudosUnicos, new Date().toISOString(), '📊 estat-historico'); rolarFim(); return '📊 estatísticas de histórico…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // AUDITORIA DE AÇÕES
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!registrar-acao') || m.startsWith('!registrar acao')) {
+    const q = msg.trim().replace(/^!registrar(-acao| acao)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__aud_registrarAcao ? window.__aud_registrarAcao(p[0], p[1] || '', p[2] || '', p.slice(3).join(' '), 'usuario') : null
+    if (!r || !r.ok) return '⚠️ uso: !registrar-acao <acao> <entidade> <id> <detalhes>'
+    bolha('bot', '📋 AÇÃO REGISTRADA\n• ' + r.log.acao + ' — ' + r.log.entidade, new Date().toISOString(), '📋 acao'); rolarFim(); return '📋 ação registrada: ' + r.log.acao
+  }
+  if (m.startsWith('!listar-logs') || m.startsWith('!listar logs')) {
+    const qs = window.__aud_listarLogs ? window.__aud_listarLogs(null, null, 10) : []
+    if (!qs.length) return '⚠️ nenhum log de auditoria'
+    const linhas = ['📋 LOGS DE AUDITORIA']
+    for (const l of qs) linhas.push('• ' + l.acao + ' — ' + l.entidade + ' — ' + l.usuario)
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📋 logs'); rolarFim(); return '📋 listando logs…'
+  }
+  if (m.startsWith('!estat-auditoria') || m.startsWith('!estat auditoria')) {
+    const est = window.__aud_estatisticasAuditoria ? window.__aud_estatisticasAuditoria() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE AUDITORIA\n• Total de logs: ' + est.total, new Date().toISOString(), '📊 estat-auditoria'); rolarFim(); return '📊 estatísticas de auditoria…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // LIMITES DE POSTAGEM
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!registrar-post-limite') || m.startsWith('!registrar post limite')) {
+    const q = msg.trim().replace(/^!registrar(-post| post)?(-limite| limite)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__lim_registrarPost ? window.__lim_registrarPost(p[0] || 'instagram', p[1] || 'ambos') : null
+    if (!r) return '⚠️ erro ao registrar post'
+    bolha('bot', '🛑 POST REGISTRADO\n• Total hoje: ' + r.totalHoje + ' / ' + r.limite + '\n• Excedeu: ' + (r.excedeu ? 'SIM' : 'NÃO'), new Date().toISOString(), '🛑 limite'); rolarFim(); return '🛑 post registrado no limite…'
+  }
+  if (m.startsWith('!registrar-falha-limite') || m.startsWith('!registrar falha limite')) {
+    const r = window.__lim_registrarFalha ? window.__lim_registrarFalha() : null
+    if (!r) return '⚠️ erro ao registrar falha'
+    bolha('bot', '🛑 FALHA REGISTRADA\n• Consecutivas: ' + r.falhasConsecutivas + ' / ' + r.limite + '\n• Bloqueado: ' + (r.bloqueado ? 'SIM' : 'NÃO'), new Date().toISOString(), '🛑 falha'); rolarFim(); return '🛑 falha registrada…'
+  }
+  if (m.startsWith('!resetar-falhas') || m.startsWith('!resetar falhas')) {
+    const r = window.__lim_resetarFalhas ? window.__lim_resetarFalhas() : null
+    if (!r) return '⚠️ erro ao resetar falhas'
+    bolha('bot', '🛑 FALHAS RESETADAS', new Date().toISOString(), '🛑 reset'); rolarFim(); return '🛑 falhas resetadas…'
+  }
+  if (m.startsWith('!estat-limites') || m.startsWith('!estat limites')) {
+    const est = window.__lim_estatisticasLimites ? window.__lim_estatisticasLimites() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE LIMITES\n• Posts/dia: ' + est.limitePostsDia + '\n• Falhas consecutivas: ' + est.falhasConsecutivas + ' / ' + est.limiteFalhasConsecutivas, new Date().toISOString(), '📊 estat-limites'); rolarFim(); return '📊 estatísticas de limites…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // RESPOSTAS A COMENTÁRIOS
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!registrar-resposta-comentario') || m.startsWith('!registrar resposta comentario')) {
+    const q = msg.trim().replace(/^!registrar(-resposta| resposta)?(-comentario| comentario)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__resp_registrarResposta ? window.__resp_registrarResposta(p[0], p[1] || 'instagram', p[2] || '', p[3] || 'neutro', p.slice(4).join(' '), p[5] || 'ambos') : null
+    if (!r || !r.ok) return '⚠️ uso: !registrar-resposta-comentario <id> <rede> <texto> <sentimento> <resposta> <jogo>'
+    bolha('bot', '💬 RESPOSTA REGISTRADA\n• Sentimento: ' + r.resposta.sentimento + '\n• Resposta: ' + r.resposta.resposta.slice(0, 50), new Date().toISOString(), '💬 resposta'); rolarFim(); return '💬 resposta registrada…'
+  }
+  if (m.startsWith('!estat-respostas') || m.startsWith('!estat respostas')) {
+    const est = window.__resp_estatisticasRespostas ? window.__resp_estatisticasRespostas() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE RESPOSTAS\n• Total: ' + est.total + '\n• Enviadas: ' + est.enviados + '\n• Não enviadas: ' + est.naoEnviados, new Date().toISOString(), '📊 estat-respostas'); rolarFim(); return '📊 estatísticas de respostas…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // INDICAÇÃO / REFERRAL
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!registrar-indicacao') || m.startsWith('!registrar indicacao')) {
+    const q = msg.trim().replace(/^!registrar(-indicacao| indicacao)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__ind_registrarIndicacao ? window.__ind_registrarIndicacao(p[0], p[1], p[2] || 'ambos', p[3] || '', p[4] || '') : null
+    if (!r || !r.ok) return '⚠️ uso: !registrar-indicacao <indicator> <indicado> <jogo> <codigo> <recompensa>'
+    bolha('bot', '👥 INDICAÇÃO REGISTRADA\n• ' + r.indicacao.indicator + ' → ' + r.indicacao.indicado, new Date().toISOString(), '👥 indicacao'); rolarFim(); return '👥 indicação registrada…'
+  }
+  if (m.startsWith('!estat-indicacoes') || m.startsWith('!estat indicacoes')) {
+    const est = window.__ind_estatisticasIndicacoes ? window.__ind_estatisticasIndicacoes() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE INDICAÇÕES\n• Total: ' + est.total + '\n• Convertidos: ' + est.convertidos + '\n• Taxa: ' + est.taxaConversao + '%', new Date().toISOString(), '📊 estat-indicacoes'); rolarFim(); return '📊 estatísticas de indicações…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // OTIMIZAÇÃO DE HORÁRIO
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!registrar-desempenho-horario') || m.startsWith('!registrar desempenho horario')) {
+    const q = msg.trim().replace(/^!registrar(-desempenho| desempenho)?(-horario| horario)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__hor_registrarDesempenho ? window.__hor_registrarDesempenho(p[0] || 'instagram', p[1] || 'segunda', p[2] || '10', p[3] || '0', p[4] || 'ambos') : null
+    if (!r || !r.ok) return '⚠️ uso: !registrar-desempenho-horario <rede> <dia> <hora> <engajamento> <jogo>'
+    bolha('bot', '📅 DESEMPENHO REGISTRADO\n• ' + r.desempenho.rede + ' — ' + r.desempenho.diaSemana + ' ' + r.desempenho.hora + 'h — ' + r.desempenho.engajamento, new Date().toISOString(), '📅 desempenho'); rolarFim(); return '📅 desempenho registrado…'
+  }
+  if (m.startsWith('!melhor-horario-dia') || m.startsWith('!melhor horario dia')) {
+    const q = msg.trim().replace(/^!melhor(-horario| horario)?(-dia| dia)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__hor_melhorHorarioPorDiaESemana ? window.__hor_melhorHorarioPorDiaESemana(p[0] || 'instagram', p[1] || null) : null
+    if (!r) return '⚠️ sem dados de horário'
+    const linhas = ['📅 MELHOR HORÁRIO POR DIA — ' + (p[0] || 'instagram')]
+    for (const [dia, h] of Object.entries(r)) linhas.push('• ' + dia + ': ' + h.hora + 'h (' + h.engajamento + ' engajamento)')
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📅 melhor-horario'); rolarFim(); return '📅 melhores horários…'
+  }
+  if (m.startsWith('!estat-horario') || m.startsWith('!estat horario')) {
+    const est = window.__hor_estatisticasHorario ? window.__hor_estatisticasHorario() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE HORÁRIO\n• Total de registros: ' + est.totalRegistros + '\n• Redes: ' + (est.redes ? est.redes.join(', ') : 'nenhuma'), new Date().toISOString(), '📊 estat-horario'); rolarFim(); return '📊 estatísticas de horário…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // RECOMENDAÇÃO DE CONTEÚDO
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!registrar-conteudo-rec') || m.startsWith('!registrar conteudo rec')) {
+    const q = msg.trim().replace(/^!registrar(-conteudo| conteudo)?(-rec| rec)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__rec_registrarConteudo ? window.__rec_registrarConteudo(p[0], p[1] || 'texto', p[2] || 'instagram', p[3] || 'ambos', p[4] || '0', p[5] || '0', p[6] || '0') : null
+    if (!r || !r.ok) return '⚠️ uso: !registrar-conteudo-rec <texto> <formato> <rede> <jogo> <engajamento> <cliques> <downloads>'
+    bolha('bot', '💡 CONTEÚDO REGISTRADO\n• ' + r.conteudo.texto.slice(0, 50) + '\n• Formato: ' + r.conteudo.formato + ' — Engajamento: ' + r.conteudo.engajamento, new Date().toISOString(), '💡 conteudo'); rolarFim(); return '💡 conteúdo registrado…'
+  }
+  if (m.startsWith('!gerar-recomendacoes') || m.startsWith('!gerar recomendacoes')) {
+    const q = msg.trim().replace(/^!gerar(-recomendacoes| recomendacoes)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__rec_gerarRecomendacoes ? window.__rec_gerarRecomendacoes(p[0] || null, p[1] || null) : null
+    if (!r || !r.recomendacoes.length) return '⚠️ sem recomendações disponíveis'
+    const linhas = ['💡 RECOMENDAÇÕES DE CONTEÚDO']
+    for (const rec of r.recomendacoes) linhas.push('• ' + rec.texto + ' — ' + rec.formato + ' — ' + rec.engajamento + ' engajamento')
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '💡 recomendacoes'); rolarFim(); return '💡 recomendações geradas…'
+  }
+  if (m.startsWith('!estat-conteudos') || m.startsWith('!estat conteudos')) {
+    const est = window.__rec_estatisticasConteudos ? window.__rec_estatisticasConteudos() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE CONTEÚDOS\n• Total: ' + est.total + '\n• Engajamento médio: ' + est.medioEngajamento + '\n• Total cliques: ' + est.totalCliques + '\n• Total downloads: ' + est.totalDownloads, new Date().toISOString(), '📊 estat-conteudos'); rolarFim(); return '📊 estatísticas de conteúdos…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // LTV POR COHORTE
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!registrar-cohorte') || m.startsWith('!registrar cohorte')) {
+    const q = msg.trim().replace(/^!registrar(-cohorte| cohorte)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__ltv_registrarCohorte ? window.__ltv_registrarCohorte(p[0], p[1] || 'ambos', p[2] || '0', p[3] || '0', p[4] || '1') : null
+    if (!r || !r.ok) return '⚠️ uso: !registrar-cohorte <mes> <jogo> <usuarios> <receita> <periodoMeses>'
+    bolha('bot', '💰 COHORTE REGISTRADA\n• Mês: ' + r.cohorte.mes + '\n• LTV: R$ ' + r.cohorte.ltv, new Date().toISOString(), '💰 cohorte'); rolarFim(); return '💰 cohorte registrada…'
+  }
+  if (m.startsWith('!estat-ltv') || m.startsWith('!estat ltv')) {
+    const est = window.__ltv_estatisticasLTV ? window.__ltv_estatisticasLTV() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE LTV\n• Total de cohortes: ' + est.total + '\n• LTV médio: R$ ' + est.medioLTV, new Date().toISOString(), '📊 estat-ltv'); rolarFim(); return '📊 estatísticas de LTV…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // CHURN PREDITIVO
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!registrar-usuario-churn') || m.startsWith('!registrar usuario churn')) {
+    const q = msg.trim().replace(/^!registrar(-usuario| usuario)?(-churn| churn)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__chn_registrarUsuario ? window.__chn_registrarUsuario(p[0], p[1] || 'ambos', p[2] || '', p[3] || '0', p[4] || '0') : null
+    if (!r || !r.ok) return '⚠️ uso: !registrar-usuario-churn <id> <jogo> <ultimoAcesso> <totalAcessos> <diasInativo>'
+    bolha('bot', '📉 USUÁRIO REGISTRADO\n• ID: ' + r.usuario.idUsuario + '\n• Risco: ' + r.usuario.risco, new Date().toISOString(), '📉 usuario'); rolarFim(); return '📉 usuário registrado: ' + r.usuario.risco + ' risco'
+  }
+  if (m.startsWith('!estat-churn') || m.startsWith('!estat churn')) {
+    const est = window.__chn_estatisticasChurn ? window.__chn_estatisticasChurn() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE CHURN\n• Total: ' + est.total + '\n• Alto risco: ' + est.altoRisco + '\n• Médio risco: ' + est.medioRisco + '\n• Baixo risco: ' + est.baixoRisco, new Date().toISOString(), '📊 estat-churn'); rolarFim(); return '📊 estatísticas de churn…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // SISTEMA DE TAREFAS
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!criar-tarefa') || m.startsWith('!criar tarefa')) {
+    const q = msg.trim().replace(/^!criar(-tarefa| tarefa)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__tar_criarTarefa ? window.__tar_criarTarefa(p[0], p.slice(1, -3).join(' '), p[p.length - 3] || 'media', p[p.length - 2] || 'ambos', p[p.length - 1] || null, 'geral') : null
+    if (!r || !r.ok) return '⚠️ uso: !criar-tarefa <titulo> <descricao> <prioridade> <jogo> <prazo>'
+    bolha('bot', '✅ TAREFA CRIADA\n• ' + r.tarefa.titulo + '\n• Prioridade: ' + r.tarefa.prioridade + ' — Jogo: ' + r.tarefa.jogo, new Date().toISOString(), '✅ tarefa'); rolarFim(); return '✅ tarefa criada: ' + r.tarefa.titulo
+  }
+  if (m.startsWith('!concluir-tarefa') || m.startsWith('!concluir tarefa')) {
+    const id = msg.trim().replace(/^!concluir(-tarefa| tarefa)?\s*/i, '').trim()
+    if (!id) return '⚠️ uso: !concluir-tarefa <id>'
+    const r = window.__tar_concluirTarefa ? window.__tar_concluirTarefa(id) : null
+    if (!r || !r.ok) return '⚠️ não foi possível concluir tarefa'
+    bolha('bot', '✅ TAREFA CONCLUÍDA: ' + r.tarefa.titulo, new Date().toISOString(), '✅ concluida'); rolarFim(); return '✅ tarefa concluída: ' + r.tarefa.titulo
+  }
+  if (m.startsWith('!listar-tarefas') || m.startsWith('!listar tarefas')) {
+    const q = msg.trim().replace(/^!listar(-tarefas| tarefas)?\s*/i, '').trim()
+    const ts = window.__tar_listarTarefas ? window.__tar_listarTarefas(null, q || null) : []
+    if (!ts.length) return '⚠️ nenhuma tarefa cadastrada'
+    const linhas = ['✅ TAREFAS']
+    for (const t of ts) linhas.push('• ' + t.id + ' — ' + t.titulo + ' — ' + t.status + ' — ' + t.prioridade)
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '✅ tarefas'); rolarFim(); return '✅ listando tarefas…'
+  }
+  if (m.startsWith('!estat-tarefas') || m.startsWith('!estat tarefas')) {
+    const est = window.__tar_estatisticasTarefas ? window.__tar_estatisticasTarefas() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE TAREFAS\n• Total: ' + est.total + '\n• Pendentes: ' + est.pendentes + '\n• Concluídas: ' + est.concluidas, new Date().toISOString(), '📊 estat-tarefas'); rolarFim(); return '📊 estatísticas de tarefas…'
   }
 
 return null;
