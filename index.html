@@ -809,6 +809,12 @@ const TAMANHO_PAGINA_COMENTARIOS = 100;
 <script src="chat-colecoes-local.js"></script>
 <script src="chat-workspace.js"></script>
 <script src="chat-diagnostico.js"></script>
+<script src="tools/health-check-camadas-browser.js"></script>
+<script src="tools/status-total-marketing-browser.js"></script>
+<script src="tools/auto-otimizador-avancado-browser.js"></script>
+<script src="tools/alertas-proativos-marketing-browser.js"></script>
+<script src="tools/teste-redes-sociais-browser.js"></script>
+
 <script>
 function paginaFinalComentarios(total) {
   const n = Math.max(0, Number(total) || 0);
@@ -9555,6 +9561,114 @@ async function maosDaCasa(msg) {
     bolha('bot', '📊 AUTO-ESCALADA\\n• Ativo: ' + (est.ativo ? 'sim' : 'não') + '\\n• Escalas: ' + est.total_escalas + ' | Ajustes: ' + est.total_ajustes + ' | Limites: ' + est.limites.min + '-' + est.limites.max + ' min', new Date().toISOString(), '📊 estat-escalada'); rolarFim(); return '📊 estatísticas de escala…'
   }
 
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // HEALTH CHECK CAMADAS
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!health-check-ativar') || m.startsWith('!health check ativar')) {
+    const r = window.__hc_ativar ? window.__hc_ativar() : null
+    if (!r || !r.ok) return '⚠️ erro ao ativar health check'
+    bolha('bot', '🏥 HEALTH CHECK CAMADAS ATIVADO\n• Camadas totais: ' + r.camadas_total + '\n• Monitore e recupere automaticamente', new Date().toISOString(), '🏥 health-check'); rolarFim(); return '🏥 health check ativado'
+  }
+  if (m.startsWith('!health-check-executar') || m.startsWith('!health check executar')) {
+    const r = window.__hc_executar ? window.__hc_executar() : null
+    if (!r || !r.ok) return '⚠️ health check não ativo'
+    bolha('bot', '🏥 HEALTH CHECK EXECUTADO\n• Camadas ativas: ' + r.resultado.camadas_ativas + '\n• Camadas inativas: ' + r.resultado.camadas_inativas + '\n• Recuperações: ' + r.resultado.recuperacoes_sucesso + '/' + r.resultado.recuperacoes_tentadas, new Date().toISOString(), '🏥 health-check'); rolarFim(); return '🏥 health check executado'
+  }
+  if (m.startsWith('!health-check-estatisticas') || m.startsWith('!health check estatisticas')) {
+    const est = window.__hc_estatisticas ? window.__hc_estatisticas() : {}
+    bolha('bot', '📊 HEALTH CHECK\n• Ativo: ' + (est.ativo ? 'sim' : 'não') + '\n• Recuperações OK: ' + est.recuperacoes_sucesso + ' | Falhas: ' + est.recuperacoes_falha, new Date().toISOString(), '📊 estat-health'); rolarFim(); return '📊 estatísticas do health check…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // STATUS TOTAL MARKETING
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!status-total') || m.startsWith('!status total')) {
+    const r = window.__st_ativar ? window.__st_ativar() : null
+    if (!r || !r.ok) return '⚠️ erro ao ativar status total'
+    bolha('bot', '📊 STATUS TOTAL MARKETING ATIVADO\n• Camadas monitoradas: ' + r.resumo.camadas_monitoradas + '\n• Sistemas ativos: ' + r.resumo.sistemas_ativos + '\n• Inicialização automática: sim', new Date().toISOString(), '📊 status-total'); rolarFim(); return '📊 status total ativado'
+  }
+  if (m.startsWith('!status-total-gerar') || m.startsWith('!status total gerar')) {
+    const r = window.__st_gerarRelatorio ? window.__st_gerarRelatorio() : null
+    if (!r || !r.ok) return '⚠️ status total não ativo'
+    bolha('bot', '📊 RELATÓRIO STATUS TOTAL\n• Gerado em: ' + new Date(r.relatorio.geradoEm).toLocaleString('pt-BR') + '\n• Recomendações: ' + r.relatorio.recomendacoes.length, new Date().toISOString(), '📊 status-total'); rolarFim(); return '📊 relatório gerado'
+  }
+  if (m.startsWith('!status-total-estatisticas') || m.startsWith('!status total estatisticas')) {
+    const est = window.__st_estatisticas ? window.__st_estatisticas() : {}
+    bolha('bot', '📊 STATUS TOTAL\n• Ativo: ' + (est.ativo ? 'sim' : 'não') + '\n• Relatórios: ' + est.total_relatorios, new Date().toISOString(), '📊 estat-status'); rolarFim(); return '📊 estatísticas do status total…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // AUTO-OTIMIZADOR AVANÇADO
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!auto-otimizador-avancado-ativar') || m.startsWith('!auto otimizador avançado ativar')) {
+    const r = window.__aoa_ativar ? window.__aoa_ativar() : null
+    if (!r || !r.ok) return '⚠️ erro ao ativar auto-otimizador avançado'
+    bolha('bot', '⏱ AUTO-OTIMIZADOR AVANÇADO ATIVADO\n• Redes: ' + r.redes + ' | Jogos: ' + r.jogos + '\n• Sem horários fixos — dados reais de acesso', new Date().toISOString(), '⏱ auto-otimizador-avancado'); rolarFim(); return '⏱ auto-otimizador avançado ativado'
+  }
+  if (m.startsWith('!registrar-acesso-avancado') || m.startsWith('!registrar acesso avançado')) {
+    const q = msg.trim().replace(/^!registrar(-acesso| acesso)?(-avancado| avançado)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__aoa_registrarAcesso ? window.__aoa_registrarAcesso(p[0] || 'instagram', p[1] || 'ambos', p[2] || '10:00', p[3] !== 'false') : null
+    if (!r || !r.ok) return '⚠️ uso: !registrar-acesso-avancado <rede> <jogo> <horario> <sucesso>'
+    bolha('bot', '⏱ ACESSO REGISTRADO\n• Rede: ' + p[0] + ' | Jogo: ' + p[1] + ' | Horário: ' + p[2] + ' | Média: ' + r.media_acesso + '%', new Date().toISOString(), '⏱ auto-otimizador-avancado'); rolarFim(); return '⏱ acesso registrado'
+  }
+  if (m.startsWith('!otimizar-horarios') || m.startsWith('!otimizar horarios')) {
+    const r = window.__aoa_otimizar ? window.__aoa_otimizar() : null
+    if (!r || !r.ok) return '⚠️ auto-otimizador não ativo'
+    bolha('bot', '⏱ HORÁRIOS OTIMIZADOS\n• Ajustes: ' + r.ajustes.length + '\n• Baseado em dados reais de acesso', new Date().toISOString(), '⏱ auto-otimizador-avancado'); rolarFim(); return '⏱ horários otimizados'
+  }
+  if (m.startsWith('!auto-otimizador-avancado-estatisticas') || m.startsWith('!auto otimizador avançado estatisticas')) {
+    const est = window.__aoa_estatisticas ? window.__aoa_estatisticas() : {}
+    bolha('bot', '📊 AUTO-OTIMIZADOR AVANÇADO\n• Ativo: ' + (est.ativo ? 'sim' : 'não') + '\n• Redes: ' + est.redes_configuradas + ' | Ajustes: ' + est.total_ajustes, new Date().toISOString(), '📊 estat-aoa'); rolarFim(); return '📊 estatísticas do auto-otimizador avançado…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // ALERTAS PROATIVOS
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!alertas-proativos-ativar') || m.startsWith('!alertas proativos ativar')) {
+    const r = window.__ap_ativar ? window.__ap_ativar() : null
+    if (!r || !r.ok) return '⚠️ erro ao ativar alertas proativos'
+    bolha('bot', '🚨 ALERTAS PROATIVOS ATIVADOS\n• Regras: ' + r.regras + ' (engajamento baixo, fila estagnada, token expirando)\n• Dispara antes que algo falhe', new Date().toISOString(), '🚨 alertas-proativos'); rolarFim(); return '🚨 alertas proativos ativados'
+  }
+  if (m.startsWith('!monitorar-metricas') || m.startsWith('!monitorar metricas')) {
+    const r = window.__ap_monitorar ? window.__ap_monitorar() : null
+    if (!r || !r.ok) return '⚠️ alertas proativos não ativos'
+    bolha('bot', '🚨 MONITORAMENTO EXECUTADO\n• Novos alertas: ' + r.novos_alertas + '\n• Verificado em: ' + new Date().toLocaleTimeString('pt-BR'), new Date().toISOString(), '🚨 alertas-proativos'); rolarFim(); return '🚨 métricas monitoradas'
+  }
+  if (m.startsWith('!listar-alertas') || m.startsWith('!listar alertas')) {
+    const r = window.__ap_listarAlertas ? window.__ap_listarAlertas() : { alertas: [], total: 0 }
+    bolha('bot', '🚨 ALERTAS PENDENTES\n• Total: ' + r.total + '\n• ' + (r.alertas.length ? r.alertas.slice(0, 3).map(a => '• ' + a.tipo + ': ' + a.mensagem.slice(0, 60)).join('\n') : 'nenhum alerta pendente'), new Date().toISOString(), '🚨 alertas-proativos'); rolarFim(); return '🚨 alertas listados'
+  }
+  if (m.startsWith('!resolver-alerta') || m.startsWith('!resolver alerta')) {
+    const q = msg.trim().replace(/^!resolver(-alerta| alerta)?\s*/i, '').trim()
+    const r = window.__ap_resolverAlerta ? window.__ap_resolverAlerta(q) : null
+    if (!r || !r.ok) return '⚠️ uso: !resolver-alerta <id>'
+    bolha('bot', '🚨 ALERTA RESOLVIDO\n• ID: ' + q, new Date().toISOString(), '🚨 alertas-proativos'); rolarFim(); return '🚨 alerta resolvido'
+  }
+  if (m.startsWith('!alertas-proativos-estatisticas') || m.startsWith('!alertas proativos estatisticas')) {
+    const est = window.__ap_estatisticas ? window.__ap_estatisticas() : {}
+    bolha('bot', '📊 ALERTAS PROATIVOS\n• Ativo: ' + (est.ativo ? 'sim' : 'não') + '\n• Pendentes: ' + est.pendentes + ' | Resolvidos: ' + est.resolvidos, new Date().toISOString(), '📊 estat-alertas'); rolarFim(); return '📊 estatísticas de alertas…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // TESTE REDES SOCIAIS
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!teste-redes-sociais-ativar') || m.startsWith('!teste redes sociais ativar')) {
+    const r = window.__tr_ativar ? window.__tr_ativar() : null
+    if (!r || !r.ok) return '⚠️ erro ao ativar teste redes sociais'
+    bolha('bot', '📱 TESTE REDES SOCIAIS ATIVADO\n• Redes: Instagram, X, Nostr, Gmail\n• Verifica se estão respondendo e se podem postar', new Date().toISOString(), '📱 teste-redes'); rolarFim(); return '📱 teste redes sociais ativado'
+  }
+  if (m.startsWith('!teste-redes-sociais-executar') || m.startsWith('!teste redes sociais executar')) {
+    const r = window.__tr_executarTeste ? window.__tr_executarTeste() : null
+    if (!r || !r.ok) return '⚠️ teste redes não ativo'
+    bolha('bot', '📱 TESTE REDES SOCIAIS\n• Online: ' + r.resultados.online + '/' + r.resultados.redes_testadas + '\n• Pode postar: ' + r.resultados.postagem_disponivel + '\n• ' + r.resultados.detalhe.map(d => d.rede + ': ' + (d.online ? 'online' : 'offline')).join(' | '), new Date().toISOString(), '📱 teste-redes'); rolarFim(); return '📱 teste redes sociais executado'
+  }
+  if (m.startsWith('!teste-redes-sociais-estatisticas') || m.startsWith('!teste redes sociais estatisticas')) {
+    const est = window.__tr_estatisticas ? window.__tr_estatisticas() : {}
+    bolha('bot', '📊 TESTE REDES SOCIAIS\n• Testes: ' + est.total_testes + '\n• Último: ' + (est.ultimo ? est.ultimo.online + ' online, ' + est.ultimo.postagem_disponivel + ' pode postar' : 'nenhum'), new Date().toISOString(), '📊 estat-teste-redes'); rolarFim(); return '📊 estatísticas do teste redes…'
+  }
+
 return null;
 }
 eita = false;
@@ -9564,7 +9678,7 @@ function ouroFiltrado() {
   const alvo = cerebroEscolhido();
   return alvo ? OURO.filter((m) => m.id === alvo).concat(OURO.filter((m) => m.id !== alvo && !m.chaveLS)) : OURO;
 }
-const ARSENAL_JS = '!acao · !acervo · !adivinha · !agro · !agua · !anime · !anotacoes · !anotar · !apagarnota · !apagartarefa · !aprender · !ar · !arte · !artista · !asteroides · !avatar · !avioes · !backup · !bacon · !bancos · !baralho · !base64 · !bateria · !bbcmundo · !bin · !bitcoin · !bitstamp · !bundle · !busca · !cachorro · !cafe · !calc · !cambio · !cambiohistorico · !candido · !capsula · !carta · !cartapokemon · !caça · !censo · !cep · !cepworld · !cerveja · !chave · !cheias · !chess · !chuck · !chuva · !ciber · !cidades · !ciencia · !clima · !cnpj · !codigo · !commit · !conselho · !conta · !contar · !conversor · !converter · !cor · !corao · !covid · !cozinho · !cripto · !curiosidade · !curioso · !dado · !ddd · !decidir · !deputados · !desafiododia · !desculpa · !destaque · !dev · !dias · !diasemana · !disco · !dividir · !doaj · !dolar · !drink · !edgar · !elemento · !elevacao · !emprego · !empresa · !encurtar · !enxame · !eonet · !epic · !esporte · !esquecer · !estoiro · !eurlex · !f1 · !falar · !fato · !feitico · !feito · !feriado · !feriadode · !feriados · !ferramentas · !fipe · !fotinha · !fuso · !g1 · !gato · !gh · !ghibli · !giria · !gitlab · !gorjeta · !grande · !gratuito · !harry · !hash · !hn · !hoje · !humanitario · !ibge · !idade · !identidade · !imagem · !imc · !inspira · !instalar · !ipca · !iss · !jogos · !jogosdo dia · !juros · !juroscompostos · !kanye · !kombat · !lancamento · !lembrete · !letra · !library · !livro · !lobsters · !looku · !loteria · !magia · !manga · !mastodon · !matematica · !mc · !medico · !medo · !memoria · !mercado · !meuip · !mlb · !moeda · !moedaconv · !molar · !monstro · !morse · !motores · !mundo · !museu · !musica · !nasa · !nasaimg · !nasceuhoje · !natureza · !nba · !nesseadia · !nhl · !nobel · !nome · !noticias · !noticiasespaco · !npm · !nutri · !olhar · !ondas · !onde · !ouro · !ouvir · !palavra · !palavracha · !paleta · !paper · !passado · !persona · !personas · !pesquisar · !piada · !piadabr · !piadadepai · !piano · !picum · !placar · !plantar · !plenário · !pokemon · !pomodoro · !print · !produto · !promocoes · !ptax · !pubmed · !qr · !quadro · !quimica · !quiz · !raca · !radio · !raposa · !receita · !regra3 · !respirar · !restaurar · !rick · !romano · !rx · !sabio · !saude · !semear · !senado · !senha · !serie · !simounao · !sol · !solar · !sorteio · !speedrun · !stack · !starwars · !status · !surpresa · !tabela · !tabuada · !tarefa · !tarefas · !tarot · !terremoto · !timer · !tocar · !tom · !topcripto · !traduzir · !trem · !trend · !trendcripto · !truco · !tvhoje · !uf · !usar · !uuid · !varredura · !velocimetro · !verbete · !verdade · !verdadedesafio · !veredicto · !verso · !vinho · !wayback · !wiki · !word · !xadrez · !xkcd · !sistema-limite-max · !sistema-status · !orquestrador-ativar · !orquestrador-coordenar · !orquestrador-estatisticas · !detector-anomalias-ativar · !detectar-anomalia · !detector-estatisticas · !loop-aprendizado-ativar · !registrar-resultado · !loop-estatisticas · !auto-otimizador-ativar · !registrar-acesso · !otimizador-estatisticas · !dashboard-limite-ativar · !adicionar-widget · !adicionar-alerta · !dashboard-estatisticas · !recuperacao-cadeia-ativar · !registrar-falha · !recuperacao-estatisticas · !integracao-cruzada-ativar · !executar-fluxo · !integracao-estatisticas · !auto-escalada-ativar · !ajustar-escala · !escalada-estatisticas';
+const ARSENAL_JS = '!acao · !acervo · !adivinha · !agro · !agua · !anime · !anotacoes · !anotar · !apagarnota · !apagartarefa · !aprender · !ar · !arte · !artista · !asteroides · !avatar · !avioes · !backup · !bacon · !bancos · !baralho · !base64 · !bateria · !bbcmundo · !bin · !bitcoin · !bitstamp · !bundle · !busca · !cachorro · !cafe · !calc · !cambio · !cambiohistorico · !candido · !capsula · !carta · !cartapokemon · !caça · !censo · !cep · !cepworld · !cerveja · !chave · !cheias · !chess · !chuck · !chuva · !ciber · !cidades · !ciencia · !clima · !cnpj · !codigo · !commit · !conselho · !conta · !contar · !conversor · !converter · !cor · !corao · !covid · !cozinho · !cripto · !curiosidade · !curioso · !dado · !ddd · !decidir · !deputados · !desafiododia · !desculpa · !destaque · !dev · !dias · !diasemana · !disco · !dividir · !doaj · !dolar · !drink · !edgar · !elemento · !elevacao · !emprego · !empresa · !encurtar · !enxame · !eonet · !epic · !esporte · !esquecer · !estoiro · !eurlex · !f1 · !falar · !fato · !feitico · !feito · !feriado · !feriadode · !feriados · !ferramentas · !fipe · !fotinha · !fuso · !g1 · !gato · !gh · !ghibli · !giria · !gitlab · !gorjeta · !grande · !gratuito · !harry · !hash · !hn · !hoje · !humanitario · !ibge · !idade · !identidade · !imagem · !imc · !inspira · !instalar · !ipca · !iss · !jogos · !jogosdo dia · !juros · !juroscompostos · !kanye · !kombat · !lancamento · !lembrete · !letra · !library · !livro · !lobsters · !looku · !loteria · !magia · !manga · !mastodon · !matematica · !mc · !medico · !medo · !memoria · !mercado · !meuip · !mlb · !moeda · !moedaconv · !molar · !monstro · !morse · !motores · !mundo · !museu · !musica · !nasa · !nasaimg · !nasceuhoje · !natureza · !nba · !nesseadia · !nhl · !nobel · !nome · !noticias · !noticiasespaco · !npm · !nutri · !olhar · !ondas · !onde · !ouro · !ouvir · !palavra · !palavracha · !paleta · !paper · !passado · !persona · !personas · !pesquisar · !piada · !piadabr · !piadadepai · !piano · !picum · !placar · !plantar · !plenário · !pokemon · !pomodoro · !print · !produto · !promocoes · !ptax · !pubmed · !qr · !quadro · !quimica · !quiz · !raca · !radio · !raposa · !receita · !regra3 · !respirar · !restaurar · !rick · !romano · !rx · !sabio · !saude · !semear · !senado · !senha · !serie · !simounao · !sol · !solar · !sorteio · !speedrun · !stack · !starwars · !status · !surpresa · !tabela · !tabuada · !tarefa · !tarefas · !tarot · !terremoto · !timer · !tocar · !tom · !topcripto · !traduzir · !trem · !trend · !trendcripto · !truco · !tvhoje · !uf · !usar · !uuid · !varredura · !velocimetro · !verbete · !verdade · !verdadedesafio · !veredicto · !verso · !vinho · !wayback · !wiki · !word · !xadrez · !xkcd · !sistema-limite-max · !sistema-status · !orquestrador-ativar · !orquestrador-coordenar · !orquestrador-estatisticas · !detector-anomalias-ativar · !detectar-anomalia · !detector-estatisticas · !loop-aprendizado-ativar · !registrar-resultado · !loop-estatisticas · !auto-otimizador-ativar · !registrar-acesso · !otimizador-estatisticas · !dashboard-limite-ativar · !adicionar-widget · !adicionar-alerta · !dashboard-estatisticas · !recuperacao-cadeia-ativar · !registrar-falha · !recuperacao-estatisticas · !integracao-cruzada-ativar · !executar-fluxo · !integracao-estatisticas · !auto-escalada-ativar · !ajustar-escala · !escalada-estatisticas · !health-check-ativar · !health-check-executar · !health-check-estatisticas · !status-total · !status-total-gerar · !status-total-estatisticas · !auto-otimizador-avancado-ativar · !registrar-acesso-avancado · !otimizar-horarios · !auto-otimizador-avancado-estatisticas · !alertas-proativos-ativar · !monitorar-metricas · !listar-alertas · !resolver-alerta · !alertas-proativos-estatisticas · !teste-redes-sociais-ativar · !teste-redes-sociais-executar · !teste-redes-sociais-estatisticas';
 // MEMÓRIA DE CONVERSA (31/10/2026): antes o roteador só era usado quando a conversa tinha
 // UMA mensagem — ou seja, na segunda pergunta a página esquecia tudo e voltava para a frota de
 // streaming, que responde com histórico mas sem ferramenta exata, sem amostra dupla e sem a régua.
@@ -10917,6 +11031,41 @@ if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); } catch (e
           console.log('[AUTÔNOMO] Coordenação de ' + r.execucao.camadas.length + ' camadas executada');
         }
       }, 2000);
+    }
+    // Health check das 49 camadas
+    if (typeof window.__hc_ativar === 'function') {
+      const r = window.__hc_ativar();
+      if (r && r.ok) {
+        console.log('[AUTÔNOMO] Health check ativado — ' + r.camadas_total + ' camadas monitoradas');
+      }
+    }
+    // Status total marketing
+    if (typeof window.__st_ativar === 'function') {
+      const r = window.__st_ativar();
+      if (r && r.ok) {
+        console.log('[AUTÔNOMO] Status total marketing ativado');
+      }
+    }
+    // Auto-otimizador avançado
+    if (typeof window.__aoa_ativar === 'function') {
+      const r = window.__aoa_ativar();
+      if (r && r.ok) {
+        console.log('[AUTÔNOMO] Auto-otimizador avançado ativado — ' + r.redes + ' redes, ' + r.jogos + ' jogos');
+      }
+    }
+    // Alertas proativos
+    if (typeof window.__ap_ativar === 'function') {
+      const r = window.__ap_ativar();
+      if (r && r.ok) {
+        console.log('[AUTÔNOMO] Alertas proativos ativados — ' + r.regras + ' regras');
+      }
+    }
+    // Teste redes sociais
+    if (typeof window.__tr_ativar === 'function') {
+      const r = window.__tr_ativar();
+      if (r && r.ok) {
+        console.log('[AUTÔNOMO] Teste redes sociais ativado — ' + r.redes + ' redes');
+      }
     }
   } catch (e) {
     console.log('[AUTÔNOMO] Inicialização parcial — alguns módulos ainda não carregados');

@@ -49,16 +49,16 @@ const allJs = fs.readdirSync(TOOLS_DIR).filter(f => f.endsWith('.js'));
 const serverJs = allJs.filter(f => !f.endsWith('-browser.js'));
 const browserJs = allJs.filter(f => f.endsWith('-browser.js'));
 
-test(`Total de arquivos JS = 630 (esperado 630, atual ${allJs.length})`, () => {
-  assert(allJs.length === 630, `esperado 630, encontrado ${allJs.length}`);
+test(`Total de arquivos JS = 640 (esperado 640, atual ${allJs.length})`, () => {
+  assert(allJs.length === 640, `esperado 640, encontrado ${allJs.length}`);
 });
 
-test(`Módulos servidor = 315 (atual ${serverJs.length})`, () => {
-  assert(serverJs.length === 315, `esperado 315, encontrado ${serverJs.length}`);
+test(`Módulos servidor = 320 (atual ${serverJs.length})`, () => {
+  assert(serverJs.length === 320, `esperado 320, encontrado ${serverJs.length}`);
 });
 
-test(`Módulos -browser.js = 315 (atual ${browserJs.length})`, () => {
-  assert(browserJs.length === 315, `esperado 315, encontrado ${browserJs.length}`);
+test(`Módulos -browser.js = 320 (atual ${browserJs.length})`, () => {
+  assert(browserJs.length === 320, `esperado 320, encontrado ${browserJs.length}`);
 });
 
 // Validar sintaxe de todos com node -c
@@ -85,8 +85,8 @@ console.log('━━━━━━━━━━━━━━━━━━━━━━�
 
 const indexContent = fs.readFileSync(INDEX_HTML, 'utf-8');
 const scriptTags = (indexContent.match(/<script src="[^"]*-browser\.js"><\/script>/g) || []);
-test(`Script tags -browser.js = 362 (atual ${scriptTags.length})`, () => {
-  assert(scriptTags.length === 362, `esperado 362, encontrado ${scriptTags.length}`);
+test(`Script tags -browser.js = 367 (atual ${scriptTags.length})`, () => {
+  assert(scriptTags.length === 367, `esperado 367, encontrado ${scriptTags.length}`);
 });
 
 // Verificar os 9 novos -browser.js específicos
@@ -100,6 +100,11 @@ const novosBrowser = [
   'recuperacao-cadeia-marketing-browser.js',
   'integracao-cruzada-marketing-browser.js',
   'auto-escalada-marketing-browser.js',
+  'health-check-camadas-browser.js',
+  'status-total-marketing-browser.js',
+  'auto-otimizador-avancado-browser.js',
+  'alertas-proativos-marketing-browser.js',
+  'teste-redes-sociais-browser.js',
 ];
 for (const nb of novosBrowser) {
   test(`Script tag presente: ${nb}`, () => {
@@ -125,6 +130,11 @@ const novosComandos = [
   '!recuperacao-cadeia-ativar', '!registrar-falha', '!recuperacao-estatisticas',
   '!integracao-cruzada-ativar', '!executar-fluxo', '!integracao-estatisticas',
   '!auto-escalada-ativar', '!ajustar-escala', '!escalada-estatisticas',
+  '!health-check-ativar', '!health-check-executar', '!health-check-estatisticas',
+  '!status-total', '!status-total-gerar', '!status-total-estatisticas',
+  '!auto-otimizador-avancado-ativar', '!registrar-acesso-avancado', '!otimizar-horarios', '!auto-otimizador-avancado-estatisticas',
+  '!alertas-proativos-ativar', '!monitorar-metricas', '!listar-alertas', '!resolver-alerta', '!alertas-proativos-estatisticas',
+  '!teste-redes-sociais-ativar', '!teste-redes-sociais-executar', '!teste-redes-sociais-estatisticas',
 ];
 
 let comandosEncontrados = 0;
@@ -163,6 +173,11 @@ const funcoesGlobais = [
   { arquivo: 'recuperacao-cadeia-marketing-browser.js', funcao: '__rcm_ativar' },
   { arquivo: 'integracao-cruzada-marketing-browser.js', funcao: '__icm_ativar' },
   { arquivo: 'auto-escalada-marketing-browser.js', funcao: '__aem_ativar' },
+  { arquivo: 'health-check-camadas-browser.js', funcao: '__hc_ativar' },
+  { arquivo: 'status-total-marketing-browser.js', funcao: '__st_ativar' },
+  { arquivo: 'auto-otimizador-avancado-browser.js', funcao: '__aoa_ativar' },
+  { arquivo: 'alertas-proativos-marketing-browser.js', funcao: '__ap_ativar' },
+  { arquivo: 'teste-redes-sociais-browser.js', funcao: '__tr_ativar' },
 ];
 
 for (const fg of funcoesGlobais) {
@@ -195,6 +210,21 @@ test(`ARSENAL_JS contém !loop-aprendizado-ativar`, () => {
 });
 test(`ARSENAL_JS contém !auto-otimizador-ativar`, () => {
   assert(indexContent.includes('!auto-otimizador-ativar'), 'não encontrado');
+});
+test(`ARSENAL_JS contém !health-check-ativar`, () => {
+  assert(indexContent.includes('!health-check-ativar'), 'não encontrado');
+});
+test(`ARSENAL_JS contém !status-total`, () => {
+  assert(indexContent.includes('!status-total'), 'não encontrado');
+});
+test(`ARSENAL_JS contém !auto-otimizador-avancado-ativar`, () => {
+  assert(indexContent.includes('!auto-otimizador-avancado-ativar'), 'não encontrado');
+});
+test(`ARSENAL_JS contém !alertas-proativos-ativar`, () => {
+  assert(indexContent.includes('!alertas-proativos-ativar'), 'não encontrado');
+});
+test(`ARSENAL_JS contém !teste-redes-sociais-ativar`, () => {
+  assert(indexContent.includes('!teste-redes-sociais-ativar'), 'não encontrado');
 });
 test(`ARSENAL_JS contém !dashboard-limite-ativar`, () => {
   assert(indexContent.includes('!dashboard-limite-ativar'), 'não encontrado');
@@ -249,6 +279,21 @@ test(`Chamada window.__icm_ativar() na inicialização`, () => {
 });
 test(`Chamada window.__aem_ativar() na inicialização`, () => {
   assert(indexContent.includes('window.__aem_ativar'), 'não encontrado');
+});
+test(`Chamada window.__hc_ativar() na inicialização`, () => {
+  assert(indexContent.includes('window.__hc_ativar'), 'não encontrado');
+});
+test(`Chamada window.__st_ativar() na inicialização`, () => {
+  assert(indexContent.includes('window.__st_ativar'), 'não encontrado');
+});
+test(`Chamada window.__aoa_ativar() na inicialização`, () => {
+  assert(indexContent.includes('window.__aoa_ativar'), 'não encontrado');
+});
+test(`Chamada window.__ap_ativar() na inicialização`, () => {
+  assert(indexContent.includes('window.__ap_ativar'), 'não encontrado');
+});
+test(`Chamada window.__tr_ativar() na inicialização`, () => {
+  assert(indexContent.includes('window.__tr_ativar'), 'não encontrado');
 });
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
