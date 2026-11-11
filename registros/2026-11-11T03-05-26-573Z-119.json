@@ -1,0 +1,57 @@
+{
+  "quando": "2026-11-11T03:05:26.573Z",
+  "origem": "ao-vivo",
+  "pr": 119,
+  "sha": "31b8959d99b3226195c62498cb701d3b5f90f8ad",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "🎮📺 Remove limitações itch.io e YouTube",
+  "barreira": "failure",
+  "arquivos": [
+    ".github/workflows/metricas-marketing.yml",
+    "alerta-queda-recuperacao-browser.js",
+    "auto-correcao-aprendizado-browser.js",
+    "campanhas-automatizadas-browser.js",
+    "direto.html",
+    "index.html",
+    "inteligencia-marketing-browser.js",
+    "ligar.html",
+    "limpar.html",
+    "memoria-github-browser.js",
+    "posts/ab-test/testes.json",
+    "posts/evergreen/conteudos.json",
+    "posts/marketing/dashboard-avancado.html",
+    "posts/marketing/dashboard-dados.json",
+    "posts/marketing/dashboard.html",
+    "posts/marketing/metricas-historico.json",
+    "posts/marketing/metricas-resumo.json",
+    "raciocinio-marketing-avancado-browser.js",
+    "recuperacao-automatica-browser.js",
+    "tools/agendamento-inteligente.js",
+    "tools/alerta-queda-recuperacao.js",
+    "tools/auto-correcao-aprendizado.js",
+    "tools/campanhas-automatizadas.js",
+    "tools/cofre-seguro.js",
+    "tools/dashboard-marketing-avancado.js",
+    "tools/gerar-dashboard-avancado.js",
+    "tools/gerar-metricas-marketing.js",
+    "tools/inteligencia-marketing.js",
+    "tools/memoria-github.js",
+    "tools/raciocinio-marketing-avancado.js",
+    "tools/recuperacao-automatica.js",
+    "tools/redes-sociais.js",
+    "tools/testar-todas-as-apis.js"
+  ],
+  "essenciais": [
+    ".github/workflows/metricas-marketing.yml",
+    "index.html"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR grande demais (33 arquivos)"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: .github/workflows/metricas-marketing.yml, index.html"
+  }
+}
