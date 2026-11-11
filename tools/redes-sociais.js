@@ -13,6 +13,29 @@ const fs = require('fs');
 const path = require('path');
 const NL = '\n';
 
+// 🔄 Auto-correção e aprendizado integrados ao fluxo de postagem
+const aprendizado = require('./auto-correcao-aprendizado');
+
+function verificarTextoAntesDePostar(texto, rede) {
+  const verificacao = aprendizado.verificarPalavrasBloqueadas(texto);
+  if (!verificacao.limpo) {
+    return { bloqueado: true, motivo: verificacao.sugestao };
+  }
+  return { bloqueado: false };
+}
+
+function registrarResultadoPostagem(servico, sucesso, texto, formato, jogo = null, engajamento = 0) {
+  // Registrar aprendizado com base no resultado
+  const desempenho = sucesso && engajamento > 0 ? 'alto' : (sucesso ? 'medio' : 'baixo');
+  aprendizado.registrarConteudoResultado(texto, formato, servico, desempenho, jogo ? [jogo] : []);
+
+  // Registrar métrica de marketing
+  const tipoMetrica = sucesso ? 'sucessos' : 'falhas';
+  try {
+    aprendizado.registrarHorarioDesempenho(servico, new Date().getHours().toString() + 'h', engajamento, sucesso);
+  } catch (e) {}
+}
+
 const PUBLICACOES = []; // { servico, quando, sucesso, detalhe, idPublicacao, formato }
 const HISTORICO_FORMATOS = {}; // { servico: ['foto', 'video', 'post', ...] }
 const DESEMPENHO_FORMATO = {}; // { servico: { formato: { total, sucesso, zeros } } }
@@ -197,6 +220,13 @@ function registrar(servico, sucesso, detalhe, idPub, formato = 'post') {
 
   // Registrar desempenho
   registrarDesempenho(servico, formato, sucesso, detalhe && detalhe.includes('zero'));
+
+  // 🔄 Registro de aprendizado com base no resultado da publicação
+  try {
+    const engajamento = sucesso ? 100 : 0;
+    aprendizado.registrarConteudoResultado(detalhe || '', formato, servico, sucesso ? 'alto' : 'baixo', null);
+    aprendizado.registrarHorarioDesempenho(servico, new Date().getHours().toString() + 'h', engajamento, sucesso);
+  } catch (e) { /* não falha a publicação por causa do aprendizado */ }
 
   return { sucesso, servico, detalhe, idPublicacao: idPub || null, formato };
 }
@@ -1832,6 +1862,15 @@ function getJogoAtual() {
 // Posta o mesmo conteúdo em todas as redes que tiverem credencial configurada.
 // Retorna resultados de cada rede.
 async function postarTodas(texto, opcoes = {}) {
+  // 🔒 Verificar palavras bloqueadas antes de publicar
+  try {
+    const verif = aprendizado.verificarPalavrasBloqueadas(texto || '');
+    if (!verif.limpo) {
+      registrar('sistema', false, 'Postagem bloqueada: ' + verif.sugestao);
+      return [];
+    }
+  } catch (e) { /* não falha por causa do aprendizado */ }
+
   const {
     titulo = 'Post da casa',
     imagemB64 = null,
