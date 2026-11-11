@@ -565,6 +565,7 @@
 <script src="vigia-casa-browser.js"></script>
 <script src="vigia-estado-browser.js"></script>
 <script src="webhooks-marketing-browser.js"></script>
+<script src="piloto-automatico-marketing-browser.js"></script>
 // 🛡 Guarda anti-cota (14/10/2026): texto de infra da reserva (ex.: "The API key used for this
 // request has reached its limit") NÃO é resposta — a rota seguinte assume. Lei da casa: infra falada
 // ≠ cérebro errado. Aplicada também nos tools do e-mail e da bateria no mesmo dia.
@@ -9349,6 +9350,46 @@ async function maosDaCasa(msg) {
     bolha('bot', '📊 WEBHOOKS-MARKETING\n• Total: ' + est.total, new Date().toISOString(), '📊 estat-webhooks-marketing'); rolarFim(); return '📊 estatísticas de webhooks-marketing…'
   }
 
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // PILOTO AUTOMÁTICO MARKETING
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!piloto-ativar') || m.startsWith('!piloto ativar')) {
+    const q = msg.trim().replace(/^!piloto(-ativar| ativar)?\\s*/i, '').trim()
+    const p = q.split(/\\s+/)
+    const r = window.__pilam_ativar ? window.__pilam_ativar(p[0] || 'ambos', p[1] || 'geral', p[2] || '60') : null
+    if (!r || !r.ok) return '⚠️ uso: !piloto-ativar <jogo> <modo> <intervaloMinutos>'
+    bolha('bot', '🤖 PILOTO AUTOMÁTICO ATIVADO\\n• Jogo: ' + r.piloto.id + '\\n• Modo: ' + r.piloto.intervaloMinutos + ' min', new Date().toISOString(), '🤖 piloto'); rolarFim(); return '🤖 piloto ativado: ' + r.piloto.id
+  }
+  if (m.startsWith('!piloto-desativar') || m.startsWith('!piloto desativar')) {
+    const q = msg.trim().replace(/^!piloto(-desativar| desativar)?\\s*/i, '').trim()
+    const p = q.split(/\\s+/)
+    const r = window.__pilam_desativar ? window.__pilam_desativar(p[0] || 'ambos', p[1] || 'geral') : null
+    if (!r || !r.ok) return '⚠️ uso: !piloto-desativar <jogo> <modo>'
+    bolha('bot', '🤖 PILOTO DESATIVADO\\n• Jogo: ' + (p[0] || 'ambos') + ' | Modo: ' + (p[1] || 'geral'), new Date().toISOString(), '🤖 piloto'); rolarFim(); return '🤖 piloto desativado'
+  }
+  if (m.startsWith('!piloto-executar') || m.startsWith('!piloto executar')) {
+    const q = msg.trim().replace(/^!piloto(-executar| executar)?\\s*/i, '').trim()
+    const p = q.split(/\\s+/)
+    const r = window.__pilam_executar ? window.__pilam_executar(p[0] || 'ambos', p[1] || 'geral') : null
+    if (!r || !r.ok) return '⚠️ uso: !piloto-executar <jogo> <modo>'
+    bolha('bot', '🤖 PILOTO EXECUTADO\\n• ' + r.piloto.jogo + ' | ' + r.piloto.modo + ' | ' + r.piloto.executadoEm, new Date().toISOString(), '🤖 piloto'); rolarFim(); return '🤖 piloto executado'
+  }
+  if (m.startsWith('!piloto-listar') || m.startsWith('!piloto listar')) {
+    const d = window.__pilam_listar ? window.__pilam_listar() : {}
+    let texto = '🤖 PILOTOS AUTOMÁTICOS\\n• Ativo: ' + (d.ativo ? 'sim' : 'não') + '\\n'
+    for (const j of Object.keys(d.modos || {})) {
+      for (const mo of Object.keys(d.modos[j] || {})) {
+        const p = d.modos[j][mo]
+        texto += '• ' + j + '/' + mo + ' | ' + (p.ativo ? 'ativo' : 'inativo') + ' | ' + p.intervaloMinutos + 'min | próximo: ' + (p.proximaExecucao || '—') + '\\n'
+      }
+    }
+    bolha('bot', texto, new Date().toISOString(), '🤖 piloto'); rolarFim(); return '🤖 lista de pilotos na tela'
+  }
+  if (m.startsWith('!piloto-estatisticas') || m.startsWith('!piloto estatisticas')) {
+    const est = window.__pilam_estatisticas ? window.__pilam_estatisticas() : {}
+    bolha('bot', '📊 PILOTO AUTOMÁTICO\\n• Ativo: ' + (est.ativo ? 'sim' : 'não') + '\\n• Total: ' + est.totalPilotos + ' | Ativos: ' + est.ativos + '\\n• Execuções: ' + est.total_execucoes, new Date().toISOString(), '📊 estat-piloto'); rolarFim(); return '📊 estatísticas do piloto…'
+  }
 
 return null;
 }
