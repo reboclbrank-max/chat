@@ -275,7 +275,7 @@ function reescreverRespostaMarketing(texto, jogo = null) {
   if (!nova.endsWith('.') && !nova.endsWith('!') && !nova.endsWith('?')) nova += '.';
   const temCTA = CTAS.some(c => nova.toLowerCase().includes(c));
   if (!temCTA) {
-    nova += ` Baixe${nomeJogo} agora: reboclbrank-max.itch.io`;
+    nova += ' Baixe agora';
   }
   return nova;
 }

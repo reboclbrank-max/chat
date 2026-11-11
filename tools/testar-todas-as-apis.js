@@ -60,20 +60,6 @@ async function testeYouTube() {
   } catch (e) { registro('YouTube API', false, 'erro de conexão', e.message.slice(0, 100)); }
 }
 
-async function testeItch() {
-  try {
-    const key = process.env.ITCH_API_KEYS;
-    if (!key) { registro('itch.io API', false, 'sem segredo ITCH_API_KEYS'); return; }
-    const r = await busca('https://api.itch.io/profile', { headers: { Authorization: `Bearer ${key}` } });
-    if (r.ok) {
-      const j = await r.json();
-      registro('itch.io API', true, 'perfil lido', j.user ? j.user.username : 'desconhecido');
-    } else {
-      registro('itch.io API', false, `HTTP ${r.status}`, await r.text().slice(0, 100));
-    }
-  } catch (e) { registro('itch.io API', false, 'erro de conexão', e.message.slice(0, 100)); }
-}
-
 async function testeBluesky() {
   try {
     const handle = process.env.BLUESKY_HANDLE;

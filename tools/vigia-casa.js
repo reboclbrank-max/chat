@@ -280,16 +280,6 @@ async function acao(rotulo, arquivo) {
     return sondaSaudavel('último exame há ' + idade.toFixed(1) + 'h', 'bateria-recem-executada');
   }));
 
-  for (const par of [['itch Ceifalume', 'https://rebocl-brank.itch.io/ceifalume'], ['itch Prancheta', 'https://rebocl-brank.itch.io/prancheta']]) {
-    itens.push(await verifica(par[0], async () => {
-      const r = await fetch(par[1], { signal: AbortSignal.timeout(25000), redirect: 'follow' });
-      // 429 = o próprio itch limitou a checagem (a página está no ar, só não quer conversa agora)
-      if (r.status === 429) return sondaSaudavel('no ar (itch limitou a checagem agora — 429, sem alarme)', 'checagem-limitada');
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return sondaSaudavel('no ar', 'pagina-respondendo');
-    }));
-  }
-
 
   // 📱 REDES SOCIAIS: testa se cada credencial ainda responde (apenas leitura, sem modificar nada)
   itens.push(await verifica('GitHub API', async () => {
@@ -320,19 +310,6 @@ async function acao(rotulo, arquivo) {
     }
   }));
 
-  itens.push(await verifica('itch.io API', async () => {
-    const key = process.env.ITCH_API_KEYS;
-    if (!key) throw falhaVigia('rede-itch', 'sem segredo ITCH_API_KEYS nesta execução');
-    try {
-      const r = await fetch('https://api.itch.io/profile', { headers: { Authorization: 'Bearer ' + key }, signal: AbortSignal.timeout(30000) });
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      const j = await r.json();
-      if (j.user) return sondaSaudavel('perfil: ' + j.user.username, 'rede-itch-ok');
-      throw new Error('sem campo user');
-    } catch (e) {
-      throw falhaVigia('rede-itch', 'erro: ' + String(e.message || e).slice(0, 80));
-    }
-  }));
 
   itens.push(await verifica('Bluesky', async () => {
     const handle = process.env.BLUESKY_HANDLE;

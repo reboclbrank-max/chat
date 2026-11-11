@@ -49,7 +49,7 @@ const TIPOS_CAMPANHA = {
     padraoPassos: [
       { dia: 0, acao: 'teaser', rede: 'todos', texto: 'Algo novo está chegando… fique ligado! 🎮' },
       { dia: 1, acao: 'revelacao', rede: 'todos', texto: 'Conheça o novo jogo! Baixe agora gratuitamente.' },
-      { dia: 2, acao: 'gameplay', rede: 'todos', texto: 'Veja o gameplay em ação. Jogue agora no itch.io.' },
+      { dia: 2, acao: 'gameplay', rede: 'todos', texto: 'Veja o gameplay em ação. Jogue agora no navegador.' },
       { dia: 3, acao: 'depoimento', rede: 'todos', texto: 'O que os jogadores estão dizendo sobre o jogo.' },
       { dia: 4, acao: 'destaque', rede: 'todos', texto: 'Recurso especial que você vai adorar no jogo.' },
       { dia: 5, acao: 'urgencia', rede: 'todos', texto: 'Últimos dias para baixar gratuitamente!' },
