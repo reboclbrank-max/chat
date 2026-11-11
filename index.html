@@ -3235,7 +3235,7 @@ async function maosDaCasa(msg) {
       '• amostras modelos: ' + est.totalAmostrasModelos,
       '• amostras tons: ' + est.totalAmostrasTons,
       '• amostras horários: ' + est.totalAmostrasHorarios]
-    bolha('bot', linhas.join('\n'), new Date().toISOString(), '�4 aprendizado'); rolarFim(); return '🔄 estatísticas de aprendizado…'
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '🔄 aprendizado'); rolarFim(); return '🔄 estatísticas de aprendizado…'
   }
   if (m.startsWith('!bloquear-palavra') || m.startsWith('!bloquear palavra')) {
     const q = msg.trim().replace(/^!bloquear(-palavra| palavra)?\s*/i, '').trim()
@@ -3306,6 +3306,224 @@ async function maosDaCasa(msg) {
     })();
     return '💾 salvando memória no GitHub…';
   }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // CAMPANHAS AUTOMATIZADAS
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!criar-campanha') || m.startsWith('!criar campanha')) {
+    const q = msg.trim().replace(/^!criar(-campanha| campanha)?\s*/i, '').trim()
+    if (!q) return '⚠️ uso: !criar-campanha <nome> <tipo> <jogo>\nTipos: lancamento, sazonal, reativacao, indicacao'
+    const partes = q.split(/\s+/)
+    const nome = partes[0]
+    const tipo = partes[1] || 'lancamento'
+    const jogo = partes[2] || 'ambos'
+    if (!['lancamento', 'sazonal', 'reativacao', 'indicacao'].includes(tipo)) return '⚠️ tipo inválido. Use: lancamento, sazonal, reativacao, indicacao'
+    if (!['ceifalume', 'prancheta', 'ambos'].includes(jogo)) return '⚠️ jogo inválido. Use: ceifalume, prancheta, ambos'
+    const r = window.__camp_criarCampanha ? window.__camp_criarCampanha(nome, tipo, jogo, new Date().toISOString()) : null
+    if (!r || !r.ok) return '⚠️ não foi possível criar a campanha'
+    bolha('bot', '📢 CAMPANHA CRIADA\n• ID: ' + r.campanha.id + '\n• Nome: ' + r.campanha.nome + '\n• Tipo: ' + r.campanha.tipo + '\n• Jogo: ' + r.campanha.jogo + '\n• Passos: ' + r.campanha.passos.length, new Date().toISOString(), '📢 campanha'); rolarFim(); return '📢 campanha criada: ' + nome + '…'
+  }
+  if (m.startsWith('!listar-campanhas') || m.startsWith('!listar campanhas')) {
+    const campanhas = window.__camp_listarCampanhas ? window.__camp_listarCampanhas() : []
+    if (!campanhas.length) return '⚠️ nenhuma campanha cadastrada'
+    const linhas = ['📢 CAMPANHAS']
+    for (const c of campanhas) {
+      linhas.push('• ' + c.id + ' — ' + c.nome + ' (' + c.tipo + ') — ' + c.status + ' — jogo: ' + c.jogo)
+    }
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📢 campanhas'); rolarFim(); return '📢 listando campanhas…'
+  }
+  if (m.startsWith('!passos-hoje') || m.startsWith('!passos hoje')) {
+    const passos = window.__camp_obterPassosParaHoje ? window.__camp_obterPassosParaHoje() : []
+    if (!passos.length) return '⚠️ nenhum passo para executar hoje'
+    const linhas = ['📋 PASSOS PARA HOJE']
+    for (const p of passos) {
+      linhas.push('• ' + p.campanhaNome + ' — ' + p.passo.acao + ' (' + p.passo.rede + ') — dia ' + p.passo.dia)
+    }
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📋 passos'); rolarFim(); return '📋 passos para hoje…'
+  }
+  if (m.startsWith('!estat-campanhas') || m.startsWith('!estat campanhas')) {
+    const est = window.__camp_estatisticasCampanhas ? window.__camp_estatisticasCampanhas() : {}
+    const linhas = ['📊 ESTATÍSTICAS DE CAMPANHAS',
+      '• total: ' + est.total,
+      '• ativas: ' + est.ativas,
+      '• concluídas: ' + est.concluidas,
+      '• falhas: ' + est.falhas]
+    for (const [tipo, s] of Object.entries(est.porTipo || {})) {
+      linhas.push('• ' + tipo + ': ' + s.concluidas + '/' + s.total + ' concluídas')
+    }
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📊 estat-campanhas'); rolarFim(); return '📊 estatísticas de campanhas…'
+  }
+  if (m.startsWith('!tipos-campanha') || m.startsWith('!tipos campanha')) {
+    const tipos = window.__camp_TIPOS_CAMPANHA || {}
+    const linhas = ['📢 TIPOS DE CAMPANHA DISPONÍVEIS']
+    for (const [id, def] of Object.entries(tipos)) {
+      linhas.push('• ' + id + ': ' + def.nome)
+    }
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📢 tipos'); rolarFim(); return '📢 tipos de campanha…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // AGENDAMENTO INTELIGENTE
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!agendar-post') || m.startsWith('!agendar post')) {
+    const q = msg.trim().replace(/^!agendar(-post| post)?\s*/i, '').trim()
+    const partes = q.split(/\s+/)
+    const texto = partes[0]
+    const rede = partes[1] || 'instagram'
+    const jogo = partes[2] || 'ambos'
+    if (!['instagram', 'x', 'nostr', 'gmail', 'facebook', 'linkedin', 'threads', 'youtube', 'bluesky', 'reddit', 'telegram', 'discord', 'todos'].includes(rede)) return '⚠️ rede inválida'
+    if (!['ceifalume', 'prancheta', 'ambos'].includes(jogo)) return '⚠️ jogo inválido'
+    const r = window.__agend_agendarPost ? window.__agend_agendarPost(texto, rede, jogo) : null
+    if (!r || !r.ok) return '⚠️ não foi possível agendar'
+    bolha('bot', '🕐 POST AGENDADO\n• Rede: ' + rede + '\n• Jogo: ' + jogo + '\n• Texto: ' + texto + '\n• Horário: ' + r.horarioAgendado, new Date().toISOString(), '🕐 agendamento'); rolarFim(); return '🕐 post agendado para ' + rede + '…'
+  }
+  if (m.startsWith('!minha-agenda') || m.startsWith('!minha agenda')) {
+    const fila = window.__agend_listarAgendamento ? window.__agend_listarAgendamento() : []
+    if (!fila.length) return '⚠️ nenhum post agendado'
+    const linhas = ['🕐 MINHA AGENDA']
+    for (const item of fila) {
+      linhas.push('• ' + item.id + ' — ' + item.rede + ' (' + item.jogo + ') — ' + item.status + ' — ' + new Date(item.horarioAgendado).toLocaleString('pt-BR'))
+    }
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '🕐 agenda'); rolarFim(); return '🕐 sua agenda…'
+  }
+  if (m.startsWith('!posts-para-executar') || m.startsWith('!posts para executar')) {
+    const posts = window.__agend_obterPostsParaExecutar ? window.__agend_obterPostsParaExecutar() : []
+    if (!posts.length) return '⚠️ nenhum post para executar agora'
+    const linhas = ['📋 POSTS PARA EXECUTAR AGORA']
+    for (const p of posts) {
+      linhas.push('• ' + (p.campanhaNome ? p.campanhaNome : p.id) + ' — ' + (p.passo ? p.passo.acao : p.texto))
+    }
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📋 posts'); rolarFim(); return '📋 posts para executar…'
+  }
+  if (m.startsWith('!estat-agenda') || m.startsWith('!estat agenda')) {
+    const est = window.__agend_estatisticasAgenda ? window.__agend_estatisticasAgenda() : {}
+    const linhas = ['📊 ESTATÍSTICAS DA AGENDA',
+      '• total: ' + est.total,
+      '• agendados: ' + est.agendados,
+      '• executados: ' + est.executados,
+      '• falhos: ' + est.falhos,
+      '• cancelados: ' + est.cancelados]
+    for (const [rede, s] of Object.entries(est.porRede || {})) {
+      linhas.push('• ' + rede + ': ' + s.executados + '/' + s.total + ' executados')
+    }
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📊 estat-agenda'); rolarFim(); return '📊 estatísticas da agenda…'
+  }
+  if (m.startsWith('!cancelar-post') || m.startsWith('!cancelar post')) {
+    const id = msg.trim().replace(/^!cancelar(-post| post)?\s*/i, '').trim()
+    if (!id) return '⚠️ uso: !cancelar-post <id>'
+    const r = window.__agend_cancelarAgendamento ? window.__agend_cancelarAgendamento(id) : null
+    if (!r || !r.ok) return '⚠️ não foi possível cancelar'
+    bolha('bot', '🕐 POST CANCELADO: ' + id, new Date().toISOString(), '🕐 cancelar'); rolarFim(); return '🕐 post cancelado: ' + id
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // ALERTA DE QUEDA + RECUPERAÇÃO AUTOMÁTICA
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!detectar-queda') || m.startsWith('!detectar queda')) {
+    const q = msg.trim().replace(/^!detectar(-queda| queda)?\s*/i, '').trim()
+    const partes = q.split(/\s+/)
+    const metrica = partes[0] || 'downloads'
+    const valor = parseFloat(partes[1] || '0')
+    const limiar = parseFloat(partes[2] || '10')
+    const r = window.__queda_detectarQueda ? window.__queda_detectarQueda(metrica, valor, limiar) : null
+    if (!r) return '⚠️ não foi possível detectar queda'
+    if (r.alerta) {
+      bolha('bot', '🚨 QUEDA DETECTADA\n• Métrica: ' + r.alerta.metrica + '\n• Anterior: ' + r.alerta.valorAnterior + '\n• Atual: ' + r.alerta.valorAtual + '\n• Queda: ' + r.alerta.pctQueda + '%\n• Severidade: ' + r.alerta.severidade, new Date().toISOString(), '🚨 queda'); rolarFim(); return '🚨 queda de ' + r.alerta.pctQueda + '% em ' + metrica + '…'
+    }
+    bolha('bot', '📊 Sem queda significativa em ' + metrica + ' (valor: ' + valor + ')', new Date().toISOString(), '📊 sem-queda'); rolarFim(); return '📊 sem queda em ' + metrica + '…'
+  }
+  if (m.startsWith('!meus-alertas') || m.startsWith('!meus alertas')) {
+    const alertas = window.__queda_listarAlertas ? window.__queda_listarAlertas('ativo') : []
+    if (!alertas.length) return '⚠️ nenhum alerta ativo'
+    const linhas = ['🚨 ALERTAS ATIVOS']
+    for (const a of alertas) {
+      linhas.push('• ' + a.id + ' — ' + a.metrica + ' — queda ' + a.pctQueda + '% — ' + a.severidade)
+    }
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '🚨 alertas'); rolarFim(); return '🚨 seus alertas ativos…'
+  }
+  if (m.startsWith('!sugerir-recuperacao') || m.startsWith('!sugerir recuperacao')) {
+    const id = msg.trim().replace(/^!sugerir(-recuperacao| recuperacao)?\s*/i, '').trim()
+    if (!id) return '⚠️ uso: !sugerir-recuperacao <id-alerta>'
+    const r = window.__queda_sugerirRecuperacao ? window.__queda_sugerirRecuperacao(id) : null
+    if (!r || !r.ok) return '⚠️ não foi possível sugerir recuperação'
+    bolha('bot', '💡 RECUPERAÇÃO SUGERIDA\n• Alerta: ' + r.alerta.metrica + '\n• ' + r.sugestao, new Date().toISOString(), '💡 recuperacao'); rolarFim(); return '💡 sugestão de recuperação…'
+  }
+  if (m.startsWith('!executar-recuperacao') || m.startsWith('!executar recuperacao')) {
+    const q = msg.trim().replace(/^!executar(-recuperacao| recuperacao)?\s*/i, '').trim()
+    const partes = q.split(/\s+/)
+    const id = partes[0]
+    const acao = partes.slice(1).join(' ') || 'acao nao especificada'
+    const r = window.__queda_executarRecuperacao ? window.__queda_executarRecuperacao(id, acao, '') : null
+    if (!r || !r.ok) return '⚠️ não foi executar recuperação'
+    bolha('bot', '🔄 RECUPERAÇÃO EXECUTADA\n• Alerta: ' + id + '\n• Ação: ' + acao, new Date().toISOString(), '🔄 execucao'); rolarFim(); return '🔄 recuperação executada…'
+  }
+  if (m.startsWith('!resolver-alerta') || m.startsWith('!resolver alerta')) {
+    const q = msg.trim().replace(/^!resolver(-alerta| alerta)?\s*/i, '').trim()
+    const partes = q.split(/\s+/)
+    const id = partes[0]
+    const sucesso = partes[1] !== 'nao' && partes[1] !== 'falso' && partes[1] !== '0'
+    const r = window.__queda_resolverAlerta ? window.__queda_resolverAlerta(id, sucesso) : null
+    if (!r || !r.ok) return '⚠️ não foi possível resolver alerta'
+    bolha('bot', '✅ ALERTA RESOLVIDO: ' + id + ' — ' + (sucesso ? 'sucesso' : 'não resolvido'), new Date().toISOString(), '✅ resolvido'); rolarFim(); return '✅ alerta resolvido: ' + id
+  }
+  if (m.startsWith('!estat-alertas') || m.startsWith('!estat alertas')) {
+    const est = window.__queda_estatisticasAlertas ? window.__queda_estatisticasAlertas() : {}
+    const linhas = ['📊 ESTATÍSTICAS DE ALERTAS',
+      '• total: ' + est.total,
+      '• ativos: ' + est.ativos,
+      '• resolvidos: ' + est.resolvidos,
+      '• não resolvidos: ' + est.naoResolvidos,
+      '• em recuperação: ' + est.emRecuperacao,
+      '• recuperações: ' + est.totalRecuperacoes]
+    for (const [metrica, s] of Object.entries(est.porMetrica || {})) {
+      linhas.push('• ' + metrica + ': ' + s.ativos + '/' + s.total + ' ativos')
+    }
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📊 estat-alertas'); rolarFim(); return '📊 estatísticas de alertas…'
+  }
+  if (m.startsWith('!processar-queda') || m.startsWith('!processar queda')) {
+    const id = msg.trim().replace(/^!processar(-queda| queda)?\s*/i, '').trim()
+    if (!id) return '⚠️ uso: !processar-queda <id-alerta>'
+    const r = window.__rec_processarQueda ? window.__rec_processarQueda(id) : null
+    if (!r) return '⚠️ não foi possível processar queda'
+    if (!r.ok) return '⚠️ ' + (r.motivo || r.erro || 'erro desconhecido')
+    const linhas = ['🔄 RECUPERAÇÃO AUTOMÁTICA INICIADA',
+      '• Alerta: ' + r.idAlerta,
+      '• Métrica: ' + r.recuperacao.metrica,
+      '• Severidade: ' + r.recuperacao.severidade,
+      '• Campanha: ' + r.campanha.nome,
+      '• Posts criados: ' + r.postsCriados.length]
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '🔄 recuperacao'); rolarFim(); return '🔄 recuperação automática iniciada para ' + r.recuperacao.metrica + '…'
+  }
+  if (m.startsWith('!minhas-recuperacoes') || m.startsWith('!minhas recuperacoes')) {
+    const recs = window.__rec_listarRecuperacoes ? window.__rec_listarRecuperacoes() : []
+    if (!recs.length) return '⚠️ nenhuma recuperação automática'
+    const linhas = ['🔄 RECUPERAÇÕES AUTOMÁTICAS']
+    for (const r of recs) {
+      linhas.push('• ' + r.id + ' — ' + r.metrica + ' (' + r.severidade + ') — ' + r.status + ' — tentativa ' + r.tentativa + '/' + r.maxTentativas)
+    }
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '🔄 recuperacoes'); rolarFim(); return '🔄 suas recuperações automáticas…'
+  }
+  if (m.startsWith('!estat-recuperacao') || m.startsWith('!estat recuperacao')) {
+    const est = window.__rec_estatisticasRecuperacao ? window.__rec_estatisticasRecuperacao() : {}
+    const linhas = ['📊 ESTATÍSTICAS DE RECUPERAÇÃO',
+      '• total: ' + est.total,
+      '• ativas: ' + est.ativas,
+      '• resolvidas: ' + est.resolvidas,
+      '• exauridas: ' + est.exauridas,
+      '• canceladas: ' + est.canceladas]
+    for (const [metrica, s] of Object.entries(est.porMetrica || {})) {
+      linhas.push('• ' + metrica + ': ' + s.resolvidas + '/' + s.total + ' resolvidas')
+    }
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📊 estat-recuperacao'); rolarFim(); return '📊 estatísticas de recuperação…'
+  }
+  if (m.startsWith('!cancelar-recuperacao') || m.startsWith('!cancelar recuperacao')) {
+    const id = msg.trim().replace(/^!cancelar(-recuperacao| recuperacao)?\s*/i, '').trim()
+    if (!id) return '⚠️ uso: !cancelar-recuperacao <id>'
+    const r = window.__rec_cancelarRecuperacao ? window.__rec_cancelarRecuperacao(id) : null
+    if (!r || !r.ok) return '⚠️ não foi possível cancelar'
+    bolha('bot', '🔄 RECUPERAÇÃO CANCELADA: ' + id, new Date().toISOString(), '🔄 cancelar'); rolarFim(); return '🔄 recuperação cancelada: ' + id
+  }
+
 return null;
 }
 eita = false;
