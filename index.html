@@ -19,6 +19,7 @@
 <script src="lexico-pt.js"></script>
 <script src="razao-local.js"></script>
 <script src="roteador-ia.js"></script>
+<script src="inteligencia-marketing-browser.js"></script>
 </head>
 <body>
 
@@ -2992,6 +2993,112 @@ async function maosDaCasa(msg) {
     return '🏛 **Museu dos Motores** — 1991 catalogados com fonte e crachá de VIVO\n\nreboclbrank-max.github.io/site/museu.html (busca instantânea + censo .json aberto)\n\nVivos keyless: 12 — todos na casa.';
   }
     { const FAB = (function () { try { return JSON.parse(localStorage.getItem('rebocl_fabrica') || '[]'); } catch (e) { return []; } })(); const f0 = FAB.find(x => x && x.nome && (m === x.nome || m.startsWith(x.nome + ' '))); if (f0) { const arg = msg.trim().slice(f0.nome.length).trim(); fetch('https://text.pollinations.ai/openai/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: 'openai-fast', messages: [{ role: 'user', content: f0.prompt + (arg ? '\n\nPEDIDO: ' + arg : '') }], max_tokens: 450 }) }).then(r2 => r2.json()).then(j0 => { const c0 = ((((j0.choices || [])[0] || {}).message || {}).content || '').trim(); bolha('bot', '🏭 **' + f0.nome.toUpperCase() + '** (forjada na fábrica da casa)\n' + (c0 || 'cochilou — tenta de novo'), new Date().toISOString(), '🏭 fábrica'); rolarFim(); }).catch(() => { bolha('bot', '🏭 ' + f0.nome + ' falhou — tenta de novo.', new Date().toISOString(), '🏭'); rolarFim(); }); return '🏭 ' + f0.nome + ' trabalhando…'; } }
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🧠 COMANDOS DE INTELIGÊNCIA DE MARKETING
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!memoria-marketing') || m.startsWith('!memoria-mkt')) {
+    const p = window.__inteligencia_obterPreferencias();
+    const linhas = ['🧠 MEMÓRIA DE MARKETING', '• último jogo: ' + (p.ultimoJogo || 'nenhum'), '• tom preferido: ' + p.tomPreferido, '• horários: ' + (p.horariosPreferidos.length ? p.horariosPreferidos.join(', ') : 'nenhum'), '• metas: ' + (Object.keys(p.metas).length ? JSON.stringify(p.metas).slice(0, 120) : 'nenhuma'), '• jogos permitidos: ceifalume, prancheta'];
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '🧠 memória-mkt'); rolarFim(); return '🧠 memória de marketing na tela…';
+  }
+  if (m.startsWith('!intencao ')) {
+    const q = msg.trim().slice(9).trim();
+    if (!q) return '⚠️ uso: !intencao <mensagem>';
+    const det = window.__inteligencia_detectarIntencao(q);
+    bolha('bot', '🎯 INTENÇÃO: ' + det.intencao + ' (confiança ' + Math.round(det.confianca * 100) + '%)', new Date().toISOString(), '🎯 intencao'); rolarFim(); return '🎯 intenção detectada…';
+  }
+  if (m.startsWith('!projetar ')) {
+    const q = msg.trim().slice(9).trim();
+    if (!q) return '⚠️ uso: !projetar <inscritos> <taxa>% ao dia <dias> dias (ex: !projetar 1000 5% 30 dias)';
+    const r = window.__inteligencia_raciocinioMarketing(q);
+    if (!r) return '⚠️ não entendi. Ex: "!projetar 1000 inscritos 5% ao dia 30 dias"';
+    bolha('bot', '📈 PROJEÇÃO DE INSCRITOS\n' + r.texto + '\n\nDados: ' + JSON.stringify(r.dados), new Date().toISOString(), '📈 projetar'); rolarFim(); return '📈 projetando inscritos…';
+  }
+  if (m.startsWith('!conversao ')) {
+    const q = msg.trim().slice(10).trim();
+    if (!q) return '⚠️ uso: !conversao <cliques> <downloads> (ex: !conversao 1000 50)';
+    const r = window.__inteligencia_raciocinioMarketing(q);
+    if (!r) return '⚠️ não entendi. Ex: "!conversao 1000 cliques 50 downloads"';
+    bolha('bot', '🔄 TAXA DE CONVERSÃO\n' + r.texto + '\n\nDados: ' + JSON.stringify(r.dados), new Date().toISOString(), '🔄 conversao'); rolarFim(); return '🔄 calculando conversão…';
+  }
+  if (m.startsWith('!tempo-post') || m.startsWith('!tempo post')) {
+    const q = msg.trim().replace(/^!tempo(-post| post)?\s*/i, '').trim();
+    if (!q) return '⚠️ uso: !tempo-post <horas> <posts> (ex: !tempo-post 5 10)';
+    const r = window.__inteligencia_raciocinioMarketing(q);
+    if (!r) return '⚠️ não entendi. Ex: "!tempo-post 5 horas 10 posts"';
+    bolha('bot', '⏱ TEMPO POR POST\n' + r.texto + '\n\nDados: ' + JSON.stringify(r.dados), new Date().toISOString(), '⏱ tempo-post'); rolarFim(); return '⏱ calculando tempo por post…';
+  }
+  if (m.startsWith('!melhor-horario') || m.startsWith('!melhor horario')) {
+    const r = window.__inteligencia_raciocinioMarketing('qual melhor horario para postar');
+    if (!r || !r.dados) return '⚠️ ainda não há dados de fluxo de acesso. Registre com: registrarFluxoAcesso("instagram", 14, 120)';
+    bolha('bot', '🕐 MELHOR HORÁRIO\n' + r.texto + '\n\nDados: ' + JSON.stringify(r.dados), new Date().toISOString(), '🕐 horario'); rolarFim(); return '🕐 melhor horário na tela…';
+  }
+  if (m.startsWith('!roi-tempo') || m.startsWith('!roi tempo')) {
+    const q = msg.trim().replace(/^!roi(-tempo| tempo)?\s*/i, '').trim();
+    if (!q) return '⚠️ uso: !roi-tempo <horas> <downloads> (ex: !roi-tempo 10 500)';
+    const r = window.__inteligencia_raciocinioMarketing(q);
+    if (!r) return '⚠️ não entendi. Ex: "!roi-tempo 10 horas 500 downloads"';
+    bolha('bot', '💰 ROI DE TEMPO\n' + r.texto + '\n\nDados: ' + JSON.stringify(r.dados), new Date().toISOString(), '💰 roi'); rolarFim(); return '💰 calculando ROI…';
+  }
+  if (m.startsWith('!avaliar-resposta') || m.startsWith('!avaliar resposta')) {
+    const q = msg.trim().replace(/^!avaliar(-resposta| resposta)?\s*/i, '').trim();
+    if (!q) return '⚠️ uso: !avaliar-resposta <texto da resposta> [divulgacao]';
+    const partes = q.split('||');
+    const textoResp = partes[0].trim();
+    const contexto = (partes[1] || 'geral').trim();
+    const aval = window.__inteligencia_avaliarQualidadeResposta(textoResp, contexto);
+    const linhas = ['📊 AVALIAÇÃO DE RESPOSTA', '• aprovado: ' + (aval.aprovado ? 'SIM ✅' : 'NÃO ❌'), '• pontuação: ' + aval.pontuacao + '/10'];
+    if (aval.problemas.length) linhas.push('• problemas: ' + aval.problemas.join(', '));
+    linhas.push('• sugestão: ' + aval.sugestao);
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📊 avaliar'); rolarFim(); return '📊 avaliando resposta…';
+  }
+  if (m.startsWith('!cache-semantico') || m.startsWith('!cache semantico')) {
+    const q = msg.trim().replace(/^!cache(-semantico| semantico)?\s*/i, '').trim();
+    if (!q) return '⚠️ uso: !cache-semantico <pergunta> (busca similaridade)';
+    const hit = window.__inteligencia_buscarCacheSemantico(q);
+    if (hit) {
+      bolha('bot', '💾 CACHE SEMÂNTICO — HIT\nsimilaridade: ' + Math.round(hit.similaridade * 100) + '%\nresposta: ' + hit.resposta, new Date().toISOString(), '💾 cache'); rolarFim(); return '💾 cache encontrado…';
+    }
+    bolha('bot', '💾 CACHE SEMÂNTICO — MISS\nnão há entrada similar para: "' + q + '"', new Date().toISOString(), '💾 cache'); rolarFim(); return '💾 sem cache para essa pergunta…';
+  }
+  if (m === '!feedback' || m.startsWith('!feedback ')) {
+    const est = window.__inteligencia_estatisticasFeedback();
+    const linhas = ['📈 FEEDBACK — ESTATÍSTICAS', '• total: ' + est.total, '• aprovados: ' + est.aprovados, '• reprovados: ' + est.reprovados, '• taxa de aprovação: ' + est.taxaAprovacao + '%'];
+    for (const [rede, s] of Object.entries(est.porRede || {})) {
+      linhas.push('• ' + rede + ': ' + s.aprovados + '/' + s.total + ' (' + Math.round((s.aprovados / s.total) * 100) + '%)');
+    }
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '📈 feedback'); rolarFim(); return '📈 estatísticas de feedback…';
+  }
+  if (m.startsWith('!preferencias') || m.startsWith('!preferencia')) {
+    const resto = msg.trim().replace(/^!preferencia(s)?\s*/i, '').trim();
+    if (!resto) {
+      const p = window.__inteligencia_obterPreferencias();
+      bolha('bot', '⚙️ PREFERÊNCIAS\n• último jogo: ' + (p.ultimoJogo || 'nenhum') + '\n• tom: ' + p.tomPreferido + '\n• horários: ' + (p.horariosPreferidos.length ? p.horariosPreferidos.join(', ') : 'nenhum') + '\n• metas: ' + (Object.keys(p.metas).length ? JSON.stringify(p.metas).slice(0, 120) : 'nenhuma') + '\n• jogos: ' + p.jogos.join(', '), new Date().toISOString(), '⚙️ preferencias'); rolarFim(); return '⚙️ preferências na tela…';
+    }
+    const prefs = {};
+    const partes2 = resto.split(/\s+/);
+    for (const pt of partes2) {
+      const eq = pt.indexOf('=');
+      if (eq > 0) { const k = pt.slice(0, eq); const v = pt.slice(eq + 1); prefs[k] = v; }
+    }
+    if (prefs.horarios) prefs.horariosPreferidos = prefs.horarios.split(',').map(h => h.trim()).filter(Boolean);
+    delete prefs.horarios;
+    window.__inteligencia_salvarPreferencias(prefs);
+    bolha('bot', '✅ PREFERÊNCIAS SALVAS\n' + JSON.stringify(prefs), new Date().toISOString(), '⚙️ preferencias'); rolarFim(); return '⚙️ preferências salvas…';
+  }
+  if (m.startsWith('!tom ')) {
+    const tom = msg.trim().slice(5).trim();
+    if (!tom) return '⚠️ uso: !tom <entusiasta|cauteloso|neutro>';
+    if (!['entusiasta', 'cauteloso', 'neutro'].includes(tom)) return '⚠️ tom inválido. Use: entusiasta, cauteloso ou neutro';
+    window.__inteligencia_salvarPreferencias({ tomPreferido: tom });
+    bolha('bot', '✅ TOM SALVO: ' + tom + '\nO chat usará este tom nas próximas respostas de marketing.', new Date().toISOString(), '⚙️ tom'); rolarFim(); return '✅ tom salvo: ' + tom + '…';
+  }
+  if (m.startsWith('!jogo ')) {
+    const jogo = msg.trim().slice(6).trim();
+    if (!window.__inteligencia_validarJogo(jogo)) return '⚠️ jogo inválido. Use: ceifalume ou prancheta';
+    window.__inteligencia_salvarMemoriaConversa('ultimoJogo', jogo);
+    bolha('bot', '✅ JOGO DEFINIDO: ' + jogo + '\nPrioridade igual para ambos os jogos — este é apenas o último mencionado.', new Date().toISOString(), '✅ jogo'); rolarFim(); return '✅ jogo definido: ' + jogo + '…';
+  }
 return null;
 }eita = false;
 let TURBO = localStorage.getItem('rebocl_turbo') === '1';
