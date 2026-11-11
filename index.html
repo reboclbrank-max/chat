@@ -566,6 +566,15 @@
 <script src="vigia-estado-browser.js"></script>
 <script src="webhooks-marketing-browser.js"></script>
 <script src="piloto-automatico-marketing-browser.js"></script>
+<script src="orquestrador-maximo-marketing-browser.js"></script>
+<script src="detector-anomalias-marketing-browser.js"></script>
+<script src="loop-aprendizado-automatico-browser.js"></script>
+<script src="auto-otimizador-horarios-browser.js"></script>
+<script src="dashboard-limite-marketing-browser.js"></script>
+<script src="recuperacao-cadeia-marketing-browser.js"></script>
+<script src="integracao-cruzada-marketing-browser.js"></script>
+<script src="auto-escalada-marketing-browser.js"></script>
+<script src="sistema-limite-max-browser.js"></script>
 // 🛡 Guarda anti-cota (14/10/2026): texto de infra da reserva (ex.: "The API key used for this
 // request has reached its limit") NÃO é resposta — a rota seguinte assume. Lei da casa: infra falada
 // ≠ cérebro errado. Aplicada também nos tools do e-mail e da bateria no mesmo dia.
@@ -9389,6 +9398,162 @@ async function maosDaCasa(msg) {
   if (m.startsWith('!piloto-estatisticas') || m.startsWith('!piloto estatisticas')) {
     const est = window.__pilam_estatisticas ? window.__pilam_estatisticas() : {}
     bolha('bot', '📊 PILOTO AUTOMÁTICO\\n• Ativo: ' + (est.ativo ? 'sim' : 'não') + '\\n• Total: ' + est.totalPilotos + ' | Ativos: ' + est.ativos + '\\n• Execuções: ' + est.total_execucoes, new Date().toISOString(), '📊 estat-piloto'); rolarFim(); return '📊 estatísticas do piloto…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // SISTEMA LIMITE MÁXIMO E CAMADAS AVANÇADAS
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!sistema-limite-max') || m.startsWith('!sistema limite max')) {
+    const r = window.__slm_ativar ? window.__slm_ativar() : null
+    if (!r || !r.ok) return '⚠️ erro ao ativar sistema limite máximo'
+    bolha('bot', '🚀 SISTEMA LIMITE MÁXIMO ATIVADO\\n• Camadas ativas: ' + r.camadas_ativas + '\\n• Orquestrador: ativo\\n• Piloto: ativo', new Date().toISOString(), '🚀 sistema-limite-max'); rolarFim(); return '🚀 sistema limite máximo ativado com ' + r.camadas_ativas + ' camadas'
+  }
+  if (m.startsWith('!sistema-status') || m.startsWith('!sistema status')) {
+    const st = window.__slm_status ? window.__slm_status() : {}
+    bolha('bot', '📊 STATUS SISTEMA LIMITE MÁXIMO\\n• Ativo: ' + (st.ativo ? 'sim' : 'não') + '\\n• Limite máximo: ' + (st.limite_maximo ? 'sim' : 'não') + '\\n• Camadas: ' + st.camadas_ativas + '\\n• Orquestrador: ' + (st.orquestrador_ativo ? 'ativo' : 'inativo') + '\\n• Piloto: ' + (st.piloto_ativo ? 'ativo' : 'inativo'), new Date().toISOString(), '📊 status-sistema'); rolarFim(); return '📊 status do sistema na tela'
+  }
+  if (m.startsWith('!orquestrador-ativar') || m.startsWith('!orquestrador ativar')) {
+    const q = msg.trim().replace(/^!orquestrador(-ativar| ativar)?\\s*/i, '').trim()
+    const p = q.split(/\\s+/)
+    const r = window.__omm_ativar ? window.__omm_ativar(p[0] || 'limite', p[1] === 'false' ? false : true, p[2] === 'false' ? false : true) : null
+    if (!r || !r.ok) return '⚠️ uso: !orquestrador-ativar <modo> <ajusteAuto> <limiteMax>'
+    bolha('bot', '🎯 ORQUESTRADOR MÁXIMO ATIVADO\\n• Modo: ' + r.coord.modo + '\\n• Ajuste auto: ' + (r.orquestrador.ajuste_automatico ? 'sim' : 'não') + '\\n• Limite máximo: ' + (r.orquestrador.limite_maximo ? 'sim' : 'não'), new Date().toISOString(), '🎯 orquestrador-maximo'); rolarFim(); return '🎯 orquestrador máximo ativado'
+  }
+  if (m.startsWith('!orquestrador-coordenar') || m.startsWith('!orquestrador coordenar')) {
+    const r = window.__omm_coordenar ? window.__omm_coordenar() : null
+    if (!r || !r.ok) return '⚠️ orquestrador não ativo'
+    bolha('bot', '🎯 COORDENAÇÃO EXECUTADA\\n• Camadas: ' + r.execucao.camadas.length + '\\n• Ações disparadas: ' + r.execucao.acoes_disparadas, new Date().toISOString(), '🎯 orquestrador-maximo'); rolarFim(); return '🎯 coordenação de ' + r.execucao.camadas.length + ' camadas executada'
+  }
+  if (m.startsWith('!orquestrador-estatisticas') || m.startsWith('!orquestrador estatisticas')) {
+    const est = window.__omm_estatisticas ? window.__omm_estatisticas() : {}
+    bolha('bot', '📊 ORQUESTRADOR MÁXIMO\\n• Ativo: ' + (est.ativo ? 'sim' : 'não') + '\\n• Modo: ' + est.modo + '\\n• Coordenações: ' + est.total_coordenacoes + '\\n• Última execução: ' + (est.ultima_execucao || '—'), new Date().toISOString(), '📊 estat-orquestrador'); rolarFim(); return '📊 estatísticas do orquestrador…'
+  }
+  if (m.startsWith('!detector-anomalias-ativar') || m.startsWith('!detector anomalias ativar')) {
+    const q = msg.trim().replace(/^!detector(-anomalias| anomalias)?(-ativar| ativar)?\\s*/i, '').trim()
+    const p = q.split(/\\s+/)
+    const r = window.__dam_ativar ? window.__dam_ativar(p[0] || '20', p[1] || '50') : null
+    if (!r || !r.ok) return '⚠️ uso: !detector-anomalias-ativar <limiteQueda> <limitePico>'
+    bolha('bot', '🚨 DETECTOR DE ANOMALIAS ATIVADO\\n• Limite queda: ' + r.detector.limite_queda + '%\\n• Limite pico: ' + r.detector.limite_pico + '%', new Date().toISOString(), '🚨 detector-anomalias'); rolarFim(); return '🚨 detector de anomalias ativado'
+  }
+  if (m.startsWith('!detectar-anomalia') || m.startsWith('!detectar anomalia')) {
+    const q = msg.trim().replace(/^!detectar(-anomalia| anomalia)?\\s*/i, '').trim()
+    const p = q.split(/\\s+/)
+    const r = window.__dam_detectar ? window.__dam_detectar(p[0], p[1] || '0', p[2] || '0', p[3] || 'ambos') : null
+    if (!r || !r.ok) return '⚠️ uso: !detectar-anomalia <metrica> <valor> <referencia> <jogo>'
+    bolha('bot', '🚨 ANOMALIA DETECTADA\\n• Métrica: ' + r.anomalia.metrica + '\\n• Tipo: ' + r.anomalia.tipo + ' | Gravidade: ' + r.anomalia.gravidade + '\\n• Corrigida: ' + (r.anomalia.corrigida ? 'sim' : 'não'), new Date().toISOString(), '🚨 detectar-anomalia'); rolarFim(); return '🚨 anomalia ' + r.anomalia.tipo + ' detectada em ' + r.anomalia.metrica
+  }
+  if (m.startsWith('!detector-estatisticas') || m.startsWith('!detector estatisticas')) {
+    const est = window.__dam_estatisticas ? window.__dam_estatisticas() : {}
+    bolha('bot', '📊 DETECTOR DE ANOMALIAS\\n• Ativo: ' + (est.ativo ? 'sim' : 'não') + '\\n• Total: ' + est.total + ' | Quedas: ' + est.quedas + ' | Picos: ' + est.picos + ' | Corrigidas: ' + est.corrigidas, new Date().toISOString(), '📊 estat-detector'); rolarFim(); return '📊 estatísticas do detector…'
+  }
+  if (m.startsWith('!loop-aprendizado-ativar') || m.startsWith('!loop aprendizizado ativar')) {
+    const q = msg.trim().replace(/^!loop(-aprendizado| aprendizizado)?(-ativar| ativar)?\\s*/i, '').trim()
+    const p = q.split(/\\s+/)
+    const r = window.__laa_ativar ? window.__laa_ativar(p[0] || '0.1') : null
+    if (!r || !r.ok) return '⚠️ uso: !loop-aprendizado-ativar <taxa>'
+    bolha('bot', '🔁 LOOP DE APRENDIZAGEM ATIVADO\\n• Iteração: ' + r.iteracao.iteracao + '\\n• Taxa: ' + r.iteracao.taxa_aprendizado || 0.1, new Date().toISOString(), '🔁 loop-aprendizado'); rolarFim(); return '🔁 loop de aprendizizado ativado'
+  }
+  if (m.startsWith('!registrar-resultado') || m.startsWith('!registrar resultado')) {
+    const q = msg.trim().replace(/^!registrar(-resultado| resultado)?\\s*/i, '').trim()
+    const p = q.split(/\\s+/)
+    const r = window.__laa_registrar ? window.__laa_registrar(p[0], p.slice(1, -1).join(' '), p[p.length - 2] || 'ambos', p[p.length - 1] || '0') : null
+    if (!r || !r.ok) return '⚠️ uso: !registrar-resultado <acao> <resultado> <jogo> <impacto>'
+    bolha('bot', '🔁 RESULTADO REGISTRADO\\n• Ação: ' + r.registro.acao + '\\n• Impacto: ' + r.registro.impacto + ' | Aprendizado: ' + (r.registro.aprendizado_aplicado ? 'aplicado' : 'não'), new Date().toISOString(), '🔁 loop-aprendizado'); rolarFim(); return '🔁 resultado registrado'
+  }
+  if (m.startsWith('!loop-estatisticas') || m.startsWith('!loop estatisticas')) {
+    const est = window.__laa_estatisticas ? window.__laa_estatisticas() : {}
+    bolha('bot', '📊 LOOP DE APRENDIZAGEM\\n• Ativo: ' + (est.ativo ? 'sim' : 'não') + '\\n• Iterações: ' + est.total_iteracoes + ' | Melhorias: ' + est.melhorias_aplicadas + ' | Taxa: ' + est.taxa_aprendizado, new Date().toISOString(), '📊 estat-loop'); rolarFim(); return '📊 estatísticas do loop…'
+  }
+  if (m.startsWith('!auto-otimizador-ativar') || m.startsWith('!auto otimizador ativar')) {
+    const q = msg.trim().replace(/^!auto(-otimizador| otimizador)?(-ativar| ativar)?\\s*/i, '').trim()
+    const p = q.split(/\\s+/)
+    const r = window.__aoh_ativar ? window.__aoh_ativar(p[0] || 'instagram', p[1] || 'ambos') : null
+    if (!r || !r.ok) return '⚠️ uso: !auto-otimizador-ativar <rede> <jogo>'
+    bolha('bot', '⏰ AUTO-OTIMIZADOR DE HORÁRIOS ATIVADO\\n• Rede: ' + r.otimizacao.id + '\\n• Jogo: ' + (r.otimizacao.jogo || 'ambos'), new Date().toISOString(), '⏰ auto-otimizador'); rolarFim(); return '⏰ auto-otimizador ativado para ' + (p[0] || 'instagram')
+  }
+  if (m.startsWith('!registrar-acesso') || m.startsWith('!registrar acesso')) {
+    const q = msg.trim().replace(/^!registrar(-acesso| acesso)?\\s*/i, '').trim()
+    const p = q.split(/\\s+/)
+    const r = window.__aoh_registrar ? window.__aoh_registrar(p[0], p[1] || '10:00', p[2] || 'ambos', p[3] || '100') : null
+    if (!r || !r.ok) return '⚠️ uso: !registrar-acesso <rede> <horario> <jogo> <quantidade>'
+    bolha('bot', '⏰ ACESSO REGISTRADO\\n• Rede: ' + r.registro.rede + ' | Horário: ' + r.registro.horario + ' | Qtd: ' + r.registro.quantidade, new Date().toISOString(), '⏰ auto-otimizador'); rolarFim(); return '⏰ acesso registrado'
+  }
+  if (m.startsWith('!otimizador-estatisticas') || m.startsWith('!otimizador estatisticas')) {
+    const est = window.__aoh_estatisticas ? window.__aoh_estatisticas() : {}
+    bolha('bot', '📊 AUTO-OTIMIZADOR DE HORÁRIOS\\n• Ativo: ' + (est.ativo ? 'sim' : 'não') + '\\n• Otimizações: ' + est.total_otimizacoes + ' | Redes: ' + est.redes + ' | Ajustes: ' + est.total_ajustes, new Date().toISOString(), '📊 estat-otimizador'); rolarFim(); return '📊 estatísticas do otimizador…'
+  }
+  if (m.startsWith('!dashboard-limite-ativar') || m.startsWith('!dashboard limite ativar')) {
+    const r = window.__dlm_ativar ? window.__dlm_ativar() : null
+    if (!r || !r.ok) return '⚠️ erro ao ativar dashboard limite'
+    bolha('bot', '📊 DASHBOARD LIMITE ATIVADO\\n• Widgets: ' + r.dashboard.widgets.length + '\\n• Última atualização: ' + r.dashboard.ultima_atualizacao, new Date().toISOString(), '📊 dashboard-limite'); rolarFim(); return '📊 dashboard limite ativado'
+  }
+  if (m.startsWith('!adicionar-widget') || m.startsWith('!adicionar widget')) {
+    const q = msg.trim().replace(/^!adicionar(-widget| widget)?\\s*/i, '').trim()
+    const p = q.split(/\\s+/)
+    const r = window.__dlm_adicionarWidget ? window.__dlm_adicionarWidget(p[0], p[1] || 'ambos', p.slice(2).join(' ')) : null
+    if (!r || !r.ok) return '⚠️ uso: !adicionar-widget <tipo> <jogo> <dados>'
+    bolha('bot', '📊 WIDGET ADICIONADO\\n• Tipo: ' + r.widget.tipo + ' | Jogo: ' + r.widget.jogo, new Date().toISOString(), '📊 dashboard-limite'); rolarFim(); return '📊 widget adicionado'
+  }
+  if (m.startsWith('!adicionar-alerta') || m.startsWith('!adicionar alerta')) {
+    const q = msg.trim().replace(/^!adicionar(-alerta| alerta)?\\s*/i, '').trim()
+    const p = q.split(/\\s+/)
+    const r = window.__dlm_adicionarAlerta ? window.__dlm_adicionarAlerta(p.slice(0, -2).join(' '), p[p.length - 2] || 'info', p[p.length - 1] || 'ambos') : null
+    if (!r || !r.ok) return '⚠️ uso: !adicionar-alerta <mensagem> <severidade> <jogo>'
+    bolha('bot', '📊 ALERTA ADICIONADO\\n• ' + r.alerta.mensagem + '\\n• Severidade: ' + r.alerta.severidade, new Date().toISOString(), '📊 dashboard-limite'); rolarFim(); return '📊 alerta adicionado'
+  }
+  if (m.startsWith('!dashboard-estatisticas') || m.startsWith('!dashboard estatisticas')) {
+    const est = window.__dlm_estatisticas ? window.__dlm_estatisticas() : {}
+    bolha('bot', '📊 DASHBOARD LIMITE\\n• Ativo: ' + (est.ativo ? 'sim' : 'não') + '\\n• Widgets: ' + est.total_widgets + ' | Alertas: ' + est.total_alertas + ' | Não lidos: ' + est.alertas_nao_lidos, new Date().toISOString(), '📊 estat-dashboard'); rolarFim(); return '📊 estatísticas do dashboard…'
+  }
+  if (m.startsWith('!recuperacao-cadeia-ativar') || m.startsWith('!recuperacao cadeia ativar')) {
+    const r = window.__rcm_ativar ? window.__rcm_ativar() : null
+    if (!r || !r.ok) return '⚠️ erro ao ativar recuperação em cadeia'
+    bolha('bot', '🔄 RECUPERAÇÃO EM CADEIA ATIVADA\\n• ID: ' + r.recuperacao.id, new Date().toISOString(), '🔄 recuperacao-cadeia'); rolarFim(); return '🔄 recuperação em cadeia ativada'
+  }
+  if (m.startsWith('!registrar-falha') || m.startsWith('!registrar falha')) {
+    const q = msg.trim().replace(/^!registrar(-falha| falha)?\\s*/i, '').trim()
+    const p = q.split(/\\s+/)
+    const r = window.__rcm_registrarFalha ? window.__rcm_registrarFalha(p[0], p.slice(1, -1).join(' '), p[p.length - 1] || 'ambos') : null
+    if (!r || !r.ok) return '⚠️ uso: !registrar-falha <camada> <erro> <jogo>'
+    bolha('bot', '🔄 FALHA REGISTRADA\\n• Camada: ' + r.falha.camada + ' | Recuperada: ' + (r.falha.recuperada ? 'sim' : 'não'), new Date().toISOString(), '🔄 recuperacao-cadeia'); rolarFim(); return '🔄 falha registrada em ' + r.falha.camada
+  }
+  if (m.startsWith('!recuperacao-estatisticas') || m.startsWith('!recuperacao estatisticas')) {
+    const est = window.__rcm_estatisticas ? window.__rcm_estatisticas() : {}
+    bolha('bot', '📊 RECUPERAÇÃO EM CADEIA\\n• Ativo: ' + (est.ativo ? 'sim' : 'não') + '\\n• Falhas: ' + est.total_falhas + ' | Recuperações: ' + est.total_recuperacoes + ' | Não recuperadas: ' + est.falhas_nao_recuperadas, new Date().toISOString(), '📊 estat-recuperacao'); rolarFim(); return '📊 estatísticas de recuperação…'
+  }
+  if (m.startsWith('!integracao-cruzada-ativar') || m.startsWith('!integracao cruzada ativar')) {
+    const r = window.__icm_ativar ? window.__icm_ativar() : null
+    if (!r || !r.ok) return '⚠️ erro ao ativar integração cruzada'
+    bolha('bot', '🔗 INTEGRAÇÃO CRUZADA ATIVADA\\n• Fluxo: ' + r.fluxo.id, new Date().toISOString(), '🔗 integracao-cruzada'); rolarFim(); return '🔗 integração cruzada ativada'
+  }
+  if (m.startsWith('!executar-fluxo') || m.startsWith('!executar fluxo')) {
+    const q = msg.trim().replace(/^!executar(-fluxo| fluxo)?\\s*/i, '').trim()
+    const p = q.split(/\\s+/)
+    const r = window.__icm_executar ? window.__icm_executar(p[0], p[1] || 'dashboard', p[2] || 'notificar', p[3] || 'ambos', p.slice(4).join(' ')) : null
+    if (!r || !r.ok) return '⚠️ uso: !executar-fluxo <origem> <destino> <acao> <jogo> <dados>'
+    bolha('bot', '🔗 FLUXO EXECUTADO\\n• ' + r.execucao.origem + ' → ' + r.execucao.destino + ' | ' + r.execucao.acao, new Date().toISOString(), '🔗 integracao-cruzada'); rolarFim(); return '🔗 fluxo executado'
+  }
+  if (m.startsWith('!integracao-estatisticas') || m.startsWith('!integracao estatisticas')) {
+    const est = window.__icm_estatisticas ? window.__icm_estatisticas() : {}
+    bolha('bot', '📊 INTEGRAÇÃO CRUZADA\\n• Ativo: ' + (est.ativo ? 'sim' : 'não') + '\\n• Fluxos: ' + est.total_fluxos + ' | Execuções: ' + est.total_execucoes, new Date().toISOString(), '📊 estat-integracao'); rolarFim(); return '📊 estatísticas de integração…'
+  }
+  if (m.startsWith('!auto-escalada-ativar') || m.startsWith('!auto escalada ativar')) {
+    const q = msg.trim().replace(/^!auto(-escalada| escalada)?(-ativar| ativar)?\\s*/i, '').trim()
+    const p = q.split(/\\s+/)
+    const r = window.__aem_ativar ? window.__aem_ativar(p[0] || 'geral', p[1] || '60', p[2] || 'ambos') : null
+    if (!r || !r.ok) return '⚠️ uso: !auto-escalada-ativar <camada> <intervaloMinutos> <jogo>'
+    bolha('bot', '📈 AUTO-ESCALADA ATIVADA\\n• Camada: ' + r.escala.camada + ' | Intervalo: ' + r.escala.intervaloMinutos + ' min', new Date().toISOString(), '📈 auto-escalada'); rolarFim(); return '📈 auto-escalada ativada para ' + r.escala.camada
+  }
+  if (m.startsWith('!ajustar-escala') || m.startsWith('!ajustar escala')) {
+    const q = msg.trim().replace(/^!ajustar(-escala| escala)?\\s*/i, '').trim()
+    const p = q.split(/\\s+/)
+    const r = window.__aem_ajustar ? window.__aem_ajustar(p[0], p[1] || '60', p[2] || 'ambos') : null
+    if (!r || !r.ok) return '⚠️ uso: !ajustar-escala <camada> <intervaloMinutos> <jogo>'
+    bolha('bot', '📈 ESCALA AJUSTADA\\n• Camada: ' + r.escala.camada + ' | Novo intervalo: ' + r.escala.intervaloMinutos + ' min', new Date().toISOString(), '📈 auto-escalada'); rolarFim(); return '📈 escala ajustada'
+  }
+  if (m.startsWith('!escalada-estatisticas') || m.startsWith('!escalada estatisticas')) {
+    const est = window.__aem_estatisticas ? window.__aem_estatisticas() : {}
+    bolha('bot', '📊 AUTO-ESCALADA\\n• Ativo: ' + (est.ativo ? 'sim' : 'não') + '\\n• Escalas: ' + est.total_escalas + ' | Ajustes: ' + est.total_ajustes + ' | Limites: ' + est.limites.min + '-' + est.limites.max + ' min', new Date().toISOString(), '📊 estat-escalada'); rolarFim(); return '📊 estatísticas de escala…'
   }
 
 return null;
