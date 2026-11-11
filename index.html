@@ -52,6 +52,20 @@
 <script src="validacao-link-avancada-browser.js"></script>
 <script src="backup-automatico-avancado-browser.js"></script>
 <script src="sentimento-comentarios-browser.js"></script>
+<script src="gamificacao-marketing-browser.js"></script>
+<script src="calendario-editorial-browser.js"></script>
+<script src="analise-hashtags-browser.js"></script>
+<script src="sistema-cupons-browser.js"></script>
+<script src="rastreamento-afiliados-browser.js"></script>
+<script src="integracao-discord-browser.js"></script>
+<script src="integracao-telegram-browser.js"></script>
+<script src="webhooks-marketing-browser.js"></script>
+<script src="agendamento-fuso-horario-browser.js"></script>
+<script src="deteccao-spam-comentarios-browser.js"></script>
+<script src="moderacao-conteudo-browser.js"></script>
+<script src="analise-velocidade-resposta-browser.js"></script>
+<script src="rastreamento-indicacoes-rede-browser.js"></script>
+<script src="sistema-recompensas-engajamento-browser.js"></script>
 </head>
 <body>
 
@@ -4283,6 +4297,176 @@ async function maosDaCasa(msg) {
   if (m.startsWith('!estat-comparativos') || m.startsWith('!estat comparativos')) {
     const est = window.__cmp_estatisticasComparativos ? window.__cmp_estatisticasComparativos() : {}
     bolha('bot', '📊 ESTATÍSTICAS DE COMPARATIVOS\n• Total: ' + est.total + '\n• Ceifalume: ' + est.ceifalume + '\n• Prancheta: ' + est.prancheta + '\n• Empates: ' + est.empates, new Date().toISOString(), '📊 estat-comparativos'); rolarFim(); return '📊 estatísticas de comparativos…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // GAMIFICAÇÃO DE MARKETING
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!adicionar-pontos') || m.startsWith('!adicionar pontos')) {
+    const q = msg.trim().replace(/^!adicionar(-pontos| pontos)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__gam_adicionarPontos ? window.__gam_adicionarPontos(p[0], p[1] || '0', p[2] || 'ambos', p[3] || 'acao') : null
+    if (!r || !r.ok) return '⚠️ uso: !adicionar-pontos <idUsuario> <pontos> <jogo> <acao>'
+    bolha('bot', '🎮 PONTOS ADICIONADOS\n• ' + r.usuario.idUsuario + '\n• Pontos: ' + r.usuario.pontos + ' | Nível: ' + r.usuario.nivel, new Date().toISOString(), '🎮 gamificacao'); rolarFim(); return '🎮 pontos adicionados'
+  }
+  if (m.startsWith('!estat-gamificacao') || m.startsWith('!estat gamificacao')) {
+    const est = window.__gam_estatisticasGamificacao ? window.__gam_estatisticasGamificacao() : {}
+    bolha('bot', '📊 GAMIFICAÇÃO\n• Usuários: ' + est.total + '\n• Total pontos: ' + est.totalPontos + '\n• Média: ' + est.mediaPontos, new Date().toISOString(), '📊 estat-gamificacao'); rolarFim(); return '📊 estatísticas de gamificação…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // CALENDÁRIO EDITORIAL
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!agendar-editorial') || m.startsWith('!agendar editorial')) {
+    const q = msg.trim().replace(/^!agendar(-editorial| editorial)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__cal_agendarPostEditorial ? window.__cal_agendarPostEditorial(p[0], p[1] || 'todos', p.slice(2, -2).join(' '), p[p.length - 2] || 'ambos', p[p.length - 1] || '') : null
+    if (!r || !r.ok) return '⚠️ uso: !agendar-editorial <data> <rede> <texto> <jogo> <tema>'
+    bolha('bot', '📅 POST AGENDADO\n• ' + r.post.data + ' | ' + r.post.rede + '\n• Tema: ' + r.post.tema, new Date().toISOString(), '📅 editorial'); rolarFim(); return '📅 post agendado: ' + r.post.data
+  }
+  if (m.startsWith('!estat-calendario') || m.startsWith('!estat calendario')) {
+    const est = window.__cal_estatisticasCalendario ? window.__cal_estatisticasCalendario() : {}
+    bolha('bot', '📊 CALENDÁRIO EDITORIAL\n• Total: ' + est.total + '\n• Publicados: ' + est.publicados + '\n• Pendentes: ' + est.pendentes, new Date().toISOString(), '📊 estat-calendario'); rolarFim(); return '📊 estatísticas do calendário…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // ANÁLISE DE HASHTAGS
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!registrar-hashtag') || m.startsWith('!registrar hashtag')) {
+    const q = msg.trim().replace(/^!registrar(-hashtag| hashtag)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__ht_registrarHashtag ? window.__ht_registrarHashtag(p[0], p[1] || 'todos', p[2] || 'ambos') : null
+    if (!r || !r.ok) return '⚠️ uso: !registrar-hashtag <tag> <rede> <jogo>'
+    bolha('bot', '#️⃣ HASHTAG REGISTRADA\n• ' + r.hashtag.tag + ' | ' + r.hashtag.rede, new Date().toISOString(), '#️⃣ hashtag'); rolarFim(); return '#️⃣ hashtag registrada: ' + r.hashtag.tag
+  }
+  if (m.startsWith('!estat-hashtags') || m.startsWith('!estat hashtags')) {
+    const est = window.__ht_estatisticasHashtags ? window.__ht_estatisticasHashtags() : {}
+    bolha('bot', '📊 HASHTAGS\n• Total: ' + est.totalHashtags + '\n• Usos: ' + est.totalUsos, new Date().toISOString(), '📊 estat-hashtags'); rolarFim(); return '📊 estatísticas de hashtags…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // SISTEMA DE CUpons
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!criar-cupom') || m.startsWith('!criar cupom')) {
+    const q = msg.trim().replace(/^!criar(-cupom| cupom)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__cup_criarCupom ? window.__cup_criarCupom(p[0], p[1] || 'ambos', p[2] || '0%', p[3] || '0', p[4] || null) : null
+    if (!r || !r.ok) return '⚠️ uso: !criar-cupom <codigo> <jogo> <desconto> <limiteUsos> <expiracao>'
+    bolha('bot', '🎟️ CUPON CRIADO\n• ' + r.cupom.codigo + '\n• Desconto: ' + r.cupom.desconto, new Date().toISOString(), '🎟️ cupom'); rolarFim(); return '🎟️ cupom criado: ' + r.cupom.codigo
+  }
+  if (m.startsWith('!estat-cupons') || m.startsWith('!estat cupons')) {
+    const est = window.__cup_estatisticasCupons ? window.__cup_estatisticasCupons() : {}
+    bolha('bot', '📊 CUpons\n• Total: ' + est.total + '\n• Ativos: ' + est.ativos + '\n• Usos: ' + est.totalUsos, new Date().toISOString(), '📊 estat-cupons'); rolarFim(); return '📊 estatísticas de cupons…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // RASTREAMENTO DE AFILIADOS
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!cadastrar-afiliado') || m.startsWith('!cadastrar afiliado')) {
+    const q = msg.trim().replace(/^!cadastrar(-afiliado| afiliado)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__af_cadastrarAfiliado ? window.__af_cadastrarAfiliado(p[0], p[1] || 'ambos', p[2] || '', p[3] || '0%') : null
+    if (!r || !r.ok) return '⚠️ uso: !cadastrar-afiliado <nome> <jogo> <codigo> <comissao>'
+    bolha('bot', '🤝 AFILIADO CADASTRADO\n• ' + r.afiliado.nome + '\n• Código: ' + r.afiliado.codigo, new Date().toISOString(), '🤝 afiliado'); rolarFim(); return '🤝 afiliado cadastrado: ' + r.afiliado.nome
+  }
+  if (m.startsWith('!estat-afiliados') || m.startsWith('!estat afiliados')) {
+    const est = window.__af_estatisticasAfiliados ? window.__af_estatisticasAfiliados() : {}
+    bolha('bot', '📊 AFILIADOS\n• Total: ' + est.total + '\n• Conversões: ' + est.totalConversoes + '\n• Ganhos: R$' + est.totalGanhos, new Date().toISOString(), '📊 estat-afiliados'); rolarFim(); return '📊 estatísticas de afiliados…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // DISCORD / TELEGRAM / WEBHOOKS
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!enviar-discord') || m.startsWith('!enviar discord')) {
+    const q = msg.trim().replace(/^!enviar(-discord| discord)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__dc_registrarMensagemDiscord ? window.__dc_registrarMensagemDiscord(p[0] || 'geral', p.slice(1, -1).join(' '), p[p.length - 1] || 'ambos', '') : null
+    if (!r || !r.ok) return '⚠️ uso: !enviar-discord <canal> <mensagem> <jogo>'
+    bolha('bot', '💬 DISCORD\n• Canal: ' + r.mensagem.canal + '\n• ' + r.mensagem.mensagem.slice(0, 40), new Date().toISOString(), '💬 discord'); rolarFim(); return '💬 discord registrado'
+  }
+  if (m.startsWith('!enviar-telegram') || m.startsWith('!enviar telegram')) {
+    const q = msg.trim().replace(/^!enviar(-telegram| telegram)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__tg_registrarMensagemTelegram ? window.__tg_registrarMensagemTelegram(p[0] || '', p.slice(1, -1).join(' '), p[p.length - 1] || 'ambos', 'HTML') : null
+    if (!r || !r.ok) return '⚠️ uso: !enviar-telegram <chatId> <mensagem> <jogo>'
+    bolha('bot', '✈️ TELEGRAM\n• Chat: ' + r.mensagem.chatId + '\n• ' + r.mensagem.mensagem.slice(0, 40), new Date().toISOString(), '✈️ telegram'); rolarFim(); return '✈️ telegram registrado'
+  }
+  if (m.startsWith('!cadastrar-webhook') || m.startsWith('!cadastrar webhook')) {
+    const q = msg.trim().replace(/^!cadastrar(-webhook| webhook)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__wh_cadastrarWebhook ? window.__wh_cadastrarWebhook(p[0], p[1] || '', p[2] || 'geral', p[3] || 'ambos') : null
+    if (!r || !r.ok) return '⚠️ uso: !cadastrar-webhook <nome> <url> <evento> <jogo>'
+    bolha('bot', '🪝 WEBHOOK\n• ' + r.webhook.nome + ' | ' + r.webhook.evento, new Date().toISOString(), '🪝 webhook'); rolarFim(); return '🪝 webhook cadastrado'
+  }
+  if (m.startsWith('!estat-webhooks') || m.startsWith('!estat webhooks')) {
+    const est = window.__wh_estatisticasWebhooks ? window.__wh_estatisticasWebhooks() : {}
+    bolha('bot', '📊 WEBHOOKS\n• Total: ' + est.total + '\n• Disparos: ' + est.totalDisparos, new Date().toISOString(), '📊 estat-webhooks'); rolarFim(); return '📊 estatísticas de webhooks…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // FUSO HORÁRIO / SPAM / MODERAÇÃO / VELOCIDADE / INDICAÇÕES / RECOMPENSAS
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!configurar-fuso') || m.startsWith('!configurar fuso')) {
+    const q = msg.trim().replace(/^!configurar(-fuso| fuso)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__fuso_configurarFuso ? window.__fuso_configurarFuso(p[0] || 'todos', p[1] || 'America/Sao_Paulo', p[2] || '10:00', p[3] || 'ambos') : null
+    if (!r || !r.ok) return '⚠️ uso: !configurar-fuso <rede> <fuso> <horario> <jogo>'
+    bolha('bot', '🌍 FUSO HORÁRIO\n• ' + r.fuso.rede + ' | ' + r.fuso.fuso + ' | ' + r.fuso.horarioPadrao, new Date().toISOString(), '🌍 fuso'); rolarFim(); return '🌍 fuso configurado'
+  }
+  if (m.startsWith('!analisar-spam') || m.startsWith('!analisar spam')) {
+    const q = msg.trim().replace(/^!analisar(-spam| spam)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__sp_analisarComentario ? window.__sp_analisarComentario(p.slice(0, -2).join(' '), p[p.length - 2] || 'todos', p[p.length - 1] || 'ambos', 'usuario') : null
+    if (!r || !r.ok) return '⚠️ uso: !analisar-spam <texto> <rede> <jogo>'
+    bolha('bot', '🛡️ SPAM\n• É spam: ' + r.analise.ehSpam + ' | Pontuação: ' + r.analise.pontuacao, new Date().toISOString(), '🛡️ spam'); rolarFim(); return '🛡️ comentário analisado'
+  }
+  if (m.startsWith('!estat-spam') || m.startsWith('!estat spam')) {
+    const est = window.__sp_estatisticasSpam ? window.__sp_estatisticasSpam() : {}
+    bolha('bot', '📊 SPAM\n• Total: ' + est.total + '\n• Spam: ' + est.spam + ' | Não spam: ' + est.naoSpam, new Date().toISOString(), '📊 estat-spam'); rolarFim(); return '📊 estatísticas de spam…'
+  }
+  if (m.startsWith('!submeter-conteudo') || m.startsWith('!submeter conteudo')) {
+    const q = msg.trim().replace(/^!submeter(-conteudo| conteudo)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__mod_submeterConteudo ? window.__mod_submeterConteudo(p.slice(0, -3).join(' '), p[p.length - 3] || 'post', p[p.length - 2] || 'todos', p[p.length - 1] || 'ambos', 'usuario') : null
+    if (!r || !r.ok) return '⚠️ uso: !submeter-conteudo <texto> <tipo> <rede> <jogo>'
+    bolha('bot', '🛡️ CONTEÚDO SUBMETIDO\n• Tipo: ' + r.conteudo.tipo + ' | Status: ' + r.conteudo.status, new Date().toISOString(), '🛡️ moderacao'); rolarFim(); return '🛡️ conteúdo submetido'
+  }
+  if (m.startsWith('!estat-moderacao') || m.startsWith('!estat moderacao')) {
+    const est = window.__mod_estatisticasModeracao ? window.__mod_estatisticasModeracao() : {}
+    bolha('bot', '📊 MODERAÇÃO\n• Total: ' + est.total + '\n• Pendentes: ' + est.pendentes + ' | Aprovados: ' + est.aprovados + ' | Rejeitados: ' + est.rejeitados, new Date().toISOString(), '📊 estat-moderacao'); rolarFim(); return '📊 estatísticas de moderação…'
+  }
+  if (m.startsWith('!registrar-resposta') || m.startsWith('!registrar resposta')) {
+    const q = msg.trim().replace(/^!registrar(-resposta| resposta)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__vel_registrarResposta ? window.__vel_registrarResposta(p[0] || 'todos', p[1] || 'ambos', p[2] || '0', p[3] || 'comentario', p[4] || 'usuario') : null
+    if (!r || !r.ok) return '⚠️ uso: !registrar-resposta <rede> <jogo> <tempoSegundos> <tipo> <autor>'
+    bolha('bot', '⚡ RESPOSTA\n• ' + r.resposta.rede + ' | ' + r.resposta.tempoSegundos + 's', new Date().toISOString(), '⚡ velocidade'); rolarFim(); return '⚡ resposta registrada'
+  }
+  if (m.startsWith('!estat-velocidade') || m.startsWith('!estat velocidade')) {
+    const est = window.__vel_estatisticasVelocidade ? window.__vel_estatisticasVelocidade() : {}
+    bolha('bot', '📊 VELOCIDADE\n• Total: ' + est.total + ' | Média: ' + est.tempoMedio + 's', new Date().toISOString(), '📊 estat-velocidade'); rolarFim(); return '📊 estatísticas de velocidade…'
+  }
+  if (m.startsWith('!registrar-indicacao-rede') || m.startsWith('!registrar indicacao rede')) {
+    const q = msg.trim().replace(/^!registrar(-indicacao| indicacao)?(-rede| rede)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__ir_registrarIndicacaoRede ? window.__ir_registrarIndicacaoRede(p[0] || 'todos', p[1] || 'ambos', p[2] || '0', p[3] || 'organico') : null
+    if (!r || !r.ok) return '⚠️ uso: !registrar-indicacao-rede <rede> <jogo> <quantidade> <fonte>'
+    bolha('bot', '🔗 INDICAÇÃO\n• ' + r.indicacao.rede + ' | ' + r.indicacao.quantidade, new Date().toISOString(), '🔗 indicacao'); rolarFim(); return '🔗 indicação registrada'
+  }
+  if (m.startsWith('!estat-indicacoes-rede') || m.startsWith('!estat indicacoes rede')) {
+    const est = window.__ir_estatisticasIndicacoesRede ? window.__ir_estatisticasIndicacoesRede() : {}
+    bolha('bot', '📊 INDICAÇÕES\n• Total: ' + est.total + ' | Quantidade: ' + est.totalQuantidade, new Date().toISOString(), '📊 estat-indicacoes'); rolarFim(); return '📊 estatísticas de indicações…'
+  }
+  if (m.startsWith('!cadastrar-recompensa') || m.startsWith('!cadastrar recompensa')) {
+    const q = msg.trim().replace(/^!cadastrar(-recompensa| recompensa)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__rec_cadastrarRecompensa ? window.__rec_cadastrarRecompensa(p[0], p[1] || 'desconto', p[2] || '0', p.slice(3, -1).join(' '), p[p.length - 1] || 'ambos') : null
+    if (!r || !r.ok) return '⚠️ uso: !cadastrar-recompensa <nome> <tipo> <pontosNecessarios> <descricao> <jogo>'
+    bolha('bot', '🏆 RECOMPENSA\n• ' + r.recompensa.nome + ' | ' + r.recompensa.pontosNecessarios + ' pts', new Date().toISOString(), '🏆 recompensa'); rolarFim(); return '🏆 recompensa cadastrada'
+  }
+  if (m.startsWith('!estat-recompensas') || m.startsWith('!estat recompensas')) {
+    const est = window.__rec_estatisticasRecompensas ? window.__rec_estatisticasRecompensas() : {}
+    bolha('bot', '📊 RECOMPENSAS\n• Total: ' + est.total + ' | Ativas: ' + est.ativas + ' | Resgates: ' + est.totalResgates, new Date().toISOString(), '📊 estat-recompensas'); rolarFim(); return '📊 estatísticas de recompensas…'
   }
 
 return null;
