@@ -22,6 +22,7 @@
 <script src="inteligencia-marketing-browser.js"></script>
 <script src="raciocinio-marketing-avancado-browser.js"></script>
 <script src="auto-correcao-aprendizado-browser.js"></script>
+<script src="memoria-github-browser.js"></script>
 </head>
 <body>
 
@@ -3270,6 +3271,36 @@ async function maosDaCasa(msg) {
     const r = window.__aprend_melhorHorarioParaRede(q)
     if (!r) return '⚠️ não há dados suficientes para rede: ' + q
     bolha('bot', '🕐 MELHOR HORÁRIO PARA ' + q.toUpperCase() + '\n• horário: ' + r.horario + '\n• engajamento médio: ' + r.engajamentoMedio.toFixed(1) + '\n• posts: ' + r.posts, new Date().toISOString(), '🕐 melhor-horario'); rolarFim(); return '🕐 melhor horário…'
+  }
+  if (m.startsWith('!sync-memoria') || m.startsWith('!sync memoria')) {
+    (async () => {
+      const r = await window.__memoria_gh_sincronizar();
+      if (r.ok) {
+        bolha('bot', '💾 MEMÓRIA SINCRONIZADA COM GITHUB\nFonte: ' + (r.memoria && r.memoria.fonte) + '\nÚltimo jogo: ' + (r.memoria && r.memoria.ultimoJogo || 'nenhum') + '\nTom: ' + (r.memoria && r.memoria.tomPreferido || 'nenhum'), new Date().toISOString(), '💾 sync-memoria');
+      } else {
+        bolha('bot', '⚠️ FALHA NA SINCRONIZAÇÃO\n' + (r.motivo || 'erro desconhecido'), new Date().toISOString(), '⚠️ sync-memoria');
+      }
+      rolarFim();
+    })();
+    return '💾 sincronizando memória com GitHub…';
+  }
+  if (m.startsWith('!salvar-memoria') || m.startsWith('!salvar memoria')) {
+    (async () => {
+      let localMem = null;
+      try { localMem = JSON.parse(localStorage.getItem('assistente_rebocl_inteligencia_memoria_v1') || 'null'); } catch (e) {}
+      if (!localMem) {
+        bolha('bot', '⚠️ não há memória local para salvar.', new Date().toISOString(), '⚠️ salvar-memoria');
+      } else {
+        const r = await window.__memoria_gh_salvar(localMem, 'salvar memória via comando !salvar-memoria');
+        if (r.ok) {
+          bolha('bot', '✅ MEMÓRIA SALVA NO GITHUB\nA memória persistente foi gravada no repositório.', new Date().toISOString(), '✅ salvar-memoria');
+        } else {
+          bolha('bot', '⚠️ FALHA AO SALVAR\n' + (r.motivo || r.erro || 'erro desconhecido'), new Date().toISOString(), '⚠️ salvar-memoria');
+        }
+      }
+      rolarFim();
+    })();
+    return '💾 salvando memória no GitHub…';
   }
 return null;
 }
