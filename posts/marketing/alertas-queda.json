@@ -1,0 +1,50 @@
+{
+  "alertas": [
+    {
+      "id": "ref_1",
+      "metrica": "downloads",
+      "tipoMetrica": "numero",
+      "valorAnterior": null,
+      "valorAtual": 100,
+      "pctQueda": null,
+      "severidade": null,
+      "status": "referencia",
+      "criadoEm": "2026-11-11T02:51:43.857Z",
+      "resolvidoEm": null,
+      "acaoSugerida": null,
+      "acaoExecutada": null
+    },
+    {
+      "id": "ref_2",
+      "metrica": "downloads",
+      "tipoMetrica": "numero",
+      "valorAnterior": null,
+      "valorAtual": 80,
+      "pctQueda": null,
+      "severidade": null,
+      "status": "referencia",
+      "criadoEm": "2026-11-11T02:51:43.861Z",
+      "resolvidoEm": null,
+      "acaoSugerida": null,
+      "acaoExecutada": null
+    },
+    {
+      "id": "ref_3",
+      "metrica": "downloads",
+      "tipoMetrica": "numero",
+      "valorAnterior": null,
+      "valorAtual": 95,
+      "pctQueda": null,
+      "severidade": null,
+      "status": "referencia",
+      "criadoEm": "2026-11-11T02:51:43.862Z",
+      "resolvidoEm": null,
+      "acaoSugerida": null,
+      "acaoExecutada": null
+    }
+  ],
+  "recuperacoes": [],
+  "proximoId": 4,
+  "criadoEm": "2026-11-11T02:51:43.857Z",
+  "atualizadoEm": "2026-11-11T02:51:43.862Z"
+}

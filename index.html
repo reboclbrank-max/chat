@@ -46,6 +46,12 @@
 <script src="ltv-cohorte-browser.js"></script>
 <script src="churn-preditivo-browser.js"></script>
 <script src="sistema-tarefas-browser.js"></script>
+<script src="autoresponder-avancado-browser.js"></script>
+<script src="funil-utm-avancado-browser.js"></script>
+<script src="evergreen-expandido-browser.js"></script>
+<script src="validacao-link-avancada-browser.js"></script>
+<script src="backup-automatico-avancado-browser.js"></script>
+<script src="sentimento-comentarios-browser.js"></script>
 </head>
 <body>
 
@@ -4075,6 +4081,117 @@ async function maosDaCasa(msg) {
   if (m.startsWith('!estat-tarefas') || m.startsWith('!estat tarefas')) {
     const est = window.__tar_estatisticasTarefas ? window.__tar_estatisticasTarefas() : {}
     bolha('bot', '📊 ESTATÍSTICAS DE TAREFAS\n• Total: ' + est.total + '\n• Pendentes: ' + est.pendentes + '\n• Concluídas: ' + est.concluidas, new Date().toISOString(), '📊 estat-tarefas'); rolarFim(); return '📊 estatísticas de tarefas…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // AUTORESPONDER AVANÇADO
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!criar-regra') || m.startsWith('!criar regra')) {
+    const q = msg.trim().replace(/^!criar(-regra| regra)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__ar_criarRegra ? window.__ar_criarRegra(p[0], p.slice(1, -2).join(' ').split(','), p[p.length - 2], p[p.length - 1] || 'ambos') : null
+    if (!r || !r.ok) return '⚠️ uso: !criar-regra <tipo> <palavras,virgula> <resposta> <jogo>'
+    bolha('bot', '🤖 REGRA CRIADA\n• Tipo: ' + r.regra.tipo + '\n• Resposta: ' + r.regra.resposta.slice(0, 50), new Date().toISOString(), '🤖 regra'); rolarFim(); return '🤖 regra criada: ' + r.regra.tipo
+  }
+  if (m.startsWith('!processar-pergunta') || m.startsWith('!processar pergunta')) {
+    const q = msg.trim().replace(/^!processar(-pergunta| pergunta)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__ar_processarPergunta ? window.__ar_processarPergunta(p.slice(0, -1).join(' '), p[p.length - 1] || 'ambos') : null
+    if (!r) return '⚠️ uso: !processar-pergunta <pergunta> <jogo>'
+    if (r.ok) bolha('bot', '🤖 RESPOSTA AUTOMÁTICA\n• ' + r.resposta, new Date().toISOString(), '🤖 autoresponder'); rolarFim(); return '🤖 resposta automática…'
+    return '⚠️ nenhuma regra encontrada para essa pergunta'
+  }
+  if (m.startsWith('!estat-autoresponder') || m.startsWith('!estat autoresponder')) {
+    const est = window.__ar_estatisticasAutoresponder ? window.__ar_estatisticasAutoresponder() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE AUTORESPONDER\n• Total de regras: ' + est.total + '\n• Regras ativas: ' + est.ativas + '\n• Total de usos: ' + est.totalUsos, new Date().toISOString(), '📊 estat-autoresponder'); rolarFim(); return '📊 estatísticas de autoresponder…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // FUNIL UTM AVANÇADO
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!criar-link-utm') || m.startsWith('!criar link utm')) {
+    const q = msg.trim().replace(/^!criar(-link| link)?(-utm| utm)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__utm_criarLink ? window.__utm_criarLink(p[0], p[1] || '', p[2] || '', p[3] || '', p[4] || '', p[5] || '', p[6] || 'ambos') : null
+    if (!r || !r.ok) return '⚠️ uso: !criar-link-utm <campanha> <fonte> <medio> <conteudo> <termo> <url> <jogo>'
+    bolha('bot', '🔗 LINK UTM CRIADO\n• ' + r.link.urlCompleta.slice(0, 80), new Date().toISOString(), '🔗 utm'); rolarFim(); return '🔗 link UTM criado…'
+  }
+  if (m.startsWith('!registrar-clique-utm') || m.startsWith('!registrar clique utm')) {
+    const id = msg.trim().replace(/^!registrar(-clique| clique)?(-utm| utm)?\s*/i, '').trim()
+    const r = window.__utm_registrarClique ? window.__utm_registrarClique(id) : null
+    if (!r || !r.ok) return '⚠️ uso: !registrar-clique-utm <id-link>'
+    bolha('bot', '🔗 CLIQUE REGISTRADO\n• Link: ' + id + '\n• Total cliques: ' + r.cliques, new Date().toISOString(), '🔗 clique'); rolarFim(); return '🔗 clique registrado: ' + id
+  }
+  if (m.startsWith('!estat-funil') || m.startsWith('!estat funil')) {
+    const est = window.__utm_estatisticasFunil ? window.__utm_estatisticasFunil() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE FUNIL UTM\n• Links: ' + est.totalLinks + '\n• Cliques: ' + est.totalCliques + '\n• Conversões: ' + est.totalConversoes + '\n• Taxa: ' + est.taxaConversao + '%', new Date().toISOString(), '📊 estat-funil'); rolarFim(); return '📊 estatísticas de funil…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // EVERGREEN EXPANDIDO
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!adicionar-evergreen') || m.startsWith('!adicionar evergreen')) {
+    const q = msg.trim().replace(/^!adicionar(-evergreen| evergreen)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__ev_adicionarConteudo ? window.__ev_adicionarConteudo(p[0], p.slice(1, -3).join(' '), p[p.length - 3] || 'texto', p[p.length - 2] || 'instagram', p[p.length - 1] || 'ambos', 'geral') : null
+    if (!r || !r.ok) return '⚠️ uso: !adicionar-evergreen <titulo> <texto> <formato> <rede> <jogo>'
+    bolha('bot', '🌲 EVERGREEN ADICIONADO\n• ' + r.conteudo.titulo + '\n• Formato: ' + r.conteudo.formato, new Date().toISOString(), '🌲 evergreen'); rolarFim(); return '🌲 evergreen adicionado: ' + r.conteudo.titulo
+  }
+  if (m.startsWith('!estat-evergreen') || m.startsWith('!estat evergreen')) {
+    const est = window.__ev_estatisticasEvergreen ? window.__ev_estatisticasEvergreen() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE EVERGREEN\n• Total: ' + est.total + '\n• Total de usos: ' + est.totalUsos, new Date().toISOString(), '📊 estat-evergreen'); rolarFim(); return '📊 estatísticas de evergreen…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // VALIDAÇÃO DE LINK AVANÇADA
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!validar-link') || m.startsWith('!validar link')) {
+    const q = msg.trim().replace(/^!validar(-link| link)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__val_validarLink ? window.__val_validarLink(p[0], p.slice(1).join(' ')) : null
+    if (!r) return '⚠️ uso: !validar-link <url> <contexto>'
+    bolha('bot', '🔍 LINK VALIDADO\n• Válido: ' + (r.valido ? 'SIM' : 'NÃO') + '\n• Bloqueado: ' + (r.bloqueado ? 'SIM' : 'NÃO'), new Date().toISOString(), '🔍 validacao'); rolarFim(); return '🔍 link validado: ' + (r.valido ? 'válido' : 'bloqueado')
+  }
+  if (m.startsWith('!bloquear-link') || m.startsWith('!bloquear link')) {
+    const palavra = msg.trim().replace(/^!bloquear(-link| link)?\s*/i, '').trim()
+    if (!palavra) return '⚠️ uso: !bloquear-link <palavra>'
+    const r = window.__val_bloquearLink ? window.__val_bloquearLink(palavra) : null
+    if (!r) return '⚠️ erro ao bloquear link'
+    bolha('bot', '🔍 LINK BLOQUEADO\n• Palavra: ' + palavra, new Date().toISOString(), '🔍 bloqueio'); rolarFim(); return '🔍 link bloqueado: ' + palavra
+  }
+  if (m.startsWith('!estat-validacao') || m.startsWith('!estat validacao')) {
+    const est = window.__val_estatisticasValidacao ? window.__val_estatisticasValidacao() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE VALIDAÇÃO\n• Total: ' + est.total + '\n• Válidos: ' + est.validos + '\n• Bloqueados: ' + est.bloqueados + '\n• Palavras bloqueadas: ' + est.linksBloqueados, new Date().toISOString(), '📊 estat-validacao'); rolarFim(); return '📊 estatísticas de validação…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // BACKUP AUTOMÁTICO AVANÇADO
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!registrar-backup') || m.startsWith('!registrar backup')) {
+    const q = msg.trim().replace(/^!registrar(-backup| backup)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__bk_registrarBackup ? window.__bk_registrarBackup(p[0] || 'manual', p[1] || '', p[2] || '0', p[3] || 'sucesso') : null
+    if (!r || !r.ok) return '⚠️ uso: !registrar-backup <tipo> <arquivo> <tamanho> <status>'
+    bolha('bot', '💾 BACKUP REGISTRADO\n• Tipo: ' + r.backup.tipo + '\n• Status: ' + r.backup.status, new Date().toISOString(), '💾 backup'); rolarFim(); return '💾 backup registrado…'
+  }
+  if (m.startsWith('!estat-backup') || m.startsWith('!estat backup')) {
+    const est = window.__bk_estatisticasBackups ? window.__bk_estatisticasBackups() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE BACKUP\n• Total: ' + est.total + '\n• Sucesso: ' + est.sucesso + '\n• Falhas: ' + est.falhas, new Date().toISOString(), '📊 estat-backup'); rolarFim(); return '📊 estatísticas de backup…'
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // SENTIMENTO DE COMENTÁRIOS
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (m.startsWith('!analisar-sentimento') || m.startsWith('!analisar sentimento')) {
+    const q = msg.trim().replace(/^!analisar(-sentimento| sentimento)?\s*/i, '').trim()
+    const p = q.split(/\s+/)
+    const r = window.__sent_analisarSentimento ? window.__sent_analisarSentimento(p.slice(0, -2).join(' '), p[p.length - 2] || 'instagram', p[p.length - 1] || 'ambos', 'usuario') : null
+    if (!r || !r.ok) return '⚠️ uso: !analisar-sentimento <texto> <rede> <jogo>'
+    bolha('bot', '😊 SENTIMENTO ANALISADO\n• ' + r.analise.sentimento + '\n• Positivas: ' + r.analise.pos + ' — Negativas: ' + r.analise.neg, new Date().toISOString(), '😊 sentimento'); rolarFim(); return '😊 sentimento: ' + r.analise.sentimento
+  }
+  if (m.startsWith('!estat-sentimento') || m.startsWith('!estat sentimento')) {
+    const est = window.__sent_estatisticasSentimento ? window.__sent_estatisticasSentimento() : {}
+    bolha('bot', '📊 ESTATÍSTICAS DE SENTIMENTO\n• Total: ' + est.total + '\n• Positivo: ' + est.positivo + '\n• Negativo: ' + est.negativo + '\n• Neutro: ' + est.neutro, new Date().toISOString(), '📊 estat-sentimento'); rolarFim(); return '📊 estatísticas de sentimento…'
   }
 
 return null;

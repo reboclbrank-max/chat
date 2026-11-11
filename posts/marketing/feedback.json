@@ -1,0 +1,24 @@
+{
+  "entradas": [
+    {
+      "quando": "2026-11-11T02:30:09.009Z",
+      "pergunta": "teste",
+      "resposta": "resposta",
+      "aprovado": true,
+      "rede": "instagram",
+      "modelo": "groq",
+      "intencao": "postar"
+    },
+    {
+      "quando": "2026-11-11T02:30:09.009Z",
+      "pergunta": "teste2",
+      "resposta": "resposta2",
+      "aprovado": false,
+      "rede": "x",
+      "modelo": "nemotron",
+      "intencao": "medir"
+    }
+  ],
+  "criadoEm": "2026-11-11T02:30:09.009Z",
+  "atualizadoEm": "2026-11-11T02:30:09.009Z"
+}

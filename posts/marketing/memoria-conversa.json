@@ -1,0 +1,23 @@
+{
+  "ultimoJogo": "ceifalume",
+  "tomPreferido": "entusiasta",
+  "horariosPreferidos": [],
+  "metas": {},
+  "ultimasConversas": [
+    {
+      "quando": "2026-11-11T02:30:09.012Z",
+      "pergunta": "tenho 1000 inscritos, cresço 5% ao dia, em 30 dias?",
+      "resposta": "Em 30 dias: 4.322 inscritos (ganho de 3.322)",
+      "intencao": "medir",
+      "jogo": "ceifalume"
+    },
+    {
+      "quando": "2026-11-11T02:30:09.013Z",
+      "pergunta": "isso ai",
+      "resposta": "Sua pergunta não ficou clara. Pode reformular com mais detalhes? Ex: \"poste no Instagram sobre o Ceifalume\"",
+      "intencao": "conversar"
+    }
+  ],
+  "preferencias": {},
+  "atualizadoEm": "2026-11-11T02:30:09.013Z"
+}

@@ -1,0 +1,90 @@
+{
+  "campanhas": [
+    {
+      "id": "camp_1",
+      "nome": "Lançamento Ceifalume",
+      "tipo": "lancamento",
+      "jogo": "ceifalume",
+      "dataInicio": "2026-11-11T02:49:19.771Z",
+      "status": "ativa",
+      "passos": [
+        {
+          "id": "camp_1_passo_0",
+          "dia": 0,
+          "acao": "teaser",
+          "rede": "todos",
+          "texto": "Algo novo está chegando… fique ligado! 🎮",
+          "status": "pendente",
+          "executadoEm": null,
+          "resultado": null
+        },
+        {
+          "id": "camp_1_passo_1",
+          "dia": 1,
+          "acao": "revelacao",
+          "rede": "todos",
+          "texto": "Conheça o novo jogo! Baixe agora gratuitamente.",
+          "status": "pendente",
+          "executadoEm": null,
+          "resultado": null
+        },
+        {
+          "id": "camp_1_passo_2",
+          "dia": 2,
+          "acao": "gameplay",
+          "rede": "todos",
+          "texto": "Veja o gameplay em ação. Jogue agora no itch.io.",
+          "status": "pendente",
+          "executadoEm": null,
+          "resultado": null
+        },
+        {
+          "id": "camp_1_passo_3",
+          "dia": 3,
+          "acao": "depoimento",
+          "rede": "todos",
+          "texto": "O que os jogadores estão dizendo sobre o jogo.",
+          "status": "pendente",
+          "executadoEm": null,
+          "resultado": null
+        },
+        {
+          "id": "camp_1_passo_4",
+          "dia": 4,
+          "acao": "destaque",
+          "rede": "todos",
+          "texto": "Recurso especial que você vai adorar no jogo.",
+          "status": "pendente",
+          "executadoEm": null,
+          "resultado": null
+        },
+        {
+          "id": "camp_1_passo_5",
+          "dia": 5,
+          "acao": "urgencia",
+          "rede": "todos",
+          "texto": "Últimos dias para baixar gratuitamente!",
+          "status": "pendente",
+          "executadoEm": null,
+          "resultado": null
+        },
+        {
+          "id": "camp_1_passo_6",
+          "dia": 6,
+          "acao": "fechamento",
+          "rede": "todos",
+          "texto": "Baixe agora e comece a jogar imediatamente!",
+          "status": "pendente",
+          "executadoEm": null,
+          "resultado": null
+        }
+      ],
+      "resultado": {},
+      "criadoEm": "2026-11-11T02:49:19.771Z",
+      "atualizadoEm": "2026-11-11T02:49:19.771Z"
+    }
+  ],
+  "proximoId": 2,
+  "criadoEm": "2026-11-11T02:49:19.771Z",
+  "atualizadoEm": "2026-11-11T02:49:19.771Z"
+}
