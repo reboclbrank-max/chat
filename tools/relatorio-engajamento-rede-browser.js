@@ -1,0 +1,42 @@
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🌐 relatorio-engajamento-rede — versão browser (expondo __rer_*)
+// marketing Prancheta + Ceifalume.
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+(function(){
+  const STORAGE_KEY = 'rebocl_relatorio-engajamento-rede';
+  
+  function ler() {
+    try {
+      const b = localStorage.getItem(STORAGE_KEY);
+      return b ? JSON.parse(b) : { itens: [], proximoId: 1, criadoEm: new Date().toISOString(), atualizadoEm: new Date().toISOString() };
+    } catch (e) { return { itens: [], proximoId: 1, criadoEm: new Date().toISOString(), atualizadoEm: new Date().toISOString() }; }
+  }
+  function gravar(d) {
+    try { d.atualizadoEm = new Date().toISOString(); localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch (e) {}
+  }
+
+  // __rer_listar() -> lista todos os itens
+  window.__rer_listar = function() { return ler().itens; };
+
+  // __rer_adicionar(obj) -> adiciona um item
+  window.__rer_adicionar = function(obj) {
+    const d = ler();
+    const item = Object.assign({ id: d.proximoId++, criadoEm: new Date().toISOString() }, obj || {});
+    d.itens.push(item);
+    gravar(d);
+    return { ok: true, relatorio_engajamento_rede: item };
+  };
+
+  // __rer_estatisticas() -> contagem simples
+  window.__rer_estatisticas = function() {
+    const d = ler();
+    return { total: d.itens.length, atualizadoEm: d.atualizadoEm };
+  };
+
+  // __rer_limpar() -> remove todos
+  window.__rer_limpar = function() {
+    localStorage.removeItem(STORAGE_KEY);
+    return { ok: true };
+  };
+})();
