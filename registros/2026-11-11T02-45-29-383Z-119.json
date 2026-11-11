@@ -1,0 +1,40 @@
+{
+  "quando": "2026-11-11T02:45:29.383Z",
+  "origem": "ao-vivo",
+  "pr": 119,
+  "sha": "d69974e9577fb4bede3f3c41909f17c683c710ad",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "🎮📺 Remove limitações itch.io e YouTube",
+  "barreira": "failure",
+  "arquivos": [
+    ".github/workflows/metricas-marketing.yml",
+    "direto.html",
+    "index.html",
+    "inteligencia-marketing-browser.js",
+    "ligar.html",
+    "limpar.html",
+    "posts/ab-test/testes.json",
+    "posts/evergreen/conteudos.json",
+    "posts/marketing/dashboard.html",
+    "posts/marketing/metricas-historico.json",
+    "posts/marketing/metricas-resumo.json",
+    "tools/cofre-seguro.js",
+    "tools/gerar-metricas-marketing.js",
+    "tools/inteligencia-marketing.js",
+    "tools/redes-sociais.js",
+    "tools/testar-todas-as-apis.js"
+  ],
+  "essenciais": [
+    ".github/workflows/metricas-marketing.yml",
+    "index.html"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: .github/workflows/metricas-marketing.yml, direto.html, index.html…"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: .github/workflows/metricas-marketing.yml, index.html"
+  }
+}
