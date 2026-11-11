@@ -1,0 +1,83 @@
+{
+  "geradoEm": "2026-11-11T02:48:40.387Z",
+  "resumo": {
+    "totalInscritos": 0,
+    "totalDownloads": 50,
+    "totalCliques": 0,
+    "totalImpressoes": 0,
+    "totalReceita": 0,
+    "totalHoras": 0,
+    "ctr": 0,
+    "conversao": 0,
+    "cac": 0
+  },
+  "alertas": [
+    {
+      "tipo": "inatividade",
+      "severidade": "baixa",
+      "mensagem": "Nenhuma hora de trabalho registrada",
+      "acao": "Começar a registrar tempo gasto em marketing"
+    }
+  ],
+  "recomendacoes": [],
+  "conteudoTop": [
+    "Baixe o Ceifalume agora!"
+  ],
+  "sazonalidade": {},
+  "estatisticasAprendizado": {
+    "versoes": 0,
+    "modeloPorIntencao": 1,
+    "tomPorSentimento": 1,
+    "horarioPorRede": 1,
+    "palavrasBloqueadas": 1,
+    "conteudoQueFunciona": 1,
+    "conteudoQueNaoFunciona": 0,
+    "planosExecutados": 1,
+    "totalAmostrasModelos": 2,
+    "totalAmostrasTons": 2,
+    "totalAmostrasHorarios": 2
+  },
+  "metricasPorTipo": {
+    "inscritos": {
+      "total": 0,
+      "ultimo": null
+    },
+    "downloads": {
+      "total": 1,
+      "soma": 50,
+      "media": "50.00",
+      "ultimo": {
+        "quando": "2026-11-11T02:46:21.518Z",
+        "valor": 50
+      }
+    },
+    "cliques": {
+      "total": 0,
+      "ultimo": null
+    },
+    "impressoes": {
+      "total": 0,
+      "ultimo": null
+    },
+    "gastosTempo": {
+      "total": 0,
+      "ultimo": null
+    },
+    "receita": {
+      "total": 0,
+      "ultimo": null
+    },
+    "churn": {
+      "total": 0,
+      "ultimo": null
+    },
+    "viral": {
+      "total": 0,
+      "ultimo": null
+    },
+    "sazonalidade": {
+      "total": 0,
+      "ultimo": null
+    }
+  }
+}
