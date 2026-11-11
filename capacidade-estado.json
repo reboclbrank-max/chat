@@ -1,13 +1,13 @@
 {
   "esquema": "placar-capacidade-v2",
-  "gerado_em": "2026-11-10T18:32:27.756Z",
+  "gerado_em": "2026-11-11T18:29:16.442Z",
   "evidencia": {
     "fonte_estado": "estado/operacional",
     "tipo": "cobertura_estrutural_e_amostras",
     "autonomia_universal": false,
     "entrega_ponta_a_ponta": "nao_medida_por_este_indicador",
-    "vigia_observado_em": "2026-11-10T17:56:17.196Z",
-    "qualidade_observada_em": "2026-11-10T18:32:27.268Z",
+    "vigia_observado_em": "2026-11-11T18:08:53.368Z",
+    "qualidade_observada_em": "2026-11-11T18:29:16.128Z",
     "vigia_vigente": true,
     "qualidade_vigente": false
   },
@@ -99,11 +99,11 @@
     "baterias": 5,
     "media_bateria": 100,
     "qualidade_rastreavel": false,
-    "cobertura_questoes": 19,
+    "cobertura_questoes": 18,
     "respostas_auditadas": 50
   },
   "proximas_melhorias": [
-    "rastreabilidade da qualidade: completar 3 amostras recentes distintas, 30 respostas e 20 questões; fotografia atual: 5 amostra(s), 50 resposta(s), 19 questão(ões). O 100/100 interno não certifica essa rastreabilidade.",
+    "rastreabilidade da qualidade: completar 3 amostras recentes distintas, 30 respostas e 20 questões; fotografia atual: 5 amostra(s), 50 resposta(s), 18 questão(ões). O 100/100 interno não certifica essa rastreabilidade.",
     "confiabilidade observada: tratar os itens vermelhos do vigia antes de aumentar a cadência"
   ],
   "limites": [
