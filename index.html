@@ -9565,7 +9565,7 @@ function ouroFiltrado() {
   const alvo = cerebroEscolhido();
   return alvo ? OURO.filter((m) => m.id === alvo).concat(OURO.filter((m) => m.id !== alvo && !m.chaveLS)) : OURO;
 }
-const ARSENAL_JS = '!acao · !acervo · !adivinha · !agro · !agua · !anime · !anotacoes · !anotar · !apagarnota · !apagartarefa · !aprender · !ar · !arte · !artista · !asteroides · !avatar · !avioes · !backup · !bacon · !bancos · !baralho · !base64 · !bateria · !bbcmundo · !bin · !bitcoin · !bitstamp · !bundle · !busca · !cachorro · !cafe · !calc · !cambio · !cambiohistorico · !candido · !capsula · !carta · !cartapokemon · !caça · !censo · !cep · !cepworld · !cerveja · !chave · !cheias · !chess · !chuck · !chuva · !ciber · !cidades · !ciencia · !clima · !cnpj · !codigo · !commit · !conselho · !conta · !contar · !conversor · !converter · !cor · !corao · !covid · !cozinho · !cripto · !curiosidade · !curioso · !dado · !ddd · !decidir · !deputados · !desafiododia · !desculpa · !destaque · !dev · !dias · !diasemana · !disco · !dividir · !doaj · !dolar · !drink · !edgar · !elemento · !elevacao · !emprego · !empresa · !encurtar · !enxame · !eonet · !epic · !esporte · !esquecer · !estoiro · !eurlex · !f1 · !falar · !fato · !feitico · !feito · !feriado · !feriadode · !feriados · !ferramentas · !fipe · !fotinha · !fuso · !g1 · !gato · !gh · !ghibli · !giria · !gitlab · !gorjeta · !grande · !gratuito · !harry · !hash · !hn · !hoje · !humanitario · !ibge · !idade · !identidade · !imagem · !imc · !inspira · !instalar · !ipca · !iss · !jogos · !jogosdo dia · !juros · !juroscompostos · !kanye · !kombat · !lancamento · !lembrete · !letra · !library · !livro · !lobsters · !looku · !loteria · !magia · !manga · !mastodon · !matematica · !mc · !medico · !medo · !memoria · !mercado · !meuip · !mlb · !moeda · !moedaconv · !molar · !monstro · !morse · !motores · !mundo · !museu · !musica · !nasa · !nasaimg · !nasceuhoje · !natureza · !nba · !nesseadia · !nhl · !nobel · !nome · !noticias · !noticiasespaco · !npm · !nutri · !olhar · !ondas · !onde · !ouro · !ouvir · !palavra · !palavracha · !paleta · !paper · !passado · !persona · !personas · !pesquisar · !piada · !piadabr · !piadadepai · !piano · !picum · !placar · !plantar · !plenário · !pokemon · !pomodoro · !print · !produto · !promocoes · !ptax · !pubmed · !qr · !quadro · !quimica · !quiz · !raca · !radio · !raposa · !receita · !regra3 · !respirar · !restaurar · !rick · !romano · !rx · !sabio · !saude · !semear · !senado · !senha · !serie · !simounao · !sol · !solar · !sorteio · !speedrun · !stack · !starwars · !status · !surpresa · !tabela · !tabuada · !tarefa · !tarefas · !tarot · !terremoto · !timer · !tocar · !tom · !topcripto · !traduzir · !trem · !trend · !trendcripto · !truco · !tvhoje · !uf · !usar · !uuid · !varredura · !velocimetro · !verbete · !verdade · !verdadedesafio · !veredicto · !verso · !vinho · !wayback · !wiki · !word · !xadrez · !xkcd';
+const ARSENAL_JS = '!acao · !acervo · !adivinha · !agro · !agua · !anime · !anotacoes · !anotar · !apagarnota · !apagartarefa · !aprender · !ar · !arte · !artista · !asteroides · !avatar · !avioes · !backup · !bacon · !bancos · !baralho · !base64 · !bateria · !bbcmundo · !bin · !bitcoin · !bitstamp · !bundle · !busca · !cachorro · !cafe · !calc · !cambio · !cambiohistorico · !candido · !capsula · !carta · !cartapokemon · !caça · !censo · !cep · !cepworld · !cerveja · !chave · !cheias · !chess · !chuck · !chuva · !ciber · !cidades · !ciencia · !clima · !cnpj · !codigo · !commit · !conselho · !conta · !contar · !conversor · !converter · !cor · !corao · !covid · !cozinho · !cripto · !curiosidade · !curioso · !dado · !ddd · !decidir · !deputados · !desafiododia · !desculpa · !destaque · !dev · !dias · !diasemana · !disco · !dividir · !doaj · !dolar · !drink · !edgar · !elemento · !elevacao · !emprego · !empresa · !encurtar · !enxame · !eonet · !epic · !esporte · !esquecer · !estoiro · !eurlex · !f1 · !falar · !fato · !feitico · !feito · !feriado · !feriadode · !feriados · !ferramentas · !fipe · !fotinha · !fuso · !g1 · !gato · !gh · !ghibli · !giria · !gitlab · !gorjeta · !grande · !gratuito · !harry · !hash · !hn · !hoje · !humanitario · !ibge · !idade · !identidade · !imagem · !imc · !inspira · !instalar · !ipca · !iss · !jogos · !jogosdo dia · !juros · !juroscompostos · !kanye · !kombat · !lancamento · !lembrete · !letra · !library · !livro · !lobsters · !looku · !loteria · !magia · !manga · !mastodon · !matematica · !mc · !medico · !medo · !memoria · !mercado · !meuip · !mlb · !moeda · !moedaconv · !molar · !monstro · !morse · !motores · !mundo · !museu · !musica · !nasa · !nasaimg · !nasceuhoje · !natureza · !nba · !nesseadia · !nhl · !nobel · !nome · !noticias · !noticiasespaco · !npm · !nutri · !olhar · !ondas · !onde · !ouro · !ouvir · !palavra · !palavracha · !paleta · !paper · !passado · !persona · !personas · !pesquisar · !piada · !piadabr · !piadadepai · !piano · !picum · !placar · !plantar · !plenário · !pokemon · !pomodoro · !print · !produto · !promocoes · !ptax · !pubmed · !qr · !quadro · !quimica · !quiz · !raca · !radio · !raposa · !receita · !regra3 · !respirar · !restaurar · !rick · !romano · !rx · !sabio · !saude · !semear · !senado · !senha · !serie · !simounao · !sol · !solar · !sorteio · !speedrun · !stack · !starwars · !status · !surpresa · !tabela · !tabuada · !tarefa · !tarefas · !tarot · !terremoto · !timer · !tocar · !tom · !topcripto · !traduzir · !trem · !trend · !trendcripto · !truco · !tvhoje · !uf · !usar · !uuid · !varredura · !velocimetro · !verbete · !verdade · !verdadedesafio · !veredicto · !verso · !vinho · !wayback · !wiki · !word · !xadrez · !xkcd · !sistema-limite-max · !sistema-status · !orquestrador-ativar · !orquestrador-coordenar · !orquestrador-estatisticas · !detector-anomalias-ativar · !detectar-anomalia · !detector-estatisticas · !loop-aprendizado-ativar · !registrar-resultado · !loop-estatisticas · !auto-otimizador-ativar · !registrar-acesso · !otimizador-estatisticas · !dashboard-limite-ativar · !adicionar-widget · !adicionar-alerta · !dashboard-estatisticas · !recuperacao-cadeia-ativar · !registrar-falha · !recuperacao-estatisticas · !integracao-cruzada-ativar · !executar-fluxo · !integracao-estatisticas · !auto-escalada-ativar · !ajustar-escala · !escalada-estatisticas';
 // MEMÓRIA DE CONVERSA (31/10/2026): antes o roteador só era usado quando a conversa tinha
 // UMA mensagem — ou seja, na segunda pergunta a página esquecia tudo e voltava para a frota de
 // streaming, que responde com histórico mas sem ferramenta exata, sem amostra dupla e sem a régua.
@@ -10831,6 +10831,99 @@ _wrap.addEventListener('dragover', (e) => e.preventDefault());
 _wrap.addEventListener('drop', lerArquivoDrop);
 atualizarBadgeSync();
 if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); } catch (e) {} }
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   🚀 INICIALIZAÇÃO AUTOMÁTICA — TOTALMENTE AUTÔNOMO, SEM INTERVENÇÃO HUMANA
+   Ativa todas as 49 camadas de inteligência de marketing sozinho ao carregar.
+   marketing Prancheta + Ceifalume.
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+(function inicializacaoAutonoma() {
+  try {
+    // Ativa o sistema limite máximo (todas as camadas de uma vez)
+    if (typeof window.__slm_ativar === 'function') {
+      const r = window.__slm_ativar();
+      if (r && r.ok) {
+        console.log('[AUTÔNOMO] Sistema limite máximo ativado — ' + r.camadas_ativas + ' camadas');
+      }
+    }
+    // Ativa o orquestrador máximo para coordenar tudo
+    if (typeof window.__omm_ativar === 'function') {
+      const r = window.__omm_ativar('limite', true, true);
+      if (r && r.ok) {
+        console.log('[AUTÔNOMO] Orquestrador máximo ativado — modo ' + r.coord.modo);
+      }
+    }
+    // Ativa o piloto automático
+    if (typeof window.__pilam_ativar === 'function') {
+      const r = window.__pilam_ativar('ambos', 'geral', 60);
+      if (r && r.ok) {
+        console.log('[AUTÔNOMO] Piloto automático ativado — modo geral, 60 min');
+      }
+    }
+    // Ativa detector de anomalias
+    if (typeof window.__dam_ativar === 'function') {
+      const r = window.__dam_ativar(20, 50);
+      if (r && r.ok) {
+        console.log('[AUTÔNOMO] Detector de anomalias ativado — queda 20% / pico 50%');
+      }
+    }
+    // Ativa loop de aprendizado
+    if (typeof window.__laa_ativar === 'function') {
+      const r = window.__laa_ativar(0.1);
+      if (r && r.ok) {
+        console.log('[AUTÔNOMO] Loop de aprendizado ativado — taxa 0.1');
+      }
+    }
+    // Ativa auto-otimizador de horários
+    if (typeof window.__aoh_ativar === 'function') {
+      ['instagram', 'x', 'nostr'].forEach(function (rede) {
+        ['ambos', 'prancheta', 'ceifalume'].forEach(function (jogo) {
+          window.__aoh_ativar(rede, jogo);
+        });
+      });
+      console.log('[AUTÔNOMO] Auto-otimizador de horários ativado para todas as redes');
+    }
+    // Ativa dashboard limite
+    if (typeof window.__dlm_ativar === 'function') {
+      const r = window.__dlm_ativar();
+      if (r && r.ok) {
+        console.log('[AUTÔNOMO] Dashboard limite ativado');
+      }
+    }
+    // Ativa recuperação em cadeia
+    if (typeof window.__rcm_ativar === 'function') {
+      const r = window.__rcm_ativar();
+      if (r && r.ok) {
+        console.log('[AUTÔNOMO] Recuperação em cadeia ativada');
+      }
+    }
+    // Ativa integração cruzada
+    if (typeof window.__icm_ativar === 'function') {
+      const r = window.__icm_ativar();
+      if (r && r.ok) {
+        console.log('[AUTÔNOMO] Integração cruzada ativada');
+      }
+    }
+    // Ativa auto-escala
+    if (typeof window.__aem_ativar === 'function') {
+      ['relatorios-conteudo', 'gamificacao', 'calendario-editorial', 'hashtags', 'cupons', 'afiliados', 'discord', 'telegram', 'webhooks'].forEach(function (camada) {
+        window.__aem_ativar(camada, 30, 'ambos');
+      });
+      console.log('[AUTÔNOMO] Auto-escala ativada para camadas principais');
+    }
+    // Coordena todas as camadas via orquestrador
+    if (typeof window.__omm_coordenar === 'function') {
+      setTimeout(function () {
+        const r = window.__omm_coordenar();
+        if (r && r.ok) {
+          console.log('[AUTÔNOMO] Coordenação de ' + r.execucao.camadas.length + ' camadas executada');
+        }
+      }, 2000);
+    }
+  } catch (e) {
+    console.log('[AUTÔNOMO] Inicialização parcial — alguns módulos ainda não carregados');
+  }
+})();
+
 iniciarPwaCompartilhado();
 (async function iniciar() {
   if (token) {
