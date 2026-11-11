@@ -3321,7 +3321,7 @@ async function maosDaCasa(msg) {
     if (!['ceifalume', 'prancheta', 'ambos'].includes(jogo)) return '⚠️ jogo inválido. Use: ceifalume, prancheta, ambos'
     const r = window.__camp_criarCampanha ? window.__camp_criarCampanha(nome, tipo, jogo, new Date().toISOString()) : null
     if (!r || !r.ok) return '⚠️ não foi possível criar a campanha'
-    bolha('bot', '📢 CAMPANHA CRIADA\n• ID: ' + r.campanha.id + '\n• Nome: ' + r.campanha.nome + '\n• Tipo: ' + r.campanha.tipo + '\n• Jogo: ' + r.campanha.jogo + '\n• Passos: ' + r.campanha.passos.length, new Date().toISOString(), '📢 campanha'); rolarFim(); return '📢 campanha criada: ' + nome + '…'
+    bolha('bot', '📢 CAMPANHA CRIADA\n• ID: ' + r.campanha.id + '\n• Nome: ' + r.campanha.nome + '\n• Tipo: ' + r.campanha.tipo + '\n• Jogo: ' + r.campanha.jogo + '\n• Passos: ' + r.campanha.passos.length, new Date().toISOString(), '📢 campanha'); rolarFim(); __syncMemoriaAutomatica(); return '📢 campanha criada: ' + nome + '…'
   }
   if (m.startsWith('!listar-campanhas') || m.startsWith('!listar campanhas')) {
     const campanhas = window.__camp_listarCampanhas ? window.__camp_listarCampanhas() : []
@@ -3375,7 +3375,7 @@ async function maosDaCasa(msg) {
     if (!['ceifalume', 'prancheta', 'ambos'].includes(jogo)) return '⚠️ jogo inválido'
     const r = window.__agend_agendarPost ? window.__agend_agendarPost(texto, rede, jogo) : null
     if (!r || !r.ok) return '⚠️ não foi possível agendar'
-    bolha('bot', '🕐 POST AGENDADO\n• Rede: ' + rede + '\n• Jogo: ' + jogo + '\n• Texto: ' + texto + '\n• Horário: ' + r.horarioAgendado, new Date().toISOString(), '🕐 agendamento'); rolarFim(); return '🕐 post agendado para ' + rede + '…'
+    bolha('bot', '🕐 POST AGENDADO\n• Rede: ' + rede + '\n• Jogo: ' + jogo + '\n• Texto: ' + texto + '\n• Horário: ' + r.horarioAgendado, new Date().toISOString(), '🕐 agendamento'); rolarFim(); __syncMemoriaAutomatica(); return '🕐 post agendado para ' + rede + '…'
   }
   if (m.startsWith('!minha-agenda') || m.startsWith('!minha agenda')) {
     const fila = window.__agend_listarAgendamento ? window.__agend_listarAgendamento() : []
@@ -3428,7 +3428,7 @@ async function maosDaCasa(msg) {
     const r = window.__queda_detectarQueda ? window.__queda_detectarQueda(metrica, valor, limiar) : null
     if (!r) return '⚠️ não foi possível detectar queda'
     if (r.alerta) {
-      bolha('bot', '🚨 QUEDA DETECTADA\n• Métrica: ' + r.alerta.metrica + '\n• Anterior: ' + r.alerta.valorAnterior + '\n• Atual: ' + r.alerta.valorAtual + '\n• Queda: ' + r.alerta.pctQueda + '%\n• Severidade: ' + r.alerta.severidade, new Date().toISOString(), '🚨 queda'); rolarFim(); return '🚨 queda de ' + r.alerta.pctQueda + '% em ' + metrica + '…'
+      bolha('bot', '🚨 QUEDA DETECTADA\n• Métrica: ' + r.alerta.metrica + '\n• Anterior: ' + r.alerta.valorAnterior + '\n• Atual: ' + r.alerta.valorAtual + '\n• Queda: ' + r.alerta.pctQueda + '%\n• Severidade: ' + r.alerta.severidade, new Date().toISOString(), '🚨 queda'); rolarFim(); __syncMemoriaAutomatica(); return '🚨 queda de ' + r.alerta.pctQueda + '% em ' + metrica + '…'
     }
     bolha('bot', '📊 Sem queda significativa em ' + metrica + ' (valor: ' + valor + ')', new Date().toISOString(), '📊 sem-queda'); rolarFim(); return '📊 sem queda em ' + metrica + '…'
   }
@@ -3492,7 +3492,7 @@ async function maosDaCasa(msg) {
       '• Severidade: ' + r.recuperacao.severidade,
       '• Campanha: ' + r.campanha.nome,
       '• Posts criados: ' + r.postsCriados.length]
-    bolha('bot', linhas.join('\n'), new Date().toISOString(), '🔄 recuperacao'); rolarFim(); return '🔄 recuperação automática iniciada para ' + r.recuperacao.metrica + '…'
+    bolha('bot', linhas.join('\n'), new Date().toISOString(), '🔄 recuperacao'); rolarFim(); __syncMemoriaAutomatica(); return '🔄 recuperação automática iniciada para ' + r.recuperacao.metrica + '…'
   }
   if (m.startsWith('!minhas-recuperacoes') || m.startsWith('!minhas recuperacoes')) {
     const recs = window.__rec_listarRecuperacoes ? window.__rec_listarRecuperacoes() : []
