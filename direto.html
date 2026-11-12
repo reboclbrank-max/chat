@@ -2613,6 +2613,35 @@ async function maosDaCasa(msg) {
     rolarFim();
     return '🚀 executando auto-otimização com dados reais de acesso…';
   }
+  if (m === '!teste-redes-sociais-ativar' || m.startsWith('!teste-redes-sociais-ativar ')) {
+    const tr = typeof window.__tr_ativar === 'function' ? window.__tr_ativar() : null;
+    if (!tr || !tr.ok) return '⚠️ !teste-redes-sociais-ativar: módulo não carregado. Atualize a página e tente novamente.';
+    bolha('bot', '📱 **TESTE REDES SOCIAIS**\\n• Ativado para testar: ' + tr.redes + ' redes (Instagram, X, Nostr, Gmail)\\n• Use !teste-redes-sociais-executar para rodar os testes\\n• Use !teste-redes-sociais-estatisticas para ver o último resultado', new Date().toISOString(), '📱 teste-redes');
+    rolarFim();
+    return '📱 teste de redes sociais ativado…';
+  }
+  if (m === '!teste-redes-sociais-executar' || m.startsWith('!teste-redes-sociais-executar ')) {
+    const tr = typeof window.__tr_executarTeste === 'function' ? window.__tr_executarTeste() : null;
+    if (!tr || !tr.ok) return '⚠️ !teste-redes-sociais-executar: módulo não carregado. Atualize a página e tente novamente.';
+    const r = tr.resultados;
+    const L = ['📱 **TESTE REDES SOCIAIS — RESULTADO**'];
+    r.detalhe.forEach(d => {
+      L.push('• ' + d.rede + ': ' + (d.online ? '✅ online' : '❌ offline') + ' · postar: ' + (d.pode_postar ? '✅ disponível' : '❌ sem token') + ' · ' + d.motivo);
+    });
+    L.push('• Online: ' + r.online + '/' + r.redes_testadas + ' · Pode postar: ' + r.postagem_disponivel + '/' + r.redes_testadas);
+    bolha('bot', L.join('\\n'), new Date().toISOString(), '📱 teste-redes');
+    rolarFim();
+    return '📱 executando teste de redes sociais…';
+  }
+  if (m === '!teste-redes-sociais-estatisticas' || m.startsWith('!teste-redes-sociais-estatisticas ')) {
+    const est = typeof window.__tr_estatisticas === 'function' ? window.__tr_estatisticas() : null;
+    if (!est) return '⚠️ !teste-redes-sociais-estatisticas: módulo não carregado.';
+    if (!est.ultimo) return '📱 Nenhum teste executado ainda. Use !teste-redes-sociais-executar primeiro.';
+    const u = est.ultimo;
+    bolha('bot', '📱 **ESTATÍSTICAS TESTE REDES**\\n• Ativo: ' + (est.ativo ? 'sim' : 'não') + '\\n• Total de testes: ' + est.total_testes + '\\n• Último: ' + u.online + '/' + (u.online + u.offline) + ' online · ' + u.postagem_disponivel + ' pode postar\\n• Em: ' + (u.executadoEm || '—'), new Date().toISOString(), '📱 teste-redes-estatisticas');
+    rolarFim();
+    return '📱 estatísticas do teste de redes sociais…';
+  }
   if (m.startsWith('!statuscasa')) { (async () => { bolha('bot', '🏠 lendo o pulso da casa…', new Date().toISOString(), '🏠'); rolarFim(); const fora = []; try { const j = await (await fetch('https://api.github.com/repos/reboclbrank-max/site/actions/workflows/postagem-diaria.yml/runs?per_page=5', { signal: AbortSignal.timeout(15000) })).json(); (j.workflow_runs || []).forEach(r => fora.push('• run #' + r.run_number + ': ' + (r.conclusion === 'success' ? '✅ vivo' : (r.conclusion === 'failure' ? '☠ caiu' : '⏳ ' + r.status)) + ' (' + (r.created_at || '').slice(0, 16).replace('T', ' ') + ' UTC)')); } catch (e) { fora.push('• runs: ' + mensagemErroSeguro(e)); } try { const rg = await (await fetch('https://raw.githubusercontent.com/reboclbrank-max/site/main/posts/progresso-metas.md', { signal: AbortSignal.timeout(15000) })).text(); const ult = rg.trim().split('## ').pop(); fora.push('📊 régua: ' + ult.split('\n').slice(0, 2).join(' / ')); } catch (e) {} bolha('bot', '🏠 **ESTADO DA CASA AGORA**\n' + fora.join('\n') + '\n\nMande ⚡ !acordarcasa pra fazê-la postar AGORA.', new Date().toISOString(), '🏠 status'); rolarFim(); })(); return '🏠 consultando o pulso da casa…'; }
   if (m.startsWith('!acordarcasa')) { (async () => { try { const resp = await api('/repos/reboclbrank-max/site/actions/workflows/postagem-diaria.yml/dispatches', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ref: 'main' }) }); bolha('bot', resp && resp.ok ? '⚡ **CASA ACORDADA!** O ciclo dispara agora e o post nasce em ~3 minutos (mãos LIGADAS — token do dono no navegador).' : '⚠️ o GitHub respondeu ' + (resp ? resp.status : 'nada') + ' — o token do dono precisa estar no navegador (console.html).', new Date().toISOString(), '⚡ acordar'); } catch (e) { bolha('bot', '⚠️ sem mão agora: ' + mensagemErroSeguro(e) + ' — token do dono no navegador resolve.', new Date().toISOString(), '⚡'); } rolarFim(); })(); return '⚡ acordando a casa…'; }
   if (m.startsWith('!marketing')) { (async () => { bolha('bot', '📣 lendo o motor 24h…', new Date().toISOString(), '📣'); rolarFim(); const L = []; const baixarJSON = async (c) => { try { const r = await fetch('https://raw.githubusercontent.com/reboclbrank-max/site/main/' + c + '?t=' + Date.now(), { signal: AbortSignal.timeout(15000) }); return r.ok ? await r.json() : null; } catch (e) { return null; } }; const orq = await baixarJSON('posts/orquestrador.json'); if (orq) { L.push('🔁 pulsos: ' + orq.pulsos + ' · última publicação: ' + (orq.ultima_publicacao || 'nenhuma')); const h = (orq.historico || []).slice(-1)[0] || {}; if (h.acao) L.push('• último pulso: **' + h.acao + '** — ' + (h.motivo || '')); } else { L.push('• orquestrador: sem leitura'); } const plano = await baixarJSON('posts/plano-do-dia.json'); if (plano) { const r = plano.meta_em_risco || {}; if (r.meta) L.push('🎯 meta em risco: ' + r.meta + ' (falta ' + r.falta + ' · ' + r.por_dia + '/dia)'); const t = (plano.tema_do_dia || {}).texto; if (t) L.push('📝 tema do dia: ' + String(t).slice(0, 90)); const hor = plano.horario || {}; if (hor.motivo) L.push('🕐 horário: ' + hor.motivo); } const apr = await baixarJSON('posts/aprendizado.json'); if (apr && apr.decisao) L.push('📈 horário decidido: ' + apr.decisao + ' — ' + (apr.motivo || '')); bolha('bot', '📣 **MOTOR 24H DA CASA**' + String.fromCharCode(10) + L.join(String.fromCharCode(10)) + String.fromCharCode(10) + String.fromCharCode(10) + 'Fontes: orquestrador, plano do dia e aprendizado (repositório site).', new Date().toISOString(), '📣 marketing'); rolarFim(); })(); return '📣 lendo o motor 24h…'; }
