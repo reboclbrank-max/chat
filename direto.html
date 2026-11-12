@@ -2559,6 +2559,60 @@ async function maosDaCasa(msg) {
     })();
     return '🔎 consultando somente o estado mais recente da barreira aprovada…';
   }
+  if (m === '!status-total' || m.startsWith('!status-total ')) {
+    const arg = m.replace(/^!status-total\s*/i, '').trim();
+    const st = typeof window.__st_gerarRelatorio === 'function' ? window.__st_gerarRelatorio() : null;
+    if (!st || !st.ok) return '⚠️ !status-total: módulo não carregado. Atualize a página e tente novamente.';
+    const r = st.relatorio;
+    const L = ['📊 **STATUS TOTAL — RELATÓRIO INTEGRADO**'];
+    L.push('• Camadas monitoradas: ' + r.resumo.camadas_monitoradas + ' (' + r.resumo.camadas_ativas + ' ativas · ' + r.resumo.camadas_inativas + ' inativas)');
+    L.push('• Sistemas ativos: ' + r.resumo.sistemas_ativos + ' / 5');
+    L.push('• Recuperações: ' + r.resumo.recuperacoes_sucesso + ' OK · ' + r.resumo.recuperacoes_falha + ' falha');
+    L.push('• Alertas pendentes: ' + (r.alertas && r.alertas.pendentes ? r.alertas.pendentes : 0));
+    L.push('• Orquestrador: ' + (r.orquestrador && r.orquestrador.ativo ? 'ativo (' + (r.orquestrador.total_coordenacoes || 0) + ' coord.)' : 'inativo'));
+    L.push('• Auto-escalada: ' + (r.auto_escalada && r.auto_escalada.ativo ? 'ativa (' + (r.auto_escalada.total_escalas || 0) + ' escalas)' : 'inativa'));
+    L.push('• Jogos monitorados: ceifalume + prancheta (prioridade igual)');
+    if (r.recomendacoes && r.recomendacoes.length) L.push('• Recomendação: ' + r.recomendacoes[0]);
+    bolha('bot', L.join('\n'), new Date().toISOString(), '📊 status-total');
+    rolarFim();
+    return '📊 gerando relatório integrado de status total…';
+  }
+  if (m === '!health-check' || m.startsWith('!health-check ')) {
+    const hc = typeof window.__hc_executar === 'function' ? window.__hc_executar() : null;
+    if (!hc || !hc.ok) return '⚠️ !health-check: módulo não carregado. Atualize a página e tente novamente.';
+    const r = hc.resultado;
+    const L = ['🏥 **HEALTH CHECK — 49 CAMADAS**'];
+    L.push('• Ativas: ' + r.camadas_ativas + ' / ' + r.camadas_total);
+    L.push('• Inativas: ' + r.camadas_inativas);
+    L.push('• Recuperações tentadas: ' + r.recuperacoes_tentadas);
+    L.push('• Recuperações com sucesso: ' + r.recuperacoes_sucesso);
+    L.push('• Recuperações falharam: ' + (r.resultado ? (r.resultado.recuperacoes_falha || 0) : 0));
+    const inativas = r.detalhe.filter(d => !d.ativa).slice(0, 5);
+    if (inativas.length) L.push('• Últimas inativas: ' + inativas.map(d => d.camada).join(', '));
+    bolha('bot', L.join('\n'), new Date().toISOString(), '🏥 health-check');
+    rolarFim();
+    return '🏥 executando health check das 49 camadas…';
+  }
+  if (m === '!alertas-proativos' || m.startsWith('!alertas-proativos ')) {
+    const ap = typeof window.__ap_monitorarMetricas === 'function' ? window.__ap_monitorarMetricas() : null;
+    if (!ap || !ap.ok) return '⚠️ !alertas-proativos: módulo não carregado. Atualize a página e tente novamente.';
+    const L = ['🚨 **ALERTAS PROATIVOS**'];
+    L.push('• Novos alertas: ' + ap.novos_alertas);
+    if (ap.alertas && ap.alertas.length) ap.alertas.slice(0, 5).forEach(a => L.push('• [' + a.severidade + '] ' + a.tipo + ': ' + a.mensagem));
+    bolha('bot', L.join('\n'), new Date().toISOString(), '🚨 alertas-proativos');
+    rolarFim();
+    return '🚨 monitorando métricas e gerando alertas proativos…';
+  }
+  if (m === '!auto-otimizador' || m.startsWith('!auto-otimizador ')) {
+    const ao = typeof window.__ao_executarOtimizacao === 'function' ? window.__ao_executarOtimizacao() : null;
+    if (!ao || !ao.ok) return '⚠️ !auto-otimizador: módulo não carregado. Atualize a página e tente novamente.';
+    const L = ['🚀 **AUTO-OTIMIZADOR AVANÇADO**'];
+    L.push('• Otimizações geradas: ' + ao.total);
+    if (ao.otimizacoes && ao.otimizacoes.length) ao.otimizacoes.slice(0, 5).forEach(o => L.push('• ' + o.rede + '/' + o.jogo + ': ' + o.intervalo_minutos + 'min (melhor: ' + (o.melhor_horario || '—') + 'h, ' + o.total_acessos + ' acessos)'));
+    bolha('bot', L.join('\n'), new Date().toISOString(), '🚀 auto-otimizador');
+    rolarFim();
+    return '🚀 executando auto-otimização com dados reais de acesso…';
+  }
   if (m.startsWith('!statuscasa')) { (async () => { bolha('bot', '🏠 lendo o pulso da casa…', new Date().toISOString(), '🏠'); rolarFim(); const fora = []; try { const j = await (await fetch('https://api.github.com/repos/reboclbrank-max/site/actions/workflows/postagem-diaria.yml/runs?per_page=5', { signal: AbortSignal.timeout(15000) })).json(); (j.workflow_runs || []).forEach(r => fora.push('• run #' + r.run_number + ': ' + (r.conclusion === 'success' ? '✅ vivo' : (r.conclusion === 'failure' ? '☠ caiu' : '⏳ ' + r.status)) + ' (' + (r.created_at || '').slice(0, 16).replace('T', ' ') + ' UTC)')); } catch (e) { fora.push('• runs: ' + mensagemErroSeguro(e)); } try { const rg = await (await fetch('https://raw.githubusercontent.com/reboclbrank-max/site/main/posts/progresso-metas.md', { signal: AbortSignal.timeout(15000) })).text(); const ult = rg.trim().split('## ').pop(); fora.push('📊 régua: ' + ult.split('\n').slice(0, 2).join(' / ')); } catch (e) {} bolha('bot', '🏠 **ESTADO DA CASA AGORA**\n' + fora.join('\n') + '\n\nMande ⚡ !acordarcasa pra fazê-la postar AGORA.', new Date().toISOString(), '🏠 status'); rolarFim(); })(); return '🏠 consultando o pulso da casa…'; }
   if (m.startsWith('!acordarcasa')) { (async () => { try { const resp = await api('/repos/reboclbrank-max/site/actions/workflows/postagem-diaria.yml/dispatches', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ref: 'main' }) }); bolha('bot', resp && resp.ok ? '⚡ **CASA ACORDADA!** O ciclo dispara agora e o post nasce em ~3 minutos (mãos LIGADAS — token do dono no navegador).' : '⚠️ o GitHub respondeu ' + (resp ? resp.status : 'nada') + ' — o token do dono precisa estar no navegador (console.html).', new Date().toISOString(), '⚡ acordar'); } catch (e) { bolha('bot', '⚠️ sem mão agora: ' + mensagemErroSeguro(e) + ' — token do dono no navegador resolve.', new Date().toISOString(), '⚡'); } rolarFim(); })(); return '⚡ acordando a casa…'; }
   if (m.startsWith('!marketing')) { (async () => { bolha('bot', '📣 lendo o motor 24h…', new Date().toISOString(), '📣'); rolarFim(); const L = []; const baixarJSON = async (c) => { try { const r = await fetch('https://raw.githubusercontent.com/reboclbrank-max/site/main/' + c + '?t=' + Date.now(), { signal: AbortSignal.timeout(15000) }); return r.ok ? await r.json() : null; } catch (e) { return null; } }; const orq = await baixarJSON('posts/orquestrador.json'); if (orq) { L.push('🔁 pulsos: ' + orq.pulsos + ' · última publicação: ' + (orq.ultima_publicacao || 'nenhuma')); const h = (orq.historico || []).slice(-1)[0] || {}; if (h.acao) L.push('• último pulso: **' + h.acao + '** — ' + (h.motivo || '')); } else { L.push('• orquestrador: sem leitura'); } const plano = await baixarJSON('posts/plano-do-dia.json'); if (plano) { const r = plano.meta_em_risco || {}; if (r.meta) L.push('🎯 meta em risco: ' + r.meta + ' (falta ' + r.falta + ' · ' + r.por_dia + '/dia)'); const t = (plano.tema_do_dia || {}).texto; if (t) L.push('📝 tema do dia: ' + String(t).slice(0, 90)); const hor = plano.horario || {}; if (hor.motivo) L.push('🕐 horário: ' + hor.motivo); } const apr = await baixarJSON('posts/aprendizado.json'); if (apr && apr.decisao) L.push('📈 horário decidido: ' + apr.decisao + ' — ' + (apr.motivo || '')); bolha('bot', '📣 **MOTOR 24H DA CASA**' + String.fromCharCode(10) + L.join(String.fromCharCode(10)) + String.fromCharCode(10) + String.fromCharCode(10) + 'Fontes: orquestrador, plano do dia e aprendizado (repositório site).', new Date().toISOString(), '📣 marketing'); rolarFim(); })(); return '📣 lendo o motor 24h…'; }

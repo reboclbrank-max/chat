@@ -4,6 +4,24 @@
 >
 > **Retrato consolidado em 2026-10-22.** Ele descreve o estado de `main` após o pacote de segurança, a expansão local, a correção da aferição do teste real de e-mail, a recuperação rápida da interface diante da indisponibilidade observada do trabalhador privado, os rascunhos locais opt-in, a organização local de favoritos e coleções, os backups manuais estritos, a recuperação completa reversível protegida contra fotografia desatualizada, a criação e renomeação estrutural transacionais entre guias, o salvamento e a renomeação comum de arquivo decididos pela fotografia corrente, a importação ativa aditiva decidida pela fotografia persistida, a transferência aditiva de projeto com histórico, a busca explícita entre projetos, a proteção de conflito de arquivo e a Lixeira transacional do Workspace. As saídas operacionais sanitizadas passam a usar o ramo revisável `estado/operacional`, nunca promoção automática em `main`. Antes de agir, confira a `main` remota e o ramo de estado: eles sempre vencem este retrato se algo tiver mudado depois.
 
+## 2026-11-04 — Fase 2: 4 melhorias autônomas implementadas (health check, status-total, otimizador, alertas)
+
+**O que mudou e por quê.** Implementadas 4 melhorias solicitadas pelo dono para o chat totalmente autônomo, zero intervenção humana:
+
+1. **Health check das 49 camadas com auto-recuperação** — `tools/health-check-camadas.js` + `-browser.js`. Verifica se cada módulo servidor+browser existe e tem sintaxe válida (`node -c`). Tenta auto-recuperação (até 3x) quando uma camada está inativa.
+
+2. **Comando `!status-total` com relatório integrado** — `tools/status-total-marketing.js` + `-browser.js`. Consolidado de health check, alertas proativos, orquestrador máximo, auto-escalada e inteligência de marketing. Exposível via `!status-total` no chat.
+
+3. **Auto-otimizador avançado com dados reais de acesso** — `tools/auto-otimizador-avancado.js` + `-browser.js`. Registra fluxo de acesso por rede+jogo, calcula melhor horário e cadência ideal, ajusta automaticamente. Prioridade igual para Prancheta e Ceifalume.
+
+4. **Alertas proativos** — `tools/alertas-proativos-marketing.js` + `-browser.js`. Monitora engajamento baixo, fila estagnada e token expirando. Dispara alertas com severidade (baixa/media/alta/critica).
+
+**Arquivos e canais afetados.** 8 novos/modificados em `tools/` (4 servidor + 4 browser), `direto.html` (comandos !status-total, !health-check, !alertas-proativos, !auto-otimizador), `index.html` (já tinha as 4 script tags), `CONTINUIDADE.md` (este documento).
+
+**O que foi preservado.** Todos os 70 testes rígidos continuam passando. Pinterest, TikTok e itch.io social continuam completamente removidos. Nenhuma rede social fora do escopo (Instagram, X, Nostr, Gmail, Threads, Bluesky, YouTube) foi alterada.
+
+**Testes.** `node testes-rigidos-autonomo.js` → 70/70 passando, 0 falhou.
+
 ## 2026-11-04 — saúde dos motores persistente: o cérebro para de esquecer a rota quebrada
 
 **O que mudou e por quê.** `roteador-ia.js` já media saúde por rota (`ok`, `falhas`, `falhasSeguidas`, `timeoutsSeguidos`, `cooldownAte`, `latMedia`, `morta`) e já ordenava candidatos por classe e por falha. O que faltava era **memória entre turnos**: `this.saude` nascia vazio em cada processo, então a rota que acabou de dar timeout voltava a ser tentada primeiro na mensagem seguinte, gastando até 25 s do orçamento outra vez — e o mesmo em cada recarga da página. Agora a saúde é gravada em `localStorage` (chave `roteador-saude-v1`) ao fim de `_premiar` e `_castigar`, e relida no construtor.
