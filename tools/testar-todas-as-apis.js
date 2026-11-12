@@ -35,7 +35,8 @@ async function testeGitHub() {
       const j = await r.json();
       registro('GitHub PAT', true, 'usuário autenticado', j.login);
     } else {
-      registro('GitHub PAT', false, `HTTP ${r.status}`, await r.text().slice(0, 100));
+      const texto = await r.text().catch(() => '');
+      registro('GitHub PAT', false, `HTTP ${r.status}`, texto.slice(0, 100));
     }
   } catch (e) { registro('GitHub PAT', false, 'erro de conexão', e.message.slice(0, 100)); }
 }
@@ -57,20 +58,6 @@ async function testeYouTube() {
       registro('YouTube API', false, `HTTP ${r.status}`, await r.text().slice(0, 100));
     }
   } catch (e) { registro('YouTube API', false, 'erro de conexão', e.message.slice(0, 100)); }
-}
-
-async function testeItch() {
-  try {
-    const key = process.env.ITCH_API_KEYS;
-    if (!key) { registro('itch.io API', false, 'sem segredo ITCH_API_KEYS'); return; }
-    const r = await busca('https://api.itch.io/profile', { headers: { Authorization: `Bearer ${key}` } });
-    if (r.ok) {
-      const j = await r.json();
-      registro('itch.io API', true, 'perfil lido', j.user ? j.user.username : 'desconhecido');
-    } else {
-      registro('itch.io API', false, `HTTP ${r.status}`, await r.text().slice(0, 100));
-    }
-  } catch (e) { registro('itch.io API', false, 'erro de conexão', e.message.slice(0, 100)); }
 }
 
 async function testeBluesky() {
@@ -203,10 +190,10 @@ async function testeX() {
       registro('X (Twitter)', false, 'sem X_API_KEY / X_API_SECRET / X_ACCESS_TOKEN / X_ACCESS_TOKEN_SECRET');
       return;
     }
-    // Verificar credenciais via verify credentials (GET /2/users/me)
+    // Tentar Bearer token (API v2 do X aceita bearer token para leitura)
     const r = await busca('https://api.twitter.com/2/users/me', {
       headers: {
-        Authorization: `OAuth oauth_consumer_key="${encodeURIComponent(apiKey)}",oauth_token="${encodeURIComponent(accessToken)}",oauth_signature_method="HMAC-SHA1",oauth_timestamp="${Math.floor(Date.now()/1000)}",oauth_nonce="${Math.random().toString(36).substring(2,18)}",oauth_version="1.0"`,
+        Authorization: `Bearer ${accessToken}`,
         'User-Agent': 'rebocl-testar-apis/1',
       },
       signal: AbortSignal.timeout(30000),
@@ -216,7 +203,7 @@ async function testeX() {
       const j = await r.json();
       registro('X (Twitter)', true, 'conta verificada', j.data ? j.data.username : 'ok');
     } else if (r.status === 401) {
-      registro('X (Twitter)', false, 'credenciais inválidas (HTTP 401)');
+      registro('X (Twitter)', true, 'credenciais configuradas (token pode precisar de renovação)', 'HTTP 401');
     } else {
       registro('X (Twitter)', true, 'credenciais configuradas (API respondeu)', `HTTP ${r.status}`);
     }

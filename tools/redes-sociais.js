@@ -9,81 +9,46 @@
 
 const cofre = require('./cofre-seguro');
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 const NL = '\n';
 
-const PUBLICACOES = []; // { servico, quando, sucesso, detalhe, idPublicacao }
+// 🔄 Auto-correção e aprendizado integrados ao fluxo de postagem
+const aprendizado = require('./auto-correcao-aprendizado');
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// HELPER: registro de publicação
-function registrar(servico, sucesso, detalhe, idPub) {
-  PUBLICACOES.push({
-    servico,
-    quando: new Date().toISOString(),
-    sucesso,
-    detalhe,
-    idPublicacao: idPub || null,
-  });
-  return { sucesso, servico, detalhe, idPublicacao: idPub || null };
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 🐙 GITHUB — criar issue/discussion (leitura + escrita via PAT)
-async function postarGitHub(texto, titulo) {
-  const token = cofre.ler('github', 'postarGitHub');
-  if (!token) return registrar('github', false, 'sem GITHUB_TOKEN configurado');
-  try {
-    const corpo = { title: titulo || 'Post da casa', body: texto };
-    const r = await fetch('https://api.github.com/repos/reboclbrank-max/site/issues', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'User-Agent': 'rebocl-casa/1',
-        'Accept': 'application/vnd.github+json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(corpo),
-      signal: AbortSignal.timeout(30000),
-    });
-    if (r.ok) {
-      const j = await r.json();
-      return registrar('github', true, 'issue criado', j.number);
-    }
-    const erro = await r.text().catch(() => '');
-    return registrar('github', false, `HTTP ${r.status}: ${erro.slice(0, 100)}`);
-  } catch (e) {
-    return registrar('github', false, `erro: ${e.message.slice(0, 100)}`);
+function verificarTextoAntesDePostar(texto, rede) {
+  const verificacao = aprendizado.verificarPalavrasBloqueadas(texto);
+  if (!verificacao.limpo) {
+    return { bloqueado: true, motivo: verificacao.sugestao };
   }
+  return { bloqueado: false };
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 📺 YOUTUBE — métricas (somente leitura com API key; upload exige OAuth do dono)
-async function medirYoutube() {
-  const key = cofre.ler('youtube', 'medirYoutube');
-  if (!key) return registrar('youtube', false, 'sem YT_API_KEY configurado');
+function registrarResultadoPostagem(servico, sucesso, texto, formato, jogo = null, engajamento = 0) {
+  // Registrar aprendizado com base no resultado
+  const desempenho = sucesso && engajamento > 0 ? 'alto' : (sucesso ? 'medio' : 'baixo');
+  aprendizado.registrarConteudoResultado(texto, formato, servico, desempenho, jogo ? [jogo] : []);
+
+  // Registrar métrica de marketing
+  const tipoMetrica = sucesso ? 'sucessos' : 'falhas';
   try {
-    const r = await fetch(
-      `https://www.googleapis.com/youtube/v3/channels?part=statistics,contentDetails&id=UCQdxKtfRnqNLd1ZOs9B6eaQ&key=${key}`,
-      { signal: AbortSignal.timeout(30000) }
-    );
-    if (!r.ok) return registrar('youtube', false, `HTTP ${r.status}`);
-    const j = await r.json();
-    if (!j.items || !j.items[0]) return registrar('youtube', false, 'canal não encontrado');
-    const s = j.items[0].statistics;
-    return registrar('youtube', true, `inscritos=${s.subscriberCount}, vídeos=${s.videoCount}, visualizações=${s.viewCount}`);
-  } catch (e) {
-    return registrar('youtube', false, `erro: ${e.message.slice(0, 100)}`);
-  }
+    aprendizado.registrarHorarioDesempenho(servico, new Date().getHours().toString() + 'h', engajamento, sucesso);
+  } catch (e) {}
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 📺 YOUTUBE — dispara upload de vídeo no repo site (segredos OAuth já configurados lá)
-// O chat não precisa ter YT_CLIENT_ID/SECRET/REFRESH_TOKEN: dispara o workflow
-// enviar-youtube.yml do repositorio site, que ja possui esses segredos.
-async function dispararUploadYoutube(jogo = 'ceifalume') {
-  const pat = cofre.ler('github', 'dispararUploadYoutube');
+const PUBLICACOES = []; // { servico, quando, sucesso, detalhe, idPublicacao, formato }
+const HISTORICO_FORMATOS = {}; // { servico: ['foto', 'video', 'post', ...] }
+const DESEMPENHO_FORMATO = {}; // { servico: { formato: { total, sucesso, zeros } } }
+
+// ━━━━.*?
+// 📺 YOUTUBE — comentar em vídeo (OAuth do dono via workflow do site)
+// Como os segredos OAuth estão no repo site, usa o disparo de workflow para
+// executar ações que exigem autenticação do YouTube.
+async function comentarYoutube(videoId, texto) {
+  const pat = cofre.ler('github', 'comentarYoutube');
   if (!pat) return registrar('youtube', false, 'sem GITHUB_TOKEN para disparar workflow');
   try {
-    const r = await fetch('https://api.github.com/repos/reboclbrank-max/site/actions/workflows/enviar-youtube.yml/dispatches', {
+    const r = await fetch('https://api.github.com/repos/reboclbrank-max/site/actions/workflows/comentar-youtube.yml/dispatches', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${pat}`,
@@ -94,251 +59,51 @@ async function dispararUploadYoutube(jogo = 'ceifalume') {
       body: JSON.stringify({
         ref: 'main',
         inputs: {
-          jogo: jogo,
-          confirmacao: 'PUBLICAR',
+          video_id: videoId,
+          comentario: texto.slice(0, 500),
         },
       }),
       signal: AbortSignal.timeout(30000),
     });
     if (r.status === 204) {
-      return registrar('youtube', true, 'workflow de envio disparado no repo site', jogo);
+      return registrar('youtube', true, 'workflow de comentário disparado no repo site', videoId);
     }
     const erro = await r.text().catch(() => '');
-    return registrar('youtube', false, `workflow dispatch falhou: HTTP ${r.status}: ${erro.slice(0, 100)}`);
+    return registrar('youtube', false, `workflow comentário falhou: HTTP ${r.status}: ${erro.slice(0, 100)}`);
   } catch (e) {
     return registrar('youtube', false, `erro: ${e.message.slice(0, 100)}`);
   }
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 🎮 ITCH.IO — atualizar jogo (título, descrição, tags)
-async function postarItch(gameId, campos) {
-  const key = cofre.ler('itch', 'postarItch');
-  if (!key) return registrar('itch', false, 'sem ITCH_API_KEYS configurado');
+// 📺 YOUTUBE — curtir vídeo (via workflow do site)
+async function curtirYoutube(videoId) {
+  const pat = cofre.ler('github', 'curtirYoutube');
+  if (!pat) return registrar('youtube', false, 'sem GITHUB_TOKEN para disparar workflow');
   try {
-    const body = new URLSearchParams();
-    for (const [k, v] of Object.entries(campos || {})) body.append(`game[${k}]`, v);
-    body.append('slug', campos.slug || '');
-    body.append('published', campos.published || 'draft');
-    body.append('payment_mode', campos.payment_mode || 'free');
-    body.append('type', campos.type || 'default');
-    body.append('user_classification', campos.user_classification || 'game');
-    body.append('release_status', campos.release_status || 'released');
-    body.append('community_type', campos.community_type || 'steam');
-    body.append('min_price', campos.min_price || '0');
-
-    const r = await fetch(`https://api.itch.io/games/${gameId}`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${key}` },
-      body,
-      signal: AbortSignal.timeout(30000),
-    });
-    if (r.ok) return registrar('itch', true, `jogo ${gameId} atualizado`);
-    const erro = await r.text().catch(() => '');
-    return registrar('itch', false, `HTTP ${r.status}: ${erro.slice(0, 100)}`);
-  } catch (e) {
-    return registrar('itch', false, `erro: ${e.message.slice(0, 100)}`);
-  }
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 🦋 BLUESKY — postar texto + imagem (até 1 MB)
-async function postarBluesky(texto, imagemB64, nomeImagem) {
-  const handle = cofre.ler('bluesky_handle', 'postarBluesky');
-  const senha = cofre.ler('bluesky_pass', 'postarBluesky') || cofre.ler('bluesky_pass_alt', 'postarBluesky');
-  if (!handle || !senha) return registrar('bluesky', false, 'sem BLUESKY_HANDLE ou BLUESKY_APPPASS configurado');
-  try {
-    // Login
-    const login = await fetch('https://bsky.social/xrpc/com.atproto.server.createSession', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ identifier: handle, password: senha }),
-      signal: AbortSignal.timeout(30000),
-    });
-    if (!login.ok) return registrar('bluesky', false, `login falhou: HTTP ${login.status}`);
-    const j = await login.json();
-    const accessJwt = j.accessJwt;
-
-    let blobRef = null;
-    if (imagemB64) {
-      const upload = await fetch('https://bsky.social/xrpc/com.atproto.repo.uploadBlob', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${accessJwt}`,
-          'Content-Type': 'image/jpeg',
-        },
-        body: Buffer.from(imagemB64, 'base64'),
-        signal: AbortSignal.timeout(60000),
-      });
-      if (!upload.ok) return registrar('bluesky', false, `upload imagem falhou: HTTP ${upload.status}`);
-      const uj = await upload.json();
-      blobRef = uj.blob;
-    }
-
-    const registro = {
-      $type: 'app.bsky.feed.post',
-      text: texto.slice(0, 300),
-      createdAt: new Date().toISOString(),
-    };
-    if (blobRef) {
-      registro.embed = {
-        $type: 'app.bsky.embed.images',
-        images: [{ image: blobRef, alt: nomeImagem || 'imagem' }],
-      };
-    }
-
-    const post = await fetch('https://bsky.social/xrpc/com.atproto.repo.createRecord', {
+    const r = await fetch('https://api.github.com/repos/reboclbrank-max/site/actions/workflows/curtir-youtube.yml/dispatches', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${accessJwt}`,
+        Authorization: `Bearer ${pat}`,
+        'Accept': 'application/vnd.github+json',
         'Content-Type': 'application/json',
+        'User-Agent': 'rebocl-casa/1',
       },
       body: JSON.stringify({
-        repo: j.did,
-        collection: 'app.bsky.feed.post',
-        record: registro,
+        ref: 'main',
+        inputs: {
+          video_id: videoId,
+        },
       }),
       signal: AbortSignal.timeout(30000),
     });
-    if (!post.ok) {
-      const erro = await post.text().catch(() => '');
-      return registrar('bluesky', false, `post falhou: HTTP ${post.status}: ${erro.slice(0, 100)}`);
+    if (r.status === 204) {
+      return registrar('youtube', true, 'workflow de curtir disparado no repo site', videoId);
     }
-    const pj = await post.json();
-    return registrar('bluesky', true, 'post publicado', pj.uri);
+    const erro = await r.text().catch(() => '');
+    return registrar('youtube', false, `workflow curtir falhou: HTTP ${r.status}: ${erro.slice(0, 100)}`);
   } catch (e) {
-    return registrar('bluesky', false, `erro: ${e.message.slice(0, 100)}`);
-  }
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 🐘 MASTODON — postar texto + mídia
-async function postarMastodon(texto, imagemB64, nomeArquivo, tipoMime) {
-  const token = cofre.ler('mastodon', 'postarMastodon');
-  if (!token) return registrar('mastodon', false, 'sem MASTODON_TOKEN configurado');
-  try {
-    let mediaId = null;
-    if (imagemB64) {
-      const form = new FormData();
-      form.append('file', Buffer.from(imagemB64, 'base64'), nomeArquivo || 'imagem');
-      const up = await fetch('https://mastodon.social/api/v2/media', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: form,
-        signal: AbortSignal.timeout(60000),
-      });
-      if (!up.ok) return registrar('mastodon', false, `upload mídia falhou: HTTP ${up.status}`);
-      const uj = await up.json();
-      mediaId = uj.id;
-    }
-
-    const body = { status: texto.slice(0, 500), language: 'pt' };
-    if (mediaId) body.media_ids = [mediaId];
-
-    const r = await fetch('https://mastodon.social/api/v1/statuses', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      signal: AbortSignal.timeout(30000),
-    });
-    if (!r.ok) {
-      const erro = await r.text().catch(() => '');
-      return registrar('mastodon', false, `post falhou: HTTP ${r.status}: ${erro.slice(0, 100)}`);
-    }
-    const j = await r.json();
-    return registrar('mastodon', true, 'post publicado', j.id);
-  } catch (e) {
-    return registrar('mastodon', false, `erro: ${e.message.slice(0, 100)}`);
-  }
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 📸 INSTAGRAM — publicar (exige token de longa duração renovado a cada 60 dias)
-async function postarInstagram(texto, urlImagem) {
-  const token = cofre.ler('instagram', 'postarInstagram');
-  if (!token) return registrar('instagram', false, 'sem IG_TOKEN configurado');
-  try {
-    // Criar container de mídia
-    const container = await fetch(
-      `https://graph.instagram.com/v21.0/me/media?image_url=${encodeURIComponent(urlImagem)}&caption=${encodeURIComponent(texto.slice(0, 2200))}&access_token=${token}`,
-      { method: 'POST', signal: AbortSignal.timeout(30000) }
-    );
-    if (!container.ok) {
-      const erro = await container.text().catch(() => '');
-      return registrar('instagram', false, `container falhou: HTTP ${container.status}: ${erro.slice(0, 100)}`);
-    }
-    const cj = await container.json();
-    const creationId = cj.id;
-
-    // Publicar
-    const publicar = await fetch(
-      `https://graph.instagram.com/v21.0/me/media_publish?creation_id=${creationId}&access_token=${token}`,
-      { method: 'POST', signal: AbortSignal.timeout(30000) }
-    );
-    if (!publicar.ok) {
-      const erro = await publicar.text().catch(() => '');
-      return registrar('instagram', false, `publicar falhou: HTTP ${publicar.status}: ${erro.slice(0, 100)}`);
-    }
-    const pj = await publicar.json();
-    return registrar('instagram', true, 'post publicado', pj.id);
-  } catch (e) {
-    return registrar('instagram', false, `erro: ${e.message.slice(0, 100)}`);
-  }
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 🧵 THREADS — postar texto + imagem
-async function postarThreads(texto, urlImagem) {
-  const token = cofre.ler('threads', 'postarThreads') || cofre.ler('threads_alt', 'postarThreads');
-  if (!token) return registrar('threads', false, 'sem THREADS_TOKEN configurado');
-  try {
-    // Primeiro precisa do user_id
-    const me = await fetch(`https://graph.threads.net/v1.0/me?fields=id&access_token=${token}`, {
-      signal: AbortSignal.timeout(30000),
-    });
-    if (!me.ok) return registrar('threads', false, `me falhou: HTTP ${me.status}`);
-    const mj = await me.json();
-    const userId = mj.id;
-
-    // Criar container
-    const corpo = new URLSearchParams();
-    corpo.append('media_type', urlImagem ? 'IMAGE' : 'TEXT');
-    corpo.append('text', texto.slice(0, 500));
-    if (urlImagem) corpo.append('image_url', urlImagem);
-
-    const container = await fetch(`https://graph.threads.net/v1.0/${userId}/threads`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: corpo,
-      signal: AbortSignal.timeout(30000),
-    });
-    if (!container.ok) {
-      const erro = await container.text().catch(() => '');
-      return registrar('threads', false, `container falhou: HTTP ${container.status}: ${erro.slice(0, 100)}`);
-    }
-    const cj = await container.json();
-    const creationId = cj.id;
-
-    // Aguardar finish e publicar
-    await new Promise((r) => setTimeout(r, 5000));
-    const status = await fetch(`https://graph.threads.net/v1.0/${creationId}?fields=status&access_token=${token}`, {
-      signal: AbortSignal.timeout(30000),
-    });
-    const sj = await status.json();
-    if (sj.status !== 'FINISHED') return registrar('threads', false, `container não finalizou: status=${sj.status}`);
-
-    const publicar = await fetch(`https://graph.threads.net/v1.0/${userId}/threads_publish?creation_id=${creationId}&access_token=${token}`, {
-      method: 'POST',
-      signal: AbortSignal.timeout(30000),
-    });
-    if (!publicar.ok) {
-      const erro = await publicar.text().catch(() => '');
-      return registrar('threads', false, `publicar falhou: HTTP ${publicar.status}: ${erro.slice(0, 100)}`);
-    }
-    const pj = await publicar.json();
-    return registrar('threads', true, 'post publicado', pj.id);
-  } catch (e) {
-    return registrar('threads', false, `erro: ${e.message.slice(0, 100)}`);
+    return registrar('youtube', false, `erro: ${e.message.slice(0, 100)}`);
   }
 }
 
@@ -1312,11 +1077,80 @@ function relatorio() {
   };
 }
 
+// 🕒 SISTEMA DE HORÁRIOS BASEADO EM FLUXO DE ACESSO
+// Determina o melhor horário para postar em cada rede baseado em métricas de engajamento.
+const FLUXO_ACESSO = {}; // { servico: { hora: { acessos, engajamento, posts } } }
+
+function registrarFluxoAcesso(servico, hora, acessos, engajamento) {
+  if (!FLUXO_ACESSO[servico]) FLUXO_ACESSO[servico] = {};
+  if (!FLUXO_ACESSO[servico][hora]) {
+    FLUXO_ACESSO[servico][hora] = { acessos: 0, engajamento: 0, posts: 0 };
+  }
+  FLUXO_ACESSO[servico][hora].acessos += acessos;
+  FLUXO_ACESSO[servico][hora].engajamento += engajamento;
+  FLUXO_ACESSO[servico][hora].posts += 1;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🕒 MELHOR HORÁRIO PARA POSTAR (por rede)
+// Calcula baseado no fluxo de acesso histórico (acessos + engajamento por hora).
+function melhorHorarioParaPostar(servico) {
+  if (!FLUXO_ACESSO[servico] || Object.keys(FLUXO_ACESSO[servico]).length === 0) {
+    // Sem dados históricos: retorna horário padrão baseado na janela 9h-22h BRT
+    return { hora: 14, motivo: 'sem dados históricos — usando horário padrão (14h BRT)' };
+  }
+
+  const horas = Object.entries(FLUXO_ACESSO[servico]);
+  let melhorHora = horas[0][0];
+  let melhorPontuacao = -1;
+
+  for (const [hora, dados] of horas) {
+    // Pontuação = acessos * 0.6 + engajamento * 0.4 (ponderado)
+    const pontuacao = dados.acessos * 0.6 + dados.engajamento * 0.4;
+    if (pontuacao > melhorPontuacao) {
+      melhorPontuacao = pontuacao;
+      melhorHora = hora;
+    }
+  }
+
+  return {
+    hora: parseInt(melhorHora),
+    pontuacao: melhorPontuacao,
+    dados: FLUXO_ACESSO[servico][melhorHora],
+    motivo: `melhor horário baseado em fluxo de acesso (${dados.posts} posts históricos)`,
+  };
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🎮 SISTEMA DE PRIORIDADE — PRANCHETA E CEIFALUME (ambos igualmente)
+// Alterna automaticamente entre os dois jogos para dar mesma exposição.
+const JOGOS_PRIORIDADE = ['prancheta', 'ceifalume'];
+let INDICE_JOGO_ATUAL = 0;
+
+function proximoJogo() {
+  const jogo = JOGOS_PRIORIDADE[INDICE_JOGO_ATUAL];
+  INDICE_JOGO_ATUAL = (INDICE_JOGO_ATUAL + 1) % JOGOS_PRIORIDADE.length;
+  return jogo;
+}
+
+function getJogoAtual() {
+  return JOGOS_PRIORIDADE[INDICE_JOGO_ATUAL];
+}
+
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 🎯 POSTAR EM TODAS AS REDES DISPONÍVEI
 // Posta o mesmo conteúdo em todas as redes que tiverem credencial configurada.
 // Retorna resultados de cada rede.
 async function postarTodas(texto, opcoes = {}) {
+  // 🔒 Verificar palavras bloqueadas antes de publicar
+  try {
+    const verif = aprendizado.verificarPalavrasBloqueadas(texto || '');
+    if (!verif.limpo) {
+      registrar('sistema', false, 'Postagem bloqueada: ' + verif.sugestao);
+      return [];
+    }
+  } catch (e) { /* não falha por causa do aprendizado */ }
+
   const {
     titulo = 'Post da casa',
     imagemB64 = null,
@@ -1331,16 +1165,34 @@ async function postarTodas(texto, opcoes = {}) {
 
   const resultados = [];
 
+  // 📚 Se não há texto, usar conteúdo evergreen
+  if (!texto || texto.trim().length === 0) {
+    const evergreen = obterConteudoEvergreen('apresentacao');
+    if (evergreen) {
+      texto = evergreen.texto;
+      if (!titulo || titulo === 'Post da casa') {
+        titulo = evergreen.texto.slice(0, 60);
+      }
+      registrar('sistema', true, 'Usando conteúdo evergreen para postagem');
+    } else {
+      registrar('sistema', false, 'Sem texto e sem conteúdo evergreen disponível');
+      return resultados;
+    }
+  }
+
+  // 😊 Analisar sentimento do texto e ajustar tom automaticamente
+  const sentimento = analisarSentimento(texto);
+  const ajusteTom = ajustarTomPorSentimento(sentimento.sentimento);
+  if (sentimento.sentimento === 'negativo') {
+    registrar('sistema', true, `Sentimento detectado: ${sentimento.sentimento} (${sentimento.pontuacao}). Tom ajustado para: ${ajusteTom.tom}`);
+  }
+
   // GitHub (issue)
   resultados.push(await postarGitHub(texto, titulo));
 
   // YouTube (apenas medição, não postagem)
   resultados.push(await medirYoutube());
 
-  // itch.io
-  if (gameIdItch) {
-    resultados.push(await postarItch(gameIdItch, camposItch || {}));
-  }
 
   // Bluesky
   resultados.push(await postarBluesky(texto, imagemB64, nomeImagem));
@@ -1348,14 +1200,26 @@ async function postarTodas(texto, opcoes = {}) {
   // Mastodon
   resultados.push(await postarMastodon(texto, imagemB64, nomeImagem, 'image/jpeg'));
 
-  // Instagram (precisa de URL externa da imagem)
+  // Instagram (precisa de URL externa da imagem) + UTM + validação de link
   if (urlImagem) {
-    resultados.push(await postarInstagram(texto, urlImagem));
+    const linkValido = await validarLinksDoTexto(texto);
+    if (!linkValido.valido) {
+      const invalidos = linkValido.links.filter(l => !l.valido).map(l => l.link);
+      registrar('sistema', false, `Links quebrados detectados, não publicar Instagram: ${invalidos.join(', ')}`);
+    } else {
+      resultados.push(await postarInstagram(texto, urlImagem));
+    }
   }
 
-  // Threads (precisa de URL externa da imagem)
+  // Threads (precisa de URL externa da imagem) + UTM + validação de link
   if (urlImagem) {
-    resultados.push(await postarThreads(texto, urlImagem));
+    const linkValidoThreads = await validarLinksDoTexto(texto);
+    if (!linkValidoThreads.valido) {
+      const invalidos = linkValidoThreads.links.filter(l => !l.valido).map(l => l.link);
+      registrar('sistema', false, `Links quebrados detectados, não publicar Threads: ${invalidos.join(', ')}`);
+    } else {
+      resultados.push(await postarThreads(texto, urlImagem));
+    }
   }
 
   // Discord
@@ -1388,12 +1252,359 @@ async function postarTodas(texto, opcoes = {}) {
   return resultados;
 }
 
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🧪 A/B TESTING DE TEXTO E IMAGEM
+// Testa duas variantes do mesmo conteúdo e mede qual performa melhor.
+const AB_TESTS_DIR = path.join(__dirname, '..', 'posts', 'ab-test');
+if (!fs.existsSync(AB_TESTS_DIR)) {
+  fs.mkdirSync(AB_TESTS_DIR, { recursive: true });
+}
+
+let cacheAbTests = null;
+function carregarAbTests() {
+  if (cacheAbTests) return cacheAbTests;
+  try {
+    const arquivo = path.join(AB_TESTS_DIR, 'testes.json');
+    if (fs.existsSync(arquivo)) {
+      cacheAbTests = JSON.parse(fs.readFileSync(arquivo, 'utf8'));
+      return cacheAbTests;
+    }
+  } catch (e) {}
+  cacheAbTests = { testes: [], resultados: [] };
+  return cacheAbTests;
+}
+function salvarAbTests(dados) {
+  try {
+    fs.writeFileSync(path.join(AB_TESTS_DIR, 'testes.json'), JSON.stringify(dados, null, 2), 'utf8');
+    cacheAbTests = dados;
+  } catch (e) {}
+}
+
+function criarAbTest(nome, varianteA, varianteB, redes = [], metrica = 'cliques') {
+  const testes = carregarAbTests();
+  const teste = {
+    id: 'ab_' + Date.now(),
+    nome,
+    varianteA,
+    varianteB,
+    redes,
+    metrica, // 'cliques', 'engajamento', 'downloads'
+    criadoEm: new Date().toISOString(),
+    status: 'ativo',
+    resultados: { A: 0, B: 0 },
+  };
+  testes.testes.push(teste);
+  salvarAbTests(testes);
+  return teste.id;
+}
+
+function registrarResultadoAbTest(testeId, variante, valor = 1) {
+  const testes = carregarAbTests();
+  const teste = testes.testes.find(t => t.id === testeId);
+  if (!teste || teste.status !== 'ativo') return false;
+  teste.resultados[variante] = (teste.resultados[variante] || 0) + valor;
+  salvarAbTests(testes);
+  return true;
+}
+
+function finalizarAbTest(testeId) {
+  const testes = carregarAbTests();
+  const teste = testes.testes.find(t => t.id === testeId);
+  if (!teste) return null;
+  teste.status = 'finalizado';
+  teste.finalizadoEm = new Date().toISOString();
+  teste.vencedor = teste.resultados.A >= teste.resultados.B ? 'A' : 'B';
+  salvarAbTests(testes);
+  return teste;
+}
+
+function obterVarianteParaPostar(testeId) {
+  const testes = carregarAbTests();
+  const teste = testes.testes.find(t => t.id === testeId && t.status === 'ativo');
+  if (!teste) return null;
+  // Alternar entre A e B
+  const total = (teste.resultados.A || 0) + (teste.resultados.B || 0);
+  return total % 2 === 0 ? 'A' : 'B';
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 📊 FUNIL DE CONVERSÃO — UTM PARAMETERS
+// Adiciona parâmetros UTM a links para rastrear de onde vem cada clique/download.
+const LINKS_BASE = {
+  site_ceifalume: 'https://reboclbrank-max.github.io/site/jogos/ceifalume/',
+  site_prancheta: 'https://reboclbrank-max.github.io/site/jogos/prancheta/',
+  youtube: 'https://www.youtube.com/channel/UCQdxKtfRnqNLd1ZOs9B6eaQ',
+};
+
+function linkComUTM(linkBase, fonte, meio, campanha, conteudo = '') {
+  const url = new URL(linkBase);
+  url.searchParams.set('utm_source', fonte);
+  url.searchParams.set('utm_medium', meio);
+  url.searchParams.set('utm_campaign', campanha);
+  if (conteudo) url.searchParams.set('utm_content', conteudo);
+  return url.toString();
+}
+
+function linkItchComUTM(jogo, fonte, meio, campanha) {
+  const chave = jogo === 'ceifalume' ? 'itch_ceifalume' : 'itch_prancheta';
+  return linkComUTM(LINKS_BASE[chave], fonte, meio, campanha);
+}
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🚨 ALERTA DE QUEDA DE DESEMPENHO
+// Detecta métricas em queda e avisa com hipótese do porquê.
+const ALERTAS_DIR = path.join(__dirname, '..', 'posts', 'marketing');
+if (!fs.existsSync(ALERTAS_DIR)) {
+  fs.mkdirSync(ALERTAS_DIR, { recursive: true });
+}
+
+let historicoMetricas = [];
+function carregarHistoricoMetricas() {
+  try {
+    const arquivo = path.join(ALERTAS_DIR, 'metricas-historico.json');
+    if (fs.existsSync(arquivo)) {
+      historicoMetricas = JSON.parse(fs.readFileSync(arquivo, 'utf8'));
+    }
+  } catch (e) {}
+  return historicoMetricas;
+}
+function salvarHistoricoMetricas() {
+  try {
+    fs.writeFileSync(path.join(ALERTAS_DIR, 'metricas-historico.json'), JSON.stringify(historicoMetricas, null, 2), 'utf8');
+  } catch (e) {}
+}
+
+function registrarMetricaDiaria(servico, metrica, valor) {
+  carregarHistoricoMetricas();
+  const hoje = new Date().toISOString().slice(0, 10);
+  historicoMetricas.push({ servico, metrica, valor, data: hoje });
+  // Manter últimos 30 dias
+  const corte = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  historicoMetricas = historicoMetricas.filter(m => m.data >= corte);
+  salvarHistoricoMetricas();
+}
+
+function detectarQueda(servico, metrica, dias = 3) {
+  carregarHistoricoMetricas();
+  const hoje = new Date();
+  const valoresRecentes = [];
+  for (let i = 0; i < dias; i++) {
+    const d = new Date(hoje);
+    d.setDate(d.getDate() - i);
+    const dataStr = d.toISOString().slice(0, 10);
+    const entrada = historicoMetricas.find(m => m.servico === servico && m.metrica === metrica && m.data === dataStr);
+    if (entrada) valoresRecentes.push(entrada.valor);
+  }
+  if (valoresRecentes.length < 2) return null;
+  const primeiro = valoresRecentes[valoresRecentes.length - 1]; // mais antigo
+  const ultimo = valoresRecentes[0]; // mais recente
+  if (ultimo < primeiro * 0.9) {
+    const quedaPct = Math.round(((primeiro - ultimo) / primeiro) * 100);
+    return {
+      servico,
+      metrica,
+      quedaPct,
+      valorAnterior: primeiro,
+      valorAtual: ultimo,
+      hipoteses: gerarHipotesesQueda(servico, metrica, quedaPct),
+    };
+  }
+  return null;
+}
+
+function gerarHipotesesQueda(servico, metrica, quedaPct) {
+  const hipoteses = [];
+  hipoteses.push('Conteúdo pode estar repetido — verificar diversificação de formato');
+  hipoteses.push('Horário de postagem pode não estar alinhado com pico de acesso');
+  if (servico === 'instagram' && metrica === 'seguidores') {
+    hipoteses.push('Falta de posts consistentes — verificar agenda de publicação');
+    hipoteses.push('Conteúdo visual pode não estar engajando — testar novas imagens');
+  }
+  if (quedaPct > 30) {
+    hipoteses.push('Queda acentuada — revisar urgente a estratégia da rede');
+  }
+  return hipoteses;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🔄 RECUPERAÇÃO AUTOMÁTICA DE FALHA
+// Tenta novamente com backoff exponencial quando uma API falha.
+const TENTATIVAS_MAX = 3;
+const TEMPOS_RETRY = [60000, 240000, 86400000]; // 1min, 4min, 24h
+
+let estadoRedes = {}; // { servico: { falhasConsecutivas, ultimoErro, proximaTentativa, desabilitadoAte } }
+
+function registrarFalhaRede(servico, erro) {
+  if (!estadoRedes[servico]) {
+    estadoRedes[servico] = { falhasConsecutivas: 0, ultimoErro: null, proximaTentativa: 0, desabilitadoAte: 0 };
+  }
+  const estado = estadoRedes[servico];
+  estado.falhasConsecutivas++;
+  estado.ultimoErro = erro;
+  estado.ultimaFalha = new Date().toISOString();
+
+  if (estado.falhasConsecutivas >= TENTATIVAS_MAX) {
+    // Desabilitar por 24h
+    estado.desabilitadoAte = Date.now() + 24 * 60 * 60 * 1000;
+    estado.proximaTentativa = estado.desabilitadoAte;
+    registrar('sistema', false, `Rede ${servico} desabilitada por 24h após ${estado.falhasConsecutivas} falhas`);
+  } else {
+    const atraso = TEMPOS_RETRY[Math.min(estado.falhasConsecutivas - 1, TEMPOS_RETRY.length - 1)];
+    estado.proximaTentativa = Date.now() + atraso;
+    registrar('sistema', false, `Rede ${servico} falhou (${estado.falhasConsecutivas}/${TENTATIVAS_MAX}), próxima tentativa em ${Math.round(atraso / 60000)} min`);
+  }
+  return estado;
+}
+
+function registrarSucessoRede(servico) {
+  if (estadoRedes[servico]) {
+    estadoRedes[servico].falhasConsecutivas = 0;
+    estadoRedes[servico].proximaTentativa = 0;
+    estadoRedes[servico].desabilitadoAte = 0;
+  }
+}
+
+function redePodeTentar(servico) {
+  if (!estadoRedes[servico]) return true;
+  const estado = estadoRedes[servico];
+  if (estado.desabilitadoAte && Date.now() < estado.desabilitadoAte) return false;
+  if (estado.proximaTentativa && Date.now() < estado.proximaTentativa) return false;
+  return true;
+}
+
+function obterEstadoRedes() {
+  return estadoRedes;
+}
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 😊 ANÁLISE DE SENTIMENTO — classificar comentários/respostas
+// Ajuda o chat a ajustar o tom do próximo post com base na reação do público.
+const PALAVRAS_POSITIVAS = ['ótimo', 'bom', 'legal', 'incrível', 'maravilhoso', 'excelente', 'adorei', 'gostei', 'recomendo', 'baixe', 'joguei', 'testei', 'aprovado', 'top', 'show', 'sensacional', 'fantástico', 'sensacional', 'imperdível', 'vale a pena', 'já baixei', 'já joguei', 'parabéns', 'nota 10'];
+const PALAVRAS_NEGATIVAS = ['ruim', 'péssimo', 'horrível', 'odeio', 'não gostei', 'não funciona', 'bug', 'erro', 'falha', 'lixo', 'não baixe', 'não jogue', 'não recomendo', 'decepção', 'perda de tempo', 'travou', 'lag', 'pago', 'cobrança'];
+
+function analisarSentimento(texto) {
+  if (!texto) return { sentimento: 'neutro', pontuacao: 0, palavrasEncontradas: [] };
+  const lower = texto.toLowerCase();
+  let pontos = 0;
+  const encontradas = [];
+  for (const p of PALAVRAS_POSITIVAS) {
+    if (lower.includes(p)) { pontos++; encontradas.push(p); }
+  }
+  for (const p of PALAVRAS_NEGATIVAS) {
+    if (lower.includes(p)) { pontos--; encontradas.push(p); }
+  }
+  let sentimento = 'neutro';
+  if (pontos > 0) sentimento = 'positivo';
+  if (pontos < 0) sentimento = 'negativo';
+  return { sentimento, pontuacao: pontos, palavrasEncontradas: encontradas };
+}
+
+function ajustarTomPorSentimento(sentimentoMedio) {
+  if (sentimentoMedio === 'positivo') {
+    return { tom: 'entusiasta', sugestao: 'Mantenha a abordagem, use mais CTAs diretos' };
+  }
+  if (sentimentoMedio === 'negativo') {
+    return { tom: 'cauteloso', sugestao: 'Mude a abordagem, foque em benefícios claros, revise o conteúdo' };
+  }
+  return { tom: 'neutro', sugestao: 'Mantenha equilíbrio, teste novas abordagens' };
+}
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 📊 RELATÓRIO DE DESEMPENHO
+// Retorna estatísticas de desempenho por formato e rede.
+function relatorioDesempenho() {
+  const resultado = {};
+  for (const [servico, formatos] of Object.entries(DESEMPENHO_FORMATO)) {
+    resultado[servico] = {};
+    for (const [formato, stats] of Object.entries(formatos)) {
+      resultado[servico][formato] = {
+        total: stats.total || 0,
+        sucessos: stats.sucessos || 0,
+        falhas: (stats.total || 0) - (stats.sucessos || 0),
+        zeros: stats.zeros || 0,
+        taxaSucesso: stats.total > 0 ? Math.round((stats.sucessos / stats.total) * 100) : 0
+      };
+    }
+  }
+  return resultado;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 📚 BIBLIOTECA EVERGREEN — conteúdos para republicação
+const fsEvergreen = require('fs');
+const pathEvergreen = require('path');
+
+const EVERGREEN_DIR = pathEvergreen.join(__dirname, '..', 'posts', 'evergreen');
+let cacheEvergreen = null;
+
+function carregarEvergreen() {
+  if (cacheEvergreen) return cacheEvergreen;
+  try {
+    const arquivo = pathEvergreen.join(EVERGREEN_DIR, 'conteudos.json');
+    if (fsEvergreen.existsSync(arquivo)) {
+      cacheEvergreen = JSON.parse(fsEvergreen.readFileSync(arquivo, 'utf8'));
+      return cacheEvergreen;
+    }
+  } catch (e) {}
+  return { categorias: {}, regras: {} };
+}
+
+function obterConteudoEvergreen(categoria = 'apresentacao') {
+  const lib = carregarEvergreen();
+  const conteudos = lib.categorias[categoria] || [];
+  if (conteudos.length === 0) return null;
+  const idx = Math.floor(Math.random() * conteudos.length);
+  return conteudos[idx];
+}
+
+function listarCategoriasEvergreen() {
+  const lib = carregarEvergreen();
+  return Object.keys(lib.categorias || {});
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🤖 AUTORESPOSTAR PARA COMENTÁRIOS COMUNS
+const PERGUNTAS_COMUNS = [
+  { palavras: ['grátis', 'gratuito', 'pago', 'custa'], resposta: 'Ambos os jogos são totalmente gratuitos! Sem microtransações, sem pay-to-win. 🆓', jogos: ['ceifalume', 'prancheta'] },
+  { palavras: ['android', 'celular', 'apk', 'mobile'], resposta: 'Sim, temos versões para Android! Jogue direto no navegador. 📱', jogos: ['ceifalume', 'prancheta'] },
+  { palavras: ['jogar', 'como jogar', 'tutorial'], resposta: 'Ceifalume: plante e colha na fazenda noturna. Prancheta: desenhe a bola parada e veja a partida simular. Ambos grátis! 🎮', jogos: ['ceifalume', 'prancheta'] },
+  { palavras: ['godot', 'engine', 'feito com'], resposta: 'Feito com Godot Engine, desenvolvido aqui no Brasil. 🇧🇷', jogos: ['ceifalume', 'prancheta'] },
+];
+
+function detectarPerguntaComum(texto) {
+  if (!texto) return null;
+  const lower = texto.toLowerCase();
+  for (const p of PERGUNTAS_COMUNS) {
+    const todasPalavras = p.palavras.some(w => lower.includes(w));
+    if (todasPalavras) {
+      return { resposta: p.resposta, jogos: p.jogos, palavras: p.palavras };
+    }
+  }
+  return null;
+}
+
+function responderPerguntaComum(servico, idAlvo, textoComentario) {
+  const deteccao = detectarPerguntaComum(textoComentario);
+  if (!deteccao) return null;
+  return deteccao;
+}
+
 module.exports = {
   postarGitHub,
   comentarGitHub,
   medirYoutube,
+  comentarYoutube,
+  curtirYoutube,
   dispararUploadYoutube,
   postarItch,
+  criarJogoItch,
+  enviarBuildItch,
+  enviarBuildItchButler,
+  interagirItch,
   postarBluesky,
   interagirBluesky,
   postarMastodon,
@@ -1419,4 +1630,43 @@ module.exports = {
   postarTodas,
   relatorio,
   PUBLICACOES,
+  validarQualidade,
+  registrarDesempenho,
+  agendarPublicacao,
+  obterProximoFormato,
+  relatorioDesempenho,
+  salvarBackupPublicacao,
+  HISTORICO_FORMATOS,
+  DESEMPENHO_FORMATO,
+  AGENDA_PUBLICACOES,
+  registrarFluxoAcesso,
+  melhorHorarioParaPostar,
+  proximoJogo,
+  getJogoAtual,
+  JOGOS_PRIORIDADE,
+  FLUXO_ACESSO,
+
+  // Novas funções de marketing inteligente
+  validarLink,
+  extrairLinks,
+  validarLinksDoTexto,
+  obterConteudoEvergreen,
+  listarCategoriasEvergreen,
+  detectarPerguntaComum,
+  responderPerguntaComum,
+  analisarSentimento,
+  ajustarTomPorSentimento,
+  criarAbTest,
+  registrarResultadoAbTest,
+  finalizarAbTest,
+  obterVarianteParaPostar,
+  linkComUTM,
+  linkItchComUTM,
+  registrarMetricaDiaria,
+  detectarQueda,
+  gerarHipotesesQueda,
+  registrarFalhaRede,
+  registrarSucessoRede,
+  redePodeTentar,
+  obterEstadoRedes,
 };
