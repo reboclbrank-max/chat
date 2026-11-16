@@ -5,7 +5,16 @@
 const fs = require('fs');
 const path = require('path');
 
-const MARKETING_DIR = path.join(__dirname, '..', 'posts', 'marketing');
+// 16/11/2026 — DOIS NÍVEIS, NÃO UM: estes módulos nasceram em `tools/` do repo `chat`, onde
+// `../posts` era a raiz certa. Movidos para `tools/marketing/` no `site`, `../posts` aponta
+// para `tools/posts` — um diretório que ninguém lê. Em produção o estado iria para o lugar
+// errado e o painel mostraria zero para sempre. A raiz é `../../posts`.
+// POSTS_DIR permite que os contratos apontem o estado para um temporário e provem o módulo
+// sem escrever no repositório versionado (regra do `rodar-todas-as-suites`: suíte que passa
+// não deixa lixo). Em produção a variável não existe e a raiz é a do repositório.
+const MARKETING_DIR = process.env.POSTS_DIR
+  ? path.join(process.env.POSTS_DIR, 'marketing')
+  : path.join(__dirname, '..', 'posts', 'marketing');
 if (!fs.existsSync(MARKETING_DIR)) fs.mkdirSync(MARKETING_DIR, { recursive: true });
 const ARQ = path.join(MARKETING_DIR, 'status-total-marketing.json');
 
@@ -35,7 +44,9 @@ let inteligenciaModulo = null;
 
 function _carregarModulos() {
   if (hcModulo) return;
-  try { hcModulo = require('./health-check-camadas'); } catch (e) {}
+  // 16/11/2026: era `./health-check-camadas` (o do repositório `chat`, que audita módulos que
+  // não existem aqui e devolvia 0 camadas ativas). No `site` a fonte é o health-check-site.
+  try { hcModulo = require('./health-check-site'); } catch (e) { try { hcModulo = require('./health-check-camadas'); } catch (e2) {} }
   try { alertasModulo = require('./alertas-proativos-marketing'); } catch (e) {}
   try { orquestradorModulo = require('./orquestrador-maximo-marketing'); } catch (e) {}
   try { autoEscaladaModulo = require('./auto-escalada-marketing'); } catch (e) {}
@@ -57,11 +68,24 @@ function gerarRelatorioStatus() {
   _carregarModulos();
 
   // Health check das camadas
-  let hc = { camadas_total: 49, camadas_ativas: 0, camadas_inativas: 0, recuperacoes_sucesso: 0, recuperacoes_falha: 0 };
-  if (hcModulo && hcModulo.estatisticasHealthCheck) {
+  let hc = { camadas_total: 0, camadas_ativas: 0, camadas_inativas: 0, recuperacoes_sucesso: 0, recuperacoes_falha: 0 };
+  let hcResultado = null;
+  if (hcModulo && hcModulo.executar) {
+    // health-check-site: audita de verdade e devolve o detalhe
+    hcResultado = hcModulo.executar();
+    hc = {
+      camadas_total: hcResultado.camadas_total,
+      camadas_ativas: hcResultado.camadas_ativas,
+      camadas_inativas: hcResultado.camadas_inativas,
+      recuperacoes_sucesso: (hcResultado.recuperacoes || {}).sucesso || 0,
+      recuperacoes_falha: (hcResultado.recuperacoes || {}).falha || 0,
+    };
+  } else if (hcModulo && hcModulo.estatisticasHealthCheck) {
     const est = hcModulo.estatisticasHealthCheck();
-    hc = { camadas_total: est.total_camadas, camadas_ativas: est.camadas_monitoradas || 0, camadas_inativas: 0, recuperacoes_sucesso: est.recuperacoes_sucesso || 0, recuperacoes_falha: est.recuperacoes_falha || 0 };
-    if (est.camadas_monitoradas) hc.camadas_inativas = est.total_camadas - est.camadas_monitoradas;
+    hc = { camadas_total: est.total_camadas, camadas_ativas: est.camadas_monitoradas || 0,
+           camadas_inativas: (est.total_camadas || 0) - (est.camadas_monitoradas || 0),
+           recuperacoes_sucesso: est.recuperacoes_sucesso || 0,
+           recuperacoes_falha: est.recuperacoes_falha || 0 };
   }
 
   // Alertas proativos
@@ -126,7 +150,9 @@ function gerarRelatorioStatus() {
     ]
   };
 
-  if (hcModulo && hcModulo.executarHealthCheck) {
+  if (hcResultado) {
+    relatorio.status_camadas = hcResultado.detalhe.map(d => ({ camada: d.camada, ativa: d.ativa, status: d.status }));
+  } else if (hcModulo && hcModulo.executarHealthCheck) {
     const hcResult = hcModulo.executarHealthCheck();
     if (hcResult.ok) {
       relatorio.status_camadas = hcResult.resultado.detalhe.map(d => ({ camada: d.camada, ativa: d.ativa, status: d.status }));
@@ -149,4 +175,62 @@ function estatisticasStatusTotal() {
   };
 }
 
-module.exports = { ativarStatusTotal, gerarRelatorioStatus, estatisticasStatusTotal };
+// ───────────────────────────────────────────────────────────────────────────────
+// CLI (16/11/2026) — o relatório nasceu no `chat` como função de navegador; sem CLI ele nunca
+// podia rodar num passo do Actions. Uso:
+//   node tools/marketing/status-total-marketing.js --resumo   (markdown para o STEP_SUMMARY)
+//   node tools/marketing/status-total-marketing.js --json
+// ───────────────────────────────────────────────────────────────────────────────
+function resumoTexto(rel) {
+  const L = [];
+  const r = rel.resumo || {};
+  L.push('## 📋 Status total da casa');
+  L.push('');
+  L.push('| | |');
+  L.push('| --- | --- |');
+  L.push('| gerado em | ' + rel.geradoEm + ' |');
+  L.push('| camadas monitoradas | **' + r.camadas_monitoradas + '** |');
+  L.push('| camadas ativas | ' + (r.camadas_ativas || 0) + ' |');
+  L.push('| camadas inativas | ' + (r.camadas_inativas || 0) + ' |');
+  L.push('| sistemas da Fase 2 ligados | ' + (r.sistemas_ativos || 0) + '/5 |');
+  L.push('| alertas pendentes | ' + ((rel.alertas || {}).pendentes || 0) + ' |');
+  if ((rel.status_camadas || []).length) {
+    const caidas = rel.status_camadas.filter(c => !c.ativa);
+    L.push('');
+    L.push('### Camadas inativas');
+    L.push('');
+    if (!caidas.length) L.push('Nenhuma — todas as camadas auditadas estão de pé.');
+    else for (const c of caidas.slice(0, 15)) L.push('- `' + c.camada + '` — ' + c.status);
+  }
+  L.push('');
+  L.push('### Recomendações do relatório');
+  L.push('');
+  for (const rec of (rel.recomendacoes || [])) L.push('- ' + rec);
+  return L.join('\n');
+}
+
+function main(argv) {
+  if (argv.includes('--json')) {
+    ativarStatusTotal();
+    const r = gerarRelatorioStatus();
+    console.log(JSON.stringify(r, null, 1));
+    return r.ok ? 0 : 3;
+  }
+  if (argv.includes('--resumo')) {
+    ativarStatusTotal();
+    const r = gerarRelatorioStatus();
+    if (!r.ok) { console.log('não gerou: ' + r.erro); return 3; }
+    console.log(resumoTexto(r.relatorio));
+    return 0;
+  }
+  ativarStatusTotal();
+  const r = gerarRelatorioStatus();
+  console.log(r.ok ? resumoTexto(r.relatorio) : 'não gerou: ' + r.erro);
+  return r.ok ? 0 : 3;
+}
+
+if (require.main === module) {
+  process.exitCode = main(process.argv.slice(2));
+}
+
+module.exports = { ativarStatusTotal, gerarRelatorioStatus, estatisticasStatusTotal, resumoTexto };

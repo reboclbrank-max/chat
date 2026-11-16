@@ -6,7 +6,16 @@
 const fs = require('fs');
 const path = require('path');
 
-const MARKETING_DIR = path.join(__dirname, '..', 'posts', 'marketing');
+// 16/11/2026 — DOIS NÍVEIS, NÃO UM: estes módulos nasceram em `tools/` do repo `chat`, onde
+// `../posts` era a raiz certa. Movidos para `tools/marketing/` no `site`, `../posts` aponta
+// para `tools/posts` — um diretório que ninguém lê. Em produção o estado iria para o lugar
+// errado e o painel mostraria zero para sempre. A raiz é `../../posts`.
+// POSTS_DIR permite que os contratos apontem o estado para um temporário e provem o módulo
+// sem escrever no repositório versionado (regra do `rodar-todas-as-suites`: suíte que passa
+// não deixa lixo). Em produção a variável não existe e a raiz é a do repositório.
+const MARKETING_DIR = process.env.POSTS_DIR
+  ? path.join(process.env.POSTS_DIR, 'marketing')
+  : path.join(__dirname, '..', 'posts', 'marketing');
 if (!fs.existsSync(MARKETING_DIR)) fs.mkdirSync(MARKETING_DIR, { recursive: true });
 const ARQ = path.join(MARKETING_DIR, 'alertas-proativos-marketing.json');
 
@@ -117,7 +126,7 @@ function monitorarMetricas() {
   const regraToken = c.regras.find(r => r.nome === 'token_expirando');
   if (regraToken && regraToken.ativo) {
     // Verifica arquivos de registro de tokens no posts
-    const tokensDir = path.join(__dirname, '..', 'posts');
+    const tokensDir = path.join(__dirname, '..', '..', 'posts');
     try {
       const entries = fs.readdirSync(tokensDir);
       for (const entry of entries) {
@@ -162,4 +171,76 @@ function estatisticasAlertas() {
   return { ativo: c.ativo, total: c.alertas.length, pendentes, resolvidos, regras: c.regras.length, ultima_execucao: c.ultima_execucao };
 }
 
-module.exports = { ativarAlertasProativos, desativarAlertasProativos, adicionarAlerta, monitorarMetricas, listarAlertas, resolverAlerta, estatisticasAlertas };
+// ───────────────────────────────────────────────────────────────────────────────
+// CLI (16/11/2026). O módulo nasceu no `chat` para ser chamado pelo navegador e não tinha
+// porta de entrada por linha de comando — então o workflow do Actions não conseguia executá-lo
+// e o "alerta ativo" continuava só no papel. Aqui ele ganha CLI, e o workflow chama assim:
+//
+//   node tools/marketing/alertas-proativos-marketing.js --ativar-monitorar
+//   node tools/marketing/alertas-proativos-marketing.js --json          (estado completo)
+//   node tools/marketing/alertas-proativos-marketing.js --lista         (pendentes)
+//
+// Códigos: 0 = rodou · 3 = estado ilegível (não finge que monitorou)
+// ───────────────────────────────────────────────────────────────────────────────
+function resumoTexto(est, resultado) {
+  const linhas = [];
+  linhas.push('## 🚨 Alertas proativos');
+  linhas.push('');
+  linhas.push('| | |');
+  linhas.push('| --- | --- |');
+  linhas.push('| ativo | ' + (est.ativo ? '✅ sim' : '❌ não') + ' |');
+  linhas.push('| regras | ' + est.regras + ' |');
+  linhas.push('| alertas no total | ' + est.total + ' |');
+  linhas.push('| pendentes | **' + est.pendentes + '** |');
+  linhas.push('| resolvidos | ' + est.resolvidos + ' |');
+  linhas.push('| última execução | ' + (est.ultima_execucao || '—') + ' |');
+  if (resultado) {
+    linhas.push('| novos nesta execução | **' + resultado.novos_alertas + '** |');
+    if (!resultado.novos_alertas) {
+      linhas.push('');
+      linhas.push('Nenhuma regra violada agora. (Alerta que não dispara é resultado bom; ' +
+        'alerta inventado, não.)');
+    } else {
+      linhas.push('');
+      linhas.push('| tipo | mensagem | severidade |');
+      linhas.push('| --- | --- | --- |');
+      for (const a of resultado.alertas) {
+        linhas.push('| ' + a.tipo + ' | ' + String(a.mensagem).replace(/\|/g, '/') + ' | ' +
+          (a.severidade || '—') + ' |');
+      }
+    }
+  }
+  return linhas.join('\n');
+}
+
+function main(argv) {
+  if (argv.includes('--json')) {
+    const c = carregar();
+    console.log(JSON.stringify({ estatisticas: estatisticasAlertas(), estado: c }, null, 1));
+    return 0;
+  }
+  if (argv.includes('--lista')) {
+    const pend = listarAlertas(false);
+    console.log(JSON.stringify(pend, null, 1));
+    return 0;
+  }
+  if (argv.includes('--ativar-monitorar')) {
+    ativarAlertasProativos();
+    const r = monitorarMetricas();
+    const est = estatisticasAlertas();
+    if (!r.ok) {
+      console.log('não monitorou: ' + r.erro);
+      return 3;
+    }
+    console.log(resumoTexto(est, r));
+    return 0;
+  }
+  console.log(resumoTexto(estatisticasAlertas(), null));
+  return 0;
+}
+
+if (require.main === module) {
+  process.exitCode = main(process.argv.slice(2));
+}
+
+module.exports = { ativarAlertasProativos, desativarAlertasProativos, adicionarAlerta, monitorarMetricas, listarAlertas, resolverAlerta, estatisticasAlertas, resumoTexto };
