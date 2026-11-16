@@ -1,0 +1,31 @@
+{
+  "fila": [
+    {
+      "id": "agend_1",
+      "texto": "Post de teste",
+      "rede": "instagram",
+      "jogo": "ceifalume",
+      "horarioAgendado": "2026-11-11T03:50:24.916Z",
+      "status": "agendado",
+      "criadoEm": "2026-11-11T02:50:24.916Z",
+      "executadoEm": null,
+      "resultado": null,
+      "tentativa": 0
+    },
+    {
+      "id": "agend_2",
+      "texto": "Post específico",
+      "rede": "x",
+      "jogo": "prancheta",
+      "horarioAgendado": "2026-12-25T10:00:00Z",
+      "status": "agendado",
+      "criadoEm": "2026-11-11T02:50:24.920Z",
+      "executadoEm": null,
+      "resultado": null,
+      "tentativa": 0
+    }
+  ],
+  "proximoId": 3,
+  "criadoEm": "2026-11-11T02:50:24.915Z",
+  "atualizadoEm": "2026-11-11T02:50:24.920Z"
+}

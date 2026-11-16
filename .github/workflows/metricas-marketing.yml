@@ -1,0 +1,30 @@
+name: Métricas de Marketing Diárias
+# 📊 Gera métricas de marketing todos os dias às 09h (horário de Brasília)
+# Popula posts/marketing/metricas-resumo.json para o dashboard
+on:
+  schedule:
+    - cron: '0 12 * * *'  # 09h BRT = 12h UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  metricas:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+      - run: npm ci --omit=dev --no-audit --no-fund
+      - name: Gerar métricas de marketing
+        run: node tools/gerar-metricas-marketing.js
+      - name: Commit e push das métricas
+        run: |
+          git config user.email "arena@arena.ai"
+          git config user.name "Arena Agent"
+          git add posts/marketing/metricas-resumo.json
+          git commit -m "📊 Métricas de marketing atualizadas" || echo "Nenhuma mudança para commitar"
+          git push origin main || git push origin HEAD:main

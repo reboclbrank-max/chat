@@ -1,0 +1,66 @@
+{
+  "versao": 1,
+  "criado_em": "2026-11-04",
+  "descricao": "Conteúdos evergreen para republicação quando não houver novidade do dia",
+  "categorias": {
+    "apresentacao": [
+      {
+        "id": "eg-001",
+        "texto": "🌙 CEIFALUME é uma fazenda noturna idle. Plante, colha e expanda sua fazenda enquanto o mundo dorme. Grátis no navegador e Android. Feito com Godot no Brasil. #indiedev #gamedev #Godot",
+        "jogo": "ceifalume",
+        "formato": "post",
+        "cta": "Jogue agora no link abaixo",
+        "tags": ["#indiedev", "#gamedev"]
+      },
+      {
+        "id": "eg-002",
+        "texto": "⚽ PRANCHETA é um manager de futebol 100% fictício. Desenhe a bola parada, defina a tática e veja a partida simular sozinha. Sem ser jogador, seja técnico. Grátis no navegador e Android. #indiedev #gamedev #Godot",
+        "jogo": "prancheta",
+        "formato": "post",
+        "cta": "Assuma o comando do seu time",
+        "tags": ["#indiedev", "#gamedev"]
+      }
+    ],
+    "gameplay": [
+      {
+        "id": "eg-003",
+        "texto": "🎮 Vídeo de gameplay do Ceifalume: veja a fazenda noturna em ação. Plante culturas, gerencie recursos e veja sua fazenda crescer enquanto você dorme. #gamedev #indiedev #gameplay",
+        "jogo": "ceifalume",
+        "formato": "video",
+        "cta": "Assista ao vídeo completo",
+        "tags": ["#gamedev", "#indiedev"]
+      },
+      {
+        "id": "eg-004",
+        "texto": "⚽ Vídeo de gameplay do Prancheta: desenhe jogadas de bola parada e veja a simulação acontecer. O técnico manda, o jogo executa. #gamedev #indiedev #gameplay",
+        "jogo": "prancheta",
+        "formato": "video",
+        "cta": "Veja como funciona",
+        "tags": ["#gamedev", "#indiedev"]
+      }
+    ],
+    "destaque": [
+      {
+        "id": "eg-005",
+        "texto": "🆓 Ambos os jogos são totalmente gratuitos. Sem microtransações, sem pay-to-win. Jogue quando quiser, pelo tempo que quiser. #indiedev #jogosgratis #gamedevBR",
+        "jogo": "ambos",
+        "formato": "post",
+        "cta": "Baixe agora",
+        "tags": ["#indiedev", "#jogosgratis"]
+      },
+      {
+        "id": "eg-006",
+        "texto": "🇧🇷 Feito no Brasil com Godot Engine. Dois jogos indie desenvolvidos com paixão, disponíveis para navegador e Android. Apoie o desenvolvimento nacional! #gamedevBR #Godot #indiedev",
+        "jogo": "ambos",
+        "formato": "post",
+        "cta": "Conheça os jogos",
+        "tags": ["#gamedevBR", "#Godot"]
+      }
+    ]
+  },
+  "regras": {
+    "maximo_por_semana": 3,
+    "nao_repetir_mesmo_dia": true,
+    "alternar_jogos": true
+  }
+}

@@ -15,6 +15,8 @@ const SECRET_NAMES = {
   github: 'GITHUB_TOKEN',
   youtube: 'YT_API_KEY',
   itch: 'ITCH_API_KEYS',
+  itch_login: 'ITCH_LOGIN',
+  itch_senha: 'ITCH_SENHA',
   bluesky_handle: 'BLUESKY_HANDLE',
   bluesky_pass: 'BLUESKY_APPPASS',
   bluesky_pass_alt: 'BSKY_APP_PASSWORD',

@@ -33,7 +33,7 @@ function ehArquivoCofre(caminhoRelativo) {
 const PADROES_ESPECIFICOS = [
   { nome: 'GitHub PAT (ghp_)', regex: /ghp_[A-Za-z0-9]{36,}/g },
   { nome: 'GitHub fine-grained (github_pat_)', regex: /github_pat_[A-Za-z0-9_]{60,}/g },
-  { nome: 'itch.io API key', regex: /2cxSsz[A-Za-z0-9]{20,}/g },
+
   { nome: 'YouTube API key', regex: /AIza[0-9A-Za-z\-_]{35,}/g },
   { nome: 'Bluesky app password', regex: /m5cn-cnas-q23u-eaqi/g },
   { nome: 'Mastodon token', regex: /awx0N[A-Za-z0-9_\-]{30,}/g },

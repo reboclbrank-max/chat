@@ -1,0 +1,78 @@
+{
+  "modeloPorIntencao": {
+    "postar": {
+      "groq": {
+        "acertos": 1,
+        "erros": 0,
+        "confiancaMedia": 0.9,
+        "total": 1
+      },
+      "nemotron": {
+        "acertos": 0,
+        "erros": 1,
+        "confiancaMedia": 0.6,
+        "total": 1
+      }
+    }
+  },
+  "tomPorSentimento": {
+    "negativo": {
+      "cauteloso": {
+        "sucessos": 1,
+        "falhas": 0,
+        "total": 1
+      },
+      "entusiasta": {
+        "sucessos": 0,
+        "falhas": 1,
+        "total": 1
+      }
+    }
+  },
+  "horarioPorDesempenho": {
+    "instagram": {
+      "14h": {
+        "engajamentoTotal": 150,
+        "posts": 1,
+        "sucessos": 1
+      },
+      "20h": {
+        "engajamentoTotal": 80,
+        "posts": 1,
+        "sucessos": 0
+      }
+    }
+  },
+  "palavrasBloqueadas": [
+    {
+      "palavra": "scam",
+      "motivo": "gerou reprovação",
+      "ocorrencias": 1,
+      "primeiraOcorrencia": "2026-11-11T02:46:21.522Z"
+    }
+  ],
+  "conteudoQueFunciona": [
+    {
+      "texto": "Baixe o Ceifalume agora!",
+      "tipo": "post",
+      "rede": "instagram",
+      "desempenho": "alto",
+      "jogos": [
+        "ceifalume"
+      ],
+      "quando": "2026-11-11T02:46:21.523Z"
+    }
+  ],
+  "conteudoQueNaoFunciona": [],
+  "planosExecutados": [
+    {
+      "plano": "Lançar campanha",
+      "resultado": "Postei em 3 redes",
+      "sucesso": true,
+      "quando": "2026-11-11T02:46:21.523Z"
+    }
+  ],
+  "versoes": [],
+  "criadoEm": "2026-11-11T02:46:21.520Z",
+  "atualizadoEm": "2026-11-11T02:46:21.523Z"
+}

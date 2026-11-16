@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard de Marketing — Rebocl</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0e0e11; color: #e0e0e0; padding: 20px; }
+  h1 { color: #00d4aa; margin-bottom: 20px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+  .card { background: #1a1a2e; border: 1px solid #333; border-radius: 12px; padding: 15px; }
+  .card h3 { color: #00d4aa; font-size: 14px; margin-bottom: 8px; text-transform: uppercase; }
+  .card .valor { font-size: 32px; font-weight: bold; color: #ffffff; }
+  .card .sub { font-size: 12px; color: #888; margin-top: 5px; }
+  .section { margin-bottom: 30px; }
+  .section h2 { color: #ffffff; margin-bottom: 15px; font-size: 18px; border-bottom: 2px solid #00d4aa; padding-bottom: 5px; }
+  .alerta { padding: 12px; border-radius: 8px; margin-bottom: 10px; }
+  .alerta-alta { background: #8b1a1a; color: #ffffff; border: 1px solid #b71c1c; }
+  .alerta-media { background: #8a6d1a; color: #ffffff; border: 1px solid #f57f17; }
+  .alerta-baixa { background: #1a4d2e; color: #ffffff; border: 1px solid #2e7d32; }
+  .recomendacao { background: #1a1a2e; border: 1px solid #333; border-radius: 8px; padding: 12px; margin-bottom: 8px; }
+  .recomendacao strong { color: #00d4aa; }
+  .conteudo-top { background: #1a1a2e; border: 1px solid #333; border-radius: 8px; padding: 10px; margin-bottom: 8px; font-style: italic; }
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+  .sazonal-card { background: #1a1a2e; border: 1px solid #333; border-radius: 8px; padding: 15px; }
+  .sazonal-card h4 { color: #00d4aa; margin-bottom: 8px; }
+  .atualizado { font-size: 12px; color: #888; margin-top: 20px; }
+</style>
+</head>
+<body>
+<h1>📊 Dashboard de Marketing — Rebocl</h1>
+
+<div class="grid">
+  <div class="card">
+    <h3>Inscritos</h3>
+    <div class="valor">0</div>
+    <div class="sub">total acumulado</div>
+  </div>
+  <div class="card">
+    <h3>Downloads</h3>
+    <div class="valor">50</div>
+    <div class="sub">total acumulado</div>
+  </div>
+  <div class="card">
+    <h3>Cliques</h3>
+    <div class="valor">0</div>
+    <div class="sub">em links UTM</div>
+  </div>
+  <div class="card">
+    <h3>Impressões</h3>
+    <div class="valor">0</div>
+    <div class="sub">visualizações de posts</div>
+  </div>
+  <div class="card">
+    <h3>CTR</h3>
+    <div class="valor">0.00%</div>
+    <div class="sub">cliques ÷ impressões</div>
+  </div>
+  <div class="card">
+    <h3>Conversão</h3>
+    <div class="valor">0.00%</div>
+    <div class="sub">downloads ÷ cliques</div>
+  </div>
+  <div class="card">
+    <h3>CAC</h3>
+    <div class="valor">R$ 0.00</div>
+    <div class="sub">custo por usuário</div>
+  </div>
+  <div class="card">
+    <h3>Horas Trabalho</h3>
+    <div class="valor">0.0</div>
+    <div class="sub">registradas</div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>🚨 Alertas</h2>
+  
+    <div class="alerta alerta-baixa">
+      <strong>INATIVIDADE:</strong> Nenhuma hora de trabalho registrada<br>
+      <em>Ação: Começar a registrar tempo gasto em marketing</em>
+    </div>
+  
+</div>
+
+<div class="section">
+  <h2>💡 Recomendações</h2>
+  <div class="recomendacao">Nenhuma recomendação ainda — comece a usar o chat para gerar dados.</div>
+</div>
+
+<div class="section">
+  <h2>🏆 Conteúdo que Funciona</h2>
+  
+    <div class="conteudo-top">Baixe o Ceifalume agora!</div>
+  
+</div>
+
+<div class="section grid-2">
+  <div class="sazonal-card">
+    <h4>📅 Sazonalidade — Downloads</h4>
+    Sem dados suficientes</div>
+  <div class="sazonal-card">
+    <h4>📅 Sazonalidade — Inscritos</h4>
+    Sem dados suficientes</div>
+</div>
+
+<div class="atualizado">
+  Gerado em 11/11/2026, 02:48:40 | 
+  <a href="dashboard.html" style="color: #00d4aa;">Ver dashboard estático</a>
+</div>
+</body>
+</html>

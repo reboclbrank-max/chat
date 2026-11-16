@@ -372,8 +372,7 @@ const ITENS_STATUS_CASA = Object.freeze([
   ['Casa postando (site)', 'Postagem do site'],
   ['Chat por e-mail (24h)', 'Turno de e-mail'],
   ['Bateria do cérebro', 'Bateria do cérebro'],
-  ['itch Ceifalume', 'Ceifalume no itch.io'],
-  ['itch Prancheta', 'Prancheta no itch.io'],
+
   ['Caixa de e-mail', 'Caixa de e-mail']
 ]);
 const CAUSAS_STATUS_CASA = Object.freeze({
@@ -399,7 +398,7 @@ const CAUSAS_STATUS_CASA = Object.freeze({
   // 09/11: causas de rede social — cada rede tem texto próprio para o dono saber QUAL falhou
   'rede-github': { texto: 'GitHub API indisponível — sem leitura do repositório', recuperavel: false },
   'rede-youtube': { texto: 'YouTube API indisponível — sem leitura do canal', recuperavel: false },
-  'rede-itch': { texto: 'itch.io API indisponível — sem leitura do perfil', recuperavel: false },
+
   'rede-bluesky': { texto: 'Bluesky indisponível — login com senha de app falhou', recuperavel: false },
   'rede-mastodon': { texto: 'Mastodon indisponível — token de acesso inválido', recuperavel: false },
   'rede-instagram': { texto: 'Instagram Graph API indisponível — token expirado', recuperavel: false },

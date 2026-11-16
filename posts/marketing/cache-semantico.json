@@ -1,0 +1,18 @@
+{
+  "entradas": [
+    {
+      "pergunta": "como baixar o jogo",
+      "resposta": "Você pode baixar no itch.io",
+      "criadoEm": "2026-11-11T02:30:09.008Z",
+      "usos": 1
+    },
+    {
+      "pergunta": "tenho 1000 inscritos, cresço 5% ao dia, em 30 dias?",
+      "resposta": "Em 30 dias: 4.322 inscritos (ganho de 3.322)",
+      "criadoEm": "2026-11-11T02:30:09.012Z",
+      "usos": 1
+    }
+  ],
+  "criadoEm": "2026-11-11T02:30:09.008Z",
+  "atualizadoEm": "2026-11-11T02:30:09.012Z"
+}
