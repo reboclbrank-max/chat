@@ -1,0 +1,24 @@
+{
+  "quando": "2026-11-17T12:45:42.702Z",
+  "origem": "ao-vivo",
+  "pr": 123,
+  "sha": "944d026306f4b7cad3fba94c77223eedb3720b63",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "docs: credencial do instrutor entregue fora do repositório + proteção no .gitignore",
+  "barreira": "success",
+  "arquivos": [
+    ".gitignore",
+    "CONTINUIDADE.md",
+    "INSTRUCAO-DO-INSTRUTOR.md"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: .gitignore, CONTINUIDADE.md, INSTRUCAO-DO-INSTRUTOR.md"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (3)"
+  }
+}
