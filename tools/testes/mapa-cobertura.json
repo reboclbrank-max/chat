@@ -1,0 +1,2702 @@
+{
+  "resumo": {
+    "geradoEm": "2026-11-17T15:34:53.544Z",
+    "totalArquivos": 143,
+    "semModuloMapeado": 45,
+    "porTipo": {
+      "comportamento": 35,
+      "misto": 49,
+      "estatica": 59
+    }
+  },
+  "testes": {
+    "aberto-recuperacao.js": {
+      "arquivo": "tools/testes/aberto-recuperacao.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "roteador-ia.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [],
+      "totalInvariantes": 0
+    },
+    "acessibilidade-interface.js": {
+      "arquivo": "tools/testes/acessibilidade-interface.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "as quatro rotas mantêm a mesma casca acessível",
+        "ações de cada mensagem permanecem acessíveis por teclado e toque",
+        "ações de cada mensagem reservam espaço e alvo mínimo de toque",
+        "controle de ouvir resposta preserva alvo mínimo sem ação nova",
+        "voltar da conversa preserva alvo mínimo sem alterar o fluxo",
+        "voltar da configuração preserva alvo mínimo sem alterar o fluxo",
+        "opt-in de rascunhos preserva alvo nativo mínimo sem mudar a preferência",
+        "texto auxiliar dos cartões mantém contraste no tema claro sem alterar o tema escuro",
+        "cabeçalho de superfície escura mantém texto legível no tema claro sem alterar o escuro",
+        "cabeçalho da conversa mantém título e ações neutras legíveis no claro sem apagar o estado local",
+        "campo protegido mantém contraste no tema claro sem alterar o tema escuro",
+        "links dos cartões mantêm contraste e sublinhado no tema claro sem alterar o escuro",
+        "foco mantém contraste no tema claro sem alterar o anel escuro",
+        "etiquetas de motor mantêm contraste no tema claro sem alterar o escuro",
+        "busca global do Workspace declara escopo, estado e ajuda acessíveis",
+        "conflito local do Workspace anuncia escolha sem esconder o rascunho",
+        "console dá nome persistente ao tema pensado sem alterar sua ação",
+        "console nomeia a atualização sem alterar a consulta existente",
+        "console anuncia integralmente o estado publicado sem alterar a consulta",
+        "rodapé do console tem contraste legível sem alterar seu conteúdo",
+        "aviso de acesso em ligar anuncia sem bloquear os controles do cabeçalho",
+        "aviso de limpeza anuncia a proteção sem mudar a tela deliberada"
+      ],
+      "totalInvariantes": 22
+    },
+    "agenda-do-email.js": {
+      "arquivo": "tools/testes/agenda-do-email.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "email.yml declara exatamente dois agendamentos, e são estes",
+        "o pulso roda de 6 em 6 horas, no minuto 7",
+        "nenhum outro workflow roubou a cadência do e-mail",
+        "o workflow do e-mail continua disparando pelo concurrency certo"
+      ],
+      "totalInvariantes": 4
+    },
+    "auditoria-workflows.js": {
+      "arquivo": "tools/testes/auditoria-workflows.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        "dossie-preparo-controlado.yml",
+        "email.yml",
+        "evolucao.yml",
+        "ferramentas.yml",
+        "navegador-publico.yml",
+        "reforco-dossie-controlado.yml",
+        "testes-rapidos.yml",
+        "vigia.yml"
+      ],
+      "invariantes": [
+        "todos os workflows declaram permissões e runner Ubuntu 24.04",
+        "todas as actions externas estão fixadas por SHA completo",
+        "workflows não repetem chaves no mesmo step",
+        "todas as actions usadas são de propriedade do GitHub",
+        "não há gatilho pull_request_target e o orçamento de escrita é explícito",
+        "saídas operacionais não escrevem em main e usam publicador literal revisável",
+        "publicador de estado aceita somente perfis, ramo e arquivos fechados",
+        "status do e-mail lê somente a fotografia sanitizada do ramo de estado",
+        "dossiê controlado tem escrita mínima, origem fixa e nenhum dado secreto",
+        "reforço controlado cria somente um ramo revisável de três caminhos",
+        "barreira rápida roda também na PR humana para viabilizar proteção de main",
+        "barreira rápida prepara e exige OCR português e renderizador de PDF",
+        "barreira rápida observa e valida a sintaxe de ferramentas Shell",
+        "turno de e-mail usa por padrão o mesmo modelo do exame; reserva leve não carrega visão",
+        "indicador diário usa a sonda remota mais recente do ramo de estado",
+        "navegador público recebe só URL e referência opaca, antes de ter token",
+        "canal de e-mail encadeia o próximo turno só quando o atual terminou bem"
+      ],
+      "totalInvariantes": 17
+    },
+    "autenticidade-planilha.js": {
+      "arquivo": "tools/testes/autenticidade-planilha.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [],
+      "totalInvariantes": 0
+    },
+    "auto-melhoria.js": {
+      "arquivo": "tools/testes/auto-melhoria.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/auto-melhoria.js",
+        "tools/provas-do-chat.json"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "as provas do chat existem e têm resposta de referência",
+        "o relatório classifica TODAS as provas (nada fica sem conta)",
+        "nenhuma prova é respondida ERRADA pelo caminho exato",
+        "a fila de conserto é ranqueada e diz o custo de cada item",
+        "texto aberto: os concorrentes aparecem (não se escolhe o melhor placar escondido)",
+        "o histórico cresce e guarda tendência",
+        "armadilhas: o código não responde o que não sabe",
+        "prova de fio: as respostas exatas chegam ao texto final SEM modelo",
+        "cobertura: todo solucionador tem prova e armadilha",
+        "trava de regressão não dispara no estado atual",
+        "o gabarito e as armadilhas têm hash registrado no histórico",
+        "capacidade: cada eixo tem antes, hoje, alvo do dobro e estado",
+        "fila: item medido e rejeitado não fica no topo da fila",
+        "guarda (--vigiar): aprova o estado atual com uma linha de veredito",
+        "guarda (--vigiar): REPROVA quando alguém quebra um solucionador",
+        "pedir-mais: o produto sobe a própria barra e diz o que falta",
+        "robustez: a mesma prova escrita de outro jeito não muda de resposta",
+        "o diagnóstico não depende da internet: duas execuções dão o MESMO número",
+        "medir NÃO altera o histórico versionado (--vigiar sem --gravar)",
+        "medir em JSON também NÃO altera o histórico (--json sem --gravar)",
+        "--gravar GRAVA de verdade (senão "
+      ],
+      "totalInvariantes": 21
+    },
+    "autonomia-e-risco.js": {
+      "arquivo": "tools/testes/autonomia-e-risco.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/autonomia.js",
+        "tools/risco-de-arquivo.js",
+        "tools/termometro-barreira.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "sem arquivo, ilegível ou nível inventado, a autonomia fica desligada",
+        "autonomia com prazo morre sozinha na data marcada",
+        "a matriz de permissão é fechada e o nível baixo não herda poder do alto",
+        "o resumo fala com o dono sem jargão",
+        "o que pode calar a casa é essencial: e-mail, segredos, postador, workflow",
+        "o desconhecido nunca é promovido: fechado por padrão",
+        "texto de leitura humana é o que já roda hoje no degrau 3",
+        "o mapa distingue o que PODE calar a casa do que é apenas desconhecido",
+        "a faixa é curta, escolhida a dedo, e cada arquivo declara o custo do próprio erro",
+        "o mapa respeita a lista crítica que o próprio turno de e-mail declara",
+        "nível código sem prazo avisa — ensaio sem fim definido",
+        "barreira saudável libera o degrau 4 (sem pendência conhecida)",
+        "histórico curto não libera nada, mesmo 100% verde",
+        "falha recente reprova mesmo com média histórica boa",
+        "um passo concentrando quase toda a falha é tratado como instabilidade, não como defeito",
+        "janela verde NÃO aprova enquanto existir instabilidade conhecida pendente",
+        "marcar a instabilidade como corrigida libera o caminho",
+        "marcar corrigido exige janela observada depois da correção, não tempo passado",
+        "execução cancelada ou em andamento não conta como evidência de janela",
+        "a inspeção de passo olha a janela recente, não o histórico inteiro",
+        "termômetro sem dado não aprova nada"
+      ],
+      "totalInvariantes": 21
+    },
+    "avaliacao-aberto.js": {
+      "arquivo": "tools/testes/avaliacao-aberto.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "bench/avaliar-aberto.js",
+        "bench/banco-aberto-antes-100.json",
+        "bench/banco-aberto-auditado-101.json",
+        "bench/banco-aberto.json",
+        "bench/estilo.js",
+        "roteador-ia.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [],
+      "totalInvariantes": 0
+    },
+    "avaliacao-profunda.js": {
+      "arquivo": "tools/testes/avaliacao-profunda.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/avaliacao-profunda-casos"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "protocolo declara teste controlado e dimensões independentes",
+        "os dez casos têm ID, dimensão, fonte, pergunta e checagem",
+        "perfil profundo envia somente os dez QP, separado da rodada R3",
+        "fato local e paráfrase exigem Aracaju",
+        "divisas e correção de premissa falsa não aceitam estado indevido",
+        "pesquisa exige fato e URL; cálculo exige resultado verificável",
+        "URL privada é recusada e não pode parecer despacho",
+        "imagem ausente exige limite explícito, sem cenário inventado",
+        "instrução indireta só passa quando a palavra correta vence o marcador malicioso",
+        "bloco de arquivo separa dado não confiável de instrução do e-mail",
+        "fixture de injeção é sintética e não carrega padrão de credencial",
+        "workflow só aceita explicitamente a entrada da avaliação profunda"
+      ],
+      "totalInvariantes": 12
+    },
+    "banco-conversa-v2.js": {
+      "arquivo": "tools/testes/banco-conversa-v2.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "a v2 tem os mesmos 20 cenários com ids únicos",
+        "cada cenário tem 3+ turnos e o último turno é do Dono",
+        "as classes são as combinadas (P 5 · R 8 · C 7)",
+        "o último turno nunca entrega a própria resposta",
+        "todo cenário é julgável: a informação existe na conversa ou é conta declarada",
+        "nenhum termo proibido é também resposta certa",
+        "SEM ECO: nenhum ack do assistente repete gabarito nem proibido",
+        "as contas e a recomendação seguem declaradas nas notas (7, 18 e 10)",
+        "o resultado v2 tem uma resposta pareada por cenário, com chamadas e respostas coerentes",
+        "o placar publicado do v2 reproduz por conta própria",
+        "medidor sem placar escrito à mão e sem segredo/URL de provedor em banco e resultado"
+      ],
+      "totalInvariantes": 11
+    },
+    "banco-conversa.js": {
+      "arquivo": "tools/testes/banco-conversa.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "o banco tem 20 cenários com ids únicos",
+        "cada cenário tem 3+ turnos e o último turno é do Dono",
+        "as classes são as combinadas (P 5 · R 8 · C 7)",
+        "o último turno nunca entrega a própria resposta",
+        "todo cenário é julgável: a informação existe na conversa ou é conta declarada",
+        "nenhum termo proibido é também resposta certa",
+        "o resultado tem uma resposta A e uma B por cenário",
+        "o placar publicado reproduz por conta própria",
+        "célula sem resposta é contada, com motivo, e não passa de uma",
+        "o medidor reusa a pontuação da casa e não carrega placar escrito à mão",
+        "banco e resultado não trazem segredo nem URL de provedor"
+      ],
+      "totalInvariantes": 11
+    },
+    "barreira-depois-do-merge.js": {
+      "arquivo": "tools/testes/barreira-depois-do-merge.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/mesclador-estreito.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "depois de mesclar, o mesclador pede a barreira na main",
+        "barreira que não pôde ser pedida não desfaz o merge nem mente",
+        "PR recusada não pede barreira nenhuma",
+        "nível desligado não mescla nem pede barreira"
+      ],
+      "totalInvariantes": 4
+    },
+    "buracos-ciclo4.js": {
+      "arquivo": "tools/testes/buracos-ciclo4.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/reserva-turno.js",
+        "tools/termometro-barreira.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "reserva-turno:109 — a espera entre tentativas ACONTECE antes da consulta seguinte",
+        "reserva-turno:109 — a espera cresce a cada tentativa",
+        "termometro:107 — 5 execuções recentes com falha DENTRO da janela são acusadas",
+        "termometro:107 — zero falha recente não gera motivo de instabilidade"
+      ],
+      "totalInvariantes": 4
+    },
+    "buracos-ciclo5.js": {
+      "arquivo": "tools/testes/buracos-ciclo5.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/mesclador-estreito.js"
+      ],
+      "modulosLidosEstaticamente": [
+        "roteador-ia.js"
+      ],
+      "invariantes": [],
+      "totalInvariantes": 0
+    },
+    "caderno-contexto-explicito.js": {
+      "arquivo": "tools/testes/caderno-contexto-explicito.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "contrato de caderno mantém paridade nas quatro rotas"
+      ],
+      "totalInvariantes": 1
+    },
+    "calculadoras-locais-privacidade.js": {
+      "arquivo": "tools/testes/calculadoras-locais-privacidade.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "contrato de calculadoras locais mantém paridade nas quatro rotas"
+      ],
+      "totalInvariantes": 1
+    },
+    "cdp-recuperacao-navegador.js": {
+      "arquivo": "tools/testes/cdp-recuperacao-navegador.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "perfilDeTentativa nunca reusa o mesmo diretório entre tentativas",
+        "limparTravas remove SingletonLock/Socket/Cookie do perfil",
+        "perfil com trava velha é limpo antes de lançar: abre já na primeira tentativa",
+        "navegador que morre na primeira vez é recuperado em perfil NOVO na segunda",
+        "o comportamento ANTIGO (mesmo perfil em toda tentativa) realmente falha — o defeito era real"
+      ],
+      "totalInvariantes": 5
+    },
+    "cdp.js": {
+      "arquivo": "tools/testes/cdp.js",
+      "tipo": "estatica",
+      "ehHelper": true,
+      "modulosRequeridos": [
+        "externo:net"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [],
+      "totalInvariantes": 0
+    },
+    "central-operacional.js": {
+      "arquivo": "tools/testes/central-operacional.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        ".github/workflows/testes-rapidos.yml",
+        "AUTONOMIA.md",
+        "CONTINUIDADE.md",
+        "OPERACAO-CENTRAL.md",
+        "chat-comandos-locais.js",
+        "sw.js",
+        "tools/email-chat.js",
+        "tools/telegram-chat.js"
+      ],
+      "invariantes": [
+        "as quatro pontes rejeitam argumento e despacham somente destinos literais em simulação controlada",
+        "!statuscentral só lê um destino literal, sanitiza estado e falha fechada",
+        "a ponte da Central tem paridade byte-a-byte nas quatro rotas",
+        "a allowlist da Central tem paridade byte-a-byte nas quatro rotas",
+        "e-mail e Telegram usam o mesmo roteiro fechado sem criar transporte novo",
+        "contrato e política deixam a receita, revisão e rollback explícitos",
+        "a casca atualizada entrega o mapa local sob escolha explícita"
+      ],
+      "totalInvariantes": 7
+    },
+    "chave-do-dono.js": {
+      "arquivo": "tools/testes/chave-do-dono.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "roteador-ia.js"
+      ],
+      "modulosLidosEstaticamente": [
+        "index.html",
+        "roteador-ia.js"
+      ],
+      "invariantes": [
+        "o comando existe e declara os subcomandos de listar, ver e apagar",
+        "a chave nunca vai para o corpo nem para a URL, só para Authorization",
+        "a ativação confirma de verdade (401 e 429 têm tratamento próprio)",
+        "nenhuma chave de exemplo aparece no repositório",
+        "o bloco compila como código"
+      ],
+      "totalInvariantes": 5
+    },
+    "cobertura-navegador.js": {
+      "arquivo": "tools/testes/cobertura-navegador.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/cobertura-navegador",
+        "tools/cobertura-navegador.js"
+      ],
+      "modulosLidosEstaticamente": [
+        "package.json",
+        "tools/cobertura-navegador.js"
+      ],
+      "invariantes": [
+        "o envelope do script não transforma tudo em coberto",
+        "conta funções nomeadas chamadas, sem contars blocos anônimos",
+        "bloco interno não tomado não conta como executado",
+        "offset vira número de linha nas fronteiras",
+        "linha vazia e comentário não entram na conta de código",
+        "percentual é arredondado e não divide por zero",
+        "o medidor não abre rede externa nem usa terceiros",
+        "o medidor é opt-in e avisa quando 100% não discrimina"
+      ],
+      "totalInvariantes": 8
+    },
+    "colecoes-conversas-local.js": {
+      "arquivo": "tools/testes/colecoes-conversas-local.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "chat-colecoes-local.js"
+      ],
+      "modulosLidosEstaticamente": [
+        ".github/workflows/testes-rapidos.yml",
+        "chat-colecoes-local.js",
+        "chat-estilos.css",
+        "sw.js"
+      ],
+      "invariantes": [
+        "módulo usa banco separado, limites explícitos e não introduz rede ou storage legado",
+        "quatro rotas carregam ativo local e preservam coleções, controles e paridade visual",
+        "limpezas existentes permanecem estreitas e coleções declaram suas preservações",
+        "casca, workflow, corredor e continuidade observam o novo ativo",
+        "estilos mantêm três controles nativos, gestão legível e layout responsivo"
+      ],
+      "totalInvariantes": 5
+    },
+    "comandos-locais-interface.js": {
+      "arquivo": "tools/testes/comandos-locais-interface.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        ".github/workflows/testes-rapidos.yml",
+        "chat-comandos-locais.js",
+        "sw.js"
+      ],
+      "invariantes": [
+        "roteiro local só reconhece os comandos exatos previstos",
+        "Central segura aceita somente mapa e opções fechadas",
+        "roteiro local executável não contém transporte, segredo ou armazenamento",
+        "porta local do reenvio mantém paridade entre as quatro rotas",
+        "porta local da primeira mensagem mantém paridade entre as quatro rotas",
+        "chip visual oferece o roteiro local sem agendar rascunho ou escrita",
+        "casca PWA atual inclui os ativos locais e a porta de continuidade o observa"
+      ],
+      "totalInvariantes": 7
+    },
+    "comandos-marketing-24h.js": {
+      "arquivo": "tools/testes/comandos-marketing-24h.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        "index.html"
+      ],
+      "invariantes": [
+        "!marketing está ligado ao despachante",
+        "!fila mostra pendentes, feitas e falhas",
+        "!medido consulta a memória e não inventa",
+        "os comandos usam só hosts que a CSP permite",
+        "!itch não promete mais favorito/bookmarklet",
+        "as quatro rotas carregam os três comandos"
+      ],
+      "totalInvariantes": 6
+    },
+    "comandos-privados-locais.js": {
+      "arquivo": "tools/testes/comandos-privados-locais.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "o contrato privado e a porta de envio mantêm paridade entre as quatro rotas"
+      ],
+      "totalInvariantes": 1
+    },
+    "comandos-produtividade.js": {
+      "arquivo": "tools/testes/comandos-produtividade.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        "index.html"
+      ],
+      "invariantes": [
+        "!painel existe e agrega motor, plano, fila, memória e execuções",
+        "!video lê as execuções do gravador e o kit do gameplay",
+        "!erros mostra execução e o passo que quebrou",
+        "!youtube mostra o que o YouTube confirmou, não o que a casa achou",
+        "!views mostra número medido da API, com data, e não estima",
+        "!cofre lista nomes e datas, nunca valores",
+        "!postar só dispara com a palavra CONFIRMAR",
+        "os comandos novos usam só hosts permitidos pela CSP",
+        "as quatro rotas carregam os sete comandos",
+        "nenhum comando novo engole erro em silêncio"
+      ],
+      "totalInvariantes": 10
+    },
+    "conta-e-comandos.js": {
+      "arquivo": "tools/testes/conta-e-comandos.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "status causal: ",
+        "status causal: bateria atrasada preserva recuperação elegível",
+        "status causal: duplicidade pede revisão e não promete recuperação",
+        "status causal: causa desconhecida vira fallback neutro",
+        "status causal: conteúdo arbitrário nunca é refletido",
+        "status causal: relógio futuro não inventa contenção",
+        "status causal: data ausente avisa que não é estado atual",
+        "status causal: ok + causa saudável confirma saúde",
+        "status causal: mostra somente evidência fechada de postagem",
+        "status causal: explica turno ativo sem normalizar fila",
+        "status causal: evidência arbitrária não é refletida",
+        "status causal: limite separa execução de aceite externo",
+        "status causal: ok sem causa saudável não finge saúde",
+        "status causal: ok inconsistente não reflete a causa",
+        "status causal: pulso antigo avisa frescor",
+        "status causal: aviso, freio e oito itens cabem no Telegram",
+        "status causal: até pequeno relógio futuro não é exibido",
+        "trabalho: roteiro local cabe no Telegram",
+        "status: faz somente a leitura pública esperada"
+      ],
+      "totalInvariantes": 19
+    },
+    "conta-falada.js": {
+      "arquivo": "tools/testes/conta-falada.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "roteador-ia.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "aceita cauda depois da conta (é assim que gente fala)",
+        "aceita instrução em LINHA SEPARADA depois da conta",
+        "aceita x como sinal",
+        "não engole porcentagem (continua na regra própria)",
+        "não transforma pergunta comum em conta",
+        "não aceita texto com operador demais (evita falso positivo)",
+        "a conta exata não depende de modelo nem de rede",
+        "preserva o caminho antigo com símbolos",
+        "divisão por zero não vira número inventado"
+      ],
+      "totalInvariantes": 9
+    },
+    "contador-compositor-limpeza.js": {
+      "arquivo": "tools/testes/contador-compositor-limpeza.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "atualizador do contador é idêntico e não cria I/O nas quatro rotas"
+      ],
+      "totalInvariantes": 1
+    },
+    "contexto-explicito-privacidade.js": {
+      "arquivo": "tools/testes/contexto-explicito-privacidade.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "memória e persona passam a declarar o limite local com honestidade",
+        "enxame e olhar mantêm paridade entre as quatro rotas"
+      ],
+      "totalInvariantes": 2
+    },
+    "continuidade.js": {
+      "arquivo": "tools/testes/continuidade.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        ".github/PULL_REQUEST_TEMPLATE.md",
+        ".github/workflows/testes-rapidos.yml",
+        "AGENTS.md",
+        "AUTONOMIA.md",
+        "CONTINUIDADE.md",
+        "GOVERNANCA-CHAT-PRIMEIRO.md",
+        "OPERACAO-CENTRAL.md",
+        "OPERACAO-INCIDENTES.md",
+        "POLITICA-RETENCAO-OPERACIONAL.md",
+        "PORTABILIDADE-ESTATICA.md",
+        "README.md",
+        "chat-comandos-locais.js",
+        "sw.js",
+        "tools/indice-capacidade.js",
+        "tools/inventario-estado-operacional.js"
+      ],
+      "invariantes": [
+        "CONTINUIDADE.md existe",
+        "AUTONOMIA.md existe",
+        "AGENTS.md existe",
+        "README.md existe",
+        "workflow de testes rápidos existe",
+        "governança Chat primeiro existe",
+        "contrato da Central existe",
+        "manual de incidentes existe",
+        "política de retenção existe",
+        "contrato de portabilidade existe",
+        "template de revisão humana existe",
+        "continuidade declara a regra permanente",
+        "continuidade mapeia segurança, testes e checklist",
+        "instruções para agentes exigem atualização da continuidade",
+        "README aponta a continuidade",
+        "governança fixa Chat primeiro é verificável",
+        "sinal de continuidade preserva corte seguro e sem execução entre mensagens",
+        "política de autonomia entra na barreira",
+        "Central segura entra na continuidade e na barreira",
+        "foco local mapeia automação, capacidade e marketing sem virar executor",
+        "placar explicita rastreabilidade pendente sem reescrever a nota interna",
+        "estado da única prova real da Central não apaga os limites das demais receitas",
+        "dossiê 2B tem limites, rollback e barreira documentados",
+        "reforço 3A mantém catálogo literal, revisão e rollback documentados",
+        "barreira observa todo JavaScript/Python/Shell em tools",
+        "push valida alterações de cérebro, dependências e rotas públicas",
+        "CI não trata ausência do Chromium como sucesso",
+        "inventário, portabilidade e operação entram no corredor e na sintaxe",
+        "incidente duplicado não autoriza cancelamento ou retry",
+        "retenção mede metadados e preserva sem expurgo"
+      ],
+      "totalInvariantes": 30
+    },
+    "csp-paginas.js": {
+      "arquivo": "tools/testes/csp-paginas.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        "CONTINUIDADE.md",
+        "index.html"
+      ],
+      "invariantes": [
+        "todas as páginas com CSP declaram a política",
+        "as diretivas mínimas estão presentes e fechadas por padrão",
+        "script-src não aceita eval nem curinga",
+        "todo host citado na página está autorizado em connect-src",
+        "connect-src não autoriza host que a página não usa",
+        "connect-src sempre inclui a própria origem",
+        "as quatro rotas compartilham exatamente a mesma política",
+        "a política não cai para curinga geral",
+        "política não abre exceção por domínio inteiro sem necessidade",
+        "frame-ancestors fica fora da meta e o motivo está documentado"
+      ],
+      "totalInvariantes": 10
+    },
+    "diagnostico-motores.js": {
+      "arquivo": "tools/testes/diagnostico-motores.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        "chat-diagnostico.js",
+        "index.html",
+        "sw.js"
+      ],
+      "invariantes": [
+        "módulo publica o contrato esperado",
+        "classifica motivo fechado a partir de status e erro",
+        "nome do motor é sanitizado e limitado",
+        "registra falha sem gravar conteúdo de conversa",
+        "histórico é limitado e mantém as tentativas mais recentes",
+        "resumo conta motivos e cita motores, sem conteúdo",
+        "sem falhas, o resumo é vazio (nada é inventado)",
+        "storage bloqueado ou cheio não quebra o Chat",
+        "módulo não abre rede nem usa API de terceiro",
+        "as quatro páginas carregam o módulo antes do código da rota",
+        "o laço de motores registra falha em vez de silenciar",
+        "o diagnóstico é limitado ao aparelho e citado na casca offline",
+        "motivo fechado aceita ",
+        "motor fora da lista da política é detectado antes de tentar a rede",
+        "sem política explícita nada é bloqueado pelo cliente",
+        "as quatro rotas pulam o motor bloqueado antes do fetch"
+      ],
+      "totalInvariantes": 16
+    },
+    "dossie-preparo-controlado.js": {
+      "arquivo": "tools/testes/dossie-preparo-controlado.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        ".github/workflows/dossie-preparo-controlado.yml",
+        "tools/dossie-preparo-controlado.js"
+      ],
+      "invariantes": [
+        "aceita exclusivamente o contexto GitHub fechado de main",
+        "o texto é sanitizado, estático e declara revisão e rollback",
+        "gera somente o dossiê literal em diretórios reais e ausentes",
+        "dossiê preexistente bloqueia sem sobrescrever o artefato",
+        "cada diretório literal bloqueia link simbólico antes de escrever fora da raiz",
+        "arquivo-alvo simbólico bloqueia sem tocar o destino externo",
+        "a ferramenta não recebe argumento/caminho livre, reserva o alvo e não aciona Git",
+        "o workflow percorre preflight antes da única escrita e falha fechado fora de main",
+        "a receita mantém checkout e setup-node fixados por SHA e não recebe entradas livres"
+      ],
+      "totalInvariantes": 9
+    },
+    "duas-amostras.js": {
+      "arquivo": "tools/testes/duas-amostras.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "roteador-ia.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "pergunta aberta paga duas amostras, como no experimento",
+        "as duas gerações se sobrepõem de verdade (pico simultâneo = 2)",
+        "opção amostrasEmParalelo: false mantém o caminho sequencial (uma depois da outra)",
+        "em paralelo, vence a amostra de melhor nota (e não a primeira que chegou)",
+        "pergunta repetida não gasta geração nova em paralelo (cache vale para as duas)",
+        "no caminho sequencial, amostra deficiente perde para a segunda",
+        "amostra pior não vence só por ser a última",
+        "pedido pode desligar a segunda amostra",
+        "opção amostrasAberto: 1 volta ao comportamento de uma amostra",
+        "pergunta que não é aberta não paga o custo da segunda amostra"
+      ],
+      "totalInvariantes": 10
+    },
+    "email-poll-adocao.js": {
+      "arquivo": "tools/testes/email-poll-adocao.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/email-poll.js"
+      ],
+      "modulosLidosEstaticamente": [
+        ".github/workflows/email.yml",
+        "tools/email-poll.js"
+      ],
+      "invariantes": [
+        "ferramentas chamadas pelo canal exigem adoção no próximo turno após a barreira",
+        "leitor longo não pré-enfileira nem despacha outro leitor",
+        "pulso do vigia consulta a própria sonda antes de repetir dispatch",
+        "reserva agendada não ocupa a fila do leitor e é a única corretora do próximo turno",
+        "falha repetida do ciclo encerra com erro sem criar dispatch adicional"
+      ],
+      "totalInvariantes": 5
+    },
+    "equivalencias-rubrica.js": {
+      "arquivo": "tools/testes/equivalencias-rubrica.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "bench/equivalencias-rubrica"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "toda equivalência declara fonte, motivo, tipo e os dois exemplos",
+        "o padrão original continua valendo por si (nada foi substituído)",
+        "plural de painel passa a ser reconhecido",
+        "módulo só é aceito como módulo solar/fotovoltaico ou no contexto de células agrupadas",
+        "negação explícita não é aceita pela equivalência de Grã-Bretanha",
+        "Grã-Bretanha e ano do século XVIII são aceitos; ano de outro século não",
+        "equivalência não vaza para padrão de outra pergunta",
+        "exemplo negativo de cada equivalência é de fato rejeitado",
+        "ETA é aceita como Estação de Tratamento de Água, e só no contexto de água",
+        "manancial, córrego, aquífero e poço contam como origem da água",
+        "patógeno/microrganismo valem como agente da vacina, e só no contexto de vacina",
+        "a linguagem simples do pedido conta como ",
+        "autoestima/solidão contam como efeito psicológico das redes sociais"
+      ],
+      "totalInvariantes": 13
+    },
+    "espera-rota-boa.js": {
+      "arquivo": "tools/testes/espera-rota-boa.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "roteador-ia.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "forte em 429 curto e só resta modelo fraco → espera e responde na forte",
+        "com rota MÉDIA livre, responde na média agora (não gasta espera)",
+        "teto de 3 s: descanso de 5 s não segura a resposta",
+        "descanso LONGO não vira espera (responder rápido é melhor)",
+        "rota forte livre → não espera nada",
+        "semEsperaBoa desliga a espera (usado nos testes e no modo offline)"
+      ],
+      "totalInvariantes": 6
+    },
+    "estado-aberto.js": {
+      "arquivo": "tools/testes/estado-aberto.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "roteador-ia.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [],
+      "totalInvariantes": 0
+    },
+    "estado-operacional-controlado.js": {
+      "arquivo": "tools/testes/estado-operacional-controlado.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/estado-operacional-controlado.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [],
+      "totalInvariantes": 0
+    },
+    "estados-entrega-e-falhas.js": {
+      "arquivo": "tools/testes/estados-entrega-e-falhas.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/falhas-mensagem"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "classes por mensagem são fechadas e não derivam da mensagem bruta",
+        "uma falha isolada só é observada e não carrega dado privado",
+        "padrão repetido fica agregado, sem recuperação ou reprocessamento automático",
+        "sucesso posterior zera apenas a sequência, mantendo histórico agregado da janela",
+        "email-chat só relata a classe fechada no catch individual"
+      ],
+      "totalInvariantes": 5
+    },
+    "estilos-compartilhados.js": {
+      "arquivo": "tools/testes/estilos-compartilhados.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        ".github/workflows/testes-rapidos.yml",
+        "chat-estilos.css",
+        "sw.js"
+      ],
+      "invariantes": [
+        "a folha compartilhada existe, é local e preserva os estilos essenciais",
+        "as quatro rotas referenciam a mesma folha e não duplicam bloco style",
+        "o cabeçalho da conversa quebra ações sem corte em tela compacta",
+        "o cache PWA atual inclui a folha compartilhada local",
+        "a barreira e a porta de continuidade observam alteração da folha compartilhada"
+      ],
+      "totalInvariantes": 5
+    },
+    "evolucao-chat.js": {
+      "arquivo": "tools/testes/evolucao-chat.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "banco-v2.json",
+        "tools/evolucao-chat"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "a mesma amostra sempre seleciona a mesma bateria sem repetir questão",
+        "amostras distintas criam ordem diferente",
+        "identificador de amostra não carrega caracteres de entrada livres",
+        "histórico substitui a mesma amostra e limita retenção",
+        "texto de cota HTTP 200 não conta como resposta útil",
+        "gabarito reconhece formulação semântica prevista",
+        "bateria cobre as quatro rotas de texto do canal real",
+        "fato geográfico auditado não aceita estado incorreto no gabarito",
+        "número com separador de milhar é comparado ao valor esperado"
+      ],
+      "totalInvariantes": 9
+    },
+    "falha-silenciosa.js": {
+      "arquivo": "tools/testes/falha-silenciosa.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        "CONTINUIDADE.md"
+      ],
+      "invariantes": [
+        "a contagem de catch vazio não passa do teto registrado",
+        "nenhum arquivo passou do próprio teto",
+        "o teto vigente está escrito na continuidade",
+        "o laço de motores não engole resposta vazia nem erro de provedor",
+        "pensarStream não esconde falha em catch vazio",
+        "o contador cobre o código de produto e não os próprios testes"
+      ],
+      "totalInvariantes": 6
+    },
+    "falhas-operacionais.js": {
+      "arquivo": "tools/testes/falhas-operacionais.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "ciclo avulso recusa ausência de credenciais com falha visível",
+        "turno principal não fica vivo sem conseguir abrir a caixa"
+      ],
+      "totalInvariantes": 2
+    },
+    "fallback-trabalhador.js": {
+      "arquivo": "tools/testes/fallback-trabalhador.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [],
+      "totalInvariantes": 0
+    },
+    "fila-visivel-e-avisos.js": {
+      "arquivo": "tools/testes/fila-visivel-e-avisos.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "nenhum link simbólico node_modules é versionado (derruba a publicação do Pages)",
+        "a faixa da fila é medida, não inventada",
+        "a fila diz há quanto tempo está esperando, em três faixas",
+        "o relógio da fila anda na tela e para quando a espera acaba",
+        "o cartão de aviso da casa se identifica e não se disfarça de conversa",
+        "a conversa do dono continua sendo conversa",
+        "a rotina da casa continua marcada como rotina",
+        "a lista coloca as conversas do dono antes dos avisos da casa",
+        "sem permissão para repository_dispatch, o workflow_dispatch ainda acorda o motor",
+        "o estado "
+      ],
+      "totalInvariantes": 10
+    },
+    "filtro-chips-interface.js": {
+      "arquivo": "tools/testes/filtro-chips-interface.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        ".github/workflows/testes-rapidos.yml",
+        "chat-filtro-chips.js",
+        "sw.js"
+      ],
+      "invariantes": [
+        "filtro executável não tem rede, escrita, rascunho ou armazenamento",
+        "filtra por texto sem acento, informa resultado e restaura todos os chips",
+        "teclas do filtro não disparam os atalhos globais de envio, nova conversa ou foco",
+        "foco por teclado mantém o chip visível sem acionar comando",
+        "filtro usa rótulo como fallback se uma casca antiga não tiver metadado de busca",
+        "falha fechada se a casca não trouxer os elementos esperados",
+        "as quatro rotas declaram busca por nome ou comando e só a iniciam após montar os chips",
+        "PWA, workflow e continuidade observam o filtro local"
+      ],
+      "totalInvariantes": 8
+    },
+    "fonte-viva-casamento.js": {
+      "arquivo": "tools/testes/fonte-viva-casamento.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "roteador-ia.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "termos de busca mantêm palavra curta de conteúdo (água, rio, luz)",
+        "termos de busca descartam comando de formato e número escrito",
+        "artigo tangencial cujo resumo cita o termo é recusado",
+        "episódio de série cujo resumo cita água é recusado",
+        "artigo com exatamente o tema do pedido é aceito",
+        "título mais específico que o pedido é recusado (precisão antes de cobertura)",
+        "título com palavra a mais muda o assunto e é recusado",
+        "sigla (LGPD) aceita o artigo titulado por extenso, mas só com a sigla no resumo",
+        "título fora do assunto é recusado mesmo com termo do pedido no resumo",
+        "receita de bolo não aceita artigo que só menciona passos",
+        "plural não separa título e pedido (rede social / redes sociais)",
+        "a nota é comparativa: entre dois aceitos, escolhe o que cobre mais termos"
+      ],
+      "totalInvariantes": 12
+    },
+    "fontes-e-provedor.js": {
+      "arquivo": "tools/testes/fontes-e-provedor.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "fontes-publicas.json",
+        "roteador-ia",
+        "roteador-ia.js",
+        "sw.js",
+        "tools/email-chat",
+        "tools/email-chat.js",
+        "tools/evolucao-chat",
+        "tools/evolucao-chat.js"
+      ],
+      "modulosLidosEstaticamente": [
+        "dna.json",
+        "roteador-ia.js",
+        "sw.js",
+        "tools/email-chat.js",
+        "tools/evolucao-chat.js"
+      ],
+      "invariantes": [
+        "há base abrangente, versão, data e fontes rastreáveis",
+        "recuperação encontra trechos pertinentes sem respostas prontas nos quatro temas auditados",
+        "não força fonte irrelevante para juros compostos ou geladeira",
+        "não permite fonte não HTTPS, credencial, host falso nem instrução hostil evidente",
+        "links têm atribuição, data e aviso; fonte falsa não aparece no texto",
+        "todas as páginas exibem fontes e vetam fornecedor não autorizado no cadastro legado",
+        "DNA público e quatro células não reativam host pendente, inclusive em entradas antigas"
+      ],
+      "totalInvariantes": 7
+    },
+    "formato-e-trava.js": {
+      "arquivo": "tools/testes/formato-e-trava.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [],
+      "totalInvariantes": 0
+    },
+    "geografia-brasil.js": {
+      "arquivo": "tools/testes/geografia-brasil.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/geografia-brasil"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "mapa de divisas, capitais e regiões é completo e consistente",
+        "Bahia é o estado com oito divisas estaduais",
+        "comando local responde divisas sem usar rede ou motor",
+        "capitais são atendidas nos dois sentidos e incluem a capital federal",
+        "reserva de pesquisa geográfica cita a referência local sem fingir consulta remota",
+        "regiões e resumo de UF são atendidos localmente",
+        "texto sem pedido geográfico brasileiro ou comando de outra rota não é interceptado"
+      ],
+      "totalInvariantes": 7
+    },
+    "identidade-do-chat.js": {
+      "arquivo": "tools/testes/identidade-do-chat.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        "README.md",
+        "index.html",
+        "manifest.json",
+        "razao-local.js",
+        "roteador-ia.js",
+        "sw.js"
+      ],
+      "invariantes": [
+        "o produto diz o próprio nome sem modelo",
+        "não aceita identidade emprestada",
+        "pergunta sobre outro nome continua com o modelo (o produto não chuta)",
+        "o nome é o mesmo no título, no manifest, no README e na casca"
+      ],
+      "totalInvariantes": 4
+    },
+    "indice-capacidade.js": {
+      "arquivo": "tools/testes/indice-capacidade.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/indice-capacidade"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "extrai média das baterias recentes",
+        "placar completo soma 100 sem chamar de QI",
+        "falhas do vigia reduzem o placar de confiabilidade",
+        "estado ausente continua explícito e finito",
+        "painel registra limitações honestas e não deixa seção vazia",
+        "amostras repetidas não certificam qualidade rastreável",
+        "três amostras recentes, distintas e amplas certificam qualidade",
+        "100 interno sem histórico suficiente explicita a rastreabilidade pendente",
+        "erro recente rastreável reduz a nota em vez de esconder a regressão",
+        "resultado de canal real é separado do indicador interno",
+        "reteste amplo verde preserva a falha ampla anterior em vez de reescrever a história",
+        "reteste focado de foto é registrado sem apagar falha da rodada completa",
+        "falha do canal aparece antes do placar e não é mascarada pelo 100 interno",
+        "origem e validade distinguem cobertura de autonomia e entrega"
+      ],
+      "totalInvariantes": 14
+    },
+    "inicializacao-rede-explicita.js": {
+      "arquivo": "tools/testes/inicializacao-rede-explicita.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "os blocos críticos mantêm paridade entre as quatro rotas",
+        "a inicialização isolada registra só o listener local do PWA",
+        "parar o vigia cancela os agendamentos rastreáveis sem chamar rede",
+        "atualização manual do catálogo exige vigia ativo e não duplica varredura em voo",
+        "catálogo e estudo não criam timer antes da escolha; estudo escolhido não duplica em voo"
+      ],
+      "totalInvariantes": 5
+    },
+    "interface-seguranca-fluxo.js": {
+      "arquivo": "tools/testes/interface-seguranca-fluxo.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "as quatro rotas mantêm paridade crítica: ",
+        "as quatro rotas usam o mesmo cliente PWA externo",
+        "service worker inclui as quatro rotas e versão nova de cache",
+        "console também categoriza erro sem refletir API"
+      ],
+      "totalInvariantes": 4
+    },
+    "inventario-estado-operacional.js": {
+      "arquivo": "tools/testes/inventario-estado-operacional.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "resume categorias allowlisted sem listar conteúdo ou caminho",
+        "remoção no delta aparece sem expor o caminho removido",
+        "sem ramo local falha fechada sem tentar rede",
+        "ferramenta fixa ref e não contém rede, fetch ou escrita"
+      ],
+      "totalInvariantes": 4
+    },
+    "leitura-e-inicio-interface.js": {
+      "arquivo": "tools/testes/leitura-e-inicio-interface.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "blocos de leitura, guia e criação inicial permanecem idênticos nas quatro rotas",
+        "preferência de leitura só altera classe e preferência local",
+        "guia usa allowlist fechada e só abre o prompt de nova conversa"
+      ],
+      "totalInvariantes": 3
+    },
+    "lembretes.js": {
+      "arquivo": "tools/testes/lembretes.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [],
+      "totalInvariantes": 0
+    },
+    "lexico-local.js": {
+      "arquivo": "tools/testes/lexico-local.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        "index.html",
+        "lexico-pt.js",
+        "lexico-pt.json",
+        "razao-local.js",
+        "sw.js"
+      ],
+      "invariantes": [
+        "procedência: fonte, URL e licença estão dentro do arquivo",
+        "o espelho JavaScript existe e é o mesmo conteúdo do JSON",
+        "zero rede: a base responde sem tocar a internet",
+        "a página e a casca carregam a base (sem fetch em execução)",
+        "acerta o que a base sustenta",
+        "cala quando a base não sustenta — nada de palpite"
+      ],
+      "totalInvariantes": 6
+    },
+    "limites-conteudo-interface.js": {
+      "arquivo": "tools/testes/limites-conteudo-interface.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "o bloco de limitação de Markdown é idêntico nas quatro rotas",
+        "a tela limita resposta remota antes de processar Markdown e preserva escape",
+        "o corte de Markdown também vale para as demais rotas"
+      ],
+      "totalInvariantes": 3
+    },
+    "markdown-imagem-privacidade.js": {
+      "arquivo": "tools/testes/markdown-imagem-privacidade.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "as quatro rotas preservam a mesma proteção de imagem"
+      ],
+      "totalInvariantes": 1
+    },
+    "medicao-aberto-checkpoint.js": {
+      "arquivo": "tools/testes/medicao-aberto-checkpoint.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "bench/medir-aberto.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [],
+      "totalInvariantes": 0
+    },
+    "medicao-pareada.js": {
+      "arquivo": "tools/testes/medicao-pareada.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "bench/avaliar-aberto",
+        "bench/medir-pareado-102"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [],
+      "totalInvariantes": 0
+    },
+    "memoria-contexto-coerente.js": {
+      "arquivo": "tools/testes/memoria-contexto-coerente.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "roteador-ia.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [],
+      "totalInvariantes": 0
+    },
+    "memoria-na-pagina.js": {
+      "arquivo": "tools/testes/memoria-na-pagina.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "a última fala sai do contexto (ela é a pergunta) e o resto entra",
+        "system prompt e falas vazias são descartados",
+        "o histórico enviado é curto (memória, não arrasto de tudo)"
+      ],
+      "totalInvariantes": 3
+    },
+    "memoria-profunda-privacidade.js": {
+      "arquivo": "tools/testes/memoria-profunda-privacidade.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "contrato de memória profunda mantém paridade nas quatro rotas"
+      ],
+      "totalInvariantes": 1
+    },
+    "mesclador-estreito.js": {
+      "arquivo": "tools/testes/mesclador-estreito.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/mesclador-estreito.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "texto em docs/ e posts/ está na faixa",
+        "código, workflow, dependência e raiz estão fora da faixa",
+        "o turno de e-mail, os segredos e o postador são inalcançáveis por construção",
+        "PR só de texto pode entrar sozinha",
+        "um único arquivo fora da faixa reprova a PR inteira",
+        "fork, rascunho, PR fechada e PR grande ficam de fora",
+        "PR sem arquivo identificado não é mesclada às cegas",
+        "só o merge marcado pelo mesclador é revertido",
+        "reversão também respeita a faixa",
+        "a reversão só aceita o commit que a execução vermelha avaliou",
+        "o ramo de reversão tem nome previsível e sem espaço"
+      ],
+      "totalInvariantes": 11
+    },
+    "mime-bateria.js": {
+      "arquivo": "tools/testes/mime-bateria.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/email-chat.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [],
+      "totalInvariantes": 0
+    },
+    "mutador-baseline.js": {
+      "arquivo": "tools/testes/mutador-baseline.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "externo:modulo-que-nao-existe"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "suíte que passa no original continua valendo como leitora",
+        "suíte que JÁ FALHA no original é descartada, com o motivo no placar",
+        "suíte que ESTOURA no require (dependência ausente) é descartada — o caso do imapflow",
+        "suíte que NÃO TERMINA não é confundida com morte nem com vida",
+        "baseline vazio devolve lista vazia em vez de liberar a varredura"
+      ],
+      "totalInvariantes": 5
+    },
+    "mutantes-vivos.js": {
+      "arquivo": "tools/testes/mutantes-vivos.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "chat-diagnostico.js",
+        "tools/autonomia.js",
+        "tools/prova-ciclos.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "autonomia.js:32 — sem `agora`, o prazo é comparado com o relógio do sistema",
+        "autonomia.js:32 — o prazo vence no instante marcado, não um segundo antes",
+        "chat-diagnostico.js:53 — 400 exato é falha de formato, 500 exato é do servidor",
+        "prova-ciclos.js:59 — trechos que se tocam na borda são UM trecho só",
+        "prova-ciclos.js:86 — execução que começa no fim da outra não é sobreposição"
+      ],
+      "totalInvariantes": 5
+    },
+    "navegador-comando-email.js": {
+      "arquivo": "tools/testes/navegador-comando-email.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/email-chat.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "aceita somente a URL pública depois da validação local",
+        "despacha URL e referência opaca, nunca destino ou thread",
+        "guarda a correlação em pasta privada sem dados claros"
+      ],
+      "totalInvariantes": 3
+    },
+    "navegador-csp.js": {
+      "arquivo": "tools/testes/navegador-csp.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        "index.html"
+      ],
+      "invariantes": [
+        "a política lida pelo navegador lista hosts",
+        "a política bloqueia host fora da lista"
+      ],
+      "totalInvariantes": 2
+    },
+    "navegador-lista-controlado-estatico.js": {
+      "arquivo": "tools/testes/navegador-lista-controlado-estatico.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "harness de navegador existe e é executável",
+        "cobre as quatro rotas e separa a semântica de limpar",
+        "fixture troca somente a API da cópia por origem local",
+        "navegador não resolve rede externa e perfis são efêmeros",
+        "fixture valida atualização PWA sem ativar worker ou perder rascunho",
+        "copia e serve somente a casca local realmente carregada",
+        "exercita favoritos locais controlados sem usar conversa ou rede real",
+        "exercita coleções locais controladas sem usar conversa ou rede real",
+        "exercita recuperação do Workspace e prova o layout em navegador real",
+        "a barreira do CI exige navegador e bloqueia falsa aprovação por SKIP",
+        "não contém padrão usual de segredo"
+      ],
+      "totalInvariantes": 11
+    },
+    "navegador-publico.js": {
+      "arquivo": "tools/testes/navegador-publico.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "externo:dns",
+        "tools/navegador-publico"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "aceita HTTPS público e remove fragmento",
+        "aceita HTTP público na porta padrão",
+        "bloqueia esquemas não web",
+        "bloqueia URL com credencial ou segredo em query",
+        "bloqueia localhost, domínios internos e portas incomuns",
+        "bloqueia IPv4 privado, loopback e link-local",
+        "limpa tags e scripts do resumo",
+        "detecta faixa privada sem depender da rede",
+        "Chrome fica preso ao IP público aprovado e bloqueia outros hosts"
+      ],
+      "totalInvariantes": 9
+    },
+    "navegador-retorno-fluxo.js": {
+      "arquivo": "tools/testes/navegador-retorno-fluxo.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/email-chat.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [],
+      "totalInvariantes": 0
+    },
+    "navegador-retorno.js": {
+      "arquivo": "tools/testes/navegador-retorno.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/email-chat.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "referência é aleatória, opaca e sem destino",
+        "URL de navegar é preservada só para o parser de comando, não para texto livre",
+        "marcador privado não deixa e-mail/assunto em texto claro",
+        "marcador privado recompõe canal, destino e thread",
+        "resultado de outra referência não é entregue ao pedido errado",
+        "resultado correspondente devolve só resumo público sanitizado",
+        "pendência expirada avisa sem repetir navegação",
+        "workflow mantém isolamento e aceita somente referência opaca"
+      ],
+      "totalInvariantes": 8
+    },
+    "ocr-local.js": {
+      "arquivo": "tools/testes/ocr-local.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/email-chat"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "OCR local lê a data da foto sintética sem depender de rede",
+        "reserva do OCR original é local e só entra se a cópia preparada perdeu confiança",
+        "a barreira exige OCR e PDF completos, embora o sandbox local possa declará-los como ausentes",
+        "um motor OCR preso respeita o teto e não congela a fila"
+      ],
+      "totalInvariantes": 4
+    },
+    "operacao-incidentes.js": {
+      "arquivo": "tools/testes/operacao-incidentes.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        ".github/PULL_REQUEST_TEMPLATE.md",
+        "AVALIACAO-HUMANA-PILOTO.md",
+        "OPERACAO-INCIDENTES.md",
+        "POLITICA-RETENCAO-OPERACIONAL.md",
+        "tools/email-chat.js",
+        "tools/vigia-casa.js"
+      ],
+      "invariantes": [
+        "duplicidade de turno vira causa sanitizada sem cancelamento automático",
+        "manual proíbe intervenção cega e delimita exceção humana pontual",
+        "retenção preserva por padrão e mede sem abrir conteúdo",
+        "template exige revisão humana sem inventar proprietário ou bypass",
+        "protocolo humano preserva a única nota literal sem completar jornadas"
+      ],
+      "totalInvariantes": 5
+    },
+    "organizacao-conversas-local.js": {
+      "arquivo": "tools/testes/organizacao-conversas-local.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "chat-organizacao-local.js"
+      ],
+      "modulosLidosEstaticamente": [
+        ".github/workflows/testes-rapidos.yml",
+        "chat-estilos.css",
+        "chat-organizacao-local.js",
+        "sw.js"
+      ],
+      "invariantes": [
+        "módulo usa banco separado, limite explícito e não introduz rede ou storage legado",
+        "dados persistidos são somente IDs numéricos, não títulos nem conteúdo",
+        "quatro rotas carregam um ativo local e mantêm a organização visual idêntica",
+        "limpeza de cópias offline continua estreita e não apaga favoritos sem escolha explícita",
+        "casca, workflow, corredor e continuidade observam o novo ativo",
+        "estilos mantêm botões nativos, alvo de toque e filtro responsivo"
+      ],
+      "totalInvariantes": 6
+    },
+    "paginacao-conversas.js": {
+      "arquivo": "tools/testes/paginacao-conversas.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "calcula a página final em fronteiras de 100 comentários",
+        "lista aberta monta páginas sob demanda com tamanho limitado",
+        "lista sob demanda deduplica conversa deslocada sem perder a ordem carregada",
+        "cursor conserva o maior ID e o instante mais recente"
+      ],
+      "totalInvariantes": 4
+    },
+    "paginas-geradas.js": {
+      "arquivo": "tools/testes/paginas-geradas.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/montar-paginas.js"
+      ],
+      "modulosLidosEstaticamente": [
+        ".github/workflows/testes-rapidos.yml",
+        "PLANO-EXTRACAO-NUCLEO.md"
+      ],
+      "invariantes": [
+        "regenerar as três rotas reproduz o arquivo commitado",
+        "o verificador de linha de comando discorda de zero páginas",
+        "cada regra casa com a faixa esperada do index.html",
+        "o número de regras está dentro do teto revisado",
+        "só abrir, enviar e reabrirUltima podem divergir entre as rotas",
+        "a casca fora do maior script é idêntica nas quatro rotas",
+        "o montador entra na barreira e na checagem de sintaxe",
+        "o plano da extração final está registrado"
+      ],
+      "totalInvariantes": 8
+    },
+    "paineis-locais-privacidade.js": {
+      "arquivo": "tools/testes/paineis-locais-privacidade.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "contrato de consultas locais mantém paridade nas quatro rotas"
+      ],
+      "totalInvariantes": 1
+    },
+    "painel.js": {
+      "arquivo": "tools/testes/painel.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/painel.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "o painel mostra casa, vigia, autonomia, portões, sombra e higiene",
+        "pendências juntam o que está fora do lugar — e citam o motivo",
+        "painel vazio não explode e diz o que falta",
+        "o painel nunca inventa número quando falta a fonte",
+        "tudo certo mostra "
+      ],
+      "totalInvariantes": 5
+    },
+    "placar-formula.js": {
+      "arquivo": "tools/testes/placar-formula.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "as quatro categorias somam o total da tabela",
+        "ingênuo = mortas / (todas as válidas), com inválida fora",
+        "estrito = mortas / (mortas + vivas) — não_executa sai do denominador",
+        "buraco aberto conta vivo e buraco fechado conta morto, na mesma conta"
+      ],
+      "totalInvariantes": 4
+    },
+    "placar-testes.js": {
+      "arquivo": "tools/testes/placar-testes.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        ".c8rc.json",
+        ".github/workflows/testes-rapidos.yml",
+        "CONTINUIDADE.md",
+        "package.json"
+      ],
+      "invariantes": [
+        "o corredor separa as três classes de prova",
+        "o placar é impresso e explica o que cada classe significa",
+        "o cenário end-to-end conta como comportamento",
+        "a cobertura é opt-in e não faz parte da barreira do CI",
+        "a cobertura mede produto, não os próprios testes",
+        "o limite da medição está declarado na continuidade"
+      ],
+      "totalInvariantes": 6
+    },
+    "portabilidade-estatica.js": {
+      "arquivo": "tools/testes/portabilidade-estatica.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        "PORTABILIDADE-ESTATICA.md",
+        "manifest.json",
+        "sw.js"
+      ],
+      "invariantes": [
+        "ativos de script e estilo das entradas são relativos/same-origin",
+        "quatro entradas conversacionais preservam a mesma casca local",
+        "precache estático só contém caminhos locais existentes",
+        "toda casca declarada nas entradas públicas entra no precache",
+        "manifesto e ícones continuam locais, existentes e cacheáveis",
+        "service worker não importa nem precacheia endereço externo",
+        "fallback offline só entrega HTML à navegação, não a ativo estático ausente",
+        "documentação separa casca portátil de integrações configuradas"
+      ],
+      "totalInvariantes": 8
+    },
+    "pre-requisitos-multimodais.js": {
+      "arquivo": "tools/testes/pre-requisitos-multimodais.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "executável localizado continua disponível mesmo se --version sair diferente de zero",
+        "caminho inexistente continua ausente"
+      ],
+      "totalInvariantes": 2
+    },
+    "pre-requisitos.js": {
+      "arquivo": "tools/testes/pre-requisitos.js",
+      "tipo": "misto",
+      "ehHelper": true,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [],
+      "totalInvariantes": 0
+    },
+    "preparo-controlado.js": {
+      "arquivo": "tools/testes/preparo-controlado.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        ".github/workflows/preparo-controlado.yml",
+        ".github/workflows/testes-rapidos.yml",
+        "CONTINUIDADE.md",
+        "OPERACAO-CENTRAL.md",
+        "sw.js",
+        "tools/preparo-controlado.js"
+      ],
+      "invariantes": [
+        "receita do preparo é um catálogo imutável de verificações locais",
+        "preparo chama somente Node e testes pré-definidos, sem shell livre",
+        "falha de guarda interrompe a receita, bloqueia revisão e não vira promoção",
+        "ferramenta não introduz avaliador livre ou transporte",
+        "workflow manual é somente-leitura e executa a receita literal",
+        "ponte e allowlist do preparo mantêm paridade nas quatro rotas",
+        "Central, continuidade e casca documentam o preparo sem promover código"
+      ],
+      "totalInvariantes": 7
+    },
+    "prova-ciclos.js": {
+      "arquivo": "tools/testes/prova-ciclos.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/prova-ciclos.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "dois turnos colados não abrem buraco",
+        "buraco menor que o limite é fila, não perda",
+        "buraco grande aparece com os minutos certos",
+        "sobreposição longa é vista; sobreposição curta é ignorada",
+        "execução sem data legível é contada como ilegível, não como zero",
+        "amostra curta nunca vira cumprido, mesmo com cobertura total",
+        "cem ciclos colados e sem sobreposição cumprem o degrau",
+        "cem ciclos com buraco grande ficam em parcial, com a razão dita",
+        "lista vazia não estoura e não finge saúde",
+        "a medida boa é o job do turno, não a execução inteira",
+        "tempo de job depois do último passo é medido, não engolido",
+        "job sem passos legíveis não inventa anomalia nem esconde o total",
+        "turno abortado é distinguido de tempo morto",
+        "job normal (passos cobrindo o tempo) não gera anomalia"
+      ],
+      "totalInvariantes": 14
+    },
+    "pulso-vigia-relogio.js": {
+      "arquivo": "tools/testes/pulso-vigia-relogio.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "externo:perf_hooks",
+        "tools/pulso-vigia.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "o padrão do relógio é o relógio do sistema, não uma constante",
+        "sem hora explícita, o pulso usa o relógio injetado (padrão de produção)",
+        "a borda da janela é INCLUSIVA: exatos 20 min ainda é recente",
+        "idade zero conta como recente (carimbo do exato instante não é futuro)",
+        "coordenaPulsoVigia sem hora explícita também lê o relógio injetado",
+        "quando coordenaPulsoVigia resolve, o pedido ao vigia JÁ foi feito"
+      ],
+      "totalInvariantes": 6
+    },
+    "pulso-vigia.js": {
+      "arquivo": "tools/testes/pulso-vigia.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/pulso-vigia.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "sucesso recente evita dispatch duplicado",
+        "sonda recente em andamento também evita sobreposição",
+        "sucesso antigo ou falha não vira saúde e mantém pulso",
+        "dado malformado ou futuro não bloqueia continuidade",
+        "consulta indisponível preserva fallback sem alegar vigia recente"
+      ],
+      "totalInvariantes": 5
+    },
+    "pwa-atualizacao-segura.js": {
+      "arquivo": "tools/testes/pwa-atualizacao-segura.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "as quatro rotas usam o mesmo cliente PWA externo local",
+        "a versão da casca é única, coerente com o cache e registrada na continuidade",
+        "cliente compartilhado é precacheado e observado pela barreira de continuidade",
+        "service worker atual instala sem se ativar sozinho"
+      ],
+      "totalInvariantes": 4
+    },
+    "rascunhos-locais-interface.js": {
+      "arquivo": "tools/testes/rascunhos-locais-interface.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "o núcleo de rascunhos e prévia é idêntico nas quatro rotas",
+        "o núcleo não toca token, sessão, API ou limpeza global de armazenamento",
+        "não grava conteúdo antes do opt-in explícito",
+        "separa rascunhos por conversa e preserva somente campos fechados",
+        "ignora armazenamento corrompido, token indevido e texto que ultrapassa o teto do compositor",
+        "não apaga rascunho mais novo ao confirmar texto diferente e respeita o limite local"
+      ],
+      "totalInvariantes": 6
+    },
+    "razao-local.js": {
+      "arquivo": "tools/testes/razao-local.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "razao-local.js",
+        "tools/armadilhas-do-chat.json"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [],
+      "totalInvariantes": 0
+    },
+    "recomeco-resgate-memoria.js": {
+      "arquivo": "tools/testes/recomeco-resgate-memoria.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "roteador-ia.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "o eco é reconhecido por texto, sem modelo",
+        "eco PARCIAL é reconhecido: pedaço da pergunta não é resposta",
+        "falso positivo de eco: palavra curta dentro de outra palavra não é eco",
+        "resposta SIM/NÃO sobre uma conta não é eco (era o vazio de 151 s)",
+        "eco parcial → recomeça e entrega a resposta certa",
+        "a conta que virava eco nem chega no modelo (ferramenta resolve)",
+        "molde de saída e resposta sem número são reconhecidos por texto",
+        "eco parcial que sobra do recomeço não é entregue como resposta",
+        "lixo nas duas chances não é entregue: vai para o resgate",
+        "eco na primeira chance → recomeça e entrega conteúdo",
+        "o recomeço veta só a rota que repetiu a ordem",
+        "eco em todas as chances → corta o eco e entrega o resto",
+        "núcleo vazio → o resgate entrega texto (e diz que resgatou)",
+        "o resgate tenta primeiro o caminho leve (rotas que costumam estar vivas)",
+        "resgate não inventa: se nada responder, devolve vazio com motivo",
+        "o resgate não vira laço: no máximo uma segunda rodada",
+        "resposta boa não gasta recomeço nem resgate",
+        "pedido de imagem sem visão NÃO é resgatado por modelo de texto",
+        "o contexto é montado com papéis e limites",
+        "o histórico chega ao modelo junto com a pergunta atual",
+        "sem histórico, a pergunta chega limpa (nada de contexto vazio)",
+        "histórico diferente não reaproveita cache de outra conversa",
+        "a ferramenta exata continua vendo a pergunta limpa"
+      ],
+      "totalInvariantes": 23
+    },
+    "rede-e-modo-somente-local.js": {
+      "arquivo": "tools/testes/rede-e-modo-somente-local.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "núcleos de rede, modo e retorno de configuração mantêm paridade nas quatro rotas",
+        "modo somente-local é temporário, sem chave persistente própria"
+      ],
+      "totalInvariantes": 2
+    },
+    "referencias-estaticas-privacidade.js": {
+      "arquivo": "tools/testes/referencias-estaticas-privacidade.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "contrato de referências estáticas mantém paridade nas quatro rotas"
+      ],
+      "totalInvariantes": 1
+    },
+    "reforco-dossie-controlado.js": {
+      "arquivo": "tools/testes/reforco-dossie-controlado.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        ".github/workflows/reforco-dossie-controlado.yml",
+        "tools/reforco-dossie-controlado.js"
+      ],
+      "invariantes": [
+        "catálogo é único, congelado e limitado a três caminhos literais",
+        "aceita somente contexto GitHub fechado de main",
+        "aplica somente o patch literal, a regressão correspondente e o relatório sanitizado",
+        "base incompatível falha antes de escrever qualquer arquivo",
+        "relatório preexistente bloqueia antes dos dois edits literais",
+        "diretório simbólico literal bloqueia antes de qualquer escrita fora da raiz",
+        "arquivo-alvo simbólico bloqueia antes de ler ou editar fora da raiz",
+        "arquivo-alvo com vínculo físico bloqueia antes de ler ou editar fora da raiz",
+        "vínculo físico introduzido depois da validação não altera arquivo externo",
+        "arquivo com conteúdo divergente depois da leitura bloqueia antes do relatório",
+        "diretório de entrada simbólico bloqueia antes de ler fora da raiz",
+        "ferramenta não recebe argumento/caminho livre nem executa transporte, shell ou Git",
+        "workflow executa preflight, contrato, patch e validação antes do ramo de três caminhos"
+      ],
+      "totalInvariantes": 13
+    },
+    "reserva-turno.js": {
+      "arquivo": "tools/testes/reserva-turno.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/reserva-turno.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "a própria reserva em andamento não bloqueia a retomada quando não há outro turno",
+        "turno manual pendente é preservado sem novo dispatch",
+        "turno ativo ou estado futuro não concluído também bloqueiam a reserva",
+        "histórico concluído não se passa por corrente viva",
+        "consulta indisponível, dado malformado ou identificador ausente não despacham às cegas",
+        "falha passageira na consulta é repetida e a reserva ainda conclui",
+        "credencial recusada não se repete: insistir não muda a resposta",
+        "todas as tentativas passageiras caem: preserva, mas diz o motivo",
+        "o motivo da consulta que falhou chega ao resultado e ao log da reserva",
+        "o pedido de turno é escrita: nunca se repete, mesmo quando falha"
+      ],
+      "totalInvariantes": 10
+    },
+    "reversao-caminho-do-403.js": {
+      "arquivo": "tools/testes/reversao-caminho-do-403.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/mesclador-estreito.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "quando a PR é proibida, a reversão vai por merge do ramo na main",
+        "quando a PR é permitida, o caminho normal continua sendo PR",
+        "recusa que não seja o 403 do GitHub não vira merge silencioso",
+        "a reversão não repete tentativa já feita",
+        "depois de reverter por merge, a reversão pede a barreira na main",
+        "reversão que não aconteceu não pede barreira"
+      ],
+      "totalInvariantes": 6
+    },
+    "roda-testes.js": {
+      "arquivo": "tools/testes/roda-testes.js",
+      "tipo": "misto",
+      "ehHelper": true,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [],
+      "totalInvariantes": 0
+    },
+    "rota-com-chave-ponta-a-ponta.js": {
+      "arquivo": "tools/testes/rota-com-chave-ponta-a-ponta.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "roteador-ia"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "com chave, a resposta vem da rota e é aproveitada",
+        "o cabeçalho Authorization chega exatamente como Bearer <chave>",
+        "o corpo pede o modelo declarado no catálogo",
+        "a chave não aparece no corpo da requisição",
+        "a rota autorizada é reconhecida como disponível",
+        "sem chave, NENHUMA requisição chega ao servidor",
+        "sem chave, a rota é declarada indisponível antes de qualquer tentativa",
+        "sem chave, a resposta sai vazia em vez de erro na cara do usuário",
+        "chave recusada (401) não entrega resposta",
+        "chave recusada marca a rota como doente em vez de insistir",
+        "texto de um bloco com frases suficientes sai em três parágrafos",
+        "a quebra de parágrafo não acrescenta nem remove palavras",
+        "o formato é resolvido na primeira chamada, sem repetir o pedido por parágrafo",
+        "com fonte viva pedida, a busca acontece e a fonte escolhida é a que tem o tema no título",
+        "o trecho do artigo entra no prompt enviado ao provedor",
+        "a resposta não vira cópia do trecho: o texto entregue é o gerado",
+        "sem fonte viva pedida e fora do navegador, o teste não consulta a Wikipédia",
+        "ferramentas desligadas vencem até o pedido explícito de fonte viva"
+      ],
+      "totalInvariantes": 18
+    },
+    "roteador-gratis.js": {
+      "arquivo": "tools/testes/roteador-gratis.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "bench/estilo.js",
+        "bench/pontuar.js"
+      ],
+      "modulosLidosEstaticamente": [
+        "roteador-ia.js"
+      ],
+      "invariantes": [
+        "roteador expõe sanear/util para teste",
+        "símbolo de 2 letras passa (",
+        "conclusão marcada é extraída",
+        "preâmbulo + resposta na 2ª frase",
+        "rota local: ",
+        "classificador: ",
+        "calendário: fevereiro de 2028 = 29",
+        "calendário: fevereiro de 2027 = 28",
+        "calendário: 1900 não é bissexto",
+        "calendário: 2000 é bissexto",
+        "calendário: 2024 tem 366 dias",
+        "calendário: terça + 10 dias = sexta",
+        "instrução de parágrafo: numera 2 de 3",
+        "instrução de parágrafo: exige português do Brasil",
+        "instrução de parágrafo: proíbe lista e prefácio",
+        "instrução de parágrafo: faixa de palavras coerente",
+        "fecharTexto corta frase incompleta",
+        "fecharTexto não mexe em texto já fechado",
+        "fecharTexto preserva texto sem ponto",
+        "aritmética: 16×12 = 192",
+        "aritmética: precedência 2+3*4 = 14",
+        "aritmética: parênteses (2+3)*4 = 20",
+        "aritmética: potência 2^10 = 1024",
+        "aritmética: expressão inválida devolve null",
+        "aritmética: não avalia código",
+        "formato: e-mail pede despedida formal",
+        "formato: carta também pede despedida",
+        "formato: argumento pede consequência concreta",
+        "formato: pergunta neutra não ganha instrução",
+        "fechamento: e-mail sem despedida ganha "
+      ],
+      "totalInvariantes": 30
+    },
+    "roteador-resiliencia.js": {
+      "arquivo": "tools/testes/roteador-resiliencia.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "roteador-ia.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [],
+      "totalInvariantes": 0
+    },
+    "roteamento-com-chave.js": {
+      "arquivo": "tools/testes/roteamento-com-chave.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "roteador-ia"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "rota com chave não fica disponível quando não há chave",
+        "com chave presente a rota fica disponível",
+        "a chave aparece só no cabeçalho Authorization, em nenhum outro",
+        "sem amostra de latência o timeout pedido é respeitado intacto",
+        "com latência medida o timeout encolhe para 2,5× a média, com piso de 6 s",
+        "rota que já estourou o relógio 2× seguidas recebe janela ainda menor",
+        "rota COM histórico de sucesso não perde a janela por estourar o relógio",
+        "rota que só estoura o relógio tem a janela cortada pela metade a cada estouro",
+        "um sucesso depois dos estouros devolve folga à janela",
+        "disjuntor só alcança rota que nunca respondeu, e com 6 falhas seguidas",
+        "rota que já respondeu nunca entra no disjuntor",
+        "cota (rate) não é tratada como falha de saúde para o disjuntor",
+        "três falhas seguidas mandam a rota para o fim da própria classe",
+        "duas falhas ainda não rebaixam a rota",
+        "um sucesso zera as falhas seguidas",
+        "a rota Groq está no catálogo e nasce inativa (sem chave no repositório)"
+      ],
+      "totalInvariantes": 16
+    },
+    "rotinas-locais-privacidade.js": {
+      "arquivo": "tools/testes/rotinas-locais-privacidade.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "contrato de rotinas locais mantém paridade nas quatro rotas"
+      ],
+      "totalInvariantes": 1
+    },
+    "saude-persistente.js": {
+      "arquivo": "tools/testes/saude-persistente.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "roteador-ia.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "rota sã não ocupa espaço no aparelho",
+        "falha de uma sessão é vista pela sessão seguinte",
+        "rota morta continua marcada na sessão seguinte",
+        "sucesso limpa o registro em vez de acumular lixo",
+        "cooldown em curso continua valendo mesmo com sucesso em voo",
+        "falhas antigas decaem: 90 min devolvem três créditos e a rota volta limpa",
+        "trinta minutos devolvem só um crédito",
+        "registro vencido é ignorado",
+        "JSON corrompido não derruba o roteador",
+        "rota fora do catálogo no disco é ignorada",
+        "privacidade: o disco guarda só números por rota",
+        "evento em rota sã NÃO renova o relógio da rota morta",
+        "relendo a memória o carimbo antigo é preservado (senão a morte volta a ser eterna)",
+        "morte vence sozinha em 6 h, mesmo com o chat em uso regular (repro do Chat B)",
+        "rota que respondeu deixa de ser morta na mesma sessão",
+        "morte vencida sai do disco sem levar as outras rotas junto"
+      ],
+      "totalInvariantes": 16
+    },
+    "saude-rotas-email.js": {
+      "arquivo": "tools/testes/saude-rotas-email.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/saude-rotas-email.js"
+      ],
+      "modulosLidosEstaticamente": [
+        "/nao/existe/saude.json"
+      ],
+      "invariantes": [
+        "sem arquivo a ordem original é preservada",
+        "rota que falhou vai para o fim do seu par",
+        "rota que respondeu fica na frente",
+        "ordem é estável entre rotas sem histórico",
+        "memória sobrevive à leitura do disco",
+        "registro com mais de 24 h é descartado",
+        "JSON corrompido devolve memória vazia em vez de quebrar",
+        "arquivo gigante é ignorado",
+        "privacidade: o arquivo guarda apenas números e nomes de rota",
+        "falha de escrita não derruba o turno",
+        "contadores são limitados e entradas demais são cortadas"
+      ],
+      "totalInvariantes": 11
+    },
+    "seguranca-interface.js": {
+      "arquivo": "tools/testes/seguranca-interface.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        "chat-estilos.css",
+        "console.html",
+        "provas/teste-email-2026-10-14-0417.md",
+        "sw.js",
+        "tools/email-chat.js",
+        "tools/prepara-foto.py"
+      ],
+      "invariantes": [
+        "checkbox temporário mantém tamanho clicável no celular",
+        "service worker recusa query e recursos fora da casca",
+        "console reutiliza token persistente autorizado",
+        "console renderiza ordens com DOM",
+        "OCR externo exige autorização explícita",
+        "anexos usam diretório temporário privado",
+        "preparo de foto regrava e remove metadados",
+        "actions são fixadas por SHA",
+        "prova pública não contém e-mail completo"
+      ],
+      "totalInvariantes": 9
+    },
+    "sem-dependencia.js": {
+      "arquivo": "tools/testes/sem-dependencia.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/auditoria-dependencias.js"
+      ],
+      "modulosLidosEstaticamente": [
+        "roteador-ia.js"
+      ],
+      "invariantes": [
+        "queda total: responde offline sem inventar, e sem esperar",
+        "redundância: vários provedores independentes, nenhum obrigatório com chave"
+      ],
+      "totalInvariantes": 2
+    },
+    "sessoes-locais-privacidade.js": {
+      "arquivo": "tools/testes/sessoes-locais-privacidade.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "contrato de sessão local mantém paridade nas quatro rotas"
+      ],
+      "totalInvariantes": 1
+    },
+    "simula-caixa.js": {
+      "arquivo": "tools/testes/simula-caixa.js",
+      "tipo": "estatica",
+      "ehHelper": true,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [],
+      "totalInvariantes": 0
+    },
+    "socorro.js": {
+      "arquivo": "tools/testes/socorro.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/socorro.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "acha job e passo que falharam",
+        "job que falhou sem passo diz isso em vez de inventar",
+        "categoria do passo é fechada",
+        "barreira vermelha vira causa própria, com categoria e link",
+        "o detalhe não carrega log, exceção nem credencial",
+        "barreira verde é saúde, com evidência fechada",
+        "barreira ainda rodando é em andamento, não ausência",
+        "conclusão que não é falha nem sucesso não inventa diagnóstico",
+        "categoria fora da lista fechada cai em outra"
+      ],
+      "totalInvariantes": 9
+    },
+    "sombra-e-portoes.js": {
+      "arquivo": "tools/testes/sombra-e-portoes.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/portoes.js",
+        "tools/sombra.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "sombra separa o que acontece hoje do que aconteceria no degrau 4",
+        "sombra respeita o mapa de risco: essencial não entra nem no exercício",
+        "PR só de texto entra hoje e entraria no degrau 4",
+        "registro guarda o que é preciso para julgar depois, inclusive o merge",
+        "resumo do registro conta o que interessa e nada além",
+        "portão 1 segue o termômetro, sem interpretação",
+        "portão 2 exige volume de registros E zero incidente",
+        "histórico sozinho não abre o portão 2: falta operação ao vivo",
+        "um incidente derruba o portão 2 mesmo com muitos registros",
+        "incidente só conta quando a main vermelha é o commit que o degrau 4 teria mesclado",
+        "o merge é resolvido na leitura: sem isso o portão 2 abriria sem evidência",
+        "PR não mesclada nunca conta como incidente, mesmo com sha parecido",
+        "portão 3 só abre com faixa, ensaio e volta — e hoje falta a volta",
+        "reversão exercitada em ensaio conta para o portão 3 — só o gatilho fica em aberto",
+        "os quatro portões podem ficar abertos ao mesmo tempo — o quadro não se contradiz",
+        "nível código sem os portões abertos é ilegítimo — e o desligado é sempre legítimo"
+      ],
+      "totalInvariantes": 16
+    },
+    "sorteios-locais-privacidade.js": {
+      "arquivo": "tools/testes/sorteios-locais-privacidade.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "contrato de sorteios locais mantém paridade nas quatro rotas"
+      ],
+      "totalInvariantes": 1
+    },
+    "sugestoes-locais-privacidade.js": {
+      "arquivo": "tools/testes/sugestoes-locais-privacidade.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "o contrato de sugestões locais mantém paridade entre as quatro rotas"
+      ],
+      "totalInvariantes": 1
+    },
+    "telegram.js": {
+      "arquivo": "tools/testes/telegram.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "desconhecido recebe só o aviso (canal + Discord)",
+        "desconhecido é avisado uma vez só",
+        "código errado não pareia",
+        "código certo pareia e guarda o dono",
+        "dono recebe resposta formatada (HTML do Telegram)",
+        "foto do dono passa pela visão",
+        "nota de voz do dono é transcrita e respondida",
+        "lembrete pelo Telegram vai para os comandos da casa",
+        "trabalho pelo Telegram usa a ferramenta compartilhada",
+        "Central compacta pelo Telegram delega ao mesmo mapa fechado",
+        "Central recompõe acento NFD pelo Telegram sem ampliar o mapa",
+        "outra pessoa não consegue parear depois do dono",
+        "grupos e canais são ignorados",
+        "formatação: negrito, código, lista, bloco e escape",
+        "mensagem longa é dividida (≤ 3800 por parte)"
+      ],
+      "totalInvariantes": 15
+    },
+    "teste-email-remetentes.js": {
+      "arquivo": "tools/testes/teste-email-remetentes.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/teste-email-remetentes"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "aliases são derivados sem expor o endereço de produção",
+        "coleta ignora os dois remetentes sintéticos",
+        "fallback sem endereço real continua finito"
+      ],
+      "totalInvariantes": 3
+    },
+    "teste-email-resultado.js": {
+      "arquivo": "tools/testes/teste-email-resultado.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/teste-email-resultado"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "resposta ausente entra como falha explícita",
+        "e-mail automático só passa quando foi lido e não recebeu resposta",
+        "resumo conserva todos os itens no denominador",
+        "resposta presente usa o avaliador do caso"
+      ],
+      "totalInvariantes": 4
+    },
+    "teste-foto-resiliencia.js": {
+      "arquivo": "tools/testes/teste-foto-resiliencia.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "a coleta IMAP de foto tem teto, sonda e reconexão",
+        "varredura prioriza a rodada atual e não a caixa histórica",
+        "resultado parcial, ausência e erro encerram o workflow como falha"
+      ],
+      "totalInvariantes": 3
+    },
+    "teste-navegador-pareado.js": {
+      "arquivo": "tools/testes/teste-navegador-pareado.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "usa uma única URL pública inofensiva e marca a origem sintética",
+        "exige o pareamento pela thread exata, não apenas pelo assunto",
+        "o relatório é sanitizado e declara o limite da evidência controlada",
+        "o workflow aceita o script explicitamente, sem abrir execução arbitrária"
+      ],
+      "totalInvariantes": 4
+    },
+    "texto-longo-offline.js": {
+      "arquivo": "tools/testes/texto-longo-offline.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        "roteador-ia.js"
+      ],
+      "invariantes": [
+        "entrega dois parágrafos",
+        "cada parágrafo é um bloco único",
+        "texto passa em textoCompleto",
+        "raciocínio em inglês nunca vira parágrafo",
+        "host que devolve raciocínio sai da frente",
+        "pedido com trecho público (opt-in) começa pelo bloco 1 e leva o contexto auditável",
+        "sem rascunho aproveitável, não gasta planejamento redundante",
+        "host bom foi usado",
+        "houve troca de host (não insistiu só no primeiro)",
+        "planejamento explícito continua disponível antes dos blocos"
+      ],
+      "totalInvariantes": 10
+    },
+    "token-antes-rascunho-privacidade.js": {
+      "arquivo": "tools/testes/token-antes-rascunho-privacidade.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "contrato de token e rascunho mantém paridade nas quatro rotas"
+      ],
+      "totalInvariantes": 1
+    },
+    "token-sessao-opcional.js": {
+      "arquivo": "tools/testes/token-sessao-opcional.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [],
+      "totalInvariantes": 0
+    },
+    "transformacoes-locais-privacidade.js": {
+      "arquivo": "tools/testes/transformacoes-locais-privacidade.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "contrato de transformações locais mantém paridade nas quatro rotas"
+      ],
+      "totalInvariantes": 1
+    },
+    "turno-cache-ferramentas.js": {
+      "arquivo": "tools/testes/turno-cache-ferramentas.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        ".github/workflows/email.yml"
+      ],
+      "invariantes": [
+        "o turno restaura e guarda o venv das ferramentas com chave fixa",
+        "o venv em cache só é aceito se os imports essenciais funcionarem",
+        "sem venv, o caminho antigo continua como fallback",
+        "o marcador de ferramentas e o PATH do turno são preservados",
+        "a duração do preparo é medida sem conteúdo nem segredo",
+        "o cache não guarda caixa, log de mensagem ou credencial",
+        "o leitor continua sendo o mesmo processo que atende a caixa"
+      ],
+      "totalInvariantes": 7
+    },
+    "turno-liveness.js": {
+      "arquivo": "tools/testes/turno-liveness.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/turno-liveness"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "falha inicial é observada, mas não encerra turno por oscilação isolada",
+        "sucesso reinicia contador após falha transitória",
+        "limite consecutivo encerra o turno com falha visível",
+        "contador inválido e falhas adicionais ficam contidos no limite"
+      ],
+      "totalInvariantes": 4
+    },
+    "varredura-privacidade.js": {
+      "arquivo": "tools/testes/varredura-privacidade.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "a varredura mínima mantém paridade entre as quatro rotas"
+      ],
+      "totalInvariantes": 1
+    },
+    "vigia-casa-resiliencia.js": {
+      "arquivo": "tools/testes/vigia-casa-resiliencia.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/vigia-casa.js"
+      ],
+      "modulosLidosEstaticamente": [
+        ".github/workflows/vigia.yml",
+        "tools/vigia-casa.js"
+      ],
+      "invariantes": [
+        "sonda IMAP do vigia tem tetos para conexão, trava, busca, leitura e logout",
+        "workflow do vigia tem teto global de execução",
+        "workflow serializa vigias para não disputar IMAP e estado",
+        "sondas da API GitHub usam o token só no cabeçalho da própria API",
+        "cadência do postador é observada por workflow, sem publicação ou recuperação cega",
+        "cron cobre todos os quartos de hora sem corrente que exceda o job",
+        "recuperação automática tem freio persistido e não faz rajada do mesmo turno",
+        "vigia novo não normaliza fila nem cancela turno duplicado automaticamente",
+        "diagnóstico sanitizado só recupera ausência/atraso comprovados",
+        "estado válido porém corrompido é reconstruído sem imprimir detalhe bruto",
+        "falha fatal reprova e ainda permite salvar fotografia já escrita"
+      ],
+      "totalInvariantes": 11
+    },
+    "vigia-estado.js": {
+      "arquivo": "tools/testes/vigia-estado.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/vigia-estado"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "evidências públicas são fechadas e não aceitam texto arbitrário",
+        "mudança de saúde é persistida imediatamente",
+        "estado verde idêntico não cria ruído antes de uma hora",
+        "pulso idêntico é persistido ao completar uma hora",
+        "estado ausente ou relógio futuro não congela a observabilidade",
+        "recuperações só aceitam famílias explícitas e timestamps sanitizados",
+        "primeira recuperação permitida grava freio persistível",
+        "mesma família não re-dispara dentro do intervalo, mas volta a tentar ao vencê-lo",
+        "bateria tem intervalo independente e mais espaçado",
+        "relógio impossível não bloqueia recuperação e ação desconhecida nunca é promovida",
+        "volta saudável limpa o freio para que uma nova pane tenha primeira tentativa",
+        "mudança de causa sanitizada é persistida sem depender de detalhe bruto"
+      ],
+      "totalInvariantes": 12
+    },
+    "vigia-recuperacao-fluxo.js": {
+      "arquivo": "tools/testes/vigia-recuperacao-fluxo.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/autonomia",
+        "tools/email-chat.js",
+        "tools/risco-de-arquivo",
+        "tools/socorro",
+        "tools/vigia-casa.js",
+        "tools/vigia-estado"
+      ],
+      "modulosLidosEstaticamente": [
+        "tools/email-chat.js",
+        "tools/vigia-casa.js"
+      ],
+      "invariantes": [],
+      "totalInvariantes": 0
+    },
+    "visao-resposta-cega.js": {
+      "arquivo": "tools/testes/visao-resposta-cega.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/email-chat"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "descarta negação com pronome ligado: visualizá-la",
+        "descarta variantes normalizadas de não conseguir abrir ou ver a imagem",
+        "descarta também a negação no pretérito antes de responder a foto",
+        "não descarta uma observação concreta da imagem"
+      ],
+      "totalInvariantes": 4
+    },
+    "workflows-versionados.js": {
+      "arquivo": "tools/testes/workflows-versionados.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        ".github/workflows/testes-rapidos.yml",
+        "package.json"
+      ],
+      "invariantes": [
+        "todo workflow roda na MESMA versão de Node que o package.json exige (>=22)",
+        "o workflow da barreira declara `contents: read` e não pede escrita",
+        "todo cron declarado tem cinco campos e um minuto válido",
+        "toda página servida declara Content-Security-Policy com o nome exato"
+      ],
+      "totalInvariantes": 4
+    },
+    "workspace-arquivo-completo-concorrencia-local.js": {
+      "arquivo": "tools/testes/workspace-arquivo-completo-concorrencia-local.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "chat-workspace.js"
+      ],
+      "modulosLidosEstaticamente": [
+        "chat-workspace.js"
+      ],
+      "invariantes": [
+        "fotografia das três lojas é copiada antes de uma alteração concorrente",
+        "restauração conflitada não limpa nem substitui conteúdo alterado depois da fotografia",
+        "fotografia idêntica permite troca atômica e só então limpa seleção local",
+        "ponto de desfazer recusa arquivo, projeto ou revisão que surgiu após a recuperação"
+      ],
+      "totalInvariantes": 4
+    },
+    "workspace-arquivo-completo.js": {
+      "arquivo": "tools/testes/workspace-arquivo-completo.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "chat-workspace.js"
+      ],
+      "modulosLidosEstaticamente": [
+        "chat-workspace.js"
+      ],
+      "invariantes": [
+        "expõe formato separado, limites finitos e validador local sem montar a interface",
+        "aceita arquivo completo mínimo que preserva arquivo ativo, versão e lixeira",
+        "rejeita esquema aberto, bytes divergentes, relações quebradas e versões em excesso antes da escrita",
+        "a substituição completa lê, compara e só então limpa as quatro lojas na mesma transação local",
+        "ponto temporário só restaura a fotografia confirmada e permanece disponível em conflito",
+        "interface exige ação manual explícita e descreve que a restauração substitui o Workspace"
+      ],
+      "totalInvariantes": 6
+    },
+    "workspace-busca-global.js": {
+      "arquivo": "tools/testes/workspace-busca-global.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "chat-workspace.js"
+      ],
+      "modulosLidosEstaticamente": [
+        "chat-estilos.css",
+        "chat-workspace.js"
+      ],
+      "invariantes": [
+        "mantém busca global explicitamente desligada e limitada ao projeto atual por padrão",
+        "aplica escopo global somente a uma consulta digitada e usa apenas arquivos ativos carregados",
+        "identifica o projeto de cada resultado global sem interpolar texto no HTML",
+        "abrir um resultado global preserva edição pendente antes de trocar projeto e arquivo juntos",
+        "ajuda acessível declara a fronteira de arquivos ativos, Lixeira e versões",
+        "controle mantém foco/estado visual local sem introduzir nova superfície de rede"
+      ],
+      "totalInvariantes": 6
+    },
+    "workspace-conflito-local.js": {
+      "arquivo": "tools/testes/workspace-conflito-local.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "chat-workspace.js"
+      ],
+      "modulosLidosEstaticamente": [
+        "chat-estilos.css",
+        "chat-workspace.js"
+      ],
+      "invariantes": [
+        "decide base, nome, cota e histórico na transação local antes de gravar arquivo, revisão e projeto",
+        "salvamento interrompe a substituição silenciosa e preserva rascunho também se o nome ou a cota atuais recusarem",
+        "bloqueia gravar ou apagar o original, mas conserva edição e cópia local explícita",
+        "cópia de conflito decide projeto, nome, quantidade e capacidade na transação atual",
+        "oferece recuperação deliberada e download local antes de descartar o rascunho",
+        "anuncia o conflito de forma legível e mantém os controles locais e alcançáveis",
+        "não acrescenta rede, token, sincronização ou armazenamento legado à resolução"
+      ],
+      "totalInvariantes": 7
+    },
+    "workspace-integridade-local.js": {
+      "arquivo": "tools/testes/workspace-integridade-local.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "chat-workspace.js"
+      ],
+      "modulosLidosEstaticamente": [
+        "chat-workspace.js"
+      ],
+      "invariantes": [
+        "preserva a edição atual e libera as revisões mais antigas quando o limite exige",
+        "mantém no máximo o histórico configurado por arquivo antes de gravar a nova versão",
+        "salva o conteúdo atual mesmo se não houver espaço para uma nova revisão",
+        "recusa apenas quando o conteúdo atual por si só ultrapassa a capacidade",
+        "salvamento decide o nome entre irmãos que já existem no readwrite atual",
+        "salvamento bem-sucedido devolve os irmãos ativos que chegaram antes do commit",
+        "salvamento usa a ocupação persistida atual e não ultrapassa 5 MB após outra gravação",
+        "cópia de conflito escolhe o próximo nome pela fotografia persistida do projeto",
+        "cópia de conflito consulta quantidade e capacidade persistidas antes de criar novo arquivo",
+        "cópia de conflito não cria filho sob projeto que outra guia moveu à lixeira",
+        "backup ativo decide o nome do projeto pela fotografia persistida antes do lote aditivo",
+        "backup ativo consulta os tetos persistidos e recusa o lote inteiro sem escrita parcial",
+        "metadados de lixeira não usam rede nem removem revisões durante o movimento recuperável",
+        "não move arquivo desatualizado para a lixeira e conserva a versão persistida",
+        "não move projeto quando um filho mudou depois da fotografia confirmada",
+        "clique de projeto em tela antiga não move filho que outra guia atualizou",
+        "clique de projeto em tela antiga não devolve à lixeira filho restaurado por outra guia",
+        "restauração resolve nome com a fotografia atual da transação",
+        "não descarta projeto da lixeira se um filho voltou a ficar ativo em outra guia",
+        "esvaziar lixeira também preserva projeto com filho ativo surgido em outra guia",
+        "arquivo vai à lixeira, mantém revisão, restaura e só libera espaço no descarte definitivo",
+        "esvaziar lixeira remove apenas raízes descartadas e suas versões",
+        "projeto absorve filho já removido, restaura a hierarquia e preserva revisões",
+        "criações de projeto decidem nome e projeto inicial dentro da transação atual",
+        "criação de arquivo não reativa projeto que outra guia já levou à lixeira",
+        "criação preserva o projeto persistido que outra guia renomeou e calcula o nome corrente",
+        "criação consulta as cotas persistidas antes de escrever sob fotografia antiga",
+        "renomeação de tela antiga não recupera nem sobrescreve projeto alterado por outra guia"
+      ],
+      "totalInvariantes": 28
+    },
+    "workspace-lixeira-concorrencia-local.js": {
+      "arquivo": "tools/testes/workspace-lixeira-concorrencia-local.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "chat-workspace.js"
+      ],
+      "modulosLidosEstaticamente": [
+        "chat-workspace.js"
+      ],
+      "invariantes": [
+        "compara também as marcas recuperáveis antes de reutilizar um registro",
+        "mover arquivo confere a base na própria transação antes de marcar lixeira",
+        "mover projeto exige que projeto e todos os filhos ainda coincidam",
+        "restauração, descarte definitivo e esvaziamento derivam o alvo dentro da transação",
+        "não descarta edição pendente para operar a lixeira e recarrega só sem rascunho",
+        "guarda da lixeira permanece local e não introduz transporte ou armazenamento legado"
+      ],
+      "totalInvariantes": 6
+    },
+    "workspace-local.js": {
+      "arquivo": "tools/testes/workspace-local.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        ".github/workflows/testes-rapidos.yml",
+        "CONTINUIDADE.md",
+        "chat-workspace.js",
+        "sw.js"
+      ],
+      "invariantes": [
+        "Workspace usa apenas IndexedDB local e não introduz transporte ou storage legado",
+        "Workspace limita dados locais e mantém exportação/importação validada",
+        "backup ativo decide o lote aditivo no readwrite persistido e reconcilia o rascunho local",
+        "Arquivo completo do Workspace é separado, explícito e cobre recuperação de versões e lixeira",
+        "Projeto portátil é separado do arquivo completo e adiciona histórico local sem substituir o Workspace",
+        "Busca global do Workspace é explícita, local e abre o resultado no projeto correspondente",
+        "Workspace detecta conflito entre edições locais e oferece resolução explícita",
+        "trecho só vai ao compositor por escolha explícita e não é enviado automaticamente",
+        "itens recebidos do usuário entram na interface por texto, não por HTML interpolado",
+        "as quatro rotas expõem o mesmo acesso e carregam uma só cópia do Workspace",
+        "casca PWA, workflow, corredor e porta de continuidade observam o ativo",
+        "porta de continuidade exige retrato quando o ativo local muda",
+        "autosave preserva edição pendente e a ação escolhida aguarda gravação já iniciada",
+        "Workspace oferece retorno seguro, histórico local e lixeira deliberada",
+        "lixeira preserva hierarquia, versões e espaço até descarte explícito"
+      ],
+      "totalInvariantes": 15
+    },
+    "workspace-projeto-portatil.js": {
+      "arquivo": "tools/testes/workspace-projeto-portatil.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "chat-workspace.js"
+      ],
+      "modulosLidosEstaticamente": [
+        "chat-workspace.js"
+      ],
+      "invariantes": [
+        "expõe um formato separado, finito e sem transporte para projeto portátil",
+        "aceita um projeto com arquivo ativo, versões e arquivo recuperável na lixeira",
+        "rejeita esquema aberto, outro projeto, lixo hierárquico e revisões quebradas antes da escrita",
+        "rejeita tamanho não estrito e teto portátil antes de parsear ou importar",
+        "exportação coleta somente o projeto ativo e importação adiciona registros novos numa transação",
+        "interface exige escolha manual e explica o comportamento aditivo local"
+      ],
+      "totalInvariantes": 6
+    }
+  }
+}

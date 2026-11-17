@@ -2,6 +2,11 @@
 'use strict';
 
 const JANELA_VIGIA_RECENTE_MS = 20 * 60 * 1000;
+
+// O relógio é DADO, não ambiente: quem chama pode injetar a hora e o padrão continua sendo
+// o do sistema. Sem isto, o padrão `Date.now()` era o único trecho do módulo que nenhum
+// contrato prendia — congelar a hora ali (mutante `Date.now()` → constante) passava verde.
+const relogio = { agora: () => Date.now() };
 const ESTADOS_EM_ANDAMENTO = new Set(['queued', 'pending', 'in_progress']);
 
 function inicioValido(run, agora) {
@@ -13,7 +18,7 @@ function inicioValido(run, agora) {
 
 // Um sucesso recente ou uma sonda ainda em andamento impede somente o pulso redundante do e-mail.
 // Falha, dado malformado ou relógio futuro não viram saúde e mantêm a tentativa de continuidade já existente.
-function haVigiaRecente(runs, agora = Date.now()) {
+function haVigiaRecente(runs, agora = relogio.agora()) {
   if (!Array.isArray(runs) || !Number.isFinite(agora)) return false;
   return runs.some(run => {
     if (!inicioValido(run, agora)) return false;
@@ -27,7 +32,7 @@ function decisaoDePulsoVigia(runs, opcoes = {}) {
   return haVigiaRecente(runs, opcoes.agora) ? 'preservar' : 'despachar';
 }
 
-async function coordenaPulsoVigia({ consultaRuns, pedirVigia, registrar = () => {}, agora = Date.now() }) {
+async function coordenaPulsoVigia({ consultaRuns, pedirVigia, registrar = () => {}, agora = relogio.agora() }) {
   let runs = null;
   if (typeof consultaRuns === 'function') {
     try { runs = await consultaRuns(); } catch (e) {}
@@ -42,4 +47,4 @@ async function coordenaPulsoVigia({ consultaRuns, pedirVigia, registrar = () => 
   return { decisao, despachado: true };
 }
 
-module.exports = { JANELA_VIGIA_RECENTE_MS, haVigiaRecente, decisaoDePulsoVigia, coordenaPulsoVigia };
+module.exports = { JANELA_VIGIA_RECENTE_MS, relogio, haVigiaRecente, decisaoDePulsoVigia, coordenaPulsoVigia };

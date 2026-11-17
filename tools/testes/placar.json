@@ -1,0 +1,1983 @@
+{
+ "geradoEm": "2026-11-17T15:34:30.878Z",
+ "seed": 42,
+ "maxPorModulo": 6,
+ "fontes": [
+  "mutador-placar-todos.json",
+  "mutador-placar-comportamental.json",
+  "triagem-vivos.json"
+ ],
+ "regra": "aberto conta vivo; kill só conta se um teste que executa o módulo falhou por comportamento",
+ "linhas": [
+  {
+   "id": "M001",
+   "arquivo": "bench/estilo.js",
+   "linha": 34,
+   "tipo": "trocar-limite",
+   "descricao": "<= → <",
+   "status": "invalida",
+   "origem": "mutador",
+   "motivo": "mutação não aplica ou não compila"
+  },
+  {
+   "id": "M002",
+   "arquivo": "bench/estilo.js",
+   "linha": 80,
+   "tipo": "engolir-erro",
+   "descricao": "throw → return null (linha 80)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M003",
+   "arquivo": "bench/estilo.js",
+   "linha": 78,
+   "tipo": "trocar-limite",
+   "descricao": ">= → >",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M004",
+   "arquivo": "bench/estilo.js",
+   "linha": 77,
+   "tipo": "engolir-erro",
+   "descricao": "throw → return null (linha 77)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M005",
+   "arquivo": "bench/medir-aberto.js",
+   "linha": 120,
+   "tipo": "congelar-identidade",
+   "descricao": "Date.now() → 1700000000000 (linha 120)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M006",
+   "arquivo": "bench/medir-aberto.js",
+   "linha": 44,
+   "tipo": "engolir-erro",
+   "descricao": "throw → return null (linha 44)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M007",
+   "arquivo": "bench/medir-aberto.js",
+   "linha": 90,
+   "tipo": "inverter-guarda",
+   "descricao": "if (meta.invalido) → if (!meta.invalido)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M008",
+   "arquivo": "bench/medir-aberto.js",
+   "linha": 110,
+   "tipo": "inverter-guarda",
+   "descricao": "if (trilha) → if (!trilha)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M009",
+   "arquivo": "bench/medir-aberto.js",
+   "linha": 45,
+   "tipo": "inverter-guarda",
+   "descricao": "if (dados.sum.completo) → if (!dados.sum.completo)",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M010",
+   "arquivo": "bench/medir-aberto.js",
+   "linha": 66,
+   "tipo": "congelar-identidade",
+   "descricao": "new Date().toISOString() → fixo (linha 66)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M011",
+   "arquivo": "bench/pontuar.js",
+   "linha": 111,
+   "tipo": "inverter-guarda",
+   "descricao": "if (passou) → if (!passou)",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M012",
+   "arquivo": "bench/pontuar.js",
+   "linha": 33,
+   "tipo": "devolver-default",
+   "descricao": "return p → return null",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M013",
+   "arquivo": "bench/pontuar.js",
+   "linha": 77,
+   "tipo": "trocar-limite",
+   "descricao": "<= → <",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M014",
+   "arquivo": "bench/pontuar.js",
+   "linha": 57,
+   "tipo": "trocar-limite",
+   "descricao": ">= → >",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M015",
+   "arquivo": "bench/pontuar.js",
+   "linha": 81,
+   "tipo": "trocar-limite",
+   "descricao": ">= → >",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M016",
+   "arquivo": "chat-colecoes-local.js",
+   "linha": 386,
+   "tipo": "trocar-limite",
+   "descricao": ">= → >",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M017",
+   "arquivo": "chat-colecoes-local.js",
+   "linha": 369,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 369",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M018",
+   "arquivo": "chat-colecoes-local.js",
+   "linha": 335,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 335",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M019",
+   "arquivo": "chat-colecoes-local.js",
+   "linha": 274,
+   "tipo": "inverter-guarda",
+   "descricao": "if (inicio) → if (!inicio)",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M020",
+   "arquivo": "chat-colecoes-local.js",
+   "linha": 30,
+   "tipo": "devolver-default",
+   "descricao": "return falha → return null",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M021",
+   "arquivo": "chat-colecoes-local.js",
+   "linha": 302,
+   "tipo": "trocar-limite",
+   "descricao": ">= → >",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M022",
+   "arquivo": "chat-comandos-locais.js",
+   "linha": 77,
+   "tipo": "devolver-default",
+   "descricao": "return ROTEIRO_CENTRAL → return null",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M023",
+   "arquivo": "chat-comandos-locais.js",
+   "linha": 87,
+   "tipo": "inverter-guarda",
+   "descricao": "if (raiz) → if (!raiz)",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M024",
+   "arquivo": "chat-comandos-locais.js",
+   "linha": 76,
+   "tipo": "devolver-default",
+   "descricao": "return ROTEIRO_TRABALHO → return null",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M025",
+   "arquivo": "chat-diagnostico.js",
+   "linha": 67,
+   "tipo": "trocar-limite",
+   "descricao": ">= → >",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M026",
+   "arquivo": "chat-diagnostico.js",
+   "linha": 52,
+   "tipo": "trocar-limite",
+   "descricao": ">= → >",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M027",
+   "arquivo": "chat-diagnostico.js",
+   "linha": 134,
+   "tipo": "inverter-guarda",
+   "descricao": "if (raiz) → if (!raiz)",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M028",
+   "arquivo": "chat-diagnostico.js",
+   "linha": 86,
+   "tipo": "devolver-default",
+   "descricao": "return motivo → return null",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M029",
+   "arquivo": "chat-diagnostico.js",
+   "linha": 98,
+   "tipo": "devolver-default",
+   "descricao": "return contagem → return null",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M030",
+   "arquivo": "chat-diagnostico.js",
+   "linha": 53,
+   "tipo": "trocar-limite",
+   "descricao": ">= → >",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M031",
+   "arquivo": "chat-filtro-chips.js",
+   "linha": 27,
+   "tipo": "inverter-guarda",
+   "descricao": "if (mostrar) → if (!mostrar)",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M032",
+   "arquivo": "chat-filtro-chips.js",
+   "linha": 49,
+   "tipo": "inverter-guarda",
+   "descricao": "if (atalhoGlobal) → if (!atalhoGlobal)",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M033",
+   "arquivo": "chat-organizacao-local.js",
+   "linha": 180,
+   "tipo": "devolver-default",
+   "descricao": "return proxima → return null",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M034",
+   "arquivo": "chat-organizacao-local.js",
+   "linha": 156,
+   "tipo": "inverter-guarda",
+   "descricao": "if (inicio) → if (!inicio)",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M035",
+   "arquivo": "chat-organizacao-local.js",
+   "linha": 231,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 231",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M036",
+   "arquivo": "chat-organizacao-local.js",
+   "linha": 25,
+   "tipo": "devolver-default",
+   "descricao": "return falha → return null",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M037",
+   "arquivo": "chat-organizacao-local.js",
+   "linha": 206,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 206",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M038",
+   "arquivo": "chat-organizacao-local.js",
+   "linha": 216,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 216",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M039",
+   "arquivo": "chat-workspace.js",
+   "linha": 1288,
+   "tipo": "inverter-guarda",
+   "descricao": "if (houveEdicaoDurante) → if (!houveEdicaoDurante)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M040",
+   "arquivo": "chat-workspace.js",
+   "linha": 1016,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 1016",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M041",
+   "arquivo": "chat-workspace.js",
+   "linha": 1002,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 1002",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M042",
+   "arquivo": "chat-workspace.js",
+   "linha": 556,
+   "tipo": "trocar-limite",
+   "descricao": ">= → >",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M043",
+   "arquivo": "chat-workspace.js",
+   "linha": 1865,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 1865",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M044",
+   "arquivo": "chat-workspace.js",
+   "linha": 1396,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 1396",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M045",
+   "arquivo": "razao-local.js",
+   "linha": 579,
+   "tipo": "trocar-limite",
+   "descricao": ">= → >",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M046",
+   "arquivo": "razao-local.js",
+   "linha": 1071,
+   "tipo": "trocar-limite",
+   "descricao": ">= → >",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M047",
+   "arquivo": "razao-local.js",
+   "linha": 379,
+   "tipo": "inverter-guarda",
+   "descricao": "if (u) → if (!u)",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M048",
+   "arquivo": "razao-local.js",
+   "linha": 175,
+   "tipo": "trocar-limite",
+   "descricao": ">= → >",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M049",
+   "arquivo": "razao-local.js",
+   "linha": 584,
+   "tipo": "inverter-guarda",
+   "descricao": "if (fixo) → if (!fixo)",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M050",
+   "arquivo": "razao-local.js",
+   "linha": 39,
+   "tipo": "devolver-default",
+   "descricao": "return n → return null",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M051",
+   "arquivo": "roteador-ia.js",
+   "linha": 1786,
+   "tipo": "inverter-guarda",
+   "descricao": "if (FONTES_LOCAIS) → if (!FONTES_LOCAIS)",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M052",
+   "arquivo": "roteador-ia.js",
+   "linha": 1690,
+   "tipo": "trocar-limite",
+   "descricao": ">= → >",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M053",
+   "arquivo": "roteador-ia.js",
+   "linha": 1869,
+   "tipo": "trocar-limite",
+   "descricao": ">= → >",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M054",
+   "arquivo": "roteador-ia.js",
+   "linha": 2905,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 2905",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M055",
+   "arquivo": "roteador-ia.js",
+   "linha": 1312,
+   "tipo": "inverter-guarda",
+   "descricao": "if (t1) → if (!t1)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M056",
+   "arquivo": "roteador-ia.js",
+   "linha": 3125,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 3125",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M057",
+   "arquivo": "sw.js",
+   "linha": 44,
+   "tipo": "devolver-default",
+   "descricao": "return resposta → return null",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M058",
+   "arquivo": "sw.js",
+   "linha": 44,
+   "tipo": "inverter-guarda",
+   "descricao": "if (resposta) → if (!resposta)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M059",
+   "arquivo": "sw.js",
+   "linha": 41,
+   "tipo": "devolver-default",
+   "descricao": "return resposta → return null",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M060",
+   "arquivo": "tools/autonomia.js",
+   "linha": 32,
+   "tipo": "congelar-identidade",
+   "descricao": "Date.now() → 1700000000000 (linha 32)",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M061",
+   "arquivo": "tools/autonomia.js",
+   "linha": 66,
+   "tipo": "inverter-guarda",
+   "descricao": "if (l.expirado) → if (!l.expirado)",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M062",
+   "arquivo": "tools/autonomia.js",
+   "linha": 69,
+   "tipo": "inverter-guarda",
+   "descricao": "if (l.semPrazo) → if (!l.semPrazo)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M063",
+   "arquivo": "tools/cobertura-navegador.js",
+   "linha": 50,
+   "tipo": "devolver-default",
+   "descricao": "return baixo → return null",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M064",
+   "arquivo": "tools/cobertura-navegador.js",
+   "linha": 47,
+   "tipo": "trocar-limite",
+   "descricao": "<= → <",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M065",
+   "arquivo": "tools/cobertura-navegador.js",
+   "linha": 39,
+   "tipo": "devolver-default",
+   "descricao": "return inicios → return null",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M066",
+   "arquivo": "tools/dossie-preparo-controlado.js",
+   "linha": 63,
+   "tipo": "devolver-default",
+   "descricao": "return destino → return null",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M067",
+   "arquivo": "tools/dossie-preparo-controlado.js",
+   "linha": 41,
+   "tipo": "apagar-escrita",
+   "descricao": "apagar mkdirSync() na linha 41",
+   "status": "invalida",
+   "origem": "mutador",
+   "motivo": "mutação não aplica ou não compila"
+  },
+  {
+   "id": "M068",
+   "arquivo": "tools/dossie-preparo-controlado.js",
+   "linha": 18,
+   "tipo": "engolir-erro",
+   "descricao": "throw → return null (linha 18)",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M069",
+   "arquivo": "tools/dossie-preparo-controlado.js",
+   "linha": 57,
+   "tipo": "engolir-erro",
+   "descricao": "throw → return null (linha 57)",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M070",
+   "arquivo": "tools/dossie-preparo-controlado.js",
+   "linha": 48,
+   "tipo": "engolir-erro",
+   "descricao": "throw → return null (linha 48)",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M071",
+   "arquivo": "tools/dossie-preparo-controlado.js",
+   "linha": 61,
+   "tipo": "engolir-erro",
+   "descricao": "throw → return null (linha 61)",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M072",
+   "arquivo": "tools/email-chat.js",
+   "linha": 1167,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 1167",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M073",
+   "arquivo": "tools/email-chat.js",
+   "linha": 1562,
+   "tipo": "inverter-guarda",
+   "descricao": "if (dir) → if (!dir)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M074",
+   "arquivo": "tools/email-chat.js",
+   "linha": 1338,
+   "tipo": "apagar-escrita",
+   "descricao": "apagar writeFileSync() na linha 1338",
+   "status": "invalida",
+   "origem": "mutador",
+   "motivo": "mutação não aplica ou não compila"
+  },
+  {
+   "id": "M075",
+   "arquivo": "tools/email-chat.js",
+   "linha": 1915,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 1915",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M076",
+   "arquivo": "tools/email-chat.js",
+   "linha": 1698,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 1698",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M077",
+   "arquivo": "tools/email-chat.js",
+   "linha": 1749,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 1749",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M078",
+   "arquivo": "tools/email-poll.js",
+   "linha": 112,
+   "tipo": "congelar-identidade",
+   "descricao": "Date.now() → 1700000000000 (linha 112)",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M079",
+   "arquivo": "tools/email-poll.js",
+   "linha": 43,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 43",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M080",
+   "arquivo": "tools/email-poll.js",
+   "linha": 125,
+   "tipo": "congelar-identidade",
+   "descricao": "Date.now() → 1700000000000 (linha 125)",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M081",
+   "arquivo": "tools/email-poll.js",
+   "linha": 152,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 152",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M082",
+   "arquivo": "tools/email-poll.js",
+   "linha": 157,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 157",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M083",
+   "arquivo": "tools/email-poll.js",
+   "linha": 170,
+   "tipo": "congelar-identidade",
+   "descricao": "Date.now() → 1700000000000 (linha 170)",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M084",
+   "arquivo": "tools/estado-operacional-controlado.js",
+   "linha": 273,
+   "tipo": "apagar-escrita",
+   "descricao": "apagar mkdirSync() na linha 273",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M085",
+   "arquivo": "tools/estado-operacional-controlado.js",
+   "linha": 80,
+   "tipo": "inverter-guarda",
+   "descricao": "if (r.error) → if (!r.error)",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M086",
+   "arquivo": "tools/estado-operacional-controlado.js",
+   "linha": 71,
+   "tipo": "engolir-erro",
+   "descricao": "throw → return null (linha 71)",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M087",
+   "arquivo": "tools/estado-operacional-controlado.js",
+   "linha": 308,
+   "tipo": "trocar-limite",
+   "descricao": "<= → <",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M088",
+   "arquivo": "tools/estado-operacional-controlado.js",
+   "linha": 143,
+   "tipo": "apagar-escrita",
+   "descricao": "apagar writeFileSync() na linha 143",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M089",
+   "arquivo": "tools/estado-operacional-controlado.js",
+   "linha": 304,
+   "tipo": "inverter-guarda",
+   "descricao": "if (p.concatenaLog) → if (!p.concatenaLog)",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M090",
+   "arquivo": "tools/evolucao-chat.js",
+   "linha": 83,
+   "tipo": "devolver-default",
+   "descricao": "return texto → return null",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M091",
+   "arquivo": "tools/evolucao-chat.js",
+   "linha": 129,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 129",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M092",
+   "arquivo": "tools/evolucao-chat.js",
+   "linha": 106,
+   "tipo": "inverter-guarda",
+   "descricao": "if (bearer) → if (!bearer)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M093",
+   "arquivo": "tools/evolucao-chat.js",
+   "linha": 91,
+   "tipo": "trocar-limite",
+   "descricao": ">= → >",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M094",
+   "arquivo": "tools/evolucao-chat.js",
+   "linha": 108,
+   "tipo": "engolir-erro",
+   "descricao": "throw → return null (linha 108)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M095",
+   "arquivo": "tools/evolucao-chat.js",
+   "linha": 47,
+   "tipo": "congelar-identidade",
+   "descricao": "new Date().toISOString() → fixo (linha 47)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M096",
+   "arquivo": "tools/indice-capacidade.js",
+   "linha": 10,
+   "tipo": "devolver-default",
+   "descricao": "return padrao → return null",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M097",
+   "arquivo": "tools/indice-capacidade.js",
+   "linha": 82,
+   "tipo": "inverter-guarda",
+   "descricao": "if (m) → if (!m)",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M098",
+   "arquivo": "tools/indice-capacidade.js",
+   "linha": 8,
+   "tipo": "congelar-identidade",
+   "descricao": "new Date().toISOString() → fixo (linha 8)",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M099",
+   "arquivo": "tools/indice-capacidade.js",
+   "linha": 41,
+   "tipo": "trocar-limite",
+   "descricao": "<= → <",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M100",
+   "arquivo": "tools/indice-capacidade.js",
+   "linha": 46,
+   "tipo": "trocar-limite",
+   "descricao": ">= → >",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M101",
+   "arquivo": "tools/indice-capacidade.js",
+   "linha": 226,
+   "tipo": "inverter-guarda",
+   "descricao": "if (placar.sinais) → if (!placar.sinais)",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M102",
+   "arquivo": "tools/inventario-estado-operacional.js",
+   "linha": 39,
+   "tipo": "inverter-guarda",
+   "descricao": "if (resultado.error) → if (!resultado.error)",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M103",
+   "arquivo": "tools/inventario-estado-operacional.js",
+   "linha": 33,
+   "tipo": "engolir-erro",
+   "descricao": "throw → return null (linha 33)",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M104",
+   "arquivo": "tools/inventario-estado-operacional.js",
+   "linha": 46,
+   "tipo": "devolver-default",
+   "descricao": "return candidata → return null",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M105",
+   "arquivo": "tools/inventario-estado-operacional.js",
+   "linha": 41,
+   "tipo": "devolver-default",
+   "descricao": "return resultado → return null",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M106",
+   "arquivo": "tools/inventario-estado-operacional.js",
+   "linha": 77,
+   "tipo": "devolver-default",
+   "descricao": "return itens → return null",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M107",
+   "arquivo": "tools/montar-paginas.js",
+   "linha": 33,
+   "tipo": "engolir-erro",
+   "descricao": "throw → return null (linha 33)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M108",
+   "arquivo": "tools/montar-paginas.js",
+   "linha": 72,
+   "tipo": "engolir-erro",
+   "descricao": "throw → return null (linha 72)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M109",
+   "arquivo": "tools/montar-paginas.js",
+   "linha": 58,
+   "tipo": "devolver-default",
+   "descricao": "return dados → return null",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M110",
+   "arquivo": "tools/montar-paginas.js",
+   "linha": 101,
+   "tipo": "apagar-escrita",
+   "descricao": "apagar writeFileSync() na linha 101",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M111",
+   "arquivo": "tools/montar-paginas.js",
+   "linha": 68,
+   "tipo": "engolir-erro",
+   "descricao": "throw → return null (linha 68)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M112",
+   "arquivo": "tools/montar-paginas.js",
+   "linha": 57,
+   "tipo": "engolir-erro",
+   "descricao": "throw → return null (linha 57)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M113",
+   "arquivo": "tools/painel.js",
+   "linha": 155,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 155",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M114",
+   "arquivo": "tools/painel.js",
+   "linha": 108,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 108",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M115",
+   "arquivo": "tools/painel.js",
+   "linha": 37,
+   "tipo": "inverter-guarda",
+   "descricao": "if (turno.status) → if (!turno.status)",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M116",
+   "arquivo": "tools/painel.js",
+   "linha": 154,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 154",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M117",
+   "arquivo": "tools/painel.js",
+   "linha": 124,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 124",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M118",
+   "arquivo": "tools/painel.js",
+   "linha": 117,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 117",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M119",
+   "arquivo": "tools/portoes.js",
+   "linha": 177,
+   "tipo": "inverter-guarda",
+   "descricao": "if (quadro.incidentes.total) → if (!quadro.incidentes.total)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M120",
+   "arquivo": "tools/portoes.js",
+   "linha": 152,
+   "tipo": "inverter-guarda",
+   "descricao": "if (registros.length) → if (!registros.length)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M121",
+   "arquivo": "tools/portoes.js",
+   "linha": 131,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 131",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M122",
+   "arquivo": "tools/portoes.js",
+   "linha": 135,
+   "tipo": "engolir-erro",
+   "descricao": "throw → return null (linha 135)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M123",
+   "arquivo": "tools/portoes.js",
+   "linha": 174,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 174",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M124",
+   "arquivo": "tools/portoes.js",
+   "linha": 168,
+   "tipo": "engolir-erro",
+   "descricao": "throw → return null (linha 168)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M125",
+   "arquivo": "tools/prova-ciclos.js",
+   "linha": 110,
+   "tipo": "inverter-guarda",
+   "descricao": "if (listaBuracos.length) → if (!listaBuracos.length)",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M126",
+   "arquivo": "tools/prova-ciclos.js",
+   "linha": 86,
+   "tipo": "trocar-limite",
+   "descricao": ">= → >",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M127",
+   "arquivo": "tools/prova-ciclos.js",
+   "linha": 188,
+   "tipo": "inverter-guarda",
+   "descricao": "if (token) → if (!token)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M128",
+   "arquivo": "tools/prova-ciclos.js",
+   "linha": 176,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 176",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M129",
+   "arquivo": "tools/prova-ciclos.js",
+   "linha": 59,
+   "tipo": "trocar-limite",
+   "descricao": "<= → <",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M130",
+   "arquivo": "tools/prova-ciclos.js",
+   "linha": 77,
+   "tipo": "devolver-default",
+   "descricao": "return achados → return null",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M131",
+   "arquivo": "tools/pulso-vigia.js",
+   "linha": 16,
+   "tipo": "trocar-limite",
+   "descricao": ">= → >",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M132",
+   "arquivo": "tools/pulso-vigia.js",
+   "linha": 9,
+   "tipo": "congelar-identidade",
+   "descricao": "Date.now() → 1700000000000 (linha 9)",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M133",
+   "arquivo": "tools/pulso-vigia.js",
+   "linha": 38,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 38",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M134",
+   "arquivo": "tools/pulso-vigia.js",
+   "linha": 16,
+   "tipo": "trocar-limite",
+   "descricao": "<= → <",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M135",
+   "arquivo": "tools/pulso-vigia.js",
+   "linha": 46,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 46",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M136",
+   "arquivo": "tools/reforco-dossie-controlado.js",
+   "linha": 56,
+   "tipo": "devolver-default",
+   "descricao": "return destino → return null",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M137",
+   "arquivo": "tools/reforco-dossie-controlado.js",
+   "linha": 111,
+   "tipo": "devolver-default",
+   "descricao": "return atual → return null",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M138",
+   "arquivo": "tools/reforco-dossie-controlado.js",
+   "linha": 109,
+   "tipo": "engolir-erro",
+   "descricao": "throw → return null (linha 109)",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M139",
+   "arquivo": "tools/reforco-dossie-controlado.js",
+   "linha": 80,
+   "tipo": "engolir-erro",
+   "descricao": "throw → return null (linha 80)",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M140",
+   "arquivo": "tools/reforco-dossie-controlado.js",
+   "linha": 86,
+   "tipo": "apagar-escrita",
+   "descricao": "apagar mkdirSync() na linha 86",
+   "status": "invalida",
+   "origem": "mutador",
+   "motivo": "mutação não aplica ou não compila"
+  },
+  {
+   "id": "M141",
+   "arquivo": "tools/reforco-dossie-controlado.js",
+   "linha": 123,
+   "tipo": "inverter-guarda",
+   "descricao": "if (criado) → if (!criado)",
+   "status": "nao_executa",
+   "origem": "mutador",
+   "motivo": "o módulo não tem nenhum leitor que executa código (só estático)"
+  },
+  {
+   "id": "M142",
+   "arquivo": "tools/reserva-turno.js",
+   "linha": 125,
+   "tipo": "engolir-erro",
+   "descricao": "throw → return null (linha 125)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M143",
+   "arquivo": "tools/reserva-turno.js",
+   "linha": 36,
+   "tipo": "devolver-default",
+   "descricao": "return encontreiMeuRun → return null",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M144",
+   "arquivo": "tools/reserva-turno.js",
+   "linha": 102,
+   "tipo": "inverter-guarda",
+   "descricao": "if (definitiva) → if (!definitiva)",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M145",
+   "arquivo": "tools/reserva-turno.js",
+   "linha": 159,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 159",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M146",
+   "arquivo": "tools/reserva-turno.js",
+   "linha": 109,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 109",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M147",
+   "arquivo": "tools/reserva-turno.js",
+   "linha": 58,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 58",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M148",
+   "arquivo": "tools/saude-rotas-email.js",
+   "linha": 153,
+   "tipo": "apagar-escrita",
+   "descricao": "apagar writeFileSync() na linha 153",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M149",
+   "arquivo": "tools/saude-rotas-email.js",
+   "linha": 116,
+   "tipo": "devolver-default",
+   "descricao": "return lista → return null",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M150",
+   "arquivo": "tools/saude-rotas-email.js",
+   "linha": 61,
+   "tipo": "devolver-default",
+   "descricao": "return saida → return null",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M151",
+   "arquivo": "tools/saude-rotas-email.js",
+   "linha": 89,
+   "tipo": "inverter-guarda",
+   "descricao": "if (ok) → if (!ok)",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M152",
+   "arquivo": "tools/saude-rotas-email.js",
+   "linha": 132,
+   "tipo": "congelar-identidade",
+   "descricao": "Date.now() → 1700000000000 (linha 132)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M153",
+   "arquivo": "tools/saude-rotas-email.js",
+   "linha": 107,
+   "tipo": "devolver-default",
+   "descricao": "return nota → return null",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M154",
+   "arquivo": "tools/socorro.js",
+   "linha": 96,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 96",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M155",
+   "arquivo": "tools/socorro.js",
+   "linha": 106,
+   "tipo": "inverter-guarda",
+   "descricao": "if (d.evidencia) → if (!d.evidencia)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M156",
+   "arquivo": "tools/socorro.js",
+   "linha": 88,
+   "tipo": "engolir-erro",
+   "descricao": "throw → return null (linha 88)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M157",
+   "arquivo": "tools/socorro.js",
+   "linha": 97,
+   "tipo": "engolir-erro",
+   "descricao": "throw → return null (linha 97)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M158",
+   "arquivo": "tools/socorro.js",
+   "linha": 100,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 100",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M159",
+   "arquivo": "tools/socorro.js",
+   "linha": 101,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 101",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M160",
+   "arquivo": "tools/sombra.js",
+   "linha": 225,
+   "tipo": "inverter-guarda",
+   "descricao": "if (resumo.essenciaisMaisFrequentes.length) → if (!resumo.essenciaisMaisFrequentes.length)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M161",
+   "arquivo": "tools/sombra.js",
+   "linha": 148,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 148",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M162",
+   "arquivo": "tools/sombra.js",
+   "linha": 122,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 122",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M163",
+   "arquivo": "tools/sombra.js",
+   "linha": 121,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 121",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M164",
+   "arquivo": "tools/sombra.js",
+   "linha": 180,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 180",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M165",
+   "arquivo": "tools/sombra.js",
+   "linha": 173,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 173",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M166",
+   "arquivo": "tools/telegram-chat.js",
+   "linha": 151,
+   "tipo": "inverter-guarda",
+   "descricao": "if (vl) → if (!vl)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M167",
+   "arquivo": "tools/telegram-chat.js",
+   "linha": 59,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 59",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M168",
+   "arquivo": "tools/telegram-chat.js",
+   "linha": 218,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 218",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M169",
+   "arquivo": "tools/telegram-chat.js",
+   "linha": 241,
+   "tipo": "congelar-identidade",
+   "descricao": "Date.now() → 1700000000000 (linha 241)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M170",
+   "arquivo": "tools/telegram-chat.js",
+   "linha": 145,
+   "tipo": "inverter-guarda",
+   "descricao": "if (imagem) → if (!imagem)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M171",
+   "arquivo": "tools/telegram-chat.js",
+   "linha": 129,
+   "tipo": "inverter-guarda",
+   "descricao": "if (lidos.length) → if (!lidos.length)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M172",
+   "arquivo": "tools/termometro-barreira.js",
+   "linha": 170,
+   "tipo": "inverter-guarda",
+   "descricao": "if (n.passoDominante) → if (!n.passoDominante)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M173",
+   "arquivo": "tools/termometro-barreira.js",
+   "linha": 164,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 164",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M174",
+   "arquivo": "tools/termometro-barreira.js",
+   "linha": 107,
+   "tipo": "trocar-limite",
+   "descricao": ">= → >",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M175",
+   "arquivo": "tools/termometro-barreira.js",
+   "linha": 145,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 145",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M176",
+   "arquivo": "tools/termometro-barreira.js",
+   "linha": 70,
+   "tipo": "trocar-limite",
+   "descricao": ">= → >",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M177",
+   "arquivo": "tools/termometro-barreira.js",
+   "linha": 63,
+   "tipo": "trocar-limite",
+   "descricao": ">= → >",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M178",
+   "arquivo": "tools/vigia-casa.js",
+   "linha": 298,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 298",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M179",
+   "arquivo": "tools/vigia-casa.js",
+   "linha": 331,
+   "tipo": "engolir-erro",
+   "descricao": "throw → return null (linha 331)",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M180",
+   "arquivo": "tools/vigia-casa.js",
+   "linha": 384,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 384",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M181",
+   "arquivo": "tools/vigia-casa.js",
+   "linha": 412,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 412",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M182",
+   "arquivo": "tools/vigia-casa.js",
+   "linha": 187,
+   "tipo": "inverter-guarda",
+   "descricao": "if (leitura.expirado) → if (!leitura.expirado)",
+   "status": "morta",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "M183",
+   "arquivo": "tools/vigia-casa.js",
+   "linha": 356,
+   "tipo": "remover-await",
+   "descricao": "await removido na linha 356",
+   "status": "viva",
+   "origem": "mutador",
+   "motivo": "veredito da corrida só-comportamental"
+  },
+  {
+   "id": "B001",
+   "arquivo": "chat-colecoes-local.js",
+   "linha": 335,
+   "tipo": "remover-await",
+   "descricao": "sem await, `criarColecao` pode resolver antes de `iniciar()` terminar; o teste em vm não observa a ordem",
+   "status": "viva",
+   "origem": "buraco",
+   "motivo": "buraco aberto: nenhum contrato prende este sítio"
+  },
+  {
+   "id": "B002",
+   "arquivo": "chat-organizacao-local.js",
+   "linha": 206,
+   "tipo": "remover-await",
+   "descricao": "limparFavoritos sem await: o retorno chega antes da limpeza",
+   "status": "viva",
+   "origem": "buraco",
+   "motivo": "buraco aberto: nenhum contrato prende este sítio"
+  },
+  {
+   "id": "B003",
+   "arquivo": "chat-organizacao-local.js",
+   "linha": 216,
+   "tipo": "remover-await",
+   "descricao": "exportarBackup sem await: o backup pode ser devolvido incompleto",
+   "status": "viva",
+   "origem": "buraco",
+   "motivo": "buraco aberto: nenhum contrato prende este sítio"
+  },
+  {
+   "id": "B004",
+   "arquivo": "chat-workspace.js",
+   "linha": 1288,
+   "tipo": "inverter-guarda",
+   "descricao": "agendarSalvarAutomatico passa a rodar quando NÃO houve edição durante a troca, e deixa de rodar quando houve",
+   "status": "viva",
+   "origem": "buraco",
+   "motivo": "buraco aberto: nenhum contrato prende este sítio"
+  },
+  {
+   "id": "B005",
+   "arquivo": "chat-workspace.js",
+   "linha": 1016,
+   "tipo": "remover-await",
+   "descricao": "sem await no salvar, a troca segue mesmo se a gravação falhar",
+   "status": "viva",
+   "origem": "buraco",
+   "motivo": "buraco aberto: nenhum contrato prende este sítio"
+  },
+  {
+   "id": "B006",
+   "arquivo": "chat-workspace.js",
+   "linha": 1002,
+   "tipo": "remover-await",
+   "descricao": "sem await, o projeto inicial é usado antes de existir",
+   "status": "viva",
+   "origem": "buraco",
+   "motivo": "buraco aberto: nenhum contrato prende este sítio"
+  },
+  {
+   "id": "B007",
+   "arquivo": "chat-workspace.js",
+   "linha": 1865,
+   "tipo": "remover-await",
+   "descricao": "o salvamento automático deixa de ser aguardado antes de seguir",
+   "status": "viva",
+   "origem": "buraco",
+   "motivo": "buraco aberto: nenhum contrato prende este sítio"
+  },
+  {
+   "id": "B008",
+   "arquivo": "razao-local.js",
+   "linha": 175,
+   "tipo": "trocar-limite",
+   "descricao": "limiar 0,5 de termos em comum: com `>` um par que acerta metade das palavras deixa de casar — muda resposta do raciocínio",
+   "status": "viva",
+   "origem": "buraco",
+   "motivo": "buraco aberto: nenhum contrato prende este sítio"
+  },
+  {
+   "id": "B009",
+   "arquivo": "roteador-ia.js",
+   "linha": 3023,
+   "tipo": "remover-await",
+   "descricao": "sem await, o ramo leve devolve promessa em vez do texto; qualquer consumidor que compare string quebra",
+   "status": "viva",
+   "origem": "buraco",
+   "motivo": "buraco aberto: nenhum contrato prende este sítio"
+  },
+  {
+   "id": "B010",
+   "arquivo": "tools/mesclador-estreito.js",
+   "linha": 213,
+   "tipo": "remover-await",
+   "descricao": "sem await, o revert é reportado como concluído antes de a chamada voltar",
+   "status": "viva",
+   "origem": "buraco",
+   "motivo": "buraco aberto: nenhum contrato prende este sítio"
+  },
+  {
+   "id": "B011",
+   "arquivo": "tools/reforco-dossie-controlado.js",
+   "linha": 111,
+   "tipo": "devolver-default",
+   "descricao": "devolve null em vez do texto atual: comparação de igualdade do arquivo passa a comparar com null",
+   "status": "viva",
+   "origem": "buraco",
+   "motivo": "buraco aberto: nenhum contrato prende este sítio"
+  },
+  {
+   "id": "B012",
+   "arquivo": "tools/reserva-turno.js",
+   "linha": 109,
+   "tipo": "remover-await",
+   "descricao": "a espera entre tentativas deixa de acontecer antes da próxima chamada: as 3 tentativas viram rajada",
+   "status": "morta",
+   "origem": "buraco",
+   "motivo": "fechado: buracos-ciclo4.js — ordem das tentativas e backoff por literal"
+  },
+  {
+   "id": "B013",
+   "arquivo": "tools/termometro-barreira.js",
+   "linha": 107,
+   "tipo": "trocar-limite",
+   "descricao": "com 5 execuções recentes exatas o termômetro deixa de avaliar instabilidade",
+   "status": "morta",
+   "origem": "buraco",
+   "motivo": "fechado: buracos-ciclo4.js — janela recente inclusiva (5 conta)"
+  },
+  {
+   "id": "B014",
+   "arquivo": "tools/termometro-barreira.js",
+   "linha": 63,
+   "tipo": "trocar-limite",
+   "descricao": "execução exatamente no marco do deploy deixa de contar",
+   "status": "viva",
+   "origem": "buraco",
+   "motivo": "buraco aberto: nenhum contrato prende este sítio"
+  }
+ ]
+}
