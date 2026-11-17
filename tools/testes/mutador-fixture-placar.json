@@ -1,5 +1,5 @@
 {
-  "geradoEm": "2026-11-17T13:50:00.322Z",
+  "geradoEm": "2026-11-17T14:01:58.316Z",
   "seed": 42,
   "max": 6,
   "fixtures": 20,
@@ -34,6 +34,7 @@
         "reforco-dossie-controlado.js",
         "auditoria-workflows.js",
         "dossie-preparo-controlado.js",
+        "workflows-versionados.js",
         "seguranca-interface.js",
         "preparo-controlado.js",
         "estilos-compartilhados.js",
@@ -45,8 +46,7 @@
         "comandos-locais-interface.js",
         "navegador-retorno.js",
         "central-operacional.js",
-        "paginas-geradas.js",
-        "workflows-versionados.js"
+        "paginas-geradas.js"
       ],
       "detalhes": [
         {
@@ -78,6 +78,7 @@
         "reforco-dossie-controlado.js",
         "auditoria-workflows.js",
         "dossie-preparo-controlado.js",
+        "workflows-versionados.js",
         "seguranca-interface.js",
         "preparo-controlado.js",
         "vigia-recuperacao-fluxo.js",
@@ -90,8 +91,7 @@
         "comandos-locais-interface.js",
         "navegador-retorno.js",
         "central-operacional.js",
-        "paginas-geradas.js",
-        "workflows-versionados.js"
+        "paginas-geradas.js"
       ],
       "detalhes": [
         {
@@ -142,6 +142,7 @@
         "reforco-dossie-controlado.js",
         "auditoria-workflows.js",
         "dossie-preparo-controlado.js",
+        "workflows-versionados.js",
         "seguranca-interface.js",
         "preparo-controlado.js",
         "estilos-compartilhados.js",
@@ -153,8 +154,7 @@
         "comandos-locais-interface.js",
         "navegador-retorno.js",
         "central-operacional.js",
-        "paginas-geradas.js",
-        "workflows-versionados.js"
+        "paginas-geradas.js"
       ],
       "detalhes": [
         {
@@ -191,6 +191,7 @@
         "reforco-dossie-controlado.js",
         "auditoria-workflows.js",
         "dossie-preparo-controlado.js",
+        "workflows-versionados.js",
         "seguranca-interface.js",
         "preparo-controlado.js",
         "estilos-compartilhados.js",
@@ -202,8 +203,7 @@
         "comandos-locais-interface.js",
         "navegador-retorno.js",
         "central-operacional.js",
-        "paginas-geradas.js",
-        "workflows-versionados.js"
+        "paginas-geradas.js"
       ],
       "detalhes": [
         {
@@ -233,6 +233,7 @@
         "reforco-dossie-controlado.js",
         "auditoria-workflows.js",
         "dossie-preparo-controlado.js",
+        "workflows-versionados.js",
         "seguranca-interface.js",
         "preparo-controlado.js",
         "vigia-recuperacao-fluxo.js",
@@ -246,8 +247,7 @@
         "navegador-retorno.js",
         "central-operacional.js",
         "paginas-geradas.js",
-        "ocr-local.js",
-        "workflows-versionados.js"
+        "ocr-local.js"
       ],
       "detalhes": [
         {
@@ -284,6 +284,7 @@
         "reforco-dossie-controlado.js",
         "auditoria-workflows.js",
         "dossie-preparo-controlado.js",
+        "workflows-versionados.js",
         "seguranca-interface.js",
         "preparo-controlado.js",
         "estilos-compartilhados.js",
@@ -295,8 +296,7 @@
         "comandos-locais-interface.js",
         "navegador-retorno.js",
         "central-operacional.js",
-        "paginas-geradas.js",
-        "workflows-versionados.js"
+        "paginas-geradas.js"
       ],
       "detalhes": [
         {
@@ -445,6 +445,7 @@
         "barreira-depois-do-merge.js",
         "placar-testes.js",
         "autonomia-e-risco.js",
+        "pulso-vigia-relogio.js",
         "vigia-casa-resiliencia.js",
         "geografia-brasil.js",
         "navegador-retorno-fluxo.js",
@@ -455,6 +456,7 @@
         "chave-do-dono.js",
         "cobertura-navegador.js",
         "avaliacao-profunda.js",
+        "mutantes-vivos.js",
         "saude-persistente.js",
         "medicao-aberto-checkpoint.js",
         "memoria-contexto-coerente.js",
@@ -473,6 +475,7 @@
         "indice-capacidade.js",
         "fonte-viva-casamento.js",
         "roteamento-com-chave.js",
+        "workflows-versionados.js",
         "seguranca-interface.js",
         "estado-aberto.js",
         "estados-entrega-e-falhas.js",
@@ -499,9 +502,6 @@
         "ocr-local.js",
         "estado-operacional-controlado.js",
         "cdp-recuperacao-navegador.js",
-        "mutantes-vivos.js",
-        "pulso-vigia-relogio.js",
-        "workflows-versionados.js",
         "rota-com-chave-ponta-a-ponta.js"
       ],
       "detalhes": [
@@ -510,7 +510,7 @@
           "descricao": "Content-Security-Policy → Content-Security-PolicY (token quebrado, linha 6)",
           "linha": 6,
           "morto": true,
-          "quemMatou": "csp-paginas.js"
+          "quemMatou": "workflows-versionados.js"
         }
       ]
     },
@@ -555,6 +555,7 @@
         "barreira-depois-do-merge.js",
         "placar-testes.js",
         "autonomia-e-risco.js",
+        "pulso-vigia-relogio.js",
         "vigia-casa-resiliencia.js",
         "geografia-brasil.js",
         "navegador-retorno-fluxo.js",
@@ -565,6 +566,7 @@
         "chave-do-dono.js",
         "cobertura-navegador.js",
         "avaliacao-profunda.js",
+        "mutantes-vivos.js",
         "saude-persistente.js",
         "medicao-aberto-checkpoint.js",
         "memoria-contexto-coerente.js",
@@ -592,6 +594,7 @@
         "fila-visivel-e-avisos.js",
         "roteamento-com-chave.js",
         "sugestoes-locais-privacidade.js",
+        "workflows-versionados.js",
         "paineis-locais-privacidade.js",
         "lexico-local.js",
         "memoria-na-pagina.js",
@@ -643,9 +646,6 @@
         "ocr-local.js",
         "estado-operacional-controlado.js",
         "cdp-recuperacao-navegador.js",
-        "mutantes-vivos.js",
-        "pulso-vigia-relogio.js",
-        "workflows-versionados.js",
         "rota-com-chave-ponta-a-ponta.js"
       ],
       "detalhes": [
@@ -654,14 +654,14 @@
           "descricao": "Content-Security-Policy → Content-Security-PolicY (token quebrado, linha 6)",
           "linha": 6,
           "morto": true,
-          "quemMatou": "paginas-geradas.js"
+          "quemMatou": "workflows-versionados.js"
         },
         {
           "tipo": "afrouxar-csp",
           "descricao": "Content-Security-Policy → Content-Security-PolicY (token quebrado, linha 2225)",
           "linha": 2225,
           "morto": true,
-          "quemMatou": "paginas-geradas.js"
+          "quemMatou": "workflows-versionados.js"
         }
       ]
     },
