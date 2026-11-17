@@ -1,0 +1,112 @@
+name: Copiar credenciais do X para o repo site
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# POR QUE ESTE WORKFLOW EXISTE (16/11/2026)
+#
+# As 4 credenciais do X (X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, X_ACCESS_TOKEN_SECRET)
+# sempre viveram NESTE repositório. O `site` nunca as teve — e por isso a camada `rede-x` do
+# health check aparecia "inativa" e o placar de redes dizia 11/13.
+#
+# A API do GitHub NUNCA devolve o valor de um secret (são write-only): não há como copiá-los
+# de fora. A única forma legítima é um runner do PRÓPRIO `chat`, que tem os valores no
+# ambiente, cifrá-los com a chave pública do `site` e gravá-los lá. É o que este workflow faz.
+#
+# SEGURANÇA: os valores nunca são impressos, nem passam por `echo`. O passo lê do ambiente,
+# cifra com `PyNaCl` (o esquema exigido pela API) e envia direto. O que aparece no log é
+# apenas o NOME de cada secret e "ok".
+#
+# É execução única. Depois de rodar com sucesso, apague este arquivo (o próprio workflow
+# lembra disso no resumo).
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  copiar:
+    # O guardião do chat (auditoria-workflows.js) exige versão fixa: runner flutuante muda
+    # de imagem sem aviso e transforma "funcionava ontem" em quebra silenciosa.
+    runs-on: ubuntu-24.04
+    steps:
+      # Fixado por SHA completo, como todo o resto da casa: tag pode ser movida, commit não.
+      # Serve para o log registrar de qual commit do chat saíram os secrets copiados.
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+
+      - name: Instala o cifrador (PyNaCl, exigido pela API de secrets)
+        run: python3 -m pip install --quiet pynacl
+
+      - name: Copia os 4 secrets do X para reboclbrank-max/site
+        env:
+          # PAT com permissão de escrever secrets no repo `site`
+          PAT: ${{ secrets.GHPAT }}
+          # os valores que só existem neste repositório
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+        run: |
+          set -u
+          python3 - <<'PY'
+          import base64, json, os, sys, urllib.request
+
+          PAT = os.environ["PAT"].strip()
+          DESTINO = "reboclbrank-max/site"
+          API = "https://api.github.com"
+
+          def pedir(caminho, metodo="GET", corpo=None):
+              dados = json.dumps(corpo).encode() if corpo else None
+              r = urllib.request.Request(
+                  API + caminho, data=dados, method=metodo,
+                  headers={"Authorization": "Bearer " + PAT,
+                           "Accept": "application/vnd.github+json",
+                           "User-Agent": "copia-x",
+                           "Content-Type": "application/json"})
+              with urllib.request.urlopen(r, timeout=60) as resp:
+                  bruto = resp.read().decode()
+                  return resp.status, (json.loads(bruto) if bruto.strip() else {})
+
+          from nacl import encoding, public
+
+          chave = pedir("/repos/%s/actions/secrets/public-key" % DESTINO)[1]
+          pub = public.PublicKey(chave["key"].encode(), encoding.Base64Encoder())
+
+          def cifrar(valor):
+              selado = public.SealedBox(pub).encrypt(valor.encode())
+              return base64.b64encode(selado).decode()
+
+          nomes = ["X_API_KEY", "X_API_SECRET", "X_ACCESS_TOKEN", "X_ACCESS_TOKEN_SECRET"]
+          faltando = [n for n in nomes if not (os.environ.get(n) or "").strip()]
+          if faltando:
+              print("❌ sem valor neste repositório: " + ", ".join(faltando))
+              sys.exit(2)
+
+          for n in nomes:
+              corpo = {"encrypted_value": cifrar(os.environ[n]), "key_id": chave["key_id"]}
+              status, _ = pedir("/repos/%s/actions/secrets/%s" % (DESTINO, n), "PUT", corpo)
+              # NUNCA imprime o valor — só o nome e o código HTTP
+              print(("✅ " if status in (201, 204) else "❌ ") + n + " → HTTP " + str(status))
+
+          # confere que os 4 existem no destino (a API só confirma o NOME, nunca o valor)
+          st, lista = pedir("/repos/%s/actions/secrets" % DESTINO)
+          presentes = {s["name"] for s in lista.get("secrets", [])}
+          ok = [n for n in nomes if n in presentes]
+          print("\nno site agora: %d de 4 — %s" % (len(ok), ", ".join(ok)))
+          sys.exit(0 if len(ok) == 4 else 1)
+          PY
+
+      - name: Resumo
+        if: always()
+        run: |
+          {
+            echo "### Credenciais do X copiadas para o site"
+            echo ""
+            echo "Os valores nunca aparecem em log (a API do GitHub não os devolve e este"
+            echo "workflow não os imprime). O que foi feito: lidos do ambiente do \`chat\`,"
+            echo "cifrados com a chave pública do \`site\` e gravados lá."
+            echo ""
+            echo "**Próximo passo:** rode \`testar-todas-as-redes.yml\` no \`site\` e confirme"
+            echo "que o X passou a responder. Depois, apague este arquivo — ele não deve ficar."
+          } >> "$GITHUB_STEP_SUMMARY"
