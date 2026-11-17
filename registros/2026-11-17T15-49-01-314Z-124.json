@@ -1,0 +1,57 @@
+{
+  "quando": "2026-11-17T15:49:01.314Z",
+  "origem": "ao-vivo",
+  "pr": 124,
+  "sha": "18303d94adda2063060003ae2c8c0128b92e21b8",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "instrumento: mapa, mutador e dois buracos fechados",
+  "barreira": "success",
+  "arquivos": [
+    "CONTINUIDADE.md",
+    "tools/pulso-vigia.js",
+    "tools/testes/agenda-do-email.js",
+    "tools/testes/buracos-ciclo4.js",
+    "tools/testes/buracos-ciclo5.js",
+    "tools/testes/cobertura-fonte.json",
+    "tools/testes/cobertura-linhas.js",
+    "tools/testes/cobertura-linhas.json",
+    "tools/testes/gerar-cobertura-fonte.js",
+    "tools/testes/gerar-mapa.js",
+    "tools/testes/gerar-triagem.js",
+    "tools/testes/mapa-cobertura.json",
+    "tools/testes/medir-tempos.js",
+    "tools/testes/mutador-baseline.js",
+    "tools/testes/mutador-fixture-placar.json",
+    "tools/testes/mutador-fixture.js",
+    "tools/testes/mutador-placar-ciclo2.json",
+    "tools/testes/mutador-placar-comportamental.json",
+    "tools/testes/mutador-placar-todos.json",
+    "tools/testes/mutador-placar.json",
+    "tools/testes/mutador-tempos.json",
+    "tools/testes/mutador.js",
+    "tools/testes/mutantes-vivos.js",
+    "tools/testes/placar-formula.js",
+    "tools/testes/placar.js",
+    "tools/testes/placar.json",
+    "tools/testes/pulso-vigia-relogio.js",
+    "tools/testes/ranking-zero-cobertura.js",
+    "tools/testes/ranking-zero-cobertura.json",
+    "tools/testes/rastreio-alcancavel.js",
+    "tools/testes/roda-testes.js",
+    "tools/testes/triagem-vivos.js",
+    "tools/testes/triagem-vivos.json",
+    "tools/testes/workflows-versionados.js"
+  ],
+  "essenciais": [
+    "tools/pulso-vigia.js"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "PR grande demais (34 arquivos)"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: tools/pulso-vigia.js"
+  }
+}
