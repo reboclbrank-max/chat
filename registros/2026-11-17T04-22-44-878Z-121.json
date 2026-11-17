@@ -1,0 +1,24 @@
+{
+  "quando": "2026-11-17T04:22:44.878Z",
+  "origem": "ao-vivo",
+  "pr": 121,
+  "sha": "30d72a4477bc20d13d4c687232dbaf58b50dabd3",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "docs: ciclo de trabalho contínuo — instrutor externo, metodologia e régua",
+  "barreira": "success",
+  "arquivos": [
+    "AGENTS.md",
+    "CONTINUIDADE.md",
+    "INSTRUCAO-DO-INSTRUTOR.md"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: AGENTS.md, CONTINUIDADE.md, INSTRUCAO-DO-INSTRUTOR.md"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (3)"
+  }
+}
