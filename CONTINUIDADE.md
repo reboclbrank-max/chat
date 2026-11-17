@@ -4,6 +4,58 @@
 >
 > **Retrato consolidado em 2026-10-22.** Ele descreve o estado de `main` após o pacote de segurança, a expansão local, a correção da aferição do teste real de e-mail, a recuperação rápida da interface diante da indisponibilidade observada do trabalhador privado, os rascunhos locais opt-in, a organização local de favoritos e coleções, os backups manuais estritos, a recuperação completa reversível protegida contra fotografia desatualizada, a criação e renomeação estrutural transacionais entre guias, o salvamento e a renomeação comum de arquivo decididos pela fotografia corrente, a importação ativa aditiva decidida pela fotografia persistida, a transferência aditiva de projeto com histórico, a busca explícita entre projetos, a proteção de conflito de arquivo e a Lixeira transacional do Workspace. As saídas operacionais sanitizadas passam a usar o ramo revisável `estado/operacional`, nunca promoção automática em `main`. Antes de agir, confira a `main` remota e o ramo de estado: eles sempre vencem este retrato se algo tiver mudado depois.
 
+## 2026-11-17 — ciclo de trabalho contínuo: o instrutor entra e a régua sobe
+
+**O que mudou e por quê.** O dono abriu, por ordem expressa, um ciclo de **trabalho contínuo
+sem pausa** para o Chat, com um instrutor externo auditando cada entrega na fonte (API, log de
+run, conteúdo do `main`) e não no relatório. O pedido literal foi "trabalho máximo, cada vez
+mais e melhor, fazendo o chat melhorar cada vez mais". Isso deixou de ser intenção e virou
+documento: **`INSTRUCAO-DO-INSTRUTOR.md`** (novo) define metodologia, as cinco classes de
+defeito a caçar, a fila permanente e o critério de auditoria; `AGENTS.md` ganhou a seção de
+topo que obriga a leitura antes de qualquer ação.
+
+**Estado medido no dia (não estimado).** `main` `a2b6cc0` · barreira `testes-rapidos` **#523
+success** · bateria local **136/136 testes, 3 ignorados por pré-requisito de ambiente** ·
+**135** arquivos de teste · **19** workflows ativos + Dependabot + Pages · placar por tipo:
+comportamento 38/38, misto 42/42, estática 56/56.
+
+**O que o instrutor encontrou, para servir de régua.** No repositório irmão `site`, sob
+suíte inteiramente verde, cinco classes de defeito estavam vivas simultaneamente: estado
+destruído na leitura (`try` sem `else` sobrescrevendo o JSON recém-lido — o histórico de
+`metricas_engajamento` nunca persistiu em produção), cálculo sem consumidor (a cadência
+calculada era ignorada e o portão usava 120 fixo), identificador que repete
+(`'al_' + Date.now()` colidindo no mesmo milissegundo, travando a conciliação de estado
+inteira), carimbo de tempo tratado como dado (dois runs nunca têm o mesmo `atualizadoEm`, e
+a conciliação recusava por isso) e alerta que não age (token crítico gravado num JSON
+enquanto a publicação insistia com a credencial morta). **Nenhum desses aparecia em teste de
+processo único.** Ficam registrados aqui porque são o mapa do que procurar neste repositório.
+
+**Arquivos afetados.** `INSTRUCAO-DO-INSTRUTOR.md` (novo), `AGENTS.md` (seção de topo +
+referência), este documento.
+
+**O que foi preservado.** Nenhuma linha de código de produção foi alterada por esta entrada.
+Nenhuma guarda de segurança, canal, segredo, permissão ou limite de autonomia mudou. A regra
+"Chat primeiro" e a barreira `tools/testes/continuidade.js` continuam intactas e valendo.
+
+**Validação executada.** `npm ci --omit=dev` + `node tools/testes/roda-testes.js` →
+**136/136 testes, 3 ignorados por pré-requisito de ambiente, 0 falhas** (comportamento 38/38,
+misto 42/42, estática 56/56). A barreira de continuidade aceitou esta entrada; nenhuma guarda
+foi afrouxada para isso. Um aviso honesto: a primeira execução **falhou** porque eu havia
+apagado `node_modules` para economizar disco e seis módulos acusaram `Cannot find module
+'imapflow'`. Isso é a barreira funcionando — ela reprova por ausência de dependência em vez de
+passar em silêncio. Fica registrado porque é o tipo de falha que se confunde com defeito de
+código quando alguém lê o placar sem ler a causa.
+
+**O que fica aberto e precisa de número.** (a) quantos dos contratos da bateria já foram
+vistos **falhando** — a dívida de falso positivo; (b) quantos módulos com estado de módulo
+(`let cache`, variável global) têm teste de persistência **em processo separado**; (c) quais
+alertas do Chat mudam algum comportamento. Cada um desses é um item da fila de
+`INSTRUCAO-DO-INSTRUTOR.md` §6.
+
+**Próximo ciclo (definido, não sugerido).** Medir a bateria, mapear os contratos que nunca
+falharam, escolher **um**, sabotar o código que ele deveria proteger e consertar o contrato
+ou o código — entregando run #, saída `OK`, sabotagem antes/depois e o próximo item.
+
 ## 2026-11-04 — saúde dos motores persistente: o cérebro para de esquecer a rota quebrada
 
 **O que mudou e por quê.** `roteador-ia.js` já media saúde por rota (`ok`, `falhas`, `falhasSeguidas`, `timeoutsSeguidos`, `cooldownAte`, `latMedia`, `morta`) e já ordenava candidatos por classe e por falha. O que faltava era **memória entre turnos**: `this.saude` nascia vazio em cada processo, então a rota que acabou de dar timeout voltava a ser tentada primeiro na mensagem seguinte, gastando até 25 s do orçamento outra vez — e o mesmo em cada recarga da página. Agora a saúde é gravada em `localStorage` (chave `roteador-saude-v1`) ao fim de `_premiar` e `_castigar`, e relida no construtor.
