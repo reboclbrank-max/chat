@@ -1,0 +1,2139 @@
+{
+  "geradoEm": "2026-11-17T13:29:07.456Z",
+  "seed": 42,
+  "maxPorModulo": 6,
+  "alvos": 41,
+  "comCobertura": 35,
+  "semCoberturaOuLenta": 2,
+  "mutantes": 189,
+  "mortos": 59,
+  "vivos": 130,
+  "killRateGeral": 31,
+  "resultados": [
+    {
+      "arquivo": "bench/avaliar-aberto.js",
+      "mutantes": 0,
+      "mortos": 0,
+      "vivos": 0,
+      "killRate": null
+    },
+    {
+      "arquivo": "bench/estilo.js",
+      "mutantes": 3,
+      "mortos": 0,
+      "vivos": 3,
+      "invalidos": 1,
+      "killRate": 0,
+      "testes": [
+        "avaliacao-aberto.js",
+        "roteador-gratis.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "trocar-limite",
+          "descricao": "<= → <",
+          "linha": 34,
+          "invalido": true
+        },
+        {
+          "tipo": "engolir-erro",
+          "descricao": "throw → return null (linha 80)",
+          "linha": 80,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": ">= → >",
+          "linha": 78,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "engolir-erro",
+          "descricao": "throw → return null (linha 77)",
+          "linha": 77,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "bench/medir-aberto.js",
+      "mutantes": 6,
+      "mortos": 1,
+      "vivos": 5,
+      "invalidos": 0,
+      "killRate": 17,
+      "testes": [
+        "medicao-aberto-checkpoint.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "congelar-identidade",
+          "descricao": "Date.now() → 1700000000000 (linha 120)",
+          "linha": 120,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "engolir-erro",
+          "descricao": "throw → return null (linha 44)",
+          "linha": 44,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (meta.invalido) → if (!meta.invalido)",
+          "linha": 90,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (trilha) → if (!trilha)",
+          "linha": 110,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (dados.sum.completo) → if (!dados.sum.completo)",
+          "linha": 45,
+          "morto": true,
+          "quemMatou": "medicao-aberto-checkpoint.js",
+          "pista": "  if (!dados.sum.completo) throw new Error('régua já está completa; não repetir itens para melhorar placar'); | Error: régua já está completa; não repetir itens para melhorar placar"
+        },
+        {
+          "tipo": "congelar-identidade",
+          "descricao": "new Date().toISOString() → fixo (linha 66)",
+          "linha": 66,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "bench/pontuar.js",
+      "mutantes": 5,
+      "mortos": 2,
+      "vivos": 3,
+      "invalidos": 0,
+      "killRate": 40,
+      "testes": [
+        "roteador-gratis.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (passou) → if (!passou)",
+          "linha": 111,
+          "morto": true,
+          "quemMatou": "roteador-gratis.js",
+          "pista": "✘ régua (bench/pontuar.js) passa → 0/12 casos do pontuador | ✘ 1 falha(s)"
+        },
+        {
+          "tipo": "devolver-default",
+          "descricao": "return p → return null",
+          "linha": 33,
+          "morto": true,
+          "quemMatou": "roteador-gratis.js",
+          "pista": "✘ régua (bench/pontuar.js) passa → ✔ hífen não separável — \"A baleia‑azul (Balaenoptera musculus).\" × [\"baleia-azul\"] → true | ✘ 1 falha(s)"
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": "<= → <",
+          "linha": 77,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": ">= → >",
+          "linha": 57,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": ">= → >",
+          "linha": 81,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "chat-colecoes-local.js",
+      "mutantes": 6,
+      "mortos": 4,
+      "vivos": 2,
+      "invalidos": 0,
+      "killRate": 67,
+      "testes": [
+        "colecoes-conversas-local.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "trocar-limite",
+          "descricao": ">= → >",
+          "linha": 386,
+          "morto": true,
+          "quemMatou": "colecoes-conversas-local.js",
+          "pista": "✔ sem IndexedDB falha fechada, sem fallback para rede ou storage legado | ✘ valida nomes, duplicatas, limites e entradas inválidas antes de guardar associações extras — Missing expected rejection."
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 369",
+          "linha": 369,
+          "morto": true,
+          "quemMatou": "colecoes-conversas-local.js",
+          "pista": "✔ sem IndexedDB falha fechada, sem fallback para rede ou storage legado | ✘ cria, renomeia, associa e apaga coleção sem guardar título, mensagem ou token — 1 == 0"
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 335",
+          "linha": 335,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (inicio) → if (!inicio)",
+          "linha": 274,
+          "morto": true,
+          "quemMatou": "colecoes-conversas-local.js",
+          "pista": "✘ cria, renomeia, associa e apaga coleção sem guardar título, mensagem ou token — Cannot read properties of null (reading 'catch') | ✘ nova instância relê coleção e associação mínimas do mesmo banco l"
+        },
+        {
+          "tipo": "devolver-default",
+          "descricao": "return falha → return null",
+          "linha": 30,
+          "morto": true,
+          "quemMatou": "colecoes-conversas-local.js",
+          "pista": "✘ sem IndexedDB falha fechada, sem fallback para rede ou storage legado — The validation function is expected to return \"true\". Received null | ✘ valida nomes, duplicatas, limites e entradas inválidas"
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": ">= → >",
+          "linha": 302,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "chat-comandos-locais.js",
+      "mutantes": 3,
+      "mortos": 3,
+      "vivos": 0,
+      "invalidos": 0,
+      "killRate": 100,
+      "testes": [
+        "continuidade.js",
+        "comandos-locais-interface.js",
+        "central-operacional.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "devolver-default",
+          "descricao": "return ROTEIRO_CENTRAL → return null",
+          "linha": 77,
+          "morto": true,
+          "quemMatou": "comandos-locais-interface.js",
+          "pista": "✘ Central segura aceita somente mapa e opções fechadas — The \"string\" argument must be of type string. Received type object (null)"
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (raiz) → if (!raiz)",
+          "linha": 87,
+          "morto": true,
+          "quemMatou": "comandos-locais-interface.js",
+          "pista": "✘ roteiro local só reconhece os comandos exatos previstos — 'undefined' == 'function' | ✘ Central segura aceita somente mapa e opções fechadas — Cannot set properties of null (setting 'respostaComando"
+        },
+        {
+          "tipo": "devolver-default",
+          "descricao": "return ROTEIRO_TRABALHO → return null",
+          "linha": 76,
+          "morto": true,
+          "quemMatou": "comandos-locais-interface.js",
+          "pista": "✘ roteiro local só reconhece os comandos exatos previstos — The \"string\" argument must be of type string. Received type object (null)"
+        }
+      ]
+    },
+    {
+      "arquivo": "chat-diagnostico.js",
+      "mutantes": 6,
+      "mortos": 5,
+      "vivos": 1,
+      "invalidos": 0,
+      "killRate": 83,
+      "testes": [
+        "diagnostico-motores.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "trocar-limite",
+          "descricao": ">= → >",
+          "linha": 67,
+          "morto": true,
+          "quemMatou": "diagnostico-motores.js",
+          "pista": "✔ classifica motivo fechado a partir de status e erro | ✔ registra falha sem gravar conteúdo de conversa"
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": ">= → >",
+          "linha": 52,
+          "morto": true,
+          "quemMatou": "diagnostico-motores.js",
+          "pista": "✔ classifica motivo fechado a partir de status e erro | ✔ registra falha sem gravar conteúdo de conversa"
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (raiz) → if (!raiz)",
+          "linha": 134,
+          "morto": true,
+          "quemMatou": "diagnostico-motores.js",
+          "pista": "✔ o laço de motores registra falha em vez de silenciar | ✘ 7/16 testes do diagnóstico de motores passaram"
+        },
+        {
+          "tipo": "devolver-default",
+          "descricao": "return motivo → return null",
+          "linha": 86,
+          "morto": true,
+          "quemMatou": "diagnostico-motores.js",
+          "pista": "✔ classifica motivo fechado a partir de status e erro | ✔ registra falha sem gravar conteúdo de conversa"
+        },
+        {
+          "tipo": "devolver-default",
+          "descricao": "return contagem → return null",
+          "linha": 98,
+          "morto": true,
+          "quemMatou": "diagnostico-motores.js",
+          "pista": "✔ classifica motivo fechado a partir de status e erro | ✔ registra falha sem gravar conteúdo de conversa"
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": ">= → >",
+          "linha": 53,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "chat-filtro-chips.js",
+      "mutantes": 2,
+      "mortos": 2,
+      "vivos": 0,
+      "invalidos": 0,
+      "killRate": 100,
+      "testes": [
+        "filtro-chips-interface.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (mostrar) → if (!mostrar)",
+          "linha": 27,
+          "morto": true,
+          "quemMatou": "filtro-chips-interface.js",
+          "pista": "✔ falha fechada se a casca não trouxer os elementos esperados | ✘ filtra por texto sem acento, informa resultado e restaura todos os chips — '3 atalhos' == '1 atalho'"
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (atalhoGlobal) → if (!atalhoGlobal)",
+          "linha": 49,
+          "morto": true,
+          "quemMatou": "filtro-chips-interface.js",
+          "pista": "✔ falha fechada se a casca não trouxer os elementos esperados | ✘ filtra por texto sem acento, informa resultado e restaura todos os chips — 'não existe' == ''"
+        }
+      ]
+    },
+    {
+      "arquivo": "chat-organizacao-local.js",
+      "mutantes": 6,
+      "mortos": 4,
+      "vivos": 2,
+      "invalidos": 0,
+      "killRate": 67,
+      "testes": [
+        "organizacao-conversas-local.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "devolver-default",
+          "descricao": "return proxima → return null",
+          "linha": 180,
+          "morto": true,
+          "quemMatou": "organizacao-conversas-local.js",
+          "pista": "✘ favorita, remove e apaga em IndexedDB controlado sem expor a lista por evento — null == true | ✘ limite e entrada inválida falham fechados antes de guardar dados extras — Expected instance of Promis"
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (inicio) → if (!inicio)",
+          "linha": 156,
+          "morto": true,
+          "quemMatou": "organizacao-conversas-local.js",
+          "pista": "✘ favorita, remove e apaga em IndexedDB controlado sem expor a lista por evento — Cannot read properties of null (reading 'catch') | ✘ nova instância lê somente o ID favorito já persistido no banco lo"
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 231",
+          "linha": 231,
+          "morto": true,
+          "quemMatou": "organizacao-conversas-local.js",
+          "pista": "✔ limite e entrada inválida falham fechados antes de guardar dados extras | ✘ exporta backup mínimo, valida esquema estrito e restaura substituindo só favoritos locais — Expected values to be loosely "
+        },
+        {
+          "tipo": "devolver-default",
+          "descricao": "return falha → return null",
+          "linha": 25,
+          "morto": true,
+          "quemMatou": "organizacao-conversas-local.js",
+          "pista": "✘ sem IndexedDB não há fallback para rede ou armazenamento legado — The validation function is expected to return \"true\". Received null | ✘ limite e entrada inválida falham fechados antes de guardar d"
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 206",
+          "linha": 206,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 216",
+          "linha": 216,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "chat-workspace.js",
+      "mutantes": 6,
+      "mortos": 2,
+      "vivos": 4,
+      "invalidos": 0,
+      "killRate": 33,
+      "testes": [
+        "workspace-busca-global.js",
+        "workspace-conflito-local.js",
+        "workspace-lixeira-concorrencia-local.js",
+        "workspace-arquivo-completo-concorrencia-local.js",
+        "workspace-projeto-portatil.js",
+        "workspace-arquivo-completo.js",
+        "workspace-integridade-local.js",
+        "workspace-local.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (houveEdicaoDurante) → if (!houveEdicaoDurante)",
+          "linha": 1288,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 1016",
+          "linha": 1016,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 1002",
+          "linha": 1002,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": ">= → >",
+          "linha": 556,
+          "morto": true,
+          "quemMatou": "workspace-conflito-local.js",
+          "pista": "✔ salvamento interrompe a substituição silenciosa e preserva rascunho também se o nome ou a cota atuais recusarem | ✘ cópia de conflito decide projeto, nome, quantidade e capacidade na transação atual"
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 1865",
+          "linha": 1865,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 1396",
+          "linha": 1396,
+          "morto": true,
+          "quemMatou": "workspace-integridade-local.js",
+          "pista": "✘ arquivo vai à lixeira, mantém revisão, restaura e só libera espaço no descarte definitivo — '' == 'a'"
+        }
+      ]
+    },
+    {
+      "arquivo": "lexico-pt.js",
+      "mutantes": 0,
+      "mortos": 0,
+      "vivos": 0,
+      "killRate": null
+    },
+    {
+      "arquivo": "razao-local.js",
+      "mutantes": 6,
+      "mortos": 3,
+      "vivos": 3,
+      "invalidos": 0,
+      "killRate": 50,
+      "testes": [
+        "lexico-local.js",
+        "identidade-do-chat.js",
+        "razao-local.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "trocar-limite",
+          "descricao": ">= → >",
+          "linha": 579,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": ">= → >",
+          "linha": 1071,
+          "morto": true,
+          "quemMatou": "razao-local.js",
+          "pista": "✘ 85/86 casos de raciocínio local (provas + armadilhas) | ✘ Qual é o sinônimo mais próximo de \"efêmero\": (A) passageiro (B) eterno → null (esperado \"passageiro\")"
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (u) → if (!u)",
+          "linha": 379,
+          "morto": true,
+          "quemMatou": "razao-local.js",
+          "pista": "✘ 84/86 casos de raciocínio local (provas + armadilhas) | ✘ Numa urna há 3 bolas vermelhas e 2 azuis. Tiro duas sem repor. Qual a  → null (esperado \"3/10\")"
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": ">= → >",
+          "linha": 175,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (fixo) → if (!fixo)",
+          "linha": 584,
+          "morto": true,
+          "quemMatou": "razao-local.js",
+          "pista": "✘ 85/86 casos de raciocínio local (provas + armadilhas) | ✘ ARMADILHA arm-letras-vogais → \"S\" (esperado null)"
+        },
+        {
+          "tipo": "devolver-default",
+          "descricao": "return n → return null",
+          "linha": 39,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "roteador-ia.js",
+      "mutantes": 6,
+      "mortos": 3,
+      "vivos": 3,
+      "invalidos": 0,
+      "killRate": 50,
+      "testes": [
+        "chave-do-dono.js",
+        "saude-persistente.js",
+        "memoria-contexto-coerente.js",
+        "avaliacao-aberto.js",
+        "roteador-resiliencia.js",
+        "conta-falada.js",
+        "fonte-viva-casamento.js",
+        "identidade-do-chat.js",
+        "estado-aberto.js",
+        "aberto-recuperacao.js",
+        "fontes-e-provedor.js",
+        "roteador-gratis.js",
+        "espera-rota-boa.js",
+        "texto-longo-offline.js"
+      ],
+      "lentosExcluidos": [
+        "sem-dependencia.js",
+        "recomeco-resgate-memoria.js",
+        "duas-amostras.js"
+      ],
+      "detalhes": [
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (sup) → if (!sup)",
+          "linha": 2075,
+          "morto": true,
+          "quemMatou": "roteador-gratis.js",
+          "pista": "✘ rota local: Qual o superlativo de 'bom'? → sem rota | ✘ rota local: Qual o superlativo de 'salgado'? → undefined"
+        },
+        {
+          "tipo": "devolver-default",
+          "descricao": "return r → return null",
+          "linha": 1906,
+          "morto": true,
+          "quemMatou": "estado-aberto.js",
+          "pista": "TypeError: Cannot read properties of null (reading 'texto')"
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": ">= → >",
+          "linha": 1547,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": ">= → >",
+          "linha": 1869,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 3023",
+          "linha": 3023,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 3166",
+          "linha": 3166,
+          "morto": true,
+          "quemMatou": "identidade-do-chat.js",
+          "pista": "✘ o nome não chegou ao texto final — veio undefined | ✘ 1 de 5 verificações de identidade FALHARAM"
+        }
+      ]
+    },
+    {
+      "arquivo": "sw.js",
+      "mutantes": 3,
+      "mortos": 0,
+      "vivos": 3,
+      "invalidos": 0,
+      "killRate": 0,
+      "testes": [
+        "continuidade.js",
+        "lexico-local.js",
+        "identidade-do-chat.js",
+        "seguranca-interface.js",
+        "preparo-controlado.js",
+        "estilos-compartilhados.js",
+        "portabilidade-estatica.js",
+        "workspace-local.js",
+        "organizacao-conversas-local.js",
+        "colecoes-conversas-local.js",
+        "filtro-chips-interface.js",
+        "comandos-locais-interface.js",
+        "diagnostico-motores.js",
+        "central-operacional.js",
+        "fontes-e-provedor.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "devolver-default",
+          "descricao": "return resposta → return null",
+          "linha": 44,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (resposta) → if (!resposta)",
+          "linha": 44,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "devolver-default",
+          "descricao": "return resposta → return null",
+          "linha": 41,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/auditoria-dependencias.js",
+      "soLento": true,
+      "mutantes": 0,
+      "mortos": 0,
+      "vivos": 0,
+      "killRate": null
+    },
+    {
+      "arquivo": "tools/auto-melhoria.js",
+      "soLento": true,
+      "mutantes": 0,
+      "mortos": 0,
+      "vivos": 0,
+      "killRate": null
+    },
+    {
+      "arquivo": "tools/autonomia.js",
+      "mutantes": 3,
+      "mortos": 1,
+      "vivos": 2,
+      "invalidos": 0,
+      "killRate": 33,
+      "testes": [
+        "autonomia-e-risco.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "congelar-identidade",
+          "descricao": "Date.now() → 1700000000000 (linha 32)",
+          "linha": 32,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (l.expirado) → if (!l.expirado)",
+          "linha": 66,
+          "morto": true,
+          "quemMatou": "autonomia-e-risco.js",
+          "pista": "✔ a faixa é curta, escolhida a dedo, e cada arquivo declara o custo do próprio erro | ✔ falha recente reprova mesmo com média histórica boa"
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (l.semPrazo) → if (!l.semPrazo)",
+          "linha": 69,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/cobertura-navegador.js",
+      "mutantes": 6,
+      "mortos": 1,
+      "vivos": 5,
+      "invalidos": 0,
+      "killRate": 17,
+      "testes": [
+        "cobertura-navegador.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "devolver-default",
+          "descricao": "return baixo → return null",
+          "linha": 50,
+          "morto": true,
+          "quemMatou": "cobertura-navegador.js",
+          "pista": "✘ 7/8 testes do medidor de cobertura passaram | ✘ offset vira número de linha nas fronteiras — null == 0"
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 162",
+          "linha": 162,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 150",
+          "linha": 150,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (querJson) → if (!querJson)",
+          "linha": 198,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "congelar-identidade",
+          "descricao": "new Date().toISOString() → fixo (linha 200)",
+          "linha": 200,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 161",
+          "linha": 161,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/dossie-preparo-controlado.js",
+      "mutantes": 5,
+      "mortos": 4,
+      "vivos": 1,
+      "invalidos": 1,
+      "killRate": 80,
+      "testes": [
+        "dossie-preparo-controlado.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "devolver-default",
+          "descricao": "return destino → return null",
+          "linha": 63,
+          "morto": true,
+          "quemMatou": "dossie-preparo-controlado.js",
+          "pista": "✔ o workflow percorre preflight antes da única escrita e falha fechado fora de main | ✘ gera somente o dossiê literal em diretórios reais e ausentes — The \"path\" argument must be of type string or an "
+        },
+        {
+          "tipo": "apagar-escrita",
+          "descricao": "apagar mkdirSync() na linha 41",
+          "linha": 41,
+          "invalido": true
+        },
+        {
+          "tipo": "engolir-erro",
+          "descricao": "throw → return null (linha 18)",
+          "linha": 18,
+          "morto": true,
+          "quemMatou": "dossie-preparo-controlado.js",
+          "pista": "✔ o workflow percorre preflight antes da única escrita e falha fechado fora de main | ✘ aceita exclusivamente o contexto GitHub fechado de main — Missing expected exception."
+        },
+        {
+          "tipo": "engolir-erro",
+          "descricao": "throw → return null (linha 57)",
+          "linha": 57,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "engolir-erro",
+          "descricao": "throw → return null (linha 48)",
+          "linha": 48,
+          "morto": true,
+          "quemMatou": "dossie-preparo-controlado.js",
+          "pista": "✔ o workflow percorre preflight antes da única escrita e falha fechado fora de main | ✘ cada diretório literal bloqueia link simbólico antes de escrever fora da raiz — The input did not match the regu"
+        },
+        {
+          "tipo": "engolir-erro",
+          "descricao": "throw → return null (linha 61)",
+          "linha": 61,
+          "morto": true,
+          "quemMatou": "dossie-preparo-controlado.js",
+          "pista": "✔ o workflow percorre preflight antes da única escrita e falha fechado fora de main | ✘ dossiê preexistente bloqueia sem sobrescrever o artefato — The input did not match the regular expression /dossi"
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/email-chat.js",
+      "mutantes": 5,
+      "mortos": 0,
+      "vivos": 5,
+      "invalidos": 1,
+      "killRate": 0,
+      "testes": [
+        "navegador-retorno-fluxo.js",
+        "navegador-comando-email.js",
+        "operacao-incidentes.js",
+        "seguranca-interface.js",
+        "vigia-recuperacao-fluxo.js",
+        "mime-bateria.js",
+        "navegador-retorno.js",
+        "central-operacional.js",
+        "fontes-e-provedor.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "apagar-escrita",
+          "descricao": "apagar writeFileSync() na linha 1338",
+          "linha": 1338,
+          "invalido": true
+        },
+        {
+          "tipo": "congelar-identidade",
+          "descricao": "Date.now() → 1700000000000 (linha 790)",
+          "linha": 790,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": ">= → >",
+          "linha": 86,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (imagemVisao) → if (!imagemVisao)",
+          "linha": 1936,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 596",
+          "linha": 596,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 1076",
+          "linha": 1076,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/email-poll.js",
+      "mutantes": 6,
+      "mortos": 0,
+      "vivos": 6,
+      "invalidos": 0,
+      "killRate": 0,
+      "testes": [
+        "email-poll-adocao.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "congelar-identidade",
+          "descricao": "Date.now() → 1700000000000 (linha 112)",
+          "linha": 112,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 43",
+          "linha": 43,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "congelar-identidade",
+          "descricao": "Date.now() → 1700000000000 (linha 125)",
+          "linha": 125,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 152",
+          "linha": 152,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 157",
+          "linha": 157,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "congelar-identidade",
+          "descricao": "Date.now() → 1700000000000 (linha 170)",
+          "linha": 170,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/estado-operacional-controlado.js",
+      "mutantes": 6,
+      "mortos": 3,
+      "vivos": 3,
+      "invalidos": 0,
+      "killRate": 50,
+      "testes": [
+        "estado-operacional-controlado.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "apagar-escrita",
+          "descricao": "apagar mkdirSync() na linha 273",
+          "linha": 273,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (r.error) → if (!r.error)",
+          "linha": 80,
+          "morto": true,
+          "quemMatou": "estado-operacional-controlado.js",
+          "pista": "✘ ramo de estado ausente falha fechado sem usar main como alternativa — The input did not match the regular expression /fetch recusado|ramo estado\\/operacional inexistente/. Input: | ✘ preparar lê est"
+        },
+        {
+          "tipo": "engolir-erro",
+          "descricao": "throw → return null (linha 71)",
+          "linha": 71,
+          "morto": true,
+          "quemMatou": "estado-operacional-controlado.js",
+          "pista": "✘ ramo de estado ausente falha fechado sem usar main como alternativa — The input did not match the regular expression /fetch recusado|ramo estado\\/operacional inexistente/. Input: | ✘ teste de e-mail"
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": "<= → <",
+          "linha": 308,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "apagar-escrita",
+          "descricao": "apagar writeFileSync() na linha 143",
+          "linha": 143,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (p.concatenaLog) → if (!p.concatenaLog)",
+          "linha": 304,
+          "morto": true,
+          "quemMatou": "estado-operacional-controlado.js",
+          "pista": "✔ ramo de estado ausente falha fechado sem usar main como alternativa | ✘ log de e-mail não pode reescrever a própria fotografia, mesmo sem concorrência — 0 != 0"
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/evolucao-chat.js",
+      "mutantes": 6,
+      "mortos": 0,
+      "vivos": 6,
+      "invalidos": 0,
+      "killRate": 0,
+      "testes": [
+        "fontes-e-provedor.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "devolver-default",
+          "descricao": "return texto → return null",
+          "linha": 83,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 129",
+          "linha": 129,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (bearer) → if (!bearer)",
+          "linha": 106,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": ">= → >",
+          "linha": 91,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "engolir-erro",
+          "descricao": "throw → return null (linha 108)",
+          "linha": 108,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "congelar-identidade",
+          "descricao": "new Date().toISOString() → fixo (linha 47)",
+          "linha": 47,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/indice-capacidade.js",
+      "mutantes": 6,
+      "mortos": 0,
+      "vivos": 6,
+      "invalidos": 0,
+      "killRate": 0,
+      "testes": [
+        "continuidade.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "devolver-default",
+          "descricao": "return padrao → return null",
+          "linha": 10,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (m) → if (!m)",
+          "linha": 82,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "congelar-identidade",
+          "descricao": "new Date().toISOString() → fixo (linha 8)",
+          "linha": 8,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": "<= → <",
+          "linha": 41,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": ">= → >",
+          "linha": 46,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (placar.sinais) → if (!placar.sinais)",
+          "linha": 226,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/inventario-estado-operacional.js",
+      "mutantes": 5,
+      "mortos": 0,
+      "vivos": 5,
+      "invalidos": 0,
+      "killRate": 0,
+      "testes": [
+        "continuidade.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (resultado.error) → if (!resultado.error)",
+          "linha": 39,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "engolir-erro",
+          "descricao": "throw → return null (linha 33)",
+          "linha": 33,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "devolver-default",
+          "descricao": "return candidata → return null",
+          "linha": 46,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "devolver-default",
+          "descricao": "return resultado → return null",
+          "linha": 41,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "devolver-default",
+          "descricao": "return itens → return null",
+          "linha": 77,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/mesclador-estreito.js",
+      "mutantes": 6,
+      "mortos": 4,
+      "vivos": 2,
+      "invalidos": 0,
+      "killRate": 67,
+      "testes": [
+        "reversao-caminho-do-403.js",
+        "mesclador-estreito.js",
+        "barreira-depois-do-merge.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (dados.rascunho) → if (!dados.rascunho)",
+          "linha": 58,
+          "morto": true,
+          "quemMatou": "mesclador-estreito.js",
+          "pista": "✘ PR só de texto pode entrar sozinha — false == true | ✘ um único arquivo fora da faixa reprova a PR inteira — The input did not match the regular expression /fora da faixa/. Input:"
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 191",
+          "linha": 191,
+          "morto": true,
+          "quemMatou": "reversao-caminho-do-403.js",
+          "pista": "✘ quando a PR é proibida, a reversão vai por merge do ramo na main — deveria ter chamado POST /merges | ✘ quando a PR é permitida, o caminho normal continua sendo PR — The expression evaluated to a fa"
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 155",
+          "linha": 155,
+          "morto": true,
+          "quemMatou": "barreira-depois-do-merge.js",
+          "pista": "✘ depois de mesclar, o mesclador pede a barreira na main → sem a dispatch, a main fica sem barreira depois de um merge do robô | ✘ barreira que não pôde ser pedida não desfaz o merge nem mente → o mer"
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 152",
+          "linha": 152,
+          "morto": true,
+          "quemMatou": "barreira-depois-do-merge.js",
+          "pista": "✘ depois de mesclar, o mesclador pede a barreira na main → sem a dispatch, a main fica sem barreira depois de um merge do robô | ✘ barreira que não pôde ser pedida não desfaz o merge nem mente → o mer"
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 213",
+          "linha": 213,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 210",
+          "linha": 210,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/montar-paginas.js",
+      "mutantes": 6,
+      "mortos": 1,
+      "vivos": 5,
+      "invalidos": 0,
+      "killRate": 17,
+      "testes": [
+        "paginas-geradas.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "engolir-erro",
+          "descricao": "throw → return null (linha 33)",
+          "linha": 33,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "engolir-erro",
+          "descricao": "throw → return null (linha 72)",
+          "linha": 72,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "devolver-default",
+          "descricao": "return dados → return null",
+          "linha": 58,
+          "morto": true,
+          "quemMatou": "paginas-geradas.js",
+          "pista": "✘ 6/8 testes das páginas geradas passaram | ✘ regenerar as três rotas reproduz o arquivo commitado — Cannot read properties of null (reading 'regras')"
+        },
+        {
+          "tipo": "apagar-escrita",
+          "descricao": "apagar writeFileSync() na linha 101",
+          "linha": 101,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "engolir-erro",
+          "descricao": "throw → return null (linha 68)",
+          "linha": 68,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "engolir-erro",
+          "descricao": "throw → return null (linha 57)",
+          "linha": 57,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/painel.js",
+      "mutantes": 6,
+      "mortos": 1,
+      "vivos": 5,
+      "invalidos": 0,
+      "killRate": 17,
+      "testes": [
+        "painel.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 155",
+          "linha": 155,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 108",
+          "linha": 108,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (turno.status) → if (!turno.status)",
+          "linha": 37,
+          "morto": true,
+          "quemMatou": "painel.js",
+          "pista": "✘ o painel mostra casa, vigia, autonomia, portões, sombra e higiene — The input did not match the regular expression /turno de e-mail: em andamento/. Input:"
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 154",
+          "linha": 154,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 124",
+          "linha": 124,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 117",
+          "linha": 117,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/portoes.js",
+      "mutantes": 6,
+      "mortos": 0,
+      "vivos": 6,
+      "invalidos": 0,
+      "killRate": 0,
+      "testes": [
+        "sombra-e-portoes.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (quadro.incidentes.total) → if (!quadro.incidentes.total)",
+          "linha": 177,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (registros.length) → if (!registros.length)",
+          "linha": 152,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 131",
+          "linha": 131,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "engolir-erro",
+          "descricao": "throw → return null (linha 135)",
+          "linha": 135,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 174",
+          "linha": 174,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "engolir-erro",
+          "descricao": "throw → return null (linha 168)",
+          "linha": 168,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/preparo-controlado.js",
+      "mutantes": 0,
+      "mortos": 0,
+      "vivos": 0,
+      "killRate": null
+    },
+    {
+      "arquivo": "tools/prova-ciclos.js",
+      "mutantes": 6,
+      "mortos": 2,
+      "vivos": 4,
+      "invalidos": 0,
+      "killRate": 33,
+      "testes": [
+        "prova-ciclos.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (listaBuracos.length) → if (!listaBuracos.length)",
+          "linha": 110,
+          "morto": true,
+          "quemMatou": "prova-ciclos.js",
+          "pista": "✘ cem ciclos colados e sem sobreposição cumprem o degrau — 'parcial' == 'cumprido' | ✘ cem ciclos com buraco grande ficam em parcial, com a razão dita — 'cumprido' == 'parcial'"
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": ">= → >",
+          "linha": 86,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (token) → if (!token)",
+          "linha": 188,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 176",
+          "linha": 176,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": "<= → <",
+          "linha": 59,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "devolver-default",
+          "descricao": "return achados → return null",
+          "linha": 77,
+          "morto": true,
+          "quemMatou": "prova-ciclos.js",
+          "pista": "✘ dois turnos colados não abrem buraco — Cannot read properties of null (reading 'length') | ✘ buraco menor que o limite é fila, não perda — Cannot read properties of null (reading 'length')"
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/pulso-vigia.js",
+      "mutantes": 6,
+      "mortos": 1,
+      "vivos": 5,
+      "invalidos": 0,
+      "killRate": 17,
+      "testes": [
+        "pulso-vigia.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "trocar-limite",
+          "descricao": "<= → <",
+          "linha": 11,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": ">= → >",
+          "linha": 11,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "congelar-identidade",
+          "descricao": "Date.now() → 1700000000000 (linha 16)",
+          "linha": 16,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "congelar-identidade",
+          "descricao": "Date.now() → 1700000000000 (linha 30)",
+          "linha": 30,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 33",
+          "linha": 33,
+          "morto": true,
+          "quemMatou": "pulso-vigia.js",
+          "pista": "✘ sucesso recente evita dispatch duplicado — 'despachar-sem-confirmacao' == 'preservar' | ✘ sucesso antigo ou falha não vira saúde e mantém pulso — Expected values to be loosely deep-equal:"
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 41",
+          "linha": 41,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/reforco-dossie-controlado.js",
+      "mutantes": 5,
+      "mortos": 2,
+      "vivos": 3,
+      "invalidos": 1,
+      "killRate": 40,
+      "testes": [
+        "reforco-dossie-controlado.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "devolver-default",
+          "descricao": "return destino → return null",
+          "linha": 56,
+          "morto": true,
+          "quemMatou": "reforco-dossie-controlado.js",
+          "pista": "✔ base incompatível falha antes de escrever qualquer arquivo | ✘ aplica somente o patch literal, a regressão correspondente e o relatório sanitizado — base incompatível para reforço: .github/workflows"
+        },
+        {
+          "tipo": "devolver-default",
+          "descricao": "return atual → return null",
+          "linha": 111,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "engolir-erro",
+          "descricao": "throw → return null (linha 109)",
+          "linha": 109,
+          "morto": true,
+          "quemMatou": "reforco-dossie-controlado.js",
+          "pista": "✔ base incompatível falha antes de escrever qualquer arquivo | ✘ arquivo com conteúdo divergente depois da leitura bloqueia antes do relatório — Missing expected exception."
+        },
+        {
+          "tipo": "engolir-erro",
+          "descricao": "throw → return null (linha 80)",
+          "linha": 80,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "apagar-escrita",
+          "descricao": "apagar mkdirSync() na linha 86",
+          "linha": 86,
+          "invalido": true
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (criado) → if (!criado)",
+          "linha": 123,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/reserva-turno.js",
+      "mutantes": 6,
+      "mortos": 3,
+      "vivos": 3,
+      "invalidos": 0,
+      "killRate": 50,
+      "testes": [
+        "reserva-turno.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "engolir-erro",
+          "descricao": "throw → return null (linha 125)",
+          "linha": 125,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "devolver-default",
+          "descricao": "return encontreiMeuRun → return null",
+          "linha": 36,
+          "morto": true,
+          "quemMatou": "reserva-turno.js",
+          "pista": "✔ falha passageira na consulta é repetida e a reserva ainda conclui | ✔ o motivo da consulta que falhou chega ao resultado e ao log da reserva"
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (definitiva) → if (!definitiva)",
+          "linha": 102,
+          "morto": true,
+          "quemMatou": "reserva-turno.js",
+          "pista": "✔ o motivo da consulta que falhou chega ao resultado e ao log da reserva | ✔ o pedido de turno é escrita: nunca se repete, mesmo quando falha"
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 159",
+          "linha": 159,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 109",
+          "linha": 109,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 58",
+          "linha": 58,
+          "morto": true,
+          "quemMatou": "reserva-turno.js",
+          "pista": "✔ falha passageira na consulta é repetida e a reserva ainda conclui | ✘ a própria reserva em andamento não bloqueia a retomada quando não há outro turno — 'preservar-sem-confirmacao' == 'despachar'"
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/risco-de-arquivo.js",
+      "mutantes": 0,
+      "mortos": 0,
+      "vivos": 0,
+      "killRate": null
+    },
+    {
+      "arquivo": "tools/saude-rotas-email.js",
+      "mutantes": 6,
+      "mortos": 4,
+      "vivos": 2,
+      "invalidos": 0,
+      "killRate": 67,
+      "testes": [
+        "saude-rotas-email.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "apagar-escrita",
+          "descricao": "apagar writeFileSync() na linha 153",
+          "linha": 153,
+          "morto": true,
+          "quemMatou": "saude-rotas-email.js",
+          "pista": "✔ rota que falhou vai para o fim do seu par | ✔ falha de escrita não derruba o turno"
+        },
+        {
+          "tipo": "devolver-default",
+          "descricao": "return lista → return null",
+          "linha": 116,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "devolver-default",
+          "descricao": "return saida → return null",
+          "linha": 61,
+          "morto": true,
+          "quemMatou": "saude-rotas-email.js",
+          "pista": "✔ rota que falhou vai para o fim do seu par | ✔ falha de escrita não derruba o turno"
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (ok) → if (!ok)",
+          "linha": 89,
+          "morto": true,
+          "quemMatou": "saude-rotas-email.js",
+          "pista": "✔ falha de escrita não derruba o turno | ✘ rota que falhou vai para o fim do seu par — a rota que falhou não pode continuar na frente"
+        },
+        {
+          "tipo": "congelar-identidade",
+          "descricao": "Date.now() → 1700000000000 (linha 132)",
+          "linha": 132,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "devolver-default",
+          "descricao": "return nota → return null",
+          "linha": 107,
+          "morto": true,
+          "quemMatou": "saude-rotas-email.js",
+          "pista": "✔ falha de escrita não derruba o turno | ✘ rota que falhou vai para o fim do seu par — a rota que falhou não pode continuar na frente"
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/socorro.js",
+      "mutantes": 6,
+      "mortos": 0,
+      "vivos": 6,
+      "invalidos": 0,
+      "killRate": 0,
+      "testes": [
+        "socorro.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 96",
+          "linha": 96,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (d.evidencia) → if (!d.evidencia)",
+          "linha": 106,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "engolir-erro",
+          "descricao": "throw → return null (linha 88)",
+          "linha": 88,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "engolir-erro",
+          "descricao": "throw → return null (linha 97)",
+          "linha": 97,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 100",
+          "linha": 100,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 101",
+          "linha": 101,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/sombra.js",
+      "mutantes": 6,
+      "mortos": 0,
+      "vivos": 6,
+      "invalidos": 0,
+      "killRate": 0,
+      "testes": [
+        "sombra-e-portoes.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (resumo.essenciaisMaisFrequentes.length) → if (!resumo.essenciaisMaisFrequentes.length)",
+          "linha": 225,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 148",
+          "linha": 148,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 122",
+          "linha": 122,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 121",
+          "linha": 121,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 180",
+          "linha": 180,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 173",
+          "linha": 173,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/telegram-chat.js",
+      "mutantes": 6,
+      "mortos": 0,
+      "vivos": 6,
+      "invalidos": 0,
+      "killRate": 0,
+      "testes": [
+        "central-operacional.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (vl) → if (!vl)",
+          "linha": 151,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 59",
+          "linha": 59,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 218",
+          "linha": 218,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "congelar-identidade",
+          "descricao": "Date.now() → 1700000000000 (linha 241)",
+          "linha": 241,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (imagem) → if (!imagem)",
+          "linha": 145,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (lidos.length) → if (!lidos.length)",
+          "linha": 129,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/termometro-barreira.js",
+      "mutantes": 6,
+      "mortos": 1,
+      "vivos": 5,
+      "invalidos": 0,
+      "killRate": 17,
+      "testes": [
+        "autonomia-e-risco.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (n.passoDominante) → if (!n.passoDominante)",
+          "linha": 170,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 164",
+          "linha": 164,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": ">= → >",
+          "linha": 107,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 145",
+          "linha": 145,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": ">= → >",
+          "linha": 70,
+          "morto": true,
+          "quemMatou": "autonomia-e-risco.js",
+          "pista": "✔ a faixa é curta, escolhida a dedo, e cada arquivo declara o custo do próprio erro | ✔ falha recente reprova mesmo com média histórica boa"
+        },
+        {
+          "tipo": "trocar-limite",
+          "descricao": ">= → >",
+          "linha": 63,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    },
+    {
+      "arquivo": "tools/vigia-casa.js",
+      "mutantes": 6,
+      "mortos": 2,
+      "vivos": 4,
+      "invalidos": 0,
+      "killRate": 33,
+      "testes": [
+        "vigia-casa-resiliencia.js",
+        "operacao-incidentes.js",
+        "vigia-recuperacao-fluxo.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 298",
+          "linha": 298,
+          "morto": true,
+          "quemMatou": "vigia-recuperacao-fluxo.js",
+          "pista": "    throw new Error('URL inesperada no isolamento: ' + url); | Error: URL inesperada no isolamento: https://api.github.com/user"
+        },
+        {
+          "tipo": "engolir-erro",
+          "descricao": "throw → return null (linha 331)",
+          "linha": 331,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 384",
+          "linha": 384,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 412",
+          "linha": 412,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        },
+        {
+          "tipo": "inverter-guarda",
+          "descricao": "if (leitura.expirado) → if (!leitura.expirado)",
+          "linha": 187,
+          "morto": true,
+          "quemMatou": "vigia-recuperacao-fluxo.js",
+          "pista": "✘ fluxo isolado da recuperação — AssertionError [ERR_ASSERTION]: 'autonomia-desligada' == 'autonomia-codigo'"
+        },
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 356",
+          "linha": 356,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    }
+  ]
+}

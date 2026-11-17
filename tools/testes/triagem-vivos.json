@@ -1,0 +1,1624 @@
+{
+  "geradoEm": "2026-11-17T14:00:38.755Z",
+  "total": 130,
+  "conta": {
+    "NAO-EXECUTA": 107,
+    "BURACO": 14,
+    "MATA": 8,
+    "EQUIVALENTE": 1
+  },
+  "denominador": {
+    "mutantesGerados": 189,
+    "mortosNaPrimeiraMedicao": 59,
+    "vivosNaPrimeiraMedicao": 130,
+    "foraDoDenominadorNaoExecuta": 107,
+    "foraDoDenominadorEquivalente": 1,
+    "denominadorQueExecuta": 81,
+    "mortosAgora": 67,
+    "killRateIngenuo": 31,
+    "killRateEstrito": 83,
+    "nota": "kill estrito = (mortos + vivos que o contrato novo mata) / (mortos + vivos que a suíte executa)"
+  },
+  "vivos": [
+    {
+      "modulo": "bench/estilo.js",
+      "linha": 80,
+      "tipo": "engolir-erro",
+      "descricao": "throw → return null (linha 80)",
+      "testesQueCobrem": [
+        "avaliacao-aberto.js",
+        "roteador-gratis.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "bench/estilo.js",
+      "linha": 78,
+      "tipo": "trocar-limite",
+      "descricao": ">= → >",
+      "testesQueCobrem": [
+        "avaliacao-aberto.js",
+        "roteador-gratis.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "bench/estilo.js",
+      "linha": 77,
+      "tipo": "engolir-erro",
+      "descricao": "throw → return null (linha 77)",
+      "testesQueCobrem": [
+        "avaliacao-aberto.js",
+        "roteador-gratis.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "bench/medir-aberto.js",
+      "linha": 120,
+      "tipo": "congelar-identidade",
+      "descricao": "Date.now() → 1700000000000 (linha 120)",
+      "testesQueCobrem": [
+        "medicao-aberto-checkpoint.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "bench/medir-aberto.js",
+      "linha": 44,
+      "tipo": "engolir-erro",
+      "descricao": "throw → return null (linha 44)",
+      "testesQueCobrem": [
+        "medicao-aberto-checkpoint.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "bench/medir-aberto.js",
+      "linha": 90,
+      "tipo": "inverter-guarda",
+      "descricao": "if (meta.invalido) → if (!meta.invalido)",
+      "testesQueCobrem": [
+        "medicao-aberto-checkpoint.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "bench/medir-aberto.js",
+      "linha": 110,
+      "tipo": "inverter-guarda",
+      "descricao": "if (trilha) → if (!trilha)",
+      "testesQueCobrem": [
+        "medicao-aberto-checkpoint.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "bench/medir-aberto.js",
+      "linha": 66,
+      "tipo": "congelar-identidade",
+      "descricao": "new Date().toISOString() → fixo (linha 66)",
+      "testesQueCobrem": [
+        "medicao-aberto-checkpoint.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "bench/pontuar.js",
+      "linha": 77,
+      "tipo": "trocar-limite",
+      "descricao": "<= → <",
+      "testesQueCobrem": [
+        "roteador-gratis.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "bench/pontuar.js",
+      "linha": 57,
+      "tipo": "trocar-limite",
+      "descricao": ">= → >",
+      "testesQueCobrem": [
+        "roteador-gratis.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "bench/pontuar.js",
+      "linha": 81,
+      "tipo": "trocar-limite",
+      "descricao": ">= → >",
+      "testesQueCobrem": [
+        "roteador-gratis.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "chat-colecoes-local.js",
+      "linha": 335,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 335",
+      "testesQueCobrem": [
+        "colecoes-conversas-local.js"
+      ],
+      "classificacao": "BURACO",
+      "prova": "sem await, `criarColecao` pode resolver antes de `iniciar()` terminar; o teste em vm não observa a ordem"
+    },
+    {
+      "modulo": "chat-colecoes-local.js",
+      "linha": 302,
+      "tipo": "trocar-limite",
+      "descricao": ">= → >",
+      "testesQueCobrem": [
+        "colecoes-conversas-local.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": "a função `proximoId` não é chamada por nenhum dos testes que cobrem o módulo (grep: 0 ocorrências)"
+    },
+    {
+      "modulo": "chat-diagnostico.js",
+      "linha": 53,
+      "tipo": "trocar-limite",
+      "descricao": ">= → >",
+      "testesQueCobrem": [
+        "diagnostico-motores.js"
+      ],
+      "classificacao": "MATA",
+      "prova": "mutantes-vivos.js — 400 exato é formato, 500 exato é servidor (vm comprovou execução)"
+    },
+    {
+      "modulo": "chat-organizacao-local.js",
+      "linha": 206,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 206",
+      "testesQueCobrem": [
+        "organizacao-conversas-local.js"
+      ],
+      "classificacao": "BURACO",
+      "prova": "limparFavoritos sem await: o retorno chega antes da limpeza"
+    },
+    {
+      "modulo": "chat-organizacao-local.js",
+      "linha": 216,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 216",
+      "testesQueCobrem": [
+        "organizacao-conversas-local.js"
+      ],
+      "classificacao": "BURACO",
+      "prova": "exportarBackup sem await: o backup pode ser devolvido incompleto"
+    },
+    {
+      "modulo": "chat-workspace.js",
+      "linha": 1288,
+      "tipo": "inverter-guarda",
+      "descricao": "if (houveEdicaoDurante) → if (!houveEdicaoDurante)",
+      "testesQueCobrem": [
+        "workspace-busca-global.js",
+        "workspace-conflito-local.js",
+        "workspace-lixeira-concorrencia-local.js",
+        "workspace-arquivo-completo-concorrencia-local.js",
+        "workspace-projeto-portatil.js",
+        "workspace-arquivo-completo.js",
+        "workspace-integridade-local.js",
+        "workspace-local.js"
+      ],
+      "classificacao": "BURACO",
+      "prova": "agendarSalvarAutomatico passa a rodar quando NÃO houve edição durante a troca, e deixa de rodar quando houve"
+    },
+    {
+      "modulo": "chat-workspace.js",
+      "linha": 1016,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 1016",
+      "testesQueCobrem": [
+        "workspace-busca-global.js",
+        "workspace-conflito-local.js",
+        "workspace-lixeira-concorrencia-local.js",
+        "workspace-arquivo-completo-concorrencia-local.js",
+        "workspace-projeto-portatil.js",
+        "workspace-arquivo-completo.js",
+        "workspace-integridade-local.js",
+        "workspace-local.js"
+      ],
+      "classificacao": "BURACO",
+      "prova": "sem await no salvar, a troca segue mesmo se a gravação falhar"
+    },
+    {
+      "modulo": "chat-workspace.js",
+      "linha": 1002,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 1002",
+      "testesQueCobrem": [
+        "workspace-busca-global.js",
+        "workspace-conflito-local.js",
+        "workspace-lixeira-concorrencia-local.js",
+        "workspace-arquivo-completo-concorrencia-local.js",
+        "workspace-projeto-portatil.js",
+        "workspace-arquivo-completo.js",
+        "workspace-integridade-local.js",
+        "workspace-local.js"
+      ],
+      "classificacao": "BURACO",
+      "prova": "sem await, o projeto inicial é usado antes de existir"
+    },
+    {
+      "modulo": "chat-workspace.js",
+      "linha": 1865,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 1865",
+      "testesQueCobrem": [
+        "workspace-busca-global.js",
+        "workspace-conflito-local.js",
+        "workspace-lixeira-concorrencia-local.js",
+        "workspace-arquivo-completo-concorrencia-local.js",
+        "workspace-projeto-portatil.js",
+        "workspace-arquivo-completo.js",
+        "workspace-integridade-local.js",
+        "workspace-local.js"
+      ],
+      "classificacao": "BURACO",
+      "prova": "o salvamento automático deixa de ser aguardado antes de seguir"
+    },
+    {
+      "modulo": "razao-local.js",
+      "linha": 579,
+      "tipo": "trocar-limite",
+      "descricao": ">= → >",
+      "testesQueCobrem": [
+        "lexico-local.js",
+        "identidade-do-chat.js",
+        "razao-local.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "razao-local.js",
+      "linha": 175,
+      "tipo": "trocar-limite",
+      "descricao": ">= → >",
+      "testesQueCobrem": [
+        "lexico-local.js",
+        "identidade-do-chat.js",
+        "razao-local.js"
+      ],
+      "classificacao": "BURACO",
+      "prova": "limiar 0,5 de termos em comum: com `>` um par que acerta metade das palavras deixa de casar — muda resposta do raciocínio"
+    },
+    {
+      "modulo": "razao-local.js",
+      "linha": 39,
+      "tipo": "devolver-default",
+      "descricao": "return n → return null",
+      "testesQueCobrem": [
+        "lexico-local.js",
+        "identidade-do-chat.js",
+        "razao-local.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "roteador-ia.js",
+      "linha": 1547,
+      "tipo": "trocar-limite",
+      "descricao": ">= → >",
+      "testesQueCobrem": [
+        "chave-do-dono.js",
+        "saude-persistente.js",
+        "memoria-contexto-coerente.js",
+        "avaliacao-aberto.js",
+        "roteador-resiliencia.js",
+        "conta-falada.js",
+        "fonte-viva-casamento.js",
+        "identidade-do-chat.js",
+        "estado-aberto.js",
+        "aberto-recuperacao.js",
+        "fontes-e-provedor.js",
+        "roteador-gratis.js",
+        "espera-rota-boa.js",
+        "texto-longo-offline.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "roteador-ia.js",
+      "linha": 1869,
+      "tipo": "trocar-limite",
+      "descricao": ">= → >",
+      "testesQueCobrem": [
+        "chave-do-dono.js",
+        "saude-persistente.js",
+        "memoria-contexto-coerente.js",
+        "avaliacao-aberto.js",
+        "roteador-resiliencia.js",
+        "conta-falada.js",
+        "fonte-viva-casamento.js",
+        "identidade-do-chat.js",
+        "estado-aberto.js",
+        "aberto-recuperacao.js",
+        "fontes-e-provedor.js",
+        "roteador-gratis.js",
+        "espera-rota-boa.js",
+        "texto-longo-offline.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "roteador-ia.js",
+      "linha": 3023,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 3023",
+      "testesQueCobrem": [
+        "chave-do-dono.js",
+        "saude-persistente.js",
+        "memoria-contexto-coerente.js",
+        "avaliacao-aberto.js",
+        "roteador-resiliencia.js",
+        "conta-falada.js",
+        "fonte-viva-casamento.js",
+        "identidade-do-chat.js",
+        "estado-aberto.js",
+        "aberto-recuperacao.js",
+        "fontes-e-provedor.js",
+        "roteador-gratis.js",
+        "espera-rota-boa.js",
+        "texto-longo-offline.js"
+      ],
+      "classificacao": "BURACO",
+      "prova": "sem await, o ramo leve devolve promessa em vez do texto; qualquer consumidor que compare string quebra"
+    },
+    {
+      "modulo": "sw.js",
+      "linha": 44,
+      "tipo": "devolver-default",
+      "descricao": "return resposta → return null",
+      "testesQueCobrem": [
+        "continuidade.js",
+        "lexico-local.js",
+        "identidade-do-chat.js",
+        "seguranca-interface.js",
+        "preparo-controlado.js",
+        "estilos-compartilhados.js",
+        "portabilidade-estatica.js",
+        "workspace-local.js",
+        "organizacao-conversas-local.js",
+        "colecoes-conversas-local.js",
+        "filtro-chips-interface.js",
+        "comandos-locais-interface.js",
+        "diagnostico-motores.js",
+        "central-operacional.js",
+        "fontes-e-provedor.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "sw.js",
+      "linha": 44,
+      "tipo": "inverter-guarda",
+      "descricao": "if (resposta) → if (!resposta)",
+      "testesQueCobrem": [
+        "continuidade.js",
+        "lexico-local.js",
+        "identidade-do-chat.js",
+        "seguranca-interface.js",
+        "preparo-controlado.js",
+        "estilos-compartilhados.js",
+        "portabilidade-estatica.js",
+        "workspace-local.js",
+        "organizacao-conversas-local.js",
+        "colecoes-conversas-local.js",
+        "filtro-chips-interface.js",
+        "comandos-locais-interface.js",
+        "diagnostico-motores.js",
+        "central-operacional.js",
+        "fontes-e-provedor.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": "mesmo caminho: `if (resposta)` está dentro do handler `fetch`, que nenhum teste aciona"
+    },
+    {
+      "modulo": "sw.js",
+      "linha": 41,
+      "tipo": "devolver-default",
+      "descricao": "return resposta → return null",
+      "testesQueCobrem": [
+        "continuidade.js",
+        "lexico-local.js",
+        "identidade-do-chat.js",
+        "seguranca-interface.js",
+        "preparo-controlado.js",
+        "estilos-compartilhados.js",
+        "portabilidade-estatica.js",
+        "workspace-local.js",
+        "organizacao-conversas-local.js",
+        "colecoes-conversas-local.js",
+        "filtro-chips-interface.js",
+        "comandos-locais-interface.js",
+        "diagnostico-motores.js",
+        "central-operacional.js",
+        "fontes-e-provedor.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": "nenhum teste aciona o handler `fetch` do service worker: os 15 que apontam para sw.js rodam o arquivo em vm para extrair funções de apoio; o caminho de rede/cache nunca é simulado"
+    },
+    {
+      "modulo": "tools/autonomia.js",
+      "linha": 32,
+      "tipo": "congelar-identidade",
+      "descricao": "Date.now() → 1700000000000 (linha 32)",
+      "testesQueCobrem": [
+        "autonomia-e-risco.js"
+      ],
+      "classificacao": "MATA",
+      "prova": "mutantes-vivos.js — prazo comparado com relógio falso: ontem expira, amanhã não"
+    },
+    {
+      "modulo": "tools/autonomia.js",
+      "linha": 69,
+      "tipo": "inverter-guarda",
+      "descricao": "if (l.semPrazo) → if (!l.semPrazo)",
+      "testesQueCobrem": [
+        "autonomia-e-risco.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/cobertura-navegador.js",
+      "linha": 162,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 162",
+      "testesQueCobrem": [
+        "cobertura-navegador.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/cobertura-navegador.js",
+      "linha": 150,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 150",
+      "testesQueCobrem": [
+        "cobertura-navegador.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/cobertura-navegador.js",
+      "linha": 198,
+      "tipo": "inverter-guarda",
+      "descricao": "if (querJson) → if (!querJson)",
+      "testesQueCobrem": [
+        "cobertura-navegador.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/cobertura-navegador.js",
+      "linha": 200,
+      "tipo": "congelar-identidade",
+      "descricao": "new Date().toISOString() → fixo (linha 200)",
+      "testesQueCobrem": [
+        "cobertura-navegador.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/cobertura-navegador.js",
+      "linha": 161,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 161",
+      "testesQueCobrem": [
+        "cobertura-navegador.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/dossie-preparo-controlado.js",
+      "linha": 57,
+      "tipo": "engolir-erro",
+      "descricao": "throw → return null (linha 57)",
+      "testesQueCobrem": [
+        "dossie-preparo-controlado.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/email-chat.js",
+      "linha": 790,
+      "tipo": "congelar-identidade",
+      "descricao": "Date.now() → 1700000000000 (linha 790)",
+      "testesQueCobrem": [
+        "navegador-retorno-fluxo.js",
+        "navegador-comando-email.js",
+        "operacao-incidentes.js",
+        "seguranca-interface.js",
+        "vigia-recuperacao-fluxo.js",
+        "mime-bateria.js",
+        "navegador-retorno.js",
+        "central-operacional.js",
+        "fontes-e-provedor.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/email-chat.js",
+      "linha": 86,
+      "tipo": "trocar-limite",
+      "descricao": ">= → >",
+      "testesQueCobrem": [
+        "navegador-retorno-fluxo.js",
+        "navegador-comando-email.js",
+        "operacao-incidentes.js",
+        "seguranca-interface.js",
+        "vigia-recuperacao-fluxo.js",
+        "mime-bateria.js",
+        "navegador-retorno.js",
+        "central-operacional.js",
+        "fontes-e-provedor.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/email-chat.js",
+      "linha": 1936,
+      "tipo": "inverter-guarda",
+      "descricao": "if (imagemVisao) → if (!imagemVisao)",
+      "testesQueCobrem": [
+        "navegador-retorno-fluxo.js",
+        "navegador-comando-email.js",
+        "operacao-incidentes.js",
+        "seguranca-interface.js",
+        "vigia-recuperacao-fluxo.js",
+        "mime-bateria.js",
+        "navegador-retorno.js",
+        "central-operacional.js",
+        "fontes-e-provedor.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/email-chat.js",
+      "linha": 596,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 596",
+      "testesQueCobrem": [
+        "navegador-retorno-fluxo.js",
+        "navegador-comando-email.js",
+        "operacao-incidentes.js",
+        "seguranca-interface.js",
+        "vigia-recuperacao-fluxo.js",
+        "mime-bateria.js",
+        "navegador-retorno.js",
+        "central-operacional.js",
+        "fontes-e-provedor.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/email-chat.js",
+      "linha": 1076,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 1076",
+      "testesQueCobrem": [
+        "navegador-retorno-fluxo.js",
+        "navegador-comando-email.js",
+        "operacao-incidentes.js",
+        "seguranca-interface.js",
+        "vigia-recuperacao-fluxo.js",
+        "mime-bateria.js",
+        "navegador-retorno.js",
+        "central-operacional.js",
+        "fontes-e-provedor.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/email-poll.js",
+      "linha": 112,
+      "tipo": "congelar-identidade",
+      "descricao": "Date.now() → 1700000000000 (linha 112)",
+      "testesQueCobrem": [
+        "email-poll-adocao.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/email-poll.js",
+      "linha": 43,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 43",
+      "testesQueCobrem": [
+        "email-poll-adocao.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/email-poll.js",
+      "linha": 125,
+      "tipo": "congelar-identidade",
+      "descricao": "Date.now() → 1700000000000 (linha 125)",
+      "testesQueCobrem": [
+        "email-poll-adocao.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/email-poll.js",
+      "linha": 152,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 152",
+      "testesQueCobrem": [
+        "email-poll-adocao.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/email-poll.js",
+      "linha": 157,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 157",
+      "testesQueCobrem": [
+        "email-poll-adocao.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/email-poll.js",
+      "linha": 170,
+      "tipo": "congelar-identidade",
+      "descricao": "Date.now() → 1700000000000 (linha 170)",
+      "testesQueCobrem": [
+        "email-poll-adocao.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/estado-operacional-controlado.js",
+      "linha": 273,
+      "tipo": "apagar-escrita",
+      "descricao": "apagar mkdirSync() na linha 273",
+      "testesQueCobrem": [
+        "estado-operacional-controlado.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/estado-operacional-controlado.js",
+      "linha": 308,
+      "tipo": "trocar-limite",
+      "descricao": "<= → <",
+      "testesQueCobrem": [
+        "estado-operacional-controlado.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/estado-operacional-controlado.js",
+      "linha": 143,
+      "tipo": "apagar-escrita",
+      "descricao": "apagar writeFileSync() na linha 143",
+      "testesQueCobrem": [
+        "estado-operacional-controlado.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/evolucao-chat.js",
+      "linha": 83,
+      "tipo": "devolver-default",
+      "descricao": "return texto → return null",
+      "testesQueCobrem": [
+        "fontes-e-provedor.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/evolucao-chat.js",
+      "linha": 129,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 129",
+      "testesQueCobrem": [
+        "fontes-e-provedor.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/evolucao-chat.js",
+      "linha": 106,
+      "tipo": "inverter-guarda",
+      "descricao": "if (bearer) → if (!bearer)",
+      "testesQueCobrem": [
+        "fontes-e-provedor.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/evolucao-chat.js",
+      "linha": 91,
+      "tipo": "trocar-limite",
+      "descricao": ">= → >",
+      "testesQueCobrem": [
+        "fontes-e-provedor.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/evolucao-chat.js",
+      "linha": 108,
+      "tipo": "engolir-erro",
+      "descricao": "throw → return null (linha 108)",
+      "testesQueCobrem": [
+        "fontes-e-provedor.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/evolucao-chat.js",
+      "linha": 47,
+      "tipo": "congelar-identidade",
+      "descricao": "new Date().toISOString() → fixo (linha 47)",
+      "testesQueCobrem": [
+        "fontes-e-provedor.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/indice-capacidade.js",
+      "linha": 10,
+      "tipo": "devolver-default",
+      "descricao": "return padrao → return null",
+      "testesQueCobrem": [
+        "continuidade.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/indice-capacidade.js",
+      "linha": 82,
+      "tipo": "inverter-guarda",
+      "descricao": "if (m) → if (!m)",
+      "testesQueCobrem": [
+        "continuidade.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/indice-capacidade.js",
+      "linha": 8,
+      "tipo": "congelar-identidade",
+      "descricao": "new Date().toISOString() → fixo (linha 8)",
+      "testesQueCobrem": [
+        "continuidade.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/indice-capacidade.js",
+      "linha": 41,
+      "tipo": "trocar-limite",
+      "descricao": "<= → <",
+      "testesQueCobrem": [
+        "continuidade.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/indice-capacidade.js",
+      "linha": 46,
+      "tipo": "trocar-limite",
+      "descricao": ">= → >",
+      "testesQueCobrem": [
+        "continuidade.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/indice-capacidade.js",
+      "linha": 226,
+      "tipo": "inverter-guarda",
+      "descricao": "if (placar.sinais) → if (!placar.sinais)",
+      "testesQueCobrem": [
+        "continuidade.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/inventario-estado-operacional.js",
+      "linha": 39,
+      "tipo": "inverter-guarda",
+      "descricao": "if (resultado.error) → if (!resultado.error)",
+      "testesQueCobrem": [
+        "continuidade.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/inventario-estado-operacional.js",
+      "linha": 33,
+      "tipo": "engolir-erro",
+      "descricao": "throw → return null (linha 33)",
+      "testesQueCobrem": [
+        "continuidade.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/inventario-estado-operacional.js",
+      "linha": 46,
+      "tipo": "devolver-default",
+      "descricao": "return candidata → return null",
+      "testesQueCobrem": [
+        "continuidade.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/inventario-estado-operacional.js",
+      "linha": 41,
+      "tipo": "devolver-default",
+      "descricao": "return resultado → return null",
+      "testesQueCobrem": [
+        "continuidade.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/inventario-estado-operacional.js",
+      "linha": 77,
+      "tipo": "devolver-default",
+      "descricao": "return itens → return null",
+      "testesQueCobrem": [
+        "continuidade.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/mesclador-estreito.js",
+      "linha": 213,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 213",
+      "testesQueCobrem": [
+        "reversao-caminho-do-403.js",
+        "mesclador-estreito.js",
+        "barreira-depois-do-merge.js"
+      ],
+      "classificacao": "BURACO",
+      "prova": "sem await, o revert é reportado como concluído antes de a chamada voltar"
+    },
+    {
+      "modulo": "tools/mesclador-estreito.js",
+      "linha": 210,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 210",
+      "testesQueCobrem": [
+        "reversao-caminho-do-403.js",
+        "mesclador-estreito.js",
+        "barreira-depois-do-merge.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/montar-paginas.js",
+      "linha": 33,
+      "tipo": "engolir-erro",
+      "descricao": "throw → return null (linha 33)",
+      "testesQueCobrem": [
+        "paginas-geradas.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/montar-paginas.js",
+      "linha": 72,
+      "tipo": "engolir-erro",
+      "descricao": "throw → return null (linha 72)",
+      "testesQueCobrem": [
+        "paginas-geradas.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/montar-paginas.js",
+      "linha": 101,
+      "tipo": "apagar-escrita",
+      "descricao": "apagar writeFileSync() na linha 101",
+      "testesQueCobrem": [
+        "paginas-geradas.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/montar-paginas.js",
+      "linha": 68,
+      "tipo": "engolir-erro",
+      "descricao": "throw → return null (linha 68)",
+      "testesQueCobrem": [
+        "paginas-geradas.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/montar-paginas.js",
+      "linha": 57,
+      "tipo": "engolir-erro",
+      "descricao": "throw → return null (linha 57)",
+      "testesQueCobrem": [
+        "paginas-geradas.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/painel.js",
+      "linha": 155,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 155",
+      "testesQueCobrem": [
+        "painel.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/painel.js",
+      "linha": 108,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 108",
+      "testesQueCobrem": [
+        "painel.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/painel.js",
+      "linha": 154,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 154",
+      "testesQueCobrem": [
+        "painel.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/painel.js",
+      "linha": 124,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 124",
+      "testesQueCobrem": [
+        "painel.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/painel.js",
+      "linha": 117,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 117",
+      "testesQueCobrem": [
+        "painel.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/portoes.js",
+      "linha": 177,
+      "tipo": "inverter-guarda",
+      "descricao": "if (quadro.incidentes.total) → if (!quadro.incidentes.total)",
+      "testesQueCobrem": [
+        "sombra-e-portoes.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/portoes.js",
+      "linha": 152,
+      "tipo": "inverter-guarda",
+      "descricao": "if (registros.length) → if (!registros.length)",
+      "testesQueCobrem": [
+        "sombra-e-portoes.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/portoes.js",
+      "linha": 131,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 131",
+      "testesQueCobrem": [
+        "sombra-e-portoes.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/portoes.js",
+      "linha": 135,
+      "tipo": "engolir-erro",
+      "descricao": "throw → return null (linha 135)",
+      "testesQueCobrem": [
+        "sombra-e-portoes.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/portoes.js",
+      "linha": 174,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 174",
+      "testesQueCobrem": [
+        "sombra-e-portoes.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/portoes.js",
+      "linha": 168,
+      "tipo": "engolir-erro",
+      "descricao": "throw → return null (linha 168)",
+      "testesQueCobrem": [
+        "sombra-e-portoes.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/prova-ciclos.js",
+      "linha": 86,
+      "tipo": "trocar-limite",
+      "descricao": ">= → >",
+      "testesQueCobrem": [
+        "prova-ciclos.js"
+      ],
+      "classificacao": "EQUIVALENTE",
+      "prova": "o `break` é otimização: com inicio == fim o laço continua, calcula 0 minuto e o filtro (>= 5) descarta igual. Experimento: sob a mutação `>=`→`>` o contrato novo continua verde e a saída é a mesma — comportamento idêntico."
+    },
+    {
+      "modulo": "tools/prova-ciclos.js",
+      "linha": 188,
+      "tipo": "inverter-guarda",
+      "descricao": "if (token) → if (!token)",
+      "testesQueCobrem": [
+        "prova-ciclos.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/prova-ciclos.js",
+      "linha": 176,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 176",
+      "testesQueCobrem": [
+        "prova-ciclos.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/prova-ciclos.js",
+      "linha": 59,
+      "tipo": "trocar-limite",
+      "descricao": "<= → <",
+      "testesQueCobrem": [
+        "prova-ciclos.js"
+      ],
+      "classificacao": "MATA",
+      "prova": "mutantes-vivos.js — trechos que se tocam na borda são um trecho só"
+    },
+    {
+      "modulo": "tools/pulso-vigia.js",
+      "linha": 11,
+      "tipo": "trocar-limite",
+      "descricao": "<= → <",
+      "testesQueCobrem": [
+        "pulso-vigia.js"
+      ],
+      "classificacao": "MATA",
+      "prova": "pulso-vigia-relogio.js — borda inclusiva de 20 min (<= → <) fica vermelha"
+    },
+    {
+      "modulo": "tools/pulso-vigia.js",
+      "linha": 11,
+      "tipo": "trocar-limite",
+      "descricao": ">= → >",
+      "testesQueCobrem": [
+        "pulso-vigia.js"
+      ],
+      "classificacao": "MATA",
+      "prova": "pulso-vigia-relogio.js — borda inclusiva de 20 min (<= → <) fica vermelha"
+    },
+    {
+      "modulo": "tools/pulso-vigia.js",
+      "linha": 16,
+      "tipo": "congelar-identidade",
+      "descricao": "Date.now() → 1700000000000 (linha 16)",
+      "testesQueCobrem": [
+        "pulso-vigia.js"
+      ],
+      "classificacao": "MATA",
+      "prova": "pulso-vigia-relogio.js — relógio do sistema vira constante: desvio de 3 anos no caso 1"
+    },
+    {
+      "modulo": "tools/pulso-vigia.js",
+      "linha": 30,
+      "tipo": "congelar-identidade",
+      "descricao": "Date.now() → 1700000000000 (linha 30)",
+      "testesQueCobrem": [
+        "pulso-vigia.js"
+      ],
+      "classificacao": "MATA",
+      "prova": "pulso-vigia-relogio.js — coordenaPulsoVigia sem hora explícita lê o relógio injetado"
+    },
+    {
+      "modulo": "tools/pulso-vigia.js",
+      "linha": 41,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 41",
+      "testesQueCobrem": [
+        "pulso-vigia.js"
+      ],
+      "classificacao": "MATA",
+      "prova": "pulso-vigia-relogio.js — sem o await, coordenaPulsoVigia resolve antes do pedido terminar"
+    },
+    {
+      "modulo": "tools/reforco-dossie-controlado.js",
+      "linha": 111,
+      "tipo": "devolver-default",
+      "descricao": "return atual → return null",
+      "testesQueCobrem": [
+        "reforco-dossie-controlado.js"
+      ],
+      "classificacao": "BURACO",
+      "prova": "devolve null em vez do texto atual: comparação de igualdade do arquivo passa a comparar com null"
+    },
+    {
+      "modulo": "tools/reforco-dossie-controlado.js",
+      "linha": 80,
+      "tipo": "engolir-erro",
+      "descricao": "throw → return null (linha 80)",
+      "testesQueCobrem": [
+        "reforco-dossie-controlado.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/reforco-dossie-controlado.js",
+      "linha": 123,
+      "tipo": "inverter-guarda",
+      "descricao": "if (criado) → if (!criado)",
+      "testesQueCobrem": [
+        "reforco-dossie-controlado.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/reserva-turno.js",
+      "linha": 125,
+      "tipo": "engolir-erro",
+      "descricao": "throw → return null (linha 125)",
+      "testesQueCobrem": [
+        "reserva-turno.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/reserva-turno.js",
+      "linha": 159,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 159",
+      "testesQueCobrem": [
+        "reserva-turno.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/reserva-turno.js",
+      "linha": 109,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 109",
+      "testesQueCobrem": [
+        "reserva-turno.js"
+      ],
+      "classificacao": "BURACO",
+      "prova": "a espera entre tentativas deixa de acontecer antes da próxima chamada: as 3 tentativas viram rajada"
+    },
+    {
+      "modulo": "tools/saude-rotas-email.js",
+      "linha": 116,
+      "tipo": "devolver-default",
+      "descricao": "return lista → return null",
+      "testesQueCobrem": [
+        "saude-rotas-email.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/saude-rotas-email.js",
+      "linha": 132,
+      "tipo": "congelar-identidade",
+      "descricao": "Date.now() → 1700000000000 (linha 132)",
+      "testesQueCobrem": [
+        "saude-rotas-email.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/socorro.js",
+      "linha": 96,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 96",
+      "testesQueCobrem": [
+        "socorro.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/socorro.js",
+      "linha": 106,
+      "tipo": "inverter-guarda",
+      "descricao": "if (d.evidencia) → if (!d.evidencia)",
+      "testesQueCobrem": [
+        "socorro.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/socorro.js",
+      "linha": 88,
+      "tipo": "engolir-erro",
+      "descricao": "throw → return null (linha 88)",
+      "testesQueCobrem": [
+        "socorro.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/socorro.js",
+      "linha": 97,
+      "tipo": "engolir-erro",
+      "descricao": "throw → return null (linha 97)",
+      "testesQueCobrem": [
+        "socorro.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/socorro.js",
+      "linha": 100,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 100",
+      "testesQueCobrem": [
+        "socorro.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/socorro.js",
+      "linha": 101,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 101",
+      "testesQueCobrem": [
+        "socorro.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/sombra.js",
+      "linha": 225,
+      "tipo": "inverter-guarda",
+      "descricao": "if (resumo.essenciaisMaisFrequentes.length) → if (!resumo.essenciaisMaisFrequentes.length)",
+      "testesQueCobrem": [
+        "sombra-e-portoes.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/sombra.js",
+      "linha": 148,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 148",
+      "testesQueCobrem": [
+        "sombra-e-portoes.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/sombra.js",
+      "linha": 122,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 122",
+      "testesQueCobrem": [
+        "sombra-e-portoes.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/sombra.js",
+      "linha": 121,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 121",
+      "testesQueCobrem": [
+        "sombra-e-portoes.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/sombra.js",
+      "linha": 180,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 180",
+      "testesQueCobrem": [
+        "sombra-e-portoes.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/sombra.js",
+      "linha": 173,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 173",
+      "testesQueCobrem": [
+        "sombra-e-portoes.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/telegram-chat.js",
+      "linha": 151,
+      "tipo": "inverter-guarda",
+      "descricao": "if (vl) → if (!vl)",
+      "testesQueCobrem": [
+        "central-operacional.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/telegram-chat.js",
+      "linha": 59,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 59",
+      "testesQueCobrem": [
+        "central-operacional.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/telegram-chat.js",
+      "linha": 218,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 218",
+      "testesQueCobrem": [
+        "central-operacional.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/telegram-chat.js",
+      "linha": 241,
+      "tipo": "congelar-identidade",
+      "descricao": "Date.now() → 1700000000000 (linha 241)",
+      "testesQueCobrem": [
+        "central-operacional.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/telegram-chat.js",
+      "linha": 145,
+      "tipo": "inverter-guarda",
+      "descricao": "if (imagem) → if (!imagem)",
+      "testesQueCobrem": [
+        "central-operacional.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/telegram-chat.js",
+      "linha": 129,
+      "tipo": "inverter-guarda",
+      "descricao": "if (lidos.length) → if (!lidos.length)",
+      "testesQueCobrem": [
+        "central-operacional.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/termometro-barreira.js",
+      "linha": 170,
+      "tipo": "inverter-guarda",
+      "descricao": "if (n.passoDominante) → if (!n.passoDominante)",
+      "testesQueCobrem": [
+        "autonomia-e-risco.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/termometro-barreira.js",
+      "linha": 164,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 164",
+      "testesQueCobrem": [
+        "autonomia-e-risco.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/termometro-barreira.js",
+      "linha": 107,
+      "tipo": "trocar-limite",
+      "descricao": ">= → >",
+      "testesQueCobrem": [
+        "autonomia-e-risco.js"
+      ],
+      "classificacao": "BURACO",
+      "prova": "com 5 execuções recentes exatas o termômetro deixa de avaliar instabilidade"
+    },
+    {
+      "modulo": "tools/termometro-barreira.js",
+      "linha": 145,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 145",
+      "testesQueCobrem": [
+        "autonomia-e-risco.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/termometro-barreira.js",
+      "linha": 63,
+      "tipo": "trocar-limite",
+      "descricao": ">= → >",
+      "testesQueCobrem": [
+        "autonomia-e-risco.js"
+      ],
+      "classificacao": "BURACO",
+      "prova": "execução exatamente no marco do deploy deixa de contar"
+    },
+    {
+      "modulo": "tools/vigia-casa.js",
+      "linha": 331,
+      "tipo": "engolir-erro",
+      "descricao": "throw → return null (linha 331)",
+      "testesQueCobrem": [
+        "vigia-casa-resiliencia.js",
+        "operacao-incidentes.js",
+        "vigia-recuperacao-fluxo.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/vigia-casa.js",
+      "linha": 384,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 384",
+      "testesQueCobrem": [
+        "vigia-casa-resiliencia.js",
+        "operacao-incidentes.js",
+        "vigia-recuperacao-fluxo.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/vigia-casa.js",
+      "linha": 412,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 412",
+      "testesQueCobrem": [
+        "vigia-casa-resiliencia.js",
+        "operacao-incidentes.js",
+        "vigia-recuperacao-fluxo.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    },
+    {
+      "modulo": "tools/vigia-casa.js",
+      "linha": 356,
+      "tipo": "remover-await",
+      "descricao": "await removido na linha 356",
+      "testesQueCobrem": [
+        "vigia-casa-resiliencia.js",
+        "operacao-incidentes.js",
+        "vigia-recuperacao-fluxo.js"
+      ],
+      "classificacao": "NAO-EXECUTA",
+      "prova": ""
+    }
+  ]
+}

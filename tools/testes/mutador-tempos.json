@@ -784,5 +784,23 @@
     "status": 0,
     "ignorado": false,
     "ultima": "6/6 testes do projeto portátil do Workspace passaram"
+  },
+  "mutantes-vivos.js": {
+    "ms": 39,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "5/5 mutantes vivos agora mortos"
+  },
+  "pulso-vigia-relogio.js": {
+    "ms": 34,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "6/6 contratos de tempo do pulso passaram"
+  },
+  "workflows-versionados.js": {
+    "ms": 57,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "4/4 contratos de fixture passaram"
   }
 }

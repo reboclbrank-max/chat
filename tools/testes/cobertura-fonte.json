@@ -1,0 +1,4831 @@
+{
+  "geradoEm": "2026-11-17T13:39:50.489Z",
+  "totalArquivos": 536,
+  "fontesNaoTeste": 392,
+  "alcancadas": 121,
+  "zeroCobertura": 271,
+  "percentualAlcancado": 31,
+  "porCategoria": {
+    "dados-json": {
+      "total": 117,
+      "alcancadas": 23,
+      "zero": 94
+    },
+    "doc": {
+      "total": 134,
+      "alcancadas": 21,
+      "zero": 113
+    },
+    "workflow/config-yaml": {
+      "total": 20,
+      "alcancadas": 12,
+      "zero": 8
+    },
+    "estatico-web": {
+      "total": 16,
+      "alcancadas": 11,
+      "zero": 5
+    },
+    "codigo-js": {
+      "total": 105,
+      "alcancadas": 54,
+      "zero": 51
+    },
+    "teste": {
+      "total": 144,
+      "alcancadas": 0,
+      "zero": 0
+    }
+  },
+  "zeroCoberturaLista": [
+    ".github/dependabot.yml",
+    ".github/workflows/copiar-x-para-site.yml",
+    ".github/workflows/diag-email.yml",
+    ".github/workflows/diagnostico-caixa.yml",
+    ".github/workflows/diagnostico-telegram.yml",
+    ".github/workflows/seguranca-chaves.yml",
+    ".github/workflows/testar-apis.yml",
+    ".github/workflows/visao-cache.yml",
+    "AUDITORIA-COMPLETA-2026-10-17.md",
+    "AUDITORIA-OPERACIONAL-2026-10-17.md",
+    "AVALIACAO-PROFUNDA.md",
+    "INSTRUCAO-DO-INSTRUTOR.md",
+    "acervo/INDICE.md",
+    "acervo/MAPA-WORKSPACE.md",
+    "acervo/arquivo/rodada-101-102/agente-desativados.json",
+    "acervo/arquivo/rodada-101-102/base-protection-101.json",
+    "acervo/arquivo/rodada-101-102/diagnostico-101-antes.json",
+    "acervo/arquivo/rodada-101-102/espelho-desativados.json",
+    "acervo/arquivo/rodada-101-102/llm7-101-home.html",
+    "acervo/arquivo/rodada-101-102/llm7-models-101.json",
+    "acervo/arquivo/rodada-101-102/medidor-101-intermediario.js",
+    "acervo/arquivo/rodada-101-102/modelos-blockrun-101.json",
+    "acervo/arquivo/rodada-101-102/piloto-101.json",
+    "acervo/arquivo/rodada-101-102/qi-dificil3.json",
+    "acervo/arquivo/rodada-101-102/qi-estilo.json",
+    "acervo/arquivo/rodada-101-102/qi-maximo.json",
+    "acervo/arquivo/rodada-101-102/qi-resumo.json",
+    "acervo/arquivo/rodada-101-102/sonda-llm7-101.json",
+    "acervo/arquivo/rodada-101-102/sonda-wiki-102.json",
+    "acervo/pesquisas/CEREBRO-GRATIS-v2.md",
+    "acervo/pesquisas/PARIDADE-IA.md",
+    "acervo/pesquisas/RODADA-96-TEXTO-ABERTO.md",
+    "acervo/pesquisas/RODADA-97-VISAO-E-LATENCIA.md",
+    "acervo/pesquisas/RODADA-98-BUGS-E-MEDICAO.md",
+    "acervo/pesquisas/RODADA-99-PLANO-E-ESTILO.md",
+    "acervo/pesquisas/ROTEADOR-IA.md",
+    "acervo/pesquisas/TETO-DOS-GRATIS.md",
+    "acervo/pesquisas/comparacao-chat-vs-fronteira-2026-10-27.md",
+    "acervo/pesquisas/ia-mais-inteligente-out-2026.md",
+    "acervo/pesquisas/medicao-chat-2026-10-27/ferramentas.json",
+    "acervo/pesquisas/medicao-chat-2026-10-27/resultados.json",
+    "acervo/pesquisas/medicao-chat-2026-10-27/resultados2.json",
+    "acervo/qi/medir-dificil.js",
+    "acervo/qi/medir-dificil3.js",
+    "acervo/qi/medir-estilo-calibracao.js",
+    "acervo/qi/medir-maximo.js",
+    "acervo/qi/medir-qi.js",
+    "acervo/qi/qi-bruto.json",
+    "acervo/qi/qi-dificil.json",
+    "acervo/relatorios/auditoria-chat-2026-10-24.md",
+    "acervo/relatorios/auditoria-chat-qi-2026-10-31.html",
+    "acervo/relatorios/guia-cookie-itch.md",
+    "acervo/relatorios/proposta-corte-agente-2026-10-24.md",
+    "acervo/relatorios/rodada-132-fechamento.md",
+    "acervo/relatorios/rodada-133-limites.md",
+    "acervo/relatorios/rodada-134-auto-melhoria.md",
+    "acervo/relatorios/rodada-135-auto-auditoria.md",
+    "acervo/relatorios/rodada-136-capacidade.md",
+    "acervo/relatorios/rodada-137-nome-e-guarda.md",
+    "acervo/relatorios/rodada-138-dependencias.md",
+    "acervo/relatorios/rodada-139-soberania.md",
+    "bench/PROTOCOLO-PAREADO-102.md",
+    "bench/analisar-fonte-viva.js",
+    "bench/analisar-potencia-107.js",
+    "bench/auditoria-fontes-vivas-105.json",
+    "bench/banco-aberto-holdout-100.json",
+    "bench/banco-aberto-novo-102.json",
+    "bench/banco-codigo.json",
+    "bench/banco-duro.json",
+    "bench/banco-estilo-amostra-100.json",
+    "bench/banco-fresco.json",
+    "bench/banco-holdout.json",
+    "bench/banco-multietapa.json",
+    "bench/banco-visao.json",
+    "bench/banco200.json",
+    "bench/base-34bbe1d.json",
+    "bench/candidato-cadeia-107.js",
+    "bench/candidato-concretude-106.js",
+    "bench/candidato-duas-amostras-108.js",
+    "bench/candidato-paralelo-109.js",
+    "bench/coletar-amostra-estilo.js",
+    "bench/coletar-fontes-vivas.js",
+    "bench/controle-sem-fonte-viva-106.js",
+    "bench/controle-sequencial-109.js",
+    "bench/diagnostico-101-antes.json",
+    "bench/diagnostico-fatos-107.js",
+    "bench/estilo-98-d-v2.json",
+    "bench/estilo-99-a-v2.json",
+    "bench/estilo-99-b-v2.json",
+    "bench/estilo-amostra-100-v2.json",
+    "bench/final-paragrafo.json",
+    "bench/fontes-vivas-105.json",
+    "bench/lexico-publico.json",
+    "bench/local-sem-api.html",
+    "bench/medir-codigo.js",
+    "bench/medir-fonte-viva-pareado.js",
+    "bench/medir-fontes-vivas.js",
+    "bench/medir-pareado-102.js",
+    "bench/medir-potencia-107.js",
+    "bench/medir-rotas.js",
+    "bench/medir-visao.js",
+    "bench/medir.js",
+    "bench/piloto-101-exploratorio.json",
+    "bench/piloto-llm7-101.json",
+    "bench/piloto-ovh-101.json",
+    "bench/reavaliacao-101.json",
+    "bench/reavaliacao-aberto-100.json",
+    "bench/reavaliacao-aberto-99.json",
+    "bench/reavaliar-aberto.js",
+    "bench/reavaliar-equivalencias.js",
+    "bench/reavaliar-paragrafos.js",
+    "bench/reavaliar-rubrica.js",
+    "bench/resultado-aberto-100-original.json",
+    "bench/resultado-aberto-101-holdout.json",
+    "bench/resultado-aberto-101-intermediario-holdout.json",
+    "bench/resultado-aberto-101-intermediario-original.json",
+    "bench/resultado-aberto-101-original.json",
+    "bench/resultado-aberto-98-d.json",
+    "bench/resultado-aberto-99-a.json",
+    "bench/resultado-aberto-99-b.json",
+    "bench/resultado-aberto-antes.json",
+    "bench/resultado-aberto-depois.json",
+    "bench/resultado-aberto-holdout-100.json",
+    "bench/resultado-aberto-paragrafos-v1.json",
+    "bench/resultado-aberto-v4.json",
+    "bench/resultado-antes-glm.json",
+    "bench/resultado-antes-ovhq397.json",
+    "bench/resultado-cadeia-107.json",
+    "bench/resultado-codigo-96.json",
+    "bench/resultado-codigo-antes.json",
+    "bench/resultado-codigo-depois.json",
+    "bench/resultado-codigo-v4.json",
+    "bench/resultado-concretude-106.json",
+    "bench/resultado-depois.json",
+    "bench/resultado-duas-amostras-108.json",
+    "bench/resultado-duro-antes.json",
+    "bench/resultado-duro-depois.json",
+    "bench/resultado-estilo-amostra-100.json",
+    "bench/resultado-fonte-viva-106.json",
+    "bench/resultado-gratis-200.json",
+    "bench/resultado-gratis-banco-duro.json",
+    "bench/resultado-gratis-banco-holdout.json",
+    "bench/resultado-gratis-banco200.json",
+    "bench/resultado-gratis-fresco.json",
+    "bench/resultado-gratis-holdout.json",
+    "bench/resultado-gratis.json",
+    "bench/resultado-multietapa-depois.json",
+    "bench/resultado-paralelo-109.json",
+    "bench/resultado-pareado-102.json",
+    "bench/resultado-pareado-103.json",
+    "bench/resultado-pareado-104.json",
+    "bench/resultado-pareado-105.json",
+    "bench/resultado-rotas-duro.json",
+    "bench/resultado-visao-100.json",
+    "bench/resultado-visao-99.json",
+    "bench/resultado-visao.json",
+    "bench/rev-1.json",
+    "bench/validar-duas-amostras-108.js",
+    "bench/varredura.json",
+    "bench/varrer.js",
+    "bench/verificar-itens.js",
+    "docs/AUDITORIA-REGUA-ABERTA-100.md",
+    "docs/AUTONOMIA-EM-UMA-PAGINA.md",
+    "docs/AVALIACAO-TEXTO-ABERTO.md",
+    "docs/BURACO-DA-BARREIRA-06-11.md",
+    "docs/DECISAO-DO-DEGRAU-4.md",
+    "docs/DEGRAU-4-ARQUITETURA.md",
+    "docs/DEGRAU-4-POSSIBILIDADES.md",
+    "docs/ENSAIO-DO-GATILHO-06-11.md",
+    "docs/PARIDADE-IA.md",
+    "docs/PORTOES-DO-DEGRAU-4.md",
+    "docs/PROVA-DO-SOMBRA.md",
+    "docs/REGISTRO-DE-DEFEITOS.md",
+    "docs/RODADA-100-RESULTADOS.md",
+    "docs/RODADA-101-RESULTADOS.md",
+    "docs/RODADA-102-RESULTADOS.md",
+    "docs/RODADA-103-RESULTADOS.md",
+    "docs/RODADA-104-RESULTADOS.md",
+    "docs/RODADA-105-RESULTADOS.md",
+    "docs/RODADA-106-BUSCA-VIVA.md",
+    "docs/RODADA-107-FALHAS-DE-FATO.md",
+    "docs/RODADA-108-VARIANCIA.md",
+    "docs/RODADA-109-DUAS-AMOSTRAS.md",
+    "docs/RODADA-110-AMOSTRAS-EM-PARALELO.md",
+    "docs/RODADA-CONVERSA-2026-11-04.md",
+    "docs/RODADA-CONVERSA-V2-2026-11-04.md",
+    "docs/ROTEADOR-IA.md",
+    "navegador-estado.json",
+    "paginas/rotas/direto.json",
+    "paginas/rotas/ligar.json",
+    "paginas/rotas/limpar.json",
+    "provas/auditoria-pratica-2026-10-18-1439.md",
+    "provas/avaliacao-profunda-2026-10-18-0603.md",
+    "provas/avaliacao-profunda-2026-10-18-0619.md",
+    "provas/coleta-email-2026-10-14-0422.md",
+    "provas/ferramentas-2026-10-15-0220.md",
+    "provas/ferramentas-2026-10-15-0454.md",
+    "provas/ferramentas-2026-10-15-1522.md",
+    "provas/ferramentas-2026-10-17-2346.md",
+    "provas/ferramentas-2026-10-17-2349.md",
+    "provas/ferramentas-2026-10-18-0009.md",
+    "provas/ferramentas-2026-10-18-0015.md",
+    "provas/ferramentas-2026-10-18-0028.md",
+    "provas/ferramentas-2026-10-18-0040.md",
+    "provas/teste-anexos-2026-10-14-1303.md",
+    "provas/teste-anexos-2026-10-14-1401.md",
+    "provas/teste-email-final-2026-10-14-0513.md",
+    "provas/teste-email-final-2026-10-16-1906.md",
+    "provas/teste-email-final-2026-10-16-1931.md",
+    "provas/teste-email-final-2026-10-17-1430.md",
+    "provas/teste-email-final-2026-10-17-1611.md",
+    "provas/teste-email-r2-2026-10-14-0431.md",
+    "provas/teste-email-r3-2026-10-14-0538.md",
+    "provas/teste-email-r3-2026-10-14-0611.md",
+    "provas/teste-email-r3-2026-10-14-0640.md",
+    "provas/teste-email-r3-2026-10-14-0714.md",
+    "provas/teste-email-r3-2026-10-14-1336.md",
+    "provas/teste-email-r3-2026-10-14-1417.md",
+    "provas/teste-email-r3-2026-10-14-1454.md",
+    "provas/teste-email-r3-2026-10-14-1529.md",
+    "provas/teste-email-r3-2026-10-14-2027.md",
+    "provas/teste-email-r3-2026-10-14-2057.md",
+    "provas/teste-email-r3-2026-10-15-0305.md",
+    "provas/teste-email-r3-2026-10-15-0400.md",
+    "provas/teste-email-r3-2026-10-15-0535.md",
+    "provas/teste-email-r3-2026-10-15-1425.md",
+    "provas/teste-email-r3-2026-10-15-1456.md",
+    "provas/teste-email-r3-2026-10-15-1606.md",
+    "provas/teste-email-r3-2026-10-15-1627.md",
+    "provas/teste-email-r3-2026-10-15-1705.md",
+    "provas/teste-email-r3-2026-10-15-1734.md",
+    "provas/teste-email-r3-2026-10-15-2156.md",
+    "provas/teste-email-r3-2026-10-15-2257.md",
+    "provas/teste-email-r3-2026-10-15-2349.md",
+    "provas/teste-email-r3-2026-10-16-0030.md",
+    "provas/teste-email-r3-2026-10-16-0053.md",
+    "provas/teste-email-r3-2026-10-16-0357.md",
+    "provas/teste-email-r3-2026-10-16-1656.md",
+    "provas/teste-email-r3-2026-10-16-1838.md",
+    "provas/teste-email-r3-2026-10-17-1411.md",
+    "provas/teste-foto-2026-10-14-0648.md",
+    "provas/teste-foto-2026-10-17-1550.md",
+    "provas/teste-foto-2026-10-17-1855.md",
+    "provas/teste-foto-2026-10-17-1919.md",
+    "provas/teste-memoria-2026-10-14-0548.md",
+    "provas/teste-navegador-pareado-2026-10-18-02-43.md",
+    "provas/teste-navegador-pareado-2026-10-18-03-37.md",
+    "provas/teste-navegador-pareado-2026-10-18-03-50.md",
+    "provas/teste-voz-2026-10-14-1232.md",
+    "provas/teste-voz-2026-10-14-1320.md",
+    "tools/askpass-github-101.sh",
+    "tools/avaliacao-profunda-casos.js",
+    "tools/clonar.sh",
+    "tools/cofre-seguro.js",
+    "tools/coleta-respostas.js",
+    "tools/diag-email.js",
+    "tools/diagnostico-caixa.js",
+    "tools/diagnostico-telegram.js",
+    "tools/gerar-fontes-educativas.js",
+    "tools/gerar-lexico-pt.js",
+    "tools/gerar-medidor-local.js",
+    "tools/redes-sociais.js",
+    "tools/scanner-credenciais.js",
+    "tools/sonda-latencia-paragrafo.js",
+    "tools/testar-todas-as-apis.js",
+    "tools/testar-todas-as-redes.js",
+    "tools/teste-anexos.js",
+    "tools/teste-email.js",
+    "tools/teste-memoria.js",
+    "tools/teste-qualidade-profunda.js",
+    "tools/teste-voz.js"
+  ],
+  "detalhe": {
+    ".c8rc.json": {
+      "categoria": "dados-json",
+      "linhas": 14,
+      "declaradoPor": [
+        "placar-testes.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    ".github/PULL_REQUEST_TEMPLATE.md": {
+      "categoria": "doc",
+      "linhas": 27,
+      "declaradoPor": [
+        "continuidade.js",
+        "operacao-incidentes.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    ".github/dependabot.yml": {
+      "categoria": "workflow/config-yaml",
+      "linhas": 26,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    ".github/workflows/coleta-email.yml": {
+      "categoria": "workflow/config-yaml",
+      "linhas": 42,
+      "declaradoPor": [],
+      "citadoPor": [
+        "auditoria-workflows.js"
+      ],
+      "alcancada": true
+    },
+    ".github/workflows/copiar-x-para-site.yml": {
+      "categoria": "workflow/config-yaml",
+      "linhas": 113,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    ".github/workflows/diag-email.yml": {
+      "categoria": "workflow/config-yaml",
+      "linhas": 23,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    ".github/workflows/diagnostico-caixa.yml": {
+      "categoria": "workflow/config-yaml",
+      "linhas": 22,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    ".github/workflows/diagnostico-telegram.yml": {
+      "categoria": "workflow/config-yaml",
+      "linhas": 29,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    ".github/workflows/dossie-preparo-controlado.yml": {
+      "categoria": "workflow/config-yaml",
+      "linhas": 61,
+      "declaradoPor": [
+        "dossie-preparo-controlado.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    ".github/workflows/email.yml": {
+      "categoria": "workflow/config-yaml",
+      "linhas": 176,
+      "declaradoPor": [
+        "email-poll-adocao.js",
+        "turno-cache-ferramentas.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    ".github/workflows/evolucao.yml": {
+      "categoria": "workflow/config-yaml",
+      "linhas": 48,
+      "declaradoPor": [],
+      "citadoPor": [
+        "auditoria-workflows.js",
+        "vigia-recuperacao-fluxo.js"
+      ],
+      "alcancada": true
+    },
+    ".github/workflows/ferramentas.yml": {
+      "categoria": "workflow/config-yaml",
+      "linhas": 93,
+      "declaradoPor": [],
+      "citadoPor": [
+        "auditoria-workflows.js"
+      ],
+      "alcancada": true
+    },
+    ".github/workflows/mesclador.yml": {
+      "categoria": "workflow/config-yaml",
+      "linhas": 79,
+      "declaradoPor": [],
+      "citadoPor": [
+        "auditoria-workflows.js"
+      ],
+      "alcancada": true
+    },
+    ".github/workflows/navegador-publico.yml": {
+      "categoria": "workflow/config-yaml",
+      "linhas": 91,
+      "declaradoPor": [],
+      "citadoPor": [
+        "auditoria-workflows.js",
+        "navegador-retorno.js"
+      ],
+      "alcancada": true
+    },
+    ".github/workflows/preparo-controlado.yml": {
+      "categoria": "workflow/config-yaml",
+      "linhas": 23,
+      "declaradoPor": [
+        "preparo-controlado.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    ".github/workflows/reforco-dossie-controlado.yml": {
+      "categoria": "workflow/config-yaml",
+      "linhas": 69,
+      "declaradoPor": [
+        "reforco-dossie-controlado.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    ".github/workflows/seguranca-chaves.yml": {
+      "categoria": "workflow/config-yaml",
+      "linhas": 45,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    ".github/workflows/testar-apis.yml": {
+      "categoria": "workflow/config-yaml",
+      "linhas": 52,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    ".github/workflows/teste-email.yml": {
+      "categoria": "workflow/config-yaml",
+      "linhas": 55,
+      "declaradoPor": [],
+      "citadoPor": [
+        "auditoria-workflows.js",
+        "avaliacao-profunda.js",
+        "teste-navegador-pareado.js"
+      ],
+      "alcancada": true
+    },
+    ".github/workflows/testes-rapidos.yml": {
+      "categoria": "workflow/config-yaml",
+      "linhas": 122,
+      "declaradoPor": [
+        "central-operacional.js",
+        "colecoes-conversas-local.js",
+        "comandos-locais-interface.js",
+        "continuidade.js",
+        "estilos-compartilhados.js",
+        "filtro-chips-interface.js",
+        "organizacao-conversas-local.js",
+        "paginas-geradas.js",
+        "placar-testes.js",
+        "preparo-controlado.js",
+        "workspace-local.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    ".github/workflows/vigia.yml": {
+      "categoria": "workflow/config-yaml",
+      "linhas": 49,
+      "declaradoPor": [
+        "vigia-casa-resiliencia.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    ".github/workflows/visao-cache.yml": {
+      "categoria": "workflow/config-yaml",
+      "linhas": 42,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "AGENTS.md": {
+      "categoria": "doc",
+      "linhas": 73,
+      "declaradoPor": [
+        "continuidade.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "AUDITORIA-COMPLETA-2026-10-17.md": {
+      "categoria": "doc",
+      "linhas": 130,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "AUDITORIA-OPERACIONAL-2026-10-17.md": {
+      "categoria": "doc",
+      "linhas": 62,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "AUTONOMIA.md": {
+      "categoria": "doc",
+      "linhas": 100,
+      "declaradoPor": [
+        "central-operacional.js",
+        "continuidade.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "AVALIACAO-HUMANA-PILOTO.md": {
+      "categoria": "doc",
+      "linhas": 53,
+      "declaradoPor": [
+        "operacao-incidentes.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "AVALIACAO-PROFUNDA.md": {
+      "categoria": "doc",
+      "linhas": 95,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "CAPACIDADE.md": {
+      "categoria": "doc",
+      "linhas": 24,
+      "declaradoPor": [],
+      "citadoPor": [
+        "estado-operacional-controlado.js"
+      ],
+      "alcancada": true
+    },
+    "CONTINUIDADE.md": {
+      "categoria": "doc",
+      "linhas": 1900,
+      "declaradoPor": [
+        "central-operacional.js",
+        "continuidade.js",
+        "csp-paginas.js",
+        "falha-silenciosa.js",
+        "placar-testes.js",
+        "preparo-controlado.js",
+        "workspace-local.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "GOVERNANCA-CHAT-PRIMEIRO.md": {
+      "categoria": "doc",
+      "linhas": 41,
+      "declaradoPor": [
+        "continuidade.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "INSTRUCAO-DO-INSTRUTOR.md": {
+      "categoria": "doc",
+      "linhas": 273,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "OPERACAO-CENTRAL.md": {
+      "categoria": "doc",
+      "linhas": 146,
+      "declaradoPor": [
+        "central-operacional.js",
+        "continuidade.js",
+        "preparo-controlado.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "OPERACAO-INCIDENTES.md": {
+      "categoria": "doc",
+      "linhas": 51,
+      "declaradoPor": [
+        "continuidade.js",
+        "operacao-incidentes.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "PLANO-EXTRACAO-NUCLEO.md": {
+      "categoria": "doc",
+      "linhas": 62,
+      "declaradoPor": [
+        "paginas-geradas.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "POLITICA-RETENCAO-OPERACIONAL.md": {
+      "categoria": "doc",
+      "linhas": 46,
+      "declaradoPor": [
+        "continuidade.js",
+        "operacao-incidentes.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "PORTABILIDADE-ESTATICA.md": {
+      "categoria": "doc",
+      "linhas": 28,
+      "declaradoPor": [
+        "continuidade.js",
+        "portabilidade-estatica.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "README.md": {
+      "categoria": "doc",
+      "linhas": 402,
+      "declaradoPor": [
+        "continuidade.js",
+        "identidade-do-chat.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "acervo/INDICE.md": {
+      "categoria": "doc",
+      "linhas": 35,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/MAPA-WORKSPACE.md": {
+      "categoria": "doc",
+      "linhas": 81,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/arquivo/rodada-101-102/agente-desativados.json": {
+      "categoria": "dados-json",
+      "linhas": 50,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/arquivo/rodada-101-102/base-protection-101.json": {
+      "categoria": "dados-json",
+      "linhas": 6,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/arquivo/rodada-101-102/diagnostico-101-antes.json": {
+      "categoria": "dados-json",
+      "linhas": 64,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/arquivo/rodada-101-102/espelho-desativados.json": {
+      "categoria": "dados-json",
+      "linhas": 82,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/arquivo/rodada-101-102/llm7-101-home.html": {
+      "categoria": "estatico-web",
+      "linhas": 1,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/arquivo/rodada-101-102/llm7-models-101.json": {
+      "categoria": "dados-json",
+      "linhas": 1,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/arquivo/rodada-101-102/medidor-101-intermediario.js": {
+      "categoria": "codigo-js",
+      "linhas": 138,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/arquivo/rodada-101-102/modelos-blockrun-101.json": {
+      "categoria": "dados-json",
+      "linhas": 1,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/arquivo/rodada-101-102/piloto-101.json": {
+      "categoria": "dados-json",
+      "linhas": 26,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/arquivo/rodada-101-102/qi-dificil3.json": {
+      "categoria": "dados-json",
+      "linhas": 546,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/arquivo/rodada-101-102/qi-estilo.json": {
+      "categoria": "dados-json",
+      "linhas": 119,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/arquivo/rodada-101-102/qi-maximo.json": {
+      "categoria": "dados-json",
+      "linhas": 200,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/arquivo/rodada-101-102/qi-resumo.json": {
+      "categoria": "dados-json",
+      "linhas": 50,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/arquivo/rodada-101-102/sonda-llm7-101.json": {
+      "categoria": "dados-json",
+      "linhas": 32,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/arquivo/rodada-101-102/sonda-wiki-102.json": {
+      "categoria": "dados-json",
+      "linhas": 143,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/pesquisas/CEREBRO-GRATIS-v2.md": {
+      "categoria": "doc",
+      "linhas": 111,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/pesquisas/PARIDADE-IA.md": {
+      "categoria": "doc",
+      "linhas": 74,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/pesquisas/RODADA-96-TEXTO-ABERTO.md": {
+      "categoria": "doc",
+      "linhas": 110,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/pesquisas/RODADA-97-VISAO-E-LATENCIA.md": {
+      "categoria": "doc",
+      "linhas": 85,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/pesquisas/RODADA-98-BUGS-E-MEDICAO.md": {
+      "categoria": "doc",
+      "linhas": 67,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/pesquisas/RODADA-99-PLANO-E-ESTILO.md": {
+      "categoria": "doc",
+      "linhas": 89,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/pesquisas/ROTEADOR-IA.md": {
+      "categoria": "doc",
+      "linhas": 108,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/pesquisas/TETO-DOS-GRATIS.md": {
+      "categoria": "doc",
+      "linhas": 83,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/pesquisas/comparacao-chat-vs-fronteira-2026-10-27.md": {
+      "categoria": "doc",
+      "linhas": 140,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/pesquisas/ia-mais-inteligente-out-2026.md": {
+      "categoria": "doc",
+      "linhas": 196,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/pesquisas/medicao-chat-2026-10-27/ferramentas.json": {
+      "categoria": "dados-json",
+      "linhas": 681,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/pesquisas/medicao-chat-2026-10-27/resultados.json": {
+      "categoria": "dados-json",
+      "linhas": 6134,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/pesquisas/medicao-chat-2026-10-27/resultados2.json": {
+      "categoria": "dados-json",
+      "linhas": 726,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/qi/medir-dificil.js": {
+      "categoria": "codigo-js",
+      "linhas": 79,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/qi/medir-dificil3.js": {
+      "categoria": "codigo-js",
+      "linhas": 87,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/qi/medir-estilo-calibracao.js": {
+      "categoria": "codigo-js",
+      "linhas": 70,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/qi/medir-maximo.js": {
+      "categoria": "codigo-js",
+      "linhas": 123,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/qi/medir-qi.js": {
+      "categoria": "codigo-js",
+      "linhas": 108,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/qi/qi-bruto.json": {
+      "categoria": "dados-json",
+      "linhas": 312,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/qi/qi-dificil.json": {
+      "categoria": "dados-json",
+      "linhas": 183,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/relatorios/auditoria-chat-2026-10-24.md": {
+      "categoria": "doc",
+      "linhas": 224,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/relatorios/auditoria-chat-qi-2026-10-31.html": {
+      "categoria": "estatico-web",
+      "linhas": 108,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/relatorios/guia-cookie-itch.md": {
+      "categoria": "doc",
+      "linhas": 81,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/relatorios/proposta-corte-agente-2026-10-24.md": {
+      "categoria": "doc",
+      "linhas": 120,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/relatorios/rodada-132-fechamento.md": {
+      "categoria": "doc",
+      "linhas": 45,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/relatorios/rodada-133-limites.md": {
+      "categoria": "doc",
+      "linhas": 39,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/relatorios/rodada-134-auto-melhoria.md": {
+      "categoria": "doc",
+      "linhas": 57,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/relatorios/rodada-135-auto-auditoria.md": {
+      "categoria": "doc",
+      "linhas": 103,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/relatorios/rodada-136-capacidade.md": {
+      "categoria": "doc",
+      "linhas": 107,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/relatorios/rodada-137-nome-e-guarda.md": {
+      "categoria": "doc",
+      "linhas": 100,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/relatorios/rodada-138-dependencias.md": {
+      "categoria": "doc",
+      "linhas": 97,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "acervo/relatorios/rodada-139-soberania.md": {
+      "categoria": "doc",
+      "linhas": 92,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "autonomia.json": {
+      "categoria": "dados-json",
+      "linhas": 20,
+      "declaradoPor": [],
+      "citadoPor": [
+        "autonomia-e-risco.js",
+        "barreira-depois-do-merge.js",
+        "vigia-recuperacao-fluxo.js"
+      ],
+      "alcancada": true
+    },
+    "banco-questoes.json": {
+      "categoria": "dados-json",
+      "linhas": 522,
+      "declaradoPor": [],
+      "citadoPor": [
+        "continuidade.js"
+      ],
+      "alcancada": true
+    },
+    "banco-v2.json": {
+      "categoria": "dados-json",
+      "linhas": 172,
+      "declaradoPor": [
+        "evolucao-chat.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "bench/PROTOCOLO-PAREADO-102.md": {
+      "categoria": "doc",
+      "linhas": 25,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/analisar-fonte-viva.js": {
+      "categoria": "codigo-js",
+      "linhas": 73,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/analisar-potencia-107.js": {
+      "categoria": "codigo-js",
+      "linhas": 90,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/auditoria-fontes-vivas-105.json": {
+      "categoria": "dados-json",
+      "linhas": 94,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/avaliar-aberto.js": {
+      "categoria": "codigo-js",
+      "linhas": 37,
+      "declaradoPor": [
+        "avaliacao-aberto.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "bench/banco-aberto-antes-100.json": {
+      "categoria": "dados-json",
+      "linhas": 75,
+      "declaradoPor": [
+        "avaliacao-aberto.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "bench/banco-aberto-auditado-101.json": {
+      "categoria": "dados-json",
+      "linhas": 264,
+      "declaradoPor": [
+        "avaliacao-aberto.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "bench/banco-aberto-holdout-100.json": {
+      "categoria": "dados-json",
+      "linhas": 15,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/banco-aberto-novo-102.json": {
+      "categoria": "dados-json",
+      "linhas": 45,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/banco-aberto.json": {
+      "categoria": "dados-json",
+      "linhas": 75,
+      "declaradoPor": [
+        "avaliacao-aberto.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "bench/banco-codigo.json": {
+      "categoria": "dados-json",
+      "linhas": 110,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/banco-conversa-v2.json": {
+      "categoria": "dados-json",
+      "linhas": 262,
+      "declaradoPor": [],
+      "citadoPor": [
+        "banco-conversa-v2.js"
+      ],
+      "alcancada": true
+    },
+    "bench/banco-conversa.json": {
+      "categoria": "dados-json",
+      "linhas": 262,
+      "declaradoPor": [],
+      "citadoPor": [
+        "banco-conversa.js"
+      ],
+      "alcancada": true
+    },
+    "bench/banco-duro.json": {
+      "categoria": "dados-json",
+      "linhas": 36,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/banco-estilo-amostra-100.json": {
+      "categoria": "dados-json",
+      "linhas": 18,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/banco-fresco.json": {
+      "categoria": "dados-json",
+      "linhas": 717,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/banco-holdout.json": {
+      "categoria": "dados-json",
+      "linhas": 894,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/banco-multietapa.json": {
+      "categoria": "dados-json",
+      "linhas": 156,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/banco-visao.json": {
+      "categoria": "dados-json",
+      "linhas": 92,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/banco200.json": {
+      "categoria": "dados-json",
+      "linhas": 1702,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/base-34bbe1d.json": {
+      "categoria": "dados-json",
+      "linhas": 1353,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/candidato-cadeia-107.js": {
+      "categoria": "codigo-js",
+      "linhas": 2797,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/candidato-concretude-106.js": {
+      "categoria": "codigo-js",
+      "linhas": 2797,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/candidato-duas-amostras-108.js": {
+      "categoria": "codigo-js",
+      "linhas": 2828,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/candidato-paralelo-109.js": {
+      "categoria": "codigo-js",
+      "linhas": 2845,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/coletar-amostra-estilo.js": {
+      "categoria": "codigo-js",
+      "linhas": 32,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/coletar-fontes-vivas.js": {
+      "categoria": "codigo-js",
+      "linhas": 83,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/controle-101-roteador.js": {
+      "categoria": "codigo-js",
+      "linhas": 2261,
+      "declaradoPor": [],
+      "citadoPor": [
+        "medicao-pareada.js"
+      ],
+      "alcancada": true
+    },
+    "bench/controle-sem-fonte-viva-106.js": {
+      "categoria": "codigo-js",
+      "linhas": 2784,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/controle-sequencial-109.js": {
+      "categoria": "codigo-js",
+      "linhas": 2829,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/diagnostico-101-antes.json": {
+      "categoria": "dados-json",
+      "linhas": 64,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/diagnostico-fatos-107.js": {
+      "categoria": "codigo-js",
+      "linhas": 78,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/equivalencias-rubrica.js": {
+      "categoria": "codigo-js",
+      "linhas": 156,
+      "declaradoPor": [],
+      "citadoPor": [
+        "medicao-pareada.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "bench/estilo-98-d-v2.json": {
+      "categoria": "dados-json",
+      "linhas": 370,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/estilo-99-a-v2.json": {
+      "categoria": "dados-json",
+      "linhas": 434,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/estilo-99-b-v2.json": {
+      "categoria": "dados-json",
+      "linhas": 387,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/estilo-amostra-100-v2.json": {
+      "categoria": "dados-json",
+      "linhas": 52,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/estilo.js": {
+      "categoria": "codigo-js",
+      "linhas": 104,
+      "declaradoPor": [
+        "avaliacao-aberto.js",
+        "roteador-gratis.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "bench/final-paragrafo.json": {
+      "categoria": "dados-json",
+      "linhas": 2277,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/fontes-vivas-105.json": {
+      "categoria": "dados-json",
+      "linhas": 1010,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/lexico-publico.json": {
+      "categoria": "dados-json",
+      "linhas": 30,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/local-sem-api.html": {
+      "categoria": "estatico-web",
+      "linhas": 344,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/medir-aberto.js": {
+      "categoria": "codigo-js",
+      "linhas": 144,
+      "declaradoPor": [
+        "medicao-aberto-checkpoint.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "bench/medir-codigo.js": {
+      "categoria": "codigo-js",
+      "linhas": 70,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/medir-conversa.js": {
+      "categoria": "codigo-js",
+      "linhas": 261,
+      "declaradoPor": [],
+      "citadoPor": [
+        "banco-conversa-v2.js",
+        "banco-conversa.js"
+      ],
+      "alcancada": true
+    },
+    "bench/medir-fonte-viva-pareado.js": {
+      "categoria": "codigo-js",
+      "linhas": 108,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/medir-fontes-vivas.js": {
+      "categoria": "codigo-js",
+      "linhas": 153,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/medir-pareado-102.js": {
+      "categoria": "codigo-js",
+      "linhas": 118,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/medir-potencia-107.js": {
+      "categoria": "codigo-js",
+      "linhas": 110,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/medir-rotas.js": {
+      "categoria": "codigo-js",
+      "linhas": 65,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/medir-visao.js": {
+      "categoria": "codigo-js",
+      "linhas": 51,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/medir.js": {
+      "categoria": "codigo-js",
+      "linhas": 114,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/piloto-101-exploratorio.json": {
+      "categoria": "dados-json",
+      "linhas": 26,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/piloto-llm7-101.json": {
+      "categoria": "dados-json",
+      "linhas": 32,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/piloto-ovh-101.json": {
+      "categoria": "dados-json",
+      "linhas": 26,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/pontuar.js": {
+      "categoria": "codigo-js",
+      "linhas": 117,
+      "declaradoPor": [
+        "roteador-gratis.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "bench/reavaliacao-101.json": {
+      "categoria": "dados-json",
+      "linhas": 490,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/reavaliacao-aberto-100.json": {
+      "categoria": "dados-json",
+      "linhas": 176,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/reavaliacao-aberto-99.json": {
+      "categoria": "dados-json",
+      "linhas": 121,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/reavaliar-aberto.js": {
+      "categoria": "codigo-js",
+      "linhas": 61,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/reavaliar-equivalencias.js": {
+      "categoria": "codigo-js",
+      "linhas": 67,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/reavaliar-paragrafos.js": {
+      "categoria": "codigo-js",
+      "linhas": 76,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/reavaliar-rubrica.js": {
+      "categoria": "codigo-js",
+      "linhas": 59,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-aberto-100-original.json": {
+      "categoria": "dados-json",
+      "linhas": 373,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-aberto-101-holdout.json": {
+      "categoria": "dados-json",
+      "linhas": 247,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-aberto-101-intermediario-holdout.json": {
+      "categoria": "dados-json",
+      "linhas": 304,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-aberto-101-intermediario-original.json": {
+      "categoria": "dados-json",
+      "linhas": 1183,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-aberto-101-original.json": {
+      "categoria": "dados-json",
+      "linhas": 824,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-aberto-98-d.json": {
+      "categoria": "dados-json",
+      "linhas": 378,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-aberto-99-a.json": {
+      "categoria": "dados-json",
+      "linhas": 360,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-aberto-99-b.json": {
+      "categoria": "dados-json",
+      "linhas": 375,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-aberto-antes.json": {
+      "categoria": "dados-json",
+      "linhas": 434,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-aberto-depois.json": {
+      "categoria": "dados-json",
+      "linhas": 360,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-aberto-holdout-100.json": {
+      "categoria": "dados-json",
+      "linhas": 112,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-aberto-paragrafos-v1.json": {
+      "categoria": "dados-json",
+      "linhas": 395,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-aberto-v4.json": {
+      "categoria": "dados-json",
+      "linhas": 395,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-antes-glm.json": {
+      "categoria": "dados-json",
+      "linhas": 2952,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-antes-ovhq397.json": {
+      "categoria": "dados-json",
+      "linhas": 2952,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-cadeia-107.json": {
+      "categoria": "dados-json",
+      "linhas": 3101,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-codigo-96.json": {
+      "categoria": "dados-json",
+      "linhas": 229,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-codigo-antes.json": {
+      "categoria": "dados-json",
+      "linhas": 229,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-codigo-depois.json": {
+      "categoria": "dados-json",
+      "linhas": 229,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-codigo-v4.json": {
+      "categoria": "dados-json",
+      "linhas": 229,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-concretude-106.json": {
+      "categoria": "dados-json",
+      "linhas": 2605,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-conversa-v2.json": {
+      "categoria": "dados-json",
+      "linhas": 1195,
+      "declaradoPor": [],
+      "citadoPor": [
+        "banco-conversa-v2.js"
+      ],
+      "alcancada": true
+    },
+    "bench/resultado-conversa.json": {
+      "categoria": "dados-json",
+      "linhas": 1080,
+      "declaradoPor": [],
+      "citadoPor": [
+        "banco-conversa.js"
+      ],
+      "alcancada": true
+    },
+    "bench/resultado-depois.json": {
+      "categoria": "dados-json",
+      "linhas": 2952,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-duas-amostras-108.json": {
+      "categoria": "dados-json",
+      "linhas": 3073,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-duro-antes.json": {
+      "categoria": "dados-json",
+      "linhas": 485,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-duro-depois.json": {
+      "categoria": "dados-json",
+      "linhas": 485,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-estilo-amostra-100.json": {
+      "categoria": "dados-json",
+      "linhas": 38,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-fonte-viva-106.json": {
+      "categoria": "dados-json",
+      "linhas": 2729,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-gratis-200.json": {
+      "categoria": "dados-json",
+      "linhas": 2957,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-gratis-banco-duro.json": {
+      "categoria": "dados-json",
+      "linhas": 485,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-gratis-banco-holdout.json": {
+      "categoria": "dados-json",
+      "linhas": 1580,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-gratis-banco200.json": {
+      "categoria": "dados-json",
+      "linhas": 2957,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-gratis-fresco.json": {
+      "categoria": "dados-json",
+      "linhas": 1270,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-gratis-holdout.json": {
+      "categoria": "dados-json",
+      "linhas": 1580,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-gratis.json": {
+      "categoria": "dados-json",
+      "linhas": 2957,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-multietapa-depois.json": {
+      "categoria": "dados-json",
+      "linhas": 286,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-paralelo-109.json": {
+      "categoria": "dados-json",
+      "linhas": 3070,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-pareado-102.json": {
+      "categoria": "dados-json",
+      "linhas": 4649,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-pareado-103.json": {
+      "categoria": "dados-json",
+      "linhas": 4883,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-pareado-104.json": {
+      "categoria": "dados-json",
+      "linhas": 4852,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-pareado-105.json": {
+      "categoria": "dados-json",
+      "linhas": 4160,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-rotas-duro.json": {
+      "categoria": "dados-json",
+      "linhas": 279,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-visao-100.json": {
+      "categoria": "dados-json",
+      "linhas": 159,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-visao-99.json": {
+      "categoria": "dados-json",
+      "linhas": 136,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/resultado-visao.json": {
+      "categoria": "dados-json",
+      "linhas": 136,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/rev-1.json": {
+      "categoria": "dados-json",
+      "linhas": 2355,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/validar-duas-amostras-108.js": {
+      "categoria": "codigo-js",
+      "linhas": 59,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/varredura.json": {
+      "categoria": "dados-json",
+      "linhas": 314,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/varrer.js": {
+      "categoria": "codigo-js",
+      "linhas": 27,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "bench/verificar-itens.js": {
+      "categoria": "codigo-js",
+      "linhas": 36,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "capacidade-estado.json": {
+      "categoria": "dados-json",
+      "linhas": 103,
+      "declaradoPor": [],
+      "citadoPor": [
+        "estado-operacional-controlado.js"
+      ],
+      "alcancada": true
+    },
+    "chat-colecoes-local.js": {
+      "categoria": "codigo-js",
+      "linhas": 459,
+      "declaradoPor": [
+        "colecoes-conversas-local.js",
+        "colecoes-conversas-local.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "chat-comandos-locais.js": {
+      "categoria": "codigo-js",
+      "linhas": 89,
+      "declaradoPor": [
+        "central-operacional.js",
+        "comandos-locais-interface.js",
+        "continuidade.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "chat-diagnostico.js": {
+      "categoria": "codigo-js",
+      "linhas": 137,
+      "declaradoPor": [
+        "diagnostico-motores.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "chat-estilos.css": {
+      "categoria": "estatico-web",
+      "linhas": 213,
+      "declaradoPor": [
+        "colecoes-conversas-local.js",
+        "estilos-compartilhados.js",
+        "organizacao-conversas-local.js",
+        "seguranca-interface.js",
+        "workspace-busca-global.js",
+        "workspace-conflito-local.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "chat-filtro-chips.js": {
+      "categoria": "codigo-js",
+      "linhas": 72,
+      "declaradoPor": [
+        "filtro-chips-interface.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "chat-organizacao-local.js": {
+      "categoria": "codigo-js",
+      "linhas": 258,
+      "declaradoPor": [
+        "organizacao-conversas-local.js",
+        "organizacao-conversas-local.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "chat-pwa.js": {
+      "categoria": "codigo-js",
+      "linhas": 117,
+      "declaradoPor": [],
+      "citadoPor": [
+        "comandos-locais-interface.js",
+        "falha-silenciosa.js",
+        "filtro-chips-interface.js",
+        "interface-seguranca-fluxo.js",
+        "pwa-atualizacao-segura.js"
+      ],
+      "alcancada": true
+    },
+    "chat-workspace.js": {
+      "categoria": "codigo-js",
+      "linhas": 2461,
+      "declaradoPor": [
+        "workspace-arquivo-completo-concorrencia-local.js",
+        "workspace-arquivo-completo-concorrencia-local.js",
+        "workspace-arquivo-completo.js",
+        "workspace-arquivo-completo.js",
+        "workspace-busca-global.js",
+        "workspace-busca-global.js",
+        "workspace-conflito-local.js",
+        "workspace-conflito-local.js",
+        "workspace-integridade-local.js",
+        "workspace-integridade-local.js",
+        "workspace-lixeira-concorrencia-local.js",
+        "workspace-lixeira-concorrencia-local.js",
+        "workspace-local.js",
+        "workspace-projeto-portatil.js",
+        "workspace-projeto-portatil.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "console.html": {
+      "categoria": "estatico-web",
+      "linhas": 353,
+      "declaradoPor": [
+        "seguranca-interface.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "direto.html": {
+      "categoria": "estatico-web",
+      "linhas": 4334,
+      "declaradoPor": [],
+      "citadoPor": [
+        "acessibilidade-interface.js",
+        "caderno-contexto-explicito.js",
+        "calculadoras-locais-privacidade.js",
+        "central-operacional.js",
+        "colecoes-conversas-local.js"
+      ],
+      "alcancada": true
+    },
+    "dna.json": {
+      "categoria": "dados-json",
+      "linhas": 2,
+      "declaradoPor": [
+        "fontes-e-provedor.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "docs/AUDITORIA-REGUA-ABERTA-100.md": {
+      "categoria": "doc",
+      "linhas": 36,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/AUTONOMIA-EM-UMA-PAGINA.md": {
+      "categoria": "doc",
+      "linhas": 83,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/AVALIACAO-TEXTO-ABERTO.md": {
+      "categoria": "doc",
+      "linhas": 63,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/BURACO-DA-BARREIRA-06-11.md": {
+      "categoria": "doc",
+      "linhas": 35,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/DECISAO-DO-DEGRAU-4.md": {
+      "categoria": "doc",
+      "linhas": 84,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/DEGRAU-3-MESCLADOR.md": {
+      "categoria": "doc",
+      "linhas": 31,
+      "declaradoPor": [],
+      "citadoPor": [
+        "autonomia-e-risco.js"
+      ],
+      "alcancada": true
+    },
+    "docs/DEGRAU-4-ARQUITETURA.md": {
+      "categoria": "doc",
+      "linhas": 116,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/DEGRAU-4-POSSIBILIDADES.md": {
+      "categoria": "doc",
+      "linhas": 122,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/ENSAIO-DO-GATILHO-06-11.md": {
+      "categoria": "doc",
+      "linhas": 57,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/PARIDADE-IA.md": {
+      "categoria": "doc",
+      "linhas": 74,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/PORTOES-DO-DEGRAU-4.md": {
+      "categoria": "doc",
+      "linhas": 258,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/PROVA-DO-SOMBRA.md": {
+      "categoria": "doc",
+      "linhas": 16,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/REGISTRO-DE-DEFEITOS.md": {
+      "categoria": "doc",
+      "linhas": 32,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/RODADA-100-RESULTADOS.md": {
+      "categoria": "doc",
+      "linhas": 55,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/RODADA-101-RESULTADOS.md": {
+      "categoria": "doc",
+      "linhas": 101,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/RODADA-102-RESULTADOS.md": {
+      "categoria": "doc",
+      "linhas": 62,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/RODADA-103-RESULTADOS.md": {
+      "categoria": "doc",
+      "linhas": 208,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/RODADA-104-RESULTADOS.md": {
+      "categoria": "doc",
+      "linhas": 133,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/RODADA-105-RESULTADOS.md": {
+      "categoria": "doc",
+      "linhas": 132,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/RODADA-106-BUSCA-VIVA.md": {
+      "categoria": "doc",
+      "linhas": 106,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/RODADA-107-FALHAS-DE-FATO.md": {
+      "categoria": "doc",
+      "linhas": 116,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/RODADA-108-VARIANCIA.md": {
+      "categoria": "doc",
+      "linhas": 91,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/RODADA-109-DUAS-AMOSTRAS.md": {
+      "categoria": "doc",
+      "linhas": 102,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/RODADA-110-AMOSTRAS-EM-PARALELO.md": {
+      "categoria": "doc",
+      "linhas": 77,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/RODADA-CONVERSA-2026-11-04.md": {
+      "categoria": "doc",
+      "linhas": 80,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/RODADA-CONVERSA-V2-2026-11-04.md": {
+      "categoria": "doc",
+      "linhas": 75,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/ROTEADOR-IA.md": {
+      "categoria": "doc",
+      "linhas": 279,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "docs/auto-melhoria.json": {
+      "categoria": "dados-json",
+      "linhas": 645,
+      "declaradoPor": [],
+      "citadoPor": [
+        "auto-melhoria.js"
+      ],
+      "alcancada": true
+    },
+    "email-log.md": {
+      "categoria": "doc",
+      "linhas": 523,
+      "declaradoPor": [],
+      "citadoPor": [
+        "estado-operacional-controlado.js",
+        "inventario-estado-operacional.js"
+      ],
+      "alcancada": true
+    },
+    "fontes-publicas.json": {
+      "categoria": "dados-json",
+      "linhas": 833,
+      "declaradoPor": [
+        "fontes-e-provedor.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "index.html": {
+      "categoria": "estatico-web",
+      "linhas": 4377,
+      "declaradoPor": [
+        "chave-do-dono.js",
+        "comandos-marketing-24h.js",
+        "comandos-produtividade.js",
+        "csp-paginas.js",
+        "diagnostico-motores.js",
+        "identidade-do-chat.js",
+        "lexico-local.js",
+        "navegador-csp.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "lexico-pt.js": {
+      "categoria": "codigo-js",
+      "linhas": 9,
+      "declaradoPor": [
+        "lexico-local.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "lexico-pt.json": {
+      "categoria": "dados-json",
+      "linhas": 2,
+      "declaradoPor": [
+        "lexico-local.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "ligar.html": {
+      "categoria": "estatico-web",
+      "linhas": 4341,
+      "declaradoPor": [],
+      "citadoPor": [
+        "acessibilidade-interface.js",
+        "caderno-contexto-explicito.js",
+        "calculadoras-locais-privacidade.js",
+        "central-operacional.js",
+        "colecoes-conversas-local.js"
+      ],
+      "alcancada": true
+    },
+    "limpar.html": {
+      "categoria": "estatico-web",
+      "linhas": 4383,
+      "declaradoPor": [],
+      "citadoPor": [
+        "acessibilidade-interface.js",
+        "caderno-contexto-explicito.js",
+        "calculadoras-locais-privacidade.js",
+        "central-operacional.js",
+        "colecoes-conversas-local.js"
+      ],
+      "alcancada": true
+    },
+    "manifest.json": {
+      "categoria": "dados-json",
+      "linhas": 16,
+      "declaradoPor": [
+        "identidade-do-chat.js",
+        "portabilidade-estatica.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "motor.html": {
+      "categoria": "estatico-web",
+      "linhas": 196,
+      "declaradoPor": [],
+      "citadoPor": [
+        "fontes-e-provedor.js"
+      ],
+      "alcancada": true
+    },
+    "motor02.html": {
+      "categoria": "estatico-web",
+      "linhas": 198,
+      "declaradoPor": [],
+      "citadoPor": [
+        "fontes-e-provedor.js"
+      ],
+      "alcancada": true
+    },
+    "motor03.html": {
+      "categoria": "estatico-web",
+      "linhas": 198,
+      "declaradoPor": [],
+      "citadoPor": [
+        "fontes-e-provedor.js"
+      ],
+      "alcancada": true
+    },
+    "motor04.html": {
+      "categoria": "estatico-web",
+      "linhas": 196,
+      "declaradoPor": [],
+      "citadoPor": [
+        "fontes-e-provedor.js"
+      ],
+      "alcancada": true
+    },
+    "navegador-estado.json": {
+      "categoria": "dados-json",
+      "linhas": 38,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "package-lock.json": {
+      "categoria": "dados-json",
+      "linhas": 1412,
+      "declaradoPor": [],
+      "citadoPor": [
+        "continuidade.js",
+        "mesclador-estreito.js"
+      ],
+      "alcancada": true
+    },
+    "package.json": {
+      "categoria": "dados-json",
+      "linhas": 24,
+      "declaradoPor": [
+        "cobertura-navegador.js",
+        "placar-testes.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "paginas/rotas/direto.json": {
+      "categoria": "dados-json",
+      "linhas": 55,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "paginas/rotas/ligar.json": {
+      "categoria": "dados-json",
+      "linhas": 56,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "paginas/rotas/limpar.json": {
+      "categoria": "dados-json",
+      "linhas": 24,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/auditoria-pratica-2026-10-18-1439.md": {
+      "categoria": "doc",
+      "linhas": 37,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/avaliacao-profunda-2026-10-18-0603.md": {
+      "categoria": "doc",
+      "linhas": 931,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/avaliacao-profunda-2026-10-18-0619.md": {
+      "categoria": "doc",
+      "linhas": 208,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/coleta-email-2026-10-14-0422.md": {
+      "categoria": "doc",
+      "linhas": 192,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/ferramentas-2026-10-15-0220.md": {
+      "categoria": "doc",
+      "linhas": 32,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/ferramentas-2026-10-15-0454.md": {
+      "categoria": "doc",
+      "linhas": 97,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/ferramentas-2026-10-15-1522.md": {
+      "categoria": "doc",
+      "linhas": 95,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/ferramentas-2026-10-17-2346.md": {
+      "categoria": "doc",
+      "linhas": 55,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/ferramentas-2026-10-17-2349.md": {
+      "categoria": "doc",
+      "linhas": 55,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/ferramentas-2026-10-18-0009.md": {
+      "categoria": "doc",
+      "linhas": 55,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/ferramentas-2026-10-18-0015.md": {
+      "categoria": "doc",
+      "linhas": 55,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/ferramentas-2026-10-18-0028.md": {
+      "categoria": "doc",
+      "linhas": 55,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/ferramentas-2026-10-18-0040.md": {
+      "categoria": "doc",
+      "linhas": 55,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-anexos-2026-10-14-1303.md": {
+      "categoria": "doc",
+      "linhas": 44,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-anexos-2026-10-14-1401.md": {
+      "categoria": "doc",
+      "linhas": 57,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-2026-10-14-0417.md": {
+      "categoria": "doc",
+      "linhas": 64,
+      "declaradoPor": [
+        "seguranca-interface.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "provas/teste-email-final-2026-10-14-0513.md": {
+      "categoria": "doc",
+      "linhas": 234,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-final-2026-10-16-1906.md": {
+      "categoria": "doc",
+      "linhas": 179,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-final-2026-10-16-1931.md": {
+      "categoria": "doc",
+      "linhas": 460,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-final-2026-10-17-1430.md": {
+      "categoria": "doc",
+      "linhas": 3038,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-final-2026-10-17-1611.md": {
+      "categoria": "doc",
+      "linhas": 3459,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r2-2026-10-14-0431.md": {
+      "categoria": "doc",
+      "linhas": 127,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-14-0538.md": {
+      "categoria": "doc",
+      "linhas": 217,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-14-0611.md": {
+      "categoria": "doc",
+      "linhas": 219,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-14-0640.md": {
+      "categoria": "doc",
+      "linhas": 214,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-14-0714.md": {
+      "categoria": "doc",
+      "linhas": 248,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-14-1336.md": {
+      "categoria": "doc",
+      "linhas": 219,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-14-1417.md": {
+      "categoria": "doc",
+      "linhas": 224,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-14-1454.md": {
+      "categoria": "doc",
+      "linhas": 246,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-14-1529.md": {
+      "categoria": "doc",
+      "linhas": 243,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-14-2027.md": {
+      "categoria": "doc",
+      "linhas": 257,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-14-2057.md": {
+      "categoria": "doc",
+      "linhas": 258,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-15-0305.md": {
+      "categoria": "doc",
+      "linhas": 281,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-15-0400.md": {
+      "categoria": "doc",
+      "linhas": 280,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-15-0535.md": {
+      "categoria": "doc",
+      "linhas": 322,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-15-1425.md": {
+      "categoria": "doc",
+      "linhas": 342,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-15-1456.md": {
+      "categoria": "doc",
+      "linhas": 330,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-15-1606.md": {
+      "categoria": "doc",
+      "linhas": 364,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-15-1627.md": {
+      "categoria": "doc",
+      "linhas": 358,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-15-1705.md": {
+      "categoria": "doc",
+      "linhas": 288,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-15-1734.md": {
+      "categoria": "doc",
+      "linhas": 369,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-15-2156.md": {
+      "categoria": "doc",
+      "linhas": 390,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-15-2257.md": {
+      "categoria": "doc",
+      "linhas": 487,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-15-2349.md": {
+      "categoria": "doc",
+      "linhas": 577,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-16-0030.md": {
+      "categoria": "doc",
+      "linhas": 674,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-16-0053.md": {
+      "categoria": "doc",
+      "linhas": 658,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-16-0357.md": {
+      "categoria": "doc",
+      "linhas": 665,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-16-1656.md": {
+      "categoria": "doc",
+      "linhas": 299,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-16-1838.md": {
+      "categoria": "doc",
+      "linhas": 299,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-17-1411.md": {
+      "categoria": "doc",
+      "linhas": 614,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-email-r3-2026-10-17-1510.md": {
+      "categoria": "doc",
+      "linhas": 714,
+      "declaradoPor": [],
+      "citadoPor": [
+        "indice-capacidade.js"
+      ],
+      "alcancada": true
+    },
+    "provas/teste-email-r3-2026-10-18-0211.md": {
+      "categoria": "doc",
+      "linhas": 722,
+      "declaradoPor": [],
+      "citadoPor": [
+        "indice-capacidade.js"
+      ],
+      "alcancada": true
+    },
+    "provas/teste-email-r3-2026-10-18-0501.md": {
+      "categoria": "doc",
+      "linhas": 745,
+      "declaradoPor": [],
+      "citadoPor": [
+        "indice-capacidade.js"
+      ],
+      "alcancada": true
+    },
+    "provas/teste-foto-2026-10-14-0648.md": {
+      "categoria": "doc",
+      "linhas": 30,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-foto-2026-10-17-1550.md": {
+      "categoria": "doc",
+      "linhas": 8,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-foto-2026-10-17-1855.md": {
+      "categoria": "doc",
+      "linhas": 20,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-foto-2026-10-17-1919.md": {
+      "categoria": "doc",
+      "linhas": 16,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-foto-2026-10-17-1932.md": {
+      "categoria": "doc",
+      "linhas": 20,
+      "declaradoPor": [],
+      "citadoPor": [
+        "indice-capacidade.js"
+      ],
+      "alcancada": true
+    },
+    "provas/teste-memoria-2026-10-14-0548.md": {
+      "categoria": "doc",
+      "linhas": 36,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-navegador-pareado-2026-10-18-02-43.md": {
+      "categoria": "doc",
+      "linhas": 21,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-navegador-pareado-2026-10-18-03-37.md": {
+      "categoria": "doc",
+      "linhas": 21,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-navegador-pareado-2026-10-18-03-50.md": {
+      "categoria": "doc",
+      "linhas": 21,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-voz-2026-10-14-1232.md": {
+      "categoria": "doc",
+      "linhas": 48,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "provas/teste-voz-2026-10-14-1320.md": {
+      "categoria": "doc",
+      "linhas": 41,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "qualidade-historico.json": {
+      "categoria": "dados-json",
+      "linhas": 354,
+      "declaradoPor": [],
+      "citadoPor": [
+        "estado-operacional-controlado.js"
+      ],
+      "alcancada": true
+    },
+    "razao-local.js": {
+      "categoria": "codigo-js",
+      "linhas": 1232,
+      "declaradoPor": [
+        "identidade-do-chat.js",
+        "lexico-local.js",
+        "razao-local.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "roteador-ia.js": {
+      "categoria": "codigo-js",
+      "linhas": 3449,
+      "declaradoPor": [
+        "aberto-recuperacao.js",
+        "avaliacao-aberto.js",
+        "chave-do-dono.js",
+        "chave-do-dono.js",
+        "conta-falada.js",
+        "duas-amostras.js",
+        "espera-rota-boa.js",
+        "estado-aberto.js",
+        "fonte-viva-casamento.js",
+        "fontes-e-provedor.js",
+        "fontes-e-provedor.js",
+        "identidade-do-chat.js",
+        "memoria-contexto-coerente.js",
+        "recomeco-resgate-memoria.js",
+        "roteador-gratis.js",
+        "roteador-resiliencia.js",
+        "saude-persistente.js",
+        "sem-dependencia.js",
+        "texto-longo-offline.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "roteador.html": {
+      "categoria": "estatico-web",
+      "linhas": 124,
+      "declaradoPor": [],
+      "citadoPor": [
+        "continuidade.js"
+      ],
+      "alcancada": true
+    },
+    "saude-cerebro.md": {
+      "categoria": "doc",
+      "linhas": 41,
+      "declaradoPor": [],
+      "citadoPor": [
+        "estado-operacional-controlado.js"
+      ],
+      "alcancada": true
+    },
+    "sw.js": {
+      "categoria": "codigo-js",
+      "linhas": 53,
+      "declaradoPor": [
+        "central-operacional.js",
+        "colecoes-conversas-local.js",
+        "comandos-locais-interface.js",
+        "continuidade.js",
+        "diagnostico-motores.js",
+        "estilos-compartilhados.js",
+        "filtro-chips-interface.js",
+        "fontes-e-provedor.js",
+        "fontes-e-provedor.js",
+        "identidade-do-chat.js",
+        "lexico-local.js",
+        "organizacao-conversas-local.js",
+        "portabilidade-estatica.js",
+        "preparo-controlado.js",
+        "seguranca-interface.js",
+        "workspace-local.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/armadilhas-do-chat.json": {
+      "categoria": "dados-json",
+      "linhas": 294,
+      "declaradoPor": [
+        "razao-local.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/askpass-github-101.sh": {
+      "categoria": "estatico-web",
+      "linhas": 7,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "tools/auditoria-dependencias.js": {
+      "categoria": "codigo-js",
+      "linhas": 201,
+      "declaradoPor": [
+        "sem-dependencia.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/auto-melhoria.js": {
+      "categoria": "codigo-js",
+      "linhas": 746,
+      "declaradoPor": [
+        "auto-melhoria.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/autonomia.js": {
+      "categoria": "codigo-js",
+      "linhas": 74,
+      "declaradoPor": [
+        "autonomia-e-risco.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/avaliacao-profunda-casos.js": {
+      "categoria": "codigo-js",
+      "linhas": 130,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "tools/clonar.sh": {
+      "categoria": "estatico-web",
+      "linhas": 41,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "tools/cobertura-navegador.js": {
+      "categoria": "codigo-js",
+      "linhas": 248,
+      "declaradoPor": [
+        "cobertura-navegador.js",
+        "cobertura-navegador.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/cofre-seguro.js": {
+      "categoria": "codigo-js",
+      "linhas": 92,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "tools/coleta-respostas.js": {
+      "categoria": "codigo-js",
+      "linhas": 129,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "tools/diag-email.js": {
+      "categoria": "codigo-js",
+      "linhas": 50,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "tools/diagnostico-caixa.js": {
+      "categoria": "codigo-js",
+      "linhas": 32,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "tools/diagnostico-telegram.js": {
+      "categoria": "codigo-js",
+      "linhas": 41,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "tools/dossie-preparo-controlado.js": {
+      "categoria": "codigo-js",
+      "linhas": 132,
+      "declaradoPor": [
+        "dossie-preparo-controlado.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/email-chat.js": {
+      "categoria": "codigo-js",
+      "linhas": 2012,
+      "declaradoPor": [
+        "central-operacional.js",
+        "fontes-e-provedor.js",
+        "fontes-e-provedor.js",
+        "mime-bateria.js",
+        "navegador-comando-email.js",
+        "navegador-retorno-fluxo.js",
+        "navegador-retorno.js",
+        "operacao-incidentes.js",
+        "seguranca-interface.js",
+        "vigia-recuperacao-fluxo.js",
+        "vigia-recuperacao-fluxo.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/email-poll.js": {
+      "categoria": "codigo-js",
+      "linhas": 178,
+      "declaradoPor": [
+        "email-poll-adocao.js",
+        "email-poll-adocao.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/estado-operacional-controlado.js": {
+      "categoria": "codigo-js",
+      "linhas": 365,
+      "declaradoPor": [
+        "estado-operacional-controlado.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/evolucao-chat.js": {
+      "categoria": "codigo-js",
+      "linhas": 216,
+      "declaradoPor": [
+        "fontes-e-provedor.js",
+        "fontes-e-provedor.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/falhas-mensagem.js": {
+      "categoria": "codigo-js",
+      "linhas": 59,
+      "declaradoPor": [],
+      "citadoPor": [
+        "autonomia-e-risco.js"
+      ],
+      "alcancada": true
+    },
+    "tools/geografia-brasil.js": {
+      "categoria": "codigo-js",
+      "linhas": 228,
+      "declaradoPor": [],
+      "citadoPor": [
+        "autonomia-e-risco.js",
+        "email-poll-adocao.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/gerar-fontes-educativas.js": {
+      "categoria": "codigo-js",
+      "linhas": 79,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "tools/gerar-lexico-pt.js": {
+      "categoria": "codigo-js",
+      "linhas": 207,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "tools/gerar-medidor-local.js": {
+      "categoria": "codigo-js",
+      "linhas": 270,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "tools/indice-capacidade.js": {
+      "categoria": "codigo-js",
+      "linhas": 246,
+      "declaradoPor": [
+        "continuidade.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/inventario-estado-operacional.js": {
+      "categoria": "codigo-js",
+      "linhas": 125,
+      "declaradoPor": [
+        "continuidade.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/mesclador-estreito.js": {
+      "categoria": "codigo-js",
+      "linhas": 291,
+      "declaradoPor": [
+        "barreira-depois-do-merge.js",
+        "mesclador-estreito.js",
+        "reversao-caminho-do-403.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/montar-paginas.js": {
+      "categoria": "codigo-js",
+      "linhas": 116,
+      "declaradoPor": [
+        "paginas-geradas.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/navegador-publico.js": {
+      "categoria": "codigo-js",
+      "linhas": 228,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/painel.js": {
+      "categoria": "codigo-js",
+      "linhas": 169,
+      "declaradoPor": [
+        "painel.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/portoes.js": {
+      "categoria": "codigo-js",
+      "linhas": 189,
+      "declaradoPor": [
+        "sombra-e-portoes.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/preparo-controlado.js": {
+      "categoria": "codigo-js",
+      "linhas": 84,
+      "declaradoPor": [
+        "preparo-controlado.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/prova-ciclos.js": {
+      "categoria": "codigo-js",
+      "linhas": 253,
+      "declaradoPor": [
+        "prova-ciclos.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/provas-do-chat.json": {
+      "categoria": "dados-json",
+      "linhas": 1075,
+      "declaradoPor": [
+        "auto-melhoria.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/pulso-vigia.js": {
+      "categoria": "codigo-js",
+      "linhas": 46,
+      "declaradoPor": [
+        "pulso-vigia.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/redes-sociais.js": {
+      "categoria": "codigo-js",
+      "linhas": 1423,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "tools/reforco-dossie-controlado.js": {
+      "categoria": "codigo-js",
+      "linhas": 218,
+      "declaradoPor": [
+        "reforco-dossie-controlado.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/reserva-turno.js": {
+      "categoria": "codigo-js",
+      "linhas": 181,
+      "declaradoPor": [
+        "reserva-turno.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/risco-de-arquivo.js": {
+      "categoria": "codigo-js",
+      "linhas": 118,
+      "declaradoPor": [
+        "autonomia-e-risco.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/saude-rotas-email.js": {
+      "categoria": "codigo-js",
+      "linhas": 163,
+      "declaradoPor": [
+        "saude-rotas-email.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/scanner-credenciais.js": {
+      "categoria": "codigo-js",
+      "linhas": 225,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "tools/socorro.js": {
+      "categoria": "codigo-js",
+      "linhas": 117,
+      "declaradoPor": [
+        "socorro.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/sombra.js": {
+      "categoria": "codigo-js",
+      "linhas": 250,
+      "declaradoPor": [
+        "sombra-e-portoes.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/sonda-latencia-paragrafo.js": {
+      "categoria": "codigo-js",
+      "linhas": 19,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "tools/telegram-chat.js": {
+      "categoria": "codigo-js",
+      "linhas": 246,
+      "declaradoPor": [
+        "central-operacional.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/termometro-barreira.js": {
+      "categoria": "codigo-js",
+      "linhas": 190,
+      "declaradoPor": [
+        "autonomia-e-risco.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/testar-todas-as-apis.js": {
+      "categoria": "codigo-js",
+      "linhas": 280,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "tools/testar-todas-as-redes.js": {
+      "categoria": "codigo-js",
+      "linhas": 106,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "tools/teste-anexos.js": {
+      "categoria": "codigo-js",
+      "linhas": 129,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "tools/teste-email-remetentes.js": {
+      "categoria": "codigo-js",
+      "linhas": 20,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/teste-email-resultado.js": {
+      "categoria": "codigo-js",
+      "linhas": 29,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/teste-email.js": {
+      "categoria": "codigo-js",
+      "linhas": 462,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "tools/teste-foto.js": {
+      "categoria": "codigo-js",
+      "linhas": 135,
+      "declaradoPor": [],
+      "citadoPor": [
+        "teste-foto-resiliencia.js"
+      ],
+      "alcancada": true
+    },
+    "tools/teste-memoria.js": {
+      "categoria": "codigo-js",
+      "linhas": 114,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "tools/teste-navegador-pareado.js": {
+      "categoria": "codigo-js",
+      "linhas": 183,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js",
+        "teste-navegador-pareado.js"
+      ],
+      "alcancada": true
+    },
+    "tools/teste-qualidade-profunda.js": {
+      "categoria": "codigo-js",
+      "linhas": 6,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "tools/teste-voz.js": {
+      "categoria": "codigo-js",
+      "linhas": 174,
+      "declaradoPor": [],
+      "citadoPor": [],
+      "alcancada": false
+    },
+    "tools/testes/aberto-recuperacao.js": {
+      "categoria": "teste",
+      "linhas": 261,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/acessibilidade-interface.js": {
+      "categoria": "teste",
+      "linhas": 222,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/auditoria-workflows.js": {
+      "categoria": "teste",
+      "linhas": 256,
+      "declaradoPor": [],
+      "citadoPor": [
+        "preparo-controlado.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/autenticidade-planilha.js": {
+      "categoria": "teste",
+      "linhas": 32,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/auto-melhoria.js": {
+      "categoria": "teste",
+      "linhas": 283,
+      "declaradoPor": [],
+      "citadoPor": [
+        "auto-melhoria.js",
+        "gerar-mapa.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/autonomia-e-risco.js": {
+      "categoria": "teste",
+      "linhas": 232,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/avaliacao-aberto.js": {
+      "categoria": "teste",
+      "linhas": 107,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/avaliacao-profunda.js": {
+      "categoria": "teste",
+      "linhas": 96,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/banco-conversa-v2.js": {
+      "categoria": "teste",
+      "linhas": 172,
+      "declaradoPor": [],
+      "citadoPor": [
+        "banco-conversa-v2.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/banco-conversa.js": {
+      "categoria": "teste",
+      "linhas": 163,
+      "declaradoPor": [],
+      "citadoPor": [
+        "banco-conversa-v2.js",
+        "banco-conversa.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/barreira-depois-do-merge.js": {
+      "categoria": "teste",
+      "linhas": 82,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/caderno-contexto-explicito.js": {
+      "categoria": "teste",
+      "linhas": 49,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/calculadoras-locais-privacidade.js": {
+      "categoria": "teste",
+      "linhas": 98,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/cdp-recuperacao-navegador.js": {
+      "categoria": "teste",
+      "linhas": 132,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/cdp.js": {
+      "categoria": "teste",
+      "linhas": 255,
+      "declaradoPor": [],
+      "citadoPor": [
+        "cdp-recuperacao-navegador.js",
+        "gerar-mapa.js",
+        "medir-tempos.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/central-operacional.js": {
+      "categoria": "teste",
+      "linhas": 292,
+      "declaradoPor": [],
+      "citadoPor": [
+        "preparo-controlado.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/chave-do-dono.js": {
+      "categoria": "teste",
+      "linhas": 47,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/cobertura-linhas.js": {
+      "categoria": "teste",
+      "linhas": 130,
+      "declaradoPor": [],
+      "citadoPor": [
+        "cobertura-linhas.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/cobertura-navegador.js": {
+      "categoria": "teste",
+      "linhas": 121,
+      "declaradoPor": [],
+      "citadoPor": [
+        "cdp.js",
+        "cobertura-navegador.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/colecoes-conversas-local.js": {
+      "categoria": "teste",
+      "linhas": 357,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/comandos-locais-interface.js": {
+      "categoria": "teste",
+      "linhas": 225,
+      "declaradoPor": [],
+      "citadoPor": [
+        "preparo-controlado.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/comandos-marketing-24h.js": {
+      "categoria": "teste",
+      "linhas": 73,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/comandos-privados-locais.js": {
+      "categoria": "teste",
+      "linhas": 68,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/comandos-produtividade.js": {
+      "categoria": "teste",
+      "linhas": 130,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/conta-e-comandos.js": {
+      "categoria": "teste",
+      "linhas": 174,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/conta-falada.js": {
+      "categoria": "teste",
+      "linhas": 85,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/contador-compositor-limpeza.js": {
+      "categoria": "teste",
+      "linhas": 63,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/contexto-explicito-privacidade.js": {
+      "categoria": "teste",
+      "linhas": 58,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/continuidade.js": {
+      "categoria": "teste",
+      "linhas": 101,
+      "declaradoPor": [],
+      "citadoPor": [
+        "colecoes-conversas-local.js",
+        "comandos-locais-interface.js",
+        "estilos-compartilhados.js",
+        "filtro-chips-interface.js",
+        "organizacao-conversas-local.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/csp-paginas.js": {
+      "categoria": "teste",
+      "linhas": 162,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/diagnostico-motores.js": {
+      "categoria": "teste",
+      "linhas": 251,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/dossie-preparo-controlado.js": {
+      "categoria": "teste",
+      "linhas": 169,
+      "declaradoPor": [],
+      "citadoPor": [
+        "dossie-preparo-controlado.js",
+        "reforco-dossie-controlado.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/duas-amostras.js": {
+      "categoria": "teste",
+      "linhas": 174,
+      "declaradoPor": [],
+      "citadoPor": [
+        "aberto-recuperacao.js",
+        "roda-testes.js",
+        "rota-com-chave-ponta-a-ponta.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/email-poll-adocao.js": {
+      "categoria": "teste",
+      "linhas": 54,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/equivalencias-rubrica.js": {
+      "categoria": "teste",
+      "linhas": 90,
+      "declaradoPor": [],
+      "citadoPor": [
+        "medicao-pareada.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/espera-rota-boa.js": {
+      "categoria": "teste",
+      "linhas": 103,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/estado-aberto.js": {
+      "categoria": "teste",
+      "linhas": 53,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/estado-operacional-controlado.js": {
+      "categoria": "teste",
+      "linhas": 240,
+      "declaradoPor": [],
+      "citadoPor": [
+        "auditoria-workflows.js",
+        "autonomia-e-risco.js",
+        "estado-operacional-controlado.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/estados-entrega-e-falhas.js": {
+      "categoria": "teste",
+      "linhas": 154,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/estilos-compartilhados.js": {
+      "categoria": "teste",
+      "linhas": 65,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/evolucao-chat.js": {
+      "categoria": "teste",
+      "linhas": 56,
+      "declaradoPor": [],
+      "citadoPor": [
+        "auditoria-workflows.js",
+        "fontes-e-provedor.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/falha-silenciosa.js": {
+      "categoria": "teste",
+      "linhas": 108,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/falhas-operacionais.js": {
+      "categoria": "teste",
+      "linhas": 35,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/fallback-trabalhador.js": {
+      "categoria": "teste",
+      "linhas": 119,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/fila-visivel-e-avisos.js": {
+      "categoria": "teste",
+      "linhas": 271,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/filtro-chips-interface.js": {
+      "categoria": "teste",
+      "linhas": 208,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/fonte-viva-casamento.js": {
+      "categoria": "teste",
+      "linhas": 110,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/fontes-e-provedor.js": {
+      "categoria": "teste",
+      "linhas": 151,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/formato-e-trava.js": {
+      "categoria": "teste",
+      "linhas": 30,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/geografia-brasil.js": {
+      "categoria": "teste",
+      "linhas": 58,
+      "declaradoPor": [],
+      "citadoPor": [
+        "autonomia-e-risco.js",
+        "email-poll-adocao.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/gerar-cobertura-fonte.js": {
+      "categoria": "teste",
+      "linhas": 101,
+      "declaradoPor": [],
+      "citadoPor": [
+        "gerar-cobertura-fonte.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/gerar-mapa.js": {
+      "categoria": "teste",
+      "linhas": 174,
+      "declaradoPor": [],
+      "citadoPor": [
+        "gerar-mapa.js",
+        "medir-tempos.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/identidade-do-chat.js": {
+      "categoria": "teste",
+      "linhas": 77,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/indice-capacidade.js": {
+      "categoria": "teste",
+      "linhas": 142,
+      "declaradoPor": [],
+      "citadoPor": [
+        "auditoria-workflows.js",
+        "autonomia-e-risco.js",
+        "continuidade.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/inicializacao-rede-explicita.js": {
+      "categoria": "teste",
+      "linhas": 185,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/interface-seguranca-fluxo.js": {
+      "categoria": "teste",
+      "linhas": 171,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/inventario-estado-operacional.js": {
+      "categoria": "teste",
+      "linhas": 94,
+      "declaradoPor": [],
+      "citadoPor": [
+        "continuidade.js",
+        "inventario-estado-operacional.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/leitura-e-inicio-interface.js": {
+      "categoria": "teste",
+      "linhas": 91,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/lembretes.js": {
+      "categoria": "teste",
+      "linhas": 29,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/lexico-local.js": {
+      "categoria": "teste",
+      "linhas": 88,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/limites-conteudo-interface.js": {
+      "categoria": "teste",
+      "linhas": 91,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/mapa-cobertura.json": {
+      "categoria": "teste",
+      "linhas": 2573,
+      "declaradoPor": [],
+      "citadoPor": [
+        "cobertura-linhas.js",
+        "gerar-cobertura-fonte.js",
+        "gerar-mapa.js",
+        "mutador.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/markdown-imagem-privacidade.js": {
+      "categoria": "teste",
+      "linhas": 54,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/medicao-aberto-checkpoint.js": {
+      "categoria": "teste",
+      "linhas": 38,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/medicao-pareada.js": {
+      "categoria": "teste",
+      "linhas": 42,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/medir-tempos.js": {
+      "categoria": "teste",
+      "linhas": 33,
+      "declaradoPor": [],
+      "citadoPor": [
+        "gerar-mapa.js",
+        "medir-tempos.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/memoria-contexto-coerente.js": {
+      "categoria": "teste",
+      "linhas": 73,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/memoria-na-pagina.js": {
+      "categoria": "teste",
+      "linhas": 83,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/memoria-profunda-privacidade.js": {
+      "categoria": "teste",
+      "linhas": 59,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/mesclador-estreito.js": {
+      "categoria": "teste",
+      "linhas": 103,
+      "declaradoPor": [],
+      "citadoPor": [
+        "autonomia-e-risco.js",
+        "barreira-depois-do-merge.js",
+        "mesclador-estreito.js",
+        "reversao-caminho-do-403.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/mime-bateria.js": {
+      "categoria": "teste",
+      "linhas": 60,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/mutador-placar.json": {
+      "categoria": "teste",
+      "linhas": 37,
+      "declaradoPor": [],
+      "citadoPor": [
+        "mutador.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/mutador-tempos.json": {
+      "categoria": "teste",
+      "linhas": 789,
+      "declaradoPor": [],
+      "citadoPor": [
+        "cobertura-linhas.js",
+        "medir-tempos.js",
+        "mutador.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/mutador.js": {
+      "categoria": "teste",
+      "linhas": 618,
+      "declaradoPor": [],
+      "citadoPor": [
+        "gerar-mapa.js",
+        "medir-tempos.js",
+        "mutador.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/navegador-comando-email.js": {
+      "categoria": "teste",
+      "linhas": 54,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/navegador-csp.js": {
+      "categoria": "teste",
+      "linhas": 123,
+      "declaradoPor": [],
+      "citadoPor": [
+        "cdp.js",
+        "cobertura-linhas.js",
+        "medir-tempos.js",
+        "mutador.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/navegador-lista-controlado-estatico.js": {
+      "categoria": "teste",
+      "linhas": 184,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/navegador-lista-controlado.sh": {
+      "categoria": "teste",
+      "linhas": 1155,
+      "declaradoPor": [],
+      "citadoPor": [
+        "autonomia-e-risco.js",
+        "navegador-lista-controlado-estatico.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/navegador-publico.js": {
+      "categoria": "teste",
+      "linhas": 72,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/navegador-retorno-fluxo.js": {
+      "categoria": "teste",
+      "linhas": 42,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/navegador-retorno.js": {
+      "categoria": "teste",
+      "linhas": 44,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/ocr-local.js": {
+      "categoria": "teste",
+      "linhas": 106,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/operacao-incidentes.js": {
+      "categoria": "teste",
+      "linhas": 48,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/organizacao-conversas-local.js": {
+      "categoria": "teste",
+      "linhas": 293,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/paginacao-conversas.js": {
+      "categoria": "teste",
+      "linhas": 387,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/paginas-geradas.js": {
+      "categoria": "teste",
+      "linhas": 116,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/paineis-locais-privacidade.js": {
+      "categoria": "teste",
+      "linhas": 95,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/painel.js": {
+      "categoria": "teste",
+      "linhas": 80,
+      "declaradoPor": [],
+      "citadoPor": [
+        "painel.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/placar-testes.js": {
+      "categoria": "teste",
+      "linhas": 75,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/portabilidade-estatica.js": {
+      "categoria": "teste",
+      "linhas": 105,
+      "declaradoPor": [],
+      "citadoPor": [
+        "continuidade.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/pre-requisitos-multimodais.js": {
+      "categoria": "teste",
+      "linhas": 27,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/pre-requisitos.js": {
+      "categoria": "teste",
+      "linhas": 15,
+      "declaradoPor": [],
+      "citadoPor": [
+        "gerar-mapa.js",
+        "medir-tempos.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/preparo-controlado.js": {
+      "categoria": "teste",
+      "linhas": 145,
+      "declaradoPor": [],
+      "citadoPor": [
+        "dossie-preparo-controlado.js",
+        "preparo-controlado.js",
+        "reforco-dossie-controlado.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/prova-ciclos.js": {
+      "categoria": "teste",
+      "linhas": 163,
+      "declaradoPor": [],
+      "citadoPor": [
+        "prova-ciclos.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/pulso-vigia.js": {
+      "categoria": "teste",
+      "linhas": 69,
+      "declaradoPor": [],
+      "citadoPor": [
+        "autonomia-e-risco.js",
+        "pulso-vigia.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/pwa-atualizacao-segura.js": {
+      "categoria": "teste",
+      "linhas": 353,
+      "declaradoPor": [],
+      "citadoPor": [
+        "continuidade.js",
+        "preparo-controlado.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/rascunhos-locais-interface.js": {
+      "categoria": "teste",
+      "linhas": 159,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/razao-local.js": {
+      "categoria": "teste",
+      "linhas": 91,
+      "declaradoPor": [],
+      "citadoPor": [
+        "auto-melhoria.js",
+        "continuidade.js",
+        "identidade-do-chat.js",
+        "lexico-local.js",
+        "razao-local.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/recomeco-resgate-memoria.js": {
+      "categoria": "teste",
+      "linhas": 268,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/rede-e-modo-somente-local.js": {
+      "categoria": "teste",
+      "linhas": 218,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/referencias-estaticas-privacidade.js": {
+      "categoria": "teste",
+      "linhas": 93,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/reforco-dossie-controlado.js": {
+      "categoria": "teste",
+      "linhas": 373,
+      "declaradoPor": [],
+      "citadoPor": [
+        "reforco-dossie-controlado.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/reserva-turno.js": {
+      "categoria": "teste",
+      "linhas": 148,
+      "declaradoPor": [],
+      "citadoPor": [
+        "autonomia-e-risco.js",
+        "reserva-turno.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/reversao-caminho-do-403.js": {
+      "categoria": "teste",
+      "linhas": 119,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/roda-testes.js": {
+      "categoria": "teste",
+      "linhas": 98,
+      "declaradoPor": [],
+      "citadoPor": [
+        "auto-melhoria.js",
+        "colecoes-conversas-local.js",
+        "comandos-marketing-24h.js",
+        "comandos-produtividade.js",
+        "continuidade.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/rota-com-chave-ponta-a-ponta.js": {
+      "categoria": "teste",
+      "linhas": 240,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/roteador-gratis.js": {
+      "categoria": "teste",
+      "linhas": 258,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/roteador-resiliencia.js": {
+      "categoria": "teste",
+      "linhas": 64,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/roteamento-com-chave.js": {
+      "categoria": "teste",
+      "linhas": 189,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/rotinas-locais-privacidade.js": {
+      "categoria": "teste",
+      "linhas": 93,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/saude-persistente.js": {
+      "categoria": "teste",
+      "linhas": 215,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/saude-rotas-email.js": {
+      "categoria": "teste",
+      "linhas": 127,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js",
+        "saude-rotas-email.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/seguranca-interface.js": {
+      "categoria": "teste",
+      "linhas": 51,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/sem-dependencia.js": {
+      "categoria": "teste",
+      "linhas": 73,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/sessoes-locais-privacidade.js": {
+      "categoria": "teste",
+      "linhas": 92,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/simula-caixa.js": {
+      "categoria": "teste",
+      "linhas": 122,
+      "declaradoPor": [],
+      "citadoPor": [
+        "gerar-mapa.js",
+        "medir-tempos.js",
+        "roda-testes.js",
+        "simula-caixa.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/socorro.js": {
+      "categoria": "teste",
+      "linhas": 84,
+      "declaradoPor": [],
+      "citadoPor": [
+        "autonomia-e-risco.js",
+        "mesclador-estreito.js",
+        "roda-testes.js",
+        "socorro.js",
+        "sombra-e-portoes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/sombra-e-portoes.js": {
+      "categoria": "teste",
+      "linhas": 178,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/sorteios-locais-privacidade.js": {
+      "categoria": "teste",
+      "linhas": 92,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/sugestoes-locais-privacidade.js": {
+      "categoria": "teste",
+      "linhas": 50,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/telegram.js": {
+      "categoria": "teste",
+      "linhas": 56,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/teste-email-remetentes.js": {
+      "categoria": "teste",
+      "linhas": 27,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/teste-email-resultado.js": {
+      "categoria": "teste",
+      "linhas": 32,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/teste-foto-resiliencia.js": {
+      "categoria": "teste",
+      "linhas": 32,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/teste-navegador-pareado.js": {
+      "categoria": "teste",
+      "linhas": 39,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js",
+        "teste-navegador-pareado.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/texto-longo-offline.js": {
+      "categoria": "teste",
+      "linhas": 123,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js",
+        "texto-longo-offline.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/token-antes-rascunho-privacidade.js": {
+      "categoria": "teste",
+      "linhas": 107,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/token-sessao-opcional.js": {
+      "categoria": "teste",
+      "linhas": 34,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/transformacoes-locais-privacidade.js": {
+      "categoria": "teste",
+      "linhas": 96,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/turno-cache-ferramentas.js": {
+      "categoria": "teste",
+      "linhas": 70,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/turno-liveness.js": {
+      "categoria": "teste",
+      "linhas": 38,
+      "declaradoPor": [],
+      "citadoPor": [
+        "autonomia-e-risco.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/varredura-privacidade.js": {
+      "categoria": "teste",
+      "linhas": 43,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/vigia-casa-resiliencia.js": {
+      "categoria": "teste",
+      "linhas": 88,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/vigia-estado.js": {
+      "categoria": "teste",
+      "linhas": 87,
+      "declaradoPor": [],
+      "citadoPor": [
+        "conta-e-comandos.js",
+        "estado-operacional-controlado.js",
+        "inventario-estado-operacional.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/vigia-recuperacao-fluxo.js": {
+      "categoria": "teste",
+      "linhas": 327,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/visao-resposta-cega.js": {
+      "categoria": "teste",
+      "linhas": 25,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/workspace-arquivo-completo-concorrencia-local.js": {
+      "categoria": "teste",
+      "linhas": 176,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/workspace-arquivo-completo.js": {
+      "categoria": "teste",
+      "linhas": 191,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/workspace-busca-global.js": {
+      "categoria": "teste",
+      "linhas": 79,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/workspace-conflito-local.js": {
+      "categoria": "teste",
+      "linhas": 114,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/workspace-integridade-local.js": {
+      "categoria": "teste",
+      "linhas": 611,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/workspace-lixeira-concorrencia-local.js": {
+      "categoria": "teste",
+      "linhas": 89,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/workspace-local.js": {
+      "categoria": "teste",
+      "linhas": 282,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/testes/workspace-projeto-portatil.js": {
+      "categoria": "teste",
+      "linhas": 161,
+      "declaradoPor": [],
+      "citadoPor": [
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/turno-liveness.js": {
+      "categoria": "codigo-js",
+      "linhas": 17,
+      "declaradoPor": [],
+      "citadoPor": [
+        "autonomia-e-risco.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "tools/vigia-casa.js": {
+      "categoria": "codigo-js",
+      "linhas": 594,
+      "declaradoPor": [
+        "operacao-incidentes.js",
+        "vigia-casa-resiliencia.js",
+        "vigia-casa-resiliencia.js",
+        "vigia-recuperacao-fluxo.js",
+        "vigia-recuperacao-fluxo.js"
+      ],
+      "citadoPor": [],
+      "alcancada": true
+    },
+    "tools/vigia-estado.js": {
+      "categoria": "codigo-js",
+      "linhas": 103,
+      "declaradoPor": [],
+      "citadoPor": [
+        "conta-e-comandos.js",
+        "estado-operacional-controlado.js",
+        "inventario-estado-operacional.js",
+        "roda-testes.js"
+      ],
+      "alcancada": true
+    },
+    "vigia-estado.json": {
+      "categoria": "dados-json",
+      "linhas": 53,
+      "declaradoPor": [],
+      "citadoPor": [
+        "conta-e-comandos.js",
+        "estado-operacional-controlado.js",
+        "inventario-estado-operacional.js"
+      ],
+      "alcancada": true
+    }
+  }
+}

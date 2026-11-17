@@ -124,7 +124,8 @@ function normalizaCaminho(m) {
 function main() {
   // Exclui as ferramentas do próprio ciclo (gerar-mapa, mutador) — o mapa cobre os 135 originais.
   // ferramentas do ciclo 2 não são testes — ficam fora do mapa (que cobre os 135 do repo)
-  const EXCLUIR = new Set(['gerar-mapa.js', 'mutador.js', 'medir-tempos.js']);
+  const EXCLUIR = new Set(['gerar-mapa.js', 'mutador.js', 'mutador-fixture.js', 'medir-tempos.js',
+    'cobertura-linhas.js', 'triagem-vivos.js', 'gerar-cobertura-fonte.js']);
   const arquivos = fs.readdirSync(DIR_TESTES).filter(f => f.endsWith('.js') && !EXCLUIR.has(f)).sort();
   const mapa = {};
   let semModulo = 0;

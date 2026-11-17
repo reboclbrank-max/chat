@@ -44,6 +44,20 @@ function rng(seed) {
   };
 }
 
+// Sítio dentro de comentário não é mutante: mudar o texto de um comentário não muda
+// comportamento nenhum. Sem este filtro o placar enche de "vivo" que é ruído puro —
+// foi o que aconteceu em 17/11 com a palavra Date.now() citada num comentário.
+function dentroDeComentario(fonte, indice) {
+  const linhaIni = fonte.lastIndexOf('\n', indice) + 1;
+  const antes = fonte.slice(linhaIni, indice);
+  if (antes.includes('//')) return true;
+  // comentário de bloco: último /* sem */ antes do sítio
+  const abre = fonte.lastIndexOf('/*', indice);
+  if (abre < 0) return false;
+  const fecha = fonte.lastIndexOf('*/', indice);
+  return fecha < abre;
+}
+
 // ── Catálogo: SÓ mutação sutil ───────────────────────────────────────────────
 // Cada entrada recebe o fonte e devolve uma lista de mutantes pontuais. Cada mutante
 // sabe se descrever e sabe se aplicar. Nada aqui apaga arquivo nem renomeia função.
@@ -295,6 +309,12 @@ function rodaTeste(arquivoTeste) {
   return { status: r.status, saida: String(r.stdout || '') + String(r.stderr || '') };
 }
 
+function primeiroDiferente(a, b) {
+  const n = Math.min(a.length, b.length);
+  for (let i = 0; i < n; i++) if (a[i] !== b[i]) return i;
+  return a.length === b.length ? -1 : n;
+}
+
 function sintaxeOk(codigo, arquivo) {
   try { new vm.Script(codigo, { filename: arquivo }); return true; } catch (e) { return false; }
 }
@@ -327,7 +347,13 @@ function mutaArquivo(alvoRel, opcoes, mapa, tempos) {
   // coleta determinística: catálogo na ordem, mutantes por posição
   const todos = [];
   for (const grupo of CATALOGO) {
-    for (const m of grupo.coletar(original)) todos.push(m);
+    for (const m of grupo.coletar(original)) {
+      // sítio em comentário não entra: não muda comportamento, é ruído no denominador
+      const marcador = m.aplica(original);
+      const i = primeiroDiferente(original, marcador);
+      if (i >= 0 && dentroDeComentario(original, i)) continue;
+      todos.push(m);
+    }
   }
   // embaralha com seed — mesma seed, mesma ordem
   for (let i = todos.length - 1; i > 0; i--) {

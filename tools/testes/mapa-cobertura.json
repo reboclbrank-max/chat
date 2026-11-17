@@ -1,12 +1,12 @@
 {
   "resumo": {
-    "geradoEm": "2026-11-17T13:27:24.069Z",
-    "totalArquivos": 135,
+    "geradoEm": "2026-11-17T13:50:08.416Z",
+    "totalArquivos": 138,
     "semModuloMapeado": 43,
     "porTipo": {
-      "comportamento": 32,
+      "comportamento": 34,
       "misto": 46,
-      "estatica": 57
+      "estatica": 58
     }
   },
   "testes": {
@@ -1261,6 +1261,25 @@
       "invariantes": [],
       "totalInvariantes": 0
     },
+    "mutantes-vivos.js": {
+      "arquivo": "tools/testes/mutantes-vivos.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "chat-diagnostico.js",
+        "tools/autonomia.js",
+        "tools/prova-ciclos.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "autonomia.js:32 — sem `agora`, o prazo é comparado com o relógio do sistema",
+        "autonomia.js:32 — o prazo vence no instante marcado, não um segundo antes",
+        "chat-diagnostico.js:53 — 400 exato é falha de formato, 500 exato é do servidor",
+        "prova-ciclos.js:59 — trechos que se tocam na borda são UM trecho só",
+        "prova-ciclos.js:86 — execução que começa no fim da outra não é sobreposição"
+      ],
+      "totalInvariantes": 5
+    },
     "navegador-comando-email.js": {
       "arquivo": "tools/testes/navegador-comando-email.js",
       "tipo": "misto",
@@ -1603,6 +1622,25 @@
         "job normal (passos cobrindo o tempo) não gera anomalia"
       ],
       "totalInvariantes": 14
+    },
+    "pulso-vigia-relogio.js": {
+      "arquivo": "tools/testes/pulso-vigia-relogio.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "externo:perf_hooks",
+        "tools/pulso-vigia.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "o padrão do relógio é o relógio do sistema, não uma constante",
+        "sem hora explícita, o pulso usa o relógio injetado (padrão de produção)",
+        "a borda da janela é INCLUSIVA: exatos 20 min ainda é recente",
+        "idade zero conta como recente (carimbo do exato instante não é futuro)",
+        "coordenaPulsoVigia sem hora explícita também lê o relógio injetado",
+        "quando coordenaPulsoVigia resolve, o pedido ao vigia JÁ foi feito"
+      ],
+      "totalInvariantes": 6
     },
     "pulso-vigia.js": {
       "arquivo": "tools/testes/pulso-vigia.js",
@@ -2372,6 +2410,23 @@
         "descarta variantes normalizadas de não conseguir abrir ou ver a imagem",
         "descarta também a negação no pretérito antes de responder a foto",
         "não descarta uma observação concreta da imagem"
+      ],
+      "totalInvariantes": 4
+    },
+    "workflows-versionados.js": {
+      "arquivo": "tools/testes/workflows-versionados.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [
+        ".github/workflows/testes-rapidos.yml",
+        "package.json"
+      ],
+      "invariantes": [
+        "todo workflow roda na MESMA versão de Node que o package.json exige (>=22)",
+        "o workflow da barreira declara `contents: read` e não pede escrita",
+        "todo cron declarado tem cinco campos e um minuto válido",
+        "toda página servida declara Content-Security-Policy com o nome exato"
       ],
       "totalInvariantes": 4
     },
