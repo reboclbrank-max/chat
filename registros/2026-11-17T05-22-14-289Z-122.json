@@ -1,0 +1,24 @@
+{
+  "quando": "2026-11-17T05:22:14.289Z",
+  "origem": "ao-vivo",
+  "pr": 122,
+  "sha": "e697ec3b2cfc78a3324da9f31123771e2847aa20",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "fix: o medidor não pode alterar o que mede (auto-melhoria sujava docs/ em todo teste)",
+  "barreira": "success",
+  "arquivos": [
+    "CONTINUIDADE.md",
+    "tools/auto-melhoria.js",
+    "tools/testes/auto-melhoria.js"
+  ],
+  "essenciais": [],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: CONTINUIDADE.md, tools/auto-melhoria.js, tools/testes/auto-melhoria.js"
+  },
+  "degrau4": {
+    "decidiria": "mesclar",
+    "motivo": "só arquivos não essenciais (3)"
+  }
+}
