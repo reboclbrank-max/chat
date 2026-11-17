@@ -1,0 +1,25 @@
+{
+  "quando": "2026-11-17T00:35:58.302Z",
+  "origem": "ao-vivo",
+  "pr": 120,
+  "sha": "6873a91336e6ddd05d51ed5ce6f059a6fe602509",
+  "mesclada": false,
+  "mergeSha": null,
+  "titulo": "chore: copia as 4 credenciais do X para o repo site (execução única)",
+  "barreira": "success",
+  "arquivos": [
+    ".github/workflows/copiar-x-para-site.yml",
+    "docs/auto-melhoria.json"
+  ],
+  "essenciais": [
+    ".github/workflows/copiar-x-para-site.yml"
+  ],
+  "hoje": {
+    "decidiria": "recusar",
+    "motivo": "fora da faixa: .github/workflows/copiar-x-para-site.yml"
+  },
+  "degrau4": {
+    "decidiria": "recusar",
+    "motivo": "fora até da faixa hipotética: .github/workflows/copiar-x-para-site.yml"
+  }
+}
