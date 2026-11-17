@@ -1,0 +1,36 @@
+{
+  "geradoEm": "2026-11-17T13:29:58.804Z",
+  "seed": 7,
+  "maxPorModulo": 1,
+  "alvos": 1,
+  "comCobertura": 1,
+  "semCoberturaOuLenta": 0,
+  "mutantes": 1,
+  "mortos": 0,
+  "vivos": 1,
+  "killRateGeral": 0,
+  "resultados": [
+    {
+      "arquivo": "tools/reserva-turno.js",
+      "mutantes": 1,
+      "mortos": 0,
+      "vivos": 1,
+      "invalidos": 0,
+      "killRate": 0,
+      "testes": [
+        "reserva-turno.js"
+      ],
+      "lentosExcluidos": [],
+      "detalhes": [
+        {
+          "tipo": "remover-await",
+          "descricao": "await removido na linha 150",
+          "linha": 150,
+          "morto": false,
+          "quemMatou": null,
+          "pista": null
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,788 @@
+{
+  "aberto-recuperacao.js": {
+    "ms": 99,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ timeout permanece ativo durante leitura do corpo HTTP"
+  },
+  "acessibilidade-interface.js": {
+    "ms": 70,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "54/54 testes de acessibilidade da interface passaram"
+  },
+  "auditoria-workflows.js": {
+    "ms": 45,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "17/17 testes da auditoria de workflows passaram"
+  },
+  "autenticidade-planilha.js": {
+    "ms": 627,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "8/8 certos"
+  },
+  "auto-melhoria.js": {
+    "ms": 71342,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ 21/21 verificações do auto-diagnóstico passaram"
+  },
+  "autonomia-e-risco.js": {
+    "ms": 34,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "21/21 contratos de autonomia/risco/termômetro passaram"
+  },
+  "avaliacao-aberto.js": {
+    "ms": 44,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ avaliação aberta: gabaritos, negativos, conectivos, acentos, pontuação e plano"
+  },
+  "avaliacao-profunda.js": {
+    "ms": 38,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "12/12 testes da avaliação profunda passaram"
+  },
+  "banco-conversa-v2.js": {
+    "ms": 51,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "11/11 contratos do banco de conversa v2 passaram"
+  },
+  "banco-conversa.js": {
+    "ms": 38,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "11/11 contratos do banco de conversa passaram"
+  },
+  "barreira-depois-do-merge.js": {
+    "ms": 33,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ 4/4 contratos da barreira depois do merge passaram"
+  },
+  "caderno-contexto-explicito.js": {
+    "ms": 54,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "13/13 testes de caderno com contexto explícito passaram"
+  },
+  "calculadoras-locais-privacidade.js": {
+    "ms": 72,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "13/13 testes de calculadoras locais passaram"
+  },
+  "cdp-recuperacao-navegador.js": {
+    "ms": 2315,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "5/5 contratos do lançador de navegador passaram"
+  },
+  "central-operacional.js": {
+    "ms": 164,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "15/15 testes da Central operacional passaram"
+  },
+  "chave-do-dono.js": {
+    "ms": 37,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "5 contratos do comando !chave passaram"
+  },
+  "cobertura-navegador.js": {
+    "ms": 37,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ 8/8 testes do medidor de cobertura passaram"
+  },
+  "colecoes-conversas-local.js": {
+    "ms": 109,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "11/11 testes de coleções locais passaram"
+  },
+  "comandos-locais-interface.js": {
+    "ms": 133,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "19/19 testes dos comandos locais da interface passaram"
+  },
+  "comandos-marketing-24h.js": {
+    "ms": 50,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "6/6 testes dos comandos do motor 24h passaram"
+  },
+  "comandos-privados-locais.js": {
+    "ms": 55,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "13/13 testes de comandos privados locais passaram"
+  },
+  "comandos-produtividade.js": {
+    "ms": 90,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "10/10 testes dos comandos de produtividade passaram"
+  },
+  "conta-e-comandos.js": {
+    "ms": 217,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "65/65 certos"
+  },
+  "conta-falada.js": {
+    "ms": 48,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "13/13 verificações da conta falada passaram"
+  },
+  "contador-compositor-limpeza.js": {
+    "ms": 44,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "5/5 testes do contador do compositor passaram"
+  },
+  "contexto-explicito-privacidade.js": {
+    "ms": 84,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "10/10 testes de contexto explícito passaram"
+  },
+  "continuidade.js": {
+    "ms": 41,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "24/24 verificações de continuidade passaram"
+  },
+  "csp-paginas.js": {
+    "ms": 213,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ 10/10 testes de CSP passaram"
+  },
+  "diagnostico-motores.js": {
+    "ms": 133,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ 16/16 testes do diagnóstico de motores passaram"
+  },
+  "dossie-preparo-controlado.js": {
+    "ms": 52,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "9/9 testes do dossiê controlado passaram"
+  },
+  "duas-amostras.js": {
+    "ms": 51706,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "10 contratos da segunda amostra passaram"
+  },
+  "email-poll-adocao.js": {
+    "ms": 26,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "5/5 testes de adoção do turno passaram"
+  },
+  "equivalencias-rubrica.js": {
+    "ms": 30,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "13 contratos de equivalência da rubrica passaram"
+  },
+  "espera-rota-boa.js": {
+    "ms": 1365,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ 6/6 verificações de espera pela rota boa passaram"
+  },
+  "estado-aberto.js": {
+    "ms": 65,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ texto aberto: aviso de formato, cache e estado não verificado nas quatro rotas"
+  },
+  "estado-operacional-controlado.js": {
+    "ms": 2292,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "11/11 testes do estado operacional controlado passaram"
+  },
+  "estados-entrega-e-falhas.js": {
+    "ms": 67,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "27/27 estados de entrega e falhas sanitizadas passaram"
+  },
+  "estilos-compartilhados.js": {
+    "ms": 93,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "5/5 testes de estilos compartilhados passaram"
+  },
+  "evolucao-chat.js": {
+    "ms": 32,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "9/9 testes da evolução passaram"
+  },
+  "falha-silenciosa.js": {
+    "ms": 97,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ 6/6 testes de falha silenciosa passaram"
+  },
+  "falhas-operacionais.js": {
+    "ms": 355,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "2/2 falhas operacionais ficaram observáveis"
+  },
+  "fallback-trabalhador.js": {
+    "ms": 69,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "16/16 testes da recuperação rápida passaram"
+  },
+  "fila-visivel-e-avisos.js": {
+    "ms": 57,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "14/14 verificações da fila/avisos passaram"
+  },
+  "filtro-chips-interface.js": {
+    "ms": 124,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "8/8 testes do filtro local de chips passaram"
+  },
+  "fonte-viva-casamento.js": {
+    "ms": 56,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "12 contratos da busca viva passaram"
+  },
+  "fontes-e-provedor.js": {
+    "ms": 384,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "12/12 contratos de fontes e fornecedor passaram"
+  },
+  "formato-e-trava.js": {
+    "ms": 30,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "16/16 certos"
+  },
+  "geografia-brasil.js": {
+    "ms": 36,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "7/7 testes de geografia passaram"
+  },
+  "identidade-do-chat.js": {
+    "ms": 60,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ 5/5 verificações de identidade passaram"
+  },
+  "indice-capacidade.js": {
+    "ms": 55,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ origem e validade distinguem cobertura de autonomia e entrega"
+  },
+  "inicializacao-rede-explicita.js": {
+    "ms": 66,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "13/13 testes de inicialização com rede explícita passaram"
+  },
+  "interface-seguranca-fluxo.js": {
+    "ms": 70,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "34/34 testes de segurança e fluxo da interface passaram"
+  },
+  "inventario-estado-operacional.js": {
+    "ms": 241,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "4/4 testes do inventário operacional passaram"
+  },
+  "leitura-e-inicio-interface.js": {
+    "ms": 50,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "15/15 testes de leitura e início guiado passaram"
+  },
+  "lembretes.js": {
+    "ms": 36,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "13/13 certos"
+  },
+  "lexico-local.js": {
+    "ms": 59,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ 6/6 verificações do léxico local passaram"
+  },
+  "limites-conteudo-interface.js": {
+    "ms": 73,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "19/19 testes de limites de conteúdo da interface passaram"
+  },
+  "markdown-imagem-privacidade.js": {
+    "ms": 70,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "9/9 testes de privacidade de imagem passaram"
+  },
+  "medicao-aberto-checkpoint.js": {
+    "ms": 42,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ checkpoint atômico; sem placar parcial, mistura de hashes ou repetição de itens"
+  },
+  "medicao-pareada.js": {
+    "ms": 52,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ agenda 88 respostas, A/B pareado e balanceado; repetições, rubricas originais e ausência de percentual parcial"
+  },
+  "memoria-contexto-coerente.js": {
+    "ms": 43,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "8/8 testes de memória coerente passaram"
+  },
+  "memoria-na-pagina.js": {
+    "ms": 59,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "19/19 verificações da memória na página passaram"
+  },
+  "memoria-profunda-privacidade.js": {
+    "ms": 50,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "13/13 testes de memória profunda privada passaram"
+  },
+  "mesclador-estreito.js": {
+    "ms": 31,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "11/11 contratos do mesclador passaram"
+  },
+  "mime-bateria.js": {
+    "ms": 155,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "10/10 certos"
+  },
+  "navegador-comando-email.js": {
+    "ms": 49,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "3/3 testes do comando de navegador por e-mail passaram"
+  },
+  "navegador-csp.js": {
+    "ms": 49,
+    "status": 0,
+    "ignorado": true,
+    "ultima": "SKIP: Chromium não encontrado. Defina CHROMIUM_BIN ou instale chrome-headless-shell."
+  },
+  "navegador-lista-controlado-estatico.js": {
+    "ms": 30,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "11/11 testes estáticos do navegador controlado passaram"
+  },
+  "navegador-publico.js": {
+    "ms": 67,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ conexão usa IP aprovado, preserva host e bloqueia DNS privado antes do transporte"
+  },
+  "navegador-retorno-fluxo.js": {
+    "ms": 36,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "7/7 verificações do fluxo de retorno passaram"
+  },
+  "navegador-retorno.js": {
+    "ms": 158,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "8/8 testes de retorno do navegador passaram"
+  },
+  "ocr-local.js": {
+    "ms": 1214,
+    "status": 0,
+    "ignorado": true,
+    "ultima": "SKIP: 3/3 testes de OCR local passaram; 2 verificação(ões) não executada(s) por pré-requisito local ausente"
+  },
+  "operacao-incidentes.js": {
+    "ms": 49,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "5/5 testes de operação segura passaram"
+  },
+  "organizacao-conversas-local.js": {
+    "ms": 102,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "11/11 testes de organização local passaram"
+  },
+  "paginacao-conversas.js": {
+    "ms": 95,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "18/18 testes de paginação de conversas passaram"
+  },
+  "paginas-geradas.js": {
+    "ms": 178,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ 8/8 testes das páginas geradas passaram"
+  },
+  "paineis-locais-privacidade.js": {
+    "ms": 58,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "13/13 testes de consultas locais passaram"
+  },
+  "painel.js": {
+    "ms": 31,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "5/5 contratos do painel passaram"
+  },
+  "placar-testes.js": {
+    "ms": 33,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ 6/6 testes do placar passaram"
+  },
+  "portabilidade-estatica.js": {
+    "ms": 97,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "8/8 testes de portabilidade estática passaram"
+  },
+  "pre-requisitos-multimodais.js": {
+    "ms": 36,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "2/2 testes de pré-requisitos multimodais passaram"
+  },
+  "preparo-controlado.js": {
+    "ms": 66,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "15/15 testes do preparo controlado passaram"
+  },
+  "prova-ciclos.js": {
+    "ms": 36,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "14/14 testes da prova de ciclos passaram"
+  },
+  "pulso-vigia.js": {
+    "ms": 36,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "5/5 testes do pulso do vigia passaram"
+  },
+  "pwa-atualizacao-segura.js": {
+    "ms": 112,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "24/24 testes de atualização PWA segura passaram"
+  },
+  "rascunhos-locais-interface.js": {
+    "ms": 53,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "22/22 testes de rascunhos locais e prévia passaram"
+  },
+  "razao-local.js": {
+    "ms": 87,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ 86/86 casos de raciocínio local (provas + armadilhas)"
+  },
+  "recomeco-resgate-memoria.js": {
+    "ms": 35409,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "24/24 verificações de recomeço/resgate/memória passaram"
+  },
+  "rede-e-modo-somente-local.js": {
+    "ms": 59,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "23/23 testes de transparência e modo somente-local passaram"
+  },
+  "referencias-estaticas-privacidade.js": {
+    "ms": 63,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "13/13 testes de referências estáticas passaram"
+  },
+  "reforco-dossie-controlado.js": {
+    "ms": 42,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "13/13 testes do reforço controlado do dossiê passaram"
+  },
+  "reserva-turno.js": {
+    "ms": 28,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "10/10 testes da reserva de turno passaram"
+  },
+  "reversao-caminho-do-403.js": {
+    "ms": 30,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "6/6 contratos do caminho de reversão passaram"
+  },
+  "rota-com-chave-ponta-a-ponta.js": {
+    "ms": 11651,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "18 contratos ponta a ponta da rota com chave passaram"
+  },
+  "roteador-gratis.js": {
+    "ms": 759,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ roteador grátis: rotas locais + régua + sanidade de resposta"
+  },
+  "roteador-resiliencia.js": {
+    "ms": 45,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ falha de planejamento não derruba o texto"
+  },
+  "roteamento-com-chave.js": {
+    "ms": 57,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "16 contratos de roteamento com chave passaram"
+  },
+  "rotinas-locais-privacidade.js": {
+    "ms": 59,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "13/13 testes de rotinas locais passaram"
+  },
+  "saude-persistente.js": {
+    "ms": 39,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "16/16 testes de saúde persistente passaram"
+  },
+  "saude-rotas-email.js": {
+    "ms": 47,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "11/11 testes de memória de rotas do e-mail passaram"
+  },
+  "seguranca-interface.js": {
+    "ms": 63,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "49/49 verificações de segurança passaram"
+  },
+  "sem-dependencia.js": {
+    "ms": 20994,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ 3/3 verificações de independência passaram"
+  },
+  "sessoes-locais-privacidade.js": {
+    "ms": 65,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "13/13 testes de sessão local passaram"
+  },
+  "socorro.js": {
+    "ms": 28,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "9/9 contratos do socorro passaram"
+  },
+  "sombra-e-portoes.js": {
+    "ms": 32,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "16/16 contratos do sombra e dos portões passaram"
+  },
+  "sorteios-locais-privacidade.js": {
+    "ms": 67,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "13/13 testes de sorteios locais passaram"
+  },
+  "sugestoes-locais-privacidade.js": {
+    "ms": 57,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "5/5 testes de sugestões locais passaram"
+  },
+  "telegram.js": {
+    "ms": 33,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "15/15 certos"
+  },
+  "teste-email-remetentes.js": {
+    "ms": 26,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "3/3 testes de remetentes da rodada passaram"
+  },
+  "teste-email-resultado.js": {
+    "ms": 25,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "4/4 testes do resultado de e-mail passaram"
+  },
+  "teste-foto-resiliencia.js": {
+    "ms": 29,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "3/3 testes de resiliência da foto passaram"
+  },
+  "teste-navegador-pareado.js": {
+    "ms": 30,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "4/4 testes do navegador pareado passaram"
+  },
+  "texto-longo-offline.js": {
+    "ms": 6107,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ texto longo offline: mecanismo de parágrafo por chamada"
+  },
+  "token-antes-rascunho-privacidade.js": {
+    "ms": 47,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "25/25 testes de token antes de rascunho passaram"
+  },
+  "token-sessao-opcional.js": {
+    "ms": 50,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "4/4 rotas aprovadas para token temporário sem promoção"
+  },
+  "transformacoes-locais-privacidade.js": {
+    "ms": 65,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "13/13 testes de transformações locais privadas passaram"
+  },
+  "turno-cache-ferramentas.js": {
+    "ms": 27,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ 7/7 testes do cache do turno passaram"
+  },
+  "turno-liveness.js": {
+    "ms": 28,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "4/4 testes de liveness do turno passaram"
+  },
+  "varredura-privacidade.js": {
+    "ms": 44,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "5/5 testes de privacidade da varredura passaram"
+  },
+  "vigia-casa-resiliencia.js": {
+    "ms": 35,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "11/11 testes de resiliência do vigia passaram"
+  },
+  "vigia-estado.js": {
+    "ms": 36,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "12/12 testes do estado do vigia passaram"
+  },
+  "vigia-recuperacao-fluxo.js": {
+    "ms": 83,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "✔ 28 causas do vigia têm texto no e-mail de status"
+  },
+  "visao-resposta-cega.js": {
+    "ms": 177,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "4/4 testes de guarda contra resposta cega passaram"
+  },
+  "workspace-arquivo-completo-concorrencia-local.js": {
+    "ms": 37,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "4/4 testes da concorrência do arquivo completo local passaram"
+  },
+  "workspace-arquivo-completo.js": {
+    "ms": 40,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "6/6 testes do arquivo completo do Workspace passaram"
+  },
+  "workspace-busca-global.js": {
+    "ms": 29,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "6/6 testes da busca global do Workspace passaram"
+  },
+  "workspace-conflito-local.js": {
+    "ms": 35,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "7/7 testes do conflito local do Workspace passaram"
+  },
+  "workspace-integridade-local.js": {
+    "ms": 96,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "28/28 testes de integridade local passaram"
+  },
+  "workspace-lixeira-concorrencia-local.js": {
+    "ms": 35,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "6/6 testes da concorrência da lixeira local passaram"
+  },
+  "workspace-local.js": {
+    "ms": 98,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "15/15 testes do Workspace local passaram"
+  },
+  "workspace-projeto-portatil.js": {
+    "ms": 39,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "6/6 testes do projeto portátil do Workspace passaram"
+  }
+}
