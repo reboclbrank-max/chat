@@ -1,11 +1,11 @@
 {
   "resumo": {
-    "geradoEm": "2026-11-17T15:04:45.566Z",
-    "totalArquivos": 141,
-    "semModuloMapeado": 44,
+    "geradoEm": "2026-11-17T15:34:53.544Z",
+    "totalArquivos": 143,
+    "semModuloMapeado": 45,
     "porTipo": {
       "comportamento": 35,
-      "misto": 47,
+      "misto": 49,
       "estatica": 59
     }
   },
@@ -295,6 +295,19 @@
         "termometro:107 — zero falha recente não gera motivo de instabilidade"
       ],
       "totalInvariantes": 4
+    },
+    "buracos-ciclo5.js": {
+      "arquivo": "tools/testes/buracos-ciclo5.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/mesclador-estreito.js"
+      ],
+      "modulosLidosEstaticamente": [
+        "roteador-ia.js"
+      ],
+      "invariantes": [],
+      "totalInvariantes": 0
     },
     "caderno-contexto-explicito.js": {
       "arquivo": "tools/testes/caderno-contexto-explicito.js",
@@ -1556,6 +1569,20 @@
         "tudo certo mostra "
       ],
       "totalInvariantes": 5
+    },
+    "placar-formula.js": {
+      "arquivo": "tools/testes/placar-formula.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "as quatro categorias somam o total da tabela",
+        "ingênuo = mortas / (todas as válidas), com inválida fora",
+        "estrito = mortas / (mortas + vivas) — não_executa sai do denominador",
+        "buraco aberto conta vivo e buraco fechado conta morto, na mesma conta"
+      ],
+      "totalInvariantes": 4
     },
     "placar-testes.js": {
       "arquivo": "tools/testes/placar-testes.js",

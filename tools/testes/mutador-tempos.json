@@ -820,5 +820,17 @@
     "status": 0,
     "ignorado": false,
     "ultima": "5/5 contratos do baseline do mutador passaram"
+  },
+  "buracos-ciclo5.js": {
+    "ms": 34,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "2/2 buracos do ciclo 5 presos"
+  },
+  "placar-formula.js": {
+    "ms": 25,
+    "status": 0,
+    "ignorado": false,
+    "ultima": "4/4 contratos da fórmula do placar passaram"
   }
 }

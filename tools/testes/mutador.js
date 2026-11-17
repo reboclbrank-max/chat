@@ -286,10 +286,15 @@ function carregaMapa() {
   return JSON.parse(fs.readFileSync(MAPA, 'utf8'));
 }
 
-function testesQueCobrem(alvoRel, mapa) {
+function testesQueCobrem(alvoRel, mapa, opcoes) {
+  // `--so-comportamentais`: só entra teste que EXECUTA o módulo (tipo comportamento/misto).
+  // Teste estático compara texto: ele "mata" mutante por semelhança de string, não por
+  // comportamento. Contar esse kill como prova é medir a fonte contra ela mesma.
+  const soComportamentais = !!(opcoes && opcoes.soComportamentais);
   const out = [];
   for (const [arq, info] of Object.entries(mapa.testes)) {
     if (info.ehHelper) continue;
+    if (soComportamentais && info.tipo === 'estatica') continue;
     const mods = [].concat(info.modulosRequeridos || [], info.modulosLidosEstaticamente || []);
     if (mods.includes(alvoRel)) out.push(arq);
   }
@@ -363,7 +368,7 @@ function mutaArquivo(alvoRel, opcoes, mapa, tempos) {
   if (!fs.existsSync(abs)) {
     return { arquivo: alvoRel, erro: 'arquivo não existe', mutantes: 0, mortos: 0, vivos: 0, killRate: null };
   }
-  const cobremTodos = testesQueCobrem(alvoRel, mapa);
+  const cobremTodos = testesQueCobrem(alvoRel, mapa, opcoes);
   if (cobremTodos.length === 0) {
     console.log(alvoRel.padEnd(46) + ' SEM COBERTURA MAPEADA — 0 mutantes' + (opcoes.verbose ? '' : ''));
     return { arquivo: alvoRel, semCobertura: true, mutantes: 0, mortos: 0, vivos: 0, killRate: null };
@@ -530,6 +535,7 @@ function main() {
     max: arg('max') ? parseInt(arg('max'), 10) : 0,
     permitirLentos: temFlag('permitir-lentos'),
     verbose: temFlag('verbose'),
+    soComportamentais: temFlag('so-comportamentais'),
   };
 
   if (temFlag('todos')) {

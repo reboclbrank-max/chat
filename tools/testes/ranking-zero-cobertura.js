@@ -18,7 +18,11 @@ const { execFileSync } = require('child_process');
 
 const DIR = __dirname;
 const RAIZ = path.resolve(DIR, '..', '..');
+const { fechoAlcancavel } = require('./rastreio-alcancavel.js');
 const cobertura = JSON.parse(fs.readFileSync(path.join(DIR, 'cobertura-fonte.json'), 'utf8'));
+// Critério do instrutor (17/11/2026): cobertura só é dívida se o arquivo for alcançável de um
+// ponto de entrada de produção ou executado por workflow. O resto é fixture e sai do ranking.
+const { alcancaveis } = fechoAlcancavel();
 
 const fontes = cobertura.zeroCoberturaLista.filter(f => /\.(js|mjs|cjs)$/.test(f));
 
@@ -52,18 +56,28 @@ const ranking = fontes.map((rel) => {
   const tam = linhas >= 400 ? 3 : linhas >= 150 ? 2 : linhas >= 50 ? 1 : 0;
   const efeito = (escreve || processo ? 3 : 0) + (rede ? 2 : 0) + (segredo ? 1 : 0);
   const histP = hist >= 4 ? 4 : hist >= 3 ? 3 : hist >= 2 ? 2 : hist >= 1 ? 1 : 0;
-  return { arquivo: rel, linhas, escreve, processo, rede, segredo, historico: hist, tam, efeito, histP, risco: tam + efeito + histP };
-}).sort((a, b) => b.risco - a.risco || b.linhas - a.linhas);
+  return { arquivo: rel, linhas, escreve, processo, rede, segredo, historico: hist, tam, efeito, histP,
+    alcancavel: alcancaveis.has(rel), risco: tam + efeito + histP };
+});
+const divida = ranking.filter(r => r.alcancavel).sort((a, b) => b.risco - a.risco || b.linhas - a.linhas);
+const fixture = ranking.filter(r => !r.alcancavel).sort((a, b) => b.linhas - a.linhas);
 
 if (process.argv.includes('--json')) {
-  console.log(JSON.stringify(ranking, null, 2));
+  console.log(JSON.stringify({ divida, fixture }, null, 2));
 } else {
-  console.log('critério: risco = TAMANHO(0-3) + EFEITO(0-6) + HISTÓRICO(0-4) · ' + ranking.length + ' arquivos .js com zero cobertura\n');
+  console.log('critério de risco: TAMANHO(0-3) + EFEITO(0-6) + HISTÓRICO(0-4)');
+  console.log('critério de escopo: só entra arquivo alcançável de ponto de entrada de produção ou workflow');
+  console.log(fontes.length + ' arquivos .js com zero cobertura → ' + divida.length + ' dívida · ' +
+    fixture.length + ' fixture (' + fixture.reduce((s, r) => s + r.linhas, 0) + ' linhas que não se testam)\n');
   console.log('risco  linhas  arq'.padEnd(56) + '  efeitos');
-  for (const r of ranking) {
+  for (const r of divida) {
     const efeitos = [r.escreve || r.processo ? 'disco/proc' : '', r.rede ? 'rede' : '', r.segredo ? 'segredo' : '', r.historico ? 'hist:' + r.historico : '']
       .filter(Boolean).join(',') || '—';
     console.log(String(r.risco).padStart(3) + String(r.linhas).padStart(8) + '  ' + r.arquivo.padEnd(56) + efeitos);
+  }
+  if (process.argv.includes('--fixture')) {
+    console.log('\nfora do escopo (fixture — não é dívida, não se testa):');
+    for (const r of fixture) console.log(String(r.linhas).padStart(8) + '  ' + r.arquivo);
   }
 }
 fs.writeFileSync(path.join(DIR, 'ranking-zero-cobertura.json'), JSON.stringify(ranking, null, 2) + '\n');

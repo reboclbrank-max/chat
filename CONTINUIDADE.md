@@ -4,6 +4,38 @@
 >
 > **Retrato consolidado em 2026-10-22.** Ele descreve o estado de `main` após o pacote de segurança, a expansão local, a correção da aferição do teste real de e-mail, a recuperação rápida da interface diante da indisponibilidade observada do trabalhador privado, os rascunhos locais opt-in, a organização local de favoritos e coleções, os backups manuais estritos, a recuperação completa reversível protegida contra fotografia desatualizada, a criação e renomeação estrutural transacionais entre guias, o salvamento e a renomeação comum de arquivo decididos pela fotografia corrente, a importação ativa aditiva decidida pela fotografia persistida, a transferência aditiva de projeto com histórico, a busca explícita entre projetos, a proteção de conflito de arquivo e a Lixeira transacional do Workspace. As saídas operacionais sanitizadas passam a usar o ramo revisável `estado/operacional`, nunca promoção automática em `main`. Antes de agir, confira a `main` remota e o ramo de estado: eles sempre vencem este retrato se algo tiver mudado depois.
 
+## 2026-11-17 — o placar de 83% do ciclo 3 estava errado; fica retirado
+
+**Número errado não se substitui em silêncio: fica marcado como errado.** O `83%` de kill rate
+que este repositório publicou no ciclo 3 (67 mortos em 81 "executáveis") **estava errado**, e o
+número honesto, medido hoje pela receita reproduzível (`seed 42`, `--max 6`), é
+**36,9% estrito (59/160)** e **30,6% ingênuo (59/193)**, ambos tirados de uma tabela só
+(`tools/testes/placar.json`, 197 linhas, quatro categorias).
+
+As três causas do inflado, todas verificadas:
+
+1. **Kill por comparação de texto contava como prova.** O mutador aceitava como "morte" um
+   teste do tipo `estatica` — que compara o texto da fonte com um trecho esperado. Ele nunca
+   executa o módulo; "detecta" a mutação por semelhança de string. Teste estático é cego ao
+   mutador de código por construção, então esse kill não mede comportamento. Agora só entra
+   leitor que executa (`--so-comportamentais`).
+2. **O denominador de 81 nunca foi escrito em lugar nenhum.** "Executável" era uma noção da
+   triagem (`triagem-vivos.json`), enquanto os mortos vinham do mutador, que gerava **179**
+   mutantes válidos. Dois instrumentos, dois universos, um quociente — e ninguém consegue
+   refazer a conta. Hoje as duas pontas saem da mesma tabela, e o comando de conferência é
+   `node tools/testes/placar.js --recalcular`.
+3. **O sandbox do ciclo 4 mentiu por ambiente.** Sem `npm install`, `tools/email-chat.js` não
+   carrega (`Cannot find module 'imapflow'`); toda suíte morre no `require` e **todo mutante é
+   contado como morto**. Foi assim que apareceu um 46% que eu cheguei a publicar. O mutador
+   agora confere o baseline no código intacto antes de contar kill e **descarta a suíte que já
+   estava vermelha** (`tools/testes/mutador-baseline.js`). Não sei dizer se o sandbox do ciclo 3
+   tinha a mesma falta — por isso o 83% **não** é reinterpretado: é retirado.
+
+**O que substitui o 83%:** uma tabela com uma linha por mutante e status
+`morta | viva | nao_executa | invalida`, mais os buracos conhecidos como linhas próprias (aberto
+conta vivo). Os dois números — ingênuo e estrito — saem dela por fórmula, e qualquer pessoa
+recomputa com um comando.
+
 ## 2026-11-17 — o medidor não pode alterar o que mede (primeiro ciclo do instrutor)
 
 **O que mudou e por quê.** Rodando a bateria duas vezes seguidas com `git status` dos dois
