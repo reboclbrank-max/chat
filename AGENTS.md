@@ -1,5 +1,30 @@
 # Instruções permanentes para quem continuar o Chat
 
+## ⚠️ INSTRUÇÃO DO INSTRUTOR — leia ANTES de tudo
+
+Em **2026-11-17**, por ordem expressa do dono, foi aberto um ciclo de **trabalho contínuo
+sem pausa** neste repositório, com um instrutor externo auditando cada entrega.
+
+**Leia [`INSTRUCAO-DO-INSTRUTOR.md`](INSTRUCAO-DO-INSTRUTOR.md) inteiro antes de qualquer
+ação.** Ele contém a metodologia obrigatória (contrato antes do código, sabotagem para
+validar, zero falso positivo, prova por run #), as cinco classes de defeito que precisam
+ser caçadas, a fila permanente de trabalho e o critério exato de auditoria.
+
+Em resumo, o que mudou para quem chega agora:
+
+1. **Trabalho contínuo.** Não espere tarefa explícita para o próximo ciclo — a fila está em
+   `INSTRUCAO-DO-INSTRUTOR.md` §6. Só pare para pedir ordem em caso de risco, gasto,
+   exclusão, segredo ou ação irreversível (as guardas de §Segurança continuam valendo).
+2. **Prova ou não conta.** Run # identificado, saída `OK` do contrato, prova de sabotagem,
+   antes/depois. "Implementado" sem execução é proibido.
+3. **Um item por ciclo, inteiro.** Dez itens pela metade valem menos que um provado.
+4. **Rigor acima de velocidade.** O pedido do dono é literalmente "trabalho máximo,
+   cada vez mais e melhor".
+
+O restante deste arquivo continua valendo integralmente e **não** foi substituído.
+
+---
+
 Este repositório tem automações ativas, uma interface pública e integrações que usam segredos fora do código. Trabalhe somente mediante uma tarefa explícita do dono.
 
 ## Regra fixa — Chat primeiro
