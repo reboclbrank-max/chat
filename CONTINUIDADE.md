@@ -4,6 +4,57 @@
 >
 > **Retrato consolidado em 2026-10-22.** Ele descreve o estado de `main` após o pacote de segurança, a expansão local, a correção da aferição do teste real de e-mail, a recuperação rápida da interface diante da indisponibilidade observada do trabalhador privado, os rascunhos locais opt-in, a organização local de favoritos e coleções, os backups manuais estritos, a recuperação completa reversível protegida contra fotografia desatualizada, a criação e renomeação estrutural transacionais entre guias, o salvamento e a renomeação comum de arquivo decididos pela fotografia corrente, a importação ativa aditiva decidida pela fotografia persistida, a transferência aditiva de projeto com histórico, a busca explícita entre projetos, a proteção de conflito de arquivo e a Lixeira transacional do Workspace. As saídas operacionais sanitizadas passam a usar o ramo revisável `estado/operacional`, nunca promoção automática em `main`. Antes de agir, confira a `main` remota e o ramo de estado: eles sempre vencem este retrato se algo tiver mudado depois.
 
+## 2026-11-17 — o medidor não pode alterar o que mede (primeiro ciclo do instrutor)
+
+**O que mudou e por quê.** Rodando a bateria duas vezes seguidas com `git status` dos dois
+lados, ficou visível: **limpo antes, ` M docs/auto-melhoria.json` depois, com o placar dizendo
+136/136**. A suíte se declarava perfeita e deixava o repositório sujo. A causa era
+`salvarHistorico()` rodando em TODA execução de `tools/auto-melhoria.js` — e
+`tools/testes/auto-melhoria.js` chama esse script com `cwd: RAIZ` só para LER o relatório.
+Consequência pior que o incômodo: cada execução de teste empurrava uma **rodada falsa** para o
+histórico, envenenando a TENDÊNCIA ("antes X, agora Y") — que é justamente o número que
+`--exigir-sem-regressao` usa para decidir se houve piora. Um medidor que altera o que mede não
+serve para medir.
+
+**Segundo defeito, achado no caminho.** `--json` fazia `process.exit(0)` **antes** de chegar
+em `salvarHistorico()`: pedir o relatório em JSON nunca registrava a rodada. Efeito colateral
+silencioso: o teste que roda `--json` duas vezes e compara `a` com `b` comparava dois
+instantâneos do MESMO estado em disco — passava sempre, porque nada era gravado entre as duas
+chamadas.
+
+**Arquivos afetados.** `tools/auto-melhoria.js` (gravação opt-in por `--gravar`; `--json
+--gravar` grava antes de sair; tendência compara com a rodada certa nos dois modos),
+`tools/testes/auto-melhoria.js` (4 contratos novos: dois proíbem sujar o repositório, um exige
+que `--gravar` continue gravando, um cobre o caminho `--json`), este documento.
+
+**Falso positivo meu, pego pela sabotagem.** A primeira versão do contrato de `--gravar`
+comparava o conteúdo antes e depois e exigia que fossem **diferentes**. Ao sabotar
+`gravar = false` o teste continuou **passando** — porque "algo mudou" não prova "a gravação
+funcionou". Refiz a prova por **identidade**: forjo um histórico com uma rodada marcadora,
+confirmo que ela não está lá, rodo `--gravar`, confirmo que a rodada entrou (N → N+1) e que a
+anterior foi preservada. Aí sim a sabotagem acusa.
+
+**Contagem de testes.** `auto-melhoria.js` passou de 17 para **21 verificações**. A bateria
+completa continua **136/136 · 3 ignorados por ambiente · 0 falhas** — comportamento 38/38,
+misto 42/42, estática 56/56.
+
+**Validação de disco e repositório.** Depois de `npm ci --omit=dev` + bateria inteira,
+`git status --porcelain` mostra **somente** `tools/auto-melhoria.js` e
+`tools/testes/auto-melhoria.js` — que são exatamente as duas edições deste ciclo.
+`docs/auto-melhoria.json` **não é mais tocado por teste**, que era o defeito.
+
+**O que foi preservado.** Nenhuma regra de medição, classificação de prova, armadilha,
+cobertura, guarda de regressão ou limite de autonomia mudou. O histórico é lido igual; o que
+mudou é que ele não é mais escrito sem pedido.
+
+**Sabotagens registradas.** `--json` sem gravação → FALHOU · `gravar = true` sempre → FALHOU ·
+histórico apagado na gravação → FALHOU · `gravar = false` fixo → FALHOU (depois de corrigir o
+próprio contrato).
+
+**Próximo ciclo.** Aplicar a mesma régua aos outros módulos com escrita em `docs/` ou `tools/`
+durante teste, e levantar quantos dos 135 arquivos de teste já foram vistos **falhando** — a
+dívida de falso positivo é a maior da casa.
+
 ## 2026-11-17 — ciclo de trabalho contínuo: o instrutor entra e a régua sobe
 
 **O que mudou e por quê.** O dono abriu, por ordem expressa, um ciclo de **trabalho contínuo
