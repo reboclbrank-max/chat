@@ -4,6 +4,59 @@
 >
 > **Retrato consolidado em 2026-10-22.** Ele descreve o estado de `main` após o pacote de segurança, a expansão local, a correção da aferição do teste real de e-mail, a recuperação rápida da interface diante da indisponibilidade observada do trabalhador privado, os rascunhos locais opt-in, a organização local de favoritos e coleções, os backups manuais estritos, a recuperação completa reversível protegida contra fotografia desatualizada, a criação e renomeação estrutural transacionais entre guias, o salvamento e a renomeação comum de arquivo decididos pela fotografia corrente, a importação ativa aditiva decidida pela fotografia persistida, a transferência aditiva de projeto com histórico, a busca explícita entre projetos, a proteção de conflito de arquivo e a Lixeira transacional do Workspace. As saídas operacionais sanitizadas passam a usar o ramo revisável `estado/operacional`, nunca promoção automática em `main`. Antes de agir, confira a `main` remota e o ramo de estado: eles sempre vencem este retrato se algo tiver mudado depois.
 
+## 2026-11-17 — credencial do instrutor entregue fora do repositório (e uma armadilha a menos)
+
+**O que mudou e por quê.** O dono entregou, por ordem expressa, a credencial do instrutor para
+que o Chat tenha acesso a toda a casa. **O valor não entra neste repositório e não está em
+nenhum arquivo versionado** — o `chat` é público e token commitado aqui fica visível para a
+internet em segundos, minerado por bots 24h por dia. A credencial vive em
+`/home/user/acesso/gh_token_instrutor` (modo 600), e `INSTRUCAO-DO-INSTRUTOR.md` §5.1 passou a
+citar o **caminho** e o método, nunca o valor.
+
+**Escopo medido, não suposto.** Conta `reboclbrank-max`, escopos `repo`, `workflow`,
+`admin:org`, `admin:enterprise`, `delete_repo`, `admin:public_key`, `admin:repo_hook`,
+`admin:org_hook`, `gpg_key`, `ssh_signing_key`, `gist`, `notifications`, `project`, `user`,
+`write:discussion`, `write:packages`, `audit_log`, `codespace`, `copilot`,
+`write:network_configurations`. Rate limit 5000/h. Leitura de repo privado (HTTP 200), listagem
+de runs de Actions (HTTP 200), e **push confirmado em teste real** numa branch descartável,
+já apagada. **É chave-mestra**: alcança organização, membros, chaves e exclusão de repositório.
+
+**A armadilha que me pegou, e que fica documentada.** O `~/.gitconfig` desta máquina tinha
+`[credential] helper = store`. Com ele, **qualquer** URL com token é gravada em
+`~/.git-credentials` em texto puro — e o `git remote` fica com o token embutido em
+`.git/config`. Aconteceu comigo duas vezes hoje: primeiro no arquivo de credencial global,
+depois no `.git/config` de um clone. Medidas tomadas:
+
+1. `credential.helper` **desligado** globalmente;
+2. `~/.git-credentials` **zerado** (0 bytes, verificado);
+3. `git remote set-url` para a URL limpa no clone de trabalho;
+4. **`.gitignore` ganhou bloco** com `gh_token*`, `*token.txt`, `.gh_token*`,
+   `.git-credentials`, `.netrc`, `*.pem`, `credentials.json` — validado criando um arquivo de
+   teste e confirmando que o git o ignora.
+
+**Também medido, para não se perder tempo:** `git -c http.extraheader=... clone` **não
+funciona** em repositório privado (`fatal: could not read Username`) — o header não é aplicado
+no fetch inicial. O caminho que funciona é token na URL **com** `-c credential.helper=""`,
+que clona e faz push sem gravar nada (verificado: `~/.git-credentials` com 0 bytes depois).
+
+**Arquivos afetados.** `INSTRUCAO-DO-INSTRUTOR.md` (§5.1 reescrita com os três fatos que são
+regra: repo público, método de clone sem vazar, e o que a chave-mestra **não** autoriza),
+`.gitignore` (bloco de credenciais), este documento. **Nenhum valor de token em nenhum deles.
+
+**Validação.** `npm ci --omit=dev` + `node tools/testes/roda-testes.js` → **136/136 testes,
+3 ignorados por ambiente, 0 falhas**. `git status --porcelain` depois de rodar tudo mostra
+somente `.gitignore` e `INSTRUCAO-DO-INSTRUTOR.md` — as duas edições deste ciclo.
+
+**O que foi preservado.** Nenhuma guarda de segurança afrouxada, nenhum escopo novo criado,
+nenhuma permissão alterada, nenhum workflow tocado. A regra "Chat primeiro" e a proteção do
+`main` continuam intactas — aliás, o push direto foi **recusado** pela proteção
+(`Required status check "testes" is expected`) e o caminho usado foi PR, como deve ser.
+
+**O que fica aberto.** (a) quantos dos 135 arquivos de teste já foram vistos **falhando** — a
+dívida de falso positivo, ainda não medida; (b) auditoria de que nenhum outro clone em outras
+máquinas ficou com token em `.git/config`; (c) verificar se o `GHPAT` dos workflows precisa
+deste escopo todo ou se um token menor bastaria — reduzir escopo é trabalho, e vale.
+
 ## 2026-11-17 — o medidor não pode alterar o que mede (primeiro ciclo do instrutor)
 
 **O que mudou e por quê.** Rodando a bateria duas vezes seguidas com `git status` dos dois

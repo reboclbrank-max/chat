@@ -162,6 +162,29 @@ acumulado, ou dívida escondida.
 ## 5. O que você tem para trabalhar (e o que não tem)
 
 ### 5.1 Acesso
+
+**15/11/2026 — a credencial do instrutor foi entregue fisicamente e está fora de repositório.**
+Onde: **`/home/user/acesso/gh_token_instrutor`** (modo 600). O método de uso, a armadilha que
+já pegou o instrutor e o procedimento em caso de vazamento estão em
+**`/home/user/acesso/CREDENCIAL.md`**.
+
+**Três fatos que são regra, não aviso:**
+
+1. **O repositório `chat` é PÚBLICO.** Token commitado aqui fica visível para a internet em
+   segundos, e há bots que mineram GitHub 24h por dia. Este arquivo cita o *caminho*, nunca o
+   valor — e você deve fazer o mesmo em qualquer documento, issue, commit ou log.
+2. **Clone de repo privado exige o token na URL**, e a URL com token é gravada em
+   `~/.git-credentials` se `credential.helper=store` estiver ativo. Nesta máquina o helper foi
+   **desligado** e o arquivo foi **zerado**. Use:
+   ```bash
+   git -c credential.helper="" clone "https://x-access-token:${TOKEN}@github.com/org/repo.git"
+   ```
+   `git -c http.extraheader=... clone` **não funciona** em repo privado — o header não é
+   aplicado no fetch inicial. Já foi medido; não perca tempo nesse caminho.
+3. **É chave-mestra** (`admin:org`, `delete_repo`, `admin:enterprise`). Serve para auditar e
+   publicar. Não serve para apagar repositório, mexer em membros ou rotacionar segredo sem
+   ordem explícita do dono.
+
 O PAT (`GH_PAT`/`GHPAT`) alcança **os 15 repositórios** com `push` e `admin`:
 `acervo, agente, agente-espelho, ambiente, base, base-espelho, ceifalume, chat, midia,
 motor, prancheta, projetos-arquivados, reboclbrank-max.github.io, rele, site`.
