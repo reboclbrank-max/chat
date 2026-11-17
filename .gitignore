@@ -16,3 +16,16 @@ coverage/
 # texto de terceiros baixado pela medição de fontes (não versionar)
 bench/cache-fontes-vivas.json
 resultado-seguranca.md
+
+# 17/11/2026 — CREDENCIAIS NUNCA ENTRAM AQUI.
+# Este repositório é PÚBLICO. Token commitado vira público em segundos e é minerado por bots.
+# O PAT do instrutor vive fora do repo, em /home/user/acesso/gh_token_instrutor (modo 600),
+# e nenhum arquivo abaixo deve existir aqui dentro.
+gh_token*
+*token.txt
+.gh_token
+.gh_token_*
+.git-credentials
+.netrc
+*.pem
+credentials.json
