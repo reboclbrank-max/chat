@@ -27,8 +27,14 @@ permissions:
 
 jobs:
   copiar:
-    runs-on: ubuntu-latest
+    # O guardião do chat (auditoria-workflows.js) exige versão fixa: runner flutuante muda
+    # de imagem sem aviso e transforma "funcionava ontem" em quebra silenciosa.
+    runs-on: ubuntu-24.04
     steps:
+      # Fixado por SHA completo, como todo o resto da casa: tag pode ser movida, commit não.
+      # Serve para o log registrar de qual commit do chat saíram os secrets copiados.
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+
       - name: Instala o cifrador (PyNaCl, exigido pela API de secrets)
         run: python3 -m pip install --quiet pynacl
 
