@@ -1,12 +1,12 @@
 {
   "resumo": {
-    "geradoEm": "2026-11-17T13:50:08.416Z",
-    "totalArquivos": 138,
-    "semModuloMapeado": 43,
+    "geradoEm": "2026-11-17T15:04:45.566Z",
+    "totalArquivos": 141,
+    "semModuloMapeado": 44,
     "porTipo": {
-      "comportamento": 34,
-      "misto": 46,
-      "estatica": 58
+      "comportamento": 35,
+      "misto": 47,
+      "estatica": 59
     }
   },
   "testes": {
@@ -52,6 +52,20 @@
         "aviso de limpeza anuncia a proteção sem mudar a tela deliberada"
       ],
       "totalInvariantes": 22
+    },
+    "agenda-do-email.js": {
+      "arquivo": "tools/testes/agenda-do-email.js",
+      "tipo": "estatica",
+      "ehHelper": false,
+      "modulosRequeridos": [],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "email.yml declara exatamente dois agendamentos, e são estes",
+        "o pulso roda de 6 em 6 horas, no minuto 7",
+        "nenhum outro workflow roubou a cadência do e-mail",
+        "o workflow do e-mail continua disparando pelo concurrency certo"
+      ],
+      "totalInvariantes": 4
     },
     "auditoria-workflows.js": {
       "arquivo": "tools/testes/auditoria-workflows.js",
@@ -262,6 +276,23 @@
         "barreira que não pôde ser pedida não desfaz o merge nem mente",
         "PR recusada não pede barreira nenhuma",
         "nível desligado não mescla nem pede barreira"
+      ],
+      "totalInvariantes": 4
+    },
+    "buracos-ciclo4.js": {
+      "arquivo": "tools/testes/buracos-ciclo4.js",
+      "tipo": "comportamento",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "tools/reserva-turno.js",
+        "tools/termometro-barreira.js"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "reserva-turno:109 — a espera entre tentativas ACONTECE antes da consulta seguinte",
+        "reserva-turno:109 — a espera cresce a cada tentativa",
+        "termometro:107 — 5 execuções recentes com falha DENTRO da janela são acusadas",
+        "termometro:107 — zero falha recente não gera motivo de instabilidade"
       ],
       "totalInvariantes": 4
     },
@@ -1260,6 +1291,23 @@
       "modulosLidosEstaticamente": [],
       "invariantes": [],
       "totalInvariantes": 0
+    },
+    "mutador-baseline.js": {
+      "arquivo": "tools/testes/mutador-baseline.js",
+      "tipo": "misto",
+      "ehHelper": false,
+      "modulosRequeridos": [
+        "externo:modulo-que-nao-existe"
+      ],
+      "modulosLidosEstaticamente": [],
+      "invariantes": [
+        "suíte que passa no original continua valendo como leitora",
+        "suíte que JÁ FALHA no original é descartada, com o motivo no placar",
+        "suíte que ESTOURA no require (dependência ausente) é descartada — o caso do imapflow",
+        "suíte que NÃO TERMINA não é confundida com morte nem com vida",
+        "baseline vazio devolve lista vazia em vez de liberar a varredura"
+      ],
+      "totalInvariantes": 5
     },
     "mutantes-vivos.js": {
       "arquivo": "tools/testes/mutantes-vivos.js",

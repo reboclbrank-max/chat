@@ -309,6 +309,44 @@ function rodaTeste(arquivoTeste) {
   return { status: r.status, saida: String(r.stdout || '') + String(r.stderr || '') };
 }
 
+// ── Baseline: suíte vermelha no código INTACTO não mede nada ──────────────────
+// Sem isto, um `npm install` esquecido vira +10 pontos de placar: o require estoura, todo
+// teste "falha", e todo mutante é contado como morto. Foi assim em 17/11/2026 neste sandbox.
+const CACHE_BASELINE = new Map();
+
+function rodaTesteEm(arquivoTeste, dir, limiteMs) {
+  const args = [path.join(dir, arquivoTeste)];
+  if (dir === DIR) args.push(CHAT);
+  const r = spawnSync(process.execPath, args, { encoding: 'utf8', timeout: limiteMs });
+  const saida = String(r.stdout || '') + String(r.stderr || '');
+  if (r.signal === 'SIGTERM' || (r.error && (r.error.code === 'ETIMEDOUT' || r.error.code === 'ENOENT'))) {
+    return { ok: false, motivo: 'não terminou em ' + limiteMs + 'ms' };
+  }
+  if (r.status !== 0) {
+    if (/MODULE_NOT_FOUND|Cannot find module|Cannot find package/.test(saida)) {
+      const mod = (saida.match(/Cannot find (?:module|package) '([^']+)'/) || [])[1] || '?';
+      return { ok: false, motivo: 'não carrega: falta o módulo ' + mod };
+    }
+    return { ok: false, motivo: 'já falha no código original (código ' + r.status + ')' };
+  }
+  return { ok: true };
+}
+
+function verificaBaseline(arquivosTeste, opcoes) {
+  const o = opcoes || {};
+  const dir = o.dir || DIR;
+  const limiteMs = o.limiteMs || TIMEOUT_TESTE;
+  const confiaveis = [];
+  const descartadas = [];
+  for (const t of arquivosTeste || []) {
+    const chave = dir + '|' + t + '|' + limiteMs;
+    let r = CACHE_BASELINE.get(chave);
+    if (!r) { r = rodaTesteEm(t, dir, limiteMs); CACHE_BASELINE.set(chave, r); }
+    if (r.ok) confiaveis.push(t); else descartadas.push({ arquivo: t, motivo: r.motivo });
+  }
+  return { confiaveis, descartadas };
+}
+
 function primeiroDiferente(a, b) {
   const n = Math.min(a.length, b.length);
   for (let i = 0; i < n; i++) if (a[i] !== b[i]) return i;
@@ -339,6 +377,20 @@ function mutaArquivo(alvoRel, opcoes, mapa, tempos) {
   if (usaveis.length === 0) {
     console.log(alvoRel.padEnd(46) + ' SÓ COBERTURA LENTA (' + cobrem.map(t => t + ' ' + (tempos[t] ? tempos[t].ms + 'ms' : '?')).join(', ') + ') — use --permitir-lentos');
     return { arquivo: alvoRel, soLento: true, mutantes: 0, mortos: 0, vivos: 0, killRate: null };
+  }
+
+  // 🔎 antes de qualquer mutação: as suítes leitoras passam no código intacto?
+  const base = verificaBaseline(usaveis);
+  const descartadas = base.descartadas;
+  const leitores = base.confiaveis;
+  if (descartadas.length) {
+    console.log('   ⚠ baseline vermelho — descartadas: ' +
+      descartadas.map(d => d.arquivo + ' (' + d.motivo + ')').join(' · '));
+  }
+  if (leitores.length === 0) {
+    console.log(alvoRel.padEnd(46) + ' NENHUMA suíte confiável — não medido (e isso não é kill)');
+    return { arquivo: alvoRel, semLeitorConfiavel: true, descartadas,
+      mutantes: 0, mortos: 0, vivos: 0, killRate: null };
   }
 
   const original = fs.readFileSync(abs, 'utf8');
@@ -382,7 +434,7 @@ function mutaArquivo(alvoRel, opcoes, mapa, tempos) {
       let morto = false, quemMatou = null, pista = null;
       try {
         fs.writeFileSync(abs, mutante, 'utf8');
-        for (const t of usaveis) {
+        for (const t of leitores) {
           const r = rodaTeste(t);
           if (r.status !== 0) {
             morto = true; quemMatou = t;
@@ -417,13 +469,13 @@ function mutaArquivo(alvoRel, opcoes, mapa, tempos) {
     '  mortos ' + String(mortos).padStart(2) +
     '  vivos ' + String(vivos).padStart(2) +
     '  kill ' + (killRate === null ? ' — ' : String(killRate).padStart(3) + '%') +
-    '  | testes: ' + usaveis.slice(0, 2).join(',') + (usaveis.length > 2 ? ' +' + (usaveis.length - 2) : ''));
+    '  | testes: ' + leitores.slice(0, 2).join(',') + (leitores.length > 2 ? ' +' + (leitores.length - 2) : '') + (descartadas.length ? '  ⚠ ' + descartadas.length + ' descartada(s)' : ''));
   for (const d of detalhes.filter(x => !x.morto && !x.invalido)) {
     console.log('      VIVO  [' + d.tipo + '] ' + d.descricao);
   }
   return {
     arquivo: alvoRel, mutantes: validos, mortos, vivos, invalidos, killRate,
-    testes: usaveis, lentosExcluidos: lentos, detalhes,
+    testes: leitores, descartadas, lentosExcluidos: lentos, detalhes,
   };
 }
 
@@ -641,3 +693,5 @@ function gravaPlacar(resultados, opcoes, totalAlvos) {
 }
 
 if (require.main === module) main();
+
+module.exports = { verificaBaseline, testesQueCobrem };

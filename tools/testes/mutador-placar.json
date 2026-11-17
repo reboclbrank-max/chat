@@ -1,14 +1,14 @@
 {
-  "geradoEm": "2026-11-17T14:00:15.234Z",
+  "geradoEm": "2026-11-17T15:06:39.711Z",
   "seed": 42,
   "maxPorModulo": 6,
   "alvos": 41,
   "comCobertura": 34,
   "semCoberturaOuLenta": 2,
   "mutantes": 179,
-  "mortos": 64,
-  "vivos": 115,
-  "killRateGeral": 36,
+  "mortos": 66,
+  "vivos": 113,
+  "killRateGeral": 37,
   "resultados": [
     {
       "arquivo": "bench/avaliar-aberto.js",
@@ -28,6 +28,7 @@
         "avaliacao-aberto.js",
         "roteador-gratis.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -72,6 +73,7 @@
       "testes": [
         "medicao-aberto-checkpoint.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -134,6 +136,7 @@
       "testes": [
         "roteador-gratis.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -188,6 +191,7 @@
       "testes": [
         "colecoes-conversas-local.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -252,6 +256,7 @@
         "comandos-locais-interface.js",
         "central-operacional.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -291,6 +296,7 @@
         "mutantes-vivos.js",
         "diagnostico-motores.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -353,6 +359,7 @@
       "testes": [
         "filtro-chips-interface.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -383,6 +390,7 @@
       "testes": [
         "organizacao-conversas-local.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -452,6 +460,7 @@
         "workspace-integridade-local.js",
         "workspace-local.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -523,6 +532,7 @@
         "identidade-do-chat.js",
         "razao-local.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -598,6 +608,7 @@
         "espera-rota-boa.js",
         "texto-longo-offline.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [
         "sem-dependencia.js",
         "recomeco-resgate-memoria.js",
@@ -678,6 +689,7 @@
         "central-operacional.js",
         "fontes-e-provedor.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -733,6 +745,7 @@
         "autonomia-e-risco.js",
         "mutantes-vivos.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -771,6 +784,7 @@
       "testes": [
         "cobertura-navegador.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -809,6 +823,7 @@
       "testes": [
         "dossie-preparo-controlado.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -877,6 +892,7 @@
         "central-operacional.js",
         "fontes-e-provedor.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -937,6 +953,7 @@
       "testes": [
         "email-poll-adocao.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -999,6 +1016,7 @@
       "testes": [
         "estado-operacional-controlado.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -1061,6 +1079,7 @@
       "testes": [
         "fontes-e-provedor.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -1123,6 +1142,7 @@
       "testes": [
         "continuidade.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -1185,6 +1205,7 @@
       "testes": [
         "continuidade.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -1246,6 +1267,7 @@
       "testes": [
         "paginas-geradas.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -1308,6 +1330,7 @@
       "testes": [
         "painel.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -1370,6 +1393,7 @@
       "testes": [
         "sombra-e-portoes.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -1440,6 +1464,7 @@
         "prova-ciclos.js",
         "mutantes-vivos.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -1503,6 +1528,7 @@
         "pulso-vigia-relogio.js",
         "pulso-vigia.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -1519,7 +1545,7 @@
           "linha": 9,
           "morto": true,
           "quemMatou": "pulso-vigia-relogio.js",
-          "pista": "✘ o padrão do relógio é o relógio do sistema, não uma constante → relógio padrão devia estar a menos de 60 s do tempo real; desvio 94924012124.35791 ms"
+          "pista": "✘ o padrão do relógio é o relógio do sistema, não uma constante → relógio padrão devia estar a menos de 60 s do tempo real; desvio 94927996900.37817 ms"
         },
         {
           "tipo": "remover-await",
@@ -1557,6 +1583,7 @@
       "testes": [
         "reforco-dossie-controlado.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -1610,13 +1637,15 @@
     {
       "arquivo": "tools/reserva-turno.js",
       "mutantes": 6,
-      "mortos": 3,
-      "vivos": 3,
+      "mortos": 4,
+      "vivos": 2,
       "invalidos": 0,
-      "killRate": 50,
+      "killRate": 67,
       "testes": [
-        "reserva-turno.js"
+        "reserva-turno.js",
+        "buracos-ciclo4.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -1655,9 +1684,9 @@
           "tipo": "remover-await",
           "descricao": "await removido na linha 109",
           "linha": 109,
-          "morto": false,
-          "quemMatou": null,
-          "pista": null
+          "morto": true,
+          "quemMatou": "buracos-ciclo4.js",
+          "pista": "✘ reserva-turno:109 — a espera entre tentativas ACONTECE antes da consulta seguinte → cada tentativa nova só pode começar depois de a espera anterior terminar — sem o await vira rajada | ✔ termometro:"
         },
         {
           "tipo": "remover-await",
@@ -1686,6 +1715,7 @@
       "testes": [
         "saude-rotas-email.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -1748,6 +1778,7 @@
       "testes": [
         "socorro.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -1810,6 +1841,7 @@
       "testes": [
         "sombra-e-portoes.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -1872,6 +1904,7 @@
       "testes": [
         "central-operacional.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -1927,13 +1960,15 @@
     {
       "arquivo": "tools/termometro-barreira.js",
       "mutantes": 6,
-      "mortos": 1,
-      "vivos": 5,
+      "mortos": 2,
+      "vivos": 4,
       "invalidos": 0,
-      "killRate": 17,
+      "killRate": 33,
       "testes": [
-        "autonomia-e-risco.js"
+        "autonomia-e-risco.js",
+        "buracos-ciclo4.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
@@ -1956,9 +1991,9 @@
           "tipo": "trocar-limite",
           "descricao": ">= → >",
           "linha": 107,
-          "morto": false,
-          "quemMatou": null,
-          "pista": null
+          "morto": true,
+          "quemMatou": "buracos-ciclo4.js",
+          "pista": "✘ termometro:107 — 5 execuções recentes com falha DENTRO da janela são acusadas → com exatamente 5 execuções a janela recente ainda vale; motivos: histórico curto: 5 execuções (mínimo 20) | barreira v"
         },
         {
           "tipo": "remover-await",
@@ -1998,6 +2033,7 @@
         "operacao-incidentes.js",
         "vigia-recuperacao-fluxo.js"
       ],
+      "descartadas": [],
       "lentosExcluidos": [],
       "detalhes": [
         {
