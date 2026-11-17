@@ -196,6 +196,87 @@ testa('o diagnóstico não depende da internet: duas execuções dão o MESMO n�
   assert.equal(resumo(a), resumo(b), 'duas execuções divergiram: ' + resumo(a) + ' vs ' + resumo(b));
 });
 
+/* ─────────────────────────────────────────────────────────────────────────────────────────
+   17/11/2026 — O MEDIDOR NÃO PODE ALTERAR O QUE MEDE.
+
+   DEFEITO REAL, medido rodando a bateria duas vezes:
+     git status (antes)  → limpo
+     node tools/testes/roda-testes.js → 136/136 ✔
+     git status (depois) → ` M docs/auto-melhoria.json`
+
+   A suíte se declarava perfeita e deixava o repositório sujo. E pior que o incômodo: cada
+   execução de teste empurrava uma rodada FALSA no histórico, envenenando a TENDÊNCIA
+   ("antes X, agora Y") — que é exatamente o número que `--exigir-sem-regressao` usa para
+   decidir se houve piora. Um teste podia esconder uma regressão só por ter rodado antes.
+
+   Causa: `salvarHistorico()` rodava em toda execução, e este teste chama o script com
+   `cwd: RAIZ` para LER o relatório. Correção: a escrita passou a exigir `--gravar`.
+
+   Os quatro contratos abaixo fixam a correção. Os dois primeiros protegeriam a suíte de
+   sujar o repositório; o terceiro garante que a gravação EXPLÍCITA continua funcionando
+   (senão "não sujar" viraria "nunca gravar", e a tendência morreria); o quarto garante que
+   `--json --gravar` realmente grava — porque `--json` saía com `process.exit(0)` antes de
+   chegar na gravação, e isso estava silencioso há tempos.
+   ───────────────────────────────────────────────────────────────────────────────────────── */
+const HIST = path.join(RAIZ, 'docs', 'auto-melhoria.json');
+// conteúdo ORIGINAL do arquivo versionado, capturado ANTES de qualquer teste rodar.
+// Restaurar com o valor lido na hora (`antes`) não serve: se um teste anterior já tiver
+// mexido, `antes` já está contaminado e a restauração "passa" restaurando o sujo.
+const jsonOriginal = (function () {
+  try { return fs.readFileSync(HIST, 'utf8'); } catch (e) { return null; }
+})();
+function conteudoHist() {
+  try { return fs.readFileSync(HIST, 'utf8'); } catch (e) { return null; }
+}
+
+testa('medir NÃO altera o histórico versionado (--vigiar sem --gravar)',
+  () => {
+    const antes = conteudoHist();
+    roda(['--vigiar', '--fio=1']);
+    assert.equal(conteudoHist(), antes,
+      'rodar o medidor reescreveu docs/auto-melhoria.json — a suíte sujaria o repositório ' +
+      'e envenenaria a tendência');
+  });
+
+testa('medir em JSON também NÃO altera o histórico (--json sem --gravar)',
+  () => {
+    const antes = conteudoHist();
+    roda(['--json', '--fio=1']);
+    assert.equal(conteudoHist(), antes,
+      '--json reescreveu o histórico sem ninguém pedir');
+  });
+
+testa('--gravar GRAVA de verdade (senão "não sujar" viraria "nunca gravar")',
+  () => {
+    /* 17/11/2026 — ESTE CONTRATO TINHA FALSO POSITIVO, pego na sabotagem.
+       A primeira versão comparava `antes` (conteúdo do arquivo) com `depois` e exigia que
+       fossem diferentes. Quando sabotei `gravar = false` fixo, o teste CONTINUOU PASSANDO.
+       Motivo: a comparação só prova que ALGO mudou. Se o conteúdo já estava diferente por
+       qualquer razão (rodada anterior, formatação, o próprio histórico crescendo), o teste
+       passa mesmo sem ninguém gravar.
+       Agora a prova é de IDENTIDADE, não de diferença: eu forjo um `docs/auto-melhoria.json`
+       com uma rodada marcadora conhecida, testo que ela NÃO aparece, rodo `--gravar` e
+       testo que ela APARECEU. Ou seja: a gravação tem que levar o número de rodadas de N
+       para N+1 e preservar a marca anterior. */
+    const marca = { quando: '2000-01-01T00:00:00.000Z', provas: 1, porCodigo: 1,
+                    dependemDoModelo: 0, erradas: 0, marcador: 'contrato-do-instructor' };
+    fs.writeFileSync(HIST, JSON.stringify({ esquema: 'auto-melhoria-v1', rodadas: [marca] }, null, 1));
+    try {
+      roda(['--json', '--fio=1', '--gravar']);
+      const hist = JSON.parse(fs.readFileSync(HIST, 'utf8'));
+      assert.equal(hist.rodadas.length, 2,
+        '--gravar não acrescentou rodada: de 1 rodada foi para ' + hist.rodadas.length);
+      assert.equal(hist.rodadas[0].marcador, 'contrato-do-instructor',
+        '--gravar apagou a rodada anterior em vez de acrescentar');
+      assert.ok(hist.rodadas[1].quando && hist.rodadas[1].quando !== marca.quando,
+        'a rodada acrescentada não tem carimbo próprio');
+    } finally {
+      // a suíte não deixa rastro: o arquivo volta ao que o repositório tinha
+      const original = jsonOriginal;
+      if (original !== null) fs.writeFileSync(HIST, original);
+    }
+  });
+
 console.log('');
 if (falhas.length) { console.error('✘ ' + falhas.length + ' de ' + (certos + falhas.length) + ' verificações FALHARAM'); process.exit(1); }
 console.log('✔ ' + certos + '/' + (certos + falhas.length) + ' verificações do auto-diagnóstico passaram');

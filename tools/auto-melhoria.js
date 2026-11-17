@@ -533,6 +533,12 @@ function salvarHistorico(relatorio) {
   relatorio.capacidade = capacidade(relatorio, provas, cob);
 
   if (process.argv.includes('--json')) {
+    // 17/11/2026 — `--json` SAÍA ANTES DE GRAVAR.
+    // `salvarHistorico()` mora depois do bloco de texto e `--json` fazia `process.exit(0)`
+    // aqui: pedir o relatório em JSON NUNCA registrava a rodada. Efeito medido: o teste que
+    // roda `--json` duas vezes e compara `a` com `b` comparava dois instantâneos do MESMO
+    // estado em disco — passava sempre, porque nada era gravado entre as duas chamadas.
+    if (process.argv.includes('--gravar')) salvarHistorico(relatorio);
     console.log(JSON.stringify(relatorio, null, 1));
     // sai já: temporizadores pendentes de rota mantinham o processo vivo por mais ~8 s sem
     // nenhuma medição a mais (medido em 31/10/2026). Medir não pode custar espera.
@@ -615,8 +621,38 @@ function salvarHistorico(relatorio) {
     }
   }
 
-  const hist = salvarHistorico(relatorio);
-  const anterior = hist.rodadas.length > 1 ? hist.rodadas[hist.rodadas.length - 2] : null;
+  /* 17/11/2026 — GRAVAR O HISTÓRICO PASSA A SER OPT-IN (`--gravar`).
+     O DEFEITO: `salvarHistorico()` rodava em TODA execução, inclusive quando quem chamava só
+     queria LER o relatório. `tools/testes/auto-melhoria.js` invoca este script com
+     `cwd: RAIZ` para medir — então rodar a bateria reescrevia `docs/auto-melhoria.json`, um
+     arquivo VERSIONADO. Medido: `git status` limpo antes de
+     `node tools/testes/roda-testes.js`, e ` M docs/auto-melhoria.json` depois, com o placar
+     dizendo 136/136.
+     Pior que o incômodo: cada execução de teste empurrava uma rodada FALSA no histórico,
+     envenenando a TENDÊNCIA ("antes X, agora Y") — que é o número que
+     `--exigir-sem-regressao` usa para decidir se houve piora. Um medidor que altera o que
+     mede não serve para medir.
+     Agora só grava quando pedirem. Sem `--gravar`, o histórico é LIDO e a tendência continua
+     aparecendo; o que não acontece é a escrita. */
+  const gravar = process.argv.includes('--gravar');
+  let hist;
+  if (gravar) {
+    hist = salvarHistorico(relatorio);
+  } else {
+    try {
+      hist = fs.existsSync(HISTORICO)
+        ? JSON.parse(fs.readFileSync(HISTORICO, 'utf8'))
+        : { esquema: 'auto-melhoria-v1', rodadas: [] };
+      if (!Array.isArray(hist.rodadas)) hist.rodadas = [];
+    } catch (e) {
+      hist = { esquema: 'auto-melhoria-v1', rodadas: [] };   // ilegível: não apaga nada
+    }
+  }
+  // TENDÊNCIA: com `--gravar` a rodada atual já está no fim da lista (por isso -2);
+  // sem gravar, a última do disco É a anterior.
+  const anterior = hist.rodadas.length >= (gravar ? 2 : 1)
+    ? hist.rodadas[hist.rodadas.length - (gravar ? 2 : 1)]
+    : null;
   if (anterior) {
     console.log('== TENDÊNCIA: antes ' + anterior.porCodigo + '/' + anterior.provas
       + ' por código · agora ' + porCodigo + '/' + provas.length);
