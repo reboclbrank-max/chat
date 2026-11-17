@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-11-17T15:17:15.903Z",
+ "verificado_em": "2026-11-17T15:57:34.900Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -34,7 +34,7 @@
    "ok": true,
    "falhas": 0,
    "causa": "saudavel",
-   "evidencia": "turno-ativo"
+   "evidencia": "fila-recente-sem-executor"
   },
   "Bateria do cérebro": {
    "ok": true,
