@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-11-18T14:57:30.294Z",
+ "verificado_em": "2026-11-18T16:29:21.126Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -110,9 +110,9 @@
    "causa": "rede-nostr"
   },
   "Gmail IMAP/SMTP": {
-   "ok": true,
-   "falhas": 0,
-   "causa": "saudavel"
+   "ok": false,
+   "falhas": 1,
+   "causa": "sonda-indisponivel"
   },
   "Caixa de e-mail": {
    "ok": true,
