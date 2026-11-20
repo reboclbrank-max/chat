@@ -1,10 +1,10 @@
 # Placar de capacidade do Chat
 
-Atualizado: `2026-11-19T19:25:43.028Z`
+Atualizado: `2026-11-20T19:00:28.827Z`
 
 Fonte operacional: `estado/operacional`; cópias em `main` podem ser históricas.
 Esta nota combina cobertura estrutural e amostras; não mede entrega ponta a ponta nem autonomia universal.
-Vigia observado: 2026-11-19T18:16:42.343Z; qualidade observada: 2026-11-19T19:25:42.791Z.
+Vigia observado: 2026-11-20T18:43:48.508Z; qualidade observada: 2026-11-20T19:00:28.484Z.
 
 **Indicador interno: 91/100.** Indicador interno de cobertura; não é resultado observável do produto, não é teste de QI, consciência nem garantia de disponibilidade.
 **Estado do canal real (tráfego controlado):** última rodada controlada: 38/38 PASS; falha ampla anterior preservada: 37/38 PASS, 1 falha(s) (provas/teste-email-r3-2026-10-18-0211.md); ainda não mede satisfação humana; reteste focado de foto mais recente: PASS (amostra única, não substitui a rodada completa).

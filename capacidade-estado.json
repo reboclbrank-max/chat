@@ -1,13 +1,13 @@
 {
   "esquema": "placar-capacidade-v2",
-  "gerado_em": "2026-11-19T19:25:43.028Z",
+  "gerado_em": "2026-11-20T19:00:28.827Z",
   "evidencia": {
     "fonte_estado": "estado/operacional",
     "tipo": "cobertura_estrutural_e_amostras",
     "autonomia_universal": false,
     "entrega_ponta_a_ponta": "nao_medida_por_este_indicador",
-    "vigia_observado_em": "2026-11-19T18:16:42.343Z",
-    "qualidade_observada_em": "2026-11-19T19:25:42.791Z",
+    "vigia_observado_em": "2026-11-20T18:43:48.508Z",
+    "qualidade_observada_em": "2026-11-20T19:00:28.484Z",
     "vigia_vigente": true,
     "qualidade_vigente": true
   },
