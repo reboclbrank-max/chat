@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-11-20T23:22:21.371Z",
+ "verificado_em": "2026-11-20T23:49:17.991Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -31,9 +31,10 @@
    "evidencia": "barreira-verde"
   },
   "Chat por e-mail (24h)": {
-   "ok": false,
-   "falhas": 1,
-   "causa": "turnos-duplicados"
+   "ok": true,
+   "falhas": 0,
+   "causa": "saudavel",
+   "evidencia": "turno-ativo"
   },
   "Bateria do cérebro": {
    "ok": true,
@@ -45,13 +46,13 @@
    "ok": true,
    "falhas": 0,
    "causa": "saudavel",
-   "evidencia": "checagem-limitada"
+   "evidencia": "pagina-respondendo"
   },
   "itch Prancheta": {
    "ok": true,
    "falhas": 0,
    "causa": "saudavel",
-   "evidencia": "checagem-limitada"
+   "evidencia": "pagina-respondendo"
   },
   "GitHub API": {
    "ok": false,
