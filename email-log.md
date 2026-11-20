@@ -522,3 +522,4 @@
 - 2026-10-18T06:16 UTC — bog***+alias@gmail.com | "[TESTE-REBOCL] QP-10 — leitura de bilhet" → respondido via visão (omni) (nvidia/nemotron-3-nano-omni-30b-a3b-reasoning)
 - 2026-10-26T14:09 UTC — nor***@google.com | "(assunto do dono — fica só na caixa)" → remetente não autorizado (resposta curta, sem IA)
 - 2026-11-18T23:53 UTC — tea***@everify.arena.ai | "(assunto do dono — fica só na caixa)" → remetente não autorizado (resposta curta, sem IA)
+- 2026-11-20T01:50 UTC — new***@google.com | "(assunto do dono — fica só na caixa)" → remetente não autorizado (resposta curta, sem IA)
