@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-11-21T15:49:06.217Z",
+ "verificado_em": "2026-11-21T16:17:04.770Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -52,7 +52,7 @@
    "ok": true,
    "falhas": 0,
    "causa": "saudavel",
-   "evidencia": "checagem-limitada"
+   "evidencia": "pagina-respondendo"
   },
   "GitHub API": {
    "ok": false,
