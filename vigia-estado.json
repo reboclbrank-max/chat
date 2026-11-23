@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-11-23T19:43:54.962Z",
+ "verificado_em": "2026-11-23T20:23:57.376Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -37,22 +37,21 @@
    "evidencia": "turno-ativo"
   },
   "Bateria do cérebro": {
-   "ok": true,
-   "falhas": 0,
-   "causa": "saudavel",
-   "evidencia": "bateria-recem-executada"
+   "ok": false,
+   "falhas": 1,
+   "causa": "bateria-atrasada"
   },
   "itch Ceifalume": {
    "ok": true,
    "falhas": 0,
    "causa": "saudavel",
-   "evidencia": "checagem-limitada"
+   "evidencia": "pagina-respondendo"
   },
   "itch Prancheta": {
    "ok": true,
    "falhas": 0,
    "causa": "saudavel",
-   "evidencia": "checagem-limitada"
+   "evidencia": "pagina-respondendo"
   },
   "GitHub API": {
    "ok": false,
@@ -119,6 +118,11 @@
    "falhas": 0,
    "causa": "saudavel",
    "evidencia": "caixa-sem-pendencia"
+  }
+ },
+ "recuperacoes": {
+  "exame": {
+   "ultima_tentativa_em": "2026-11-23T20:23:57.376Z"
   }
  }
 }
