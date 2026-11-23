@@ -1,13 +1,13 @@
 {
   "esquema": "placar-capacidade-v2",
-  "gerado_em": "2026-11-22T18:21:16.688Z",
+  "gerado_em": "2026-11-23T20:24:56.675Z",
   "evidencia": {
     "fonte_estado": "estado/operacional",
     "tipo": "cobertura_estrutural_e_amostras",
     "autonomia_universal": false,
     "entrega_ponta_a_ponta": "nao_medida_por_este_indicador",
-    "vigia_observado_em": "2026-11-22T17:57:28.416Z",
-    "qualidade_observada_em": "2026-11-22T18:21:16.455Z",
+    "vigia_observado_em": "2026-11-23T20:23:57.376Z",
+    "qualidade_observada_em": "2026-11-23T20:24:56.138Z",
     "vigia_vigente": true,
     "qualidade_vigente": false
   },
@@ -60,7 +60,7 @@
       "nome": "confiabilidade observada",
       "maximo": 20,
       "pontos": 11,
-      "evidencia": "10/22 itens OK; vigia recente",
+      "evidencia": "9/22 itens OK; vigia recente",
       "comoMelhorar": "tratar os itens vermelhos do vigia antes de aumentar a cadência"
     },
     {
@@ -93,7 +93,7 @@
     }
   ],
   "sinais": {
-    "itens_vigia_ok": 10,
+    "itens_vigia_ok": 9,
     "itens_vigia_total": 22,
     "vigia_recente": true,
     "baterias": 5,
