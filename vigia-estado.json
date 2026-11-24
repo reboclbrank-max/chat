@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-11-24T11:01:05.949Z",
+ "verificado_em": "2026-11-24T11:41:42.068Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -46,7 +46,7 @@
    "ok": true,
    "falhas": 0,
    "causa": "saudavel",
-   "evidencia": "pagina-respondendo"
+   "evidencia": "checagem-limitada"
   },
   "itch Prancheta": {
    "ok": true,
@@ -110,9 +110,9 @@
    "causa": "rede-nostr"
   },
   "Gmail IMAP/SMTP": {
-   "ok": true,
-   "falhas": 0,
-   "causa": "saudavel"
+   "ok": false,
+   "falhas": 1,
+   "causa": "sonda-indisponivel"
   },
   "Caixa de e-mail": {
    "ok": true,
