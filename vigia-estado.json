@@ -1,5 +1,5 @@
 {
- "verificado_em": "2026-11-28T04:59:56.821Z",
+ "verificado_em": "2026-11-28T05:40:44.007Z",
  "itens": {
   "Página do chat": {
    "ok": true,
@@ -31,9 +31,10 @@
    "evidencia": "barreira-verde"
   },
   "Chat por e-mail (24h)": {
-   "ok": false,
-   "falhas": 1,
-   "causa": "turnos-duplicados"
+   "ok": true,
+   "falhas": 0,
+   "causa": "saudavel",
+   "evidencia": "turno-ativo"
   },
   "Bateria do cérebro": {
    "ok": true,
